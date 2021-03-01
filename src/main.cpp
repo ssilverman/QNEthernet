@@ -1,7 +1,11 @@
 #include <Arduino.h>
 
+extern "C" {
+#include <lwip/init.h>
+}
+
 void setup() {
-  // put your setup code here, to run once:
+  lwip_init();
 }
 
 void loop() {

@@ -1,0 +1,26 @@
+{
+  "name": "lwIP",
+  "version": "2.1.2",
+  "description": "lwIP is a small independent implementation of the TCP/IP protocol suite. The focus of the lwIP TCP/IP implementation is to reduce the RAM usage while still having a full scale TCP. This making lwIP suitable for use in embedded systems with tens of kilobytes of free RAM and room for around 40 kilobytes of code ROM.",
+  "keywords": "ip, lwip",
+  "authors": [
+    {
+      "name": "Adam Dunkels",
+      "email": "adam@sics.se",
+      "url": "http://dunkels.com/adam/"
+    },
+    {
+      "name": "Leon Woestenberg",
+      "email": "leon.woestenberg@gmx.net"
+    }
+  ],
+  "license": "BSD-3-Clause",
+  "homepage": "https://savannah.nongnu.org/projects/lwip/",
+  "frameworks": "*",
+  "platforms": "*",
+  "build": {
+    "includeDir": "src/include",
+    "srcDir": "src",
+    "srcFilter": "+<core/> +<netif/ethernet.c>"
+  }
+}
