@@ -100,7 +100,7 @@ typedef enum _enet_tx_bd_control_extend0 {
 // Defines the control extended region2 of the transmit buffer descriptor.
 typedef enum _enet_tx_bd_control_extend1 {
   kEnetTxBdTxInterrupt   = 0x4000U,  // Transmit interrupt
-  kEnetTxBdTimeStamp     = 0x2000U,  // Transmit timestamp flag
+  kEnetTxBdTimestamp     = 0x2000U,  // Transmit timestamp flag
   kEnetTxBdProtChecksum  = 0x1000U,  // Insert protocol specific checksum
   kEnetTxBdIpHdrChecksum = 0x0800U,  // Insert IP header checksum
 } enet_tx_bd_control_extend1_t;
@@ -263,25 +263,6 @@ static void t41_low_level_init() {
 	// RCSR offset 0x17, set RMII_Clock_Select, pg 61
 	mdio_write(0, 0x17, 0x0081);  // Config for 50 MHz clock input
 
-  // Serial.printf("RCSR:%04X, LEDCR:%04X, PHYCR %04X\n",
-  //               mdio_read(0, 0x17), mdio_read(0, 0x18), mdio_read(0, 0x19));
-
-  // ENET_EIR     2174  Interrupt Event Register
-  // ENET_EIMR    2177  Interrupt Mask Register
-  // ENET_RDAR    2180  Receive Descriptor Active Register
-  // ENET_TDAR    2181  Transmit Descriptor Active Register
-  // ENET_ECR     2181  Ethernet Control Register
-  // ENET_RCR     2187  Receive Control Register
-  // ENET_TCR     2190  Transmit Control Register
-  // ENET_PALR/UR 2192  Physical Address
-  // ENET_RDSR    2199  Receive Descriptor Ring Start
-  // ENET_TDSR    2199  Transmit Buffer Descriptor Ring
-  // ENET_MRBR    2200  Maximum Receive Buffer Size
-  //              2278  receive buffer descriptor
-  //              2281  transmit buffer descriptor
-
-  // print("enetbufferdesc_t size = ", sizeof(enetbufferdesc_t));
-	// print("rx_ring size = ", sizeof(rx_ring));
 	memset(rx_ring, 0, sizeof(rx_ring));
 	memset(tx_ring, 0, sizeof(tx_ring));
 
@@ -328,11 +309,13 @@ static void t41_low_level_init() {
       | ENET_TACC_IPCHK | ENET_TACC_PROCHK
 #endif
       ;
+
   ENET_RACC = 0
 #if ETH_PAD_SIZE == 2
       | ENET_RACC_SHIFT16
 #endif
-      | ENET_RACC_PADREM;
+      | ENET_RACC_PADREM
+      ;
 
   ENET_TFWR = ENET_TFWR_STRFWD;
   ENET_RSFL = 0;
