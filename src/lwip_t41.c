@@ -1,5 +1,8 @@
-// Ethernet IF implementation.
+// Teensy 4.1 Ethernet interface implementation.
+// Based on code from Paul Stoffregen: https://github.com/PaulStoffregen/teensy41_ethernet
 // (c) 2021 Shawn Silverman
+
+#include "lwip_t41.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -10,7 +13,6 @@
 #include <lwip/etharp.h>
 #include <lwip/init.h>
 #include <lwip/netif.h>
-#include <lwip/pbuf.h>
 #include <lwip/timeouts.h>
 #include <netif/ethernet.h>
 
@@ -510,7 +512,6 @@ inline static void check_link_status() {
 //  Public interface
 // --------------------------------------------------------------------------
 
-// Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac) {
   uint32_t m1 = HW_OCOTP_MAC1;
   uint32_t m2 = HW_OCOTP_MAC0;
@@ -522,7 +523,6 @@ void enet_getmac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-// Initialize Ethernet.
 void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw) {
   ip_addr_t zeroip = IPADDR4_INIT(IPADDR_ANY);
 
@@ -543,7 +543,6 @@ void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw) {
   }
 }
 
-// Sets the receive callback funciton
 void enet_set_receive_callback(rx_frame_fn rx_cb) {
   rx_callback = rx_cb;
 }
@@ -559,7 +558,6 @@ void enet_input(struct pbuf *p_frame) {
   }
 }
 
-// Process any Ethernet input.
 void enet_proc_input(void) {
   struct pbuf *p;
 
@@ -575,7 +573,6 @@ void enet_proc_input(void) {
   }
 }
 
-// Poll Ethernet link status.
 void enet_poll() {
   sys_check_timeouts();
   check_link_status();
