@@ -14,6 +14,8 @@
 extern "C" {
 #endif
 
+typedef void (*rx_frame_fn)(void *);
+
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
