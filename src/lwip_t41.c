@@ -326,9 +326,8 @@ static void t41_low_level_init() {
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  ENET_PALR = netif->hwaddr[0] << 24 | netif->hwaddr[1] << 16 |
-              netif->hwaddr[2] << 8 | netif->hwaddr[3];
-  ENET_PAUR = netif->hwaddr[4] << 24 | netif->hwaddr[5] << 16 | 0x8808;
+  ENET_PALR = mac[0] << 24 | mac[1] << 16 | mac[2] << 8 | mac[3];
+  ENET_PAUR = mac[4] << 24 | mac[5] << 16 | 0x8808;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
