@@ -4,15 +4,6 @@
 #ifndef LWIPTEENSY_ARCH_CC_H_
 #define LWIPTEENSY_ARCH_CC_H_
 
-#include <stdint.h>
-
-#ifndef BYTE_ORDER  // May be defined by the system
-#define BYTE_ORDER LITTLE_ENDIAN
-#endif  // BYTE_ORDER
-#define LWIP_ERRNO_STDINCLUDE 1
-
 #define LWIP_RAND() ((u32_t)rand())
 
-typedef uint32_t sys_prot_t;
-
-#endif  // #ifndef LWIPTEENSY_ARCH_CC_H_
+#endif  // LWIPTEENSY_ARCH_CC_H_
