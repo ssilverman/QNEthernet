@@ -131,8 +131,8 @@ static uint8_t txbufs[TX_SIZE * BFSIZE] __attribute__((aligned(32)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
-static rx_frame_fn rx_callback;
-// static tx_timestamp_fn tx_timestamp_callback = NULL;
+static rx_frame_fn rx_callback = NULL;
+static tx_timestamp_fn tx_timestamp_callback = NULL;
 static volatile uint32_t rx_ready;
 
 void enet_isr();
@@ -338,7 +338,7 @@ static void t41_low_level_init() {
   ENET_GAUR = 0;
   ENET_GALR = 0;
 
-  ENET_EIMR = ENET_EIMR_RXF;
+  ENET_EIMR = ENET_EIMR_RXF | ENET_EIMR_TS_AVAIL;
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
@@ -393,16 +393,30 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   return p;
 }
 
+static uint8_t txTimestampEnabled = 0;
+void enet_txTimestampNextPacket() {
+  txTimestampEnabled = 1;
+}
+
 err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = p_txbd;
+  struct eth_hdr *ethhdr;
 
   while (bdPtr->status & kEnetTxBdReady) {
     // Wait while ready
   }
 
   bdPtr->length = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
+  ethhdr = (struct eth_hdr *)bdPtr->buffer;
 
   bdPtr->extend1 &= kEnetTxBdIpHdrChecksum | kEnetTxBdProtChecksum;
+
+  // don't timestamp ARP packets
+  if (txTimestampEnabled && ethhdr->type == PP_HTONS(ETHTYPE_IP)) {
+    bdPtr->extend1 |= kEnetTxBdTimestamp;
+    txTimestampEnabled = 0;
+  }
+
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
                   kEnetTxBdTransmitCrc |
                   kEnetTxBdLast |
@@ -463,9 +477,16 @@ inline volatile static enetbufferdesc_t *rxbd_next() {
 }
 
 void enet_isr() {
+  if (ENET_EIR & ENET_EIR_TS_AVAIL) {
+    ENET_EIR = ENET_EIR_TS_AVAIL;
+    if (tx_timestamp_callback) {
+      tx_timestamp_callback(ENET_ATSTMP);
+    }
+  }
+
   // struct pbuf *p;
-  while (ENET_EIR & ENET_EIMR_RXF) {
-    ENET_EIR = ENET_EIMR_RXF;
+  while (ENET_EIR & ENET_EIR_RXF) {
+    ENET_EIR = ENET_EIR_RXF;
     if (rx_callback) {
       // p = enet_rx_next();
       rx_callback(NULL);
@@ -527,6 +548,10 @@ void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw) {
 
 void enet_set_receive_callback(rx_frame_fn rx_cb) {
   rx_callback = rx_cb;
+}
+
+void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb) {
+  tx_timestamp_callback = tx_cb;
 }
 
 struct pbuf *enet_rx_next() {
