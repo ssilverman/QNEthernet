@@ -4,7 +4,9 @@
 
 #include "lwip_t41.h"
 
+#include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <core_pins.h>
@@ -122,6 +124,8 @@ typedef struct {
   uint16_t unused3;
   uint16_t unused4;
 } enetbufferdesc_t;
+
+static const int kMTU = 1522;
 
 static uint8_t mac[ETHARP_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
@@ -278,16 +282,16 @@ static void t41_low_level_init() {
     tx_ring[i].buffer = &txbufs[i * BFSIZE];
     tx_ring[i].status = kEnetTxBdTransmitCrc;
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt;
-#if HW_CHKSUMS == 1
+// #if HW_CHKSUMS == 1
     tx_ring[i].extend1 |= kEnetTxBdIpHdrChecksum | kEnetTxBdProtChecksum;
-#endif
+// #endif
   }
   tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
   ENET_EIMR = 0;
 
   ENET_RCR = ENET_RCR_NLC |
-             ENET_RCR_MAX_FL(1522) |
+             ENET_RCR_MAX_FL(kMTU) |
              ENET_RCR_CFEN |
              ENET_RCR_CRCFWD |
              ENET_RCR_PADEN |
@@ -305,9 +309,9 @@ static void t41_low_level_init() {
 #if ETH_PAD_SIZE == 2
       | ENET_TACC_SHIFT16
 #endif
-#if HW_CHKSUMS == 1
+// #if HW_CHKSUMS == 1
       | ENET_TACC_IPCHK | ENET_TACC_PROCHK
-#endif
+// #endif
       ;
 
   ENET_RACC = 0
@@ -398,7 +402,7 @@ void enet_txTimestampNextPacket() {
   txTimestampEnabled = 1;
 }
 
-err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
+static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = p_txbd;
   struct eth_hdr *ethhdr;
 
@@ -438,9 +442,11 @@ err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 static err_t t41_netif_init(struct netif *netif) {
   netif->linkoutput = t41_low_level_output;
   netif->output = etharp_output;
-  netif->mtu = 1522;
-  netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP |
-                 NETIF_FLAG_ETHERNET | NETIF_FLAG_IGMP;
+  netif->mtu = kMTU;
+  netif->flags = NETIF_FLAG_BROADCAST |
+                 NETIF_FLAG_ETHARP |
+                 NETIF_FLAG_ETHERNET |
+                 NETIF_FLAG_IGMP;
   MEMCPY(netif->hwaddr, mac, ETHARP_HWADDR_LEN);
   netif->hwaddr_len = ETHARP_HWADDR_LEN;
 #if LWIP_NETIF_HOSTNAME

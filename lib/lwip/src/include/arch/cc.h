@@ -11,6 +11,8 @@
 #endif  // BYTE_ORDER
 #define LWIP_ERRNO_STDINCLUDE 1
 
+#define LWIP_RAND() ((u32_t)rand())
+
 typedef uint32_t sys_prot_t;
 
 #endif  // #ifndef LWIPTEENSY_ARCH_CC_H_
