@@ -8,16 +8,16 @@ extern "C" {
 #include "lwip/netif.h"
 }
 
-static void status_callback(struct netif *netif) {
-  static char ip[IP4ADDR_STRLEN_MAX];
-  static char mask[IP4ADDR_STRLEN_MAX];
-  static char gw[IP4ADDR_STRLEN_MAX];
+static void netif_status_callback(struct netif *netif) {
+  static char ip[IPADDR_STRLEN_MAX];
+  static char mask[IPADDR_STRLEN_MAX];
+  static char gw[IPADDR_STRLEN_MAX];
 
   Serial.printf(
       "netif status changed: ip %s, mask %s, gw %s\n",
-      ip4addr_ntoa_r(netif_ip_addr4(netif), ip, IP4ADDR_STRLEN_MAX),
-      ip4addr_ntoa_r(netif_ip_netmask4(netif), mask, IP4ADDR_STRLEN_MAX),
-      ip4addr_ntoa_r(netif_ip_gw4(netif), gw, IP4ADDR_STRLEN_MAX));
+      ipaddr_ntoa_r(netif_ip_addr4(netif), ip, IPADDR_STRLEN_MAX),
+      ipaddr_ntoa_r(netif_ip_netmask4(netif), mask, IPADDR_STRLEN_MAX),
+      ipaddr_ntoa_r(netif_ip_gw4(netif), gw, IPADDR_STRLEN_MAX));
 }
 
 static void link_status_callback(struct netif *netif) {
@@ -33,7 +33,7 @@ void setup() {
   delay(4000);
 
   enet_init(NULL, NULL, NULL);
-  netif_set_status_callback(netif_default, status_callback);
+  netif_set_status_callback(netif_default, netif_status_callback);
   netif_set_link_callback(netif_default, link_status_callback);
   netif_set_up(netif_default);
 
