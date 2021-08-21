@@ -135,7 +135,7 @@ static uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(32)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
-static rx_frame_fn rx_callback = NULL;
+// static rx_frame_fn rx_callback = NULL;
 static tx_timestamp_fn tx_timestamp_callback = NULL;
 static volatile uint32_t rx_ready;
 
@@ -458,7 +458,8 @@ static err_t t41_netif_init(struct netif *netif) {
   return ERR_OK;
 }
 
-inline volatile static enetbufferdesc_t *rxbd_next() {
+// Find the next non-empty BD.
+static inline volatile enetbufferdesc_t *rxbd_next() {
   volatile enetbufferdesc_t *p_bd = p_rxbd;
 
   while (p_bd->status & kEnetRxBdEmpty) {
@@ -491,12 +492,12 @@ void enet_isr() {
   // struct pbuf *p;
   while (ENET_EIR & ENET_EIR_RXF) {
     ENET_EIR = ENET_EIR_RXF;
-    if (rx_callback) {
-      // p = enet_rx_next();
-      rx_callback(NULL);
-    } else {
+    // if (rx_callback) {
+    //   // p = enet_rx_next();
+    //   rx_callback(NULL);
+    // } else {
       rx_ready = 1;
-    }
+    // }
     asm("dsb");
   }
 }
@@ -550,9 +551,9 @@ void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw) {
   }
 }
 
-void enet_set_receive_callback(rx_frame_fn rx_cb) {
-  rx_callback = rx_cb;
-}
+// void enet_set_receive_callback(rx_frame_fn rx_cb) {
+//   rx_callback = rx_cb;
+// }
 
 void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb) {
   tx_timestamp_callback = tx_cb;
@@ -572,13 +573,17 @@ static void enet_input(struct pbuf *p_frame) {
 void enet_proc_input(void) {
   struct pbuf *p;
 
-  if (!rx_callback) {
-    if (rx_ready) {
-      rx_ready = 0;
-    } else {
-      return;
-    }
+  // if (!rx_callback) {
+  //   if (rx_ready) {
+  //     rx_ready = 0;
+  //   } else {
+  //     return;
+  //   }
+  // }
+  if (!rx_ready) {
+    return;
   }
+  rx_ready = 0;
   while ((p = enet_rx_next()) != NULL) {
     enet_input(p);
   }

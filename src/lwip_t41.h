@@ -23,8 +23,8 @@ void enet_getmac(uint8_t *mac);
 // Initialize Ethernet.
 void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw);
 
-// Sets the receive callback function.
-void enet_set_receive_callback(rx_frame_fn rx_cb);
+// // Sets the receive callback function.
+// void enet_set_receive_callback(rx_frame_fn rx_cb);
 
 // Sets the timestamp callback function.
 void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb);
