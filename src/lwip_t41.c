@@ -558,12 +558,12 @@ void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb) {
   tx_timestamp_callback = tx_cb;
 }
 
-struct pbuf *enet_rx_next() {
+static struct pbuf *enet_rx_next() {
   volatile enetbufferdesc_t *p_bd = rxbd_next();
   return (p_bd ? t41_low_level_input(p_bd) : NULL);
 }
 
-void enet_input(struct pbuf *p_frame) {
+static void enet_input(struct pbuf *p_frame) {
   if (t41_netif.input(p_frame, &t41_netif) != ERR_OK) {
     pbuf_free(p_frame);
   }

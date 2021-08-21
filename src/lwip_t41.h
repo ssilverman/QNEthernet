@@ -29,13 +29,14 @@ void enet_set_receive_callback(rx_frame_fn rx_cb);
 // Sets the timestamp callback function.
 void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb);
 
-// Get the next chunk of input data.
-struct pbuf *enet_rx_next();
+// // Get the next chunk of input data.
+// struct pbuf *enet_rx_next();
 
-// Process one chunk of input data.
-void enet_input(struct pbuf *p_frame);
+// // Process one chunk of input data.
+// void enet_input(struct pbuf *p_frame);
 
-// Process any Ethernet input.
+// Process any Ethernet input. This is meant to be called often by the
+// main loop.
 void enet_proc_input(void);
 
 // Poll Ethernet link status.
