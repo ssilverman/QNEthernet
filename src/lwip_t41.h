@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 #include <lwip/ip_addr.h>
-#include <lwip/pbuf.h>
 #include <lwip/prot/ethernet.h>
 
 #ifdef __cplusplus

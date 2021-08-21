@@ -15,6 +15,9 @@
 #include <lwip/etharp.h>
 #include <lwip/init.h>
 #include <lwip/netif.h>
+#include <lwip/pbuf.h>
+#include <lwip/prot/ethernet.h>
+#include <lwip/stats.h>
 #include <lwip/timeouts.h>
 #include <netif/ethernet.h>
 
