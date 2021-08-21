@@ -281,9 +281,9 @@ static void t41_low_level_init() {
   for (int i=0; i < TX_SIZE; i++) {
     tx_ring[i].buffer = &txbufs[i * BUF_SIZE];
     tx_ring[i].status = kEnetTxBdTransmitCrc;
-    tx_ring[i].extend1 = kEnetTxBdTxInterrupt;
-// #if HW_CHKSUMS == 1
-    tx_ring[i].extend1 |= kEnetTxBdIpHdrChecksum | kEnetTxBdProtChecksum;
+    tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
+                         kEnetTxBdProtChecksum |
+                         kEnetTxBdIpHdrChecksum;
 // #endif
   }
   tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
@@ -381,11 +381,9 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
     if (p) {
       pbuf_take(p, bdPtr->buffer, p->tot_len);
       p->timestamp = bdPtr->timestamp;
-    }
-    if (NULL == p) {
-      LINK_STATS_INC(link.drop);
-    } else {
       LINK_STATS_INC(link.recv);
+    } else {
+      LINK_STATS_INC(link.drop);
     }
   }
 
@@ -407,18 +405,18 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   struct eth_hdr *ethhdr;
 
   while (bdPtr->status & kEnetTxBdReady) {
-    // Wait while ready
+    // Wait until BD is free
   }
 
   bdPtr->length = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
   ethhdr = (struct eth_hdr *)bdPtr->buffer;
 
-  bdPtr->extend1 &= kEnetTxBdIpHdrChecksum | kEnetTxBdProtChecksum;
-
   // don't timestamp ARP packets
   if (txTimestampEnabled && ethhdr->type == PP_HTONS(ETHTYPE_IP)) {
     bdPtr->extend1 |= kEnetTxBdTimestamp;
     txTimestampEnabled = 0;
+  } else {
+    bdPtr->extend1 &= ~kEnetTxBdTimestamp;
   }
 
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
