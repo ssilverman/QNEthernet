@@ -562,12 +562,15 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
   } else {
     SMEMCPY(m, macaddr, ETH_HWADDR_LEN);
   }
-  if (isNetifAdded && memcmp(mac, m, ETH_HWADDR_LEN)) {
+  if (memcmp(mac, m, ETH_HWADDR_LEN)) {
     // MAC address has changed
 
-    // Remove any previous configuration
-    netif_remove(&t41_netif);
-    isNetifAdded = false;
+    if (isNetifAdded) {
+      // Remove any previous configuration
+      netif_remove(&t41_netif);
+      isNetifAdded = false;
+    }
+    SMEMCPY(mac, m, ETH_HWADDR_LEN);
   }
 
   if (isNetifAdded) {
