@@ -43,10 +43,10 @@
 // #define MEMP_NUM_FRAG_PBUF                 15
 // #define MEMP_NUM_ARP_QUEUE                 30
 // #define MEMP_NUM_IGMP_GROUP                8
-// #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                 \
+/* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                 \
 //   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
-//    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))
+//    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 // #define MEMP_NUM_SYS_TIMEOUT LWIP_NUM_SYS_TIMEOUT_INTERNAL
 #define MEMP_NUM_NETBUF                    0
 #define MEMP_NUM_NETCONN                   0
@@ -117,8 +117,8 @@
 // #define LWIP_MIB2_CALLBACKS 0
 
 // Multicast options
-// #define LWIP_MULTICAST_TX_OPTIONS \
-//   ((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))
+/* #define LWIP_MULTICAST_TX_OPTIONS \
+//   ((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))*/
 
 // IGMP options
 #define LWIP_IGMP 1
@@ -130,9 +130,9 @@
 // #define DNS_MAX_SERVERS               2
 // #define DNS_MAX_RETRIES               4
 // #define DNS_DOES_NAME_CHECK           1
-// #define LWIP_DNS_SECURE                                                 \
+/* #define LWIP_DNS_SECURE                                                 \
 //   (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
-//    LWIP_DNS_SECURE_RAND_SRC_PORT)
+//    LWIP_DNS_SECURE_RAND_SRC_PORT)*/
 // #define DNS_LOCAL_HOSTLIST            0
 // #define DNS_LOCAL_HOSTLIST_IS_DYNAMIC 0
 // #define LWIP_DNS_SUPPORT_MDNS_QUERIES 0
@@ -156,8 +156,8 @@
 // #define TCP_CALCULATE_EFF_SEND_MSS 1
 #define TCP_SND_BUF                (4 * TCP_MSS)
 // #define TCP_SND_QUEUELEN ((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
-// #define TCP_SNDLOWAT \
-//   LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF)-1)
+/* #define TCP_SNDLOWAT \
+//   LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF)-1)*/
 // #define TCP_SNDQUEUELOWAT LWIP_MAX(((TCP_SND_QUEUELEN)/2), 5)
 // #define TCP_OOSEQ_MAX_BYTES        0
 // #if TCP_OOSEQ_MAX_BYTES
