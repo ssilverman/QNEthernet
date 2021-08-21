@@ -7,8 +7,10 @@
 
 #ifdef ARDUINO_TEENSY41
 
+#include <stdint.h>
 #include <lwip/ip_addr.h>
 #include <lwip/pbuf.h>
+#include <lwip/prot/ethernet.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,8 +22,14 @@ typedef void (*tx_timestamp_fn)(uint32_t);
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
-// Initialize Ethernet.
-void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw);
+// Initialize Ethernet. This does not set the interface to "up".
+//
+// This may be called more than once, but if the MAC address has changed then
+// the interface is first removed and then re-added.
+void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
+               const ip_addr_t *ipaddr,
+               const ip_addr_t *netmask,
+               const ip_addr_t *gw);
 
 // // Sets the receive callback function.
 // void enet_set_receive_callback(rx_frame_fn rx_cb);

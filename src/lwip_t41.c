@@ -4,8 +4,8 @@
 
 #include "lwip_t41.h"
 
+#include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -127,7 +127,7 @@ typedef struct {
 
 static const int kMTU = 1522;
 
-static uint8_t mac[ETHARP_HWADDR_LEN];
+static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
 static uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(32)));
@@ -445,8 +445,9 @@ static err_t t41_netif_init(struct netif *netif) {
                  NETIF_FLAG_ETHARP |
                  NETIF_FLAG_ETHERNET |
                  NETIF_FLAG_IGMP;
-  MEMCPY(netif->hwaddr, mac, ETHARP_HWADDR_LEN);
-  netif->hwaddr_len = ETHARP_HWADDR_LEN;
+
+  SMEMCPY(netif->hwaddr, mac, ETH_HWADDR_LEN);
+  netif->hwaddr_len = ETH_HWADDR_LEN;
 #if LWIP_NETIF_HOSTNAME
   netif->hostname = "lwip";
 #endif
@@ -531,23 +532,48 @@ void enet_getmac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-void enet_init(ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw) {
-  ip_addr_t zeroip = IPADDR4_INIT(IPADDR_ANY);
+static bool isFirstInit = true;
+static bool isNetifAdded = false;
 
-  if (ip == NULL) ip = &zeroip;
-  if (mask == NULL) mask = &zeroip;
-  if (gw == NULL) gw = &zeroip;
-
-  enet_getmac(mac);
-  if (t41_netif.flags == 0) {
+void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
+               const ip_addr_t *ipaddr,
+               const ip_addr_t *netmask,
+               const ip_addr_t *gw) {
+  // Only execute the following code once
+  if (isFirstInit) {
     srand(micros());
-
     lwip_init();
 
-    netif_add(&t41_netif, ip, mask, gw, NULL, t41_netif_init, ethernet_input);
-    netif_set_default(&t41_netif);
+    isFirstInit = false;
+  }
+
+  if (ipaddr == NULL) ipaddr = IP4_ADDR_ANY;
+  if (netmask == NULL) netmask = IP4_ADDR_ANY;
+  if (gw == NULL) gw = IP4_ADDR_ANY;
+
+  // First test if the MAC address has changed
+  // If it's changed then remove the interface and start again
+  uint8_t m[ETH_HWADDR_LEN];
+  if (macaddr == NULL) {
+    enet_getmac(m);
   } else {
-    netif_set_addr(&t41_netif, ip, mask, gw);
+    SMEMCPY(m, macaddr, ETH_HWADDR_LEN);
+  }
+  if (isNetifAdded && memcmp(mac, m, ETH_HWADDR_LEN)) {
+    // MAC address has changed
+
+    // Remove any previous configuration
+    netif_remove(&t41_netif);
+    isNetifAdded = false;
+  }
+
+  if (isNetifAdded) {
+    netif_set_addr(&t41_netif, ipaddr, netmask, gw);
+  } else {
+    netif_add(&t41_netif, ipaddr, netmask, gw,
+              NULL, t41_netif_init, ethernet_input);
+    netif_set_default(&t41_netif);
+    isNetifAdded = true;
   }
 }
 

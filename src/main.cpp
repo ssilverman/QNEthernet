@@ -32,7 +32,7 @@ void setup() {
   }
   delay(4000);
 
-  enet_init(NULL, NULL, NULL);
+  enet_init(NULL, NULL, NULL, NULL);
   netif_set_status_callback(netif_default, netif_status_callback);
   netif_set_link_callback(netif_default, link_status_callback);
   netif_set_up(netif_default);
