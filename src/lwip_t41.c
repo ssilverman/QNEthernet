@@ -28,7 +28,7 @@
 
 #define RX_SIZE 5
 #define TX_SIZE 5
-#define BFSIZE 1536
+#define BUF_SIZE 1536
 #define IRQ_PRIORITY 64
 
 #define ENET_ATCR_SLAVE   (1 << 13)
@@ -45,66 +45,66 @@
 
 // Defines the control and status region of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_status {
-  kEnetRxBdEmpty           = 0x8000U,  // Empty bit*/
-  kEnetRxBdRxSoftOwner1    = 0x4000U,  // Receive software owner */
-  kEnetRxBdWrap            = 0x2000U,  // Update buffer descriptor */
-  kEnetRxBdRxSoftOwner2    = 0x1000U,  // Receive software owner */
-  kEnetRxBdLast            = 0x0800U,  // Last BD in the frame */
-  kEnetRxBdMiss            = 0x0100U,  // Receive for promiscuous mode */
-  kEnetRxBdBroadCast       = 0x0080U,  // Broadcast */
-  kEnetRxBdMultiCast       = 0x0040U,  // Multicast */
-  kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation */
-  kEnetRxBdNoOctet         = 0x0010U,  // Receive non-octet aligned frame */
-  kEnetRxBdCrc             = 0x0004U,  // Receive CRC error */
-  kEnetRxBdOverRun         = 0x0002U,  // Receive FIFO overrun
+  kEnetRxBdEmpty           = 0x8000U,  // Empty bit
+  kEnetRxBdRxSoftOwner1    = 0x4000U,  // Receive software ownership
+  kEnetRxBdWrap            = 0x2000U,  // Update buffer descriptor
+  kEnetRxBdRxSoftOwner2    = 0x1000U,  // Receive software ownership
+  kEnetRxBdLast            = 0x0800U,  // Last BD in the frame (L bit)
+  kEnetRxBdMiss            = 0x0100U,  // In promiscuous mode; needs L
+  kEnetRxBdBroadcast       = 0x0080U,  // Broadcast
+  kEnetRxBdMulticast       = 0x0040U,  // Multicast
+  kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation; needs L
+  kEnetRxBdNoOctet         = 0x0010U,  // Receive non-octet aligned frame; needs L
+  kEnetRxBdCrc             = 0x0004U,  // Receive CRC or frame error; needs L
+  kEnetRxBdOverrun         = 0x0002U,  // Receive FIFO overrun; needs L
   kEnetRxBdTrunc           = 0x0001U   // Frame is truncated
 } enet_rx_bd_control_status_t;
 
 // Defines the control extended region1 of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_extend0 {
-  kEnetRxBdIpv4                = 0x0001U,  // Ipv4 frame
-  kEnetRxBdIpv6                = 0x0002U,  // Ipv6 frame
-  kEnetRxBdVlan                = 0x0004U,  // VLAN
-  kEnetRxBdProtocolChecksumErr = 0x0010U,  // Protocol checksum error
-  kEnetRxBdIpHeaderChecksumErr = 0x0020U,  // IP header checksum error
+  kEnetRxBdIpHeaderChecksumErr = 0x0020U,  // IP header checksum error; needs L
+  kEnetRxBdProtocolChecksumErr = 0x0010U,  // Protocol checksum error; needs L
+  kEnetRxBdVlan                = 0x0004U,  // VLAN; needs L
+  kEnetRxBdIpv6                = 0x0002U,  // Ipv6 frame; needs L
+  kEnetRxBdIpv4Fragment        = 0x0001U,  // Ipv4 fragment; needs L
 } enet_rx_bd_control_extend0_t;
 
 // Defines the control extended region2 of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_extend1 {
-  kEnetRxBdIntrrupt  = 0x0080U,  // BD interrupt
-  kEnetRxBdUnicast   = 0x0100U,  // Unicast frame
-  kEnetRxBdCollision = 0x0200U,  // BD collision
-  kEnetRxBdPhyErr    = 0x0400U,  // PHY error
-  kEnetRxBdMacErr    = 0x8000U,  // Mac error
+  kEnetRxBdMacErr    = 0x8000U,  // MAC error; needs L
+  kEnetRxBdPhyErr    = 0x0400U,  // PHY error; needs L
+  kEnetRxBdCollision = 0x0200U,  // Collision; needs L
+  kEnetRxBdUnicast   = 0x0100U,  // Unicast frame; valid even if L is not set
+  kEnetRxBdInterrupt = 0x0080U,  // Generate RXB/RXF interrupt
 } enet_rx_bd_control_extend1_t;
 
 // Defines the control status of the transmit buffer descriptor.
 typedef enum _enet_tx_bd_control_status {
-  kEnetTxBdReady        = 0x8000U,  //  Ready bit
-  kEnetTxBdTxSoftOwner1 = 0x4000U,  //  Transmit software owner
-  kEnetTxBdWrap         = 0x2000U,  //  Wrap buffer descriptor
-  kEnetTxBdTxSoftOwner2 = 0x1000U,  //  Transmit software owner
-  kEnetTxBdLast         = 0x0800U,  //  Last BD in the frame
-  kEnetTxBdTransmitCrc  = 0x0400U,  //  Receive for transmit CRC
+  kEnetTxBdReady        = 0x8000U,  // Ready bit
+  kEnetTxBdTxSoftOwner1 = 0x4000U,  // Transmit software ownership
+  kEnetTxBdWrap         = 0x2000U,  // Wrap buffer descriptor
+  kEnetTxBdTxSoftOwner2 = 0x1000U,  // Transmit software ownership
+  kEnetTxBdLast         = 0x0800U,  // Last BD in the frame (L bit)
+  kEnetTxBdTransmitCrc  = 0x0400U,  // Transmit CRC; needs L
 } enet_tx_bd_control_status_t;
 
 // Defines the control extended region1 of the transmit buffer descriptor.
 typedef enum _enet_tx_bd_control_extend0 {
-  kEnetTxBdTxErr              = 0x8000U,  //  Transmit error
-  kEnetTxBdTxUnderFlowErr     = 0x2000U,  //  Underflow error
-  kEnetTxBdExcessCollisionErr = 0x1000U,  //  Excess collision error
-  kEnetTxBdTxFrameErr         = 0x0800U,  //  Frame error
-  kEnetTxBdLatecollisionErr   = 0x0400U,  //  Late collision error
-  kEnetTxBdOverFlowErr        = 0x0200U,  //  Overflow error
-  kEnetTxTimestampErr         = 0x0100U,  //  Timestamp error
+  kEnetTxBdTxErr              = 0x8000U,  // Transmit error; needs L
+  kEnetTxBdTxUnderflowErr     = 0x2000U,  // Underflow error; needs L
+  kEnetTxBdExcessCollisionErr = 0x1000U,  // Excess collision error; needs L
+  kEnetTxBdTxFrameErr         = 0x0800U,  // Frame with error; needs L
+  kEnetTxBdLatecollisionErr   = 0x0400U,  // Late collision error; needs L
+  kEnetTxBdOverflowErr        = 0x0200U,  // Overflow error; needs L
+  kEnetTxTimestampErr         = 0x0100U,  // Timestamp error; needs L
 } enet_tx_bd_control_extend0_t;
 
 // Defines the control extended region2 of the transmit buffer descriptor.
 typedef enum _enet_tx_bd_control_extend1 {
-  kEnetTxBdTxInterrupt   = 0x4000U,  // Transmit interrupt
-  kEnetTxBdTimestamp     = 0x2000U,  // Transmit timestamp flag
-  kEnetTxBdProtChecksum  = 0x1000U,  // Insert protocol specific checksum
-  kEnetTxBdIpHdrChecksum = 0x0800U,  // Insert IP header checksum
+  kEnetTxBdTxInterrupt   = 0x4000U,  // Transmit interrupt; all BDs
+  kEnetTxBdTimestamp     = 0x2000U,  // Transmit timestamp flag; all BDs
+  kEnetTxBdProtChecksum  = 0x1000U,  // Insert protocol specific checksum; all BDs
+  kEnetTxBdIpHdrChecksum = 0x0800U,  // Insert IP header checksum; all BDs
 } enet_tx_bd_control_extend1_t;
 
 typedef struct {
@@ -130,8 +130,8 @@ static const int kMTU = 1522;
 static uint8_t mac[ETHARP_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
-static uint8_t rxbufs[RX_SIZE * BFSIZE] __attribute__((aligned(32)));
-static uint8_t txbufs[TX_SIZE * BFSIZE] __attribute__((aligned(32)));
+static uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(32)));
+static uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(32)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
@@ -271,15 +271,15 @@ static void t41_low_level_init() {
 	memset(tx_ring, 0, sizeof(tx_ring));
 
   for (int i = 0; i < RX_SIZE; i++) {
-    rx_ring[i].buffer = &rxbufs[i * BFSIZE];
+    rx_ring[i].buffer = &rxbufs[i * BUF_SIZE];
     rx_ring[i].status = kEnetRxBdEmpty;
-    rx_ring[i].extend1 = kEnetRxBdIntrrupt;
+    rx_ring[i].extend1 = kEnetRxBdInterrupt;
   }
   // The last buffer descriptor should be set with the wrap flag
   rx_ring[RX_SIZE - 1].status |= kEnetRxBdWrap;
 
   for (int i=0; i < TX_SIZE; i++) {
-    tx_ring[i].buffer = &txbufs[i * BFSIZE];
+    tx_ring[i].buffer = &txbufs[i * BUF_SIZE];
     tx_ring[i].status = kEnetTxBdTransmitCrc;
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt;
 // #if HW_CHKSUMS == 1
@@ -326,7 +326,7 @@ static void t41_low_level_init() {
 
   ENET_RDSR = (uint32_t)rx_ring;
   ENET_TDSR = (uint32_t)tx_ring;
-  ENET_MRBR = BFSIZE;
+  ENET_MRBR = BUF_SIZE;
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
