@@ -13,11 +13,22 @@ static void netif_status_callback(struct netif *netif) {
   static char mask[IPADDR_STRLEN_MAX];
   static char gw[IPADDR_STRLEN_MAX];
 
+  static char dns[IPADDR_STRLEN_MAX];
+
   Serial.printf(
-      "netif status changed: ip %s, mask %s, gw %s\n",
+      "netif status changed: ip=%s, mask=%s, gw=%s",
       ipaddr_ntoa_r(netif_ip_addr4(netif), ip, IPADDR_STRLEN_MAX),
       ipaddr_ntoa_r(netif_ip_netmask4(netif), mask, IPADDR_STRLEN_MAX),
       ipaddr_ntoa_r(netif_ip_gw4(netif), gw, IPADDR_STRLEN_MAX));
+
+  for (int i = 0; i < DNS_MAX_SERVERS; i++) {
+    if (dns_getserver(i)->addr == 0) {
+      continue;
+    }
+    ipaddr_ntoa_r(dns_getserver(i), dns, IPADDR_STRLEN_MAX);
+    Serial.printf(", dns(%d)=%s", i + 1, dns);
+  }
+  Serial.println();
 }
 
 static void link_status_callback(struct netif *netif) {
