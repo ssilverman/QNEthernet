@@ -191,7 +191,7 @@
   u32_t timestamp;
 
 // Network Interfaces options
-// #define LWIP_SINGLE_NETIF              0
+#define LWIP_SINGLE_NETIF              1
 #define LWIP_NETIF_HOSTNAME            1
 // #define LWIP_NETIF_API                 0
 #define LWIP_NETIF_STATUS_CALLBACK     1
