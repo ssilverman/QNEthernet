@@ -20,16 +20,21 @@ struct netif Ethernet::nullNetif_;
 
 Ethernet::Ethernet() : Ethernet(nullptr) {}
 
-Ethernet::Ethernet(const uint8_t mac[ETH_HWADDR_LEN])
-    : isDefaultMAC_(mac == nullptr),
-      netif_(&nullNetif_) {
+Ethernet::Ethernet(const uint8_t mac[kMACAddrSize])
+    : netif_(&nullNetif_) {
   if (mac != nullptr) {
-    std::copy_n(mac, ETH_HWADDR_LEN, mac_);
+    std::copy_n(mac, kMACAddrSize, mac_);
+  } else {
+    enet_getmac(mac_);
   }
 }
 
 Ethernet::~Ethernet() {
   netif_remove(netif_);
+}
+
+void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) {
+  std::copy_n(mac_, kMACAddrSize, mac);
 }
 
 void Ethernet::loop() {
@@ -44,8 +49,7 @@ void Ethernet::loop() {
 }
 
 void Ethernet::begin() {
-  const uint8_t *mac = (isDefaultMAC_) ? NULL : mac_;
-  enet_init(mac, NULL, NULL, NULL);
+  enet_init(mac_, NULL, NULL, NULL);
   netif_ = netif_default;
   netif_set_up(netif_);
 
@@ -63,8 +67,7 @@ void Ethernet::begin(const IPAddress &ip,
   ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
-  const uint8_t *mac = (isDefaultMAC_) ? NULL : mac_;
-  enet_init(mac, &ipaddr, &netmask, &gw);
+  enet_init(mac_, &ipaddr, &netmask, &gw);
   netif_ = netif_default;
   netif_set_up(netif_);
 }

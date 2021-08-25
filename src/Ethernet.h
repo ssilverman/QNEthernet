@@ -13,10 +13,15 @@ namespace network {
 
 class Ethernet final {
  public:
+  static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
+
   Ethernet();
-  Ethernet(const uint8_t mac[ETH_HWADDR_LEN]);
+  Ethernet(const uint8_t mac[kMACAddrSize]);
 
   ~Ethernet();
+
+  // Retrieve the MAC address.
+  void macAddress(uint8_t mac[kMACAddrSize]);
 
   // Call often.
   static void loop();
@@ -40,11 +45,8 @@ class Ethernet final {
  private:
   static struct netif nullNetif_;
 
-  const bool isDefaultMAC_;
-  uint8_t mac_[ETH_HWADDR_LEN];
-
+  uint8_t mac_[kMACAddrSize];
   struct netif *netif_;
-
   bool isLinkUp_ = false;
 };
 
