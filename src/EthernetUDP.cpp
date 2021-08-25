@@ -7,14 +7,14 @@
 #include <algorithm>
 #include <atomic>
 
-extern const int kMTU;
+#include "Ethernet.h"
 
 namespace qindesign {
 namespace network {
 
 // Maximum UDP packet size.
 // Subtract UDP header size and minimum IPv4 header size.
-const int kMaxUDPSize = kMTU - 8 - 20;
+const int kMaxUDPSize = Ethernet::mtu() - 8 - 20;
 
 std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
