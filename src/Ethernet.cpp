@@ -13,6 +13,8 @@
 #include <lwip/udp.h>
 #include "lwip_t41.h"
 
+extern const int kMTU;
+
 namespace qindesign {
 namespace network {
 
@@ -35,6 +37,10 @@ Ethernet::~Ethernet() {
 
 void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) {
   std::copy_n(mac_, kMACAddrSize, mac);
+}
+
+int Ethernet::mtu() {
+  return kMTU;
 }
 
 void Ethernet::loop() {

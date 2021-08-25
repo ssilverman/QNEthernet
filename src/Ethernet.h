@@ -23,6 +23,9 @@ class Ethernet final {
   // Retrieve the MAC address.
   void macAddress(uint8_t mac[kMACAddrSize]);
 
+  // Get the MTU.
+  static int mtu();
+
   // Call often.
   static void loop();
 
