@@ -128,7 +128,8 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-static const int kMTU = 1522;
+static const int kMaxFrameLen = 1522;
+const int kMTU = 1500;
 
 static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
@@ -294,7 +295,7 @@ static void t41_low_level_init() {
   ENET_EIMR = 0;
 
   ENET_RCR = ENET_RCR_NLC |
-             ENET_RCR_MAX_FL(kMTU) |
+             ENET_RCR_MAX_FL(kMaxFrameLen) |
              ENET_RCR_CFEN |
              ENET_RCR_CRCFWD |
              ENET_RCR_PADEN |
