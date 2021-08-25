@@ -1,18 +1,21 @@
 #include <Arduino.h>
 
-extern "C" {
-#include "lwip_t41.h"
-#include "lwip/dhcp.h"
-#include "lwip/dns.h"
-#include "lwip/ip_addr.h"
-#include "lwip/netif.h"
-}
+#include <lwip/dhcp.h>
+#include <lwip/dns.h>
+#include <lwip/ip_addr.h>
+#include <lwip/netif.h>
+
+#include "Ethernet.h"
+#include "EthernetUDP.h"
+#include "OSC.h"
+
+qindesign::network::Ethernet eth{};
+qindesign::network::EthernetUDP udpIn{};
 
 static void netif_status_callback(struct netif *netif) {
   static char ip[IPADDR_STRLEN_MAX];
   static char mask[IPADDR_STRLEN_MAX];
   static char gw[IPADDR_STRLEN_MAX];
-
   static char dns[IPADDR_STRLEN_MAX];
 
   Serial.printf(
@@ -42,22 +45,26 @@ void setup() {
     // Wait for Serial to initialize
   }
   delay(4000);
+  Serial.println("Starting...");
 
-  enet_init(NULL, NULL, NULL, NULL);
+  uint8_t mac[6];
+  eth.macAddress(mac);
+  Serial.printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+               mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+  eth.begin();
   netif_set_status_callback(netif_default, netif_status_callback);
   netif_set_link_callback(netif_default, link_status_callback);
-  netif_set_up(netif_default);
-
-  dhcp_start(netif_default);
+  udpIn.begin(8000);
 }
 
 void loop() {
-  static elapsedMillis timer;
+  qindesign::network::Ethernet::loop();
 
-  enet_proc_input();
-
-  if (timer >= 100) {
-    enet_poll();
-    timer = 0;
+  int size = udpIn.parsePacket();
+  if (size > 0) {
+    unsigned char buf[size];
+    udpIn.read(buf, size);
+    printOSC(Serial, buf, size);
   }
 }
