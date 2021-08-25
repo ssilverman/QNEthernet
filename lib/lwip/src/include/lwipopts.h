@@ -248,7 +248,7 @@
 // #define LWIP_SO_LINGER                    0
 // #define RECV_BUFSIZE_DEFAULT              INT_MAX
 // #define LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT 20000
-// #define SO_REUSE                          0
+#define SO_REUSE                          1
 // #define SO_REUSE_RXTOALL                  0
 // #define LWIP_FIONREAD_LINUXMODE           0
 // #define LWIP_SOCKET_SELECT                1
