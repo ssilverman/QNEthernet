@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
-extern "C" {
 extern const int kMTU;
-}
 
 namespace qindesign {
 namespace network {
