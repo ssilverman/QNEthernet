@@ -242,11 +242,19 @@ size_t EthernetUDP::write(uint8_t b) {
   if (!hasOutPacket_) {
     return 0;
   }
+  // TODO: Limit vector size
   outPacket_.emplace_back(b);
   return 1;
 }
 
 size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
+  if (!hasOutPacket_ || size == 0) {
+    return 0;
+  }
+  if (size > UINT16_MAX) {
+    size = UINT16_MAX;
+  }
+  // TODO: Limit vector size
   outPacket_.insert(outPacket_.end(), &buffer[0], &buffer[size]);
   return size;
 }
