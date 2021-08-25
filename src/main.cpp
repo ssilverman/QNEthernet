@@ -4,7 +4,7 @@ extern "C" {
 #include "lwip_t41.h"
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
-#include "lwip/inet.h"
+#include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 }
 
