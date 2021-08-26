@@ -16,7 +16,7 @@ namespace network {
 // Subtract UDP header size and minimum IPv4 header size.
 const int kMaxUDPSize = Ethernet::mtu() - 8 - 20;
 
-std::atomic_flag lock = ATOMIC_FLAG_INIT;
+static std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 static inline void acquireLock() {
   while (lock.test_and_set(std::memory_order_acquire)) {}
@@ -29,6 +29,12 @@ static inline void releaseLock() {
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
   EthernetUDP *udp = static_cast<EthernetUDP *>(arg);
+
+  if (p == nullptr) {
+    udp->stop();
+    return;
+  }
+
   struct pbuf *pHead = p;
 
   acquireLock();
@@ -77,7 +83,7 @@ uint8_t EthernetUDP::begin(uint16_t localPort) {
   if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
     return false;
   }
-  udp_recv(pcb_, recvFunc, this);
+  udp_recv(pcb_, &recvFunc, this);
 
   return true;
 }
