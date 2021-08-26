@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "Ethernet.h"
+#include "SpinLock.h"
 
 namespace qindesign {
 namespace network {
@@ -16,15 +17,7 @@ namespace network {
 // Subtract UDP header size and minimum IPv4 header size.
 const int kMaxUDPSize = Ethernet::mtu() - 8 - 20;
 
-static std::atomic_flag lock = ATOMIC_FLAG_INIT;
-
-static inline void acquireLock() {
-  while (lock.test_and_set(std::memory_order_acquire)) {}
-}
-
-static inline void releaseLock() {
-  lock.clear(std::memory_order_release);
-}
+static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
@@ -37,18 +30,20 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
   struct pbuf *pHead = p;
 
-  acquireLock();
-  udp->inPacket_.clear();
-  udp->inPacket_.reserve(p->tot_len);
-  // TODO: Limit vector size
-  while (p != nullptr) {
-    unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-    udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
-    p = p->next;
+  {
+    SpinLock lock(lock_);
+    udp->inPacket_.clear();
+    udp->inPacket_.reserve(p->tot_len);
+    // TODO: Limit vector size
+    while (p != nullptr) {
+      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+      udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
+      p = p->next;
+    }
+    udp->inAddr_ = addr->addr;
+    udp->inPort_ = port;
+    std::atomic_signal_fence(std::memory_order_release);
   }
-  udp->inAddr_ = addr->addr;
-  udp->inPort_ = port;
-  releaseLock();
 
   pbuf_free(pHead);
 }
@@ -127,10 +122,12 @@ int EthernetUDP::parsePacket() {
     return 0;
   }
 
-  acquireLock();
-  packet_ = inPacket_;
-  inPacket_.clear();
-  releaseLock();
+  {
+    SpinLock lock{lock_};
+    std::atomic_signal_fence(std::memory_order_acquire);
+    packet_ = inPacket_;
+    inPacket_.clear();
+  }
 
   if (packet_.size() > 0) {
     packetPos_ = 0;
@@ -185,10 +182,14 @@ void EthernetUDP::flush() {
 }
 
 IPAddress EthernetUDP::remoteIP() {
+  SpinLock lock{lock_};
+  std::atomic_signal_fence(std::memory_order_acquire);
   return inAddr_;
 }
 
 uint16_t EthernetUDP::remotePort() {
+  SpinLock lock{lock_};
+  std::atomic_signal_fence(std::memory_order_acquire);
   return inPort_;
 }
 
