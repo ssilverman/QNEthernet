@@ -100,6 +100,20 @@ EthernetClient::EthernetClient()
   inBuf_.clear();
 }
 
+EthernetClient::EthernetClient(tcp_pcb *pcb)
+    : pcb_(pcb),
+      connecting_(false),
+      connected_(true),
+      inBuf_(TCP_WND),
+      inBufPos_(0) {
+  inBuf_.clear();
+
+  // Set up the connection
+  tcp_arg(pcb_, this);
+  tcp_err(pcb_, &errFunc);
+  tcp_recv(pcb_, &recvFunc);
+}
+
 EthernetClient::~EthernetClient() {
   stop();
 }
@@ -109,17 +123,18 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     pcb_ = tcp_new();
     tcp_arg(pcb_, this);
     tcp_err(pcb_, &errFunc);
+    tcp_recv(pcb_, &recvFunc);
   }
   if (pcb_ == nullptr) {
     return false;
   }
 
-  ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (tcp_bind(pcb_, IP_ADDR_ANY, 0) != ERR_OK) {
     return false;
   }
-  tcp_recv(pcb_, &recvFunc);
+
   connecting_ = true;
+  ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (tcp_connect(pcb_, &ipaddr, port, &connectedFunc) != ERR_OK) {
     return false;
   }
@@ -245,7 +260,7 @@ uint8_t EthernetClient::connected() {
 }
 
 EthernetClient::operator bool() {
-  return true;
+  return pcb_ != nullptr;
 }
 
 }  // namespace network

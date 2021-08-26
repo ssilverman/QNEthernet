@@ -30,6 +30,9 @@ class EthernetClient final : public Client {
   operator bool() override;
 
  private:
+  // Set up an already-connected client.
+  EthernetClient(tcp_pcb *pcb);
+
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
   static err_t connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err);
