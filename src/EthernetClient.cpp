@@ -121,9 +121,11 @@ EthernetClient::~EthernetClient() {
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   if (pcb_ == nullptr) {
     pcb_ = tcp_new();
-    tcp_arg(pcb_, this);
-    tcp_err(pcb_, &errFunc);
-    tcp_recv(pcb_, &recvFunc);
+    if (pcb_ != nullptr) {
+      tcp_arg(pcb_, this);
+      tcp_err(pcb_, &errFunc);
+      tcp_recv(pcb_, &recvFunc);
+    }
   }
   if (pcb_ == nullptr) {
     return false;
