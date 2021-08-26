@@ -10,12 +10,14 @@
 #include "Ethernet.h"
 #include "SpinLock.h"
 
+extern const int kMTU;
+
 namespace qindesign {
 namespace network {
 
 // Maximum UDP packet size.
 // Subtract UDP header size and minimum IPv4 header size.
-const int kMaxUDPSize = Ethernet::mtu() - 8 - 20;
+const int kMaxUDPSize = kMTU - 8 - 20;
 
 static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 

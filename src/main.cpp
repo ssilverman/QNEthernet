@@ -75,7 +75,7 @@ void setupHTTPClient() {
 }
 
 void loop() {
-  qindesign::network::Ethernet::loop();
+  eth.loop();
 
   // loopOSC();
   loopHTTPClient();

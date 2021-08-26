@@ -24,10 +24,10 @@ class Ethernet final {
   void macAddress(uint8_t mac[kMACAddrSize]);
 
   // Get the MTU.
-  static int mtu();
+  int mtu();
 
   // Call often.
-  static void loop();
+  void loop();
 
   void begin();
   void begin(const IPAddress &ipaddr,
