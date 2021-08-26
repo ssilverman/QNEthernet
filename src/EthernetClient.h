@@ -19,6 +19,7 @@ class EthernetClient final : public Client {
   int connect(const char *host, uint16_t port) override;
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
+  int availableForWrite() override;
   int available() override;
   int read() override;
   int read(uint8_t *buf, size_t size) override;

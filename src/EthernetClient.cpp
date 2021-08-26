@@ -174,6 +174,13 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   return 0;
 }
 
+int EthernetClient::availableForWrite() {
+  if (pcb_ == nullptr) {
+    return 0;
+  }
+  return tcp_sndbuf(pcb_);
+}
+
 inline bool EthernetClient::isAvailable() {
   return (0 <= inBufPos_ && static_cast<size_t>(inBufPos_) < inBuf_.size());
 }
