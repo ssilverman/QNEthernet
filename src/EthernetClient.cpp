@@ -107,18 +107,16 @@ EthernetClient::EthernetClient()
     : pcb_(nullptr),
       connecting_(false),
       connected_(false),
-      inBuf_(TCP_WND),
-      inBufPos_(0) {
-  inBuf_.clear();
-}
+      inBuf_{},
+      inBufPos_(0) {}
 
 EthernetClient::EthernetClient(tcp_pcb *pcb)
     : pcb_(pcb),
       connecting_(false),
       connected_(true),
-      inBuf_(TCP_WND),
+      inBuf_{},
       inBufPos_(0) {
-  inBuf_.clear();
+  inBuf_.reserve(TCP_WND);
 
   // Set up the connection
   tcp_arg(pcb_, this);
@@ -137,6 +135,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
       tcp_arg(pcb_, this);
       tcp_err(pcb_, &errFunc);
       tcp_recv(pcb_, &recvFunc);
+      inBuf_.reserve(TCP_WND);
     }
   }
   if (pcb_ == nullptr) {
