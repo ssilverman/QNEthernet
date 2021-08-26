@@ -68,16 +68,28 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
   {
     SpinLock lock{bufLock_};
     std::vector<unsigned char> &v = client->inBuf_;
-    // If there isn't enough space at the end, move all the data in the buffer to
-    // the top
+
+    std::atomic_signal_fence(std::memory_order_acquire);
+    size_t rem = v.capacity() - v.size() + client->inBufPos_;
+    if (rem < p->tot_len) {
+      tcp_recved(tpcb, rem);
+      return ERR_INPROGRESS;  // ERR_MEM?
+    }
+
+    // If there isn't enough space at the end, move all the data in the buffer
+    // to the top
     if (v.capacity() - v.size() < p->tot_len) {
-      std::atomic_signal_fence(std::memory_order_acquire);
       size_t n = v.size() - client->inBufPos_;
-      std::copy_n(v.begin() + client->inBufPos_, n, v.begin());
-      v.resize(n);
+      if (n > 0) {
+        std::copy_n(v.begin() + client->inBufPos_, n, v.begin());
+        v.resize(n);
+      } else {
+        v.clear();
+      }
       client->inBufPos_ = 0;
       std::atomic_signal_fence(std::memory_order_release);
     }
+
     while (p != nullptr) {
       unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
       v.insert(v.end(), &data[0], &data[p->len]);
