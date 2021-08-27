@@ -39,6 +39,12 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
   // TODO: Lock if not single-threaded
   client->connecting_ = false;
   client->connected_ = (err == ERR_OK);
+  if (err != ERR_OK) {
+    if (tcp_close(tpcb) != ERR_OK) {
+      tcp_abort(tpcb);
+    }
+    client->pcb_ = nullptr;
+  }
   std::atomic_signal_fence(std::memory_order_release);
   return ERR_OK;
 }
@@ -51,6 +57,11 @@ void EthernetClient::errFunc(void *arg, err_t err) {
   // TODO: Lock if not single-threaded
   client->connecting_ = false;
   client->connected_ = (err == ERR_OK);
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (tcp_close(client->pcb_) != ERR_OK) {
+    tcp_abort(client->pcb_);
+  }
+  client->pcb_ = nullptr;
   std::atomic_signal_fence(std::memory_order_release);
 }
 
@@ -127,15 +138,9 @@ EthernetClient::EthernetClient()
       inBuf_{},
       inBufPos_(0) {}
 
-EthernetClient::EthernetClient(tcp_pcb *pcb)
-    : pcb_(pcb),
-      connecting_(false),
-      connected_(true),
-      connTimeout_(1000),
-      lookupHost_{},
-      lookupIP_{INADDR_NONE},
-      inBuf_{},
-      inBufPos_(0) {
+EthernetClient::EthernetClient(tcp_pcb *pcb) : EthernetClient() {
+  pcb_ = pcb;
+  connected_ = true;
   inBuf_.reserve(TCP_WND);
 
   // Set up the connection
@@ -166,10 +171,14 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     return false;
   }
 
+  // Try to bind
   if (tcp_bind(pcb_, IP_ADDR_ANY, 0) != ERR_OK) {
+    tcp_abort(pcb_);
+    pcb_ = nullptr;
     return false;
   }
 
+  // Try to connect
   connecting_ = true;
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (tcp_connect(pcb_, &ipaddr, port, &connectedFunc) != ERR_OK) {
