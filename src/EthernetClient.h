@@ -5,13 +5,12 @@
 #define ETHERNETCLIENT_H_
 
 // C++ includes
+#include <memory>
 #include <vector>
 
 #include <Client.h>
 #include <IPAddress.h>
 #include <WString.h>
-#include <lwip/tcp.h>
-
 #include "ConnectionHolder.h"
 
 namespace qindesign {
@@ -21,6 +20,45 @@ class EthernetClient final : public Client {
  public:
   EthernetClient();
   ~EthernetClient();
+
+  // We only want move semantics because the state should only be owned by one
+  // client at a time. When a moved object is destroyed, stop() is called, and
+  // we don't want the state to get closed.
+  // OLD: In theory, copying should work, but this will catch any odd uses.
+
+  EthernetClient(const EthernetClient &) = delete;
+  EthernetClient &operator=(const EthernetClient &) = delete;
+
+  EthernetClient(EthernetClient &&other) {
+    connecting_ = other.connecting_;
+    connected_ = other.connected_;
+    connTimeout_ = other.connTimeout_;
+    state_ = other.state_;
+    stateExternallyManaged_ = other.stateExternallyManaged_;
+
+    if (state_ != nullptr) {
+      state_->client = this;
+    }
+
+    // Move the state
+    other.state_ = nullptr;
+  }
+
+  EthernetClient &operator=(EthernetClient &&other) {
+    connecting_ = other.connecting_;
+    connected_ = other.connected_;
+    connTimeout_ = other.connTimeout_;
+    state_ = other.state_;
+    stateExternallyManaged_ = other.stateExternallyManaged_;
+
+    if (state_ != nullptr) {
+      state_->client = this;
+    }
+
+    // Move the state
+    other.state_ = nullptr;
+    return *this;
+  }
 
   int connect(IPAddress ip, uint16_t port) override;
   int connect(const char *host, uint16_t port) override;
@@ -42,8 +80,14 @@ class EthernetClient final : public Client {
   void stop() override;
 
  private:
-  // Set up an already-connected client.
-  EthernetClient(ConnectionHolder *state);
+  // Set up an already-connected client. If the state is NULL then a new
+  // unconnected client will be created. If the state is not NULL then it is
+  // assumed that the client is already connected and the state will be set
+  // up accordingly.
+  //
+  // The `externallyManaged` parameter indicates that an external party will
+  // take care of stopping the connection and freeing the object.
+  EthernetClient(ConnectionHolder *state, bool externallyManaged);
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
@@ -55,6 +99,12 @@ class EthernetClient final : public Client {
   // Check if there's data still available in the buffer.
   bool isAvailable();
 
+  // Copy any remaining data from the state to the "remaining" buffer.
+  void maybeCopyRemaining();
+
+  // Connection state
+  volatile bool connecting_ = false;
+  volatile bool connected_ = false;
   uint16_t connTimeout_;
 
   // DNS lookups
@@ -63,7 +113,13 @@ class EthernetClient final : public Client {
   volatile bool lookupFound_;
 
   ConnectionHolder *state_;
-  bool stateNeedsDelete_;
+  bool stateExternallyManaged_;  // Indicates if we shouldn't close
+                                 // the connection
+
+  // Remaining data after a connection is closed
+  // Will only be non-empty after the connection is closed
+  int remainingPos_;
+  std::vector<unsigned char> remaining_;
 };
 
 }  // namespace network

@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <atomic>
 
+#include <Arduino.h>
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/netif.h>
+#include <lwip/tcp.h>
 #include <lwipopts.h>
 
 namespace qindesign {
@@ -20,11 +22,21 @@ static std::atomic_flag connectionLock_ = ATOMIC_FLAG_INIT;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
+  if (callback_arg == nullptr) {
+    Serial.println("Client dns callback_arg=NULL");
+  }
+  if (ipaddr == nullptr) {
+    Serial.printf("Client dns ipaddr=NULL (host=%s)\n", name);
+  }
+  if (callback_arg == nullptr || ipaddr == nullptr) {
+    return;
+  }
+
   EthernetClient *client = reinterpret_cast<EthernetClient *>(callback_arg);
 
   // Also check the host name in case there was some previous request pending
   std::atomic_signal_fence(std::memory_order_acquire);
-  if ((ipaddr != nullptr) && (client->lookupHost_ == name)) {
+  if (client->lookupHost_ == name) {
     client->lookupIP_ = ipaddr->addr;
     client->lookupFound_ = true;
     std::atomic_signal_fence(std::memory_order_release);
@@ -32,55 +44,116 @@ void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
 }
 
 err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) {
+  if (arg == nullptr) {
+    Serial.println("Client connected arg=NULL");
+  }
+  if (tpcb == nullptr) {
+    Serial.println("Client connected tpcb=NULL");
+  }
+  if (arg == nullptr || tpcb == nullptr) {
+    return ERR_VAL;
+  }
+
   ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
 
   // TODO: Tell client what the error was
 
   // TODO: Lock if not single-threaded
-  state->connecting = false;
-  state->connected = (err == ERR_OK);
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state->client != nullptr) {
+    state->client->connecting_ = false;
+    state->client->connected_ = (err == ERR_OK);
+    std::atomic_signal_fence(std::memory_order_release);
+  }
   if (err != ERR_OK) {
+    Serial.printf("Client connected err=%d\n", err);
     if (tcp_close(tpcb) != ERR_OK) {
       tcp_abort(tpcb);
     }
-    state->pcb = nullptr;
+    delete state;
+    std::atomic_signal_fence(std::memory_order_release);
   }
-  std::atomic_signal_fence(std::memory_order_release);
   return ERR_OK;
 }
 
+void EthernetClient::maybeCopyRemaining() {
+  if (isAvailable()) {
+    remaining_.clear();
+    remaining_.insert(remaining_.end(),
+               state_->inBuf.begin() + state_->inBufPos,
+               state_->inBuf.end());
+    remainingPos_ = 0;
+  }
+}
+
 void EthernetClient::errFunc(void *arg, err_t err) {
+  if (arg == nullptr) {
+    Serial.println("Client err arg=NULL");
+    return;
+  }
+
   ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
 
   // TODO: Tell client what the error was
 
   // TODO: Lock if not single-threaded
-  state->connecting = false;
-  state->connected = (err == ERR_OK);
   std::atomic_signal_fence(std::memory_order_acquire);
-  if (tcp_close(state->pcb) != ERR_OK) {
-    tcp_abort(state->pcb);
+  if (state->client != nullptr) {
+    state->client->connecting_ = false;
+    state->client->connected_ = (err == ERR_OK);
+    std::atomic_signal_fence(std::memory_order_release);
   }
-  state->pcb = nullptr;
-  std::atomic_signal_fence(std::memory_order_release);
+  if (err != ERR_OK) {
+    Serial.printf("Client err=%d\n", err);
+    if (tcp_close(state->pcb) != ERR_OK) {
+      tcp_abort(state->pcb);
+    }
+
+    // Copy any buffered data
+    if (state->client != nullptr) {
+      state->client->maybeCopyRemaining();
+    }
+
+    delete state;
+    std::atomic_signal_fence(std::memory_order_release);
+  }
 }
 
 err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
                                err_t err) {
+  if (arg == nullptr) {
+    Serial.println("Client recv arg=NULL");
+  }
+  if (tpcb == nullptr) {
+    Serial.println("Client recv tpcb=NULL");
+  }
+  if (arg == nullptr || tpcb == nullptr) {
+    return ERR_VAL;
+  }
+
   ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
 
+  // Check for any errors, and if so, clean up
   if (p == nullptr || err != ERR_OK) {
+    Serial.printf("Client recv err=%d\n", err);
     if (p != nullptr) {
       tcp_recved(tpcb, p->tot_len);
       pbuf_free(p);
+    } else {
+      Serial.println("Client recv p=NULL");
     }
 
     // TODO: Tell client what the error was
 
     // TODO: Lock if not single-threaded
-    state->connecting = false;
-    state->connected = false;
-    state->pcb = nullptr;
+
+    // Copy any buffered data
+    std::atomic_signal_fence(std::memory_order_acquire);
+    if (state->client != nullptr) {
+      state->client->maybeCopyRemaining();
+    }
+
+    delete state;
     std::atomic_signal_fence(std::memory_order_release);
     if (tcp_close(tpcb) != ERR_OK) {
       tcp_abort(tpcb);
@@ -92,10 +165,13 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
   struct pbuf *pHead = p;
 
   // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state->client != nullptr) {
+    state->client->connecting_ = false;
+    state->client->connected_ = (err == ERR_OK);
+  }
 
   std::vector<unsigned char> &v = state->inBuf;
-
-  std::atomic_signal_fence(std::memory_order_acquire);
   size_t rem = v.capacity() - v.size() + state->inBufPos;
   if (rem < p->tot_len) {
     tcp_recved(tpcb, rem);
@@ -113,7 +189,6 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
       v.clear();
     }
     state->inBufPos = 0;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 
   while (p != nullptr) {
@@ -121,6 +196,7 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
     v.insert(v.end(), &data[0], &data[p->len]);
     p = p->next;
   }
+  std::atomic_signal_fence(std::memory_order_release);
 
   tcp_recved(tpcb, pHead->tot_len);
   pbuf_free(pHead);
@@ -128,35 +204,36 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
   return ERR_OK;
 }
 
-EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
+EthernetClient::EthernetClient() : EthernetClient(nullptr, false) {}
 
-EthernetClient::EthernetClient(ConnectionHolder *state)
+EthernetClient::EthernetClient(ConnectionHolder *state, bool externallyManaged)
     : connTimeout_(1000),
       lookupHost_{},
       lookupIP_{INADDR_NONE},
-      state_(nullptr),
-      stateNeedsDelete_(false) {
-  if (state == nullptr) {
-    state = new ConnectionHolder();
-    stateNeedsDelete_ = true;
-  } else {
-    state->connecting = false;
-    state->connected = true;
-    state->inBuf.reserve(TCP_WND);
-    state->inBufPos = 0;
+      state_(state),
+      stateExternallyManaged_(externallyManaged),
+      remainingPos_(0) {
+  if (state != nullptr) {
+    connecting_ = false;
+    connected_ = true;
 
-    // Set up the connection
-    tcp_arg(state_->pcb, state);
-    tcp_err(state_->pcb, &errFunc);
-    tcp_recv(state_->pcb, &recvFunc);
+    auto removeFn = state->removeFunc;
+    state->removeFunc = [removeFn](ConnectionHolder *state) {
+      if (removeFn != nullptr) {
+        removeFn(state);
+      }
+
+      // Unlink this state
+      if (state->client != nullptr) {
+        state->client->state_ = nullptr;
+      }
+    };
   }
-  state_ = state;
 }
 
 EthernetClient::~EthernetClient() {
-  stop();
-  if (stateNeedsDelete_) {
-    delete state_;
+  if (!stateExternallyManaged_) {
+    stop();
   }
 }
 
@@ -165,44 +242,64 @@ EthernetClient::~EthernetClient() {
 // --------------------------------------------------------------------------
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
-  state_->connecting = false;
-  state_->connected = false;
-
-  // Close any existing connection
-  // Re-connect, even if to the same destination
-  if (state_->pcb != nullptr) {
+  // First close any existing connection
+  // TODO: Lock if not single-threaded
+  connecting_ = false;
+  connected_ = false;
+  remainingPos_ = 0;
+  remaining_.clear();
+  std::atomic_signal_fence(std::memory_order_release);
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ != nullptr) {
+    // Close any existing connection
+    // Re-connect, even if to the same destination
     if (tcp_close(state_->pcb) != ERR_OK) {
       tcp_abort(state_->pcb);
     }
-    state_->pcb = nullptr;
+    // state_->pcb = nullptr;  // Reuse the state
   }
 
+  // Try to allocate
   tcp_pcb *pcb = tcp_new();
   if (pcb == nullptr) {
+    // TODO: Delete state_?
+    state_ = nullptr;
+    std::atomic_signal_fence(std::memory_order_release);
     return false;
   }
-  tcp_arg(pcb, state_);
-  tcp_err(pcb, &errFunc);
-  tcp_recv(pcb, &recvFunc);
-  state_->inBuf.reserve(TCP_WND);
-  state_->pcb = pcb;
 
   // Try to bind
   if (tcp_bind(pcb, IP_ADDR_ANY, 0) != ERR_OK) {
     tcp_abort(pcb);  // TODO: Should we abort here or do nothing?
-    state_->pcb = nullptr;
+    // TODO: Delete state_?
+    state_ = nullptr;
+    std::atomic_signal_fence(std::memory_order_release);
     return false;
   }
 
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    state_ = new ConnectionHolder();
+    state_->removeFunc = [](ConnectionHolder *state) {
+      // Unlink this state
+      if (state->client != nullptr) {
+        state->client->state_ = nullptr;
+      }
+    };
+  }
+  state_->init(this, pcb, &recvFunc, &errFunc);
+
   // Try to connect
-  state_->connecting = true;
+  connecting_ = true;
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (tcp_connect(pcb, &ipaddr, port, &connectedFunc) != ERR_OK) {
     tcp_abort(pcb);  // TODO: Should we abort here or do nothing?
-    state_->pcb = nullptr;
-    state_->connecting = false;
+    // TODO: Delete state_?
+    state_ = nullptr;
+    std::atomic_signal_fence(std::memory_order_release);
     return false;
   }
+  std::atomic_signal_fence(std::memory_order_release);
   return true;
 }
 
@@ -236,7 +333,10 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 uint8_t EthernetClient::connected() {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
-  return state_->connecting || state_->connected;
+  if (remaining_.empty() && state_ == nullptr) {
+    return false;
+  }
+  return !remaining_.empty() || connecting_ || connected_;
 }
 
 EthernetClient::operator bool() {
@@ -258,7 +358,9 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
 // --------------------------------------------------------------------------
 
 size_t EthernetClient::write(uint8_t b) {
-  if (state_->pcb == nullptr) {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
     return 0;
   }
 
@@ -272,7 +374,9 @@ size_t EthernetClient::write(uint8_t b) {
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
-  if (state_->pcb == nullptr || size == 0) {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr || size == 0) {
     return 0;
   }
 
@@ -292,7 +396,9 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::availableForWrite() {
-  if (state_->pcb == nullptr) {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
     return 0;
   }
   return tcp_sndbuf(state_->pcb);
@@ -303,19 +409,33 @@ int EthernetClient::availableForWrite() {
 // --------------------------------------------------------------------------
 
 inline bool EthernetClient::isAvailable() {
-  return (0 <= state_->inBufPos &&
+  return (state_ != nullptr &&
+          0 <= state_->inBufPos &&
           static_cast<size_t>(state_->inBufPos) < state_->inBuf.size());
 }
 
 int EthernetClient::available() {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
+  if (!remaining_.empty()) {
+    return remaining_.size() - remainingPos_;
+  }
+  if (!isAvailable()) {
+    return 0;
+  }
   return state_->inBuf.size() - state_->inBufPos;
 }
 
 int EthernetClient::read() {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
+  if (!remaining_.empty()) {
+    int c = remaining_[remainingPos_++];
+    if (static_cast<size_t>(remainingPos_) >= remaining_.size()) {
+      remaining_.clear();
+    }
+    return c;
+  }
   if (!isAvailable()) {
     return -1;
   }
@@ -323,9 +443,23 @@ int EthernetClient::read() {
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
+  if (size == 0) {
+    return 0;
+  }
+
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
-  if (size == 0 || !isAvailable()) {
+  if (!remaining_.empty()) {
+    size = std::min(size, remaining_.size() - static_cast<size_t>(remainingPos_));
+    std::copy_n(remaining_.begin() + remainingPos_, size, buf);
+    remainingPos_ += size;
+    if (static_cast<size_t>(remainingPos_) >= remaining_.size()) {
+      remaining_.clear();
+    }
+    std::atomic_signal_fence(std::memory_order_release);
+    return size;
+  }
+  if (!isAvailable()) {
     return 0;
   }
   size = std::min(size, state_->inBuf.size() - state_->inBufPos);
@@ -338,6 +472,9 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
 int EthernetClient::peek() {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
+  if (!remaining_.empty()) {
+    return remaining_[remainingPos_];
+  }
   if (!isAvailable()) {
     return -1;
   }
@@ -346,7 +483,8 @@ int EthernetClient::peek() {
 
 void EthernetClient::flush() {
   // TODO: Lock if not single-threaded
-  if (state_->pcb == nullptr) {
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
     return;
   }
   tcp_output(state_->pcb);
@@ -354,7 +492,10 @@ void EthernetClient::flush() {
 
 void EthernetClient::stop() {
   // TODO: Lock if not single-threaded
-  if (state_->pcb == nullptr) {
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    // This can happen if this object was moved to another
+    // or if the connection was disconnected
     return;
   }
   if (tcp_close(state_->pcb) != ERR_OK) {
@@ -364,9 +505,10 @@ void EthernetClient::stop() {
     do {
       // NOTE: Depends on Ethernet loop being called from yield()
       delay(10);
-    } while ((state_->connecting || state_->connected) && timer < connTimeout_);
+    } while ((connecting_ || connected_) && timer < connTimeout_);
   }
-  state_->pcb = nullptr;
+  // TODO: Delete state_?
+  state_ = nullptr;
   std::atomic_signal_fence(std::memory_order_release);
 }
 
