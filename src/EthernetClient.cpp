@@ -9,8 +9,6 @@
 
 #include <lwip/dns.h>
 #include <lwipopts.h>
-#include "Ethernet.h"
-#include "SpinLock.h"
 
 namespace qindesign {
 namespace network {
@@ -20,13 +18,15 @@ static std::atomic_flag connectionLock_ = ATOMIC_FLAG_INIT;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
-  // EthernetClient *client = static_cast<EthernetClient *>(callback_arg);
+  EthernetClient *client = reinterpret_cast<EthernetClient *>(callback_arg);
 }
 
 err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) {
-  EthernetClient *client = static_cast<EthernetClient *>(arg);
+  EthernetClient *client = reinterpret_cast<EthernetClient *>(arg);
 
-  SpinLock lock{connectionLock_};
+  // TODO: Tell client what the error was
+
+  // TODO: Lock if not single-threaded
   client->connecting_ = false;
   client->connected_ = (err == ERR_OK);
   std::atomic_signal_fence(std::memory_order_release);
@@ -34,9 +34,11 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
 }
 
 void EthernetClient::errFunc(void *arg, err_t err) {
-  EthernetClient *client = static_cast<EthernetClient *>(arg);
+  EthernetClient *client = reinterpret_cast<EthernetClient *>(arg);
 
-  SpinLock lock{connectionLock_};
+  // TODO: Tell client what the error was
+
+  // TODO: Lock if not single-threaded
   client->connecting_ = false;
   client->connected_ = (err == ERR_OK);
   std::atomic_signal_fence(std::memory_order_release);
@@ -44,7 +46,7 @@ void EthernetClient::errFunc(void *arg, err_t err) {
 
 err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
                                err_t err) {
-  EthernetClient *client = static_cast<EthernetClient *>(arg);
+  EthernetClient *client = reinterpret_cast<EthernetClient *>(arg);
 
   if (p == nullptr || err != ERR_OK) {
     if (p != nullptr) {
@@ -52,9 +54,12 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
       pbuf_free(p);
     }
 
-    SpinLock lock{connectionLock_};
+    // TODO: Tell client what the error was
+
+    // TODO: Lock if not single-threaded
     client->connecting_ = false;
     client->connected_ = false;
+    client->pcb_ = nullptr;
     std::atomic_signal_fence(std::memory_order_release);
     if (tcp_close(tpcb) != ERR_OK) {
       tcp_abort(tpcb);
@@ -65,36 +70,35 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
   struct pbuf *pHead = p;
 
-  {
-    SpinLock lock{bufLock_};
-    std::vector<unsigned char> &v = client->inBuf_;
+  // TODO: Lock if not single-threaded
 
-    std::atomic_signal_fence(std::memory_order_acquire);
-    size_t rem = v.capacity() - v.size() + client->inBufPos_;
-    if (rem < p->tot_len) {
-      tcp_recved(tpcb, rem);
-      return ERR_INPROGRESS;  // ERR_MEM?
-    }
+  std::vector<unsigned char> &v = client->inBuf_;
 
-    // If there isn't enough space at the end, move all the data in the buffer
-    // to the top
-    if (v.capacity() - v.size() < p->tot_len) {
-      size_t n = v.size() - client->inBufPos_;
-      if (n > 0) {
-        std::copy_n(v.begin() + client->inBufPos_, n, v.begin());
-        v.resize(n);
-      } else {
-        v.clear();
-      }
-      client->inBufPos_ = 0;
-      std::atomic_signal_fence(std::memory_order_release);
-    }
+  std::atomic_signal_fence(std::memory_order_acquire);
+  size_t rem = v.capacity() - v.size() + client->inBufPos_;
+  if (rem < p->tot_len) {
+    tcp_recved(tpcb, rem);
+    return ERR_INPROGRESS;  // ERR_MEM?
+  }
 
-    while (p != nullptr) {
-      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-      v.insert(v.end(), &data[0], &data[p->len]);
-      p = p->next;
+  // If there isn't enough space at the end, move all the data in the buffer
+  // to the top
+  if (v.capacity() - v.size() < p->tot_len) {
+    size_t n = v.size() - client->inBufPos_;
+    if (n > 0) {
+      std::copy_n(v.begin() + client->inBufPos_, n, v.begin());
+      v.resize(n);
+    } else {
+      v.clear();
     }
+    client->inBufPos_ = 0;
+    std::atomic_signal_fence(std::memory_order_release);
+  }
+
+  while (p != nullptr) {
+    unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+    v.insert(v.end(), &data[0], &data[p->len]);
+    p = p->next;
   }
 
   tcp_recved(tpcb, pHead->tot_len);
@@ -214,13 +218,13 @@ inline bool EthernetClient::isAvailable() {
 }
 
 int EthernetClient::available() {
-  SpinLock lock{bufLock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   return inBuf_.size() - inBufPos_;
 }
 
 int EthernetClient::read() {
-  SpinLock lock{bufLock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (!isAvailable()) {
     return -1;
@@ -229,7 +233,7 @@ int EthernetClient::read() {
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
-  SpinLock lock{bufLock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (size == 0 || !isAvailable()) {
     return 0;
@@ -242,7 +246,7 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::peek() {
-  SpinLock lock{bufLock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (!isAvailable()) {
     return -1;
@@ -264,16 +268,20 @@ void EthernetClient::stop() {
   if (tcp_close(pcb_) != ERR_OK) {
     tcp_abort(pcb_);
   }
+  pcb_ = nullptr;
+  std::atomic_signal_fence(std::memory_order_release);
 }
 
 uint8_t EthernetClient::connected() {
-  SpinLock lock{connectionLock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   return connecting_ || connected_;
 }
 
 EthernetClient::operator bool() {
-  return pcb_ != nullptr;
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  return (pcb_ != nullptr);
 }
 
 }  // namespace network

@@ -46,12 +46,12 @@ class EthernetClient final : public Client {
   // Check if there's data still available in the buffer.
   bool isAvailable();
 
-  tcp_pcb *pcb_;
-  bool connecting_;
-  bool connected_;
+  tcp_pcb *volatile pcb_;
+  volatile bool connecting_;
+  volatile bool connected_;
 
   std::vector<unsigned char> inBuf_;
-  int inBufPos_;
+  volatile int inBufPos_;
 };
 
 }  // namespace network
