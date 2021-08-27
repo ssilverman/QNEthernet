@@ -16,6 +16,8 @@
 namespace qindesign {
 namespace network {
 
+class EthernetServer;
+
 class EthernetClient final : public Client {
  public:
   EthernetClient();
@@ -121,6 +123,8 @@ class EthernetClient final : public Client {
   // Will only be non-empty after the connection is closed
   int remainingPos_;
   std::vector<unsigned char> remaining_;
+
+  friend class EthernetServer;
 };
 
 }  // namespace network
