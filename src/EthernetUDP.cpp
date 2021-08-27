@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include <Arduino.h>
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 
@@ -23,11 +24,21 @@ static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
 void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                void *callback_arg) {
+  if (callback_arg == nullptr) {
+    Serial.println("UDP dns callback_arg=NULL");
+  }
+  if (ipaddr == nullptr) {
+    Serial.println("UDP dns ipaddr=NULL");
+  }
+  if (callback_arg == nullptr || ipaddr == nullptr) {
+    return;
+  }
+
   EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(callback_arg);
 
   // Also check the host name in case there was some previous request pending
   std::atomic_signal_fence(std::memory_order_acquire);
-  if ((ipaddr != nullptr) && (udp->lookupHost_ == name)) {
+  if (udp->lookupHost_ == name) {
     udp->lookupIP_ = ipaddr->addr;
     udp->lookupFound_ = true;
     std::atomic_signal_fence(std::memory_order_release);
@@ -36,6 +47,16 @@ void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
+  if (arg == nullptr) {
+    Serial.println("USB recv arg=NULL");
+  }
+  if (pcb == nullptr) {
+    Serial.println("USB recv pcb=NULL");
+  }
+  if (arg == nullptr || pcb == nullptr) {
+    return;
+  }
+
   EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(arg);
 
   if (p == nullptr) {
