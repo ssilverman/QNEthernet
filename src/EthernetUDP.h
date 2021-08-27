@@ -61,7 +61,7 @@ class EthernetUDP final : public UDP {
 
   std::vector<unsigned char> inPacket_;  // Holds received packets
   std::vector<unsigned char> packet_;    // Holds the packet being read
-  int packetPos_;               // -1 if not currently reading a packet
+  int packetPos_;                        // -1 if not currently reading a packet
 
   // Source of incoming packet
   IPAddress inAddr_;
@@ -76,6 +76,7 @@ class EthernetUDP final : public UDP {
   // DNS lookups
   String lookupHost_;   // For matching DNS lookups
   IPAddress lookupIP_;  // Set by a DNS lookup
+  volatile bool lookupFound_;
 };
 
 }  // namespace network

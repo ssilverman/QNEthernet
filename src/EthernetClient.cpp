@@ -26,6 +26,7 @@ void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
   std::atomic_signal_fence(std::memory_order_acquire);
   if ((ipaddr != nullptr) && (client->lookupHost_ == name)) {
     client->lookupIP_ = ipaddr->addr;
+    client->lookupFound_ = true;
     std::atomic_signal_fence(std::memory_order_release);
   }
 }
@@ -181,6 +182,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   ip_addr_t addr;
   lookupHost_ = host;
   lookupIP_ = INADDR_NONE;
+  lookupFound_ = false;
   std::atomic_signal_fence(std::memory_order_release);
   switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
     case ERR_OK:
@@ -192,7 +194,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
         delay(10);
         std::atomic_signal_fence(std::memory_order_acquire);
       } while (lookupIP_ == INADDR_NONE && timer < connTimeout_);
-      if (!(lookupIP_ == INADDR_NONE)) {  // Note: No "!=" operator
+      if (lookupFound_) {
         return connect(lookupIP_, port);
       }
       return false;

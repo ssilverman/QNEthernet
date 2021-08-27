@@ -61,6 +61,7 @@ class EthernetClient final : public Client {
   // DNS lookups
   String lookupHost_;   // For matching DNS lookups
   IPAddress lookupIP_;  // Set by a DNS lookup
+  volatile bool lookupFound_;
 
   std::vector<unsigned char> inBuf_;
   volatile int inBufPos_;
