@@ -1,6 +1,9 @@
 // EthernetUDP.h defines the UDP interface.
 // (c) 2021 Shawn Silverman
 
+#ifndef ETHERNETUDP_H_
+#define ETHERNETUDP_H_
+
 // C++ includes
 #include <cstdint>
 #include <vector>
@@ -77,3 +80,5 @@ class EthernetUDP final : public UDP {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // #ifndef ETHERNETUDP_H_
