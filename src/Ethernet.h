@@ -49,10 +49,8 @@ class Ethernet final {
   void setDNSServerIP(const IPAddress &dnsServerIP);
 
  private:
-  static struct netif nullNetif_;
-
   uint8_t mac_[kMACAddrSize];
-  struct netif *netif_;
+  struct netif *netif_ = nullptr;
   bool isLinkUp_ = false;
 };
 

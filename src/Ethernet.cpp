@@ -18,12 +18,9 @@ extern const int kMTU;
 namespace qindesign {
 namespace network {
 
-struct netif Ethernet::nullNetif_;
-
 Ethernet::Ethernet() : Ethernet(nullptr) {}
 
-Ethernet::Ethernet(const uint8_t mac[kMACAddrSize])
-    : netif_(&nullNetif_) {
+Ethernet::Ethernet(const uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
     std::copy_n(mac, kMACAddrSize, mac_);
   } else {
@@ -32,7 +29,7 @@ Ethernet::Ethernet(const uint8_t mac[kMACAddrSize])
 }
 
 Ethernet::~Ethernet() {
-  netif_remove(netif_);
+  end();
 }
 
 void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) {
@@ -79,52 +76,88 @@ void Ethernet::begin(const IPAddress &ip,
 }
 
 void Ethernet::end() {
+  if (netif_ == nullptr) {
+    return;
+  }
+
   dhcp_stop(netif_);
+  dns_setserver(0, IP_ADDR_ANY);
   netif_set_down(netif_);
-  netif_ = &nullNetif_;
+  netif_ = nullptr;
 
   enet_deinit();
 }
 
 bool Ethernet::linkStatus() {
+  if (netif_ == nullptr) {
+    return false;
+  }
   return netif_is_link_up(netif_);
 }
 
 IPAddress Ethernet::localIP() {
+  if (netif_ == nullptr) {
+    return INADDR_NONE;
+  }
   return IPAddress{netif_ip_addr4(netif_)->addr};
 }
 
 IPAddress Ethernet::subnetMask() {
+  if (netif_ == nullptr) {
+    return INADDR_NONE;
+  }
   return IPAddress{netif_ip_netmask4(netif_)->addr};
 }
 
 IPAddress Ethernet::gatewayIP() {
+  if (netif_ == nullptr) {
+    return INADDR_NONE;
+  }
   return IPAddress{netif_ip_gw4(netif_)->addr};
 }
 
 IPAddress Ethernet::dnsServerIP() {
+  if (netif_ == nullptr) {
+    return INADDR_NONE;
+  }
   return IPAddress{dns_getserver(0)->addr};
 }
 
 void Ethernet::setLocalIP(const IPAddress &localIP) {
+  if (netif_ == nullptr) {
+    return;
+  }
+
   const ip_addr_t ipaddr =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(localIP)));
   netif_set_ipaddr(netif_, &ipaddr);
 }
 
 void Ethernet::setSubnetMask(const IPAddress &subnetMask) {
+  if (netif_ == nullptr) {
+    return;
+  }
+
   const ip_addr_t netmask =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(subnetMask)));
   netif_set_netmask(netif_, &netmask);
 }
 
 void Ethernet::setGatewayIP(const IPAddress &gatewayIP) {
+  if (netif_ == nullptr) {
+    return;
+  }
+
   const ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gatewayIP)));
   netif_set_gw(netif_, &gw);
 }
 
 void Ethernet::setDNSServerIP(const IPAddress &dnsServerIP) {
+  if (netif_ == nullptr) {
+    return;
+  }
+
   const ip_addr_t dnsserver =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(dnsServerIP)));
   dns_setserver(0, &dnsserver);
