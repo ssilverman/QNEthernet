@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/netif.h>
 #include <lwipopts.h>
@@ -20,6 +21,13 @@ static std::atomic_flag connectionLock_ = ATOMIC_FLAG_INIT;
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
   EthernetClient *client = reinterpret_cast<EthernetClient *>(callback_arg);
+
+  // Also check the host name in case there was some previous request pending
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if ((ipaddr != nullptr) && (client->lookupHost_ == name)) {
+    client->lookupIP_ = ipaddr->addr;
+    std::atomic_signal_fence(std::memory_order_release);
+  }
 }
 
 err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) {
@@ -112,6 +120,9 @@ EthernetClient::EthernetClient()
     : pcb_(nullptr),
       connecting_(false),
       connected_(false),
+      connTimeout_(1000),
+      lookupHost_{},
+      lookupIP_{INADDR_NONE},
       inBuf_{},
       inBufPos_(0) {}
 
@@ -119,6 +130,9 @@ EthernetClient::EthernetClient(tcp_pcb *pcb)
     : pcb_(pcb),
       connecting_(false),
       connected_(true),
+      connTimeout_(1000),
+      lookupHost_{},
+      lookupIP_{INADDR_NONE},
       inBuf_{},
       inBufPos_(0) {
   inBuf_.reserve(TCP_WND);
@@ -165,12 +179,24 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 
 int EthernetClient::connect(const char *host, uint16_t port) {
   ip_addr_t addr;
+  lookupHost_ = host;
+  lookupIP_ = INADDR_NONE;
+  std::atomic_signal_fence(std::memory_order_release);
   switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
     case ERR_OK:
-      return connect(IPAddress{addr.addr}, port);
-    case ERR_INPROGRESS:
-      // TODO: Implement this
+      return connect(addr.addr, port);
+    case ERR_INPROGRESS: {
+      elapsedMillis timer;
+      do {
+        // NOTE: Depends on Ethernet loop being called from yield()
+        delay(10);
+        std::atomic_signal_fence(std::memory_order_acquire);
+      } while (lookupIP_ == INADDR_NONE && timer < connTimeout_);
+      if (!(lookupIP_ == INADDR_NONE)) {  // Note: No "!=" operator
+        return connect(lookupIP_, port);
+      }
       return false;
+    }
     case ERR_ARG:
     default:
       return false;
@@ -191,6 +217,10 @@ EthernetClient::operator bool() {
   return netif_is_up(netif) &&
          netif_is_link_up(netif) &&  // TODO: Should we also check for link up?
          (netif_ip_addr4(netif)->addr != 0);
+}
+
+void EthernetClient::setConnectionTimeout(uint16_t timeout) {
+  connTimeout_ = timeout;
 }
 
 // --------------------------------------------------------------------------
@@ -296,6 +326,12 @@ void EthernetClient::stop() {
   }
   if (tcp_close(pcb_) != ERR_OK) {
     tcp_abort(pcb_);
+  } else {
+    elapsedMillis timer;
+    do {
+      // NOTE: Depends on Ethernet loop being called from yield()
+      delay(10);
+    } while (connected_ && timer < connTimeout_);
   }
   pcb_ = nullptr;
   std::atomic_signal_fence(std::memory_order_release);

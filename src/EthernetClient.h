@@ -8,6 +8,8 @@
 #include <vector>
 
 #include <Client.h>
+#include <IPAddress.h>
+#include <WString.h>
 #include <lwip/tcp.h>
 
 namespace qindesign {
@@ -23,6 +25,8 @@ class EthernetClient final : public Client {
 
   uint8_t connected() override;
   operator bool() override;
+
+  void setConnectionTimeout(uint16_t timeout);
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
@@ -52,6 +56,11 @@ class EthernetClient final : public Client {
   tcp_pcb *volatile pcb_;
   volatile bool connecting_;
   volatile bool connected_;
+  uint16_t connTimeout_;
+
+  // DNS lookups
+  String lookupHost_;   // For matching DNS lookups
+  IPAddress lookupIP_;  // Set by a DNS lookup
 
   std::vector<unsigned char> inBuf_;
   volatile int inBufPos_;
