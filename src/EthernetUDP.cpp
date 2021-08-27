@@ -16,7 +16,7 @@ namespace network {
 
 // Maximum UDP packet size.
 // Subtract UDP header size and minimum IPv4 header size.
-const int kMaxUDPSize = kMTU - 8 - 20;
+const size_t kMaxUDPSize = kMTU - 8 - 20;
 
 static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
