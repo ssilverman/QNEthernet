@@ -6,7 +6,6 @@
 // C++ includes
 #include <algorithm>
 
-#include <elapsedMillis.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
@@ -41,13 +40,11 @@ int Ethernet::mtu() {
 }
 
 void Ethernet::loop() {
-  static elapsedMillis timer;
-
   enet_proc_input();
 
-  if (timer >= 100) {
+  if (loopTimer_ >= 100) {
     enet_poll();
-    timer = 0;
+    loopTimer_ = 0;
   }
 }
 

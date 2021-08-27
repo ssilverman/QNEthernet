@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include <IPAddress.h>
+#include <elapsedMillis.h>
 #include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>
 
@@ -49,6 +50,8 @@ class Ethernet final {
   void setDNSServerIP(const IPAddress &dnsServerIP);
 
  private:
+  elapsedMillis loopTimer_;
+
   uint8_t mac_[kMACAddrSize];
   struct netif *netif_ = nullptr;
   bool isLinkUp_ = false;
