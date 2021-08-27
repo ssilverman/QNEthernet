@@ -5,8 +5,11 @@
 #include <cstdint>
 #include <vector>
 
+#include <IPAddress.h>
 #include <Udp.h>
+#include <WString.h>
 #include <lwip/udp.h>
+#include <lwip/dns.h>
 
 namespace qindesign {
 namespace network {
@@ -43,6 +46,8 @@ class EthernetUDP final : public UDP {
   uint16_t remotePort() override;
 
  private:
+  static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
+                           void *callback_arg);
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
@@ -64,6 +69,10 @@ class EthernetUDP final : public UDP {
   ip_addr_t outIpaddr_;
   uint16_t outPort_;
   std::vector<unsigned char> outPacket_;
+
+  // DNS lookups
+  String lookupHost_;   // For matching DNS lookups
+  IPAddress lookupIP_;  // Set by a DNS lookup
 };
 
 }  // namespace network

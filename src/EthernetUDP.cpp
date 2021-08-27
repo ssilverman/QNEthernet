@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <atomic>
 
-#include "Ethernet.h"
+#include <elapsedMillis.h>
+#include <lwip/dns.h>
 
 extern const int kMTU;
 
@@ -19,6 +20,18 @@ namespace network {
 const size_t kMaxUDPSize = kMTU - 8 - 20;
 
 static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
+
+void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
+                               void *callback_arg) {
+  EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(callback_arg);
+
+  // Also check the host name in case there was some previous request pending
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if ((ipaddr != nullptr) && (udp->lookupHost_ == name)) {
+    udp->lookupIP_ = ipaddr->addr;
+    std::atomic_signal_fence(std::memory_order_release);
+  }
+}
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
@@ -224,22 +237,29 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
 }
 
 int EthernetUDP::beginPacket(const char *host, uint16_t port) {
-  if (pcb_ == nullptr) {
-    pcb_ = udp_new();
+  ip_addr_t addr;
+  lookupHost_ = host;
+  lookupIP_ = INADDR_NONE;
+  std::atomic_signal_fence(std::memory_order_release);
+  switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
+    case ERR_OK:
+      return beginPacket(addr.addr, port);
+    case ERR_INPROGRESS: {
+      elapsedMillis timer;
+      do {
+        // NOTE: Depends on Ethernet loop being called from yield()
+        delay(10);
+        std::atomic_signal_fence(std::memory_order_acquire);
+      } while (lookupIP_ == INADDR_NONE && timer < 2000);
+      if (!(lookupIP_ == INADDR_NONE)) {  // Note: No "!=" operator
+        return beginPacket(lookupIP_, port);
+      }
+      return false;
+    }
+    case ERR_ARG:
+    default:
+      return false;
   }
-  if (pcb_ == nullptr) {
-    return false;
-  }
-  if (outPacket_.capacity() < kMaxUDPSize) {
-    outPacket_.reserve(kMaxUDPSize);
-  }
-
-  if (!ipaddr_aton(host, &outIpaddr_)) {
-    return false;
-  }
-  hasOutPacket_ = true;
-  outPacket_.clear();
-  return true;
 }
 
 int EthernetUDP::endPacket() {
