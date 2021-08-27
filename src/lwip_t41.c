@@ -551,9 +551,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     isFirstInit = false;
   }
 
-  if (ipaddr == NULL) ipaddr = IP4_ADDR_ANY;
-  if (netmask == NULL) netmask = IP4_ADDR_ANY;
-  if (gw == NULL) gw = IP4_ADDR_ANY;
+  if (ipaddr == NULL) ipaddr = IP_ADDR_ANY;
+  if (netmask == NULL) netmask = IP_ADDR_ANY;
+  if (gw == NULL) gw = IP_ADDR_ANY;
 
   // First test if the MAC address has changed
   // If it's changed then remove the interface and start again
