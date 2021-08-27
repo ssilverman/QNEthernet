@@ -12,6 +12,8 @@
 #include <WString.h>
 #include <lwip/tcp.h>
 
+#include "ConnectionHolder.h"
+
 namespace qindesign {
 namespace network {
 
@@ -53,9 +55,6 @@ class EthernetClient final : public Client {
   // Check if there's data still available in the buffer.
   bool isAvailable();
 
-  tcp_pcb *volatile pcb_;
-  volatile bool connecting_;
-  volatile bool connected_;
   uint16_t connTimeout_;
 
   // DNS lookups
@@ -63,8 +62,7 @@ class EthernetClient final : public Client {
   IPAddress lookupIP_;  // Set by a DNS lookup
   volatile bool lookupFound_;
 
-  std::vector<unsigned char> inBuf_;
-  volatile int inBufPos_;
+  ConnectionHolder state_;
 };
 
 }  // namespace network
