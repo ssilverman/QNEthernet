@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include <lwip/dns.h>
+#include <lwip/netif.h>
 #include <lwipopts.h>
 
 namespace qindesign {
@@ -183,9 +184,13 @@ uint8_t EthernetClient::connected() {
 }
 
 EthernetClient::operator bool() {
-  // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
-  return (pcb_ != nullptr);
+  struct netif *netif = netif_default;
+  if (netif == nullptr) {
+    return false;
+  }
+  return netif_is_up(netif) &&
+         netif_is_link_up(netif) &&  // TODO: Should we also check for link up?
+         (netif_ip_addr4(netif)->addr != 0);
 }
 
 // --------------------------------------------------------------------------
