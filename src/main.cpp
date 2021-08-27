@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include <EventResponder.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
@@ -13,6 +14,8 @@
 qindesign::network::Ethernet eth{};
 qindesign::network::EthernetUDP udpIn{};
 qindesign::network::EthernetClient client{};
+
+EventResponder ethEvent;
 
 static void netif_status_callback(struct netif *netif) {
   static char ip[IPADDR_STRLEN_MAX];
@@ -63,6 +66,12 @@ void setup() {
   netif_set_status_callback(netif_default, netif_status_callback);
   netif_set_link_callback(netif_default, link_status_callback);
 
+  ethEvent.attach([](EventResponderRef r) {
+    eth.loop();
+    r.triggerEvent();
+  });
+  ethEvent.triggerEvent();
+
   // setupOSC();
   setupHTTPClient();
 }
@@ -75,8 +84,6 @@ void setupHTTPClient() {
 }
 
 void loop() {
-  eth.loop();
-
   // loopOSC();
   loopHTTPClient();
 }
