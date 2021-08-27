@@ -45,6 +45,8 @@ struct ConnectionHolder final {
     tcp_recv(pcb, recvFn);
   }
 
+  // Holds the client that holds this object. This is necessary because
+  // currently, the callbacks only know about ConnectionHolder (the state).
   EthernetClient *client = nullptr;
 
   tcp_pcb *volatile pcb = nullptr;
