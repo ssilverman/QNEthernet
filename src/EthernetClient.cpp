@@ -132,6 +132,10 @@ EthernetClient::~EthernetClient() {
   stop();
 }
 
+// --------------------------------------------------------------------------
+//  Connection
+// --------------------------------------------------------------------------
+
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   if (pcb_ == nullptr) {
     pcb_ = tcp_new();
@@ -171,6 +175,22 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       return false;
   }
 }
+
+uint8_t EthernetClient::connected() {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  return connecting_ || connected_;
+}
+
+EthernetClient::operator bool() {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  return (pcb_ != nullptr);
+}
+
+// --------------------------------------------------------------------------
+//  Transmission
+// --------------------------------------------------------------------------
 
 size_t EthernetClient::write(uint8_t b) {
   if (pcb_ == nullptr) {
@@ -212,6 +232,10 @@ int EthernetClient::availableForWrite() {
   }
   return tcp_sndbuf(pcb_);
 }
+
+// --------------------------------------------------------------------------
+//  Reception
+// --------------------------------------------------------------------------
 
 inline bool EthernetClient::isAvailable() {
   return (0 <= inBufPos_ && static_cast<size_t>(inBufPos_) < inBuf_.size());
@@ -270,18 +294,6 @@ void EthernetClient::stop() {
   }
   pcb_ = nullptr;
   std::atomic_signal_fence(std::memory_order_release);
-}
-
-uint8_t EthernetClient::connected() {
-  // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
-  return connecting_ || connected_;
-}
-
-EthernetClient::operator bool() {
-  // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
-  return (pcb_ != nullptr);
 }
 
 }  // namespace network

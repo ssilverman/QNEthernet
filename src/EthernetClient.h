@@ -20,17 +20,20 @@ class EthernetClient final : public Client {
 
   int connect(IPAddress ip, uint16_t port) override;
   int connect(const char *host, uint16_t port) override;
+
+  uint8_t connected() override;
+  operator bool() override;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
   int availableForWrite() override;
+
   int available() override;
   int read() override;
   int read(uint8_t *buf, size_t size) override;
   int peek() override;
   void flush() override;
   void stop() override;
-  uint8_t connected() override;
-  operator bool() override;
 
  private:
   // Set up an already-connected client.
