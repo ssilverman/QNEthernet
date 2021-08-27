@@ -43,7 +43,7 @@ class EthernetClient final : public Client {
 
  private:
   // Set up an already-connected client.
-  EthernetClient(tcp_pcb *pcb);
+  EthernetClient(ConnectionHolder *state);
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
@@ -62,7 +62,8 @@ class EthernetClient final : public Client {
   IPAddress lookupIP_;  // Set by a DNS lookup
   volatile bool lookupFound_;
 
-  ConnectionHolder state_;
+  ConnectionHolder *state_;
+  bool stateNeedsDelete_;
 };
 
 }  // namespace network
