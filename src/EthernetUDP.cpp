@@ -49,19 +49,15 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
-      inPacket_(kMaxUDPSize),
-      packet_(kMaxUDPSize),
+      inPacket_{},
+      packet_{},
       packetPos_(-1),
       inAddr_{INADDR_NONE},
       inPort_(0),
       hasOutPacket_(false),
       outIpaddr_{0},
       outPort_(0),
-      outPacket_(kMaxUDPSize) {
-  inPacket_.clear();
-  packet_.clear();
-  outPacket_.clear();
-}
+      outPacket_{} {}
 
 EthernetUDP::~EthernetUDP() {
   stop();
@@ -77,6 +73,14 @@ uint8_t EthernetUDP::begin(uint16_t localPort) {
   if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
     return false;
   }
+
+  if (inPacket_.capacity() < kMaxUDPSize) {
+    inPacket_.reserve(kMaxUDPSize);
+  }
+  if (packet_.capacity() < kMaxUDPSize) {
+    packet_.reserve(kMaxUDPSize);
+  }
+
   udp_recv(pcb_, &recvFunc, this);
 
   return true;
@@ -99,6 +103,14 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
   if (udp_bind(pcb_, &ipaddr, localPort) != ERR_OK) {
     return false;
   }
+
+  if (inPacket_.capacity() < kMaxUDPSize) {
+    inPacket_.reserve(kMaxUDPSize);
+  }
+  if (packet_.capacity() < kMaxUDPSize) {
+    packet_.reserve(kMaxUDPSize);
+  }
+
   udp_recv(pcb_, recvFunc, this);
 
   return true;
@@ -201,6 +213,9 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
   if (pcb_ == nullptr) {
     return false;
   }
+  if (outPacket_.capacity() < kMaxUDPSize) {
+    outPacket_.reserve(kMaxUDPSize);
+  }
 
   outIpaddr_ = IPADDR4_INIT(static_cast<uint32_t>(ip));
   hasOutPacket_ = true;
@@ -214,6 +229,9 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
   }
   if (pcb_ == nullptr) {
     return false;
+  }
+  if (outPacket_.capacity() < kMaxUDPSize) {
+    outPacket_.reserve(kMaxUDPSize);
   }
 
   if (!ipaddr_aton(host, &outIpaddr_)) {
@@ -247,7 +265,7 @@ size_t EthernetUDP::write(uint8_t b) {
     return 0;
   }
   // TODO: Limit vector size
-  outPacket_.emplace_back(b);
+  outPacket_.push_back(b);
   return 1;
 }
 
