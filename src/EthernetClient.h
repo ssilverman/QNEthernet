@@ -1,6 +1,9 @@
 // EthernetClient.h defines the TCP client interface.
 // (c) 2021 Shawn Silverman
 
+#ifndef ETHERNETCLIENT_H_
+#define ETHERNETCLIENT_H_
+
 // C++ includes
 #include <vector>
 
@@ -53,3 +56,5 @@ class EthernetClient final : public Client {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // ETHERNETCLIENT_H_
