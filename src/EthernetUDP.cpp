@@ -22,7 +22,7 @@ static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
-  EthernetUDP *udp = static_cast<EthernetUDP *>(arg);
+  EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(arg);
 
   if (p == nullptr) {
     udp->stop();
