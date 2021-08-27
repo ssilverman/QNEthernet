@@ -57,7 +57,7 @@ class EthernetUDP final : public UDP {
 
   // Source of incoming packet
   IPAddress inAddr_;
-  uint16_t inPort_;
+  volatile uint16_t inPort_;
 
   // Outgoing packets
   bool hasOutPacket_;

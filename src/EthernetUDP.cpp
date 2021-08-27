@@ -8,7 +8,6 @@
 #include <atomic>
 
 #include "Ethernet.h"
-#include "SpinLock.h"
 
 extern const int kMTU;
 
@@ -32,20 +31,18 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
   struct pbuf *pHead = p;
 
-  {
-    SpinLock lock(lock_);
-    udp->inPacket_.clear();
-    udp->inPacket_.reserve(p->tot_len);
-    // TODO: Limit vector size
-    while (p != nullptr) {
-      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-      udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
-      p = p->next;
-    }
-    udp->inAddr_ = addr->addr;
-    udp->inPort_ = port;
-    std::atomic_signal_fence(std::memory_order_release);
+  // TODO: Lock if not single-threaded
+  udp->inPacket_.clear();
+  udp->inPacket_.reserve(p->tot_len);
+  // TODO: Limit vector size
+  while (p != nullptr) {
+    unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+    udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
+    p = p->next;
   }
+  udp->inAddr_ = addr->addr;
+  udp->inPort_ = port;
+  std::atomic_signal_fence(std::memory_order_release);
 
   pbuf_free(pHead);
 }
@@ -124,12 +121,10 @@ int EthernetUDP::parsePacket() {
     return 0;
   }
 
-  {
-    SpinLock lock{lock_};
-    std::atomic_signal_fence(std::memory_order_acquire);
-    packet_ = inPacket_;
-    inPacket_.clear();
-  }
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  packet_ = inPacket_;
+  inPacket_.clear();
 
   if (packet_.size() > 0) {
     packetPos_ = 0;
@@ -184,13 +179,13 @@ void EthernetUDP::flush() {
 }
 
 IPAddress EthernetUDP::remoteIP() {
-  SpinLock lock{lock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   return inAddr_;
 }
 
 uint16_t EthernetUDP::remotePort() {
-  SpinLock lock{lock_};
+  // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   return inPort_;
 }
