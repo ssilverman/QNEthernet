@@ -34,6 +34,9 @@ class Ethernet final {
              const IPAddress &netmask,
              const IPAddress &gw);
 
+  // Shut down the Ethernet peripheral(s).
+  void end();
+
   bool linkStatus();
 
   IPAddress localIP();

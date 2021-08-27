@@ -30,6 +30,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *netmask,
                const ip_addr_t *gw);
 
+// Disable Ethernet.
+void enet_deinit();
+
 // // Sets the receive callback function.
 // void enet_set_receive_callback(rx_frame_fn rx_cb);
 

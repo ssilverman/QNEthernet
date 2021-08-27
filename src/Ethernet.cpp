@@ -78,6 +78,14 @@ void Ethernet::begin(const IPAddress &ip,
   netif_set_up(netif_);
 }
 
+void Ethernet::end() {
+  dhcp_stop(netif_);
+  netif_set_down(netif_);
+  netif_ = &nullNetif_;
+
+  enet_deinit();
+}
+
 bool Ethernet::linkStatus() {
   return netif_is_link_up(netif_);
 }

@@ -584,6 +584,13 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
   }
 }
 
+void enet_deinit() {
+  netif_remove(&t41_netif);
+
+  // Disable the clock for ENET
+  CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+}
+
 // void enet_set_receive_callback(rx_frame_fn rx_cb) {
 //   rx_callback = rx_cb;
 // }
