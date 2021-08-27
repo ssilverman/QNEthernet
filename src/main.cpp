@@ -1,3 +1,6 @@
+// C++ includes
+#include <utility>
+
 #include <Arduino.h>
 
 #include <EventResponder.h>
@@ -8,12 +11,14 @@
 
 #include "Ethernet.h"
 #include "EthernetClient.h"
+#include "EthernetServer.h"
 #include "EthernetUDP.h"
 #include "OSC.h"
 
 qindesign::network::Ethernet eth{};
 qindesign::network::EthernetUDP udpIn{};
 qindesign::network::EthernetClient client{};
+qindesign::network::EthernetServer server{5000};
 
 EventResponder ethEvent;
 
@@ -46,8 +51,12 @@ static void link_status_callback(struct netif *netif) {
 
 void setupOSC();
 void setupHTTPClient();
+void setupServer();
+void setupServerAvail();
 void loopOSC();
 void loopHTTPClient();
+void loopServer();
+void loopServerAvail();
 
 void setup() {
   Serial.begin(115200);
@@ -55,6 +64,7 @@ void setup() {
     // Wait for Serial to initialize
   }
   delay(4000);
+  Serial.println(CrashReport);
   Serial.println("Starting...");
 
   uint8_t mac[6];
@@ -73,7 +83,9 @@ void setup() {
   ethEvent.triggerEvent();
 
   // setupOSC();
-  setupHTTPClient();
+  // setupHTTPClient();
+  setupServer();
+  // setupServerAvail();
 }
 
 void setupOSC() {
@@ -83,9 +95,19 @@ void setupOSC() {
 void setupHTTPClient() {
 }
 
+void setupServer() {
+  server.begin();
+}
+
+void setupServerAvail() {
+  server.begin();
+}
+
 void loop() {
   // loopOSC();
-  loopHTTPClient();
+  // loopHTTPClient();
+  loopServer();
+  // loopServerAvail();
 }
 
 void loopOSC() {
@@ -103,7 +125,7 @@ void loopHTTPClient() {
   switch (httpClientState) {
     case 0:
       if (eth.localIP() != 0) {
-        if (client.connect(IPAddress{172, 217, 6, 46}, 80)) {  // example.com: 93, 184, 216, 34
+        if (client.connect("google.com", 80)) {// google.com: 172, 217, 6, 46, example.com: 93, 184, 216, 34
           Serial.println("connected");
           client.print("GET /search?q=arduino HTTP/1.0\r\n");
           // client.print("GET / HTTP/1.1\r\n");
@@ -136,5 +158,51 @@ void loopHTTPClient() {
 
     default:
       break;
+  }
+}
+
+qindesign::network::EthernetClient clients[8];
+
+void loopServer() {
+  // check for any new client connecting, and say hello (before any incoming data)
+  qindesign::network::EthernetClient newClient = server.accept();
+  if (newClient.connected()) {
+    for (int i = 0; i < 8; i++) {
+      if (!clients[i].connected()) {
+        Serial.printf("Client %d\n", i);
+        newClient.print("Hello, client number: ");
+        newClient.println(i);
+        // Once we "accept", the client is no longer tracked by EthernetServer
+        // so we must store it into our list of clients
+        clients[i] = std::move(newClient);
+        break;
+      }
+    }
+  }
+
+  // check for incoming data from all clients
+  for (int i = 0; i < 8; i++) {
+    while (/*clients[i].connected() &&*/ clients[i].available() > 0) {
+      // read incoming data from the client
+      Serial.write(clients[i].read());
+    }
+  }
+
+  // // stop any clients which disconnect
+  // for (int i = 0; i < 8; i++) {
+  //   if (!clients[i]) {
+  //     Serial.printf("Stopping client %d\n", i);
+  //     clients[i].stop();
+  //   }
+  // }
+}
+
+void loopServerAvail() {
+  // if an incoming client connects, there will be bytes available to read:
+  qindesign::network::EthernetClient client = server.available();
+  if (client.connected()) {
+    // read bytes from the incoming client and write them back
+    // to any clients connected to the server:
+    server.write(client.read());
   }
 }
