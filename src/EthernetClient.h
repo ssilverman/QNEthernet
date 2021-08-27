@@ -68,16 +68,17 @@ class EthernetClient final : public Client {
 
   void setConnectionTimeout(uint16_t timeout);
 
+  void stop() override;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
   int availableForWrite() override;
+  void flush() override;
 
   int available() override;
   int read() override;
   int read(uint8_t *buf, size_t size) override;
   int peek() override;
-  void flush() override;
-  void stop() override;
 
  private:
   // Set up an already-connected client. If the state is NULL then a new

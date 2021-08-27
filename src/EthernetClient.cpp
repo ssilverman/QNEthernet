@@ -353,6 +353,28 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
   connTimeout_ = timeout;
 }
 
+void EthernetClient::stop() {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    // This can happen if this object was moved to another
+    // or if the connection was disconnected
+    return;
+  }
+  if (tcp_close(state_->pcb) != ERR_OK) {
+    tcp_abort(state_->pcb);
+  } else {
+    elapsedMillis timer;
+    do {
+      // NOTE: Depends on Ethernet loop being called from yield()
+      delay(10);
+    } while ((connecting_ || connected_) && timer < connTimeout_);
+  }
+  // TODO: Delete state_?
+  state_ = nullptr;
+  std::atomic_signal_fence(std::memory_order_release);
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
@@ -402,6 +424,15 @@ int EthernetClient::availableForWrite() {
     return 0;
   }
   return tcp_sndbuf(state_->pcb);
+}
+
+void EthernetClient::flush() {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    return;
+  }
+  tcp_output(state_->pcb);
 }
 
 // --------------------------------------------------------------------------
@@ -479,37 +510,6 @@ int EthernetClient::peek() {
     return -1;
   }
   return state_->inBuf[state_->inBufPos];
-}
-
-void EthernetClient::flush() {
-  // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
-  if (state_ == nullptr) {
-    return;
-  }
-  tcp_output(state_->pcb);
-}
-
-void EthernetClient::stop() {
-  // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
-  if (state_ == nullptr) {
-    // This can happen if this object was moved to another
-    // or if the connection was disconnected
-    return;
-  }
-  if (tcp_close(state_->pcb) != ERR_OK) {
-    tcp_abort(state_->pcb);
-  } else {
-    elapsedMillis timer;
-    do {
-      // NOTE: Depends on Ethernet loop being called from yield()
-      delay(10);
-    } while ((connecting_ || connected_) && timer < connTimeout_);
-  }
-  // TODO: Delete state_?
-  state_ = nullptr;
-  std::atomic_signal_fence(std::memory_order_release);
 }
 
 }  // namespace network
