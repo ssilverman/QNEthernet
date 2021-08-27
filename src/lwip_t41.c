@@ -128,8 +128,8 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-static const int kMaxFrameLen = 1522;
-const int kMTU = 1500;
+static const unsigned int kMaxFrameLen = 1522;
+const unsigned int kMTU = 1500;
 
 static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
