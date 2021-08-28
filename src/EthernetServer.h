@@ -28,7 +28,10 @@ class EthernetServer final : public Server {
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
+
+  // Always returns zero.
   int availableForWrite() override;
+
   void flush() override;
 
   operator bool();
