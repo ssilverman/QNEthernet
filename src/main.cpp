@@ -1,8 +1,10 @@
 // C++ includes
+#include <cstdlib>
 #include <utility>
 
 #include <Arduino.h>
 
+#include <Entropy.h>
 #include <EventResponder.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
@@ -69,6 +71,10 @@ void setup() {
   delay(4000);
   Serial.println(CrashReport);
   Serial.println("Starting...");
+
+  // Initialize the randomness
+  Entropy.Initialize();
+  srand(Entropy.random());
 
   uint8_t mac[6];
   eth.macAddress(mac);

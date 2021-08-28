@@ -6,7 +6,6 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <core_pins.h>
@@ -520,7 +519,6 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *gw) {
   // Only execute the following code once
   if (isFirstInit) {
-    srand(micros());
     lwip_init();
 
     isFirstInit = false;
