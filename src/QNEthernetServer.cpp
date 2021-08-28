@@ -165,8 +165,11 @@ size_t EthernetServer::write(uint8_t b) {
     if (state == nullptr) {
       continue;
     }
+
     if (tcp_sndbuf(state->pcb) < 1) {
-      tcp_output(state->pcb);
+      if (tcp_output(state->pcb) != ERR_OK) {
+        continue;
+      }
     }
     if (tcp_sndbuf(state->pcb) >= 1) {
       tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
@@ -187,8 +190,11 @@ size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
     if (state == nullptr) {
       continue;
     }
+
     if (tcp_sndbuf(state->pcb) < size) {
-      tcp_output(state->pcb);
+      if (tcp_output(state->pcb) != ERR_OK) {
+        continue;
+      }
     }
     uint16_t len = std::min(size16, tcp_sndbuf(state->pcb));
     if (len > 0) {
