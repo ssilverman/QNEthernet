@@ -1,6 +1,9 @@
 // Arduino-style Ethernet driver for Teensy 4.1.
 // (c) 2021 Shawn Silverman
 
+#ifndef ETHERNET_H_
+#define ETHERNET_H_
+
 // C++ includes
 #include <cstdint>
 
@@ -59,3 +62,5 @@ class Ethernet final {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // ETHERNET_H_
