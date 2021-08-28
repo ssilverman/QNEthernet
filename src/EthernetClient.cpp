@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <atomic>
 
-#include <Arduino.h>
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/netif.h>
@@ -22,12 +21,6 @@ static std::atomic_flag connectionLock_ = ATOMIC_FLAG_INIT;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
-  if (callback_arg == nullptr) {
-    Serial.println("Client dns callback_arg=NULL");
-  }
-  if (ipaddr == nullptr) {
-    Serial.printf("Client dns ipaddr=NULL (host=%s)\n", name);
-  }
   if (callback_arg == nullptr || ipaddr == nullptr) {
     return;
   }
@@ -44,12 +37,6 @@ void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
 }
 
 err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) {
-  if (arg == nullptr) {
-    Serial.println("Client connected arg=NULL");
-  }
-  if (tpcb == nullptr) {
-    Serial.println("Client connected tpcb=NULL");
-  }
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_VAL;
   }
@@ -65,7 +52,6 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
     std::atomic_signal_fence(std::memory_order_release);
   }
   if (err != ERR_OK) {
-    Serial.printf("Client connected err=%d\n", err);
     if (tcp_close(tpcb) != ERR_OK) {
       tcp_abort(tpcb);
     }
@@ -87,7 +73,6 @@ void EthernetClient::maybeCopyRemaining() {
 
 void EthernetClient::errFunc(void *arg, err_t err) {
   if (arg == nullptr) {
-    Serial.println("Client err arg=NULL");
     return;
   }
 
@@ -102,7 +87,6 @@ void EthernetClient::errFunc(void *arg, err_t err) {
     std::atomic_signal_fence(std::memory_order_release);
   }
   if (err != ERR_OK) {
-    Serial.printf("Client err=%d\n", err);
     if (tcp_close(state->pcb) != ERR_OK) {
       tcp_abort(state->pcb);
     }
@@ -119,12 +103,6 @@ void EthernetClient::errFunc(void *arg, err_t err) {
 
 err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
                                err_t err) {
-  if (arg == nullptr) {
-    Serial.println("Client recv arg=NULL");
-  }
-  if (tpcb == nullptr) {
-    Serial.println("Client recv tpcb=NULL");
-  }
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_VAL;
   }
@@ -133,12 +111,9 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
   // Check for any errors, and if so, clean up
   if (p == nullptr || err != ERR_OK) {
-    Serial.printf("Client recv err=%d\n", err);
     if (p != nullptr) {
       tcp_recved(tpcb, p->tot_len);
       pbuf_free(p);
-    } else {
-      Serial.println("Client recv p=NULL");
     }
 
     // TODO: Tell client what the error was

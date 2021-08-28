@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <atomic>
 
-#include <Arduino.h>
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 
@@ -24,12 +23,6 @@ static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
 void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                void *callback_arg) {
-  if (callback_arg == nullptr) {
-    Serial.println("UDP dns callback_arg=NULL");
-  }
-  if (ipaddr == nullptr) {
-    Serial.println("UDP dns ipaddr=NULL");
-  }
   if (callback_arg == nullptr || ipaddr == nullptr) {
     return;
   }
@@ -47,12 +40,6 @@ void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
-  if (arg == nullptr) {
-    Serial.println("USB recv arg=NULL");
-  }
-  if (pcb == nullptr) {
-    Serial.println("USB recv pcb=NULL");
-  }
   if (arg == nullptr || pcb == nullptr) {
     return;
   }

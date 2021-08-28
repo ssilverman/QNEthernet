@@ -8,8 +8,6 @@
 #include <atomic>
 #include <utility>
 
-#include <Arduino.h>
-
 namespace qindesign {
 namespace network {
 
@@ -55,7 +53,6 @@ static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
 
 void EthernetServer::errFunc(void *arg, err_t err) {
   if (arg == nullptr) {
-    Serial.println("Server err arg=NULL");
     return;
   }
 
@@ -64,7 +61,6 @@ void EthernetServer::errFunc(void *arg, err_t err) {
   // TODO: Tell server what the error was
 
   if (err != ERR_OK) {
-    Serial.printf("Server err=%d\n", err);
     // TODO: Lock if not single-threaded
     std::atomic_signal_fence(std::memory_order_acquire);
     if (tcp_close(server->pcb_) != ERR_OK) {
@@ -76,15 +72,6 @@ void EthernetServer::errFunc(void *arg, err_t err) {
 }
 
 err_t EthernetServer::acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err) {
-  if (err != ERR_OK) {
-    Serial.printf("Server accept err=%d\n", err);
-  }
-  if (arg == nullptr) {
-    Serial.println("Server accept arg=NULL");
-  }
-  if (newpcb == nullptr) {
-    Serial.println("Server accept newpcb=NULL");
-  }
   if (err != ERR_OK || newpcb == nullptr || arg == nullptr) {
     return ERR_VAL;
   }
@@ -160,7 +147,6 @@ EthernetClient EthernetServer::accept() {
     ConnectionHolder *state = *it;
     clients_.erase(it);
     state->removeFunc = nullptr;  // The state is already removed
-    Serial.println("accept(): client");
     return EthernetClient{state, false};
   }
   return EthernetClient{};

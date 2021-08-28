@@ -8,7 +8,6 @@
 #include <functional>
 #include <vector>
 
-#include <Arduino.h>
 #include <lwip/tcp.h>
 
 namespace qindesign {
@@ -18,12 +17,9 @@ class EthernetClient;
 
 // Holds all the state needed for a connection.
 struct ConnectionHolder final {
-  ConnectionHolder() {
-    Serial.printf("ConnectionHolder: %p\n", this);
-  }
+  ConnectionHolder() = default;
 
   ~ConnectionHolder() {
-    Serial.printf("~ConnectionHolder: %p\n", this);
     if (removeFunc != nullptr) {
       removeFunc(this);
     }
