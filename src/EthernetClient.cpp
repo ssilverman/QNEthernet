@@ -204,7 +204,8 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 EthernetClient::EthernetClient() : EthernetClient(nullptr, false) {}
 
 EthernetClient::EthernetClient(ConnectionHolder *state, bool externallyManaged)
-    : connTimeout_(1000),
+    : connected_(false),
+      connTimeout_(1000),
       lookupHost_{},
       lookupIP_{INADDR_NONE},
       state_(state),
