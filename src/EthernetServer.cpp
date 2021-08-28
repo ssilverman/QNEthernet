@@ -157,7 +157,7 @@ size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
       tcp_write(state->pcb, buffer, len, TCP_WRITE_FLAG_COPY);
     }
   }
-  return 1;
+  return size;
 }
 
 int EthernetServer::availableForWrite() {
