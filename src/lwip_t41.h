@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-typedef void (*rx_frame_fn)(void *);
+// typedef void (*rx_frame_fn)(void *);
 
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
@@ -37,12 +37,6 @@ void enet_deinit();
 
 // // Sets the receive callback function.
 // void enet_set_receive_callback(rx_frame_fn rx_cb);
-
-// // Get the next chunk of input data.
-// struct pbuf *enet_rx_next();
-
-// // Process one chunk of input data.
-// void enet_input(struct pbuf *p_frame);
 
 // Process any Ethernet input. This is meant to be called often by the
 // main loop.

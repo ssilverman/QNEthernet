@@ -568,11 +568,13 @@ void enet_deinit() {
 //   rx_callback = rx_cb;
 // }
 
+// Get the next chunk of input data.
 static struct pbuf *enet_rx_next() {
   volatile enetbufferdesc_t *p_bd = rxbd_next();
   return (p_bd ? t41_low_level_input(p_bd) : NULL);
 }
 
+// Process one chunk of input data.
 static void enet_input(struct pbuf *p_frame) {
   if (t41_netif.input(p_frame, &t41_netif) != ERR_OK) {
     pbuf_free(p_frame);
