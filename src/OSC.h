@@ -1,4 +1,5 @@
-// OSC function declarations.
+// OSC.h contains OSC function declarations.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef OSC_H_
