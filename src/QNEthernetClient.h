@@ -12,7 +12,7 @@
 #include <Client.h>
 #include <IPAddress.h>
 #include <WString.h>
-#include "ConnectionHolder.h"
+#include "ConnectionState.h"
 
 namespace qindesign {
 namespace network {

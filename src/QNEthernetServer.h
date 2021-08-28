@@ -12,7 +12,7 @@
 #include <Client.h>
 #include <Server.h>
 #include <lwip/tcp.h>
-#include "ConnectionHolder.h"
+#include "ConnectionState.h"
 #include "QNEthernetClient.h"
 
 namespace qindesign {
