@@ -1,4 +1,5 @@
 // QNEthernetUDP.h defines the UDP interface.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETUDP_H_

@@ -1,4 +1,5 @@
 // QNMDNS.h defines an mDNS implementation.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef MDNS_H_

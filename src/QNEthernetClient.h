@@ -1,4 +1,5 @@
 // QNEthernetClient.h defines the TCP client interface.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETCLIENT_H_

@@ -1,4 +1,5 @@
-// Provide system function implementations.
+// sys_arch.c provides system function implementations.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include <stdint.h>

@@ -1,4 +1,5 @@
-// Arduino-style Ethernet driver for Teensy 4.1.
+// QNEthernet.h defines an Arduino-style Ethernet driver for Teensy 4.1.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNET_H_

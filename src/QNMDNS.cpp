@@ -1,4 +1,5 @@
 // QMMDNS.cpp implements MDNS.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include "QNMDNS.h"

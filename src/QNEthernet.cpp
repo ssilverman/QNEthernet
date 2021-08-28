@@ -1,4 +1,5 @@
-// Teensy 4.1 Ethernet implementation.
+// QNEthernet.cpp contains the Teensy 4.1 Ethernet implementation.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include "QNEthernet.h"

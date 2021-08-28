@@ -1,4 +1,5 @@
 // QNEthernetServer.h defines the TCP server interface.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETSERVER_H_

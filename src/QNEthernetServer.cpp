@@ -1,4 +1,5 @@
-// EthernetServer implementation.
+// QNEthernetServer.cpp contains the EthernetServer implementation.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include "QNEthernetServer.h"

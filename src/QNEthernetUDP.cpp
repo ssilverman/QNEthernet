@@ -1,4 +1,5 @@
-// EthernetUDP implementation.
+// QNEthernetUDP.cpp contains the EthernetUDP implementation.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include "QNEthernetUDP.h"

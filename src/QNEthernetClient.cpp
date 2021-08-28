@@ -1,4 +1,5 @@
-// EthernetClient implementation.
+// QNEthernetClient.cpp contains the EthernetClient implementation.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
 #include "QNEthernetClient.h"
