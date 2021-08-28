@@ -25,7 +25,7 @@ struct ConnectionHolder final {
     }
   }
 
-  // Initializes all the state. This does not set the connection state.
+  // Initializes all the state.
   // 1. Sets up the buffer
   // 2. Connects the listeners
   //
@@ -43,6 +43,7 @@ struct ConnectionHolder final {
 
   // Holds the client that holds this object. This is necessary because
   // currently, the callbacks only know about ConnectionHolder (the state).
+  // I don't love this.
   EthernetClient *client = nullptr;
 
   tcp_pcb *volatile pcb = nullptr;
