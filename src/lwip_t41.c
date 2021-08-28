@@ -140,7 +140,6 @@ volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
 // static rx_frame_fn rx_callback = NULL;
-static tx_timestamp_fn tx_timestamp_callback = NULL;
 static volatile uint32_t rx_ready;
 
 void enet_isr();
@@ -346,7 +345,7 @@ static void t41_low_level_init() {
   ENET_GAUR = 0;
   ENET_GALR = 0;
 
-  ENET_EIMR = ENET_EIMR_RXF | ENET_EIMR_TS_AVAIL;
+  ENET_EIMR = ENET_EIMR_RXF;
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
@@ -384,7 +383,6 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
     p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
     if (p) {
       pbuf_take(p, bdPtr->buffer, p->tot_len);
-      p->timestamp = bdPtr->timestamp;
       LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
@@ -399,30 +397,14 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   return p;
 }
 
-static uint8_t txTimestampEnabled = 0;
-void enet_txTimestampNextPacket() {
-  txTimestampEnabled = 1;
-}
-
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = p_txbd;
-  struct eth_hdr *ethhdr;
 
   while (bdPtr->status & kEnetTxBdReady) {
     // Wait until BD is free
   }
 
   bdPtr->length = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
-  ethhdr = (struct eth_hdr *)bdPtr->buffer;
-
-  // don't timestamp ARP packets
-  if (txTimestampEnabled && ethhdr->type == PP_HTONS(ETHTYPE_IP)) {
-    bdPtr->extend1 |= kEnetTxBdTimestamp;
-    txTimestampEnabled = 0;
-  } else {
-    bdPtr->extend1 &= ~kEnetTxBdTimestamp;
-  }
-
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
                   kEnetTxBdTransmitCrc |
                   kEnetTxBdLast |
@@ -487,13 +469,6 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 }
 
 void enet_isr() {
-  if (ENET_EIR & ENET_EIR_TS_AVAIL) {
-    ENET_EIR = ENET_EIR_TS_AVAIL;
-    if (tx_timestamp_callback) {
-      tx_timestamp_callback(ENET_ATSTMP);
-    }
-  }
-
   // struct pbuf *p;
   while (ENET_EIR & ENET_EIR_RXF) {
     ENET_EIR = ENET_EIR_RXF;
@@ -594,10 +569,6 @@ void enet_deinit() {
 // void enet_set_receive_callback(rx_frame_fn rx_cb) {
 //   rx_callback = rx_cb;
 // }
-
-void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb) {
-  tx_timestamp_callback = tx_cb;
-}
 
 static struct pbuf *enet_rx_next() {
   volatile enetbufferdesc_t *p_bd = rxbd_next();

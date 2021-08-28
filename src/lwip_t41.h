@@ -16,7 +16,6 @@ extern "C" {
 #endif
 
 typedef void (*rx_frame_fn)(void *);
-typedef void (*tx_timestamp_fn)(uint32_t);
 
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
@@ -36,9 +35,6 @@ void enet_deinit();
 // // Sets the receive callback function.
 // void enet_set_receive_callback(rx_frame_fn rx_cb);
 
-// Sets the timestamp callback function.
-void enet_set_tx_timestamp_callback(tx_timestamp_fn tx_cb);
-
 // // Get the next chunk of input data.
 // struct pbuf *enet_rx_next();
 
@@ -51,9 +47,6 @@ void enet_proc_input(void);
 
 // Poll Ethernet link status.
 void enet_poll();
-
-// Timestamp the next transmitted packet.
-void enet_txTimestampNextPacket();
 
 // Read the IEEE1588 timer.
 uint32_t read_1588_timer();
