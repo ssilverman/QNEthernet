@@ -34,7 +34,8 @@
 // Internal Memory Pool Sizes
 // #define MEMP_NUM_PBUF                      16
 // #define MEMP_NUM_RAW_PCB                   4
-// #define MEMP_NUM_UDP_PCB                   4
+// Add one to MEMP_NUM_UDP_PCB for mDNS:
+#define MEMP_NUM_UDP_PCB                   5
 #define MEMP_NUM_TCP_PCB                   8
 // #define MEMP_NUM_TCP_PCB_LISTEN            8
 // #define MEMP_NUM_TCP_SEG                   16
@@ -47,7 +48,8 @@
 //   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
-// #define MEMP_NUM_SYS_TIMEOUT LWIP_NUM_SYS_TIMEOUT_INTERNAL
+// Add 3 for mDNS. This value seems to work:
+#define MEMP_NUM_SYS_TIMEOUT ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
 #define MEMP_NUM_NETBUF                    0
 #define MEMP_NUM_NETCONN                   0
 // #define MEMP_NUM_SELECT_CB                 4
@@ -106,8 +108,9 @@
 // #define LWIP_DHCP_MAX_DNS_SERVERS DNS_MAX_SERVERS
 
 // AUTOIP options
-// #define LWIP_AUTOIP                 0
-// #define LWIP_DHCP_AUTOIP_COOP       0
+// Add both for mDNS:
+#define LWIP_AUTOIP                 1
+#define LWIP_DHCP_AUTOIP_COOP       1
 // #define LWIP_DHCP_AUTOIP_COOP_TRIES 9
 
 // ACD options
@@ -195,12 +198,14 @@
 #define LWIP_NETIF_HOSTNAME            1
 // #define LWIP_NETIF_API                 0
 #define LWIP_NETIF_STATUS_CALLBACK     1
-// #define LWIP_NETIF_EXT_STATUS_CALLBACK 0
+// For mDNS:
+#define LWIP_NETIF_EXT_STATUS_CALLBACK 1
 #define LWIP_NETIF_LINK_CALLBACK       1
 // #define LWIP_NETIF_REMOVE_CALLBACK     0
 // #define LWIP_NETIF_HWADDRHINT          0
 // #define LWIP_NETIF_TX_SINGLE_PBUF      0
-// #define LWIP_NUM_NETIF_CLIENT_DATA     0
+// Add one for mDNS:
+#define LWIP_NUM_NETIF_CLIENT_DATA     1
 
 // LOOPIF options
 // #define LWIP_HAVE_LOOPIF (LWIP_NETIF_LOOPBACK && !LWIP_SINGLE_NETIF)
@@ -401,5 +406,10 @@
     (sec) = tv.tv_sec;                \
     (us) = tv.tv_usec;                \
   } while (0)
+
+// MDNS options
+#define LWIP_MDNS_RESPONDER LWIP_UDP
+// #define MDNS_RESP_USENETIF_EXTCALLBACK LWIP_NETIF_EXT_STATUS_CALLBACK
+#define MDNS_MAX_SERVICES   3
 
 #endif  // LWIPTEENSY_LWIPOPTS_H_

@@ -21,6 +21,6 @@
   "build": {
     "includeDir": "src/include",
     "srcDir": "src",
-    "srcFilter": "+<core/> +<netif/ethernet.c>"
+    "srcFilter": "+<core/> +<netif/ethernet.c> +<apps/mdns/>"
   }
 }
