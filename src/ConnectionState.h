@@ -18,7 +18,11 @@ class EthernetClient;
 
 // Holds all the state needed for a connection.
 struct ConnectionState final {
-  ConnectionState() = default;
+  ConnectionState(tcp_pcb *tpcb)
+      : pcb(tpcb),
+        inBufPos(0) {
+    inBuf.reserve(TCP_WND);
+  }
 
   ~ConnectionState() {
     if (removeFunc != nullptr) {
@@ -26,26 +30,13 @@ struct ConnectionState final {
     }
   }
 
-  // Initializes all the state.
-  // 1. Sets up the buffer
-  // 2. Connects the listeners
-  //
-  // This isn't in a constructor because we might want to initialize an
-  // existing connection.
-  void init(EthernetClient *c, tcp_pcb *tpcb, tcp_recv_fn recvFn, tcp_err_fn errFn) {
-    client = c;
-    pcb = tpcb;
-    inBuf.reserve(TCP_WND);
-    inBufPos = 0;
-    tcp_arg(pcb, this);
+  // Connects the listeners. The `arg` parameter is what gets passed
+  // to `tcp_arg`.
+  void connect(void *arg, tcp_recv_fn recvFn, tcp_err_fn errFn) {
+    tcp_arg(pcb, arg);
     tcp_err(pcb, errFn);
     tcp_recv(pcb, recvFn);
   }
-
-  // Holds the client that holds this object. This is necessary because
-  // currently, the callbacks only know about ConnectionState.
-  // I don't love this.
-  EthernetClient *client = nullptr;
 
   tcp_pcb *volatile pcb = nullptr;
 

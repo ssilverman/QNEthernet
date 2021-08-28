@@ -6,13 +6,12 @@
 #define QNE_ETHERNETCLIENT_H_
 
 // C++ includes
-#include <memory>
-#include <vector>
+#include <utility>
 
 #include <Client.h>
 #include <IPAddress.h>
 #include <WString.h>
-#include "ConnectionState.h"
+#include "ConnectionHolder.h"
 
 namespace qindesign {
 namespace network {
@@ -33,31 +32,35 @@ class EthernetClient final : public Client {
   EthernetClient &operator=(const EthernetClient &) = delete;
 
   EthernetClient(EthernetClient &&other) {
-    connected_ = other.connected_;
     connTimeout_ = other.connTimeout_;
-    state_ = other.state_;
-    stateExternallyManaged_ = other.stateExternallyManaged_;
+    connHolder_ = std::move(other.connHolder_);
 
-    if (state_ != nullptr) {
-      state_->client = this;
+    // Move the state if internally managed
+    if (other.pHolder_ == &other.connHolder_) {
+      pHolder_ = &connHolder_;
+      if (other.pHolder_->state != nullptr) {
+        tcp_arg(other.pHolder_->state->pcb, pHolder_);
+        other.pHolder_->state = nullptr;
+      }
+    } else {
+      pHolder_ = other.pHolder_;
     }
-
-    // Move the state
-    other.state_ = nullptr;
   }
 
   EthernetClient &operator=(EthernetClient &&other) {
-    connected_ = other.connected_;
     connTimeout_ = other.connTimeout_;
-    state_ = other.state_;
-    stateExternallyManaged_ = other.stateExternallyManaged_;
+    connHolder_ = std::move(other.connHolder_);
 
-    if (state_ != nullptr) {
-      state_->client = this;
+    // Move the state if internally managed
+    if (other.pHolder_ == &other.connHolder_) {
+      pHolder_ = &connHolder_;
+      if (other.pHolder_->state != nullptr) {
+        tcp_arg(other.pHolder_->state->pcb, pHolder_);
+        other.pHolder_->state = nullptr;
+      }
+    } else {
+      pHolder_ = other.pHolder_;
     }
-
-    // Move the state
-    other.state_ = nullptr;
     return *this;
   }
 
@@ -86,14 +89,21 @@ class EthernetClient final : public Client {
   int peek() override;
 
  private:
+  // Set up an already-connected client. If the holder is NULL then a new
+  // unconnected client will be created.
+  //
+  // The state is externally managed if `holder` it not NULL and does not equal
+  // `&connHolder_`. In this case an external party will take care of stopping
+  // the connection and freeing the object.
+  EthernetClient(ConnectionHolder *holder);
+
   // Set up an already-connected client. If the state is NULL then a new
   // unconnected client will be created. If the state is not NULL then it is
   // assumed that the client is already connected and the state will be set
   // up accordingly.
   //
-  // The `externallyManaged` parameter indicates that an external party will
-  // take care of stopping the connection and freeing the object.
-  EthernetClient(ConnectionState *state, bool externallyManaged);
+  // The state will be internally managed.
+  EthernetClient(ConnectionState *state);
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
@@ -102,14 +112,7 @@ class EthernetClient final : public Client {
   static err_t recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
                         err_t err);
 
-  // Check if there's data still available in the buffer.
-  bool isAvailable();
-
-  // Copy any remaining data from the state to the "remaining" buffer.
-  void maybeCopyRemaining();
-
   // Connection state
-  volatile bool connected_ = false;
   uint16_t connTimeout_;
 
   // DNS lookups
@@ -117,14 +120,10 @@ class EthernetClient final : public Client {
   IPAddress lookupIP_;  // Set by a DNS lookup
   volatile bool lookupFound_;
 
-  ConnectionState *state_;
-  bool stateExternallyManaged_;  // Indicates if we shouldn't close
-                                 // the connection
-
-  // Remaining data after a connection is closed
-  // Will only be non-empty after the connection is closed
-  int remainingPos_;
-  std::vector<unsigned char> remaining_;
+  ConnectionHolder connHolder_;
+  ConnectionHolder *pHolder_;  // Points to the state being used
+                               // It is externally managed if it doesn't point
+                               // to connHolder_
 
   friend class EthernetServer;
 };

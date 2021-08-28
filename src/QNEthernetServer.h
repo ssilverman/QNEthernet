@@ -7,12 +7,11 @@
 
 // C++ includes
 #include <vector>
-#include <memory>
 
 #include <Client.h>
 #include <Server.h>
 #include <lwip/tcp.h>
-#include "ConnectionState.h"
+#include "ConnectionHolder.h"
 #include "QNEthernetClient.h"
 
 namespace qindesign {
@@ -48,7 +47,8 @@ class EthernetServer final : public Server {
   tcp_pcb *volatile pcb_;
 
   // tcp_pcb/data-available pairs.
-  std::vector<ConnectionState *> clients_;
+  // Note: Using std::unique_ptr doesn't seem to work properly. Memory pressure?
+  std::vector<ConnectionHolder *> clients_;
 };
 
 }  // namespace network
