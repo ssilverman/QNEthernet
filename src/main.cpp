@@ -161,11 +161,11 @@ void loopHTTPClient() {
   }
 }
 
-qindesign::network::EthernetClient clients[8];
+qn::EthernetClient clients[8];
 
 void loopServer() {
   // check for any new client connecting, and say hello (before any incoming data)
-  qindesign::network::EthernetClient newClient = server.accept();
+  qn::EthernetClient newClient = server.accept();
   if (newClient.connected()) {
     for (int i = 0; i < 8; i++) {
       if (!clients[i].connected()) {
@@ -199,7 +199,7 @@ void loopServer() {
 
 void loopServerAvail() {
   // if an incoming client connects, there will be bytes available to read:
-  qindesign::network::EthernetClient client = server.available();
+  qn::EthernetClient client = server.available();
   if (client.connected()) {
     // read bytes from the incoming client and write them back
     // to any clients connected to the server:
