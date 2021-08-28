@@ -11,44 +11,6 @@
 namespace qindesign {
 namespace network {
 
-// err_t EthernetServer::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
-//                                err_t err) {
-//   EthernetServer *server = reinterpret_cast<EthernetServer *>(arg);
-//   auto clients = server->clients_;
-
-//   // Check for any errors, and if so, clean up
-//   if (p == nullptr || err != ERR_OK) {
-//     if (p != nullptr) {
-//       tcp_recved(tpcb, p->tot_len);
-//       pbuf_free(p);
-//     }
-
-//     auto it = std::find(clients.begin(), clients.end(), tpcb);
-//     if (it != clients.end()) {
-//       clients.erase(it);
-//     }
-
-//     if (tcp_close(tpcb) != ERR_OK) {
-//       tcp_abort(tpcb);
-//       server->pcb_ = nullptr;
-//       return ERR_ABRT;
-//     }
-//     return ERR_OK;
-//   }
-
-//   // Mark this client as having data available
-//   auto it =
-//       std::find_if(clients.begin(), clients.end(),
-//                    [tpcb](const auto &pair) { return pair.first == tpcb; });
-//   if (it != clients.end()) {
-//     it->second = it->second || (p->tot_len > 0);
-//   }
-
-//   // Don't process any data
-//   tcp_recved(tpcb, 0);
-//   return ERR_INPROGRESS;
-// }
-
 void EthernetServer::errFunc(void *arg, err_t err) {
   if (arg == nullptr) {
     return;
