@@ -6,6 +6,8 @@
 // C++ includes
 #include <algorithm>
 
+#include <Entropy.h>
+#include <EventResponder.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
@@ -14,32 +16,49 @@
 
 extern const int kMTU;
 
+// Global definitions for Arduino.
+static EventResponder ethLoop;
+qindesign::network::EthernetClass Ethernet;
+
+// Start the loop() call in yield() via EventResponder.
+void startLoopInYield() {
+  ethLoop.attach([](EventResponderRef r) {
+    Ethernet.loop();
+    r.triggerEvent();
+  });
+  ethLoop.triggerEvent();
+}
+
 namespace qindesign {
 namespace network {
 
-Ethernet::Ethernet() : Ethernet(nullptr) {}
+EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-Ethernet::Ethernet(const uint8_t mac[kMACAddrSize]) {
+EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
     std::copy_n(mac, kMACAddrSize, mac_);
   } else {
     enet_getmac(mac_);
   }
+
+  // Initialize randomness since this isn't done anymore in eth_init
+  Entropy.Initialize();
+  srand(Entropy.random());
 }
 
-Ethernet::~Ethernet() {
+EthernetClass::~EthernetClass() {
   end();
 }
 
-void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) const {
+void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
   std::copy_n(mac_, kMACAddrSize, mac);
 }
 
-int Ethernet::mtu() const {
+int EthernetClass::mtu() const {
   return kMTU;
 }
 
-void Ethernet::loop() {
+void EthernetClass::loop() {
   enet_proc_input();
 
   if (loopTimer_ >= 100) {
@@ -48,17 +67,19 @@ void Ethernet::loop() {
   }
 }
 
-void Ethernet::begin() {
+bool EthernetClass::begin() {
   enet_init(mac_, NULL, NULL, NULL);
   netif_ = netif_default;
   netif_set_up(netif_);
 
-  dhcp_start(netif_);
+  bool retval = (dhcp_start(netif_) != ERR_OK);
+  startLoopInYield();
+  return retval;
 }
 
-void Ethernet::begin(const IPAddress &ip,
-                     const IPAddress &mask,
-                     const IPAddress &gateway) {
+void EthernetClass::begin(const IPAddress &ip,
+                          const IPAddress &mask,
+                          const IPAddress &gateway) {
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
   ip_addr_t ipaddr =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
@@ -70,9 +91,40 @@ void Ethernet::begin(const IPAddress &ip,
   enet_init(mac_, &ipaddr, &netmask, &gw);
   netif_ = netif_default;
   netif_set_up(netif_);
+
+  startLoopInYield();
 }
 
-void Ethernet::end() {
+int EthernetClass::begin(const uint8_t mac[6]) {
+  std::copy_n(mac, kMACAddrSize, mac_);
+  return begin();
+}
+
+void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip) {
+  begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
+        IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
+}
+
+void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+                          const IPAddress &dns) {
+  begin(mac, ip, dns, IPAddress{ip[0], ip[1], ip[2], 1},
+        IPAddress{255, 255, 255, 0});
+}
+
+void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+                          const IPAddress &dns, const IPAddress &gateway) {
+  begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
+}
+
+void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+                          const IPAddress &dns, const IPAddress &gateway,
+                          const IPAddress &subnet) {
+  std::copy_n(mac, kMACAddrSize, mac_);
+  begin(ip, subnet, gateway);
+  setDNSServerIP(dns);
+}
+
+void EthernetClass::end() {
   if (netif_ == nullptr) {
     return;
   }
@@ -85,42 +137,42 @@ void Ethernet::end() {
   enet_deinit();
 }
 
-bool Ethernet::linkStatus() const {
+bool EthernetClass::linkStatus() const {
   if (netif_ == nullptr) {
     return false;
   }
   return netif_is_link_up(netif_);
 }
 
-IPAddress Ethernet::localIP() const {
+IPAddress EthernetClass::localIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_addr4(netif_)->addr};
 }
 
-IPAddress Ethernet::subnetMask() const {
+IPAddress EthernetClass::subnetMask() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_netmask4(netif_)->addr};
 }
 
-IPAddress Ethernet::gatewayIP() const {
+IPAddress EthernetClass::gatewayIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_gw4(netif_)->addr};
 }
 
-IPAddress Ethernet::dnsServerIP() const {
+IPAddress EthernetClass::dnsServerIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{dns_getserver(0)->addr};
 }
 
-void Ethernet::setLocalIP(const IPAddress &localIP) {
+void EthernetClass::setLocalIP(const IPAddress &localIP) {
   if (netif_ == nullptr) {
     return;
   }
@@ -130,7 +182,7 @@ void Ethernet::setLocalIP(const IPAddress &localIP) {
   netif_set_ipaddr(netif_, &ipaddr);
 }
 
-void Ethernet::setSubnetMask(const IPAddress &subnetMask) {
+void EthernetClass::setSubnetMask(const IPAddress &subnetMask) {
   if (netif_ == nullptr) {
     return;
   }
@@ -140,7 +192,7 @@ void Ethernet::setSubnetMask(const IPAddress &subnetMask) {
   netif_set_netmask(netif_, &netmask);
 }
 
-void Ethernet::setGatewayIP(const IPAddress &gatewayIP) {
+void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) {
   if (netif_ == nullptr) {
     return;
   }
@@ -150,7 +202,7 @@ void Ethernet::setGatewayIP(const IPAddress &gatewayIP) {
   netif_set_gw(netif_, &gw);
 }
 
-void Ethernet::setDNSServerIP(const IPAddress &dnsServerIP) {
+void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
   if (netif_ == nullptr) {
     return;
   }

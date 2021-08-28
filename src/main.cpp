@@ -4,8 +4,6 @@
 
 #include <Arduino.h>
 
-#include <Entropy.h>
-#include <EventResponder.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
@@ -18,14 +16,13 @@
 #include "MDNS.h"
 #include "OSC.h"
 
-qindesign::network::Ethernet eth{};
-qindesign::network::EthernetUDP udpIn{};
-qindesign::network::EthernetClient client{};
-qindesign::network::EthernetServer server{5000};
+namespace qn = ::qindesign::network;
 
-qindesign::network::MDNS mdns;
+qn::EthernetUDP udpIn{};
+qn::EthernetClient client{};
+qn::EthernetServer server{5000};
 
-EventResponder ethEvent;
+qn::MDNS mdns;
 
 static void netif_status_callback(struct netif *netif) {
   static char ip[IPADDR_STRLEN_MAX];
@@ -72,24 +69,14 @@ void setup() {
   Serial.println(CrashReport);
   Serial.println("Starting...");
 
-  // Initialize the randomness
-  Entropy.Initialize();
-  srand(Entropy.random());
-
   uint8_t mac[6];
-  eth.macAddress(mac);
+  Ethernet.macAddress(mac);
   Serial.printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-  eth.begin();
+  Ethernet.begin();
   netif_set_status_callback(netif_default, netif_status_callback);
   netif_set_link_callback(netif_default, link_status_callback);
-
-  ethEvent.attach([](EventResponderRef r) {
-    eth.loop();
-    r.triggerEvent();
-  });
-  ethEvent.triggerEvent();
 
   setupOSC();
   // setupHTTPClient();
@@ -136,7 +123,7 @@ int httpClientState = 0;
 void loopHTTPClient() {
   switch (httpClientState) {
     case 0:
-      if (eth.localIP() != 0) {
+      if (Ethernet.localIP() != 0) {
         if (client.connect("google.com", 80)) {// google.com: 172, 217, 6, 46, example.com: 93, 184, 216, 34
           Serial.println("connected");
           client.print("GET /search?q=arduino HTTP/1.0\r\n");
