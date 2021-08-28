@@ -13,12 +13,15 @@
 #include "EthernetClient.h"
 #include "EthernetServer.h"
 #include "EthernetUDP.h"
+#include "MDNS.h"
 #include "OSC.h"
 
 qindesign::network::Ethernet eth{};
 qindesign::network::EthernetUDP udpIn{};
 qindesign::network::EthernetClient client{};
 qindesign::network::EthernetServer server{5000};
+
+qindesign::network::MDNS mdns;
 
 EventResponder ethEvent;
 
@@ -82,14 +85,17 @@ void setup() {
   });
   ethEvent.triggerEvent();
 
-  // setupOSC();
+  setupOSC();
   // setupHTTPClient();
-  setupServer();
+  // setupServer();
   // setupServerAvail();
 }
 
 void setupOSC() {
   udpIn.begin(8000);
+  Serial.println("Starting mDNS");
+  mdns.begin("qeth");
+  mdns.addService("_osc", "_udp", 8000);
 }
 
 void setupHTTPClient() {
@@ -104,9 +110,9 @@ void setupServerAvail() {
 }
 
 void loop() {
-  // loopOSC();
+  loopOSC();
   // loopHTTPClient();
-  loopServer();
+  // loopServer();
   // loopServerAvail();
 }
 
