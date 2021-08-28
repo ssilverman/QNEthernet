@@ -48,7 +48,7 @@ class EthernetServer final : public Server {
   tcp_pcb *volatile pcb_;
 
   // tcp_pcb/data-available pairs.
-  std::vector<ConnectionHolder *> clients_;
+  std::vector<ConnectionState *> clients_;
 };
 
 }  // namespace network

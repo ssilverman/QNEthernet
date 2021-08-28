@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef QNE_CONNECTIONHOLDER_H_
-#define QNE_CONNECTIONHOLDER_H_
+#ifndef QNE_CONNECTIONSTATE_H_
+#define QNE_CONNECTIONSTATE_H_
 
 // C++ includes
 #include <functional>
@@ -17,10 +17,10 @@ namespace network {
 class EthernetClient;
 
 // Holds all the state needed for a connection.
-struct ConnectionHolder final {
-  ConnectionHolder() = default;
+struct ConnectionState final {
+  ConnectionState() = default;
 
-  ~ConnectionHolder() {
+  ~ConnectionState() {
     if (removeFunc != nullptr) {
       removeFunc(this);
     }
@@ -43,7 +43,7 @@ struct ConnectionHolder final {
   }
 
   // Holds the client that holds this object. This is necessary because
-  // currently, the callbacks only know about ConnectionHolder (the state).
+  // currently, the callbacks only know about ConnectionState.
   // I don't love this.
   EthernetClient *client = nullptr;
 
@@ -54,10 +54,10 @@ struct ConnectionHolder final {
   volatile int inBufPos = 0;
 
   // Called when this has been removed from the TCP stack.
-  std::function<void(ConnectionHolder *)> removeFunc = nullptr;
+  std::function<void(ConnectionState *)> removeFunc = nullptr;
 };
 
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_CONNECTIONHOLDER_H_
+#endif  // QNE_CONNECTIONSTATE_H_

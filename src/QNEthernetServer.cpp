@@ -44,11 +44,11 @@ err_t EthernetServer::acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err) {
   // TODO: Lock if not single-threaded
 
   // See: https://quuxplusone.github.io/blog/2021/03/03/push-back-emplace-back/
-  ConnectionHolder *state = new ConnectionHolder();
+  ConnectionState *state = new ConnectionState();
   state->init(nullptr, newpcb, &EthernetClient::recvFunc, &EthernetClient::errFunc);
   // state->connecting = false;
   // state->connected = true;
-  state->removeFunc = [server](ConnectionHolder *state) {
+  state->removeFunc = [server](ConnectionState *state) {
     auto it = std::find(server->clients_.begin(), server->clients_.end(), state);
     if (it != server->clients_.end()) {
       server->clients_.erase(it);
@@ -105,7 +105,7 @@ void EthernetServer::begin() {
 EthernetClient EthernetServer::accept() {
   // TODO: Lock if not single-threaded
   for (auto it = clients_.begin(); it != clients_.end(); ++it) {
-    ConnectionHolder *state = *it;
+    ConnectionState *state = *it;
     clients_.erase(it);
     state->removeFunc = nullptr;  // The state is already removed
     return EthernetClient{state, false};

@@ -39,7 +39,7 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
     return ERR_VAL;
   }
 
-  ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionState *state = reinterpret_cast<ConnectionState *>(arg);
 
   // TODO: Tell client what the error was
 
@@ -74,7 +74,7 @@ void EthernetClient::errFunc(void *arg, err_t err) {
     return;
   }
 
-  ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionState *state = reinterpret_cast<ConnectionState *>(arg);
 
   // TODO: Tell client what the error was
 
@@ -107,7 +107,7 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
     return ERR_VAL;
   }
 
-  ConnectionHolder *state = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionState *state = reinterpret_cast<ConnectionState *>(arg);
 
   // Check for any errors, and if so, clean up
   if (p == nullptr || err != ERR_OK) {
@@ -180,7 +180,7 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
 EthernetClient::EthernetClient() : EthernetClient(nullptr, false) {}
 
-EthernetClient::EthernetClient(ConnectionHolder *state, bool externallyManaged)
+EthernetClient::EthernetClient(ConnectionState *state, bool externallyManaged)
     : connected_(false),
       connTimeout_(1000),
       lookupHost_{},
@@ -192,7 +192,7 @@ EthernetClient::EthernetClient(ConnectionHolder *state, bool externallyManaged)
     connected_ = true;
 
     auto removeFn = state->removeFunc;
-    state->removeFunc = [removeFn](ConnectionHolder *state) {
+    state->removeFunc = [removeFn](ConnectionState *state) {
       if (removeFn != nullptr) {
         removeFn(state);
       }
@@ -252,8 +252,8 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   }
 
   std::atomic_signal_fence(std::memory_order_acquire);
-  state_ = new ConnectionHolder();
-  state_->removeFunc = [](ConnectionHolder *state) {
+  state_ = new ConnectionState();
+  state_->removeFunc = [](ConnectionState *state) {
     // Unlink this state
     if (state->client != nullptr) {
       state->client->state_ = nullptr;

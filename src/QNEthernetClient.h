@@ -93,7 +93,7 @@ class EthernetClient final : public Client {
   //
   // The `externallyManaged` parameter indicates that an external party will
   // take care of stopping the connection and freeing the object.
-  EthernetClient(ConnectionHolder *state, bool externallyManaged);
+  EthernetClient(ConnectionState *state, bool externallyManaged);
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
@@ -117,7 +117,7 @@ class EthernetClient final : public Client {
   IPAddress lookupIP_;  // Set by a DNS lookup
   volatile bool lookupFound_;
 
-  ConnectionHolder *state_;
+  ConnectionState *state_;
   bool stateExternallyManaged_;  // Indicates if we shouldn't close
                                  // the connection
 
