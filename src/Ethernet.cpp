@@ -100,6 +100,8 @@ int EthernetClass::begin(const uint8_t mac[6]) {
   return begin();
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip) {
   begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
         IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
@@ -123,6 +125,7 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
   begin(ip, subnet, gateway);
   setDNSServerIP(dns);
 }
+#pragma GCC diagnostic pop
 
 void EthernetClass::end() {
   if (netif_ == nullptr) {
