@@ -306,7 +306,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
         // NOTE: Depends on Ethernet loop being called from yield()
         delay(10);
         std::atomic_signal_fence(std::memory_order_acquire);
-      } while (lookupIP_ == INADDR_NONE && timer < connTimeout_);
+      } while (lookupIP_ == INADDR_NONE && timer < 2000);
       if (lookupFound_) {
         return connect(lookupIP_, port);
       }
