@@ -1,7 +1,7 @@
 // EthernetClient implementation.
 // (c) 2021 Shawn Silverman
 
-#include "EthernetClient.h"
+#include "QNEthernetClient.h"
 
 // C++ includes
 #include <algorithm>

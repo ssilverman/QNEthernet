@@ -1,4 +1,4 @@
-// MDNS.h defines an mDNS implementation.
+// QNMDNS.h defines an mDNS implementation.
 // (c) 2021 Shawn Silverman
 
 #ifndef MDNS_H_

@@ -1,7 +1,7 @@
 // EthernetUDP implementation.
 // (c) 2021 Shawn Silverman
 
-#include "EthernetUDP.h"
+#include "QNEthernetUDP.h"
 
 // C++ includes
 #include <algorithm>

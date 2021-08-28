@@ -1,4 +1,4 @@
-// EthernetClient.h defines the TCP client interface.
+// QNEthernetClient.h defines the TCP client interface.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETCLIENT_H_

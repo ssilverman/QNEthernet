@@ -1,7 +1,7 @@
 // EthernetServer implementation.
 // (c) 2021 Shawn Silverman
 
-#include "EthernetServer.h"
+#include "QNEthernetServer.h"
 
 // C++ includes
 #include <algorithm>

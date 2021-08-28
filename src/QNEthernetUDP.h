@@ -1,4 +1,4 @@
-// EthernetUDP.h defines the UDP interface.
+// QNEthernetUDP.h defines the UDP interface.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETUDP_H_

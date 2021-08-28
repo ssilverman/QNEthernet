@@ -1,4 +1,4 @@
-// EthernetServer.h defines the TCP server interface.
+// QNEthernetServer.h defines the TCP server interface.
 // (c) 2021 Shawn Silverman
 
 #ifndef ETHERNETSERVER_H_
@@ -11,7 +11,8 @@
 #include <Client.h>
 #include <Server.h>
 #include <lwip/tcp.h>
-#include "EthernetClient.h"
+#include "ConnectionHolder.h"
+#include "QNEthernetClient.h"
 
 namespace qindesign {
 namespace network {

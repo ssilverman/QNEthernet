@@ -11,6 +11,8 @@
 #include <elapsedMillis.h>
 #include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>
+#include "QNEthernetClient.h"
+#include "QNEthernetServer.h"
 
 namespace qindesign {
 namespace network {

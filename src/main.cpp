@@ -1,5 +1,4 @@
 // C++ includes
-#include <cstdlib>
 #include <utility>
 
 #include <Arduino.h>
@@ -9,11 +8,9 @@
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
 
-#include "Ethernet.h"
-#include "EthernetClient.h"
-#include "EthernetServer.h"
-#include "EthernetUDP.h"
-#include "MDNS.h"
+#include "QNEthernet.h"
+#include "QNEthernetUDP.h"
+#include "QNMDNS.h"
 #include "OSC.h"
 
 namespace qn = ::qindesign::network;

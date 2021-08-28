@@ -1,7 +1,7 @@
-// MDNS.cpp implements MDNS.
+// QMMDNS.cpp implements MDNS.
 // (c) 2021 Shawn Silverman
 
-#include "MDNS.h"
+#include "QNMDNS.h"
 
 #include <lwip/apps/mdns.h>
 

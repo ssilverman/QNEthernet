@@ -1,7 +1,7 @@
 // Teensy 4.1 Ethernet implementation.
 // (c) 2021 Shawn Silverman
 
-#include "Ethernet.h"
+#include "QNEthernet.h"
 
 // C++ includes
 #include <algorithm>
