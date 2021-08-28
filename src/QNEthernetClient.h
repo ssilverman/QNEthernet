@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef ETHERNETCLIENT_H_
-#define ETHERNETCLIENT_H_
+#ifndef QNE_ETHERNETCLIENT_H_
+#define QNE_ETHERNETCLIENT_H_
 
 // C++ includes
 #include <memory>
@@ -132,4 +132,4 @@ class EthernetClient final : public Client {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // ETHERNETCLIENT_H_
+#endif  // QNE_ETHERNETCLIENT_H_

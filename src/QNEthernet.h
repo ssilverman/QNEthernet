@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef ETHERNET_H_
-#define ETHERNET_H_
+#ifndef QNE_ETHERNET_H_
+#define QNE_ETHERNET_H_
 
 // C++ includes
 #include <cstdint>
@@ -94,4 +94,4 @@ class EthernetClass final {
 
 extern qindesign::network::EthernetClass Ethernet;
 
-#endif  // ETHERNET_H_
+#endif  // QNE_ETHERNET_H_

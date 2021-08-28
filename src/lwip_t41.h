@@ -3,8 +3,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef LWIP_T41_H_
-#define LWIP_T41_H_
+#ifndef QNE_LWIP_T41_H_
+#define QNE_LWIP_T41_H_
 
 #ifdef ARDUINO_TEENSY41
 
@@ -55,4 +55,4 @@ uint32_t read_1588_timer();
 
 #endif  // ARDUINO_TEENSY41
 
-#endif  // LWIP_T41_H_
+#endif  // QNE_LWIP_T41_H_

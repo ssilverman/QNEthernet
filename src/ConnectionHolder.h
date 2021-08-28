@@ -1,8 +1,9 @@
 // ConnectionHolder.h defines all the data needed to host a connection.
+// This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef CONNECTIONHOLDER_H_
-#define CONNECTIONHOLDER_H_
+#ifndef QNE_CONNECTIONHOLDER_H_
+#define QNE_CONNECTIONHOLDER_H_
 
 // C++ includes
 #include <functional>
@@ -59,4 +60,4 @@ struct ConnectionHolder final {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // CONNECTIONHOLDER_H_
+#endif  // QNE_CONNECTIONHOLDER_H_

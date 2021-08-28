@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef ETHERNETUDP_H_
-#define ETHERNETUDP_H_
+#ifndef QNE_ETHERNETUDP_H_
+#define QNE_ETHERNETUDP_H_
 
 // C++ includes
 #include <cstdint>
@@ -83,4 +83,4 @@ class EthernetUDP final : public UDP {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // #ifndef ETHERNETUDP_H_
+#endif  // #ifndef QNE_ETHERNETUDP_H_

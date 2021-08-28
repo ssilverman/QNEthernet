@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef MDNS_H_
-#define MDNS_H_
+#ifndef QNE_MDNS_H_
+#define QNE_MDNS_H_
 
 // C++ includes
 #include <memory>
@@ -54,4 +54,4 @@ class MDNS final {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // MDNS_H_
+#endif  // QNE_MDNS_H_

@@ -2,8 +2,8 @@
 // This file is part of the QNEthernet library.
 // (c) 2021 Shawn Silverman
 
-#ifndef ETHERNETSERVER_H_
-#define ETHERNETSERVER_H_
+#ifndef QNE_ETHERNETSERVER_H_
+#define QNE_ETHERNETSERVER_H_
 
 // C++ includes
 #include <vector>
@@ -54,4 +54,4 @@ class EthernetServer final : public Server {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // ETHERNETSERVER_H_
+#endif  // QNE_ETHERNETSERVER_H_
