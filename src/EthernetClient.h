@@ -70,6 +70,10 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
+  uint16_t localPort() const;
+  IPAddress remoteIP() const;
+  uint16_t remotePort() const;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
   int availableForWrite() override;

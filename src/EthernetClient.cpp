@@ -342,6 +342,36 @@ void EthernetClient::stop() {
   std::atomic_signal_fence(std::memory_order_release);
 }
 
+uint16_t EthernetClient::localPort() const {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    return 0;
+  }
+
+  return state_->pcb->local_port;
+}
+
+IPAddress EthernetClient::remoteIP() const {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    return INADDR_NONE;
+  }
+
+  return state_->pcb->remote_ip.addr;
+}
+
+uint16_t EthernetClient::remotePort() const {
+  // TODO: Lock if not single-threaded
+  std::atomic_signal_fence(std::memory_order_acquire);
+  if (state_ == nullptr) {
+    return 0;
+  }
+
+  return state_->pcb->remote_port;
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
