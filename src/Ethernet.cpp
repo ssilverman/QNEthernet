@@ -31,11 +31,11 @@ Ethernet::~Ethernet() {
   end();
 }
 
-void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) {
+void Ethernet::macAddress(uint8_t mac[kMACAddrSize]) const {
   std::copy_n(mac_, kMACAddrSize, mac);
 }
 
-int Ethernet::mtu() {
+int Ethernet::mtu() const {
   return kMTU;
 }
 
@@ -85,35 +85,35 @@ void Ethernet::end() {
   enet_deinit();
 }
 
-bool Ethernet::linkStatus() {
+bool Ethernet::linkStatus() const {
   if (netif_ == nullptr) {
     return false;
   }
   return netif_is_link_up(netif_);
 }
 
-IPAddress Ethernet::localIP() {
+IPAddress Ethernet::localIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_addr4(netif_)->addr};
 }
 
-IPAddress Ethernet::subnetMask() {
+IPAddress Ethernet::subnetMask() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_netmask4(netif_)->addr};
 }
 
-IPAddress Ethernet::gatewayIP() {
+IPAddress Ethernet::gatewayIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return IPAddress{netif_ip_gw4(netif_)->addr};
 }
 
-IPAddress Ethernet::dnsServerIP() {
+IPAddress Ethernet::dnsServerIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }

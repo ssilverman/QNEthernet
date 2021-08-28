@@ -25,10 +25,10 @@ class Ethernet final {
   ~Ethernet();
 
   // Retrieve the MAC address.
-  void macAddress(uint8_t mac[kMACAddrSize]);
+  void macAddress(uint8_t mac[kMACAddrSize]) const;
 
   // Get the MTU.
-  int mtu();
+  int mtu() const;
 
   // Call often.
   void loop();
@@ -41,12 +41,12 @@ class Ethernet final {
   // Shut down the Ethernet peripheral(s).
   void end();
 
-  bool linkStatus();
+  bool linkStatus() const;
 
-  IPAddress localIP();
-  IPAddress subnetMask();
-  IPAddress gatewayIP();
-  IPAddress dnsServerIP();
+  IPAddress localIP() const;
+  IPAddress subnetMask() const;
+  IPAddress gatewayIP() const;
+  IPAddress dnsServerIP() const;
   void setLocalIP(const IPAddress &localIP);
   void setSubnetMask(const IPAddress &subnetMask);
   void setGatewayIP(const IPAddress &gatewayIP);
