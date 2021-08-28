@@ -19,8 +19,6 @@ namespace network {
 // Subtract UDP header size and minimum IPv4 header size.
 const size_t kMaxUDPSize = kMTU - 8 - 20;
 
-static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
-
 void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                void *callback_arg) {
   if (callback_arg == nullptr || ipaddr == nullptr) {

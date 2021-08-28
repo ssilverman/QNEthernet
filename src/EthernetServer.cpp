@@ -11,8 +11,6 @@
 namespace qindesign {
 namespace network {
 
-static std::atomic_flag lock_ = ATOMIC_FLAG_INIT;
-
 // err_t EthernetServer::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 //                                err_t err) {
 //   EthernetServer *server = reinterpret_cast<EthernetServer *>(arg);

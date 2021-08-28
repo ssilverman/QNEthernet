@@ -16,9 +16,6 @@
 namespace qindesign {
 namespace network {
 
-static std::atomic_flag bufLock_ = ATOMIC_FLAG_INIT;
-static std::atomic_flag connectionLock_ = ATOMIC_FLAG_INIT;
-
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
   if (callback_arg == nullptr || ipaddr == nullptr) {
