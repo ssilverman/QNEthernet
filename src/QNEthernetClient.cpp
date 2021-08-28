@@ -85,8 +85,10 @@ void EthernetClient::errFunc(void *arg, err_t err) {
     std::atomic_signal_fence(std::memory_order_release);
   }
   if (err != ERR_OK) {
-    if (tcp_close(state->pcb) != ERR_OK) {
-      tcp_abort(state->pcb);
+    if (err != ERR_CLSD && err != ERR_ABRT) {
+      if (tcp_close(state->pcb) != ERR_OK) {
+        tcp_abort(state->pcb);
+      }
     }
 
     // Copy any buffered data
@@ -126,9 +128,11 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
     delete state;
     std::atomic_signal_fence(std::memory_order_release);
-    if (tcp_close(tpcb) != ERR_OK) {
-      tcp_abort(tpcb);
-      return ERR_ABRT;
+    if (err != ERR_CLSD && err != ERR_ABRT) {
+      if (tcp_close(tpcb) != ERR_OK) {
+        tcp_abort(tpcb);
+        return ERR_ABRT;
+      }
     }
     return ERR_OK;
   }
@@ -225,6 +229,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     if (tcp_close(state_->pcb) != ERR_OK) {
       tcp_abort(state_->pcb);
     }
+    state_ = nullptr;
     // state_->pcb = nullptr;  // Reuse the state
   }
 
@@ -247,15 +252,13 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   }
 
   std::atomic_signal_fence(std::memory_order_acquire);
-  if (state_ == nullptr) {
-    state_ = new ConnectionHolder();
-    state_->removeFunc = [](ConnectionHolder *state) {
-      // Unlink this state
-      if (state->client != nullptr) {
-        state->client->state_ = nullptr;
-      }
-    };
-  }
+  state_ = new ConnectionHolder();
+  state_->removeFunc = [](ConnectionHolder *state) {
+    // Unlink this state
+    if (state->client != nullptr) {
+      state->client->state_ = nullptr;
+    }
+  };
   state_->init(this, pcb, &recvFunc, &errFunc);
 
   // Try to connect
@@ -267,7 +270,24 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     std::atomic_signal_fence(std::memory_order_release);
     return false;
   }
-  std::atomic_signal_fence(std::memory_order_release);
+
+  // Wait for a connection
+  elapsedMillis timer;
+  do {
+    // NOTE: Depends on Ethernet loop being called from yield()
+    delay(10);
+    std::atomic_signal_fence(std::memory_order_acquire);
+  } while (!connected_ && timer < connTimeout_);
+  if (!connected_) {
+    if (tcp_close(pcb) != ERR_OK) {
+      tcp_abort(pcb);
+    }
+    // TODO: Delete state_?
+    state_ = nullptr;
+    std::atomic_signal_fence(std::memory_order_release);
+    return false;
+  }
+
   return true;
 }
 
