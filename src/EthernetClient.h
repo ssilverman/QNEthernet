@@ -32,7 +32,6 @@ class EthernetClient final : public Client {
   EthernetClient &operator=(const EthernetClient &) = delete;
 
   EthernetClient(EthernetClient &&other) {
-    connecting_ = other.connecting_;
     connected_ = other.connected_;
     connTimeout_ = other.connTimeout_;
     state_ = other.state_;
@@ -47,7 +46,6 @@ class EthernetClient final : public Client {
   }
 
   EthernetClient &operator=(EthernetClient &&other) {
-    connecting_ = other.connecting_;
     connected_ = other.connected_;
     connTimeout_ = other.connTimeout_;
     state_ = other.state_;
@@ -106,7 +104,6 @@ class EthernetClient final : public Client {
   void maybeCopyRemaining();
 
   // Connection state
-  volatile bool connecting_ = false;
   volatile bool connected_ = false;
   uint16_t connTimeout_;
 

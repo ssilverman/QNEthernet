@@ -61,7 +61,6 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (state->client != nullptr) {
-    state->client->connecting_ = false;
     state->client->connected_ = (err == ERR_OK);
     std::atomic_signal_fence(std::memory_order_release);
   }
@@ -99,7 +98,6 @@ void EthernetClient::errFunc(void *arg, err_t err) {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (state->client != nullptr) {
-    state->client->connecting_ = false;
     state->client->connected_ = (err == ERR_OK);
     std::atomic_signal_fence(std::memory_order_release);
   }
@@ -167,7 +165,6 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   if (state->client != nullptr) {
-    state->client->connecting_ = false;
     state->client->connected_ = (err == ERR_OK);
   }
 
@@ -214,7 +211,6 @@ EthernetClient::EthernetClient(ConnectionHolder *state, bool externallyManaged)
       stateExternallyManaged_(externallyManaged),
       remainingPos_(0) {
   if (state != nullptr) {
-    connecting_ = false;
     connected_ = true;
 
     auto removeFn = state->removeFunc;
@@ -244,7 +240,6 @@ EthernetClient::~EthernetClient() {
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   // First close any existing connection
   // TODO: Lock if not single-threaded
-  connecting_ = false;
   connected_ = false;
   remainingPos_ = 0;
   remaining_.clear();
@@ -290,7 +285,6 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   state_->init(this, pcb, &recvFunc, &errFunc);
 
   // Try to connect
-  connecting_ = true;
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (tcp_connect(pcb, &ipaddr, port, &connectedFunc) != ERR_OK) {
     tcp_abort(pcb);  // TODO: Should we abort here or do nothing?
@@ -336,7 +330,7 @@ uint8_t EthernetClient::connected() {
   if (remaining_.empty() && state_ == nullptr) {
     return false;
   }
-  return !remaining_.empty() || connecting_ || connected_;
+  return !remaining_.empty() || connected_;
 }
 
 EthernetClient::operator bool() {
@@ -368,7 +362,7 @@ void EthernetClient::stop() {
     do {
       // NOTE: Depends on Ethernet loop being called from yield()
       delay(10);
-    } while ((connecting_ || connected_) && timer < connTimeout_);
+    } while (connected_ && timer < connTimeout_);
   }
   // TODO: Delete state_?
   state_ = nullptr;
