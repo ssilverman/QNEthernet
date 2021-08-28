@@ -137,14 +137,18 @@ EthernetClient EthernetServer::accept() {
   return EthernetClient{};
 }
 
+// Check if there's data available in the buffer.
+inline bool isAvailable(const ConnectionState *state) {
+  return (state != nullptr &&
+          0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
+}
+
 EthernetClient EthernetServer::available() {
   // TODO: Lock if not single-threaded
   std::atomic_signal_fence(std::memory_order_acquire);
   for (auto &holder : clients_) {
     const ConnectionState *state = holder->state;
-    if (state == nullptr ||
-        state->inBufPos < 0 ||
-        state->inBuf.size() <= static_cast<size_t>(state->inBufPos)) {
+    if (!isAvailable(state)) {
       continue;
     }
     return EthernetClient{holder};

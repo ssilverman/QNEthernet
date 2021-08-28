@@ -19,8 +19,9 @@ struct ConnectionHolder final {
 
   // Remaining data after a connection is closed
   // Will only be non-empty after the connection is closed
-  volatile int remainingPos = 0;
+  volatile size_t remainingPos = 0;
   std::vector<unsigned char> remaining;
+  // `remainingPos` should never be past the end of `remaining`
 };
 
 }  // namespace network

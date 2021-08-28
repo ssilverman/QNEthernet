@@ -60,11 +60,10 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
   return ERR_OK;
 }
 
-// Check if there's data still available in the buffer.
+// Check if there's data available in the buffer.
 inline bool isAvailable(const ConnectionState *state) {
   return (state != nullptr &&
-          0 <= state->inBufPos &&
-          static_cast<size_t>(state->inBufPos) < state->inBuf.size());
+          0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
 }
 
 // Copy any remaining data from the state to the "remaining" buffer.
@@ -474,9 +473,9 @@ int EthernetClient::read() {
   std::atomic_signal_fence(std::memory_order_acquire);
   if (!pHolder_->remaining.empty()) {
     int c = pHolder_->remaining[pHolder_->remainingPos++];
-    if (static_cast<size_t>(pHolder_->remainingPos) >=
-        pHolder_->remaining.size()) {
+    if (pHolder_->remainingPos >= pHolder_->remaining.size()) {
       pHolder_->remaining.clear();
+      pHolder_->remainingPos = 0;
     }
     return c;
   }
@@ -497,12 +496,12 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   std::atomic_signal_fence(std::memory_order_acquire);
   auto &rem = pHolder_->remaining;
   if (!rem.empty()) {
-    size = std::min(size,
-                    rem.size() - static_cast<size_t>(pHolder_->remainingPos));
+    size = std::min(size, rem.size() - pHolder_->remainingPos);
     std::copy_n(rem.cbegin() + pHolder_->remainingPos, size, buf);
     pHolder_->remainingPos += size;
-    if (static_cast<size_t>(pHolder_->remainingPos) >= rem.size()) {
+    if (pHolder_->remainingPos >= rem.size()) {
       pHolder_->remaining.clear();
+      pHolder_->remainingPos = 0;
     }
     std::atomic_signal_fence(std::memory_order_release);
     return size;

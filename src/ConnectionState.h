@@ -42,7 +42,7 @@ struct ConnectionState final {
 
   // Incoming buffer
   std::vector<unsigned char> inBuf;
-  volatile int inBufPos = 0;
+  volatile size_t inBufPos = 0;
 
   // Called when this has been removed from the TCP stack.
   std::function<void(ConnectionState *)> removeFunc = nullptr;
