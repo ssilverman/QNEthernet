@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <atomic>
 
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
@@ -28,11 +27,9 @@ void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
   EthernetClient *client = reinterpret_cast<EthernetClient *>(callback_arg);
 
   // Also check the host name in case there was some previous request pending
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (client->lookupHost_ == name) {
     client->lookupIP_ = ipaddr->addr;
     client->lookupFound_ = true;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 }
 
@@ -47,7 +44,6 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
 
   // TODO: Lock if not single-threaded
   holder->connected = (err == ERR_OK);
-  std::atomic_signal_fence(std::memory_order_release);
 
   if (holder->state != nullptr && err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {
@@ -57,7 +53,6 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
     }
     delete holder->state;
     holder->state = nullptr;
-    std::atomic_signal_fence(std::memory_order_release);
   }
   return ERR_OK;
 }
@@ -70,7 +65,6 @@ inline bool isAvailable(const ConnectionState *state) {
 
 // Copy any remaining data from the state to the "remaining" buffer.
 void maybeCopyRemaining(ConnectionHolder *holder) {
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (isAvailable(holder->state)) {
     holder->remaining.clear();
     holder->remaining.insert(
@@ -78,7 +72,6 @@ void maybeCopyRemaining(ConnectionHolder *holder) {
         holder->state->inBuf.cbegin() + holder->state->inBufPos,
         holder->state->inBuf.cend());
     holder->remainingPos = 0;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 }
 
@@ -93,7 +86,6 @@ void EthernetClient::errFunc(void *arg, err_t err) {
 
   // TODO: Lock if not single-threaded
   holder->connected = (err == ERR_OK);
-  std::atomic_signal_fence(std::memory_order_acq_rel);
 
   if (holder->state != nullptr && err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {
@@ -107,7 +99,6 @@ void EthernetClient::errFunc(void *arg, err_t err) {
 
     delete holder->state;
     holder->state = nullptr;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 }
 
@@ -135,11 +126,9 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
     // Copy any buffered data
     maybeCopyRemaining(holder);
 
-    std::atomic_signal_fence(std::memory_order_acquire);
     if (holder->state != nullptr) {
       delete holder->state;
       holder->state = nullptr;
-      std::atomic_signal_fence(std::memory_order_release);
 
       if (err != ERR_CLSD && err != ERR_ABRT) {
         if (tcp_close(tpcb) != ERR_OK) {
@@ -155,7 +144,6 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
   // TODO: Lock if not single-threaded
   holder->connected = true;
-  std::atomic_signal_fence(std::memory_order_acq_rel);
 
   ConnectionState *state = holder->state;
   if (state != nullptr) {
@@ -187,7 +175,6 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
       v.insert(v.end(), &data[0], &data[p->len]);
       p = p->next;
     }
-    std::atomic_signal_fence(std::memory_order_release);
 
     tcp_recved(tpcb, pHead->tot_len);
     pbuf_free(pHead);
@@ -230,7 +217,6 @@ EthernetClient::~EthernetClient() {
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   // First close any existing connection
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (pHolder_->state != nullptr) {
     // Re-connect, even if to the same destination
     if (tcp_close(pHolder_->state->pcb) != ERR_OK) {
@@ -244,7 +230,6 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   pHolder_->connected = false;
   pHolder_->remainingPos = 0;
   pHolder_->remaining.clear();
-  std::atomic_signal_fence(std::memory_order_release);
 
   // Try to allocate
   tcp_pcb *pcb = tcp_new();
@@ -260,7 +245,6 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 
   pHolder_->state = new ConnectionState(pcb);
   pHolder_->state->connect(pHolder_, &recvFunc, &errFunc);
-  std::atomic_signal_fence(std::memory_order_release);
 
   // Try to connect
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
@@ -274,7 +258,6 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   do {
     // NOTE: Depends on Ethernet loop being called from yield()
     delay(10);
-    std::atomic_signal_fence(std::memory_order_acquire);
   } while (!pHolder_->connected && timer < connTimeout_);
   if (!pHolder_->connected) {
     if (tcp_close(pcb) != ERR_OK) {
@@ -291,7 +274,6 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   lookupHost_ = host;
   lookupIP_ = INADDR_NONE;
   lookupFound_ = false;
-  std::atomic_signal_fence(std::memory_order_release);
   switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
     case ERR_OK:
       return connect(addr.addr, port);
@@ -300,7 +282,6 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       do {
         // NOTE: Depends on Ethernet loop being called from yield()
         delay(10);
-        std::atomic_signal_fence(std::memory_order_acquire);
       } while (lookupIP_ == INADDR_NONE && timer < 2000);
       if (lookupFound_) {
         return connect(lookupIP_, port);
@@ -315,12 +296,11 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 
 uint8_t EthernetClient::connected() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   return !pHolder_->remaining.empty() || pHolder_->connected;
 }
 
 EthernetClient::operator bool() {
-  std::atomic_signal_fence(std::memory_order_acquire);
+  // TODO: Lock if not single-threaded
   return pHolder_->connected;
 }
 
@@ -330,7 +310,6 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
 
 void EthernetClient::stop() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     // This can happen if this object was moved to another
@@ -351,7 +330,6 @@ void EthernetClient::stop() {
 
 uint16_t EthernetClient::localPort() const {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return 0;
@@ -361,7 +339,6 @@ uint16_t EthernetClient::localPort() const {
 
 IPAddress EthernetClient::remoteIP() const {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return INADDR_NONE;
@@ -371,7 +348,6 @@ IPAddress EthernetClient::remoteIP() const {
 
 uint16_t EthernetClient::remotePort() const {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return 0;
@@ -385,7 +361,6 @@ uint16_t EthernetClient::remotePort() const {
 
 size_t EthernetClient::write(uint8_t b) {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return 0;
@@ -406,7 +381,6 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   }
 
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return 0;
@@ -429,7 +403,6 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
 int EthernetClient::availableForWrite() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return 0;
@@ -439,7 +412,6 @@ int EthernetClient::availableForWrite() {
 
 void EthernetClient::flush() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   const ConnectionState *state = pHolder_->state;
   if (state == nullptr) {
     return;
@@ -453,7 +425,6 @@ void EthernetClient::flush() {
 
 int EthernetClient::available() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (!pHolder_->remaining.empty()) {
     return pHolder_->remaining.size() - pHolder_->remainingPos;
   }
@@ -467,7 +438,6 @@ int EthernetClient::available() {
 
 int EthernetClient::read() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (!pHolder_->remaining.empty()) {
     int c = pHolder_->remaining[pHolder_->remainingPos++];
     if (pHolder_->remainingPos >= pHolder_->remaining.size()) {
@@ -490,7 +460,6 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   }
 
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   auto &rem = pHolder_->remaining;
   if (!rem.empty()) {
     size = std::min(size, rem.size() - pHolder_->remainingPos);
@@ -500,7 +469,6 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
       pHolder_->remaining.clear();
       pHolder_->remainingPos = 0;
     }
-    std::atomic_signal_fence(std::memory_order_release);
     return size;
   }
 
@@ -511,13 +479,11 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   size = std::min(size, state->inBuf.size() - state->inBufPos);
   std::copy_n(&state->inBuf.data()[state->inBufPos], size, buf);
   state->inBufPos += size;
-  std::atomic_signal_fence(std::memory_order_release);
   return size;
 }
 
 int EthernetClient::peek() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (!pHolder_->remaining.empty()) {
     return pHolder_->remaining[pHolder_->remainingPos];
   }

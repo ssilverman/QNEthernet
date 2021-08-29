@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <atomic>
 #include <utility>
 
 namespace qindesign {
@@ -26,13 +25,11 @@ void EthernetServer::errFunc(void *arg, err_t err) {
   if (err != ERR_OK) {
     // TODO: Lock if not single-threaded
     if (err != ERR_CLSD && err != ERR_ABRT) {
-      std::atomic_signal_fence(std::memory_order_acquire);
       if (tcp_close(server->pcb_) != ERR_OK) {
         tcp_abort(server->pcb_);
       }
     }
     server->pcb_ = nullptr;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 }
 
@@ -50,7 +47,6 @@ err_t EthernetServer::acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err) {
   // See: https://quuxplusone.github.io/blog/2021/03/03/push-back-emplace-back/
 
   server->clients_.push_back(new ConnectionHolder());
-  std::atomic_signal_fence(std::memory_order_acq_rel);
   auto &holder = server->clients_.back();
   holder->connected = true;
   holder->state = new ConnectionState(newpcb);
@@ -60,17 +56,14 @@ err_t EthernetServer::acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err) {
   const ConnectionHolder *pHolder = holder;
   holder->state->removeFunc = [server, pHolder](ConnectionState *state) {
     // TODO: Lock if not single-threaded
-    std::atomic_signal_fence(std::memory_order_acquire);
     auto it = std::find_if(server->clients_.cbegin(), server->clients_.cend(),
                            [pHolder](const auto &holder) {
                              return holder == pHolder;
                            });
     if (it != server->clients_.cend()) {
       server->clients_.erase(it);
-      std::atomic_signal_fence(std::memory_order_release);
     }
   };
-  std::atomic_signal_fence(std::memory_order_release);
 
   // Add a receive listener so we can see who has data available
   // tcp_arg(newpcb, server);
@@ -119,7 +112,6 @@ void EthernetServer::begin() {
 
 EthernetClient EthernetServer::accept() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   while (!clients_.empty()) {
     for (auto it = clients_.begin(); it != clients_.end(); ++it) {
       auto *holder = *it;
@@ -131,11 +123,9 @@ EthernetClient EthernetServer::accept() {
         break;
       }
       state->removeFunc = nullptr;  // The holder is already removed
-      std::atomic_signal_fence(std::memory_order_release);
       return EthernetClient{state};
     }
   }
-  std::atomic_signal_fence(std::memory_order_release);
   return EthernetClient{};
 }
 
@@ -147,7 +137,6 @@ inline bool isAvailable(const ConnectionState *state) {
 
 EthernetClient EthernetServer::available() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   for (auto &holder : clients_) {
     const ConnectionState *state = holder->state;
     if (!isAvailable(state)) {
@@ -159,13 +148,11 @@ EthernetClient EthernetServer::available() {
 }
 
 EthernetServer::operator bool() {
-  std::atomic_signal_fence(std::memory_order_acquire);
   return (pcb_ != nullptr);
 }
 
 size_t EthernetServer::write(uint8_t b) {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   for (const auto &holder : clients_) {
     const ConnectionState *state = holder->state;
     if (state == nullptr) {
@@ -190,7 +177,6 @@ size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
   }
   uint16_t size16 = size;
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   for (const auto &holder : clients_) {
     const ConnectionState *state = holder->state;
     if (state == nullptr) {

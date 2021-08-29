@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <atomic>
 
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
@@ -31,11 +30,9 @@ void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
   EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(callback_arg);
 
   // Also check the host name in case there was some previous request pending
-  std::atomic_signal_fence(std::memory_order_acquire);
   if (udp->lookupHost_ == name) {
     udp->lookupIP_ = ipaddr->addr;
     udp->lookupFound_ = true;
-    std::atomic_signal_fence(std::memory_order_release);
   }
 }
 
@@ -65,7 +62,6 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   }
   udp->inAddr_ = addr->addr;
   udp->inPort_ = port;
-  std::atomic_signal_fence(std::memory_order_release);
 
   pbuf_free(pHead);
 }
@@ -157,7 +153,6 @@ int EthernetUDP::parsePacket() {
   }
 
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   packet_ = inPacket_;
   inPacket_.clear();
 
@@ -215,13 +210,11 @@ void EthernetUDP::flush() {
 
 IPAddress EthernetUDP::remoteIP() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   return inAddr_;
 }
 
 uint16_t EthernetUDP::remotePort() {
   // TODO: Lock if not single-threaded
-  std::atomic_signal_fence(std::memory_order_acquire);
   return inPort_;
 }
 
@@ -251,7 +244,6 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
   lookupHost_ = host;
   lookupIP_ = INADDR_NONE;
   lookupFound_ = false;
-  std::atomic_signal_fence(std::memory_order_release);
   switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
     case ERR_OK:
       return beginPacket(addr.addr, port);
@@ -260,7 +252,6 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
       do {
         // NOTE: Depends on Ethernet loop being called from yield()
         delay(10);
-        std::atomic_signal_fence(std::memory_order_acquire);
       } while (lookupIP_ == INADDR_NONE && timer < 2000);
       if (lookupFound_) {
         return beginPacket(lookupIP_, port);
