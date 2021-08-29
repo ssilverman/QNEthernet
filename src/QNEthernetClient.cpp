@@ -317,6 +317,10 @@ void EthernetClient::stop() {
     return;
   }
 
+  // First try to flush any data
+  // TODO: Should we wait a little bit?
+  tcp_output(state->pcb);
+
   if (tcp_close(state->pcb) != ERR_OK) {
     tcp_abort(state->pcb);
   } else {
