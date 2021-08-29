@@ -13,7 +13,6 @@
 
 #include <WString.h>
 #include <lwip/netif.h>
-#include <lwipopts.h>
 
 namespace qindesign {
 namespace network {

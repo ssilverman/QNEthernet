@@ -13,7 +13,6 @@
 #include <lwip/dns.h>
 #include <lwip/netif.h>
 #include <lwip/tcp.h>
-#include <lwipopts.h>
 
 namespace qindesign {
 namespace network {

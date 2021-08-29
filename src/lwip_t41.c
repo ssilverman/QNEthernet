@@ -13,7 +13,6 @@
 #include <string.h>
 
 #include <core_pins.h>
-#include <lwipopts.h>
 #include <lwip/err.h>
 #include <lwip/etharp.h>
 #include <lwip/init.h>
