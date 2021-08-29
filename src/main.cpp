@@ -7,7 +7,6 @@
 
 #include <Arduino.h>
 
-#include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
