@@ -36,6 +36,10 @@ class EthernetUDP final : public UDP {
   int beginPacket(IPAddress ip, uint16_t port) override;
   int beginPacket(const char *host, uint16_t port) override;
   int endPacket() override;
+
+  // Bring Print::write functions into scope
+  using Print::write;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
 

@@ -29,6 +29,9 @@ class EthernetServer final : public Server {
   EthernetClient accept();
   EthernetClient available();
 
+  // Bring Print::write functions into scope
+  using Print::write;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
 

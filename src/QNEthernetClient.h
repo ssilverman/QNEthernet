@@ -80,6 +80,9 @@ class EthernetClient final : public Client {
   IPAddress remoteIP() const;
   uint16_t remotePort() const;
 
+  // Bring Print::write functions into scope
+  using Print::write;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
   int availableForWrite() override;
