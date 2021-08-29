@@ -13,6 +13,8 @@
 namespace qindesign {
 namespace network {
 
+// ConnectionHolder is effectively a connection proxy, useful because
+// connections need to be managed by both a server and client.
 struct ConnectionHolder final {
   volatile bool connected = false;
   ConnectionState *volatile state = nullptr;

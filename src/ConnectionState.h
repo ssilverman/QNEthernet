@@ -14,9 +14,7 @@
 namespace qindesign {
 namespace network {
 
-class EthernetClient;
-
-// Holds all the state needed for a connection.
+// ConnectionState holds all the state needed for a connection.
 struct ConnectionState final {
   ConnectionState(tcp_pcb *tpcb)
       : pcb(tpcb),
