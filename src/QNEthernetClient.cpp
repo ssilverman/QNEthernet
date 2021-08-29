@@ -18,6 +18,22 @@
 namespace qindesign {
 namespace network {
 
+// Use constants for the following delays and timeouts until we decide on
+// something better.
+
+// Polling interval when waiting for:
+// * Connection
+// * Stop connection
+// * DNS lookup
+static constexpr uint32_t kTimedWaitDelay = 10;
+
+// DNS lookup timeout.
+static constexpr uint32_t kDNSLookupTimeout =
+    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+
+// Delay when polling input or output.
+static constexpr uint32_t kIODelay = 10;
+
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
   if (callback_arg == nullptr || ipaddr == nullptr) {
@@ -257,7 +273,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   elapsedMillis timer;
   do {
     // NOTE: Depends on Ethernet loop being called from yield()
-    delay(10);
+    delay(kTimedWaitDelay);
   } while (!pHolder_->connected && timer < connTimeout_);
   if (!pHolder_->connected) {
     if (tcp_close(pcb) != ERR_OK) {
@@ -281,8 +297,8 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       elapsedMillis timer;
       do {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(10);
-      } while (lookupIP_ == INADDR_NONE && timer < 2000);
+        delay(kTimedWaitDelay);
+      } while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout);
       if (lookupFound_) {
         return connect(lookupIP_, port);
       }
@@ -327,7 +343,7 @@ void EthernetClient::stop() {
     elapsedMillis timer;
     do {
       // NOTE: Depends on Ethernet loop being called from yield()
-      delay(10);
+      delay(kTimedWaitDelay);
     } while (pHolder_->connected && timer < connTimeout_);
   }
 }
@@ -377,7 +393,7 @@ size_t EthernetClient::write(uint8_t b) {
 
     // Wait for some data to flush
     do {
-      delay(10);
+      delay(kIODelay);
     } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
     return 1;
   }
@@ -407,7 +423,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
     // Wait for some data to flush
     do {
-      delay(10);
+      delay(kIODelay);
     } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
     return size;
   }
@@ -433,7 +449,7 @@ void EthernetClient::flush() {
 
   // Wait for some data to flush
   do {
-    delay(10);
+    delay(kIODelay);
   } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
 }
 
@@ -451,7 +467,7 @@ int EthernetClient::available() {
   if (state == nullptr) {
     return 0;
   }
-  delay(10);  // Allow data to come in
+  delay(kIODelay);  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -473,7 +489,7 @@ int EthernetClient::read() {
   if (state == nullptr) {
     return 0;
   }
-  delay(10);  // Allow data to come in
+  delay(kIODelay);  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
@@ -502,7 +518,7 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   if (state == nullptr) {
     return 0;
   }
-  delay(10);  // Allow data to come in
+  delay(kIODelay);  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -522,7 +538,7 @@ int EthernetClient::peek() {
   if (state == nullptr) {
     return 0;
   }
-  delay(10);  // Allow data to come in
+  delay(kIODelay);  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
