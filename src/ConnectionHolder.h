@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // ConnectionHolder.h defines a proxy for connection state.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #ifndef QNE_CONNECTIONHOLDER_H_
 #define QNE_CONNECTIONHOLDER_H_

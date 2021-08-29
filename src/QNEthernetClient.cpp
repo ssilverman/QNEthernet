@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // QNEthernetClient.cpp contains the EthernetClient implementation.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #include "QNEthernetClient.h"
 

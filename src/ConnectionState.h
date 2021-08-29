@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // ConnectionState.h defines all the data needed to host a connection.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #ifndef QNE_CONNECTIONSTATE_H_
 #define QNE_CONNECTIONSTATE_H_

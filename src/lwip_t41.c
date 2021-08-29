@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // lwip_t41.c contains the Teensy 4.1 Ethernet interface implementation.
-// Based on code from Paul Stoffregen and others: https://github.com/PaulStoffregen/teensy41_ethernet
+// Based on code from Paul Stoffregen and others:
+// https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #include "lwip_t41.h"
 

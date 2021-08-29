@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // QNEthernetClient.h defines the TCP client interface.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #ifndef QNE_ETHERNETCLIENT_H_
 #define QNE_ETHERNETCLIENT_H_

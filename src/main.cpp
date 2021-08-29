@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // main.cpp is a testing playground for this library.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 // C++ includes
 #include <utility>

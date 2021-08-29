@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2017-2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // OSC.cpp contains OSC function definitions.
 // This file is part of the QNEthernet library.
-// (c) 2017-2021 Shawn Silverman
 
 #include "OSC.h"
 

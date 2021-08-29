@@ -1,6 +1,8 @@
-// sys_arch.c provides system function implementations.
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
+// sys_arch.c provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #include <stdint.h>
 #include <lwip/arch.h>

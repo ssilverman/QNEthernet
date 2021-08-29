@@ -1,5 +1,8 @@
-// lwIP on Teensy 4.1
-// (c) 2021 Shawn Silverman
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
+// lwIP configuration for QNEthernet library on Teensy 4.1.
+// This file is part of the QNEthernet library.
 
 #ifndef LWIPTEENSY_LWIPOPTS_H_
 #define LWIPTEENSY_LWIPOPTS_H_

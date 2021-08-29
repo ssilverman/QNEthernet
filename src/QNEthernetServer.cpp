@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // QNEthernetServer.cpp contains the EthernetServer implementation.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #include "QNEthernetServer.h"
 

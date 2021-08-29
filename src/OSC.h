@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // OSC.h contains OSC function declarations.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #ifndef QNE_OSC_H_
 #define QNE_OSC_H_

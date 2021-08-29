@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-License-Identifier: MIT
+
 // QNEthernet.h defines an Arduino-style Ethernet driver for Teensy 4.1.
 // This file is part of the QNEthernet library.
-// (c) 2021 Shawn Silverman
 
 #ifndef QNE_ETHERNET_H_
 #define QNE_ETHERNET_H_
