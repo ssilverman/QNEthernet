@@ -23,8 +23,6 @@ qn::EthernetUDP udpIn{};
 qn::EthernetClient client{};
 qn::EthernetServer server{5000};
 
-qn::MDNS mdns;
-
 static void netif_status_callback(struct netif *netif) {
   static char ip[IPADDR_STRLEN_MAX];
   static char mask[IPADDR_STRLEN_MAX];
@@ -88,8 +86,8 @@ void setup() {
 void setupOSC() {
   udpIn.begin(8000);
   Serial.println("Starting mDNS");
-  mdns.begin("qeth");
-  mdns.addService("_osc", "_udp", 8000);
+  MDNS.begin("qeth");
+  MDNS.addService("_osc", "_udp", 8000);
 }
 
 void setupHTTPClient() {
