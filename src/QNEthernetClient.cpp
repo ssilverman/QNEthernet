@@ -30,8 +30,8 @@ static constexpr uint32_t kTimedWaitDelay = 10;
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
 
-// Delay when polling input or output.
-static constexpr uint32_t kIODelay = 10;
+// Delay when polling output to see if the write buffer is full.
+static constexpr uint32_t kWriteBufCheckDelay = 10;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
@@ -410,7 +410,7 @@ size_t EthernetClient::write(uint8_t b) {
 
     // Wait for some data to flush
     do {
-      delay(kIODelay);
+      delay(kWriteBufCheckDelay);
     } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
     return 1;
   }
@@ -440,7 +440,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
     // Wait for some data to flush
     do {
-      delay(kIODelay);
+      delay(kWriteBufCheckDelay);
     } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
     return size;
   }
@@ -466,7 +466,7 @@ void EthernetClient::flush() {
 
   // Wait for some data to flush
   do {
-    delay(kIODelay);
+    delay(kWriteBufCheckDelay);
   } while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0);
 }
 
@@ -484,7 +484,7 @@ int EthernetClient::available() {
   if (state == nullptr) {
     return 0;
   }
-  delay(kIODelay);  // Allow data to come in
+  yield();  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -506,7 +506,7 @@ int EthernetClient::read() {
   if (state == nullptr) {
     return 0;
   }
-  delay(kIODelay);  // Allow data to come in
+  yield();  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
@@ -535,7 +535,7 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   if (state == nullptr) {
     return 0;
   }
-  delay(kIODelay);  // Allow data to come in
+  yield();  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -555,7 +555,7 @@ int EthernetClient::peek() {
   if (state == nullptr) {
     return 0;
   }
-  delay(kIODelay);  // Allow data to come in
+  yield();  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
