@@ -77,17 +77,22 @@ inline bool isAvailable(const ConnectionState *state) {
   return (0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
 }
 
-// Copy any remaining data from the state to the "remaining" buffer.
+// Copy any remaining data from the state to the "remaining" buffer. This first
+// clears the 'remaining' buffer.
 //
 // This assumes holder->state != NULL.
 void maybeCopyRemaining(ConnectionHolder *holder) {
-  if (isAvailable(holder->state)) {
-    holder->remaining.clear();
-    holder->remaining.insert(
-        holder->remaining.end(),
-        holder->state->inBuf.cbegin() + holder->state->inBufPos,
-        holder->state->inBuf.cend());
-    holder->remainingPos = 0;
+  auto &v = holder->remaining;
+  const auto *state = holder->state;
+
+  // Reset the 'remaining' buffer
+  v.clear();
+  holder->remainingPos = 0;
+
+  if (isAvailable(state)) {
+    v.insert(v.end(),
+             state->inBuf.cbegin() + state->inBufPos,
+             state->inBuf.cend());
   }
 }
 
@@ -130,6 +135,21 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
   if (p == nullptr || err != ERR_OK) {
     holder->connected = false;
 
+    if (holder->state != nullptr) {
+      // Copy any buffered data
+      maybeCopyRemaining(holder);
+
+      if (p != nullptr) {
+        // Copy pbuf contents
+        while (p != nullptr) {
+          unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+          holder->remaining.insert(holder->remaining.end(),
+                                   &data[0], &data[p->len]);
+          p = p->next;
+        }
+      }
+    }
+
     if (p != nullptr) {
       tcp_recved(tpcb, p->tot_len);
       pbuf_free(p);
@@ -140,9 +160,6 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
     // TODO: Lock if not single-threaded
 
     if (holder->state != nullptr) {
-      // Copy any buffered data
-      maybeCopyRemaining(holder);
-
       delete holder->state;
       holder->state = nullptr;
 
