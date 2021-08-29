@@ -19,11 +19,11 @@ namespace qindesign {
 namespace network {
 
 // MDNS provides mDNS responder functionality.
-class MDNS final {
+class MDNSClass final {
  public:
   // Initializes mDNS. This should only be called once.
-  MDNS() = default;
-  ~MDNS() = default;
+  MDNSClass() = default;
+  ~MDNSClass() = default;
 
   // Start the mDNS responder. This returns whether the call was successful.
   bool begin(const String &host);
@@ -55,5 +55,7 @@ class MDNS final {
 
 }  // namespace network
 }  // namespace qindesign
+
+extern qindesign::network::MDNSClass MDNS;
 
 #endif  // QNE_MDNS_H_

@@ -19,7 +19,7 @@
 
 extern const int kMTU;
 
-// Global definitions for Arduino.
+// Global definitions for Arduino
 static EventResponder ethLoop;
 qindesign::network::EthernetClass Ethernet;
 

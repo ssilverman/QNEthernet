@@ -8,6 +8,9 @@
 
 #include <lwip/apps/mdns.h>
 
+// Global definitions for Arduino
+qindesign::network::MDNSClass MDNS;
+
 namespace qindesign {
 namespace network {
 
@@ -22,7 +25,7 @@ static constexpr size_t countof(const T (&)[N]) {
 //   LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK), return );
 // }
 
-bool MDNS::begin(const String &host) {
+bool MDNSClass::begin(const String &host) {
   netif_ = netif_default;
   if (netif_ == nullptr) {
     return false;
@@ -38,7 +41,7 @@ bool MDNS::begin(const String &host) {
   return true;
 }
 
-bool MDNS::end() {
+bool MDNSClass::end() {
   if (netif_ == nullptr) {
     // Return true for no netif
     return true;
@@ -58,8 +61,8 @@ enum mdns_sd_proto toProto(const String &protocol) {
   }
 }
 
-bool MDNS::addService(const String &type, const String &protocol,
-                      uint16_t port) {
+bool MDNSClass::addService(const String &type, const String &protocol,
+                           uint16_t port) {
   if (netif_ == nullptr) {
     return false;
   }
@@ -75,8 +78,8 @@ bool MDNS::addService(const String &type, const String &protocol,
   return true;
 }
 
-int MDNS::findService(const String &type, const String &protocol,
-                      uint16_t port) {
+int MDNSClass::findService(const String &type, const String &protocol,
+                           uint16_t port) {
   auto tuple = std::make_tuple(type, protocol, port);
   for (size_t i = 0; i < countof(slots_); i++) {
     if (slots_[i] != nullptr && *slots_[i] == tuple) {
@@ -86,7 +89,8 @@ int MDNS::findService(const String &type, const String &protocol,
   return -1;
 }
 
-bool MDNS::removeService(const String &type, const String &protocol, uint16_t port) {
+bool MDNSClass::removeService(const String &type, const String &protocol,
+                              uint16_t port) {
   if (netif_ == nullptr) {
     // Return true for no netif
     return true;
