@@ -103,6 +103,8 @@ Input is welcome.
   it cleaner.
 * See if there's a way to improve DHCP time.
 * A better API design than the Arduino-defined API.
+* Perhaps zero-copy is an option.
+* Make a test suite.
 
 ## References
 
