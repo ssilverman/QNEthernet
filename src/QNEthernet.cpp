@@ -62,7 +62,7 @@ int EthernetClass::mtu() const {
 void EthernetClass::loop() {
   enet_proc_input();
 
-  if (loopTimer_ >= 100) {
+  if (loopTimer_ >= 125) {
     enet_poll();
     loopTimer_ = 0;
   }
