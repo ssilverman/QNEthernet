@@ -14,6 +14,7 @@
 #include <lwip/prot/ethernet.h>
 #include "QNEthernetClient.h"
 #include "QNEthernetServer.h"
+#include "QNEthernetUDP.h"
 
 namespace qindesign {
 namespace network {
