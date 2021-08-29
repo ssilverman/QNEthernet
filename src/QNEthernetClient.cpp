@@ -370,6 +370,11 @@ size_t EthernetClient::write(uint8_t b) {
     if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
+
+    // Wait for some data to flush
+    do {
+      delay(10);
+    } while (tcp_sndbuf(state->pcb) == 0);
     return 1;
   }
   return 0;
@@ -395,7 +400,11 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     if (tcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-    // TODO: When do we call tcp_output?
+
+    // Wait for some data to flush
+    do {
+      delay(10);
+    } while (tcp_sndbuf(state->pcb) == 0);
     return size;
   }
   return 0;
@@ -417,6 +426,11 @@ void EthernetClient::flush() {
     return;
   }
   tcp_output(state->pcb);
+
+  // Wait for some data to flush
+  do {
+    delay(10);
+  } while (tcp_sndbuf(state->pcb) == 0);
 }
 
 // --------------------------------------------------------------------------
