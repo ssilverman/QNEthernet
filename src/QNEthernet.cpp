@@ -75,7 +75,7 @@ bool EthernetClass::begin() {
   netif_ = netif_default;
   netif_set_up(netif_);
 
-  bool retval = (dhcp_start(netif_) != ERR_OK);
+  bool retval = (dhcp_start(netif_) == ERR_OK);
   startLoopInYield();
   return retval;
 }
