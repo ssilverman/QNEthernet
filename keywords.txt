@@ -1,0 +1,63 @@
+#######################################
+# Syntax Coloring Map for QNEthernet
+# https://arduino.github.io/arduino-cli/latest/library-specification/#keywords
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Ethernet	KEYWORD1	Ethernet
+EthernetClient	KEYWORD1	ClientConstructor
+EthernetServer	KEYWORD1	ServerConstructor
+EthernetUDP	KEYWORD1	Ethernet
+MDNS	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+macAddress	KEYWORD2	EthernetMACAddress
+mtu	KEYWORD2
+loop	KEYWORD2
+begin	KEYWORD2
+end	KEYWORD2
+linkStatus	KEYWORD2
+localIP	KEYWORD2	EthernetLocalIP
+subnetMask	KEYWORD2	EthernetSubnetMask
+gatewayIP	KEYWORD2	EthernetGatewayIP
+dnsServerIP	KEYWORD2	EthernetDnsServerIP
+setLocalIP	KEYWORD2	EthernetSetLocalIP
+setSubnetMask	KEYWORD2	EthernetSetSubnetMask
+setGatewayIP	KEYWORD2	EthernetSetGatewayIP
+setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
+connect	KEYWORD2	ClientConnect
+connected	KEYWORD2	ClientConnected
+setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
+stop	KEYWORD2
+localPort	KEYWORD2	ClientLocalPort
+remoteIP	KEYWORD2
+remotePort	KEYWORD2
+write	KEYWORD2
+availableForWrite	KEYWORD2
+flush	KEYWORD2
+available	KEYWORD2
+read	KEYWORD2
+peek	KEYWORD2
+accept	KEYWORD2	EthernetServerAccept
+beginMulticast	KEYWORD2
+beginPacket	KEYWORD2	EthernetUDPBeginPacket
+endPacket	KEYWORD2	EthernetUDPEndPacket
+parsePacket	KEYWORD2	EthernetUDPParsePacket
+addService	KEYWORD2
+removeService	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+kMACAddrSize	LITERAL1
