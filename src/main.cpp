@@ -13,7 +13,6 @@
 #include <lwip/netif.h>
 
 #include "QNEthernet.h"
-#include "QNEthernetUDP.h"
 #include "QNMDNS.h"
 #include "OSC.h"
 
