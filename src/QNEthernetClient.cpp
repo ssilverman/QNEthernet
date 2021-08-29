@@ -448,6 +448,10 @@ int EthernetClient::available() {
   }
 
   const ConnectionState *state = pHolder_->state;
+  if (state == nullptr) {
+    return 0;
+  }
+  delay(10);  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -466,6 +470,10 @@ int EthernetClient::read() {
   }
 
   ConnectionState *state = pHolder_->state;
+  if (state == nullptr) {
+    return 0;
+  }
+  delay(10);  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
@@ -491,6 +499,10 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   }
 
   ConnectionState *state = pHolder_->state;
+  if (state == nullptr) {
+    return 0;
+  }
+  delay(10);  // Allow data to come in
   if (!isAvailable(state)) {
     return 0;
   }
@@ -507,6 +519,10 @@ int EthernetClient::peek() {
   }
 
   const ConnectionState *state = pHolder_->state;
+  if (state == nullptr) {
+    return 0;
+  }
+  delay(10);  // Allow data to come in
   if (!isAvailable(state)) {
     return -1;
   }
