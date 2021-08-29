@@ -74,11 +74,12 @@ err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) 
 
 // Check if there's data available in the buffer.
 inline bool isAvailable(const ConnectionState *state) {
-  return (state != nullptr &&
-          0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
+  return (0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
 }
 
 // Copy any remaining data from the state to the "remaining" buffer.
+//
+// This assumes holder->state != NULL.
 void maybeCopyRemaining(ConnectionHolder *holder) {
   if (isAvailable(holder->state)) {
     holder->remaining.clear();
@@ -138,10 +139,10 @@ err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
 
     // TODO: Lock if not single-threaded
 
-    // Copy any buffered data
-    maybeCopyRemaining(holder);
-
     if (holder->state != nullptr) {
+      // Copy any buffered data
+      maybeCopyRemaining(holder);
+
       delete holder->state;
       holder->state = nullptr;
 
