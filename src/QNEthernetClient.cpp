@@ -318,13 +318,8 @@ uint8_t EthernetClient::connected() {
 }
 
 EthernetClient::operator bool() {
-  struct netif *netif = netif_default;
-  if (netif == nullptr) {
-    return false;
-  }
-  return netif_is_up(netif) &&
-         netif_is_link_up(netif) &&  // TODO: Should we also check for link up?
-         (netif_ip_addr4(netif)->addr != 0);
+  std::atomic_signal_fence(std::memory_order_acquire);
+  return pHolder_->connected;
 }
 
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
