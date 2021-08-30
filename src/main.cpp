@@ -4,9 +4,6 @@
 // main.cpp is a testing playground for this library.
 // This file is part of the QNEthernet library.
 
-// C++ includes
-#include <utility>
-
 #include <Arduino.h>
 
 #include <lwip/dns.h>
@@ -164,15 +161,16 @@ qn::EthernetClient clients[8];
 void loopServer() {
   // check for any new client connecting, and say hello (before any incoming data)
   qn::EthernetClient newClient = server.accept();
-  if (newClient.connected()) {
+  if (newClient) {
     for (int i = 0; i < 8; i++) {
-      if (!clients[i].connected()) {
+      if (!clients[i]) {
         Serial.printf("Client %d\n", i);
         newClient.print("Hello, client number: ");
         newClient.println(i);
+        newClient.flush();
         // Once we "accept", the client is no longer tracked by EthernetServer
         // so we must store it into our list of clients
-        clients[i] = std::move(newClient);
+        clients[i] = newClient;
         break;
       }
     }
@@ -180,19 +178,18 @@ void loopServer() {
 
   // check for incoming data from all clients
   for (int i = 0; i < 8; i++) {
-    while (/*clients[i].connected() &&*/ clients[i].available() > 0) {
+    while (clients[i] && clients[i].available() > 0) {
       // read incoming data from the client
       Serial.write(clients[i].read());
     }
   }
 
-  // // stop any clients which disconnect
-  // for (int i = 0; i < 8; i++) {
-  //   if (!clients[i]) {
-  //     Serial.printf("Stopping client %d\n", i);
-  //     clients[i].stop();
-  //   }
-  // }
+  // stop any clients which disconnect
+  for (int i = 0; i < 8; i++) {
+    if (!clients[i]) {
+      clients[i].stop();
+    }
+  }
 }
 
 void loopServerAvail() {
