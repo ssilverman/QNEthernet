@@ -27,17 +27,6 @@ and notes:
   https://www.arduino.cc/en/Reference/IfEthernetClient directly contradict each
   other with regard to what `operator bool()` means. The first example uses it
   as "already connected", while the second uses it as "available to connect".
-* `EthernetClient` can't be copied, only moved, for example with `std::move`.
-  If you're getting compiler errors, try this. For example:
-  ```c++
-  qn::EthernetClient client = server.accept();
-  anotherClient = std::move(client);
-  ```
-  Briefly, the reason behind this is because the connections are managed by the
-  client code and not the server code. All the management would need to be done
-  in the server code, but this would be in service to making this work with the
-  Arduino-style API and I don't love that API and am still thinking about
-  underlying design choices.
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or
@@ -98,9 +87,6 @@ Input is welcome.
 ## To do
 
 * Tune lwIP.
-* There's a few hoops the code has to jump through to make client connections
-  both standalone and server-managed. I'd like to fix this up and make
-  it cleaner.
 * See if there's a way to improve DHCP time.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
