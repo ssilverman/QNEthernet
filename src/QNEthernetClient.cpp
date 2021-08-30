@@ -146,15 +146,18 @@ void EthernetClient::stop() {
   // First try to flush any data
   tcp_output(state->pcb);
   yield();  // Maybe some data gets out
+  // NOTE: yield() requires a re-check of the state
 
-  if (tcp_close(state->pcb) != ERR_OK) {
-    tcp_abort(state->pcb);
-  } else {
-    elapsedMillis timer;
-    do {
-      // NOTE: Depends on Ethernet loop being called from yield()
-      delay(kTimedWaitDelay);
-    } while (conn_->connected && timer < connTimeout_);
+  if (state != nullptr) {
+    if (tcp_close(state->pcb) != ERR_OK) {
+      tcp_abort(state->pcb);
+    } else {
+      elapsedMillis timer;
+      do {
+        // NOTE: Depends on Ethernet loop being called from yield()
+        delay(kTimedWaitDelay);
+      } while (conn_->connected && timer < connTimeout_);
+    }
   }
 
   conn_ = nullptr;
@@ -303,6 +306,7 @@ int EthernetClient::available() {
     return 0;
   }
   yield();  // Allow data to come in
+  // NOTE: yield() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -329,6 +333,7 @@ int EthernetClient::read() {
     return 0;
   }
   yield();  // Allow data to come in
+  // NOTE: yield() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
@@ -358,6 +363,7 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return 0;
   }
   yield();  // Allow data to come in
+  // NOTE: yield() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -381,6 +387,7 @@ int EthernetClient::peek() {
     return 0;
   }
   yield();  // Allow data to come in
+  // NOTE: yield() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
