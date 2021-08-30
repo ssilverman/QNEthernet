@@ -21,6 +21,17 @@ namespace network {
 // Subtract UDP header size and minimum IPv4 header size.
 const size_t kMaxUDPSize = kMTU - 8 - 20;
 
+// Use constants for the following delays and timeouts until we decide on
+// something better.
+
+// Polling interval when waiting for:
+// * Starting a packet
+static constexpr uint32_t kTimedWaitDelay = 10;
+
+// DNS lookup timeout.
+static constexpr uint32_t kDNSLookupTimeout =
+    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+
 void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                void *callback_arg) {
   if (callback_arg == nullptr || ipaddr == nullptr) {
@@ -251,8 +262,8 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
       elapsedMillis timer;
       do {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(10);
-      } while (lookupIP_ == INADDR_NONE && timer < 2000);
+        delay(kTimedWaitDelay);
+      } while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout);
       if (lookupFound_) {
         return beginPacket(lookupIP_, port);
       }

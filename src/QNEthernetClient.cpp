@@ -24,7 +24,6 @@ namespace network {
 // Polling interval when waiting for:
 // * Connection
 // * Stop connection
-// * DNS lookup
 static constexpr uint32_t kTimedWaitDelay = 10;
 
 // DNS lookup timeout.
