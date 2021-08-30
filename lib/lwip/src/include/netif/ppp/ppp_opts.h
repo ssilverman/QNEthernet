@@ -45,13 +45,6 @@
 #endif
 
 /**
- * PPPOE_SCNAME_SUPPORT==1: Enable PPP Over Ethernet Service Name and Concentrator Name support
- */
-#ifndef PPPOE_SCNAME_SUPPORT
-#define PPPOE_SCNAME_SUPPORT            0
-#endif
-
-/**
  * PPPOL2TP_SUPPORT==1: Enable PPP Over L2TP
  */
 #ifndef PPPOL2TP_SUPPORT
@@ -95,7 +88,7 @@
  * timers analysis.
  */
 #ifndef PPP_NUM_TIMEOUTS_PER_PCB
-#define PPP_NUM_TIMEOUTS_PER_PCB        (2 + PPP_IPV4_SUPPORT + PPP_IPV6_SUPPORT + CCP_SUPPORT)
+#define PPP_NUM_TIMEOUTS_PER_PCB        (1 + PPP_IPV4_SUPPORT + PPP_IPV6_SUPPORT + CCP_SUPPORT)
 #endif
 
 /* The number of sys_timeouts required for the PPP module */
@@ -182,6 +175,20 @@
  */
 #ifndef PPP_NOTIFY_PHASE
 #define PPP_NOTIFY_PHASE                0
+#endif
+
+/**
+ * pbuf_type PPP is using for LCP, PAP, CHAP, EAP, CCP, IPCP and IP6CP packets.
+ *
+ * Memory allocated must be single buffered for PPP to works, it requires pbuf
+ * that are not going to be chained when allocated. This requires setting
+ * PBUF_POOL_BUFSIZE to at least 512 bytes, which is quite huge for small systems.
+ *
+ * Setting PPP_USE_PBUF_RAM to 1 makes PPP use memory from heap where continuous
+ * buffers are required, allowing you to use a smaller PBUF_POOL_BUFSIZE.
+ */
+#ifndef PPP_USE_PBUF_RAM
+#define PPP_USE_PBUF_RAM                0
 #endif
 
 /**
@@ -297,11 +304,9 @@
 
 /**
  * VJ_SUPPORT==1: Support VJ header compression.
- *
- * BEWARE: It is known to be broken when built with some compiler optimizations enabled.
  */
 #ifndef VJ_SUPPORT
-#define VJ_SUPPORT                      0
+#define VJ_SUPPORT                      1
 #endif
 /* VJ compression is only supported for TCP over IPv4 over PPPoS. */
 #if !PPPOS_SUPPORT || !PPP_IPV4_SUPPORT || !LWIP_TCP
@@ -495,33 +500,28 @@
  */
 
 /**
- * PPP_MRU: MRU value we want to negotiate (peer MTU)
- *
- * It only affects PPPoS because PPPoE value is derived from the
- * Ethernet interface MTU and PPPoL2TP have a separate setting.
+ * PPP_MRU: Default MRU
  */
 #ifndef PPP_MRU
 #define PPP_MRU                         1500
 #endif
 
 /**
- * PPP_MAXMRU: Normally limit peer MRU to this
- *
- * This is the upper limit value to which we set our interface MTU.
- * If the peer sends a larger number, we will just ignore it as we
- * are not required to maximize the use of the peer capacity.
- *
- * It only affects PPPoS because PPPoE value is derived from the
- * Ethernet interface MTU and PPPoL2TP have a separate setting.
+ * PPP_DEFMRU: Default MRU to try
+ */
+#ifndef PPP_DEFMRU
+#define PPP_DEFMRU                      1500
+#endif
+
+/**
+ * PPP_MAXMRU: Normally limit MRU to this (pppd default = 16384)
  */
 #ifndef PPP_MAXMRU
 #define PPP_MAXMRU                      1500
 #endif
 
 /**
- * PPP_MINMRU: No peer MRUs below this
- *
- * Peer must be able to receive at least our minimum MTU.
+ * PPP_MINMRU: No MRUs below this
  */
 #ifndef PPP_MINMRU
 #define PPP_MINMRU                      128

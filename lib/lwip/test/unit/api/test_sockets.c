@@ -153,7 +153,7 @@ static void test_sockets_allfunctions_basic_domain(int domain)
   fail_unless(errno == EISCONN);
 
   /* write from server to client */
-  ret = lwip_write(s3, "test", 4);
+  ret = write(s3, "test", 4);
   fail_unless(ret == 4);
 
   ret = lwip_shutdown(s3, SHUT_WR);
@@ -250,11 +250,11 @@ static void test_sockets_init_loopback_addr(int domain, struct sockaddr_storage 
 
 static void test_sockets_msgapi_update_iovs(struct msghdr *msg, size_t bytes)
 {
-  msg_iovlen_t i;
+  int i;
 
   /* note: this modifies the underyling iov_base and iov_len for a partial
      read for an individual vector. This updates the msg->msg_iov pointer
-     to skip fully consumed vectors */
+     to skip fully consumed vecotrs */
   
   /* process fully consumed vectors */
   for (i = 0; i < msg->msg_iovlen; i++) {
@@ -330,7 +330,7 @@ static void test_sockets_msgapi_tcp(int domain)
 
   /* set s2 to non-blocking, not inherited from listener */
   opt = lwip_fcntl(s2, F_GETFL, 0);
-  fail_unless(opt == O_RDWR);
+  fail_unless(opt == 6);
   opt = O_NONBLOCK;
   ret = lwip_fcntl(s2, F_SETFL, opt);
   fail_unless(ret == 0);

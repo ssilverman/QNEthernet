@@ -233,7 +233,7 @@ struct http_ssi_state {
 
 struct http_ssi_tag_description {
   const char *lead_in;
-  const char *lead_out;
+  const char *lead_out; 
 };
 
 #endif /* LWIP_HTTPD_SSI */
@@ -871,14 +871,14 @@ get_http_headers(struct http_state *hs, const char *uri)
     return;
   }
   /* We are dealing with a particular filename. Look for one other
-     special case.  We assume that any filename with "404" in it must be
-     indicative of a 404 server error whereas all other files require
-     the 200 OK header. */
-  if (memcmp(uri, "/404.", 5) == 0) {
+      special case.  We assume that any filename with "404" in it must be
+      indicative of a 404 server error whereas all other files require
+      the 200 OK header. */
+  if (strstr(uri, "404")) {
     hs->hdrs[HDR_STRINGS_IDX_HTTP_STATUS] = g_psHTTPHeaderStrings[HTTP_HDR_NOT_FOUND];
-  } else if (memcmp(uri, "/400.", 5) == 0) {
+  } else if (strstr(uri, "400")) {
     hs->hdrs[HDR_STRINGS_IDX_HTTP_STATUS] = g_psHTTPHeaderStrings[HTTP_HDR_BAD_REQUEST];
-  } else if (memcmp(uri, "/501.", 5) == 0) {
+  } else if (strstr(uri, "501")) {
     hs->hdrs[HDR_STRINGS_IDX_HTTP_STATUS] = g_psHTTPHeaderStrings[HTTP_HDR_NOT_IMPL];
   } else {
     hs->hdrs[HDR_STRINGS_IDX_HTTP_STATUS] = g_psHTTPHeaderStrings[HTTP_HDR_OK];
@@ -1301,22 +1301,6 @@ http_send_data_ssi(struct altcp_pcb *pcb, struct http_state *hs)
             ssi->tag_state = TAG_NONE;
           }
 
-#if LWIP_HTTPD_DYNAMIC_FILE_READ && !LWIP_HTTPD_SSI_INCLUDE_TAG
-          if ((ssi->tag_state == TAG_NONE) &&
-              (ssi->parsed - hs->file < ssi->tag_index)) {
-            for(u16_t i = 0;i < ssi->tag_index;i++) {
-              ssi->tag_insert[i] = http_ssi_tag_desc[ssi->tag_type].lead_in[i];
-            }
-            ssi->tag_insert_len = ssi->tag_index;
-            hs->file += ssi->parsed - hs->file;
-            hs->left -= ssi->parsed - hs->file;
-            ssi->tag_end = hs->file;
-            ssi->tag_index = 0;
-            ssi->tag_state = TAG_SENDING;
-            break;
-          }
-#endif
-
           /* Move on to the next character in the buffer */
           ssi->parse_left--;
           ssi->parsed++;
@@ -1610,11 +1594,6 @@ http_send(struct altcp_pcb *pcb, struct http_state *hs)
   }
 #endif /* LWIP_HTTPD_DYNAMIC_HEADERS */
 
-#if LWIP_HTTPD_SSI
-  if (hs->ssi && (hs->ssi->tag_state == TAG_SENDING)) {
-    /* do not check the condition below */
-  } else
-#endif
   /* Have we run out of file data to send? If so, we need to read the next
    * block from the file. */
   if (hs->left == 0) {
@@ -1626,9 +1605,6 @@ http_send(struct altcp_pcb *pcb, struct http_state *hs)
 #if LWIP_HTTPD_SSI
   if (hs->ssi) {
     data_to_send = http_send_data_ssi(pcb, hs);
-    if (hs->ssi->tag_state == TAG_SENDING) {
-      return data_to_send;
-    }
   } else
 #endif /* LWIP_HTTPD_SSI */
   {
@@ -2379,7 +2355,7 @@ http_init_file(struct http_state *hs, struct fs_file *file, int is_09, const cha
     hs->file = file->data;
     LWIP_ASSERT("File length must be positive!", (file->len >= 0));
 #if LWIP_HTTPD_CUSTOM_FILES
-    if (((file->flags & FS_FILE_FLAGS_CUSTOM) != 0) && (file->data == NULL)) {
+    if (file->is_custom_file && (file->data == NULL)) {
       /* custom file, need to read data first (via fs_read_custom) */
       hs->left = 0;
     } else

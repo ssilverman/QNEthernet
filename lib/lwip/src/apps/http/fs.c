@@ -64,9 +64,10 @@ fs_open(struct fs_file *file, const char *name)
 
 #if LWIP_HTTPD_CUSTOM_FILES
   if (fs_open_custom(file, name)) {
-    file->flags |= FS_FILE_FLAGS_CUSTOM;
+    file->is_custom_file = 1;
     return ERR_OK;
   }
+  file->is_custom_file = 0;
 #endif /* LWIP_HTTPD_CUSTOM_FILES */
 
   for (f = FS_ROOT; f != NULL; f = f->next) {
@@ -74,14 +75,12 @@ fs_open(struct fs_file *file, const char *name)
       file->data = (const char *)f->data;
       file->len = f->len;
       file->index = f->len;
+      file->pextension = NULL;
       file->flags = f->flags;
 #if HTTPD_PRECALCULATED_CHECKSUM
       file->chksum_count = f->chksum_count;
       file->chksum = f->chksum;
 #endif /* HTTPD_PRECALCULATED_CHECKSUM */
-#if LWIP_HTTPD_FILE_EXTENSION
-      file->pextension = NULL;
-#endif /* LWIP_HTTPD_FILE_EXTENSION */
 #if LWIP_HTTPD_FILE_STATE
       file->state = fs_state_init(file, name);
 #endif /* #if LWIP_HTTPD_FILE_STATE */
@@ -97,7 +96,7 @@ void
 fs_close(struct fs_file *file)
 {
 #if LWIP_HTTPD_CUSTOM_FILES
-  if ((file->flags & FS_FILE_FLAGS_CUSTOM) != 0) {
+  if (file->is_custom_file) {
     fs_close_custom(file);
   }
 #endif /* LWIP_HTTPD_CUSTOM_FILES */
@@ -125,7 +124,7 @@ fs_read(struct fs_file *file, char *buffer, int count)
   LWIP_UNUSED_ARG(callback_arg);
 #endif /* LWIP_HTTPD_FS_ASYNC_READ */
 #if LWIP_HTTPD_CUSTOM_FILES
-  if ((file->flags & FS_FILE_FLAGS_CUSTOM) != 0) {
+  if (file->is_custom_file) {
 #if LWIP_HTTPD_FS_ASYNC_READ
     return fs_read_async_custom(file, buffer, count, callback_fn, callback_arg);
 #else /* LWIP_HTTPD_FS_ASYNC_READ */

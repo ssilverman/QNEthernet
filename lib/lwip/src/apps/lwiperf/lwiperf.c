@@ -7,7 +7,7 @@
  * @defgroup iperf Iperf server
  * @ingroup apps
  *
- * This is a simple performance measuring client/server to check your bandwidth using
+ * This is a simple performance measuring client/server to check your bandwith using
  * iPerf2 on a PC as server/client.
  * It is currently a minimal implementation providing a TCP client/server only.
  *
@@ -53,7 +53,6 @@
 
 #include "lwip/tcp.h"
 #include "lwip/sys.h"
-#include "lwip/inet.h"
 
 #include <string.h>
 
@@ -264,7 +263,7 @@ lwiperf_tcp_close(lwiperf_state_tcp_t *conn, enum lwiperf_report_type report_typ
       /* don't want to wait for free memory here... */
       tcp_abort(conn->conn_pcb);
     }
-  } else if (conn->server_pcb != NULL) {
+  } else {
     /* no conn pcb, this is the listener pcb */
     err = tcp_close(conn->server_pcb);
     LWIP_ASSERT("error", err == ERR_OK);
@@ -566,11 +565,6 @@ lwiperf_tcp_err(void *arg, err_t err)
 {
   lwiperf_state_tcp_t *conn = (lwiperf_state_tcp_t *)arg;
   LWIP_UNUSED_ARG(err);
-
-  /* pcb is already deallocated, prevent double-free */
-  conn->conn_pcb = NULL;
-  conn->server_pcb = NULL;
-
   lwiperf_tcp_close(conn, LWIPERF_TCP_ABORTED_REMOTE);
 }
 
@@ -608,7 +602,7 @@ lwiperf_tcp_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
   LWIP_ASSERT("invalid conn pcb", s->conn_pcb == NULL);
   if (s->specific_remote) {
     LWIP_ASSERT("s->base.related_master_state != NULL", s->base.related_master_state != NULL);
-    if (!ip_addr_eq(&newpcb->remote_ip, &s->remote_addr)) {
+    if (!ip_addr_cmp(&newpcb->remote_ip, &s->remote_addr)) {
       /* this listener belongs to a client session, and this is not the correct remote */
       return ERR_VAL;
     }

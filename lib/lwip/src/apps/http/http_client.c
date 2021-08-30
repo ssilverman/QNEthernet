@@ -338,7 +338,7 @@ httpc_tcp_recv(void *arg, struct altcp_pcb *pcb, struct pbuf *p, err_t r)
   if ((p != NULL) && (req->parse_state == HTTPC_PARSE_RX_DATA)) {
     req->rx_content_len += p->tot_len;
     if (req->recv_fn != NULL) {
-      /* directly return here: the connection might already be aborted from the callback! */
+      /* directly return here: the connection migth already be aborted from the callback! */
       return req->recv_fn(req->callback_arg, pcb, p, r);
     } else {
       altcp_recved(pcb, p->tot_len);
@@ -615,7 +615,7 @@ httpc_init_connection_addr(httpc_state_t **connection, const httpc_connection_t 
 }
 
 /**
- * @ingroup httpc
+ * @ingroup httpc 
  * HTTP client API: get a file by passing server IP address
  *
  * @param server_addr IP address of the server to connect
@@ -660,7 +660,7 @@ httpc_get_file(const ip_addr_t* server_addr, u16_t port, const char* uri, const 
 }
 
 /**
- * @ingroup httpc
+ * @ingroup httpc 
  * HTTP client API: get a file by passing server name as string (DNS name or IP address string)
  *
  * @param server_name server name as string (DNS name or IP address string)
@@ -718,7 +718,7 @@ typedef struct _httpc_filestate
 static void httpc_fs_result(void *arg, httpc_result_t httpc_result, u32_t rx_content_len,
   u32_t srv_res, err_t err);
 
-/** Initialize http client state for download to file system */
+/** Initalize http client state for download to file system */
 static err_t
 httpc_fs_init(httpc_filestate_t **filestate_out, const char* local_file_name,
               const httpc_connection_t *settings, void* callback_arg)
@@ -802,7 +802,7 @@ httpc_fs_tcp_recv(void *arg, struct altcp_pcb *pcb, struct pbuf *p, err_t err)
 }
 
 /**
- * @ingroup httpc
+ * @ingroup httpc 
  * HTTP client API: get a file to disk by passing server IP address
  *
  * @param server_addr IP address of the server to connect
@@ -854,7 +854,7 @@ httpc_get_file_to_disk(const ip_addr_t* server_addr, u16_t port, const char* uri
 }
 
 /**
- * @ingroup httpc
+ * @ingroup httpc 
  * HTTP client API: get a file to disk by passing server name as string (DNS name or IP address string)
  *
  * @param server_name server name as string (DNS name or IP address string)

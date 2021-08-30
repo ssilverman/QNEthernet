@@ -36,14 +36,14 @@
 /**
  * @defgroup snmp SNMPv2c/v3 agent
  * @ingroup apps
- * SNMPv2c and SNMPv3 compatible agent<br>
- * There is also a MIB compiler and a MIB viewer in lwIP/contrib subdir
- * (lwip/contrib/apps/LwipMibCompiler).<br>
+ * SNMPv2c and SNMPv3 compatible agent\n
+ * There is also a MIB compiler and a MIB viewer in lwIP contrib repository
+ * (lwip-contrib/apps/LwipMibCompiler).\n
  * The agent implements the most important MIB2 MIBs including IPv6 support
  * (interfaces, UDP, TCP, SNMP, ICMP, SYSTEM). IP MIB is an older version
- * without IPv6 statistics (TODO).<br>
+ * without IPv6 statistics (TODO).\n
  * Rewritten by Martin Hentschel <info@cl-soft.de> and
- * Dirk Ziegelmeier <dziegel@gmx.de>
+ * Dirk Ziegelmeier <dziegel@gmx.de>\n
  *
  * 0 Agent Capabilities
  * ====================
@@ -69,15 +69,12 @@
  *
  * MIB compiler (code generator):
  * ------------------------------
- * - Provided in contrib dir.
- * - Written in C#. MIB viewer using Windows Forms.
+ * - Provided in lwIP contrib repository.
+ * - Written in C#. MIB viewer used Windows Forms.
  * - Developed on Windows with Visual Studio 2010.
  * - Can be compiled and used on all platforms with http://www.monodevelop.com/.
  * - Based on a heavily modified version of of SharpSnmpLib (a4bd05c6afb4)
  *   (https://sharpsnmplib.codeplex.com/SourceControl/network/forks/Nemo157/MIBParserUpdate).
- *   This has been the last known revision of that code before being converted to
- *   closed source. The new code on github has completely changed, so we can not
- *   just update :-(
  * - MIB parser, C file generation framework and LWIP code generation are cleanly
  *   separated, which means the code may be useful as a base for code generation
  *   of other SNMP agents.
@@ -114,7 +111,7 @@
  *   tables is not possible.
  *
  *   Note lwIP has a very limited notion of IP routing. It currently
- *   doesn't have a route table and doesn't have a notion of the U,G,H flags.
+ *   doen't have a route table and doesn't have a notion of the U,G,H flags.
  *   Instead lwIP uses the interface list with only one default interface
  *   acting as a single gateway interface (G) for the default route.
  *
@@ -937,7 +934,7 @@ snmp_get_next_node_instance_from_oid(const u32_t *oid, u8_t oid_len, snmp_valida
       /*
       there is no further (suitable) node inside this MIB, search for the next MIB with following priority
       1. search for inner MIB's (whose root is located inside tree of current MIB)
-      2. search for surrounding MIB's (where the current MIB is the inner MIB) and continue there if any
+      2. search for surrouding MIB's (where the current MIB is the inner MIB) and continue there if any
       3. take the next closest MIB (not being related to the current MIB)
       */
       const struct snmp_mib *next_mib;
@@ -1056,7 +1053,7 @@ snmp_mib_tree_resolve_next(const struct snmp_mib *mib, const u32_t *oid, u8_t oi
 
 
   if (oid_offset >= oid_len) {
-    /* passed oid references a tree node -> return first usable sub node of it */
+    /* passed oid references a tree node -> return first useable sub node of it */
     subnode_oid = 0;
   } else {
     subnode_oid = *(oid + oid_offset) + 1;
@@ -1126,7 +1123,7 @@ snmp_next_oid_init(struct snmp_next_oid_state *state,
 }
 
 /** checks if the passed incomplete OID may be a possible candidate for snmp_next_oid_check();
-this method is intended if the complete OID is not yet known but it is very expensive to build it up,
+this methid is intended if the complete OID is not yet known but it is very expensive to build it up,
 so it is possible to test the starting part before building up the complete oid and pass it to snmp_next_oid_check()*/
 u8_t
 snmp_next_oid_precheck(struct snmp_next_oid_state *state, const u32_t *oid, u8_t oid_len)
@@ -1282,9 +1279,9 @@ snmp_decode_truthvalue(const s32_t *asn1_value, u8_t *bool_value)
  * get/test/set methods.
  *
  * @param buf points to a buffer where the resulting ASN1 octet string is stored to
- * @param buf_len max length of the buffer
+ * @param buf_len max length of the bufffer
  * @param bit_value Bit value to encode with Bit0 == LSB
- * @param bit_count Number of possible bits for the bit value (according to rfc we have to send all bits independent from their truth value)
+ * @param bit_count Number of possible bits for the bit value (according to rfc we have to send all bits independant from their truth value)
  * @return number of bytes used from buffer to store the resulting OctetString
  */
 u8_t

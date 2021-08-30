@@ -34,7 +34,6 @@
 
 #include "lwip/pbuf.h"
 #include "lwip/apps/mdns.h"
-#include "lwip/apps/mdns_domain.h"
 #include "lwip/apps/mdns_priv.h"
 
 START_TEST(readname_basic)
@@ -830,7 +829,7 @@ START_TEST(compress_jump_to_jump)
 
   offset = 0x20;
   length = mdns_compress_domain(p, &offset, &domain);
-  /* Don't compress if jump would be to a jump */
+  /* Dont compress if jump would be to a jump */
   fail_unless(length == domain.length);
 
   offset = 0x10;

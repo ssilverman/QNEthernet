@@ -77,7 +77,7 @@ lwip_if_indextoname(unsigned int ifindex, char *ifname)
 
 /**
  * @ingroup if_api
- * Returns the interface index corresponding to name ifname.
+ * Returs the interface index corresponding to name ifname.
  * @param ifname Interface name
  * @return The corresponding index if ifname is the name of an interface;
  * otherwise, zero.

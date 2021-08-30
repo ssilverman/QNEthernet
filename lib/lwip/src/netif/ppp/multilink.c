@@ -142,18 +142,18 @@ mp_join_bundle()
 		/* not doing multilink */
 		if (go->neg_mrru)
 			notice("oops, multilink negotiated only for receive");
-		mtu = ho->neg_mru? ho->mru: PPP_DEFMRU;
+		mtu = ho->neg_mru? ho->mru: PPP_MRU;
 		if (mtu > ao->mru)
 			mtu = ao->mru;
 		if (demand) {
 			/* already have a bundle */
 			cfg_bundle(0, 0, 0, 0);
-			ppp_netif_set_mtu(pcb, mtu);
+			netif_set_mtu(pcb, mtu);
 			return 0;
 		}
 		make_new_bundle(0, 0, 0, 0);
 		set_ifunit(1);
-		ppp_netif_set_mtu(pcb, mtu);
+		netif_set_mtu(pcb, mtu);
 		return 0;
 	}
 
@@ -198,7 +198,7 @@ mp_join_bundle()
 	mtu = LWIP_MIN(ho->mrru, ao->mru);
 	if (demand) {
 		cfg_bundle(go->mrru, ho->mrru, go->neg_ssnhf, ho->neg_ssnhf);
-		ppp_netif_set_mtu(pcb, mtu);
+		netif_set_mtu(pcb, mtu);
 		script_setenv("BUNDLE", bundle_id + 7, 1);
 		return 0;
 	}
@@ -245,7 +245,7 @@ mp_join_bundle()
 	/* we have to make a new bundle */
 	make_new_bundle(go->mrru, ho->mrru, go->neg_ssnhf, ho->neg_ssnhf);
 	set_ifunit(1);
-	ppp_netif_set_mtu(pcb, mtu);
+	netif_set_mtu(pcb, mtu);
 	script_setenv("BUNDLE", bundle_id + 7, 1);
 	make_bundle_links(pcb);
 	unlock_db();

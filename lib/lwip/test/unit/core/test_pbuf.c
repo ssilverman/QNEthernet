@@ -6,6 +6,9 @@
 #if !LWIP_STATS || !MEM_STATS ||!MEMP_STATS
 #error "This tests needs MEM- and MEMP-statistics enabled"
 #endif
+#if LWIP_DNS
+#error "This test needs DNS turned off (as it mallocs on init)"
+#endif
 #if !LWIP_TCP || !TCP_QUEUE_OOSEQ || !LWIP_WND_SCALE
 #error "This test needs TCP OOSEQ queueing and window scaling enabled"
 #endif
@@ -74,6 +77,9 @@ START_TEST(test_pbuf_copy_zero_pbuf)
   err_t err;
   LWIP_UNUSED_ARG(_i);
 
+  fail_unless(lwip_stats.mem.used == 0);
+  fail_unless(MEMP_STATS_GET(used, MEMP_PBUF_POOL) == 0);
+
   p1 = pbuf_alloc(PBUF_RAW, 1024, PBUF_RAM);
   fail_unless(p1 != NULL);
   fail_unless(p1->ref == 1);
@@ -93,100 +99,10 @@ START_TEST(test_pbuf_copy_zero_pbuf)
 
   pbuf_free(p1);
   pbuf_free(p3);
-}
-END_TEST
+  fail_unless(lwip_stats.mem.used == 0);
 
-/** Call pbuf_copy on pbufs with chains of different sizes */
-START_TEST(test_pbuf_copy_unmatched_chains)
-{
-  int i, j;
-  err_t err;
-  struct pbuf *source, *dest, *p;
-  source = NULL;
-  /* Build source pbuf from linked 16 byte parts,
-   * with payload bytes containing their offset */
-  for (i = 0; i < 8; i++) {
-    p = pbuf_alloc(PBUF_RAW, 16, PBUF_RAM);
-    fail_unless(p != NULL);
-    for (j = 0; j < p->len; j++) {
-        ((unsigned char*)p->payload)[j] = (i << 4) | j;
-    }
-    if (source) {
-        pbuf_cat(source, p);
-    } else {
-        source = p;
-    }
-  }
-  for (i = 0; i < source->tot_len; i++) {
-    fail_unless(pbuf_get_at(source, i) == i);
-  }
-
-  /* Build dest pbuf from other lengths */
-  dest = pbuf_alloc(PBUF_RAW, 35, PBUF_RAM);
-  fail_unless(dest != NULL);
-  p = pbuf_alloc(PBUF_RAW, 81, PBUF_RAM);
-  fail_unless(p != NULL);
-  pbuf_cat(dest, p);
-  p = pbuf_alloc(PBUF_RAW, 27, PBUF_RAM);
-  fail_unless(p != NULL);
-  pbuf_cat(dest, p);
-
-  /* Copy contents and verify data */
-  err = pbuf_copy(dest, source);
-  fail_unless(err == ERR_OK);
-  for (i = 0; i < source->tot_len; i++) {
-    fail_unless(pbuf_get_at(dest, i) == i);
-  }
-
-  pbuf_free(source);
-  pbuf_free(dest);
-}
-END_TEST
-
-START_TEST(test_pbuf_copy_partial_pbuf)
-{
-  struct pbuf *a, *b, *dest;
-  char lwip[] = "lwip ";
-  char packet[] = "packet";
-  err_t err;
-  LWIP_UNUSED_ARG(_i);
-
-  a = pbuf_alloc(PBUF_RAW, 5, PBUF_REF);
-  fail_unless(a != NULL);
-  a->payload = lwip;
-  b = pbuf_alloc(PBUF_RAW, 7, PBUF_REF);
-  fail_unless(b != NULL);
-  b->payload = packet;
-  pbuf_cat(a, b);
-  dest = pbuf_alloc(PBUF_RAW, 14, PBUF_RAM);
-  memset(dest->payload, 0, dest->len);
-  fail_unless(dest != NULL);
-
-  /* Don't copy if data will not fit */
-  err = pbuf_copy_partial_pbuf(dest, a, a->tot_len, 4);
-  fail_unless(err == ERR_ARG);
-  /* Don't copy if length is longer than source */
-  err = pbuf_copy_partial_pbuf(dest, a, a->tot_len + 1, 0);
-  fail_unless(err == ERR_ARG);
-  /* Normal copy */
-  err = pbuf_copy_partial_pbuf(dest, a, a->tot_len, 0);
-  fail_unless(err == ERR_OK);
-  fail_unless(strcmp("lwip packet", (char*)dest->payload) == 0);
-  /* Copy at offset */
-  err = pbuf_copy_partial_pbuf(dest, a, a->tot_len, 1);
-  fail_unless(err == ERR_OK);
-  fail_unless(strcmp("llwip packet", (char*)dest->payload) == 0);
-  /* Copy at offset with shorter length */
-  err = pbuf_copy_partial_pbuf(dest, a, 6, 6);
-  fail_unless(err == ERR_OK);
-  fail_unless(strcmp("llwip lwip p", (char*)dest->payload) == 0);
-  /* Copy with shorter length */
-  err = pbuf_copy_partial_pbuf(dest, a, 5, 0);
-  fail_unless(err == ERR_OK);
-  fail_unless(strcmp("lwip  lwip p", (char*)dest->payload) == 0);
-
-  pbuf_free(dest);
-  pbuf_free(a);
+  fail_unless(lwip_stats.mem.used == 0);
+  fail_unless(MEMP_STATS_GET(used, MEMP_PBUF_POOL) == 0);
 }
 END_TEST
 
@@ -346,8 +262,6 @@ pbuf_suite(void)
   testfunc tests[] = {
     TESTFUNC(test_pbuf_alloc_zero_pbufs),
     TESTFUNC(test_pbuf_copy_zero_pbuf),
-    TESTFUNC(test_pbuf_copy_unmatched_chains),
-    TESTFUNC(test_pbuf_copy_partial_pbuf),
     TESTFUNC(test_pbuf_split_64k_on_small_pbufs),
     TESTFUNC(test_pbuf_queueing_bigger_than_64k),
     TESTFUNC(test_pbuf_take_at_edge),

@@ -94,7 +94,6 @@ struct nd6_destination_cache_entry {
   ip6_addr_t destination_addr;
   ip6_addr_t next_hop_addr;
   u16_t pmtu;
-  u8_t cached_neighbor_idx;
   u32_t age;
 };
 

@@ -383,7 +383,6 @@ lowpan6_frag(struct netif *netif, struct pbuf *p, const struct lowpan6_link_addr
 #else /* LWIP_6LOWPAN_IPHC */
   /* Send uncompressed IPv6 header with appropriate dispatch byte. */
   lowpan6_header_len = 1;
-  hidden_header_len = 0;
   buffer[ieee_header_len] = 0x41; /* IPv6 dispatch */
 #endif /* LWIP_6LOWPAN_IPHC */
 
@@ -605,12 +604,12 @@ lowpan6_output(struct netif *netif, struct pbuf *q, const ip6_addr_t *ip6addr)
 
 #if LWIP_6LOWPAN_INFER_SHORT_ADDRESS
   if (src.addr_len == 2) {
-    /* If source address was compressible to short_mac_addr, and dest has same subnet and
-     * is also compressible to 2-bytes, assume we can infer dest as a short address too. */
+    /* If source address was compressable to short_mac_addr, and dest has same subnet and
+     * is also compressable to 2-bytes, assume we can infer dest as a short address too. */
     dest.addr_len = 2;
     dest.addr[0] = ((u8_t *)q->payload)[38];
     dest.addr[1] = ((u8_t *)q->payload)[39];
-    if ((src.addr_len == 2) && (ip6_addr_net_zoneless_eq(&ip6_hdr->src, &ip6_hdr->dest)) &&
+    if ((src.addr_len == 2) && (ip6_addr_netcmp_zoneless(&ip6_hdr->src, &ip6_hdr->dest)) &&
         (lowpan6_get_address_mode(ip6addr, &dest) == 3)) {
       MIB2_STATS_NETIF_INC(netif, ifoutucastpkts);
       return lowpan6_frag(netif, q, &src, &dest);
@@ -680,7 +679,7 @@ lowpan6_input(struct pbuf *p, struct netif *netif)
     /* check for duplicate */
     lrh = lowpan6_data.reass_list;
     while (lrh != NULL) {
-      u8_t discard = 0;
+      uint8_t discard = 0;
       lrh_next = lrh->next_packet;
       if ((lrh->sender_addr.addr_len == src.addr_len) &&
           (memcmp(lrh->sender_addr.addr, src.addr, src.addr_len) == 0)) {
@@ -882,7 +881,7 @@ lowpan6_if_init(struct netif *netif)
   MIB2_INIT_NETIF(netif, snmp_ifType_other, 0);
 
   /* maximum transfer unit */
-  netif->mtu = IP6_MIN_MTU_LENGTH;
+  netif->mtu = 1280;
 
   /* broadcast capability */
   netif->flags = NETIF_FLAG_BROADCAST /* | NETIF_FLAG_LOWPAN6 */;

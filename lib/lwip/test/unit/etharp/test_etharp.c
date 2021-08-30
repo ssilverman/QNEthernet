@@ -2,7 +2,6 @@
 
 #include "lwip/udp.h"
 #include "lwip/etharp.h"
-#include "lwip/inet.h"
 #include "netif/ethernet.h"
 #include "lwip/stats.h"
 #include "lwip/prot/iana.h"

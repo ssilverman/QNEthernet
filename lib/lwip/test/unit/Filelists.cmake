@@ -5,12 +5,8 @@
 #
 # This file is NOT designed (on purpose) to be used as cmake
 # subdir via add_subdirectory()
-# The intention is to provide greater flexibility to users to
+# The intention is to provide greater flexibility to users to 
 # create their own targets using the *_SRCS variables.
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.10.0")
-    include_guard(GLOBAL)
-endif()
 
 set(LWIP_TESTDIR ${LWIP_DIR}/test/unit)
 set(LWIP_TESTFILES
@@ -18,7 +14,6 @@ set(LWIP_TESTFILES
 	${LWIP_TESTDIR}/api/test_sockets.c
 	${LWIP_TESTDIR}/arch/sys_arch.c
 	${LWIP_TESTDIR}/core/test_def.c
-	${LWIP_TESTDIR}/core/test_dns.c
 	${LWIP_TESTDIR}/core/test_mem.c
 	${LWIP_TESTDIR}/core/test_netif.c
 	${LWIP_TESTDIR}/core/test_pbuf.c

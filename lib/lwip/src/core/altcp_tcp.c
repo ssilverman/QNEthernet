@@ -1,7 +1,6 @@
 /**
  * @file
- * Application layered TCP connection API (to be used from TCPIP thread)
- *
+ * Application layered TCP connection API (to be used from TCPIP thread)\n
  * This interface mimics the tcp callback API to the application while preventing
  * direct linking (much like virtual functions).
  * This way, an application can make use of other application layer protocols
@@ -50,7 +49,6 @@
 #include "lwip/altcp_tcp.h"
 #include "lwip/priv/altcp_priv.h"
 #include "lwip/tcp.h"
-#include "lwip/priv/tcp_priv.h"
 #include "lwip/mem.h"
 
 #include <string.h>
@@ -162,25 +160,21 @@ static void
 altcp_tcp_remove_callbacks(struct tcp_pcb *tpcb)
 {
   tcp_arg(tpcb, NULL);
-  if (tpcb->state != LISTEN) {
-    tcp_recv(tpcb, NULL);
-    tcp_sent(tpcb, NULL);
-    tcp_err(tpcb, NULL);
-    tcp_poll(tpcb, NULL, tpcb->pollinterval);
-  }
+  tcp_recv(tpcb, NULL);
+  tcp_sent(tpcb, NULL);
+  tcp_err(tpcb, NULL);
+  tcp_poll(tpcb, NULL, tpcb->pollinterval);
 }
 
 static void
 altcp_tcp_setup_callbacks(struct altcp_pcb *conn, struct tcp_pcb *tpcb)
 {
   tcp_arg(tpcb, conn);
-  /* this might be called for LISTN when close fails... */
-  if (tpcb->state != LISTEN) {
-    tcp_recv(tpcb, altcp_tcp_recv);
-    tcp_sent(tpcb, altcp_tcp_sent);
-    tcp_err(tpcb, altcp_tcp_err);
-    /* tcp_poll is set when interval is set by application */
-  }
+  tcp_recv(tpcb, altcp_tcp_recv);
+  tcp_sent(tpcb, altcp_tcp_sent);
+  tcp_err(tpcb, altcp_tcp_err);
+  /* tcp_poll is set when interval is set by application */
+  /* listen is set totally different :-) */
 }
 
 static void
@@ -452,31 +446,6 @@ altcp_tcp_setprio(struct altcp_pcb *conn, u8_t prio)
   }
 }
 
-#if LWIP_TCP_KEEPALIVE
-static void
-altcp_tcp_keepalive_disable(struct altcp_pcb *conn)
-{
-  if (conn && conn->state) {
-    struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
-    ALTCP_TCP_ASSERT_CONN(conn);
-    ip_reset_option(pcb, SOF_KEEPALIVE);
-  }
-}
-
-static void
-altcp_tcp_keepalive_enable(struct altcp_pcb *conn, u32_t idle, u32_t intvl, u32_t cnt)
-{
-  if (conn && conn->state) {
-    struct tcp_pcb *pcb = (struct tcp_pcb *)conn->state;
-    ALTCP_TCP_ASSERT_CONN(conn);
-    ip_set_option(pcb, SOF_KEEPALIVE);
-    pcb->keep_idle = idle ? idle : TCP_KEEPIDLE_DEFAULT;
-    pcb->keep_intvl = intvl ? intvl : TCP_KEEPINTVL_DEFAULT;
-    pcb->keep_cnt = cnt ? cnt : TCP_KEEPCNT_DEFAULT;
-  }
-}
-#endif
-
 static void
 altcp_tcp_dealloc(struct altcp_pcb *conn)
 {
@@ -566,10 +535,6 @@ const struct altcp_functions altcp_tcp_functions = {
   altcp_tcp_get_tcp_addrinfo,
   altcp_tcp_get_ip,
   altcp_tcp_get_port
-#if LWIP_TCP_KEEPALIVE
-  , altcp_tcp_keepalive_disable
-  , altcp_tcp_keepalive_enable
-#endif
 #ifdef LWIP_DEBUG
   , altcp_tcp_dbg_get_tcp_state
 #endif

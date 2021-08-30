@@ -60,6 +60,7 @@ extern "C" {
 #define ALTCP_MBEDTLS_FLAGS_UPPER_CALLED      0x02
 #define ALTCP_MBEDTLS_FLAGS_RX_CLOSE_QUEUED   0x04
 #define ALTCP_MBEDTLS_FLAGS_RX_CLOSED         0x08
+#define ALTCP_MBEDTLS_FLAGS_APPLDATA_SENT     0x10
 
 typedef struct altcp_mbedtls_state_s {
   void *conf;
@@ -71,7 +72,6 @@ typedef struct altcp_mbedtls_state_s {
   int rx_passed_unrecved;
   int bio_bytes_read;
   int bio_bytes_appl;
-  int overhead_bytes_adjust;
 } altcp_mbedtls_state_t;
 
 #ifdef __cplusplus

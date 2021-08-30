@@ -2,14 +2,14 @@
  * @defgroup lwip lwIP
  *
  * @defgroup infrastructure Infrastructure
- *
+ * 
  * @defgroup api APIs
  * lwIP provides three Application Program's Interfaces (APIs) for programs
  * to use for communication with the TCP/IP code:
  * - low-level "core" / "callback" or @ref callbackstyle_api.
  * - higher-level @ref sequential_api.
  * - BSD-style @ref socket.
- *
+ * 
  * The raw TCP/IP interface allows the application program to integrate
  * better with the TCP/IP code. Program execution is event based by
  * having callback functions being called from within the TCP/IP
@@ -17,23 +17,23 @@
  * thread. The sequential API has a much higher overhead and is not very
  * well suited for small systems since it forces a multithreaded paradigm
  * on the application.
- *
+ * 
  * The raw TCP/IP interface is not only faster in terms of code execution
  * time but is also less memory intensive. The drawback is that program
  * development is somewhat harder and application programs written for
  * the raw TCP/IP interface are more difficult to understand. Still, this
  * is the preferred way of writing applications that should be small in
  * code size and memory usage.
- *
+ * 
  * All APIs can be used simultaneously by different application
  * programs. In fact, the sequential API is implemented as an application
  * program using the raw TCP/IP interface.
- *
+ * 
  * Do not confuse the lwIP raw API with raw Ethernet or IP sockets.
  * The former is a way of interfacing the lwIP network stack (including
  * TCP and UDP), the latter refers to processing raw Ethernet or IP data
  * instead of TCP connections or UDP packets.
- *
+ * 
  * Raw API applications may never block since all packet processing
  * (input and output) as well as timer processing (TCP mainly) is done
  * in a single execution context.
@@ -59,7 +59,7 @@
  * receive. This API is also used by the core stack for interaction between
  * the various protocols. It is the only API available when running lwIP
  * without an operating system.
- *
+ * 
  * @defgroup sequential_api Sequential-style APIs
  * @ingroup api
  * Sequential-style APIs, blocking functions. More overhead, but can be called
@@ -70,22 +70,22 @@
  * paradigm. Since the TCP/IP stack is event based by nature, the TCP/IP
  * code and the application program must reside in different execution
  * contexts (threads).
- *
+ * 
  * @defgroup socket Socket API
  * @ingroup api
- * BSD-style socket API.<br>
- * Thread-safe, to be called from non-TCPIP threads only.<br>
- * Can be activated by defining @ref LWIP_SOCKET to 1.<br>
- * Header is in posix/sys/socket.h<br>
+ * BSD-style socket API.\n
+ * Thread-safe, to be called from non-TCPIP threads only.\n
+ * Can be activated by defining @ref LWIP_SOCKET to 1.\n
+ * Header is in posix/sys/socket.h\n
  * The socket API is a compatibility API for existing applications,
  * currently it is built on top of the sequential API. It is meant to
  * provide all functions needed to run socket API applications running
  * on other platforms (e.g. unix / windows etc.). However, due to limitations
  * in the specification of this API, there might be incompatibilities
  * that require small modifications of existing programs.
- *
+ * 
  * @defgroup netifs NETIFs
- *
+ * 
  * @defgroup apps Applications
  */
 
@@ -112,7 +112,7 @@
  * * Add sys_mbox_trypost_fromisr() and tcpip_callbackmsg_trycallback_fromisr()
  *   (for FreeRTOS, mainly)
  * * socket API: support poll(), sendmsg() and recvmsg(); fix problems on close
- *
+ * 
  * Detailed Changelog
  * ------------------
  * @verbinclude "CHANGELOG"
@@ -124,11 +124,6 @@
  */
 
 /**
- * @page cmake CMake build system
- * @verbinclude "BUILDING"
- */
-
-/**
  * @page pitfalls Common pitfalls
  *
  * Multiple Execution Contexts in lwIP code
@@ -136,21 +131,21 @@
  *
  * The most common source of lwIP problems is to have multiple execution contexts
  * inside the lwIP code.
- *
- * lwIP can be used in two basic modes: @ref lwip_nosys (no OS/RTOS
+ * 
+ * lwIP can be used in two basic modes: @ref lwip_nosys (no OS/RTOS 
  * running on target system) or @ref lwip_os (there is an OS running
  * on the target system).
- *
+ * 
  * See also: @ref multithreading (especially the part about @ref LWIP_ASSERT_CORE_LOCKED()!)
  *
  * Mainloop Mode
  * -------------
  * In mainloop mode, only @ref callbackstyle_api can be used.
- * The user has two possibilities to ensure there is only one
- * execution context at a time in lwIP:
+ * The user has two possibilities to ensure there is only one 
+ * exection context at a time in lwIP:
  *
  * 1) Deliver RX ethernet packets directly in interrupt context to lwIP
- *    by calling netif->input directly in interrupt. This implies all lwIP
+ *    by calling netif->input directly in interrupt. This implies all lwIP 
  *    callback functions are called in IRQ context, which may cause further
  *    problems in application code: IRQ is blocked for a long time, multiple
  *    execution contexts in application code etc. When the application wants
@@ -176,12 +171,12 @@
  * implemented in tcpip_input().​​
  * Again, ensure lwIP is _NEVER_ called from an interrupt, e.g.
  * some SPI IRQ wants to forward data to udp_send() or tcp_write()!
- *
+ * 
  * 1) tcpip_callback() can be used get called back from TCPIP thread,
  *    it is safe to call any @ref callbackstyle_api from there.
  *
  * 2) Use @ref LWIP_TCPIP_CORE_LOCKING. All @ref callbackstyle_api
- *    functions can be called when lwIP core lock is acquired, see
+ *    functions can be called when lwIP core lock is aquired, see
  *    @ref LOCK_TCPIP_CORE() and @ref UNLOCK_TCPIP_CORE().
  *    These macros cannot be used in an interrupt context!
  *    Note the OS must correctly handle priority inversion for this.
@@ -191,7 +186,7 @@
  *
  * DMA-capable ethernet hardware and zero-copy RX
  * ----------------------------------------------
- *
+ * 
  * lwIP changes the content of RECEIVED pbufs in the TCP code path.
  * This implies one or more cacheline(s) of the RX pbuf become dirty
  * and need to be flushed before the memory is handed over to the
@@ -210,18 +205,9 @@
  */
 
 /**
- * @page mem_err Debugging memory pool sizes
- * If you have issues with lwIP and you are using memory pools, check that your pools
- * are correctly sized.<br>
- * To debug pool sizes, \#define LWIP_STATS and MEMP_STATS to 1. Check the global variable
- * lwip_stats.memp[] using a debugger. If the "err" member of a pool is > 0, the pool
- * may be too small for your application and you need to increase its size.
- */
-
-/**
  * @page bugs Reporting bugs
- * Please report bugs in the lwIP bug tracker at savannah.<br>
- * BEFORE submitting, please check if the bug has already been reported!<br>
+ * Please report bugs in the lwIP bug tracker at savannah.\n
+ * BEFORE submitting, please check if the bug has already been reported!\n
  * https://savannah.nongnu.org/bugs/?group=lwip
  */
 
@@ -237,12 +223,12 @@
  * Use this mode if you do not run an OS on your system. \#define NO_SYS to 1.
  * Feed incoming packets to netif->input(pbuf, netif) function from mainloop,
  * *not* *from* *interrupt* *context*. You can allocate a @ref pbuf in interrupt
- * context and put them into a queue which is processed from mainloop.<br>
- * Call sys_check_timeouts() periodically in the mainloop.<br>
- * Porting: implement all functions in @ref sys_time, @ref sys_prot and
- * @ref compiler_abstraction.<br>
- * You can only use @ref callbackstyle_api in this mode.<br>
- * Sample code:
+ * context and put them into a queue which is processed from mainloop.\n
+ * Call sys_check_timeouts() periodically in the mainloop.\n
+ * Porting: implement all functions in @ref sys_time, @ref sys_prot and 
+ * @ref compiler_abstraction.\n
+ * You can only use @ref callbackstyle_api in this mode.\n
+ * Sample code:\n
  * @include NO_SYS_SampleCode.c
  */
 
@@ -251,14 +237,14 @@
  * @ingroup lwip
  * Use this mode if you run an OS on your system. It is recommended to
  * use an RTOS that correctly handles priority inversion and
- * to use @ref LWIP_TCPIP_CORE_LOCKING.<br>
- * Porting: implement all functions in @ref sys_layer.<br>
+ * to use @ref LWIP_TCPIP_CORE_LOCKING.\n
+ * Porting: implement all functions in @ref sys_layer.\n
  * You can use @ref callbackstyle_api together with @ref tcpip_callback,
  * and all @ref sequential_api.
  */
 
 /**
- * @page sys_init System initialization
+ * @page sys_init System initalization
 A truly complete and generic sequence for initializing the lwIP stack
 cannot be given because it depends on additional initializations for
 your runtime environment (e.g. timers).
@@ -279,12 +265,12 @@ Call these functions in the order of appearance:
 
   The init function pointer must point to a initialization function for
   your Ethernet netif interface. The following code illustrates its use.
-
+  
 @code{.c}
   err_t netif_if_init(struct netif *netif)
   {
     u8_t i;
-
+    
     for (i = 0; i < ETHARP_HWADDR_LEN; i++) {
       netif->hwaddr[i] = some_eth_addr[i];
     }
@@ -292,11 +278,11 @@ Call these functions in the order of appearance:
     return ERR_OK;
   }
 @endcode
-
+  
   For Ethernet drivers, the input function pointer must point to the lwIP
   function ethernet_input() declared in "netif/etharp.h". Other drivers
   must use ip_input() declared in "lwip/ip.h".
-
+  
 - netif_set_default(struct netif *netif)
   Registers the default network interface.
 
@@ -331,7 +317,7 @@ Call these functions in the order of appearance:
  * from pbuf- and memory management functions). Application threads using
  * the sequential- or socket API communicate with this main thread through
  * message passing.
- *
+ * 
  * As such, the list of functions that may be called from
  * other threads or an ISR is very limited! Only functions
  * from these API header files are thread-safe:
@@ -342,43 +328,43 @@ Call these functions in the order of appearance:
  * - pppapi.h
  * - sockets.h
  * - sys.h
- *
- * Additionally, memory (de-)allocation functions may be
+ * 
+ * Additionaly, memory (de-)allocation functions may be
  * called from multiple threads (not ISR!) with NO_SYS=0
  * since they are protected by @ref SYS_LIGHTWEIGHT_PROT and/or
  * semaphores.
- *
+ * 
  * Netconn or Socket API functions are thread safe against the
  * core thread but they are not reentrant at the control block
  * granularity level. That is, a UDP or TCP control block must
  * not be shared among multiple threads without proper locking.
- *
+ * 
  * If @ref SYS_LIGHTWEIGHT_PROT is set to 1 and
  * @ref LWIP_ALLOW_MEM_FREE_FROM_OTHER_CONTEXT is set to 1,
  * pbuf_free() may also be called from another thread or
  * an ISR (since only then, mem_free - for PBUF_RAM - may
  * be called from an ISR: otherwise, the HEAP is only
  * protected by semaphores).
- *
+ * 
  * How to get threading done right
  * -------------------------------
- *
+ * 
  * It is strongly recommended to implement the LWIP_ASSERT_CORE_LOCKED()
  * macro in an application that uses multithreading. lwIP code has
  * several places where a check for a correct thread context is
  * implemented which greatly helps the user to get threading done right.
- * See the example sys_arch.c files in unix and Win32 port
- * in the lwIP/contrib subdirectory.
- *
- * In short: Copy the functions sys_mark_tcpip_thread() and
+ * See the example sys_arch.c files in unix and Win32 port 
+ * in the contrib repository.
+ * 
+ * In short: Copy the functions sys_mark_tcpip_thread() and 
  * sys_check_core_locking() to your port and modify them to work with your OS.
  * Then let @ref LWIP_ASSERT_CORE_LOCKED() and @ref LWIP_MARK_TCPIP_THREAD()
  * point to these functions.
- *
+ * 
  * If you use @ref LWIP_TCPIP_CORE_LOCKING, you also need to copy and adapt
  * the functions sys_lock_tcpip_core() and sys_unlock_tcpip_core().
- * Let @ref LOCK_TCPIP_CORE() and @ref UNLOCK_TCPIP_CORE() point
- * to these functions.
+ * Let @ref LOCK_TCPIP_CORE() and @ref UNLOCK_TCPIP_CORE() point 
+ * to these functions. 
  */
 
 /**

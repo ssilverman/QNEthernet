@@ -2,7 +2,6 @@
 
 #include "lwip/priv/tcp_priv.h"
 #include "lwip/stats.h"
-#include "lwip/inet.h"
 #include "tcp_helper.h"
 #include "lwip/inet_chksum.h"
 
@@ -665,7 +664,6 @@ START_TEST(test_tcp_fast_rexmit_wraparound)
   check_seqnos(pcb->unsent, 6, seqnos);
   EXPECT(pcb->unacked == NULL);
   err = tcp_output(pcb);
-  EXPECT_RET(err == ERR_OK);
   EXPECT(txcounters.num_tx_calls == 2);
   EXPECT(txcounters.num_tx_bytes == 2 * (TCP_MSS + 40U));
   memset(&txcounters, 0, sizeof(txcounters));
@@ -754,7 +752,6 @@ START_TEST(test_tcp_rto_rexmit_wraparound)
   check_seqnos(pcb->unsent, 6, seqnos);
   EXPECT(pcb->unacked == NULL);
   err = tcp_output(pcb);
-  EXPECT_RET(err == ERR_OK);
   EXPECT(txcounters.num_tx_calls == 2);
   EXPECT(txcounters.num_tx_bytes == 2 * (TCP_MSS + 40U));
   memset(&txcounters, 0, sizeof(txcounters));
@@ -1103,7 +1100,6 @@ START_TEST(test_tcp_rto_tracking)
   check_seqnos(pcb->unsent, 5, seqnos);
   EXPECT(pcb->unacked == NULL);
   err = tcp_output(pcb);
-  EXPECT_RET(err == ERR_OK);
   EXPECT(txcounters.num_tx_calls == 5);
   EXPECT(txcounters.num_tx_bytes == 5 * (TCP_MSS + 40U));
   memset(&txcounters, 0, sizeof(txcounters));
@@ -1219,7 +1215,6 @@ static void test_tcp_rto_timeout_impl(int link_down)
   err = tcp_write(pcb, &tx_data[0], TCP_MSS, TCP_WRITE_FLAG_COPY);
   EXPECT_RET(err == ERR_OK);
   err = tcp_output(pcb);
-  EXPECT_RET(err == ERR_OK);
   EXPECT(txcounters.num_tx_calls == 1);
   EXPECT(txcounters.num_tx_bytes == 1 * (TCP_MSS + 40U));
   memset(&txcounters, 0, sizeof(txcounters));
@@ -1611,7 +1606,7 @@ START_TEST(test_tcp_persist_split)
 #if TCP_OVERSIZE_DBGCHECK
   /* Split segment already transmitted, should be at 0 */
   EXPECT(pcb->unacked->oversize_left == 0);
-  /* Remainder segment should match pcb value (which is 0) */
+  /* Remainder segement should match pcb value (which is 0) */
   EXPECT(pcb->unsent->oversize_left == pcb->unsent_oversize);
 #endif /* TCP_OVERSIZE_DBGCHECK */
 #endif /* TCP_OVERSIZE */

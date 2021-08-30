@@ -6,6 +6,9 @@
 #if !LWIP_STATS || !MEM_STATS
 #error "This tests needs MEM-statistics enabled"
 #endif
+#if LWIP_DNS
+#error "This test needs DNS turned off (as it mallocs on init)"
+#endif
 
 /* Setups/teardown functions */
 
