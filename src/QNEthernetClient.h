@@ -8,11 +8,13 @@
 #define QNE_ETHERNETCLIENT_H_
 
 // C++ includes
-#include <utility>
+#include <memory>
 
 #include <Client.h>
 #include <IPAddress.h>
+#include <Print.h>
 #include <WString.h>
+#include <lwip/ip_addr.h>
 #include "ConnectionHolder.h"
 
 namespace qindesign {
@@ -25,46 +27,14 @@ class EthernetClient final : public Client {
   EthernetClient();
   ~EthernetClient();
 
-  // We only want move semantics because the state should only be owned by one
-  // client at a time. When a moved object is destroyed, stop() is called, and
-  // we don't want the state to get closed.
-  // OLD: In theory, copying should work, but this will catch any odd uses.
+  // Ideally, we only want move semantics because the state should only be owned
+  // by one client at a time. However, user code may need to copy and the writer
+  // may not get that compiler errors are because std::move was required.
 
-  EthernetClient(const EthernetClient &) = delete;
-  EthernetClient &operator=(const EthernetClient &) = delete;
-
-  EthernetClient(EthernetClient &&other) {
-    connTimeout_ = other.connTimeout_;
-    connHolder_ = std::move(other.connHolder_);
-
-    // Move the state if internally managed
-    if (other.pHolder_ == &other.connHolder_) {
-      pHolder_ = &connHolder_;
-      if (other.pHolder_->state != nullptr) {
-        tcp_arg(other.pHolder_->state->pcb, pHolder_);
-        other.pHolder_->state = nullptr;
-      }
-    } else {
-      pHolder_ = other.pHolder_;
-    }
-  }
-
-  EthernetClient &operator=(EthernetClient &&other) {
-    connTimeout_ = other.connTimeout_;
-    connHolder_ = std::move(other.connHolder_);
-
-    // Move the state if internally managed
-    if (other.pHolder_ == &other.connHolder_) {
-      pHolder_ = &connHolder_;
-      if (other.pHolder_->state != nullptr) {
-        tcp_arg(other.pHolder_->state->pcb, pHolder_);
-        other.pHolder_->state = nullptr;
-      }
-    } else {
-      pHolder_ = other.pHolder_;
-    }
-    return *this;
-  }
+  EthernetClient(const EthernetClient &) = default;
+  EthernetClient &operator=(const EthernetClient &) = default;
+  EthernetClient(EthernetClient &&other) = default;
+  EthernetClient &operator=(EthernetClient &&other) = default;
 
   int connect(IPAddress ip, uint16_t port) override;
   int connect(const char *host, uint16_t port) override;
@@ -96,26 +66,10 @@ class EthernetClient final : public Client {
  private:
   // Set up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
-  //
-  // The state is externally managed if `holder` it not NULL and does not equal
-  // `&connHolder_`. In this case an external party will take care of stopping
-  // the connection and freeing the object.
-  EthernetClient(ConnectionHolder *holder);
-
-  // Set up an already-connected client. If the state is NULL then a new
-  // unconnected client will be created. If the state is not NULL then it is
-  // assumed that the client is already connected and the state will be set
-  // up accordingly.
-  //
-  // The state will be internally managed.
-  EthernetClient(ConnectionState *state);
+  EthernetClient(std::shared_ptr<ConnectionHolder> holder);
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
-  static err_t connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err);
-  static void errFunc(void *arg, err_t err);
-  static err_t recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
-                        err_t err);
 
   // Connection state
   uint16_t connTimeout_;
@@ -125,10 +79,7 @@ class EthernetClient final : public Client {
   IPAddress lookupIP_;  // Set by a DNS lookup
   volatile bool lookupFound_;
 
-  ConnectionHolder connHolder_;
-  ConnectionHolder *pHolder_;  // Points to the state being used
-                               // It is externally managed if it doesn't point
-                               // to connHolder_
+  std::shared_ptr<ConnectionHolder> conn_;
 
   friend class EthernetServer;
 };

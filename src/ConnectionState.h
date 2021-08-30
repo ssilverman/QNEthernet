@@ -18,33 +18,31 @@ namespace network {
 
 // ConnectionState holds all the state needed for a connection.
 struct ConnectionState final {
-  ConnectionState(tcp_pcb *tpcb)
-      : pcb(tpcb),
-        inBufPos(0) {
-    inBuf.reserve(TCP_WND);
+  // Creates a new object and sets `arg` as the pcb's arg. This also reserves
+  // TCP_WND bytes as buffer space.
+  ConnectionState(tcp_pcb *tpcb, void *arg) : pcb(tpcb) {
+    tcp_arg(tpcb, arg);
+    buf.reserve(TCP_WND);
   }
 
+  // Sets the callback arg to nullptr and then calls the 'remove' function. The
+  // object should be deleted before more 'tcp' functions are called.
   ~ConnectionState() {
+    // Ensure callbacks are no longer called with this as the argument
+    tcp_arg(pcb, nullptr);
+
     if (removeFunc != nullptr) {
       removeFunc(this);
     }
   }
 
-  // Connects the listeners. The `arg` parameter is what gets passed
-  // to `tcp_arg`.
-  void connect(void *arg, tcp_recv_fn recvFn, tcp_err_fn errFn) {
-    tcp_arg(pcb, arg);
-    tcp_err(pcb, errFn);
-    tcp_recv(pcb, recvFn);
-  }
-
   tcp_pcb *volatile pcb = nullptr;
 
-  // Incoming buffer
-  std::vector<unsigned char> inBuf;
-  volatile size_t inBufPos = 0;
+  // Incoming data buffer
+  std::vector<unsigned char> buf;
+  volatile size_t bufPos = 0;
 
-  // Called when this has been removed from the TCP stack.
+  // Called from the desctructor after the callback arg is deleted.
   std::function<void(ConnectionState *)> removeFunc = nullptr;
 };
 

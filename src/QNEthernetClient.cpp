@@ -13,6 +13,7 @@
 #include <lwip/dns.h>
 #include <lwip/netif.h>
 #include <lwip/tcp.h>
+#include "ConnectionManager.h"
 
 namespace qindesign {
 namespace network {
@@ -48,199 +49,18 @@ void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
   }
 }
 
-err_t EthernetClient::connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err) {
-  if (arg == nullptr || tpcb == nullptr) {
-    return ERR_VAL;
-  }
+EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
-
-  // TODO: Tell client what the error was
-
-  // TODO: Lock if not single-threaded
-  holder->connected = (err == ERR_OK);
-
-  if (holder->state != nullptr && err != ERR_OK) {
-    if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(tpcb) != ERR_OK) {
-        tcp_abort(tpcb);
-      }
-    }
-    delete holder->state;
-    holder->state = nullptr;
-  }
-  return ERR_OK;
-}
-
-// Check if there's data available in the buffer.
-inline bool isAvailable(const ConnectionState *state) {
-  return (0 <= state->inBufPos && state->inBufPos < state->inBuf.size());
-}
-
-// Copy any remaining data from the state to the "remaining" buffer. This first
-// clears the 'remaining' buffer.
-//
-// This assumes holder->state != NULL.
-void maybeCopyRemaining(ConnectionHolder *holder) {
-  auto &v = holder->remaining;
-  const auto *state = holder->state;
-
-  // Reset the 'remaining' buffer
-  v.clear();
-  holder->remainingPos = 0;
-
-  if (isAvailable(state)) {
-    v.insert(v.end(),
-             state->inBuf.cbegin() + state->inBufPos,
-             state->inBuf.cend());
-  }
-}
-
-void EthernetClient::errFunc(void *arg, err_t err) {
-  if (arg == nullptr) {
-    return;
-  }
-
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
-
-  // TODO: Tell client what the error was
-
-  // TODO: Lock if not single-threaded
-  holder->connected = (err == ERR_OK);
-
-  if (holder->state != nullptr && err != ERR_OK) {
-    if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(holder->state->pcb) != ERR_OK) {
-        tcp_abort(holder->state->pcb);
-      }
-    }
-
-    // Copy any buffered data
-    maybeCopyRemaining(holder);
-
-    delete holder->state;
-    holder->state = nullptr;
-  }
-}
-
-err_t EthernetClient::recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
-                               err_t err) {
-  if (arg == nullptr || tpcb == nullptr) {
-    return ERR_VAL;
-  }
-
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
-
-  // Check for any errors, and if so, clean up
-  if (p == nullptr || err != ERR_OK) {
-    holder->connected = false;
-
-    if (holder->state != nullptr) {
-      // Copy any buffered data
-      maybeCopyRemaining(holder);
-
-      if (p != nullptr) {
-        // Copy pbuf contents
-        while (p != nullptr) {
-          unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-          holder->remaining.insert(holder->remaining.end(),
-                                   &data[0], &data[p->len]);
-          p = p->next;
-        }
-      }
-    }
-
-    if (p != nullptr) {
-      tcp_recved(tpcb, p->tot_len);
-      pbuf_free(p);
-    }
-
-    // TODO: Tell client what the error was
-
-    // TODO: Lock if not single-threaded
-
-    if (holder->state != nullptr) {
-      delete holder->state;
-      holder->state = nullptr;
-
-      if (err != ERR_CLSD && err != ERR_ABRT) {
-        if (tcp_close(tpcb) != ERR_OK) {
-          tcp_abort(tpcb);
-          return ERR_ABRT;
-        }
-      }
-    }
-    return ERR_OK;
-  }
-
-  struct pbuf *pHead = p;
-
-  // TODO: Lock if not single-threaded
-  holder->connected = true;
-
-  ConnectionState *state = holder->state;
-  if (state != nullptr) {
-    auto &v = state->inBuf;
-
-    // Check that we can store all the data
-    size_t rem = v.capacity() - v.size() + state->inBufPos;
-    if (rem < p->tot_len) {
-      tcp_recved(tpcb, rem);
-      return ERR_INPROGRESS;  // ERR_MEM?
-    }
-
-    // If there isn't enough space at the end, move all the data in the buffer
-    // to the top
-    if (v.capacity() - v.size() < p->tot_len) {
-      size_t n = v.size() - state->inBufPos;
-      if (n > 0) {
-        std::copy_n(v.begin() + state->inBufPos, n, v.begin());
-        v.resize(n);
-      } else {
-        v.clear();
-      }
-      state->inBufPos = 0;
-    }
-
-    // Copy all the data
-    while (p != nullptr) {
-      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-      v.insert(v.end(), &data[0], &data[p->len]);
-      p = p->next;
-    }
-
-    tcp_recved(tpcb, pHead->tot_len);
-    pbuf_free(pHead);
-  }
-
-  return ERR_OK;
-}
-
-EthernetClient::EthernetClient() : EthernetClient(&connHolder_) {}
-
-EthernetClient::EthernetClient(ConnectionState *state)
-    : EthernetClient(&connHolder_) {
-  pHolder_->state = state;
-  if (state != nullptr) {
-    pHolder_->connected = true;
-  }
-}
-
-EthernetClient::EthernetClient(ConnectionHolder *holder)
+EthernetClient::EthernetClient(std::shared_ptr<ConnectionHolder> conn)
     : connTimeout_(1000),
       lookupHost_{},
       lookupIP_{INADDR_NONE},
       lookupFound_(false),
-      pHolder_(holder) {
-  if (holder == nullptr) {
-    pHolder_ = &connHolder_;
-  }
-}
+      conn_(conn) {}
 
 EthernetClient::~EthernetClient() {
-  if (pHolder_ == &connHolder_) {
-    stop();
-  }
+  // Questionable not to call stop(), but copy semantics demand that we don't
+  // stop();
 }
 
 // --------------------------------------------------------------------------
@@ -249,53 +69,22 @@ EthernetClient::~EthernetClient() {
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   // First close any existing connection
-  // TODO: Lock if not single-threaded
-  if (pHolder_->state != nullptr) {
-    // Re-connect, even if to the same destination
-    if (tcp_close(pHolder_->state->pcb) != ERR_OK) {
-      tcp_abort(pHolder_->state->pcb);
-    }
-    pHolder_->state = nullptr;
-  }
+  stop();
 
-  // Set to internally managed
-  pHolder_ = &connHolder_;
-  pHolder_->connected = false;
-  pHolder_->remainingPos = 0;
-  pHolder_->remaining.clear();
-
-  // Try to allocate
-  tcp_pcb *pcb = tcp_new();
-  if (pcb == nullptr) {
-    return false;
-  }
-
-  // Try to bind
-  if (tcp_bind(pcb, IP_ADDR_ANY, 0) != ERR_OK) {
-    tcp_abort(pcb);  // TODO: Should we abort here or do nothing?
-    return false;
-  }
-
-  pHolder_->state = new ConnectionState(pcb);
-  pHolder_->state->connect(pHolder_, &recvFunc, &errFunc);
-
-  // Try to connect
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
-  if (tcp_connect(pcb, &ipaddr, port, &connectedFunc) != ERR_OK) {
-    tcp_abort(pcb);  // TODO: Should we abort here or do nothing?
+  conn_ = ConnectionManager::instance().connect(&ipaddr, port);
+  if (conn_ == nullptr) {
     return false;
   }
 
   // Wait for a connection
   elapsedMillis timer;
-  do {
+  while (!conn_->connected && timer < connTimeout_) {
     // NOTE: Depends on Ethernet loop being called from yield()
     delay(kTimedWaitDelay);
-  } while (!pHolder_->connected && timer < connTimeout_);
-  if (!pHolder_->connected) {
-    if (tcp_close(pcb) != ERR_OK) {
-      tcp_abort(pcb);
-    }
+  }
+  if (!conn_->connected) {
+    stop();
     return false;
   }
 
@@ -312,10 +101,10 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       return connect(addr.addr, port);
     case ERR_INPROGRESS: {
       elapsedMillis timer;
-      do {
+      while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
         // NOTE: Depends on Ethernet loop being called from yield()
         delay(kTimedWaitDelay);
-      } while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout);
+      }
       if (lookupFound_) {
         return connect(lookupIP_, port);
       }
@@ -328,13 +117,13 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 }
 
 uint8_t EthernetClient::connected() {
-  // TODO: Lock if not single-threaded
-  return !pHolder_->remaining.empty() || pHolder_->connected;
+  return (conn_ != nullptr) &&
+         (!conn_->remaining.empty() || conn_->connected);
 }
 
 EthernetClient::operator bool() {
-  // TODO: Lock if not single-threaded
-  return pHolder_->connected;
+  return (conn_ != nullptr) &&
+         conn_->connected;
 }
 
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
@@ -342,17 +131,21 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
 }
 
 void EthernetClient::stop() {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return;
+  }
+
+  const auto &state = conn_->state;
   if (state == nullptr) {
     // This can happen if this object was moved to another
     // or if the connection was disconnected
+    conn_ = nullptr;
     return;
   }
 
   // First try to flush any data
-  // TODO: Should we wait a little bit?
   tcp_output(state->pcb);
+  yield();  // Maybe some data gets out
 
   if (tcp_close(state->pcb) != ERR_OK) {
     tcp_abort(state->pcb);
@@ -361,13 +154,17 @@ void EthernetClient::stop() {
     do {
       // NOTE: Depends on Ethernet loop being called from yield()
       delay(kTimedWaitDelay);
-    } while (pHolder_->connected && timer < connTimeout_);
+    } while (conn_->connected && timer < connTimeout_);
   }
+
+  conn_ = nullptr;
 }
 
 uint16_t EthernetClient::localPort() const {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -375,8 +172,10 @@ uint16_t EthernetClient::localPort() const {
 }
 
 IPAddress EthernetClient::remoteIP() const {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return INADDR_NONE;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return INADDR_NONE;
   }
@@ -384,8 +183,10 @@ IPAddress EthernetClient::remoteIP() const {
 }
 
 uint16_t EthernetClient::remotePort() const {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -397,8 +198,10 @@ uint16_t EthernetClient::remotePort() const {
 // --------------------------------------------------------------------------
 
 size_t EthernetClient::write(uint8_t b) {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -409,7 +212,7 @@ size_t EthernetClient::write(uint8_t b) {
     }
 
     // Wait for some data to flush
-    while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0) {
+    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
       delay(kWriteBufCheckDelay);
     }
     return 1;
@@ -422,8 +225,10 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     return 0;
   }
 
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -439,7 +244,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     }
 
     // Wait for some data to flush
-    while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0) {
+    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
       delay(kWriteBufCheckDelay);
     }
     return size;
@@ -448,8 +253,10 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::availableForWrite() {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -457,15 +264,17 @@ int EthernetClient::availableForWrite() {
 }
 
 void EthernetClient::flush() {
-  // TODO: Lock if not single-threaded
-  const ConnectionState *state = pHolder_->state;
+  if (conn_ == nullptr) {
+    return;
+  }
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return;
   }
   tcp_output(state->pcb);
 
   // Wait for some data to flush
-  while (pHolder_->connected && tcp_sndbuf(state->pcb) == 0) {
+  while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
     delay(kWriteBufCheckDelay);
   }
 }
@@ -474,13 +283,22 @@ void EthernetClient::flush() {
 //  Reception
 // --------------------------------------------------------------------------
 
+// Check if there's data available in the buffer.
+static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
+  return (state != nullptr) &&  // Necessary because a yield() may reset state
+         (0 <= state->bufPos && state->bufPos < state->buf.size());
+}
+
 int EthernetClient::available() {
-  // TODO: Lock if not single-threaded
-  if (!pHolder_->remaining.empty()) {
-    return pHolder_->remaining.size() - pHolder_->remainingPos;
+  if (conn_ == nullptr) {
+    return 0;
   }
 
-  const ConnectionState *state = pHolder_->state;
+  if (!conn_->remaining.empty()) {
+    return conn_->remaining.size() - conn_->remainingPos;
+  }
+
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -488,21 +306,25 @@ int EthernetClient::available() {
   if (!isAvailable(state)) {
     return 0;
   }
-  return state->inBuf.size() - state->inBufPos;
+  size_t retval = state->buf.size() - state->bufPos;
+  return retval;
 }
 
 int EthernetClient::read() {
-  // TODO: Lock if not single-threaded
-  if (!pHolder_->remaining.empty()) {
-    int c = pHolder_->remaining[pHolder_->remainingPos++];
-    if (pHolder_->remainingPos >= pHolder_->remaining.size()) {
-      pHolder_->remaining.clear();
-      pHolder_->remainingPos = 0;
+  if (conn_ == nullptr) {
+    return 0;
+  }
+
+  if (!conn_->remaining.empty()) {
+    int c = conn_->remaining[conn_->remainingPos++];
+    if (conn_->remainingPos >= conn_->remaining.size()) {
+      conn_->remaining.clear();
+      conn_->remainingPos = 0;
     }
     return c;
   }
 
-  ConnectionState *state = pHolder_->state;
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -510,28 +332,28 @@ int EthernetClient::read() {
   if (!isAvailable(state)) {
     return -1;
   }
-  return state->inBuf[state->inBufPos++];
+  return state->buf[state->bufPos++];
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
-  if (size == 0) {
+  if (size == 0 || conn_ == nullptr) {
     return 0;
   }
 
   // TODO: Lock if not single-threaded
-  auto &rem = pHolder_->remaining;
+  auto &rem = conn_->remaining;
   if (!rem.empty()) {
-    size = std::min(size, rem.size() - pHolder_->remainingPos);
-    std::copy_n(rem.cbegin() + pHolder_->remainingPos, size, buf);
-    pHolder_->remainingPos += size;
-    if (pHolder_->remainingPos >= rem.size()) {
-      pHolder_->remaining.clear();
-      pHolder_->remainingPos = 0;
+    size = std::min(size, rem.size() - conn_->remainingPos);
+    std::copy_n(rem.cbegin() + conn_->remainingPos, size, buf);
+    conn_->remainingPos += size;
+    if (conn_->remainingPos >= rem.size()) {
+      conn_->remaining.clear();
+      conn_->remainingPos = 0;
     }
     return size;
   }
 
-  ConnectionState *state = pHolder_->state;
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -539,19 +361,22 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   if (!isAvailable(state)) {
     return 0;
   }
-  size = std::min(size, state->inBuf.size() - state->inBufPos);
-  std::copy_n(&state->inBuf.data()[state->inBufPos], size, buf);
-  state->inBufPos += size;
+  size = std::min(size, state->buf.size() - state->bufPos);
+  std::copy_n(&state->buf.data()[state->bufPos], size, buf);
+  state->bufPos += size;
   return size;
 }
 
 int EthernetClient::peek() {
-  // TODO: Lock if not single-threaded
-  if (!pHolder_->remaining.empty()) {
-    return pHolder_->remaining[pHolder_->remainingPos];
+  if (conn_ == nullptr) {
+    return 0;
   }
 
-  const ConnectionState *state = pHolder_->state;
+  if (!conn_->remaining.empty()) {
+    return conn_->remaining[conn_->remainingPos];
+  }
+
+  const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -559,7 +384,7 @@ int EthernetClient::peek() {
   if (!isAvailable(state)) {
     return -1;
   }
-  return state->inBuf[state->inBufPos];
+  return state->buf[state->bufPos];
 }
 
 }  // namespace network

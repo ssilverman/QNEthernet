@@ -8,12 +8,10 @@
 #define QNE_ETHERNETSERVER_H_
 
 // C++ includes
-#include <vector>
+#include <memory>
 
-#include <Client.h>
+#include <Print.h>
 #include <Server.h>
-#include <lwip/tcp.h>
-#include "ConnectionHolder.h"
 #include "QNEthernetClient.h"
 
 namespace qindesign {
@@ -43,17 +41,8 @@ class EthernetServer final : public Server {
   operator bool();
 
  private:
-  static void errFunc(void *arg, err_t err);
-  static err_t acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err);
-  // static err_t recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
-  //                       err_t err);
-
   uint16_t port_;
-  tcp_pcb *volatile pcb_;
-
-  // tcp_pcb/data-available pairs.
-  // Note: Using std::unique_ptr doesn't seem to work properly. Memory pressure?
-  std::vector<ConnectionHolder *> clients_;
+  bool listening_;
 };
 
 }  // namespace network
