@@ -20,6 +20,9 @@ static constexpr size_t countof(const T (&)[N]) {
   return N;
 }
 
+// Recommended DNS TTL value, in seconds, per RFC 6762 "Multicast DNS".
+static constexpr uint32_t kTTL = 120;
+
 // static void srv_txt(struct mdns_service *service, void *txt_userdata) {
 //   err_t res = mdns_resp_add_service_txtitem(service, "path=/", 6);
 //   LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK), return );
@@ -33,7 +36,7 @@ bool MDNSClass::begin(const String &host) {
 
   mdns_resp_init();
 
-  if (mdns_resp_add_netif(netif_, host.c_str()) != ERR_OK) {
+  if (mdns_resp_add_netif(netif_, host.c_str(), kTTL) != ERR_OK) {
     netif_ = nullptr;
     return false;
   }
@@ -69,7 +72,8 @@ bool MDNSClass::addService(const String &type, const String &protocol,
 
   int8_t slot =
       mdns_resp_add_service(netif_, host_.c_str(), type.c_str(),
-                            toProto(protocol), port, nullptr, nullptr);
+                            toProto(protocol), port, kTTL,
+                            nullptr, nullptr);
   if (slot < 0 || countof(slots_) <= static_cast<size_t>(slot)) {
     return false;
   }
