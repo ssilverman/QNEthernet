@@ -62,10 +62,10 @@ and notes:
 * `Ethernet.linkStatus()` unabashedly returns a `bool` and not
   `EthernetLinkStatus`. You'll have to create your own mapping to an enum of
   this name if you want to use it in the Arduino fashion.
-* Files added to lwIP:
-  * sys_arch.c
-  * lwip/src/include/lwipopts.h &larr; Use this one for tuning
-  * lwip/src/include/arch/cc.h
+* Files that configure lwIP for our system:
+  * src/sys_arch.c
+  * src/lwipopts.h &larr; Use this one for tuning
+  * src/arch/cc.h
 * The main include file, `QNEthernet.h`, in addition to including the `Ethernet`
   instance, also includes the headers for `EthernetClient`, `EthernetServer`,
   and `EthernetUDP`.
