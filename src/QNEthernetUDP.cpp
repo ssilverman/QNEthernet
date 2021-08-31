@@ -62,7 +62,6 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
   struct pbuf *pHead = p;
 
-  // TODO: Lock if not single-threaded
   udp->inPacket_.clear();
   udp->inPacket_.reserve(p->tot_len);
   // TODO: Limit vector size
@@ -163,7 +162,6 @@ int EthernetUDP::parsePacket() {
     return 0;
   }
 
-  // TODO: Lock if not single-threaded
   packet_ = inPacket_;
   inPacket_.clear();
 
@@ -220,12 +218,10 @@ void EthernetUDP::flush() {
 }
 
 IPAddress EthernetUDP::remoteIP() {
-  // TODO: Lock if not single-threaded
   return inAddr_;
 }
 
 uint16_t EthernetUDP::remotePort() {
-  // TODO: Lock if not single-threaded
   return inPort_;
 }
 
