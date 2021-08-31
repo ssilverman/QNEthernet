@@ -10,7 +10,8 @@ The low-level code is based on code by Paul Stoffregen, here:\
 https://github.com/PaulStoffregen/teensy41_ethernet
 
 All the Teensy stuff is under the MIT license, so I'm making this library under
-the MIT license as well.
+the MIT license as well. Please see the _lwip-info/_ directory for the info
+files provided with the lwIP release.
 
 ## Differences, assumptions, and notes
 
