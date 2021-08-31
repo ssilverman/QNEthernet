@@ -72,8 +72,36 @@ and notes:
 
 ## How to run
 
-This library is by no means complete. In fact, I don't think it currently works
-with the Arduino IDE. You must use PlatformIO for now.
+This library works with both PlatformIO and Arduino. To use it with Arduino,
+here are a few steps to follow:
+
+1. Change `#include <Ethernet.h>` to `#include <QNEthernet.h>`. Note that this
+   include already includes the header for EthernetUDP, so you can remove any
+   `#include <EthernetUdp.h>`.
+2. Just below that, add: `using namespace qindesign::network;`
+3. You likely don't want or need to set/choose your own MAC address, so just
+   call Ethernet.begin() with no arguments. This version uses DHCP. The three-
+   argument version (IP, subnet mask, gateway) sets those parameters instead of
+   using DHCP. If you really want to set your own MAC address, for now, consult
+   the code.
+4. It may take 10-15 seconds to get a DHCP address (or whatever it is), so wait
+   for a little bit until Ethernet.localIP() isn't INADDR_NONE. You could use an
+   `elapsedMillis` with delays of, say, 10ms, until there's an address or the
+   elapsed time reaches a maximum (eg. 15000ms). Some example code:
+   ```c++
+   elapsedMillis timer;
+   while (Ethernet.localIP() == INADDR_NONE && timer < 15000) {
+     delay(1000);
+   }
+   if (Ethernet.localIP() == INADD_NONE) {
+     // Still haven't gotten an address
+     // Do stuff with this information
+   }
+   // Do stuff with the address
+   ```
+5. `Ethernet.hardwareStatus()` always returns zero and `Ethernet.linkStatus()`
+   returns a `bool` (i.e. not that `EthernetLinkStatus` enum).
+6. Most other things should be the same.
 
 ## Other notes
 
