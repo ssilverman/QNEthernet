@@ -241,6 +241,7 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
   }
 
   outIpaddr_ = IPADDR4_INIT(static_cast<uint32_t>(ip));
+  outPort_ = port;
   hasOutPacket_ = true;
   outPacket_.clear();
   return true;
