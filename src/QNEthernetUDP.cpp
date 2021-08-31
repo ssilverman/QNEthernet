@@ -288,7 +288,7 @@ int EthernetUDP::endPacket() {
   }
   pbuf_take(p, outPacket_.data(), outPacket_.size());
   outPacket_.clear();
-  bool retval = (udp_sendto(pcb_, nullptr, &outIpaddr_, outPort_) == ERR_OK);
+  bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;
 }
