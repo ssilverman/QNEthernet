@@ -16,7 +16,7 @@
 
 namespace qn = ::qindesign::network;
 
-qn::EthernetUDP udpIn{};
+qn::EthernetUDP udp{};
 qn::EthernetClient client{};
 qn::EthernetServer server{5000};
 
@@ -51,10 +51,12 @@ void setupOSC();
 void setupHTTPClient();
 void setupServer();
 void setupServerAvail();
+void setupSendUDP();
 void loopOSC();
 void loopHTTPClient();
 void loopServer();
 void loopServerAvail();
+void loopSendUDP();
 
 void setup() {
   Serial.begin(115200);
@@ -78,10 +80,11 @@ void setup() {
   // setupHTTPClient();
   // setupServer();
   // setupServerAvail();
+  // setupSendUDP();
 }
 
 void setupOSC() {
-  udpIn.begin(8000);
+  udp.begin(8000);
   Serial.println("Starting mDNS");
   MDNS.begin("qeth");
   MDNS.addService("_osc", "_udp", 8000);
@@ -98,18 +101,28 @@ void setupServerAvail() {
   server.begin();
 }
 
+void setupSendUDP() {
+  while (Ethernet.localIP() == INADDR_NONE) {
+    delay(1000);
+  }
+  Serial.print("Local IP: ");
+  Ethernet.localIP().printTo(Serial);
+  Serial.println();
+}
+
 void loop() {
   loopOSC();
   // loopHTTPClient();
   // loopServer();
   // loopServerAvail();
+  // loopSendUDP();
 }
 
 void loopOSC() {
-  int size = udpIn.parsePacket();
+  int size = udp.parsePacket();
   if (size > 0) {
     unsigned char buf[size];
-    udpIn.read(buf, size);
+    udp.read(buf, size);
     printOSC(Serial, buf, size);
   }
 }
@@ -200,4 +213,13 @@ void loopServerAvail() {
     // to any clients connected to the server:
     server.write(client.read());
   }
+}
+
+void loopSendUDP() {
+  udp.beginPacket(IPAddress{255, 255, 255, 255}, 5000);
+  udp.write("Hello!");
+  udp.endPacket();
+  Serial.println("Sent.");
+
+  delay(2000);
 }
