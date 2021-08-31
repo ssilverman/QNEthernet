@@ -9,6 +9,9 @@ and this project adheres to
 ### Added
 * This CHANGELOG.
 
+### Changed
+* Updated lwIP to v2.1.3-rc1.
+
 ## [0.3.0]
 
 ### Changed
