@@ -4,6 +4,8 @@
 // OSC.cpp contains OSC function definitions.
 // This file is part of the QNEthernet library.
 
+// Note: This needs the LiteOSCParser library.
+
 #include "OSC.h"
 
 // C++ includes
