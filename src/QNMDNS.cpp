@@ -133,7 +133,7 @@ bool MDNSClass::removeService(const String &type, const String &protocol,
   return (mdns_resp_del_service(netif_, found) == ERR_OK);
 }
 
-int MDNSClass::ttl() const {
+uint32_t MDNSClass::ttl() const {
   return kTTL;
 }
 
