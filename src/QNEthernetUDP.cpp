@@ -124,7 +124,7 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
   }
 
   // Check for a multicast address
-  if ((static_cast<uint32_t>(ip) & 0xF0000000) != 0xE0000000) {
+  if (ip[0] != 0xE0) {
     return false;
   }
 
