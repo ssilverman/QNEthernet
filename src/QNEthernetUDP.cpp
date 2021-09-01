@@ -158,7 +158,7 @@ int EthernetUDP::parsePacket() {
   }
 }
 
-inline bool EthernetUDP::isAvailable() {
+inline bool EthernetUDP::isAvailable() const {
   return (0 <= packetPos_ && static_cast<size_t>(packetPos_) < packet_.size());
 }
 

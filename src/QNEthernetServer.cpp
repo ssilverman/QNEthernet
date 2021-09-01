@@ -27,7 +27,7 @@ void EthernetServer::begin() {
   listening_ = ConnectionManager::instance().listen(port_);
 }
 
-EthernetClient EthernetServer::accept() {
+EthernetClient EthernetServer::accept() const {
   std::shared_ptr<ConnectionHolder> conn =
       ConnectionManager::instance().findConnected(port_);
   if (conn != nullptr) {
@@ -37,7 +37,7 @@ EthernetClient EthernetServer::accept() {
   return EthernetClient{};
 }
 
-EthernetClient EthernetServer::available() {
+EthernetClient EthernetServer::available() const {
   std::shared_ptr<ConnectionHolder> conn =
       ConnectionManager::instance().findAvailable(port_);
   if (conn != nullptr) {

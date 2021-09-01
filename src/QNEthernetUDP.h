@@ -62,7 +62,7 @@ class EthernetUDP final : public UDP {
                        const ip_addr_t *addr, u16_t port);
 
   // Check if there's data still available in the packet.
-  bool isAvailable();
+  bool isAvailable() const;
 
   udp_pcb *pcb_;
 

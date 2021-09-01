@@ -24,8 +24,8 @@ class EthernetServer final : public Server {
 
   void begin() override;
 
-  EthernetClient accept();
-  EthernetClient available();
+  EthernetClient accept() const;
+  EthernetClient available() const;
 
   // Bring Print::write functions into scope
   using Print::write;
