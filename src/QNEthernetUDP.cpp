@@ -11,6 +11,7 @@
 
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
+#include <lwip/igmp.h>
 
 extern const int kMTU;
 
@@ -116,32 +117,15 @@ uint8_t EthernetUDP::begin(uint16_t localPort) {
 }
 
 uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
-  if (pcb_ == nullptr) {
-    pcb_ = udp_new();
-  }
-  if (pcb_ == nullptr) {
+  if (!begin(localPort)) {
     return false;
   }
 
-  // Check for a multicast address
-  if (ip[0] != 0xE0) {
+  const ip_addr_t groupaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
+  if (igmp_joingroup(IP_ANY_TYPE, &groupaddr) != ERR_OK) {
+    udp_recv(pcb_, nullptr, nullptr);
     return false;
   }
-
-  const ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
-  if (udp_bind(pcb_, &ipaddr, localPort) != ERR_OK) {
-    return false;
-  }
-
-  if (inPacket_.capacity() < kMaxUDPSize) {
-    inPacket_.reserve(kMaxUDPSize);
-  }
-  if (packet_.capacity() < kMaxUDPSize) {
-    packet_.reserve(kMaxUDPSize);
-  }
-
-  udp_recv(pcb_, recvFunc, this);
-
   return true;
 }
 
