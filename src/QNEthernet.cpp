@@ -98,6 +98,18 @@ void EthernetClass::begin(const IPAddress &ip,
   startLoopInYield();
 }
 
+bool EthernetClass::waitForLocalIP(uint32_t timeout) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+
+  elapsedMillis timer;
+  while (netif_ip_addr4(netif_)->addr == 0 && timer < timeout) {
+    delay(500);
+  }
+  return (netif_ip_addr4(netif_)->addr != 0);
+}
+
 int EthernetClass::begin(const uint8_t mac[6]) {
   std::copy_n(mac, kMACAddrSize, mac_);
   return begin();

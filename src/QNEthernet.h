@@ -40,8 +40,15 @@ class EthernetClass final {
   void loop();
 
   // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
-  // client was successful.
+  // client was successful. Note that when this returns, an IP address may not
+  // yet have been acquired.
+  //
+  // See: waitForLocalIP(timeout)
   bool begin();
+
+  // Waits for an IP address and returns whether one was acquired. This waits in
+  // increments of 500 ms up to the specified timeout.
+  bool waitForLocalIP(uint32_t timeout);
 
   void begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
