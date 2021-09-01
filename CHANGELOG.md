@@ -12,6 +12,8 @@ and this project adheres to
 * Added the ability to add TXT items to mDNS services.
 * New `Ethernet::waitForLocalIP(timeout)` function that waits for a
   DHCP-assigned address.
+* Added the ability to reannounce mDNS services. This is useful to prevent the
+  entries from disappearing.
 
 ### Changed
 * Updated lwIP to v2.1.3-rc1.
