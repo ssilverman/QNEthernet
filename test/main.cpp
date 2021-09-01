@@ -14,11 +14,11 @@
 #include "QNMDNS.h"
 #include "OSC.h"
 
-namespace qn = ::qindesign::network;
+using namespace qindesign::network;
 
-qn::EthernetUDP udp{};
-qn::EthernetClient client{};
-qn::EthernetServer server{5000};
+EthernetUDP udp{};
+EthernetClient client{};
+EthernetServer server{5000};
 
 static void netif_status_callback(struct netif *netif) {
   static char ip[IPADDR_STRLEN_MAX];
@@ -169,11 +169,11 @@ void loopHTTPClient() {
   }
 }
 
-qn::EthernetClient clients[8];
+EthernetClient clients[8];
 
 void loopServer() {
   // check for any new client connecting, and say hello (before any incoming data)
-  qn::EthernetClient newClient = server.accept();
+  EthernetClient newClient = server.accept();
   if (newClient) {
     for (int i = 0; i < 8; i++) {
       if (!clients[i]) {
@@ -207,7 +207,7 @@ void loopServer() {
 
 void loopServerAvail() {
   // if an incoming client connects, there will be bytes available to read:
-  qn::EthernetClient client = server.available();
+  EthernetClient client = server.available();
   if (client.connected()) {
     // read bytes from the incoming client and write them back
     // to any clients connected to the server:

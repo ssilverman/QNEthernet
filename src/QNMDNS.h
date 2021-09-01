@@ -90,9 +90,9 @@ class MDNSClass final {
   Service slots_[MDNS_MAX_SERVICES];
 };
 
+extern MDNSClass MDNS;
+
 }  // namespace network
 }  // namespace qindesign
-
-extern qindesign::network::MDNSClass MDNS;
 
 #endif  // QNE_MDNS_H_

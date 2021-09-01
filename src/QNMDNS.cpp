@@ -11,11 +11,11 @@
 
 #include <lwip/apps/mdns.h>
 
-// Global definitions for Arduino
-qindesign::network::MDNSClass MDNS;
-
 namespace qindesign {
 namespace network {
+
+// Global definitions for Arduino
+MDNSClass MDNS;
 
 // Count array elements.
 template <typename T, size_t N>

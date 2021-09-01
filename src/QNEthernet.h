@@ -99,9 +99,9 @@ class EthernetClass final {
   bool isLinkUp_ = false;
 };
 
+extern EthernetClass Ethernet;
+
 }  // namespace network
 }  // namespace qindesign
-
-extern qindesign::network::EthernetClass Ethernet;
 
 #endif  // QNE_ETHERNET_H_

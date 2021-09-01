@@ -19,9 +19,12 @@
 
 extern const int kMTU;
 
+namespace qindesign {
+namespace network {
+
 // Global definitions for Arduino
 static EventResponder ethLoop;
-qindesign::network::EthernetClass Ethernet;
+EthernetClass Ethernet;
 
 // Start the loop() call in yield() via EventResponder.
 void startLoopInYield() {
@@ -31,9 +34,6 @@ void startLoopInYield() {
   });
   ethLoop.triggerEvent();
 }
-
-namespace qindesign {
-namespace network {
 
 EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
