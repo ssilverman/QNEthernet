@@ -106,7 +106,7 @@ bool MDNSClass::addService(const String &type, const String &protocol,
 
 int MDNSClass::findService(const String &type, const String &protocol,
                            uint16_t port) {
-  Service service{true, type, protocol, port};
+  Service service{true, type, protocol, port, nullptr};
   for (size_t i = 0; i < countof(slots_); i++) {
     if (slots_[i] == service) {
       return i;
