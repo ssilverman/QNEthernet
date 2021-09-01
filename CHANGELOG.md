@@ -14,6 +14,7 @@ and this project adheres to
   DHCP-assigned address.
 * Added the ability to re-announce mDNS services. This is useful to prevent the
   entries from disappearing.
+* Added mDNS notes to the README.
 
 ### Changed
 * Updated lwIP to v2.1.3-rc1.

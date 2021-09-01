@@ -105,6 +105,32 @@ here are a few steps to follow:
    returns a `bool` (i.e. not that `EthernetLinkStatus` enum).
 6. Most other things should be the same.
 
+## mDNS services
+
+It's possible to register mDNS services. Some notes:
+* Similar to `Ethernet`, there is a global `MDNS` object. It too is in the
+  `qindesign::network` namespace.
+* Registered services disappear after the TTL (currently set to 120 seconds),
+  and sometimes earlier. I'm not sure what the cause is yet. (Not receiving
+  multicast?) You might find yourself needing to re-announce things every _TTL_
+  seconds. This is the purpose of the `MDNS.ttl()` and `MDNS.announce()`
+  functions.
+* It's possible to add TXT items when adding a service. For example, the
+  following code adds "path=/" to the TXT of an HTTP service:
+  ```c++
+    MDNS.begin("Device Name");
+    MDNS.addService("_http", "_tcp", 80, []() {
+      return std::vector<String>{"path=/"};
+    });
+  ```
+  You can add more than one item to the TXT record by adding to the vector.
+* When adding a service, the function that returns TXT items defaults to NULL,
+  so it's not necessary to specify that parameter. For example:
+  ```c++
+    MDNS.begin("Device Name");
+    MDNS.addService("_http", "_tcp", 80);
+  ```
+
 ## Other notes
 
 I'm not 100% percent certain where this library will go, but I want it to be
