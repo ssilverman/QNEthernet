@@ -8,9 +8,19 @@ and this project adheres to
 
 ### Added
 * This CHANGELOG.
+* Instructions in the README for how to use with Arduino.
+* Added the ability to add TXT items to mDNS services.
+* New `Ethernet::waitForLocalIP(timeout)` function that waits for a
+  DHCP-assigned address.
 
 ### Changed
 * Updated lwIP to v2.1.3-rc1.
+* Moved global objects (`Ethernet` and `MDNS`) into the `qindesign::network`
+  namespace.
+
+### Fixed
+* UDP multicast address check was checking the wrong byte.
+* UDP multicast now IGMP joins the group.
 
 ## [0.3.0]
 
