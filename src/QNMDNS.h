@@ -46,6 +46,16 @@ class MDNSClass final {
   // Remove a service.
   bool removeService(const String &type, const String &protocol, uint16_t port);
 
+  // The following functions are for periodically re-announcing the services.
+  // Service entries seem to disappear after the TTL and sometimes earlier, so a
+  // re-announcement may be required.
+
+  // Return the TTL, in seconds.
+  int ttl() const;
+
+  // Perform the announcement.
+  void announce() const;
+
  private:
   struct Service {
     bool operator==(const Service &other) {

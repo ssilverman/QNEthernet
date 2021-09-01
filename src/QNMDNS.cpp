@@ -133,5 +133,16 @@ bool MDNSClass::removeService(const String &type, const String &protocol,
   return (mdns_resp_del_service(netif_, found) == ERR_OK);
 }
 
+int MDNSClass::ttl() const {
+  return kTTL;
+}
+
+void MDNSClass::announce() const {
+  if (netif_ == nullptr) {
+    return;
+  }
+  mdns_resp_announce(netif_);
+}
+
 }  // namespace network
 }  // namespace qindesign
