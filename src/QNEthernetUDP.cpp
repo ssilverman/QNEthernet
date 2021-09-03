@@ -12,6 +12,7 @@
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/igmp.h>
+#include <lwip/opt.h>
 
 extern const int kMTU;
 

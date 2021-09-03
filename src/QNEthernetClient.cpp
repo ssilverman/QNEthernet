@@ -12,6 +12,7 @@
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/netif.h>
+#include <lwip/opt.h>
 #include <lwip/tcp.h>
 #include "ConnectionManager.h"
 
