@@ -15,6 +15,14 @@ and this project adheres to
   `yield()` anyway.
 * No longer looping when checking the TCP send buffer in the client write
   functions. Instead, just using an `if`.
+* The client now takes more opportunities to set the internal connection pointer
+  to NULL, meaning the caller doesn't necessarily need to guarantee they call
+  `stop()` if other I/O functions are being used to check state or to write,
+  for example.
+
+### Fixed
+* Fixed client functions to also check for connected status.
+* Fixed client `read()` and `peek()` to return -1 on no connection.
 
 ## [0.4.0]
 
