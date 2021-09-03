@@ -42,7 +42,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting WebServer with NativeEthernet using QNEthernet Library");
+  Serial.println("\nStarting WebServer using QNEthernet Library");
 
 #if USING_DHCP
   // Start the Ethernet connection, using DHCP
