@@ -6,6 +6,16 @@ and this project adheres to
 
 ## [0.5.0-snapshot]
 
+### Added
+* Added a "Code style" section to the README.
+* Added link-status and address-changed callbacks.
+
+### Changed
+* Changed all the delays to yields because `delay()` just loops and calls
+  `yield()` anyway.
+* No longer looping when checking the TCP send buffer in the client write
+  functions. Instead, just using an `if`.
+
 ## [0.4.0]
 
 ### Added
@@ -48,10 +58,12 @@ and this project adheres to
   to avoid having to call `yield()` themselves.
 
 ### Changed
-* Removed all the atomic fences.
 * Brought `Print::write` functions into scope for Client, Server, and UDP by
   using a `using Print::write` directive.
 * New centralized connection management.
+
+### Removed
+* Removed all the atomic fences.
 
 ### Fixed
 * Fixed `EthernetClass::begin()` return value; it was the opposite.
