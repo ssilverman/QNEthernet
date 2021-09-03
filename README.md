@@ -35,6 +35,9 @@ and notes:
   * `begin(ipaddr, netmask, gw)`
   * `mtu()`
   * `waitForLocalIP()`
+  * The callback-adding functions:
+    * `onLinkStatus(cb)`
+    * `onAddressChanged(cb)`
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or
