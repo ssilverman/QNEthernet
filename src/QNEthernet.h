@@ -46,8 +46,8 @@ class EthernetClass final {
   // See: waitForLocalIP(timeout)
   bool begin();
 
-  // Waits for an IP address and returns whether one was acquired. This waits in
-  // increments of 500 ms up to the specified timeout.
+  // Waits, up to the specified timeout, for an IP address and returns whether
+  // one was acquired.
   bool waitForLocalIP(uint32_t timeout);
 
   void begin(const IPAddress &ipaddr,

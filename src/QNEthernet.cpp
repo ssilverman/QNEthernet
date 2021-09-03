@@ -105,7 +105,7 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) {
 
   elapsedMillis timer;
   while (netif_ip_addr4(netif_)->addr == 0 && timer < timeout) {
-    delay(500);
+    yield();
   }
   return (netif_ip_addr4(netif_)->addr != 0);
 }

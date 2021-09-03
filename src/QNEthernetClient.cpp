@@ -19,20 +19,9 @@
 namespace qindesign {
 namespace network {
 
-// Use constants for the following delays and timeouts until we decide on
-// something better.
-
-// Polling interval when waiting for:
-// * Connection
-// * Stop connection
-static constexpr uint32_t kTimedWaitDelay = 10;
-
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-
-// Delay when polling output to see if the write buffer is full.
-static constexpr uint32_t kWriteBufCheckDelay = 10;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
@@ -81,7 +70,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   elapsedMillis timer;
   while (!conn_->connected && timer < connTimeout_) {
     // NOTE: Depends on Ethernet loop being called from yield()
-    delay(kTimedWaitDelay);
+    yield();
   }
   if (!conn_->connected) {
     stop();
@@ -103,7 +92,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       elapsedMillis timer;
       while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(kTimedWaitDelay);
+        yield();
       }
       if (lookupFound_) {
         return connect(lookupIP_, port);
@@ -153,10 +142,10 @@ void EthernetClient::stop() {
       tcp_abort(state->pcb);
     } else {
       elapsedMillis timer;
-      do {
+      while (conn_->connected && timer < connTimeout_) {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(kTimedWaitDelay);
-      } while (conn_->connected && timer < connTimeout_);
+        yield();
+      }
     }
   }
 
@@ -216,7 +205,7 @@ size_t EthernetClient::write(uint8_t b) {
 
     // Wait for some data to flush
     while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      delay(kWriteBufCheckDelay);
+      yield();
     }
     return 1;
   }
@@ -248,7 +237,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
     // Wait for some data to flush
     while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      delay(kWriteBufCheckDelay);
+      yield();
     }
     return size;
   }
@@ -278,7 +267,7 @@ void EthernetClient::flush() {
 
   // Wait for some data to flush
   while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    delay(kWriteBufCheckDelay);
+    yield();
   }
 }
 
