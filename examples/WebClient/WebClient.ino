@@ -51,7 +51,7 @@ void setup()
 
   Serial.println("\nStarting WebClient using QNEthernet Library");
 
-  #if USING_DHCP
+#if USING_DHCP
   // Start the Ethernet connection, using DHCP
   Serial.print("Initialize Ethernet using DHCP => ");
   Ethernet.begin();
