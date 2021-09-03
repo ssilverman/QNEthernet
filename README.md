@@ -148,6 +148,14 @@ Input is welcome.
 * Perhaps zero-copy is an option.
 * Make a test suite.
 
+## Code style
+
+Code style for this project mostly follows the
+[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
+
+Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
+[C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
+
 ## References
 
 * lwIP testing by manitou:
