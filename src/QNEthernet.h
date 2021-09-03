@@ -9,6 +9,7 @@
 
 // C++ includes
 #include <cstdint>
+#include <functional>
 
 #include <IPAddress.h>
 #include <elapsedMillis.h>
@@ -59,6 +60,17 @@ class EthernetClass final {
 
   bool linkStatus() const;
 
+  // Set a link status callback.
+  void onLinkStatus(std::function<void(bool state)> cb) {
+    linkStatusCB_ = cb;
+  }
+
+  // Set an address changed callback. This will be called if any of the three
+  // addresses changed.
+  void onAddressChanged(std::function<void()> cb) {
+    addressChangedCB_ = cb;
+  }
+
   IPAddress localIP() const;
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
@@ -92,11 +104,17 @@ class EthernetClass final {
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
 
  private:
+  static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
+                             const netif_ext_callback_args_t *args);
+
   elapsedMillis loopTimer_;
 
   uint8_t mac_[kMACAddrSize];
   struct netif *netif_ = nullptr;
-  bool isLinkUp_ = false;
+
+  // Callbacks
+  std::function<void(bool state)> linkStatusCB_ = nullptr;
+  std::function<void()> addressChangedCB_ = nullptr;
 };
 
 extern EthernetClass Ethernet;

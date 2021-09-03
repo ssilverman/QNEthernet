@@ -35,6 +35,28 @@ void startLoopInYield() {
   ethLoop.triggerEvent();
 }
 
+NETIF_DECLARE_EXT_CALLBACK(netif_callback);
+
+void EthernetClass::netifEventFunc(struct netif *netif,
+                                   netif_nsc_reason_t reason,
+                                   const netif_ext_callback_args_t *args) {
+  if (netif != Ethernet.netif_) {
+    return;
+  }
+
+  if (reason & LWIP_NSC_LINK_CHANGED) {
+    if (Ethernet.linkStatusCB_ != nullptr && args != nullptr) {
+      Ethernet.linkStatusCB_(args->link_changed.state != 0);
+    }
+  }
+
+  if (reason & LWIP_NSC_IPV4_SETTINGS_CHANGED) {
+    if (Ethernet.addressChangedCB_ != nullptr) {
+      Ethernet.addressChangedCB_();
+    }
+  }
+}
+
 EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
 EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
@@ -75,8 +97,12 @@ bool EthernetClass::begin() {
   netif_ = netif_default;
   netif_set_up(netif_);
 
+  // Set up the callbacks
+  netif_add_ext_callback(&netif_callback, &netifEventFunc);
+
   bool retval = (dhcp_start(netif_) == ERR_OK);
   startLoopInYield();
+
   return retval;
 }
 
@@ -94,6 +120,9 @@ void EthernetClass::begin(const IPAddress &ip,
   enet_init(mac_, &ipaddr, &netmask, &gw);
   netif_ = netif_default;
   netif_set_up(netif_);
+
+  // Set up the callbacks
+  netif_add_ext_callback(&netif_callback, &netifEventFunc);
 
   startLoopInYield();
 }
