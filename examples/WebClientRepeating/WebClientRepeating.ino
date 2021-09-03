@@ -82,7 +82,7 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting WebClientRepeating with NativeEthernet using QNEthernet Library");
+  Serial.println("\nStarting WebClientRepeating using QNEthernet Library");
 
 #if USING_DHCP
   // Start the Ethernet connection, using DHCP
