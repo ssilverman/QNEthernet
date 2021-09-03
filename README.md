@@ -86,6 +86,8 @@ and notes:
 * The main include file, `QNEthernet.h`, in addition to including the `Ethernet`
   instance, also includes the headers for `EthernetClient`, `EthernetServer`,
   and `EthernetUDP`.
+* All four address-setting functions (IP, subnet mask, gateway, DNS) do nothing
+  unless the system has been initialized.
 
 ## How to run
 

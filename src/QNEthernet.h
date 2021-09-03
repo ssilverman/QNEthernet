@@ -75,6 +75,9 @@ class EthernetClass final {
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
   IPAddress dnsServerIP() const;
+
+  // None of the following address setting functions do anything unless the
+  // system is initialized after a `begin` call
   void setLocalIP(const IPAddress &localIP);
   void setSubnetMask(const IPAddress &subnetMask);
   void setGatewayIP(const IPAddress &gatewayIP);
