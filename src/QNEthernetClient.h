@@ -46,9 +46,9 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
-  uint16_t localPort() const;
-  IPAddress remoteIP() const;
-  uint16_t remotePort() const;
+  uint16_t localPort();
+  IPAddress remoteIP();
+  uint16_t remotePort();
 
   // Bring Print::write functions into scope
   using Print::write;

@@ -106,13 +106,27 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 }
 
 uint8_t EthernetClient::connected() {
-  return (conn_ != nullptr) &&
-         (!conn_->remaining.empty() || conn_->connected);
+  if (conn_ == nullptr) {
+    return false;
+  }
+  if (!conn_->connected && conn_->remaining.empty()) {
+    conn_ = nullptr;
+    return false;
+  }
+  return true;
 }
 
 EthernetClient::operator bool() {
-  return (conn_ != nullptr) &&
-         conn_->connected;
+  if (conn_ == nullptr) {
+    return false;
+  }
+  if (!conn_->connected) {
+    if (conn_->remaining.empty()) {
+      conn_ = nullptr;
+    }
+    return false;
+  }
+  return true;
 }
 
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
@@ -154,10 +168,11 @@ void EthernetClient::stop() {
   conn_ = nullptr;
 }
 
-uint16_t EthernetClient::localPort() const {
-  if (conn_ == nullptr || !conn_->connected) {
+uint16_t EthernetClient::localPort() {
+  if (!(*this)) {
     return 0;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -165,10 +180,11 @@ uint16_t EthernetClient::localPort() const {
   return state->pcb->local_port;
 }
 
-IPAddress EthernetClient::remoteIP() const {
-  if (conn_ == nullptr || !conn_->connected) {
+IPAddress EthernetClient::remoteIP() {
+  if (!(*this)) {
     return INADDR_NONE;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return INADDR_NONE;
@@ -176,10 +192,11 @@ IPAddress EthernetClient::remoteIP() const {
   return state->pcb->remote_ip.addr;
 }
 
-uint16_t EthernetClient::remotePort() const {
-  if (conn_ == nullptr || !conn_->connected) {
+uint16_t EthernetClient::remotePort() {
+  if (!(*this)) {
     return 0;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -192,7 +209,7 @@ uint16_t EthernetClient::remotePort() const {
 // --------------------------------------------------------------------------
 
 size_t EthernetClient::write(uint8_t b) {
-  if (conn_ == nullptr || !conn_->connected) {
+  if (!(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
@@ -215,13 +232,10 @@ size_t EthernetClient::write(uint8_t b) {
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
-  if (size == 0) {
+  if (!(*this) || size == 0) {
     return 0;
   }
 
-  if (conn_ == nullptr || !conn_->connected) {
-    return 0;
-  }
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -247,7 +261,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::availableForWrite() {
-  if (conn_ == nullptr || !conn_->connected) {
+  if (!(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
@@ -258,7 +272,7 @@ int EthernetClient::availableForWrite() {
 }
 
 void EthernetClient::flush() {
-  if (conn_ == nullptr || !conn_->connected) {
+  if (!(*this)) {
     return;
   }
   const auto &state = conn_->state;
@@ -293,6 +307,7 @@ int EthernetClient::available() {
   }
 
   if (!conn_->connected) {
+    conn_ = nullptr;
     return 0;
   }
 
@@ -324,6 +339,7 @@ int EthernetClient::read() {
   }
 
   if (!conn_->connected) {
+    conn_ = nullptr;
     return -1;
   }
 
@@ -340,13 +356,16 @@ int EthernetClient::read() {
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
-  if (size == 0 || conn_ == nullptr) {
+  if (conn_ == nullptr) {
     return 0;
   }
 
   // TODO: Lock if not single-threaded
   auto &rem = conn_->remaining;
   if (!rem.empty()) {
+    if (size == 0) {
+      return 0;
+    }
     size = std::min(size, rem.size() - conn_->remainingPos);
     std::copy_n(rem.cbegin() + conn_->remainingPos, size, buf);
     conn_->remainingPos += size;
@@ -358,6 +377,10 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   }
 
   if (!conn_->connected) {
+    conn_ = nullptr;
+    return 0;
+  }
+  if (size == 0) {
     return 0;
   }
 
@@ -386,6 +409,7 @@ int EthernetClient::peek() {
   }
 
   if (!conn_->connected) {
+    conn_ = nullptr;
     return -1;
   }
 
