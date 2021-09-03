@@ -204,7 +204,7 @@ size_t EthernetClient::write(uint8_t b) {
     }
 
     // Wait for some data to flush
-    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
       yield();
     }
     return 1;
@@ -236,7 +236,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     }
 
     // Wait for some data to flush
-    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
       yield();
     }
     return size;
@@ -266,7 +266,7 @@ void EthernetClient::flush() {
   tcp_output(state->pcb);
 
   // Wait for some data to flush
-  while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
     yield();
   }
 }
