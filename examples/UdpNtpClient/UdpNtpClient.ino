@@ -73,19 +73,17 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
 
-  Serial.println("\nStarting UdpNtpClient with NativeEthernet using QNEthernet Library");
-
-  // start the Ethernet connection:
-  Serial.println("Initialize Ethernet with DHCP:");
+  Serial.println("\nStarting UdpNtpClient using QNEthernet Library");
 
 #if USING_DHCP
-  // Using DHCP
-  Serial.print("Using DHCP => ");
+  // Start the Ethernet connection, using DHCP
+  Serial.print("Initialize Ethernet using DHCP => ");
   Ethernet.begin();
-#else  Ethernet.setDNSServerIP(mydnsServer);
+#else  
+  Ethernet.setDNSServerIP(mydnsServer)  
   
-  // Using static IP
-  Serial.print("Using static IP => ");
+  // Start the Ethernet connection, using static IP
+  Serial.print("Initialize Ethernet using static IP => ");
   Ethernet.begin(myIP, myNetmask, myGW);
 #endif
 
@@ -170,5 +168,4 @@ void loop()
   
   // wait ten seconds before asking for the time again
   delay(10000);
-  Ethernet.maintain();
 }
