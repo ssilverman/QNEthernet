@@ -191,7 +191,7 @@ void loopServer() {
 
   // check for incoming data from all clients
   for (int i = 0; i < 8; i++) {
-    while (clients[i] && clients[i].available() > 0) {
+    while (clients[i].available() > 0) {
       // read incoming data from the client
       Serial.write(clients[i].read());
     }
@@ -199,7 +199,7 @@ void loopServer() {
 
   // stop any clients which disconnect
   for (int i = 0; i < 8; i++) {
-    if (!clients[i]) {
+    if (clients[i].connected()) {
       clients[i].stop();
     }
   }
