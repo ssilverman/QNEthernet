@@ -44,18 +44,15 @@ void setup()
 
   Serial.println("\nStarting WebServer with NativeEthernet using QNEthernet Library");
 
-  // start the Ethernet connection:
-  Serial.println("Initialize Ethernet with DHCP:");
-
 #if USING_DHCP
-  // Using DHCP
-  Serial.print("Using DHCP => ");
+  // Start the Ethernet connection, using DHCP
+  Serial.print("Initialize Ethernet using DHCP => ");
   Ethernet.begin();
-#else
-  Ethernet.setDNSServerIP(mydnsServer);
-
-  // Using static IP
-  Serial.print("Using static IP => ");
+#else  
+  Ethernet.setDNSServerIP(mydnsServer)  
+  
+  // Start the Ethernet connection, using static IP
+  Serial.print("Initialize Ethernet using static IP => ");
   Ethernet.begin(myIP, myNetmask, myGW);
 #endif
 
