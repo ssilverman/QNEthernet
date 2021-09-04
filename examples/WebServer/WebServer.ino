@@ -48,12 +48,11 @@ void setup()
   // Start the Ethernet connection, using DHCP
   Serial.print("Initialize Ethernet using DHCP => ");
   Ethernet.begin();
-#else  
-  Ethernet.setDNSServerIP(mydnsServer)  
-  
+#else   
   // Start the Ethernet connection, using static IP
   Serial.print("Initialize Ethernet using static IP => ");
   Ethernet.begin(myIP, myNetmask, myGW);
+  Ethernet.setDNSServerIP(mydnsServer);
 #endif
 
   if (!Ethernet.waitForLocalIP(5000))
