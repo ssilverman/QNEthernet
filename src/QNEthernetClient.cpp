@@ -217,22 +217,24 @@ size_t EthernetClient::write(uint8_t b) {
     return 0;
   }
 
+  size_t written = 0;
+
   if (tcp_sndbuf(state->pcb) >= 1) {
     if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-
-    // Wait for some data to flush
-    if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      yield();
-    }
-    return 1;
+    written = 1;
   }
-  return 0;
+
+  // Potentially wait for some data to flush
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    yield();
+  }
+  return written;
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
-  if (!(*this) || size == 0) {
+  if (!(*this)) {
     return 0;
   }
 
@@ -250,14 +252,13 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     if (tcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-
-    // Wait for some data to flush
-    if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      yield();
-    }
-    return size;
   }
-  return 0;
+
+  // Potentially wait for some data to flush
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    yield();
+  }
+  return size;
 }
 
 int EthernetClient::availableForWrite() {
@@ -267,6 +268,11 @@ int EthernetClient::availableForWrite() {
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
+  }
+
+  // Potentially wait for some data to flush (known to be connected)
+  if (tcp_sndbuf(state->pcb) == 0) {
+    yield();
   }
   return tcp_sndbuf(state->pcb);
 }
@@ -281,7 +287,7 @@ void EthernetClient::flush() {
   }
   tcp_output(state->pcb);
 
-  // Wait for some data to flush
+  // Potentially wait for some data to flush
   if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
     yield();
   }
