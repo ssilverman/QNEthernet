@@ -23,6 +23,8 @@ and this project adheres to
 ### Fixed
 * Fixed client functions to also check for connected status.
 * Fixed client `read()` and `peek()` to return -1 on no connection.
+* Added potential flushing in `EthernetClient::availableForWrite()`. This keeps
+  things moving along if it always would return zero.
 
 ## [0.4.0]
 
