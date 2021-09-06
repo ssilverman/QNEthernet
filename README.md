@@ -1,4 +1,4 @@
-# _QNEthernet_, a lwIP-Based Ethernet Library For Teensy 4.1
+# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
 _Version: 0.5.0-snapshot_
 
@@ -21,7 +21,8 @@ and notes:
 * Ethernet `loop()` is called from `yield()`. The functions that wait for
   timeouts rely on this. This also means that you must use `delay` or `yield()`
   when waiting on conditions; waiting without calling these functions will
-  cause the TCP/IP stack to never refresh.
+  cause the TCP/IP stack to never refresh. Note that many of the I/O functions
+  call `yield()` so that there's less burden on the calling code.
 * `EthernetServer` write functions always return the write size requested. This
   is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
@@ -60,6 +61,7 @@ and notes:
   you'll need to fully qualify any types. To avoid this, you could utilize a `using` directive:
   ```c++
   using namespace qindesign::network;
+
   EthernetUDP udp;
 
   void setup() {
@@ -70,6 +72,7 @@ and notes:
   something shorter. For example:
   ```c++
   namespace qn = qindesign::network;
+
   qn::EthernetUDP udp;
 
   void setup() {
@@ -80,9 +83,10 @@ and notes:
   `EthernetLinkStatus`. You'll have to create your own mapping to an enum of
   this name if you want to use it in the Arduino fashion.
 * Files that configure lwIP for our system:
-  * src/sys_arch.c
-  * src/lwipopts.h &larr; Use this one for tuning
-  * src/arch/cc.h
+  * *src/sys_arch.c*
+  * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
+    more details).
+  * _src/arch/cc.h_
 * The main include file, `QNEthernet.h`, in addition to including the `Ethernet`
   instance, also includes the headers for `EthernetClient`, `EthernetServer`,
   and `EthernetUDP`.
@@ -99,10 +103,10 @@ here are a few steps to follow:
    `#include <EthernetUdp.h>`.
 2. Just below that, add: `using namespace qindesign::network;`
 3. You likely don't want or need to set/choose your own MAC address, so just
-   call Ethernet.begin() with no arguments. This version uses DHCP. The three-
-   argument version (IP, subnet mask, gateway) sets those parameters instead of
-   using DHCP. If you really want to set your own MAC address, for now, consult
-   the code.
+   call `Ethernet.begin()` with no arguments. This version uses DHCP. The
+   three-argument version (IP, subnet mask, gateway) sets those parameters
+   instead of using DHCP. If you really want to set your own MAC address, for
+   now, consult the code.
 4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
