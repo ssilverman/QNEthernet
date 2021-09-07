@@ -158,6 +158,8 @@ Input is welcome.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
 * Make a test suite.
+* enet_deinit() can freeze. Can we even disable the clocks like this, or is
+  there something else that must be done to disable Ethernet?
 
 ## Code style
 
