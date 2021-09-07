@@ -193,13 +193,6 @@ err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
   ConnectionManager *m = reinterpret_cast<ConnectionManager *>(arg);
 
   if (err != ERR_OK) {
-    // Remove the pcb from the list
-    auto &list = m->listeners_;
-    auto it = std::find(list.begin(), list.end(), newpcb);
-    if (it != list.end()) {
-      list.erase(it);
-    }
-
     if (err != ERR_CLSD && err != ERR_ABRT) {
       if (tcp_close(newpcb) != ERR_OK) {
         tcp_abort(newpcb);
@@ -289,6 +282,7 @@ bool ConnectionManager::listen(uint16_t port) {
   pcb = pcbNew;
 
   // Finally, accept connections
+  listeners_.push_back(pcb);
   tcp_arg(pcb, this);
   tcp_accept(pcb, &acceptFunc);
 
