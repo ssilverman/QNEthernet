@@ -23,6 +23,7 @@ class EthernetServer final : public Server {
   ~EthernetServer();
 
   void begin() override;
+  bool end();
 
   EthernetClient accept() const;
   EthernetClient available() const;

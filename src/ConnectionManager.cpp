@@ -297,6 +297,19 @@ bool ConnectionManager::isListening(uint16_t port) {
   return (it != listeners_.end());
 }
 
+bool ConnectionManager::stopListening(uint16_t port) {
+  auto it = std::find_if(
+      listeners_.begin(), listeners_.end(), [port](const auto &elem) {
+        return (elem != nullptr) && (elem->local_port == port);
+      });
+  if (it == listeners_.end()) {
+    return false;
+  }
+  tcp_pcb *pcb = *it;
+  listeners_.erase(it);
+  return (tcp_close(pcb) == ERR_OK);
+}
+
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
     uint16_t port) {
   auto it = std::find_if(

@@ -30,6 +30,11 @@ class ConnectionManager final {
 
   bool isListening(uint16_t port);
 
+  // Stop listening on the specified port. This returns true if the listener was
+  // found and successfully stopped. This returns false if the listener was not
+  // found or was found and not successfully stopped.
+  bool stopListening(uint16_t port);
+
   // Finds a connection whose local port is the specified port.
   std::shared_ptr<ConnectionHolder> findConnected(uint16_t port);
 
