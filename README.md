@@ -34,11 +34,13 @@ and notes:
 * The following `Ethernet` functions are not defined in the Arduino API:
   * `begin()`
   * `begin(ipaddr, netmask, gw)`
+  * `end()`
   * `mtu()`
   * `waitForLocalIP()`
   * The callback-adding functions:
     * `onLinkStatus(cb)`
     * `onAddressChanged(cb)`
+* `EthernetServer::end()` is not in the Arduino API.
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or

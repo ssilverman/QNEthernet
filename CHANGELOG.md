@@ -9,6 +9,7 @@ and this project adheres to
 ### Added
 * Added a "Code style" section to the README.
 * Added link-status and address-changed callbacks.
+* Added `EthernetServer::end()` to stop listening.
 
 ### Changed
 * Changed all the delays to yields because `delay()` just loops and calls
@@ -25,6 +26,8 @@ and this project adheres to
 * Fixed client `read()` and `peek()` to return -1 on no connection.
 * Added potential flushing in `EthernetClient::availableForWrite()`. This keeps
   things moving along if it always would return zero.
+* A listening server is now correctly added to the internal listening list. This
+  fixes `EthernetServer::operator bool()`.
 
 ## [0.4.0]
 
