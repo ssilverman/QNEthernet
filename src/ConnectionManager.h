@@ -35,13 +35,13 @@ class ConnectionManager final {
   // found or was found and not successfully stopped.
   bool stopListening(uint16_t port);
 
-  // Finds a connection whose local port is the specified port.
+  // Find a connection whose local port is the specified port.
   std::shared_ptr<ConnectionHolder> findConnected(uint16_t port);
 
-  // Finds a connection on the given port that has data available.
+  // Find a connection on the given port that has data available.
   std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port);
 
-  // Removes the given connection and returns whether the connection existed in
+  // Remove the given connection and returns whether the connection existed in
   // the list and was removed.
   bool remove(const std::shared_ptr<ConnectionHolder> &holder);
 
