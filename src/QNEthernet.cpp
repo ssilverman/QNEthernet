@@ -25,12 +25,16 @@ namespace network {
 // Global definitions for Arduino
 static EventResponder ethLoop;
 EthernetClass Ethernet;
+static bool ethActive = false;
 
 // Start the loop() call in yield() via EventResponder.
 void startLoopInYield() {
+  ethActive = true;
   ethLoop.attach([](EventResponderRef r) {
     Ethernet.loop();
-    r.triggerEvent();
+    if (ethActive) {
+      r.triggerEvent();
+    }
   });
   ethLoop.triggerEvent();
 }
@@ -175,6 +179,9 @@ void EthernetClass::end() {
   if (netif_ == nullptr) {
     return;
   }
+
+  ethActive = false;
+  ethLoop.detach();
 
   dhcp_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
