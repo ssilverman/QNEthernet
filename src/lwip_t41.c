@@ -356,7 +356,7 @@ static void t41_low_level_init() {
   ENET_ATCR = ENET_ATCR_RSVD | ENET_ATCR_ENABLE;  // Enable timer
 
   // phy soft reset
-  // phy_mdio_write(0, 1 << 15);
+  // phy_mdio_write(0, 0x00, 1 << 15);
 }
 
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
@@ -441,7 +441,7 @@ static err_t t41_netif_init(struct netif *netif) {
 }
 
 // Find the next non-empty BD.
-static inline volatile enetbufferdesc_t *rxbd_next() {
+inline static volatile enetbufferdesc_t *rxbd_next() {
   volatile enetbufferdesc_t *p_bd = p_rxbd;
 
   while (p_bd->status & kEnetRxBdEmpty) {
