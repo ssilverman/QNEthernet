@@ -145,6 +145,9 @@ static struct netif t41_netif;
 // static rx_frame_fn rx_callback = NULL;
 static volatile uint32_t rx_ready;
 
+// PHY status, polled
+static bool speed10Not100 = false;
+
 void enet_isr();
 
 #ifdef LWIP_DEBUG
@@ -475,15 +478,17 @@ void enet_isr() {
 }
 
 inline static void check_link_status() {
-  int reg_data = mdio_read(0, 1);
-  if (reg_data != -1) {
-    uint8_t is_link_up = !!(reg_data & (1 << 2));
-    if (netif_is_link_up(&t41_netif) != is_link_up) {
-      if (is_link_up) {
-        netif_set_link_up(&t41_netif);
-      } else {
-        netif_set_link_down(&t41_netif);
-      }
+  uint16_t status = mdio_read(0, 0x01);
+  uint8_t is_link_up = !!(status & (1 << 2));
+  if (netif_is_link_up(&t41_netif) != is_link_up) {
+    if (is_link_up) {
+      netif_set_link_up(&t41_netif);
+
+      // TODO: Should we read the speed only at link UP or every time?
+      status = mdio_read(0, 0x10);
+      speed10Not100 = (status & (1 << 1));
+    } else {
+      netif_set_link_down(&t41_netif);
     }
   }
 }
@@ -603,6 +608,10 @@ void enet_proc_input(void) {
 void enet_poll() {
   sys_check_timeouts();
   check_link_status();
+}
+
+int enet_link_speed() {
+  return speed10Not100 ? 10 : 100;
 }
 
 uint32_t read_1588_timer() {

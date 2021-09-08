@@ -49,6 +49,9 @@ void enet_proc_input(void);
 // Poll Ethernet link status.
 void enet_poll();
 
+// Return the link speed in Mbps.
+int enet_link_speed();
+
 // Read the IEEE1588 timer.
 uint32_t read_1588_timer();
 

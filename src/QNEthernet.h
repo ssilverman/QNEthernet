@@ -58,7 +58,11 @@ class EthernetClass final {
   // Shut down the Ethernet peripheral(s).
   void end();
 
+  // Return the link status, true for link and false for no link.
   bool linkStatus() const;
+
+  // Return the link speed in Mbps.
+  int linkSpeed() const;
 
   // Set a link status callback.
   void onLinkStatus(std::function<void(bool state)> cb) {

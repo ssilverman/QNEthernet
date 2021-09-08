@@ -190,6 +190,10 @@ bool EthernetClass::linkStatus() const {
   return netif_is_link_up(netif_);
 }
 
+int EthernetClass::linkSpeed() const {
+  return enet_link_speed();
+}
+
 IPAddress EthernetClass::localIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
