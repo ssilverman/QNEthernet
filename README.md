@@ -36,6 +36,7 @@ and notes:
   * `begin(ipaddr, netmask, gw)`
   * `end()`
   * `mtu()`
+  * `linkSpeed()`
   * `waitForLocalIP()`
   * The callback-adding functions:
     * `onLinkStatus(cb)`

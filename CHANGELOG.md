@@ -9,7 +9,11 @@ and this project adheres to
 ### Added
 * Added a "Code style" section to the README.
 * Added link-status and address-changed callbacks.
-* Added `EthernetServer::end()` to stop listening.
+* New `EthernetServer::end()` function to stop listening.
+* Disabling the PLL before disabling the clock in `enet_deinit()`. This still
+  doesn't solve the freeze problem when this function is called.
+* New `EthernetClass::linkSpeed()` function, used as `Ethernet.linkSpeed()`.
+  It returns the link speed in Mbps.
 
 ### Changed
 * Changed all the delays to yields because `delay()` just loops and calls
