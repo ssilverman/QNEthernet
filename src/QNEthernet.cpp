@@ -97,17 +97,9 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  enet_init(mac_, NULL, NULL, NULL);
-  netif_ = netif_default;
-  netif_set_up(netif_);
+  begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
 
-  // Set up the callbacks
-  netif_add_ext_callback(&netif_callback, &netifEventFunc);
-
-  bool retval = (dhcp_start(netif_) == ERR_OK);
-  startLoopInYield();
-
-  return retval;
+  return (dhcp_start(netif_) == ERR_OK);
 }
 
 void EthernetClass::begin(const IPAddress &ip,
