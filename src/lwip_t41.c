@@ -17,6 +17,7 @@
 #include <lwip/etharp.h>
 #include <lwip/init.h>
 #include <lwip/netif.h>
+#include <lwip/opt.h>
 #include <lwip/pbuf.h>
 #include <lwip/prot/ethernet.h>
 #include <lwip/stats.h>
@@ -218,19 +219,9 @@ static void t41_low_level_init() {
   // Serial.printf("PLL6 = %08X (should be 80202001)\n", CCM_ANALOG_PLL_ENET);
 
 	// Configure REFCLK to be driven as output by PLL6, pg 329 (Rev. 2, 326 Rev. 1)
-#if 1
   CLRSET(IOMUXC_GPR_GPR1,
          IOMUXC_GPR_GPR1_ENET1_CLK_SEL | IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN,
          IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
-#else
-  //IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR; // do not use
-	IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR; // 50 MHz REFCLK
-	IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN;
-	//IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN; // clock always on
-	IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET1_CLK_SEL;
-	////IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET1_CLK_SEL;
-  // Serial.printf("GPR1 = %08X\n", IOMUXC_GPR_GPR1);
-#endif
 
   // Configure pins
 	IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
@@ -289,7 +280,6 @@ static void t41_low_level_init() {
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
                          kEnetTxBdProtChecksum |
                          kEnetTxBdIpHdrChecksum;
-// #endif
   }
   tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
