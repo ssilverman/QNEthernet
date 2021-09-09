@@ -24,6 +24,8 @@ and this project adheres to
   to NULL, meaning the caller doesn't necessarily need to guarantee they call
   `stop()` if other I/O functions are being used to check state or to write,
   for example.
+* Moved adding the netif callback to `enet_init()` so that the callback still
+  gets an address-changed notification when setting a static address.
 
 ### Fixed
 * Fixed client functions to also check for connected status.
