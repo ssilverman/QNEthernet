@@ -58,7 +58,7 @@ typedef enum _enet_rx_bd_control_status {
   kEnetRxBdBroadcast       = 0x0080U,  // Broadcast
   kEnetRxBdMulticast       = 0x0040U,  // Multicast
   kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation; needs L
-  kEnetRxBdNoOctet         = 0x0010U,  // Receive non-octet aligned frame; needs L
+  kEnetRxBdNonOctet        = 0x0010U,  // Receive non-octet aligned frame; needs L
   kEnetRxBdCrc             = 0x0004U,  // Receive CRC or frame error; needs L
   kEnetRxBdOverrun         = 0x0002U,  // Receive FIFO overrun; needs L
   kEnetRxBdTrunc           = 0x0001U   // Frame is truncated
@@ -359,19 +359,34 @@ static void t41_low_level_init() {
 
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   const u16_t err_mask = kEnetRxBdTrunc |
+                         kEnetRxBdOverrun |
                          kEnetRxBdCrc |
-                         kEnetRxBdNoOctet |
+                         kEnetRxBdNonOctet |
                          kEnetRxBdLengthViolation;
 
   struct pbuf *p = NULL;
 
   // Determine if a frame has been received
   if (bdPtr->status & err_mask) {
-    // if ((bdPtr->status & kEnetRxBdLengthViolation) != 0)
-    //    LINK_STATS_INC(link.lenerr);
-    // else
-    //    LINK_STATS_INC(link.chkerr);
-    // LINK_STATS_INC(link.drop);
+#if LINK_STATS
+    if (bdPtr->status & kEnetRxBdTrunc) {
+      LINK_STATS_INC(link.lenerr);
+    } else {  // Either truncated or others
+      if (bdPtr->status & kEnetRxBdOverrun) {
+        LINK_STATS_INC(link.err);
+      } else {  // Either overrun and others zero, or others
+        if (bdPtr->status & kEnetRxBdNonOctet) {
+          LINK_STATS_INC(link.err);
+        } else if (bdPtr->status & kEnetRxBdCrc) {  // Non-octet or CRC
+          LINK_STATS_INC(link.chkerr);
+        }
+        if (bdPtr->status & kEnetRxBdLengthViolation) {
+          LINK_STATS_INC(link.lenerr);
+        }
+      }
+    }
+    LINK_STATS_INC(link.drop);
+#endif
   } else {
     p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
     if (p) {
