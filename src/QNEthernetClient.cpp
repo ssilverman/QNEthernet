@@ -366,7 +366,6 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return 0;
   }
 
-  // TODO: Lock if not single-threaded
   auto &rem = conn_->remaining;
   if (!rem.empty()) {
     if (size == 0) {
