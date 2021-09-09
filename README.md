@@ -1,3 +1,5 @@
+<a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me a Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg" alt="Buy Me a Coffee donate button"></a>
+
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
 _Version: 0.6.0-snapshot_
