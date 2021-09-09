@@ -117,6 +117,36 @@ here are a few steps to follow:
    returns a `bool` (i.e. not that `EthernetLinkStatus` enum).
 6. Most other things should be the same.
 
+## A survey of how connections (aka `EthernetClient`) work
+
+Hopefully this disambiguates some details about what each function does:
+1. `connected()`: Returns whether connected OR data is still available
+   (or both).
+2. `operator bool`: Returns whether connected (at least in _QNEthernet_).
+3. `available()`: Returns the amount of data available, whether the connection
+   is closed or not.
+4. `read`: Reads data if there's data available, whether the connection's closed
+   or not.
+
+Connections will be closed automatically if the client shuts down a connection,
+and _QNEthernet_ will properly handle the state such that the API behaves as
+expected. In addition, if a client closes a connection, any buffered data will
+still be available via the client API. If it were up to me, I'd have swapped the
+meaning of `operator bool()` and `connected()`, but see the above list as
+a guide.
+
+Some options:
+
+1. Keep checking `connected()` (or `operator bool()`) and `available()`/`read`
+   to keep reading data. The data will run out when the connection is closed and
+   after all the buffers are empty. The calls to `connected()` (or
+   `operator bool()`) will indicate connection status (plus data available in
+   the case of `connected()` or just connection state in the case of
+   `operator bool()`).
+2. Same as the above, but without one of the two connection-status calls
+   (`connected()` or `operator bool()`). The data will just run out after
+   connection-closed and after the buffers are empty.
+
 ## mDNS services
 
 It's possible to register mDNS services. Some notes:
