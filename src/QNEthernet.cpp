@@ -39,8 +39,6 @@ void startLoopInYield() {
   ethLoop.triggerEvent();
 }
 
-NETIF_DECLARE_EXT_CALLBACK(netif_callback);
-
 void EthernetClass::netifEventFunc(struct netif *netif,
                                    netif_nsc_reason_t reason,
                                    const netif_ext_callback_args_t *args) {
@@ -113,12 +111,10 @@ void EthernetClass::begin(const IPAddress &ip,
   ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
-  enet_init(mac_, &ipaddr, &netmask, &gw);
-  netif_ = netif_default;
+  // Initialize Ethernet, set up the callback, and set the netif to UP
+  netif_ = enet_netif();
+  enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
   netif_set_up(netif_);
-
-  // Set up the callbacks
-  netif_add_ext_callback(&netif_callback, &netifEventFunc);
 
   startLoopInYield();
 }

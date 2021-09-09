@@ -16,10 +16,8 @@
 #include <lwip/err.h>
 #include <lwip/etharp.h>
 #include <lwip/init.h>
-#include <lwip/netif.h>
 #include <lwip/opt.h>
 #include <lwip/pbuf.h>
-#include <lwip/prot/ethernet.h>
 #include <lwip/stats.h>
 #include <lwip/timeouts.h>
 #include <netif/ethernet.h>
@@ -511,10 +509,13 @@ void enet_getmac(uint8_t *mac) {
 static bool isFirstInit = true;
 static bool isNetifAdded = false;
 
+NETIF_DECLARE_EXT_CALLBACK(netif_callback);
+
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *ipaddr,
                const ip_addr_t *netmask,
-               const ip_addr_t *gw) {
+               const ip_addr_t *gw,
+               netif_ext_callback_fn callback) {
   // Only execute the following code once
   if (isFirstInit) {
     lwip_init();
@@ -545,6 +546,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     SMEMCPY(mac, m, ETH_HWADDR_LEN);
   }
 
+  // Add the callback
+  netif_add_ext_callback(&netif_callback, callback);
+
   if (isNetifAdded) {
     netif_set_addr(&t41_netif, ipaddr, netmask, gw);
   } else {
@@ -567,6 +571,10 @@ void enet_deinit() {
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+}
+
+struct netif *enet_netif() {
+  return &t41_netif;
 }
 
 // void enet_set_receive_callback(rx_frame_fn rx_cb) {
