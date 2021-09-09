@@ -6,6 +6,9 @@ and this project adheres to
 
 ## [0.6.0-snapshot]
 
+### Added
+* Added a new "survey of how connections work" section to the README.
+
 ## [0.5.0]
 
 ### Added
