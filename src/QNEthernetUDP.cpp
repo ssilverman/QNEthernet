@@ -148,6 +148,7 @@ int EthernetUDP::parsePacket() {
     return packet_.size();
   } else {
     packetPos_ = -1;
+    yield();  // Allow the stack to move along
     return 0;
   }
 }
