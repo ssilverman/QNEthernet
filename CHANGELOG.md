@@ -8,6 +8,9 @@ and this project adheres to
 
 ### Added
 * Added a new "survey of how connections work" section to the README.
+* Added low-level link receive error stats collection.
+* Now calling `yield()` in `EthernetUDP::parsePacket()` when it returns zero so
+  that calls in a loop will move the stack forward.
 
 ## [0.5.0]
 
