@@ -11,6 +11,7 @@
 
 #include <core_pins.h>
 #include "ConnectionHolder.h"
+#include "QNEthernet.h"
 
 namespace qindesign {
 namespace network {
@@ -193,13 +194,6 @@ err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
   ConnectionManager *m = reinterpret_cast<ConnectionManager *>(arg);
 
   if (err != ERR_OK) {
-    // Remove the pcb from the list
-    auto &list = m->listeners_;
-    auto it = std::find(list.begin(), list.end(), newpcb);
-    if (it != list.end()) {
-      list.erase(it);
-    }
-
     if (err != ERR_CLSD && err != ERR_ABRT) {
       if (tcp_close(newpcb) != ERR_OK) {
         tcp_abort(newpcb);
@@ -289,6 +283,7 @@ bool ConnectionManager::listen(uint16_t port) {
   pcb = pcbNew;
 
   // Finally, accept connections
+  listeners_.push_back(pcb);
   tcp_arg(pcb, this);
   tcp_accept(pcb, &acceptFunc);
 
@@ -301,6 +296,19 @@ bool ConnectionManager::isListening(uint16_t port) {
         return (elem != nullptr) && (elem->local_port == port);
       });
   return (it != listeners_.end());
+}
+
+bool ConnectionManager::stopListening(uint16_t port) {
+  auto it = std::find_if(
+      listeners_.begin(), listeners_.end(), [port](const auto &elem) {
+        return (elem != nullptr) && (elem->local_port == port);
+      });
+  if (it == listeners_.end()) {
+    return false;
+  }
+  tcp_pcb *pcb = *it;
+  listeners_.erase(it);
+  return (tcp_close(pcb) == ERR_OK);
 }
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
@@ -358,13 +366,13 @@ size_t ConnectionManager::write(uint16_t port, uint8_t b) {
                     if (tcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
-                    yield();
+                    EthernetClass::loop();
                   }
                   if (tcp_sndbuf(state->pcb) >= 1) {
                     tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
                   }
                 });
-  yield();
+  EthernetClass::loop();
   return 1;
 }
 
@@ -383,14 +391,14 @@ size_t ConnectionManager::write(uint16_t port, const uint8_t *b, size_t len) {
                     if (tcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
-                    yield();
+                    EthernetClass::loop();
                   }
                   uint16_t len = std::min(size16, tcp_sndbuf(state->pcb));
                   if (len > 0) {
                     tcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
                   }
                 });
-  yield();
+  EthernetClass::loop();
   return len;
 }
 
@@ -403,7 +411,7 @@ void ConnectionManager::flush(uint16_t port) {
                   }
                   tcp_output(state->pcb);
                 });
-  yield();
+  EthernetClass::loop();
 }
 
 }  // namespace network

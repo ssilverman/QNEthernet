@@ -27,6 +27,10 @@ void EthernetServer::begin() {
   listening_ = ConnectionManager::instance().listen(port_);
 }
 
+bool EthernetServer::end() {
+  return ConnectionManager::instance().stopListening(port_);
+}
+
 EthernetClient EthernetServer::accept() const {
   std::shared_ptr<ConnectionHolder> conn =
       ConnectionManager::instance().findConnected(port_);

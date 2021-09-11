@@ -12,6 +12,8 @@
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/igmp.h>
+#include <lwip/opt.h>
+#include "QNEthernet.h"
 
 extern const int kMTU;
 
@@ -21,13 +23,6 @@ namespace network {
 // Maximum UDP packet size.
 // Subtract UDP header size and minimum IPv4 header size.
 const size_t kMaxUDPSize = kMTU - 8 - 20;
-
-// Use constants for the following delays and timeouts until we decide on
-// something better.
-
-// Polling interval when waiting for:
-// * Starting a packet
-static constexpr uint32_t kTimedWaitDelay = 10;
 
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
@@ -154,6 +149,7 @@ int EthernetUDP::parsePacket() {
     return packet_.size();
   } else {
     packetPos_ = -1;
+    EthernetClass::loop();  // Allow the stack to move along
     return 0;
   }
 }
@@ -241,10 +237,10 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
       return beginPacket(addr.addr, port);
     case ERR_INPROGRESS: {
       elapsedMillis timer;
-      do {
+      while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(kTimedWaitDelay);
-      } while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout);
+        yield();
+      }
       if (lookupFound_) {
         return beginPacket(lookupIP_, port);
       }

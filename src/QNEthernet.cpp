@@ -25,14 +25,38 @@ namespace network {
 // Global definitions for Arduino
 static EventResponder ethLoop;
 EthernetClass Ethernet;
+static bool ethActive = false;
 
 // Start the loop() call in yield() via EventResponder.
 void startLoopInYield() {
+  ethActive = true;
   ethLoop.attach([](EventResponderRef r) {
-    Ethernet.loop();
-    r.triggerEvent();
+    EthernetClass::loop();
+    if (ethActive) {
+      r.triggerEvent();
+    }
   });
   ethLoop.triggerEvent();
+}
+
+void EthernetClass::netifEventFunc(struct netif *netif,
+                                   netif_nsc_reason_t reason,
+                                   const netif_ext_callback_args_t *args) {
+  if (netif != Ethernet.netif_) {
+    return;
+  }
+
+  if (reason & LWIP_NSC_LINK_CHANGED) {
+    if (Ethernet.linkStatusCB_ != nullptr && args != nullptr) {
+      Ethernet.linkStatusCB_(args->link_changed.state != 0);
+    }
+  }
+
+  if (reason & LWIP_NSC_IPV4_SETTINGS_CHANGED) {
+    if (Ethernet.addressChangedCB_ != nullptr) {
+      Ethernet.addressChangedCB_();
+    }
+  }
 }
 
 EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
@@ -61,6 +85,9 @@ int EthernetClass::mtu() const {
   return kMTU;
 }
 
+// Declare this static object.
+elapsedMillis EthernetClass::loopTimer_;
+
 void EthernetClass::loop() {
   enet_proc_input();
 
@@ -71,13 +98,9 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  enet_init(mac_, NULL, NULL, NULL);
-  netif_ = netif_default;
-  netif_set_up(netif_);
+  begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
 
-  bool retval = (dhcp_start(netif_) == ERR_OK);
-  startLoopInYield();
-  return retval;
+  return (dhcp_start(netif_) == ERR_OK);
 }
 
 void EthernetClass::begin(const IPAddress &ip,
@@ -91,8 +114,9 @@ void EthernetClass::begin(const IPAddress &ip,
   ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
-  enet_init(mac_, &ipaddr, &netmask, &gw);
-  netif_ = netif_default;
+  // Initialize Ethernet, set up the callback, and set the netif to UP
+  netif_ = enet_netif();
+  enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
   netif_set_up(netif_);
 
   startLoopInYield();
@@ -105,7 +129,7 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) {
 
   elapsedMillis timer;
   while (netif_ip_addr4(netif_)->addr == 0 && timer < timeout) {
-    delay(500);
+    yield();
   }
   return (netif_ip_addr4(netif_)->addr != 0);
 }
@@ -147,6 +171,9 @@ void EthernetClass::end() {
     return;
   }
 
+  ethActive = false;
+  ethLoop.detach();
+
   dhcp_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
   netif_set_down(netif_);
@@ -160,6 +187,10 @@ bool EthernetClass::linkStatus() const {
     return false;
   }
   return netif_is_link_up(netif_);
+}
+
+int EthernetClass::linkSpeed() const {
+  return enet_link_speed();
 }
 
 IPAddress EthernetClass::localIP() const {

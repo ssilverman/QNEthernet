@@ -16,9 +16,8 @@
 #include <lwip/err.h>
 #include <lwip/etharp.h>
 #include <lwip/init.h>
-#include <lwip/netif.h>
+#include <lwip/opt.h>
 #include <lwip/pbuf.h>
-#include <lwip/prot/ethernet.h>
 #include <lwip/stats.h>
 #include <lwip/timeouts.h>
 #include <netif/ethernet.h>
@@ -59,7 +58,7 @@ typedef enum _enet_rx_bd_control_status {
   kEnetRxBdBroadcast       = 0x0080U,  // Broadcast
   kEnetRxBdMulticast       = 0x0040U,  // Multicast
   kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation; needs L
-  kEnetRxBdNoOctet         = 0x0010U,  // Receive non-octet aligned frame; needs L
+  kEnetRxBdNonOctet        = 0x0010U,  // Receive non-octet aligned frame; needs L
   kEnetRxBdCrc             = 0x0004U,  // Receive CRC or frame error; needs L
   kEnetRxBdOverrun         = 0x0002U,  // Receive FIFO overrun; needs L
   kEnetRxBdTrunc           = 0x0001U   // Frame is truncated
@@ -144,6 +143,9 @@ static struct netif t41_netif;
 // static rx_frame_fn rx_callback = NULL;
 static volatile uint32_t rx_ready;
 
+// PHY status, polled
+static bool speed10Not100 = false;
+
 void enet_isr();
 
 #ifdef LWIP_DEBUG
@@ -218,19 +220,9 @@ static void t41_low_level_init() {
   // Serial.printf("PLL6 = %08X (should be 80202001)\n", CCM_ANALOG_PLL_ENET);
 
 	// Configure REFCLK to be driven as output by PLL6, pg 329 (Rev. 2, 326 Rev. 1)
-#if 1
   CLRSET(IOMUXC_GPR_GPR1,
          IOMUXC_GPR_GPR1_ENET1_CLK_SEL | IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN,
          IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
-#else
-  //IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR; // do not use
-	IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR; // 50 MHz REFCLK
-	IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN;
-	//IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN; // clock always on
-	IOMUXC_GPR_GPR1 &= ~IOMUXC_GPR_GPR1_ENET1_CLK_SEL;
-	////IOMUXC_GPR_GPR1 |= IOMUXC_GPR_GPR1_ENET1_CLK_SEL;
-  // Serial.printf("GPR1 = %08X\n", IOMUXC_GPR_GPR1);
-#endif
 
   // Configure pins
 	IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
@@ -289,7 +281,6 @@ static void t41_low_level_init() {
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
                          kEnetTxBdProtChecksum |
                          kEnetTxBdIpHdrChecksum;
-// #endif
   }
   tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
@@ -363,24 +354,39 @@ static void t41_low_level_init() {
   ENET_ATCR = ENET_ATCR_RSVD | ENET_ATCR_ENABLE;  // Enable timer
 
   // phy soft reset
-  // phy_mdio_write(0, 1 << 15);
+  // phy_mdio_write(0, 0x00, 1 << 15);
 }
 
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   const u16_t err_mask = kEnetRxBdTrunc |
+                         kEnetRxBdOverrun |
                          kEnetRxBdCrc |
-                         kEnetRxBdNoOctet |
+                         kEnetRxBdNonOctet |
                          kEnetRxBdLengthViolation;
 
   struct pbuf *p = NULL;
 
   // Determine if a frame has been received
   if (bdPtr->status & err_mask) {
-    // if ((bdPtr->status & kEnetRxBdLengthViolation) != 0)
-    //    LINK_STATS_INC(link.lenerr);
-    // else
-    //    LINK_STATS_INC(link.chkerr);
-    // LINK_STATS_INC(link.drop);
+#if LINK_STATS
+    if (bdPtr->status & kEnetRxBdTrunc) {
+      LINK_STATS_INC(link.lenerr);
+    } else {  // Either truncated or others
+      if (bdPtr->status & kEnetRxBdOverrun) {
+        LINK_STATS_INC(link.err);
+      } else {  // Either overrun and others zero, or others
+        if (bdPtr->status & kEnetRxBdNonOctet) {
+          LINK_STATS_INC(link.err);
+        } else if (bdPtr->status & kEnetRxBdCrc) {  // Non-octet or CRC
+          LINK_STATS_INC(link.chkerr);
+        }
+        if (bdPtr->status & kEnetRxBdLengthViolation) {
+          LINK_STATS_INC(link.lenerr);
+        }
+      }
+    }
+    LINK_STATS_INC(link.drop);
+#endif
   } else {
     p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
     if (p) {
@@ -448,7 +454,7 @@ static err_t t41_netif_init(struct netif *netif) {
 }
 
 // Find the next non-empty BD.
-static inline volatile enetbufferdesc_t *rxbd_next() {
+inline static volatile enetbufferdesc_t *rxbd_next() {
   volatile enetbufferdesc_t *p_bd = p_rxbd;
 
   while (p_bd->status & kEnetRxBdEmpty) {
@@ -485,15 +491,17 @@ void enet_isr() {
 }
 
 inline static void check_link_status() {
-  int reg_data = mdio_read(0, 1);
-  if (reg_data != -1) {
-    uint8_t is_link_up = !!(reg_data & (1 << 2));
-    if (netif_is_link_up(&t41_netif) != is_link_up) {
-      if (is_link_up) {
-        netif_set_link_up(&t41_netif);
-      } else {
-        netif_set_link_down(&t41_netif);
-      }
+  uint16_t status = mdio_read(0, 0x01);
+  uint8_t is_link_up = !!(status & (1 << 2));
+  if (netif_is_link_up(&t41_netif) != is_link_up) {
+    if (is_link_up) {
+      netif_set_link_up(&t41_netif);
+
+      // TODO: Should we read the speed only at link UP or every time?
+      status = mdio_read(0, 0x10);
+      speed10Not100 = (status & (1 << 1));
+    } else {
+      netif_set_link_down(&t41_netif);
     }
   }
 }
@@ -516,10 +524,13 @@ void enet_getmac(uint8_t *mac) {
 static bool isFirstInit = true;
 static bool isNetifAdded = false;
 
+NETIF_DECLARE_EXT_CALLBACK(netif_callback);
+
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *ipaddr,
                const ip_addr_t *netmask,
-               const ip_addr_t *gw) {
+               const ip_addr_t *gw,
+               netif_ext_callback_fn callback) {
   // Only execute the following code once
   if (isFirstInit) {
     lwip_init();
@@ -550,6 +561,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     SMEMCPY(mac, m, ETH_HWADDR_LEN);
   }
 
+  // Add the callback
+  netif_add_ext_callback(&netif_callback, callback);
+
   if (isNetifAdded) {
     netif_set_addr(&t41_netif, ipaddr, netmask, gw);
   } else {
@@ -562,9 +576,20 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
 
 void enet_deinit() {
   netif_remove(&t41_netif);
+  isNetifAdded = false;
+  isFirstInit = false;
+
+  // Stop the PLL
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_ENABLE;
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+}
+
+struct netif *enet_netif() {
+  return &t41_netif;
 }
 
 // void enet_set_receive_callback(rx_frame_fn rx_cb) {
@@ -606,6 +631,10 @@ void enet_proc_input(void) {
 void enet_poll() {
   sys_check_timeouts();
   check_link_status();
+}
+
+int enet_link_speed() {
+  return speed10Not100 ? 10 : 100;
 }
 
 uint32_t read_1588_timer() {

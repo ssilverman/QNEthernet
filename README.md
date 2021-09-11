@@ -1,6 +1,8 @@
-# _QNEthernet_, a lwIP-Based Ethernet Library For Teensy 4.1
+<a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me a Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg" alt="Buy Me a Coffee donate button"></a>
 
-_Version: 0.4.0_
+# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
+
+_Version: 0.6.0-snapshot_
 
 The _QNEthernet_ library provides Arduino-like `Ethernet` functionality for the
 Teensy 4.1. While it is mostly the same, there are a few key differences that
@@ -19,9 +21,10 @@ This library mostly follows the Arduino Ethernet API, with these differences
 and notes:
 * Include the `QNEthernet.h` header instead of `Ethernet.h`.
 * Ethernet `loop()` is called from `yield()`. The functions that wait for
-  timeouts rely on this. This also means that you must use `delay` or `yield()`
-  when waiting on conditions; waiting without calling these functions will
-  cause the TCP/IP stack to never refresh.
+  timeouts rely on this. This also means that you must use `delay`, `yield()`,
+  or `Ethernet.loop()` when waiting on conditions; waiting without calling these
+  functions will cause the TCP/IP stack to never refresh. Note that many of the
+  I/O functions call `yield()` so that there's less burden on the calling code.
 * `EthernetServer` write functions always return the write size requested. This
   is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
@@ -33,8 +36,14 @@ and notes:
 * The following `Ethernet` functions are not defined in the Arduino API:
   * `begin()`
   * `begin(ipaddr, netmask, gw)`
+  * `end()`
   * `mtu()`
+  * `linkSpeed()`
   * `waitForLocalIP()`
+  * The callback-adding functions:
+    * `onLinkStatus(cb)`
+    * `onAddressChanged(cb)`
+* `EthernetServer::end()` is not in the Arduino API.
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or
@@ -57,6 +66,7 @@ and notes:
   you'll need to fully qualify any types. To avoid this, you could utilize a `using` directive:
   ```c++
   using namespace qindesign::network;
+
   EthernetUDP udp;
 
   void setup() {
@@ -67,6 +77,7 @@ and notes:
   something shorter. For example:
   ```c++
   namespace qn = qindesign::network;
+
   qn::EthernetUDP udp;
 
   void setup() {
@@ -77,12 +88,15 @@ and notes:
   `EthernetLinkStatus`. You'll have to create your own mapping to an enum of
   this name if you want to use it in the Arduino fashion.
 * Files that configure lwIP for our system:
-  * src/sys_arch.c
-  * src/lwipopts.h &larr; Use this one for tuning
-  * src/arch/cc.h
+  * *src/sys_arch.c*
+  * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
+    more details).
+  * _src/arch/cc.h_
 * The main include file, `QNEthernet.h`, in addition to including the `Ethernet`
   instance, also includes the headers for `EthernetClient`, `EthernetServer`,
   and `EthernetUDP`.
+* All four address-setting functions (IP, subnet mask, gateway, DNS) do nothing
+  unless the system has been initialized.
 
 ## How to run
 
@@ -94,16 +108,46 @@ here are a few steps to follow:
    `#include <EthernetUdp.h>`.
 2. Just below that, add: `using namespace qindesign::network;`
 3. You likely don't want or need to set/choose your own MAC address, so just
-   call Ethernet.begin() with no arguments. This version uses DHCP. The three-
-   argument version (IP, subnet mask, gateway) sets those parameters instead of
-   using DHCP. If you really want to set your own MAC address, for now, consult
-   the code.
+   call `Ethernet.begin()` with no arguments. This version uses DHCP. The
+   three-argument version (IP, subnet mask, gateway) sets those parameters
+   instead of using DHCP. If you really want to set your own MAC address, for
+   now, consult the code.
 4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
 5. `Ethernet.hardwareStatus()` always returns zero and `Ethernet.linkStatus()`
    returns a `bool` (i.e. not that `EthernetLinkStatus` enum).
 6. Most other things should be the same.
+
+## A survey of how connections (aka `EthernetClient`) work
+
+Hopefully this disambiguates some details about what each function does:
+1. `connected()`: Returns whether connected OR data is still available
+   (or both).
+2. `operator bool`: Returns whether connected (at least in _QNEthernet_).
+3. `available()`: Returns the amount of data available, whether the connection
+   is closed or not.
+4. `read`: Reads data if there's data available, whether the connection's closed
+   or not.
+
+Connections will be closed automatically if the client shuts down a connection,
+and _QNEthernet_ will properly handle the state such that the API behaves as
+expected. In addition, if a client closes a connection, any buffered data will
+still be available via the client API. If it were up to me, I'd have swapped the
+meaning of `operator bool()` and `connected()`, but see the above list as
+a guide.
+
+Some options:
+
+1. Keep checking `connected()` (or `operator bool()`) and `available()`/`read`
+   to keep reading data. The data will run out when the connection is closed and
+   after all the buffers are empty. The calls to `connected()` (or
+   `operator bool()`) will indicate connection status (plus data available in
+   the case of `connected()` or just connection state in the case of
+   `operator bool()`).
+2. Same as the above, but without one of the two connection-status calls
+   (`connected()` or `operator bool()`). The data will just run out after
+   connection-closed and after the buffers are empty.
 
 ## mDNS services
 
@@ -147,6 +191,16 @@ Input is welcome.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
 * Make a test suite.
+* enet_deinit() can freeze. Can we even disable the clocks like this, or is
+  there something else that must be done to disable Ethernet?
+
+## Code style
+
+Code style for this project mostly follows the
+[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
+
+Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
+[C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
 
 ## References
 

@@ -12,26 +12,17 @@
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/netif.h>
+#include <lwip/opt.h>
 #include <lwip/tcp.h>
 #include "ConnectionManager.h"
+#include "QNEthernet.h"
 
 namespace qindesign {
 namespace network {
 
-// Use constants for the following delays and timeouts until we decide on
-// something better.
-
-// Polling interval when waiting for:
-// * Connection
-// * Stop connection
-static constexpr uint32_t kTimedWaitDelay = 10;
-
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-
-// Delay when polling output to see if the write buffer is full.
-static constexpr uint32_t kWriteBufCheckDelay = 10;
 
 void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                                   void *callback_arg) {
@@ -80,7 +71,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   elapsedMillis timer;
   while (!conn_->connected && timer < connTimeout_) {
     // NOTE: Depends on Ethernet loop being called from yield()
-    delay(kTimedWaitDelay);
+    yield();
   }
   if (!conn_->connected) {
     stop();
@@ -102,7 +93,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
       elapsedMillis timer;
       while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
         // NOTE: Depends on Ethernet loop being called from yield()
-        delay(kTimedWaitDelay);
+        yield();
       }
       if (lookupFound_) {
         return connect(lookupIP_, port);
@@ -116,13 +107,27 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 }
 
 uint8_t EthernetClient::connected() {
-  return (conn_ != nullptr) &&
-         (!conn_->remaining.empty() || conn_->connected);
+  if (conn_ == nullptr) {
+    return false;
+  }
+  if (!conn_->connected && conn_->remaining.empty()) {
+    conn_ = nullptr;
+    return false;
+  }
+  return true;
 }
 
 EthernetClient::operator bool() {
-  return (conn_ != nullptr) &&
-         conn_->connected;
+  if (conn_ == nullptr) {
+    return false;
+  }
+  if (!conn_->connected) {
+    if (conn_->remaining.empty()) {
+      conn_ = nullptr;
+    }
+    return false;
+  }
+  return true;
 }
 
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
@@ -142,30 +147,33 @@ void EthernetClient::stop() {
     return;
   }
 
-  // First try to flush any data
-  tcp_output(state->pcb);
-  yield();  // Maybe some data gets out
-  // NOTE: yield() requires a re-check of the state
+  if (conn_->connected) {
+    // First try to flush any data
+    tcp_output(state->pcb);
+    EthernetClass::loop();  // Maybe some data gets out
+    // NOTE: loop() requires a re-check of the state
 
-  if (state != nullptr) {
-    if (tcp_close(state->pcb) != ERR_OK) {
-      tcp_abort(state->pcb);
-    } else {
-      elapsedMillis timer;
-      do {
-        // NOTE: Depends on Ethernet loop being called from yield()
-        delay(kTimedWaitDelay);
-      } while (conn_->connected && timer < connTimeout_);
+    if (state != nullptr) {
+      if (tcp_close(state->pcb) != ERR_OK) {
+        tcp_abort(state->pcb);
+      } else {
+        elapsedMillis timer;
+        while (conn_->connected && timer < connTimeout_) {
+          // NOTE: Depends on Ethernet loop being called from yield()
+          yield();
+        }
+      }
     }
   }
 
   conn_ = nullptr;
 }
 
-uint16_t EthernetClient::localPort() const {
-  if (conn_ == nullptr) {
+uint16_t EthernetClient::localPort() {
+  if (!(*this)) {
     return 0;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -173,10 +181,11 @@ uint16_t EthernetClient::localPort() const {
   return state->pcb->local_port;
 }
 
-IPAddress EthernetClient::remoteIP() const {
-  if (conn_ == nullptr) {
+IPAddress EthernetClient::remoteIP() {
+  if (!(*this)) {
     return INADDR_NONE;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return INADDR_NONE;
@@ -184,10 +193,11 @@ IPAddress EthernetClient::remoteIP() const {
   return state->pcb->remote_ip.addr;
 }
 
-uint16_t EthernetClient::remotePort() const {
-  if (conn_ == nullptr) {
+uint16_t EthernetClient::remotePort() {
+  if (!(*this)) {
     return 0;
   }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -200,7 +210,7 @@ uint16_t EthernetClient::remotePort() const {
 // --------------------------------------------------------------------------
 
 size_t EthernetClient::write(uint8_t b) {
-  if (conn_ == nullptr) {
+  if (!(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
@@ -208,28 +218,27 @@ size_t EthernetClient::write(uint8_t b) {
     return 0;
   }
 
+  size_t written = 0;
+
   if (tcp_sndbuf(state->pcb) >= 1) {
     if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-
-    // Wait for some data to flush
-    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      delay(kWriteBufCheckDelay);
-    }
-    return 1;
+    written = 1;
   }
-  return 0;
+
+  // Potentially wait for some data to flush
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    EthernetClass::loop();
+  }
+  return written;
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
-  if (size == 0) {
+  if (!(*this)) {
     return 0;
   }
 
-  if (conn_ == nullptr) {
-    return 0;
-  }
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
@@ -244,29 +253,33 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     if (tcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-
-    // Wait for some data to flush
-    while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-      delay(kWriteBufCheckDelay);
-    }
-    return size;
   }
-  return 0;
+
+  // Potentially wait for some data to flush
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    EthernetClass::loop();
+  }
+  return size;
 }
 
 int EthernetClient::availableForWrite() {
-  if (conn_ == nullptr) {
+  if (!(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
+
+  // Potentially wait for some data to flush (known to be connected)
+  if (tcp_sndbuf(state->pcb) == 0) {
+    EthernetClass::loop();
+  }
   return tcp_sndbuf(state->pcb);
 }
 
 void EthernetClient::flush() {
-  if (conn_ == nullptr) {
+  if (!(*this)) {
     return;
   }
   const auto &state = conn_->state;
@@ -275,9 +288,9 @@ void EthernetClient::flush() {
   }
   tcp_output(state->pcb);
 
-  // Wait for some data to flush
-  while (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    delay(kWriteBufCheckDelay);
+  // Potentially wait for some data to flush
+  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
+    EthernetClass::loop();
   }
 }
 
@@ -287,7 +300,7 @@ void EthernetClient::flush() {
 
 // Check if there's data available in the buffer.
 static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
-  return (state != nullptr) &&  // Necessary because a yield() may reset state
+  return (state != nullptr) &&  // Necessary because loop() may reset state
          (0 <= state->bufPos && state->bufPos < state->buf.size());
 }
 
@@ -300,12 +313,17 @@ int EthernetClient::available() {
     return conn_->remaining.size() - conn_->remainingPos;
   }
 
+  if (!conn_->connected) {
+    conn_ = nullptr;
+    return 0;
+  }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -315,7 +333,7 @@ int EthernetClient::available() {
 
 int EthernetClient::read() {
   if (conn_ == nullptr) {
-    return 0;
+    return -1;
   }
 
   if (!conn_->remaining.empty()) {
@@ -327,12 +345,17 @@ int EthernetClient::read() {
     return c;
   }
 
+  if (!conn_->connected) {
+    conn_ = nullptr;
+    return -1;
+  }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
@@ -340,13 +363,15 @@ int EthernetClient::read() {
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
-  if (size == 0 || conn_ == nullptr) {
+  if (conn_ == nullptr) {
     return 0;
   }
 
-  // TODO: Lock if not single-threaded
   auto &rem = conn_->remaining;
   if (!rem.empty()) {
+    if (size == 0) {
+      return 0;
+    }
     size = std::min(size, rem.size() - conn_->remainingPos);
     std::copy_n(rem.cbegin() + conn_->remainingPos, size, buf);
     conn_->remainingPos += size;
@@ -357,12 +382,20 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return size;
   }
 
+  if (!conn_->connected) {
+    conn_ = nullptr;
+    return 0;
+  }
+  if (size == 0) {
+    return 0;
+  }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -374,19 +407,24 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
 
 int EthernetClient::peek() {
   if (conn_ == nullptr) {
-    return 0;
+    return -1;
   }
 
   if (!conn_->remaining.empty()) {
     return conn_->remaining[conn_->remainingPos];
   }
 
+  if (!conn_->connected) {
+    conn_ = nullptr;
+    return -1;
+  }
+
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }

@@ -9,6 +9,7 @@
 
 // C++ includes
 #include <cstdint>
+#include <functional>
 
 #include <IPAddress.h>
 #include <elapsedMillis.h>
@@ -37,7 +38,7 @@ class EthernetClass final {
   int mtu() const;
 
   // Call often.
-  void loop();
+  static void loop();
 
   // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
   // client was successful. Note that when this returns, an IP address may not
@@ -46,8 +47,8 @@ class EthernetClass final {
   // See: waitForLocalIP(timeout)
   bool begin();
 
-  // Waits for an IP address and returns whether one was acquired. This waits in
-  // increments of 500 ms up to the specified timeout.
+  // Waits, up to the specified timeout, for an IP address and returns whether
+  // one was acquired.
   bool waitForLocalIP(uint32_t timeout);
 
   void begin(const IPAddress &ipaddr,
@@ -57,12 +58,30 @@ class EthernetClass final {
   // Shut down the Ethernet peripheral(s).
   void end();
 
+  // Return the link status, true for link and false for no link.
   bool linkStatus() const;
+
+  // Return the link speed in Mbps.
+  int linkSpeed() const;
+
+  // Set a link status callback.
+  void onLinkStatus(std::function<void(bool state)> cb) {
+    linkStatusCB_ = cb;
+  }
+
+  // Set an address changed callback. This will be called if any of the three
+  // addresses changed.
+  void onAddressChanged(std::function<void()> cb) {
+    addressChangedCB_ = cb;
+  }
 
   IPAddress localIP() const;
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
   IPAddress dnsServerIP() const;
+
+  // None of the following address setting functions do anything unless the
+  // system is initialized after a `begin` call
   void setLocalIP(const IPAddress &localIP);
   void setSubnetMask(const IPAddress &subnetMask);
   void setGatewayIP(const IPAddress &gatewayIP);
@@ -92,11 +111,17 @@ class EthernetClass final {
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
 
  private:
-  elapsedMillis loopTimer_;
+  static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
+                             const netif_ext_callback_args_t *args);
+
+  static elapsedMillis loopTimer_;
 
   uint8_t mac_[kMACAddrSize];
   struct netif *netif_ = nullptr;
-  bool isLinkUp_ = false;
+
+  // Callbacks
+  std::function<void(bool state)> linkStatusCB_ = nullptr;
+  std::function<void()> addressChangedCB_ = nullptr;
 };
 
 extern EthernetClass Ethernet;

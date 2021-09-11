@@ -46,9 +46,9 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
-  uint16_t localPort() const;
-  IPAddress remoteIP() const;
-  uint16_t remotePort() const;
+  uint16_t localPort();
+  IPAddress remoteIP();
+  uint16_t remotePort();
 
   // Bring Print::write functions into scope
   using Print::write;
@@ -80,6 +80,9 @@ class EthernetClient final : public Client {
   volatile bool lookupFound_;
 
   std::shared_ptr<ConnectionHolder> conn_;
+      // If this has not been stopped then conn_ might still be non-NULL, so we
+      // can't use NULL as a "connected" check. We also need to check
+      // conn_->connected.
 
   friend class EthernetServer;
 };

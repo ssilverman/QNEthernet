@@ -4,6 +4,11 @@
 // main.cpp is a testing playground for this library.
 // This file is part of the QNEthernet library.
 
+// NOTE: The server and client code in this program should not be used as an
+//       example of how to structure your own code. Its structure was merely
+//       adapted from https://www.arduino.cc/en/Reference/Ethernet to test if
+//       the library worked using this style of API usage.
+
 #include <Arduino.h>
 
 #include <lwip/dns.h>
@@ -191,7 +196,7 @@ void loopServer() {
 
   // check for incoming data from all clients
   for (int i = 0; i < 8; i++) {
-    while (clients[i] && clients[i].available() > 0) {
+    while (clients[i].available() > 0) {
       // read incoming data from the client
       Serial.write(clients[i].read());
     }
@@ -199,7 +204,7 @@ void loopServer() {
 
   // stop any clients which disconnect
   for (int i = 0; i < 8; i++) {
-    if (!clients[i]) {
+    if (clients[i].connected()) {
       clients[i].stop();
     }
   }

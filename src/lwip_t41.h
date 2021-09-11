@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <lwip/ip_addr.h>
+#include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>
 
 #ifdef __cplusplus
@@ -34,10 +35,15 @@ void enet_getmac(uint8_t *mac);
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *ipaddr,
                const ip_addr_t *netmask,
-               const ip_addr_t *gw);
+               const ip_addr_t *gw,
+               netif_ext_callback_fn callback);
 
 // Disable Ethernet.
 void enet_deinit();
+
+// Get a pointer to the netif structure. This is useful for the netif callback
+// before the default netif has been assigned.
+struct netif *enet_netif();
 
 // // Sets the receive callback function.
 // void enet_set_receive_callback(rx_frame_fn rx_cb);
@@ -48,6 +54,9 @@ void enet_proc_input(void);
 
 // Poll Ethernet link status.
 void enet_poll();
+
+// Return the link speed in Mbps.
+int enet_link_speed();
 
 // Read the IEEE1588 timer.
 uint32_t read_1588_timer();
