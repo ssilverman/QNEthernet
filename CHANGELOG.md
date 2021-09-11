@@ -12,6 +12,12 @@ and this project adheres to
 * Now calling `yield()` in `EthernetUDP::parsePacket()` when it returns zero so
   that calls in a loop will move the stack forward.
 
+### Changed
+* Changed `EthernetClass::loop()` to be `static`.
+* Changed all the internal "`yield()` to move the stack along" calls to
+  `EthernetClass::loop()`. Note that the calls within `while` loops in the
+  external API functions were not changed.
+
 ## [0.5.0]
 
 ### Added
