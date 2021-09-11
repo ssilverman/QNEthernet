@@ -31,7 +31,7 @@ static bool ethActive = false;
 void startLoopInYield() {
   ethActive = true;
   ethLoop.attach([](EventResponderRef r) {
-    Ethernet.loop();
+    EthernetClass::loop();
     if (ethActive) {
       r.triggerEvent();
     }
@@ -84,6 +84,9 @@ void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
 int EthernetClass::mtu() const {
   return kMTU;
 }
+
+// Declare this static object.
+elapsedMillis EthernetClass::loopTimer_;
 
 void EthernetClass::loop() {
   enet_proc_input();

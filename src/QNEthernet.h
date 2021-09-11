@@ -38,7 +38,7 @@ class EthernetClass final {
   int mtu() const;
 
   // Call often.
-  void loop();
+  static void loop();
 
   // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
   // client was successful. Note that when this returns, an IP address may not
@@ -114,7 +114,7 @@ class EthernetClass final {
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
 
-  elapsedMillis loopTimer_;
+  static elapsedMillis loopTimer_;
 
   uint8_t mac_[kMACAddrSize];
   struct netif *netif_ = nullptr;
