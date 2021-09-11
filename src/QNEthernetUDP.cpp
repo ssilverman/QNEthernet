@@ -13,6 +13,7 @@
 #include <lwip/dns.h>
 #include <lwip/igmp.h>
 #include <lwip/opt.h>
+#include "QNEthernet.h"
 
 extern const int kMTU;
 
@@ -148,7 +149,7 @@ int EthernetUDP::parsePacket() {
     return packet_.size();
   } else {
     packetPos_ = -1;
-    yield();  // Allow the stack to move along
+    EthernetClass::loop();  // Allow the stack to move along
     return 0;
   }
 }

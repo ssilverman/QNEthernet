@@ -15,6 +15,7 @@
 #include <lwip/opt.h>
 #include <lwip/tcp.h>
 #include "ConnectionManager.h"
+#include "QNEthernet.h"
 
 namespace qindesign {
 namespace network {
@@ -149,8 +150,8 @@ void EthernetClient::stop() {
   if (conn_->connected) {
     // First try to flush any data
     tcp_output(state->pcb);
-    yield();  // Maybe some data gets out
-    // NOTE: yield() requires a re-check of the state
+    EthernetClass::loop();  // Maybe some data gets out
+    // NOTE: loop() requires a re-check of the state
 
     if (state != nullptr) {
       if (tcp_close(state->pcb) != ERR_OK) {
@@ -228,7 +229,7 @@ size_t EthernetClient::write(uint8_t b) {
 
   // Potentially wait for some data to flush
   if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    yield();
+    EthernetClass::loop();
   }
   return written;
 }
@@ -256,7 +257,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
   // Potentially wait for some data to flush
   if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    yield();
+    EthernetClass::loop();
   }
   return size;
 }
@@ -272,7 +273,7 @@ int EthernetClient::availableForWrite() {
 
   // Potentially wait for some data to flush (known to be connected)
   if (tcp_sndbuf(state->pcb) == 0) {
-    yield();
+    EthernetClass::loop();
   }
   return tcp_sndbuf(state->pcb);
 }
@@ -289,7 +290,7 @@ void EthernetClient::flush() {
 
   // Potentially wait for some data to flush
   if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    yield();
+    EthernetClass::loop();
   }
 }
 
@@ -299,7 +300,7 @@ void EthernetClient::flush() {
 
 // Check if there's data available in the buffer.
 static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
-  return (state != nullptr) &&  // Necessary because a yield() may reset state
+  return (state != nullptr) &&  // Necessary because loop() may reset state
          (0 <= state->bufPos && state->bufPos < state->buf.size());
 }
 
@@ -321,8 +322,8 @@ int EthernetClient::available() {
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -353,8 +354,8 @@ int EthernetClient::read() {
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
@@ -393,8 +394,8 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
   }
@@ -422,8 +423,8 @@ int EthernetClient::peek() {
   if (state == nullptr) {
     return 0;
   }
-  yield();  // Allow data to come in
-  // NOTE: yield() requires a re-check of the state
+  EthernetClass::loop();  // Allow data to come in
+  // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
