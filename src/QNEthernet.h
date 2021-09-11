@@ -22,6 +22,15 @@
 namespace qindesign {
 namespace network {
 
+// Define this enum because Arduino API. Still leaving
+// EthernetClass::linkStatus() as a bool, though; comparisons will
+// work correctly.
+enum [[deprecated]] EthernetLinkStatus {
+  LinkOFF,
+  LinkON,
+  Unknown,
+};
+
 class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
