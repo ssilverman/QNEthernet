@@ -20,8 +20,6 @@
 extern "C" {
 #endif
 
-// typedef void (*rx_frame_fn)(void *);
-
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
@@ -44,9 +42,6 @@ void enet_deinit();
 // Get a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
 struct netif *enet_netif();
-
-// // Sets the receive callback function.
-// void enet_set_receive_callback(rx_frame_fn rx_cb);
 
 // Process any Ethernet input. This is meant to be called often by the
 // main loop.

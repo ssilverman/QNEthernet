@@ -480,12 +480,7 @@ void enet_isr() {
   // struct pbuf *p;
   while (ENET_EIR & ENET_EIR_RXF) {
     ENET_EIR = ENET_EIR_RXF;
-    // if (rx_callback) {
-    //   // p = enet_rx_next();
-    //   rx_callback(NULL);
-    // } else {
-      rx_ready = 1;
-    // }
+    rx_ready = 1;
     asm("dsb");
   }
 }
@@ -589,10 +584,6 @@ struct netif *enet_netif() {
   return &t41_netif;
 }
 
-// void enet_set_receive_callback(rx_frame_fn rx_cb) {
-//   rx_callback = rx_cb;
-// }
-
 // Get the next chunk of input data.
 static struct pbuf *enet_rx_next() {
   volatile enetbufferdesc_t *p_bd = rxbd_next();
@@ -609,13 +600,6 @@ static void enet_input(struct pbuf *p_frame) {
 void enet_proc_input(void) {
   struct pbuf *p;
 
-  // if (!rx_callback) {
-  //   if (rx_ready) {
-  //     rx_ready = 0;
-  //   } else {
-  //     return;
-  //   }
-  // }
   if (!rx_ready) {
     return;
   }
