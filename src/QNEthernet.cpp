@@ -119,6 +119,13 @@ void EthernetClass::begin(const IPAddress &ip,
   enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
   netif_set_up(netif_);
 
+  // If this is using a manual configuration then inform the network
+  if (!(const_cast<IPAddress &>(ip) == INADDR_NONE) ||
+      !(const_cast<IPAddress &>(mask) == INADDR_NONE) ||
+      !(const_cast<IPAddress &>(gateway) == INADDR_NONE)) {
+    dhcp_inform(netif_);
+  }
+
   startLoopInYield();
 }
 
@@ -174,7 +181,7 @@ void EthernetClass::end() {
   ethActive = false;
   ethLoop.detach();
 
-  dhcp_stop(netif_);
+  dhcp_release_and_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
   netif_set_down(netif_);
   netif_ = nullptr;
