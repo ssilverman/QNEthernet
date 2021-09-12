@@ -556,17 +556,16 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     if (isNetifAdded) {
       // Remove any previous configuration
       netif_remove(&t41_netif);
+      netif_remove_ext_callback(&netif_callback);
       isNetifAdded = false;
     }
     SMEMCPY(mac, m, ETH_HWADDR_LEN);
   }
 
-  // Add the callback
-  netif_add_ext_callback(&netif_callback, callback);
-
   if (isNetifAdded) {
     netif_set_addr(&t41_netif, ipaddr, netmask, gw);
   } else {
+    netif_add_ext_callback(&netif_callback, callback);
     netif_add(&t41_netif, ipaddr, netmask, gw,
               NULL, t41_netif_init, ethernet_input);
     netif_set_default(&t41_netif);
@@ -575,14 +574,12 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
 }
 
 void enet_deinit() {
-  netif_remove(&t41_netif);
-  isNetifAdded = false;
+  if (isNetifAdded) {
+    netif_remove(&t41_netif);
+    netif_remove_ext_callback(&netif_callback);
+    isNetifAdded = false;
+  }
   isFirstInit = false;
-
-  // Stop the PLL
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_ENABLE;
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
