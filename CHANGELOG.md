@@ -9,14 +9,24 @@ and this project adheres to
 ### Added
 * Added a new "survey of how connections work" section to the README.
 * Added low-level link receive error stats collection.
-* Now calling `yield()` in `EthernetUDP::parsePacket()` when it returns zero so
-  that calls in a loop will move the stack forward.
+* Now calling `EthernetClass::loop()` in `EthernetUDP::parsePacket()` when it
+  returns zero so that calls in a loop will move the stack forward.
+* Added `EthernetLinkStatus` enum (marked as deprecated) for compatibility with
+  the Arduino API. Note that `EthernetClass::linkStatus()` is staying as a
+  `bool`; comparison with the enumerators will work correctly.
+* Now sending a DHCPINFORM message to the network when using a manual
+  IP configuration.
 
 ### Changed
 * Changed `EthernetClass::loop()` to be `static`.
 * Changed all the internal "`yield()` to move the stack along" calls to
   `EthernetClass::loop()`. Note that the calls within `while` loops in the
   external API functions were not changed.
+
+### Fixed
+* Fixed the driver to add and remove netif ext callback at the correct places.
+  This solves the freeze problem when ending Ethernet, however when restarting,
+  DHCP isn't able to get an IP address.
 
 ## [0.5.0]
 
