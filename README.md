@@ -85,8 +85,8 @@ and notes:
   }
   ```
 * `Ethernet.linkStatus()` unabashedly returns a `bool` and not
-  `EthernetLinkStatus`. You'll have to create your own mapping to an enum of
-  this name if you want to use it in the Arduino fashion.
+  `EthernetLinkStatus`. There exists an `EthernetLinkStatus` enum, however, and
+  comparisons to the Boolean value will work.
 * Files that configure lwIP for our system:
   * *src/sys_arch.c*
   * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
@@ -116,7 +116,8 @@ here are a few steps to follow:
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
 5. `Ethernet.hardwareStatus()` always returns zero and `Ethernet.linkStatus()`
-   returns a `bool` (i.e. not that `EthernetLinkStatus` enum).
+   returns a `bool` (i.e. not that `EthernetLinkStatus` enum, but a compare to
+   those enumerators will work).
 6. Most other things should be the same.
 
 ## A survey of how connections (aka `EthernetClient`) work
