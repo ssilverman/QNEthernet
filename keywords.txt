@@ -21,8 +21,13 @@ macAddress	KEYWORD2	EthernetMACAddress
 mtu	KEYWORD2
 loop	KEYWORD2
 begin	KEYWORD2
+waitForLocalIP	KEYWORD2
 end	KEYWORD2
-linkStatus	KEYWORD2
+linkStatus	KEYWORD2	EthernetLinkStatus
+linkState	KEYWORD2
+linkSpeed	KEYWORD2
+onLinkState	KEYWORD2
+onAddressChanged	KEYWORD2
 localIP	KEYWORD2	EthernetLocalIP
 subnetMask	KEYWORD2	EthernetSubnetMask
 gatewayIP	KEYWORD2	EthernetGatewayIP
@@ -40,7 +45,7 @@ remoteIP	KEYWORD2
 remotePort	KEYWORD2
 write	KEYWORD2
 availableForWrite	KEYWORD2
-flush	KEYWORD2
+flush	KEYWORD2	ClientFlush
 available	KEYWORD2
 read	KEYWORD2
 peek	KEYWORD2
