@@ -47,8 +47,8 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   }
 
   if (reason & LWIP_NSC_LINK_CHANGED) {
-    if (Ethernet.linkStatusCB_ != nullptr && args != nullptr) {
-      Ethernet.linkStatusCB_(args->link_changed.state != 0);
+    if (Ethernet.linkStateCB_ != nullptr && args != nullptr) {
+      Ethernet.linkStateCB_(args->link_changed.state != 0);
     }
   }
 
@@ -189,7 +189,11 @@ void EthernetClass::end() {
   enet_deinit();
 }
 
-bool EthernetClass::linkStatus() const {
+EthernetLinkStatus EthernetClass::linkStatus() const {
+  return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
+}
+
+bool EthernetClass::linkState() const {
   if (netif_ == nullptr) {
     return false;
   }

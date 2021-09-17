@@ -6,6 +6,14 @@ and this project adheres to
 
 ## [0.7.0-snapshot]
 
+### Added
+* The Boolean-valued link state is now `EthernetClass::linkState()`.
+
+### Changed
+* `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The
+  Boolean version is now `EthernetClass::linkState()`.
+* The `EthernetLinkStatus` enum is no longer marked as deprecated.
+
 ## [0.6.0]
 
 ### Added

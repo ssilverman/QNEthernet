@@ -38,10 +38,11 @@ and notes:
   * `begin(ipaddr, netmask, gw)`
   * `end()`
   * `mtu()`
+  * `linkState()`
   * `linkSpeed()`
   * `waitForLocalIP()`
   * The callback-adding functions:
-    * `onLinkStatus(cb)`
+    * `onLinkState(cb)`
     * `onAddressChanged(cb)`
 * `EthernetServer::end()` is not in the Arduino API.
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
@@ -84,9 +85,6 @@ and notes:
     qn::Ethernet.begin();
   }
   ```
-* `Ethernet.linkStatus()` unabashedly returns a `bool` and not
-  `EthernetLinkStatus`. There exists an `EthernetLinkStatus` enum, however, and
-  comparisons to the Boolean value will work.
 * Files that configure lwIP for our system:
   * *src/sys_arch.c*
   * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
@@ -115,9 +113,7 @@ here are a few steps to follow:
 4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
-5. `Ethernet.hardwareStatus()` always returns zero and `Ethernet.linkStatus()`
-   returns a `bool` (i.e. not that `EthernetLinkStatus` enum, but a compare to
-   those enumerators will work).
+5. `Ethernet.hardwareStatus()` always returns zero.
 6. Most other things should be the same.
 
 ## A survey of how connections (aka `EthernetClient`) work

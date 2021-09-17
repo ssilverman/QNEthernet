@@ -22,10 +22,8 @@
 namespace qindesign {
 namespace network {
 
-// Define this enum because Arduino API. Still leaving
-// EthernetClass::linkStatus() as a bool, though; comparisons will
-// work correctly.
-enum [[deprecated]] EthernetLinkStatus {
+// Define this enum because Arduino API.
+enum EthernetLinkStatus {
   LinkOFF,
   LinkON,
   Unknown,
@@ -67,15 +65,19 @@ class EthernetClass final {
   // Shut down the Ethernet peripheral(s).
   void end();
 
-  // Return the link status, true for link and false for no link.
-  bool linkStatus() const;
+  // Return the link status, one of the EthernetLinkStatus enumerators. This
+  // will never return Unknown.
+  EthernetLinkStatus linkStatus() const;
+
+  // Return the link state, true for link and false for no link.
+  bool linkState() const;
 
   // Return the link speed in Mbps.
   int linkSpeed() const;
 
-  // Set a link status callback.
-  void onLinkStatus(std::function<void(bool state)> cb) {
-    linkStatusCB_ = cb;
+  // Set a link state callback.
+  void onLinkState(std::function<void(bool state)> cb) {
+    linkStateCB_ = cb;
   }
 
   // Set an address changed callback. This will be called if any of the three
@@ -129,7 +131,7 @@ class EthernetClass final {
   struct netif *netif_ = nullptr;
 
   // Callbacks
-  std::function<void(bool state)> linkStatusCB_ = nullptr;
+  std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
 };
 
