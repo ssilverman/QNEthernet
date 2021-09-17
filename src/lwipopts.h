@@ -53,10 +53,10 @@
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 // Add 3 for mDNS. This value seems to work:
 #define MEMP_NUM_SYS_TIMEOUT ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
-#define MEMP_NUM_NETBUF                    0
-#define MEMP_NUM_NETCONN                   0
+// #define MEMP_NUM_NETBUF                    2
+// #define MEMP_NUM_NETCONN                   4
 // #define MEMP_NUM_SELECT_CB                 4
-#define MEMP_NUM_TCPIP_MSG_API             0
+// #define MEMP_NUM_TCPIP_MSG_API             8
 // #define MEMP_NUM_TCPIP_MSG_INPKT           8
 // #define MEMP_NUM_NETDB                     1
 // #define MEMP_NUM_LOCALHOSTLIST             1
