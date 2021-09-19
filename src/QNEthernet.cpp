@@ -184,9 +184,9 @@ void EthernetClass::end() {
   dhcp_release_and_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
   netif_set_down(netif_);
-  netif_ = nullptr;
 
   enet_deinit();
+  netif_ = nullptr;
 }
 
 EthernetLinkStatus EthernetClass::linkStatus() const {
