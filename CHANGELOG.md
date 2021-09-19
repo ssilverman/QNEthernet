@@ -8,6 +8,9 @@ and this project adheres to
 
 ### Added
 * The Boolean-valued link state is now `EthernetClass::linkState()`.
+* Added a weak `_write()` definition so that `printf` works and sends its output
+  to `Serial`. Parts of lwIP may use `printf`.
+* Now powering down the PHY in `enet_deinit()`.
 
 ### Changed
 * `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The
