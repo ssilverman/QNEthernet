@@ -6,6 +6,8 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
+#if defined(ARDUINO_TEENSY41)
+
 #include "lwip_t41.h"
 
 #include <stdbool.h>
@@ -627,3 +629,5 @@ uint32_t read_1588_timer() {
   }
   return ENET_ATVR;
 }
+
+#endif  // ARDUINO_TEENSY41
