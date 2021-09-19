@@ -140,7 +140,6 @@ static uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(32)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
-// static rx_frame_fn rx_callback = NULL;
 static volatile uint32_t rx_ready;
 
 // PHY status, polled
