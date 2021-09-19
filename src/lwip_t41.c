@@ -574,7 +574,6 @@ void enet_deinit() {
     netif_remove_ext_callback(&netif_callback);
     isNetifAdded = false;
   }
-  isFirstInit = false;
 
   // Power down the PHY
   GPIO7_GDIR |= (1<<15);
