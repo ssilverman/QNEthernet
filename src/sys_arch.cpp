@@ -4,14 +4,29 @@
 // sys_arch.cpp provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
 
+#include <Arduino.h>
+
 extern "C" {
 #include <stdint.h>
+#include <stdio.h>
 #include <lwip/arch.h>
 
 extern volatile uint32_t systick_millis_count;
 
 u32_t sys_now(void) {
   return systick_millis_count;
+}
+
+// Define this function so that printf works; parts of lwIP may use printf.
+// It's marked as "weak" so that programs that define this function
+// won't conflict.
+__attribute__((weak))
+int _write(int file, const char *buf, size_t len) {
+  // Send both stdout and stderr to Serial
+  if (file == stdout->_file || file == stderr->_file) {
+    return Serial.write(buf, len);
+  }
+  return len;
 }
 
 #if SYS_LIGHTWEIGHT_PROT
