@@ -22,11 +22,20 @@ u32_t sys_now(void) {
 // won't conflict.
 __attribute__((weak))
 int _write(int file, const char *buf, size_t len) {
+  Print *out = nullptr;
+
   // Send both stdout and stderr to Serial
   if (file == stdout->_file || file == stderr->_file) {
-    return Serial.write(buf, len);
+    out = &Serial;
+  } else {
+    out = reinterpret_cast<Print *>(file);
   }
-  return len;
+
+  if (out != nullptr) {
+    return out->write(reinterpret_cast<const uint8_t *>(buf), len);
+  } else {
+    return len;
+  }
 }
 
 #if SYS_LIGHTWEIGHT_PROT
