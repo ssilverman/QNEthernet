@@ -24,7 +24,7 @@ and notes:
   timeouts rely on this. This also means that you must use `delay`, `yield()`,
   or `Ethernet.loop()` when waiting on conditions; waiting without calling these
   functions will cause the TCP/IP stack to never refresh. Note that many of the
-  I/O functions call `yield()` so that there's less burden on the calling code.
+  I/O functions call `loop()` so that there's less burden on the calling code.
 * `EthernetServer` write functions always return the write size requested. This
   is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
