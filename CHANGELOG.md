@@ -17,6 +17,12 @@ and this project adheres to
   Boolean version is now `EthernetClass::linkState()`.
 * The `EthernetLinkStatus` enum is no longer marked as deprecated.
 
+### Fixed
+* Restarting `Ethernet` (via `begin()` or via `end()`/`begin()`) now works
+  properly. DHCP can now re-acquire an IP address. Something's weird about
+  `EventResponder`. It doesn't look like it's possible to `detach()` then
+  `attach()`, or call `attach()` more than once.
+
 ## [0.6.0]
 
 ### Added

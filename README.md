@@ -188,7 +188,6 @@ Input is welcome.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
 * Make a test suite.
-* After `enet_deinit()` and then restarting, DHCP isn't able to get an address.
 * Understand why mDNS requires re-announcements.
 
 ## Code style
