@@ -144,12 +144,13 @@ int EthernetUDP::parsePacket() {
   packet_ = inPacket_;
   inPacket_.clear();
 
+  EthernetClass::loop();  // Allow the stack to move along
+
   if (packet_.size() > 0) {
     packetPos_ = 0;
     return packet_.size();
   } else {
     packetPos_ = -1;
-    EthernetClass::loop();  // Allow the stack to move along
     return 0;
   }
 }
