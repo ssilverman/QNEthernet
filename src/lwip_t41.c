@@ -576,6 +576,10 @@ void enet_deinit() {
   }
   isFirstInit = false;
 
+  // Power down the PHY
+  GPIO7_GDIR |= (1<<15);
+  GPIO7_DR_CLEAR = (1<<15);
+
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
 }
