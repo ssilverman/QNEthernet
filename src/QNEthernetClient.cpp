@@ -218,20 +218,19 @@ size_t EthernetClient::write(uint8_t b) {
     return 0;
   }
 
-  size_t written = 0;
+  size_t sndBufSize = tcp_sndbuf(state->pcb);
+  if (sndBufSize == 0) {
+    tcp_output(state->pcb);
+    sndBufSize = tcp_sndbuf(state->pcb);
+  }
 
-  if (tcp_sndbuf(state->pcb) >= 1) {
+  if (sndBufSize >= 1) {
     if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       return 0;
     }
-    written = 1;
+    return 1;
   }
-
-  // Potentially wait for some data to flush
-  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    EthernetClass::loop();
-  }
-  return written;
+  return 0;
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
@@ -244,10 +243,15 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     return 0;
   }
 
-  if (size > UINT16_MAX) {
-    size = UINT16_MAX;
+  if (size == 0) {
+    return 0;
   }
+
   size_t sndBufSize = tcp_sndbuf(state->pcb);
+  if (sndBufSize == 0) {
+    tcp_output(state->pcb);
+    sndBufSize = tcp_sndbuf(state->pcb);
+  }
   size = std::min(size, sndBufSize);
   if (size > 0) {
     if (tcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
@@ -255,10 +259,6 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     }
   }
 
-  // Potentially wait for some data to flush
-  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    EthernetClass::loop();
-  }
   return size;
 }
 
@@ -271,9 +271,9 @@ int EthernetClient::availableForWrite() {
     return 0;
   }
 
-  // Potentially wait for some data to flush (known to be connected)
+  // Maybe flush
   if (tcp_sndbuf(state->pcb) == 0) {
-    EthernetClass::loop();
+    tcp_output(state->pcb);
   }
   return tcp_sndbuf(state->pcb);
 }
@@ -287,11 +287,6 @@ void EthernetClient::flush() {
     return;
   }
   tcp_output(state->pcb);
-
-  // Potentially wait for some data to flush
-  if (conn_->connected && tcp_sndbuf(state->pcb) == 0) {
-    EthernetClass::loop();
-  }
 }
 
 // --------------------------------------------------------------------------
