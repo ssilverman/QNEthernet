@@ -27,16 +27,14 @@ static EventResponder ethLoop;
 EthernetClass Ethernet;
 static bool ethActive = false;
 
-// Start the loop() call in yield() via EventResponder.
-void startLoopInYield() {
-  ethActive = true;
+// Attach the loop() call to yield() via EventResponder.
+static void attachLoopToYield() {
   ethLoop.attach([](EventResponderRef r) {
     EthernetClass::loop();
     if (ethActive) {
       r.triggerEvent();
     }
   });
-  ethLoop.triggerEvent();
 }
 
 void EthernetClass::netifEventFunc(struct netif *netif,
@@ -71,6 +69,8 @@ EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   // Initialize randomness since this isn't done anymore in eth_init
   Entropy.Initialize();
   srand(Entropy.random());
+
+  attachLoopToYield();
 }
 
 EthernetClass::~EthernetClass() {
@@ -126,7 +126,8 @@ void EthernetClass::begin(const IPAddress &ip,
     dhcp_inform(netif_);
   }
 
-  startLoopInYield();
+  ethActive = true;
+  ethLoop.triggerEvent();
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) {
@@ -179,7 +180,6 @@ void EthernetClass::end() {
   }
 
   ethActive = false;
-  ethLoop.detach();
 
   dhcp_release_and_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
