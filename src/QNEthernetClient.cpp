@@ -150,7 +150,7 @@ void EthernetClient::stop() {
   if (conn_->connected) {
     // First try to flush any data
     tcp_output(state->pcb);
-    EthernetClass::loop();  // Maybe some data gets out
+    EthernetClass::loop();  // Maybe some TCP data gets in
     // NOTE: loop() requires a re-check of the state
 
     if (state != nullptr) {
@@ -224,15 +224,14 @@ size_t EthernetClient::write(uint8_t b) {
     sndBufSize = tcp_sndbuf(state->pcb);
   }
 
+  size_t written = 0;
   if (sndBufSize >= 1) {
-    if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) != ERR_OK) {
-      return 0;
+    if (tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) == ERR_OK) {
+      written = 1;
     }
-    EthernetClass::loop();  // Loop to allow incoming TCP data
-    return 1;
   }
   EthernetClass::loop();  // Loop to allow incoming TCP data
-  return 0;
+  return written;
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
@@ -246,6 +245,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   }
 
   if (size == 0) {
+    EthernetClass::loop();  // Loop to allow incoming TCP data
     return 0;
   }
 
@@ -257,7 +257,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   size = std::min(size, sndBufSize);
   if (size > 0) {
     if (tcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
-      return 0;
+      size = 0;
     }
   }
 
@@ -388,15 +388,17 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     conn_ = nullptr;
     return 0;
   }
-  if (size == 0) {
-    return 0;
-  }
 
   const auto &state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
+
   EthernetClass::loop();  // Allow data to come in
+  if (size == 0) {
+    return 0;
+  }
+
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
