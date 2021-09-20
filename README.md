@@ -189,6 +189,11 @@ Input is welcome.
 * Perhaps zero-copy is an option.
 * Make a test suite.
 * Understand why mDNS requires re-announcements.
+* I sometimes see
+  `Assertion "tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT" failed at line 1442 in src/lwip/tcp.c`
+  when sending a large amount of data. Either it's an lwIP bug or I'm doing
+  something wrong.
+  See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 
 ## Code style
 
