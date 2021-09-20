@@ -11,11 +11,19 @@ and this project adheres to
 * Added a weak `_write()` definition so that `printf` works and sends its output
   to `Serial`. Parts of lwIP may use `printf`.
 * Now powering down the PHY in `enet_deinit()`.
+* Added calls to `loop()` in `EthernetServer::accept()` and `available()` to
+  help avoid having to have the caller remember to call loop() if checking
+  connectivity in a loop.
 
 ### Changed
 * `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The
   Boolean version is now `EthernetClass::linkState()`.
 * The `EthernetLinkStatus` enum is no longer marked as deprecated.
+* Updated `EthernetClient` output functions to flush data when the send buffer
+  is full and to always call `loop()` before returning. This should obviate the
+  need to call `flush()` after writes and the need to call `loop()` if writing
+  in a loop.
+* Changed `EthernetUDP::parsePacket()` to always call `loop()`.
 
 ### Fixed
 * Restarting `Ethernet` (via `begin()` or via `end()`/`begin()`) now works
