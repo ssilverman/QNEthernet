@@ -47,6 +47,10 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
 
 static bool initialized = false;
 
+MDNSClass::~MDNSClass() {
+  end();
+}
+
 bool MDNSClass::begin(const String &host) {
   netif_ = netif_default;
   if (netif_ == nullptr) {

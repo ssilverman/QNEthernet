@@ -20,9 +20,8 @@ namespace network {
 // MDNS provides mDNS responder functionality.
 class MDNSClass final {
  public:
-  // Initializes mDNS. This should only be called once.
   MDNSClass() = default;
-  ~MDNSClass() = default;
+  ~MDNSClass();
 
   // Start the mDNS responder. This returns whether the call was successful.
   bool begin(const String &host);
