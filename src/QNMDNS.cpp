@@ -45,13 +45,18 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
   }
 }
 
+static bool initialized = false;
+
 bool MDNSClass::begin(const String &host) {
   netif_ = netif_default;
   if (netif_ == nullptr) {
     return false;
   }
 
-  mdns_resp_init();
+  if (!initialized) {
+    mdns_resp_init();
+    initialized = true;
+  }
 
   if (mdns_resp_add_netif(netif_, host.c_str(), kTTL) != ERR_OK) {
     netif_ = nullptr;
