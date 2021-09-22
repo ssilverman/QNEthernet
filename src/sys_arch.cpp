@@ -16,26 +16,33 @@ extern volatile uint32_t systick_millis_count;
 u32_t sys_now(void) {
   return systick_millis_count;
 }
+}  // extern "C"
 
+// The user program can set this to something initialized. For example,
+// `Serial`, after `Serial.begin(speed)`.
+Print *volatile stdPrint = nullptr;
+
+extern "C" {
 // Define this function so that printf works; parts of lwIP may use printf.
-// It's marked as "weak" so that programs that define this function
-// won't conflict.
-__attribute__((weak))
-int _write(int file, const char *buf, size_t len) {
-  Print *out = nullptr;
+// See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
+// Note: Can't define as weak because we don't know which `_write` would be
+//       chosen by the linker, this one or the one defined in Print.cpp.
+// TODO: May have to revisit this if user code wants to define `_write`.
+int _write(int file, const void *buf, size_t len) {
+  Print *out;
 
-  // Send both stdout and stderr to Serial
+  // Send both stdout and stderr to stdPrint
   if (file == stdout->_file || file == stderr->_file) {
-    out = &Serial;
+    out = stdPrint;
   } else {
-    out = reinterpret_cast<Print *>(file);
+    out = (Print *)file;
   }
 
-  if (out != nullptr) {
-    return out->write(reinterpret_cast<const uint8_t *>(buf), len);
-  } else {
+  if (out == nullptr) {
     return len;
   }
+  // Don't check for len == 0 and return early in case there's side effects
+  return out->write((const uint8_t *)buf, len);
 }
 
 #if SYS_LIGHTWEIGHT_PROT
