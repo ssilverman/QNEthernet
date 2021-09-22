@@ -25,7 +25,11 @@ EthernetServer::~EthernetServer() {
 }
 
 void EthernetServer::begin() {
-  listening_ = ConnectionManager::instance().listen(port_);
+  begin(false);
+}
+
+void EthernetServer::begin(bool reuse) {
+  listening_ = ConnectionManager::instance().listen(port_, reuse);
 }
 
 bool EthernetServer::end() {

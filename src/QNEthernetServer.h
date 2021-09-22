@@ -22,7 +22,13 @@ class EthernetServer final : public Server {
   EthernetServer(uint16_t port);
   ~EthernetServer();
 
+  // Start listening on the server port. This calls begin(false).
   void begin() override;
+
+  // Start listening on the server port and set the SO_REUSEADDR socket option
+  // according to the `reuse` parameter.
+  void begin(bool reuse);
+
   bool end();
 
   EthernetClient accept() const;

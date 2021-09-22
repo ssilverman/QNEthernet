@@ -17,6 +17,8 @@ and this project adheres to
 * Added a call to `end()` in the `QNMDNS` destructor.
 * Added a new externally-available `Print *stdPrint` variable for `printf`
   output, both for lwIP and optionally for user code.
+* Added the ability to set the SO_REUSEADDR socket option when listening on a
+  port (both TCP and UDP).
 
 ### Changed
 * `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The

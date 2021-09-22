@@ -12,6 +12,7 @@
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
 #include <lwip/igmp.h>
+#include <lwip/ip.h>
 #include <lwip/opt.h>
 #include "QNEthernet.h"
 
@@ -89,11 +90,20 @@ EthernetUDP::~EthernetUDP() {
 }
 
 uint8_t EthernetUDP::begin(uint16_t localPort) {
+  return begin(localPort, false);
+}
+
+uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (pcb_ == nullptr) {
     pcb_ = udp_new();
   }
   if (pcb_ == nullptr) {
     return false;
+  }
+
+  // Try to bind
+  if (reuse) {
+    ip_set_option(pcb_, SOF_REUSEADDR);
   }
   if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
     return false;

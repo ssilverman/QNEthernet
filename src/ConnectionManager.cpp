@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <core_pins.h>
+#include <lwip/ip.h>
 #include "ConnectionHolder.h"
 #include "QNEthernet.h"
 
@@ -261,7 +262,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(ip_addr_t *ipaddr,
   return holder;
 }
 
-bool ConnectionManager::listen(uint16_t port) {
+bool ConnectionManager::listen(uint16_t port, bool reuse) {
   // Try to allocate
   tcp_pcb *pcb = tcp_new();
   if (pcb == nullptr) {
@@ -269,6 +270,9 @@ bool ConnectionManager::listen(uint16_t port) {
   }
 
   // Try to bind
+  if (reuse) {
+    ip_set_option(pcb, SOF_REUSEADDR);
+  }
   if (tcp_bind(pcb, IP_ADDR_ANY, port) != ERR_OK) {
     tcp_abort(pcb);
     return false;

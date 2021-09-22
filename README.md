@@ -45,6 +45,11 @@ and notes:
     * `onLinkState(cb)`
     * `onAddressChanged(cb)`
 * `EthernetServer::end()` is not in the Arduino API.
+* The following functions add a Boolean `reuse` parameter that controls the
+  SO_REUSEADDR socket option. They are in addition to the equivalent functions
+  having no `reuse` parameter.
+  * `EthernetServer::begin(reuse)`
+  * `EthernetUDP::begin(localPort, reuse)`
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or
