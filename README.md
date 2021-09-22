@@ -19,13 +19,14 @@ files provided with the lwIP release.
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
 2. [How to run](#how-to-run)
-3. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-4. [mDNS services](#mdns-services)
-5. [stdio](#stdio)
-6. [Other notes](#other-notes)
-7. [To do](#to-do)
-8. [Code style](#code-style)
-9. [References](#references)
+3. [A note on the examples](#a-note-on-the-examples)
+4. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
+5. [mDNS services](#mdns-services)
+6. [stdio](#stdio)
+7. [Other notes](#other-notes)
+8. [To do](#to-do)
+9. [Code style](#code-style)
+10. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -133,6 +134,24 @@ here are a few steps to follow:
 5. `Ethernet.hardwareStatus()` always returns zero.
 6. Most other things should be the same.
 
+## A note on the examples
+
+The examples aren't meant to be simple. They're meant to be functional. There
+are plenty of Arduino-style Ethernet library examples out there. This library
+does not aim to be just like the others, it aims to provide some more powerful
+tools to enable more powerful programs. The Teensy 4.1 is a serious device; it
+demands serious examples.
+
+An attempt was made to use a more robust programming style and modern C++ tools.
+For those not as experienced with C++ or larger projects, these may have a
+steeper learning curve. Hopefully this brings up lots of questions and an
+exposure to new concepts. For example, state machines, lambdas, callbacks,
+data structures, vector::emplace_back, and std::move.
+
+For those that do have more C++ and larger project experience, I invite you to
+improve or add to the examples so that the set of examples here becomes what
+you've always hoped Teensy library examples could be.
+
 ## A survey of how connections (aka `EthernetClient`) work
 
 Hopefully this disambiguates some details about what each function does:
@@ -235,6 +254,7 @@ Input is welcome.
   when sending a large amount of data. Either it's an lwIP bug or I'm doing
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
+* More examples.
 
 ## Code style
 

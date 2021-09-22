@@ -19,6 +19,11 @@ and this project adheres to
   output, both for lwIP and optionally for user code.
 * Added the ability to set the SO_REUSEADDR socket option when listening on a
   port (both TCP and UDP).
+* Added four examples and a "note on the examples" section in the README.
+  1. FixedWidthServer
+  2. LengthWidthServer
+  3. ServerWithAddressListener
+  4. SNTPClient
 
 ### Changed
 * `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The
