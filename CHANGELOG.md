@@ -14,6 +14,9 @@ and this project adheres to
 * Added calls to `loop()` in `EthernetServer::accept()` and `available()` to
   help avoid having to have the caller remember to call loop() if checking
   connectivity in a loop.
+* Added a call to `end()` in the `QNMDNS` destructor.
+* Added a new externally-available `Print *stdPrint` variable for `printf`
+  output, both for lwIP and optionally for user code.
 
 ### Changed
 * `EthernetClass::linkStatus()` now returns an `EthernetLinkStatus` enum. The
@@ -24,12 +27,17 @@ and this project adheres to
   need to call `flush()` after writes and the need to call `loop()` if writing
   in a loop.
 * Changed `EthernetUDP::parsePacket()` to always call `loop()`.
+* Changed `_write()` implementation to be non-weak and updated the output to
+  direct to the new `Print *stdPrint` variable. It has a default of NULL, so
+  there will be no output if not set by user code.
 
 ### Fixed
 * Restarting `Ethernet` (via `begin()` or via `end()`/`begin()`) now works
   properly. DHCP can now re-acquire an IP address. Something's weird about
   `EventResponder`. It doesn't look like it's possible to `detach()` then
   `attach()`, or call `attach()` more than once.
+* Fixed `QNMDNS` to only call `mdns_resp_init()` once. There's no corresponding
+  "deinit" call.
 
 ## [0.6.0]
 

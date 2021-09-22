@@ -172,6 +172,30 @@ It's possible to register mDNS services. Some notes:
     MDNS.addService("_http", "_tcp", 80);
   ```
 
+## stdio
+
+Internally, lwIP uses `printf` for debug output and assertions. The library
+defines `_write()` so that `printf` will work for `stdout` and `stderr`. It
+sends output to a custom variable, `Print *stdPrint`, that defaults to NULL. To
+enable any lwIP output, including assertion failure output, that variable must
+be set to something conforming to the `Print` interface. If it is not set,
+`printf` will still work, but there will be no output.
+
+For example:
+```c++
+extern Print *stdPrint;
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial && millis() < 4000) {
+    // Wait for Serial initialization
+  }
+  stdPrint = &Serial;
+}
+```
+
+The side benefit is that user code can use `printf` too.
+
 ## Other notes
 
 I'm not 100% percent certain where this library will go, but I want it to be
