@@ -27,7 +27,8 @@ and this project adheres to
 * Updated `EthernetClient` output functions to flush data when the send buffer
   is full and to always call `loop()` before returning. This should obviate the
   need to call `flush()` after writes and the need to call `loop()` if writing
-  in a loop.
+  in a loop. (`flush()` is still useful, however, when you've finished sending a
+  "section" of data.)
 * Changed `EthernetUDP::parsePacket()` to always call `loop()`.
 * Changed `_write()` implementation to be non-weak and updated the output to
   direct to the new `Print *stdPrint` variable. It has a default of NULL, so
