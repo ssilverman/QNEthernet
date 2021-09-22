@@ -123,16 +123,22 @@ here are a few steps to follow:
    include already includes the header for EthernetUDP, so you can remove any
    `#include <EthernetUdp.h>`.
 2. Just below that, add: `using namespace qindesign::network;`
-3. You likely don't want or need to set/choose your own MAC address, so just
+3. Declare `extern Print *stdPrint;` where you put your other program variables
+   (outside the functions). In `setup()`, just after initializing `Serial`, set
+   `stdPrint = &Serial`. This enables some lwIP output and also `printf` for
+   your own code.
+4. You likely don't want or need to set/choose your own MAC address, so just
    call `Ethernet.begin()` with no arguments. This version uses DHCP. The
    three-argument version (IP, subnet mask, gateway) sets those parameters
    instead of using DHCP. If you really want to set your own MAC address, for
    now, consult the code.
-4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
+5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
-5. `Ethernet.hardwareStatus()` always returns zero.
-6. Most other things should be the same.
+6. `Ethernet.hardwareStatus()` always returns zero.
+7. Most other things should be the same.
+
+Please see the examples for more things you can do with the API.
 
 ## A note on the examples
 
