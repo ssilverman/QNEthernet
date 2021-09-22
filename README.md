@@ -15,6 +15,18 @@ All the Teensy stuff is under the MIT license, so I'm making this library under
 the MIT license as well. Please see the _lwip-info/_ directory for the info
 files provided with the lwIP release.
 
+## Table of contents
+
+1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
+2. [How to run](#how-to-run)
+3. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
+4. [mDNS services](#mdns-services)
+5. [stdio](#stdio)
+6. [Other notes](#other-notes)
+7. [To do](#to-do)
+8. [Code style](#code-style)
+9. [References](#references)
+
 ## Differences, assumptions, and notes
 
 This library mostly follows the Arduino Ethernet API, with these differences
