@@ -12,8 +12,10 @@ and this project adheres to
 
 ### Added
 * The Boolean-valued link state is now `EthernetClass::linkState()`.
-* Added a weak `_write()` definition so that `printf` works and sends its output
-  to `Serial`. Parts of lwIP may use `printf`.
+* Added a `_write()` definition so that `printf` works and sends its output to
+  `Serial`. Parts of lwIP may use `printf`. This directs output to a new
+  `Print *stdPrint` variable. It has a default of NULL, so there will be no
+  output if not set by user code.
 * Now powering down the PHY in `enet_deinit()`.
 * Added calls to `loop()` in `EthernetServer::accept()` and `available()` to
   help avoid having to have the caller remember to call loop() if checking
@@ -39,9 +41,6 @@ and this project adheres to
   in a loop. (`flush()` is still useful, however, when you've finished sending a
   "section" of data.)
 * Changed `EthernetUDP::parsePacket()` to always call `loop()`.
-* Changed `_write()` implementation to be non-weak and updated the output to
-  direct to the new `Print *stdPrint` variable. It has a default of NULL, so
-  there will be no output if not set by user code.
 
 ### Fixed
 * Restarting `Ethernet` (via `begin()` or via `end()`/`begin()`) now works
