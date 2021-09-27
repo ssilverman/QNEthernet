@@ -67,7 +67,14 @@ EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   }
 
   // Initialize randomness since this isn't done anymore in eth_init
-  Entropy.Initialize();
+#if defined(__IMXRT1062__)
+  bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
+#else
+  bool doEntropyInit = true;
+#endif
+  if (doEntropyInit) {
+    Entropy.Initialize();
+  }
   srand(Entropy.random());
 
   attachLoopToYield();

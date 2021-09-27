@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [0.8.0-snapshot]
 
+### Added
+* Added a check that `Entropy` has already been initialized before calling
+  `Entropy.Initialize()`.
+
 ## [0.7.0]
 
 ### Added
