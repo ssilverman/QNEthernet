@@ -455,7 +455,7 @@ static err_t t41_netif_init(struct netif *netif) {
 }
 
 // Find the next non-empty BD.
-inline static volatile enetbufferdesc_t *rxbd_next() {
+static inline volatile enetbufferdesc_t *rxbd_next() {
   volatile enetbufferdesc_t *p_bd = p_rxbd;
 
   while (p_bd->status & kEnetRxBdEmpty) {
@@ -486,7 +486,7 @@ void enet_isr() {
   }
 }
 
-inline static void check_link_status() {
+static inline void check_link_status() {
   uint16_t status = mdio_read(0, 0x01);
   uint8_t is_link_up = !!(status & (1 << 2));
   if (netif_is_link_up(&t41_netif) != is_link_up) {
