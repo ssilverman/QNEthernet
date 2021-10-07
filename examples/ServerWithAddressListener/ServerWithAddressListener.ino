@@ -36,6 +36,9 @@ struct ClientState {
 
   EthernetClient client;
   bool closed = false;
+
+  // Parsing state
+  bool emptyLine = false;
 };
 
 // --------------------------------------------------------------------------
@@ -139,9 +142,29 @@ void tellServer(bool hasIP) {
 // The simplest possible (very non-compliant) HTTP server. Respond to
 // any input with an HTTP/1.1 response.
 void processClientData(ClientState &state) {
-  int avail = state.client.available();
-  if (avail <= 0) {
-    return;
+  // Loop over available data until an empty line or no more data
+  // Note that if emptyLine starts as false then this will ignore any
+  // initial blank line.
+  while (true) {
+    int avail = state.client.available();
+    if (avail <= 0) {
+      return;
+    }
+
+    int c = state.client.read();
+    printf("%c", c);
+    if (c == '\n') {
+      if (state.emptyLine) {
+        break;
+      }
+
+      // Start a new empty line
+      state.emptyLine = true;
+    } else if (c != '\r') {
+      // Ignore carriage returns because CRLF is a likely pattern in
+      // an HTTP request
+      state.emptyLine = false;
+    }
   }
 
   IPAddress ip = state.client.remoteIP();
