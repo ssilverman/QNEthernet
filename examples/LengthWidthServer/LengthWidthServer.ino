@@ -84,7 +84,7 @@ void setup() {
   while (!Serial && millis() < 4000) {
     // Wait for Serial to initialize
   }
-  stdPrint = &Serial;
+  stdPrint = &Serial;  // Make printf work
   printf("Starting...\n");
 
   // Unlike the Arduino API (which you can still use), Ethernet uses
