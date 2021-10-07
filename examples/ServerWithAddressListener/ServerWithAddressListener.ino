@@ -6,6 +6,15 @@
 // the Teensy to an entirely different network by moving the Ethernet
 // connection and the program will still work.
 //
+// This also demonstrates:
+// 1. Using a link state listener,
+// 2. Setting a static IP if desired,
+// 3. Managing connections and attaching state to each connection,
+// 4. How to use `printf`, and
+// 5. Very rudimentary HTTP server behaviour.
+//
+// This is a rudimentary basis for a complete server program.
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
@@ -24,6 +33,12 @@ using namespace qindesign::network;
 
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 constexpr uint16_t kServerPort = 80;
+
+// Set the static IP to something other than INADDR_NONE (zero)
+// to not use DHCP. The values here are just examples.
+IPAddress staticIP{0, 0, 0, 0};//{192, 168, 1, 101};
+IPAddress subnetMask{255, 255, 255, 0};
+IPAddress gateway{192, 168, 1, 1};
 
 // --------------------------------------------------------------------------
 //  Types
@@ -114,15 +129,20 @@ void setup() {
     tellServer(hasIP);
   });
 
-  printf("Starting Ethernet with DHCP...\n");
-  if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\n");
-    return;
-  }
-  if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-    printf("Failed to get IP address from DHCP\n");
-    // We may still get an address later, after the timeout,
-    // so continue instead of returning
+  if (staticIP == INADDR_NONE) {
+    printf("Starting Ethernet with DHCP...\n");
+    if (!Ethernet.begin()) {
+      printf("Failed to start Ethernet\n");
+      return;
+    }
+    if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
+      printf("Failed to get IP address from DHCP\n");
+      // We may still get an address later, after the timeout,
+      // so continue instead of returning
+    }
+  } else {
+    printf("Starting Ethernet with static IP...\n");
+    Ethernet.begin(staticIP, subnetMask, gateway);
   }
 }
 
