@@ -189,11 +189,11 @@ void processClientData(ClientState &state) {
 
   IPAddress ip = state.client.remoteIP();
   printf("Sending to client: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-  state.client.write("HTTP/1.1 200 OK\r\n"
-                     "Connection: close\r\n"
-                     "Content-Type: text/plain\r\n"
-                     "\r\n"
-                     "Hello, Client!\r\n");
+  state.client.writeFully("HTTP/1.1 200 OK\r\n"
+                          "Connection: close\r\n"
+                          "Content-Type: text/plain\r\n"
+                          "\r\n"
+                          "Hello, Client!\r\n");
   state.client.flush();
   state.client.stop();
 }
