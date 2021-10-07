@@ -53,6 +53,11 @@ class EthernetClient final : public Client {
   // Bring Print::write functions into scope
   using Print::write;
 
+  void writeFully(uint8_t b);
+  void writeFully(const char *s);
+  void writeFully(const char *s, size_t size);
+  void writeFully(const uint8_t *buf, size_t size);
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
   int availableForWrite() override;

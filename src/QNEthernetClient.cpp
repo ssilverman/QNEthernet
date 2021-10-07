@@ -8,6 +8,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cstring>
 
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
@@ -208,6 +209,29 @@ uint16_t EthernetClient::remotePort() {
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
+
+void EthernetClient::writeFully(uint8_t b) {
+  writeFully(&b, 1);
+}
+
+void EthernetClient::writeFully(const char *buf) {
+  writeFully(reinterpret_cast<const uint8_t *>(buf), strlen(buf));
+}
+
+void EthernetClient::writeFully(const char *buf, size_t size) {
+  writeFully(reinterpret_cast<const uint8_t *>(buf), size);
+}
+
+void EthernetClient::writeFully(const uint8_t *buf, size_t size) {
+  // Don't use client.connected() as the "connected" check because
+  // that will return true if there's data available, and this loop
+  // does not check for data available.
+  while (size > 0 && static_cast<bool>(*this)) {
+    size_t written = write(buf, size);
+    size -= written;
+    buf += written;
+  }
+}
 
 size_t EthernetClient::write(uint8_t b) {
   if (!(*this)) {

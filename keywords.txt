@@ -43,6 +43,7 @@ stop	KEYWORD2
 localPort	KEYWORD2	ClientLocalPort
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
+writeFully	KEYWORD2
 write	KEYWORD2
 availableForWrite	KEYWORD2
 flush	KEYWORD2	ClientFlush
