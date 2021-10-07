@@ -344,7 +344,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
   return nullptr;
 }
 
-bool ConnectionManager::remove(const std::shared_ptr<ConnectionHolder> &holder) {
+bool ConnectionManager::remove(
+    const std::shared_ptr<ConnectionHolder> &holder) {
   auto it =
       std::find_if(connections_.begin(), connections_.end(),
                    [holder](const auto &elem) { return (elem == holder); });
