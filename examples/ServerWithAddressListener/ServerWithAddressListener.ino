@@ -87,8 +87,8 @@ void setup() {
   // Listen for address changes
   Ethernet.onAddressChanged([]() {
     IPAddress ip = Ethernet.localIP();
-    bool hasIP = !(ip == INADDR_NONE);
-    if (!(ip == INADDR_NONE)) {  // IPAddress has no operator!=()
+    bool hasIP = !(ip == INADDR_NONE);  // IPAddress has no operator!=()
+    if (hasIP) {
       printf("Ethernet: Address changed:\n");
 
       IPAddress ip = Ethernet.localIP();
