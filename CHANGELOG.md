@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added a check that `Entropy` has already been initialized before calling
   `Entropy.Initialize()`.
+* Added a "How to write data to clients" section to the README that addresses
+  how to fully send data to clients.
 
 ### Changed
 * Updated the `ServerWithAddressListener` example. It's more complete and could

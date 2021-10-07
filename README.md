@@ -19,14 +19,15 @@ files provided with the lwIP release.
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
 2. [How to run](#how-to-run)
-3. [A note on the examples](#a-note-on-the-examples)
-4. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-5. [mDNS services](#mdns-services)
-6. [stdio](#stdio)
-7. [Other notes](#other-notes)
-8. [To do](#to-do)
-9. [Code style](#code-style)
-10. [References](#references)
+3. [How to write data to clients](#how-to-write-data-to-clients)
+4. [A note on the examples](#a-note-on-the-examples)
+5. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
+6. [mDNS services](#mdns-services)
+7. [stdio](#stdio)
+8. [Other notes](#other-notes)
+9. [To do](#to-do)
+10. [Code style](#code-style)
+11. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -139,6 +140,128 @@ here are a few steps to follow:
 7. Most other things should be the same.
 
 Please see the examples for more things you can do with the API.
+
+## How to write data to clients
+
+I'll start with these statements:
+1. **Don't use the `print` functions when writing data to clients.**
+2. **Always check the `write` and `print` (and `println` and `printf`)
+   return values, retrying if necessary.**
+
+The `write` and `print` functions in the `Print` API all return the number of
+bytes actually written. This means that you _must always check the return value,
+retrying any missing bytes_ if you want all your data to get sent.
+
+For example, the following code won't necessarily send all 250&times;102 bytes.
+Buffers might get full. There might be retries. Etcetera.
+
+```c++
+void sendTestData(EthernetClient& client) {
+  for (int i = 0; i < 250; i++) {
+    // 102 byte string (println appends CRLF)
+    client.println("1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890"
+                   "1234567890");
+  }
+}
+```
+
+The following modification will print a message every time the number of bytes
+actually written does not match the number of bytes sent to the function. You
+might find that the message prints one or more times.
+
+```c++
+void sendTestData(EthernetClient& client) {
+  for (int i = 0; i < 250; i++) {
+    // 102 byte string (println appends CRLF)
+    size_t written = client.println("1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890"
+                                    "1234567890");
+    if (written != 102) {
+      // This is not an error!
+      Serial.println("Didn't write fully");
+    }
+  }
+}
+```
+
+The solution is to utilize the raw `write` functions and retry any bytes that
+aren't sent. Let's create a `writeFully` function and use that to send the data:
+
+```c++
+// Keep writing until all the bytes are sent or the connection
+// is closed.
+void writeFully(EthernetClient &client, const char *data, int len) {
+  // Don't use client.connected() as the "connected" check because
+  // that will return true if there's data available, and this loop
+  // does not check for data available or remove it if it's there.
+  while (len > 0 && client) {
+    size_t written = client.write(data, len);
+    len -= written;
+    data += written;
+  }
+}
+
+void sendTestData(EthernetClient& client) {
+  for (int i = 0; i < 250; i++) {
+    // 102 byte string
+    size_t written = writeFully(client, "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "1234567890"
+                                        "\r\n");
+  }
+}
+```
+
+Let's go back to our original statement about not using the `print` functions.
+Their implementation is opaque and they sometimes make assumptions that the data
+will be "written fully". For example, Teensyduino's current
+`print(const String &)` implementation attempts to send all the bytes and
+returns the number of bytes sent, but it doesn't tell you _which_ bytes were
+sent. For the string `"12345"`, `print` might send `"12"`, fail to send `"3"`,
+and successfully send `"45"`, returning `4`.
+
+Similarly, we have no idea what `print(const Printable &obj)` does because the
+`Printable` implementation passed to it is beyond our control. For example,
+Teensyduino's `IPAddress::printTo(Print &)` implementation prints the address
+without checking the return value of the `print` calls. It doesn't even return a
+value, so who knows what the compiler returns? (It should be returning a
+`size_t` value.)
+
+Also, most examples I've seen that use any of the `print` functions never check
+the return values. Common practice seems to stem from this style of usage.
+Network applications work a little differently, and there's no guarantee all the data gets sent.
+
+The `write` functions don't have this problem (unless, of course, there's a
+faulty implementation). They attempt to send bytes and return the number of
+bytes actually sent.
+
+In summary, my ***strong*** suggestion is to use the `write` functions when
+sending network data, checking the return values and acting on them.
+
+See the discussion at:
+https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
 
 ## A note on the examples
 
