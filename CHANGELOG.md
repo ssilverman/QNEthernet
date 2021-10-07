@@ -12,6 +12,15 @@ and this project adheres to
 * Added a check that `Entropy` has already been initialized before calling
   `Entropy.Initialize()`.
 
+### Changed
+* Updated the `ServerWithAddressListener` example. It's more complete and could
+  be used as a rudimentary basis for a complete server program.
+  1. Added a "Content-Type" header to the response,
+  2. It now looks for an empty line before sending the response to the client,
+  3. Added the ability to use a static IP, and
+  4. Added a list to the description at the top describing some additional
+     things the program demonstrates.
+
 ## [0.7.0]
 
 ### Added
