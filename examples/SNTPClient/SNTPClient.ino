@@ -50,7 +50,7 @@ void setup() {
   while (!Serial && millis() < 4000) {
     // Wait for Serial to initialize
   }
-  stdPrint = &Serial;
+  stdPrint = &Serial;  // Make printf work
   printf("Starting...\n");
 
   uint8_t mac[6];
