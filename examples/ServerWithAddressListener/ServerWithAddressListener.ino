@@ -10,8 +10,9 @@
 // 1. Using a link state listener,
 // 2. Setting a static IP if desired,
 // 3. Managing connections and attaching state to each connection,
-// 4. How to use `printf`, and
-// 5. Very rudimentary HTTP server behaviour.
+// 4. How to use `printf`,
+// 5. Very rudimentary HTTP server behaviour, and
+// 6. Client timeouts.
 //
 // This is a rudimentary basis for a complete server program.
 //
@@ -33,6 +34,7 @@ using namespace qindesign::network;
 
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 constexpr uint16_t kServerPort = 80;
+constexpr uint32_t kClientTimeout = 5000;  // 5 seconds
 
 // Set the static IP to something other than INADDR_NONE (zero)
 // to not use DHCP. The values here are just examples.
@@ -51,6 +53,9 @@ struct ClientState {
 
   EthernetClient client;
   bool closed = false;
+
+  // For timeouts.
+  uint32_t lastRead = millis();  // Mark creation
 
   // Parsing state
   bool emptyLine = false;
@@ -171,6 +176,7 @@ void processClientData(ClientState &state) {
       return;
     }
 
+    state.lastRead = millis();
     int c = state.client.read();
     printf("%c", c);
     if (c == '\n') {
@@ -214,6 +220,12 @@ void loop() {
     if (!state.client.connected()) {
       state.closed = true;
       continue;
+    } else if (millis() - state.lastRead >= kClientTimeout) {
+      IPAddress ip = state.client.remoteIP();
+      printf("Client timeout: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+      state.client.stop();
+      state.closed = true;
+      continue;
     }
     processClientData(state);
   }
@@ -224,6 +236,6 @@ void loop() {
                                [](const auto &state) { return state.closed; }),
                 clients.end());
   if (clients.size() != size) {
-    printf("Client count: %u\n", clients.size());
+    printf("New client count: %u\n", clients.size());
   }
 }
