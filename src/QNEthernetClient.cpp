@@ -171,7 +171,7 @@ void EthernetClient::stop() {
 }
 
 uint16_t EthernetClient::localPort() {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return 0;
   }
 
@@ -183,7 +183,7 @@ uint16_t EthernetClient::localPort() {
 }
 
 IPAddress EthernetClient::remoteIP() {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return INADDR_NONE;
   }
 
@@ -195,7 +195,7 @@ IPAddress EthernetClient::remoteIP() {
 }
 
 uint16_t EthernetClient::remotePort() {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return 0;
   }
 
@@ -234,7 +234,7 @@ void EthernetClient::writeFully(const uint8_t *buf, size_t size) {
 }
 
 size_t EthernetClient::write(uint8_t b) {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
@@ -259,7 +259,7 @@ size_t EthernetClient::write(uint8_t b) {
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return 0;
   }
 
@@ -290,7 +290,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::availableForWrite() {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return 0;
   }
   const auto &state = conn_->state;
@@ -308,7 +308,7 @@ int EthernetClient::availableForWrite() {
 }
 
 void EthernetClient::flush() {
-  if (!(*this)) {
+  if (!static_cast<bool>(*this)) {
     return;
   }
   const auto &state = conn_->state;
