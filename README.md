@@ -18,16 +18,21 @@ files provided with the lwIP release.
 ## Table of contents
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
-2. [How to run](#how-to-run)
-3. [How to write data to clients](#how-to-write-data-to-clients)
-4. [A note on the examples](#a-note-on-the-examples)
-5. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-6. [mDNS services](#mdns-services)
-7. [stdio](#stdio)
-8. [Other notes](#other-notes)
-9. [To do](#to-do)
-10. [Code style](#code-style)
-11. [References](#references)
+2. [Additional functions not in the Arduino API](#additional-functions-not-in-the-arduino-api)
+   1. [`Ethernet`](#ethernet)
+   2. [`EthernetClient`](#ethernetclient)
+   3. [`EthernetServer`](#ethernetserver)
+   4. [`EthernetUDP`](#ethernetudp)
+3. [How to run](#how-to-run)
+4. [How to write data to clients](#how-to-write-data-to-clients)
+5. [A note on the examples](#a-note-on-the-examples)
+6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
+7. [mDNS services](#mdns-services)
+8. [stdio](#stdio)
+9. [Other notes](#other-notes)
+10. [To do](#to-do)
+11. [Code style](#code-style)
+12. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -47,28 +52,6 @@ and notes:
   first example uses it as "already connected", while the second uses it as
   "available to connect". "Connected" is the chosen concept, but different from
   `connected()` in that it doesn't check for unread data.
-* The following `Ethernet` functions are not defined in the Arduino API:
-  * `begin()`
-  * `begin(ipaddr, netmask, gw)`
-  * `end()`
-  * `mtu()`
-  * `linkState()`
-  * `linkSpeed()`
-  * `waitForLocalIP()`
-  * The callback-adding functions:
-    * `onLinkState(cb)`
-    * `onAddressChanged(cb)`
-* `EthernetServer::end()` is not in the Arduino API.
-* The following `EthernetClient` functions are not defined in the Arduino API:
-  * `writeFully(b)`
-  * `writeFully(s)`
-  * `writeFully(s, size)`
-  * `writeFully(buf, size)`
-* The following functions add a Boolean `reuse` parameter that controls the
-  SO_REUSEADDR socket option. They are in addition to the equivalent functions
-  having no `reuse` parameter.
-  * `EthernetServer::begin(reuse)`
-  * `EthernetUDP::begin(localPort, reuse)`
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or
@@ -119,6 +102,57 @@ and notes:
   and `EthernetUDP`.
 * All four address-setting functions (IP, subnet mask, gateway, DNS) do nothing
   unless the system has been initialized.
+
+## Additional functions not in the Arduino API
+
+_QNEthernet_ defines functions that don't exist in the Arduino API as it's
+currently defined. (See:
+[Arduino Ethernet library](https://www.arduino.cc/en/Reference/Ethernet))
+This section documents those functions.
+
+### `Ethernet`
+
+* `begin()`: Initializes the library and uses the Teensy's internal MAC address.
+* `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
+  internal MAC address, and uses the given parameters for the
+  network configuration.
+* `end()`: Shuts down the library, including the Ethernet clocks.
+* `linkState()`: Returns a `bool` indicating the link state.
+* `linkSpeed()`: Returns the link speed in Mbps.
+* `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
+  Note that the equivalent Arduino function is `MACAddress(mac)`.
+* `mtu()`: Returns the MTU.
+* `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
+  equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
+* `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
+  the system to have a local IP address. This is useful when waiting for a
+  DHCP-assigned address. Returns whether the system obtained an address within
+  the given timeout. Note that this also works for a static-assigned address.
+* Callback functions: Note that callbacks should be registered before any other
+  Ethernet functions are called. This ensures that all events are captured. This
+  includes `Ethernet.begin(...)`.
+  * `onLinkState(cb)`: The callback is called when the link changes state, for
+    example when the Ethernet cable is unplugged.
+  * `onAddressChanged(cb)`: The callback is called when any IP settings have
+    changed.
+
+### `EthernetClient`
+
+* `writeFully(b)`: Writes a single byte.
+* `writeFully(s)`: Writes a string (`const char *`).
+* `writeFully(s, size)`: Writes characters (`const char *`).
+* `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
+
+### `EthernetServer`
+
+* `begin(reuse)`: Similar to `begin()`, but the Boolean `reuse` parameter
+  controls the SO_REUSEADDR socket option.
+* `end()`: Shuts down the server.
+
+### `EthernetUDP`
+
+* `begin(localPort, reuse)`: Similar to `begin(localPort)`, but the Boolean
+  `reuse` parameter controls the SO_REUSEADDR socket option.
 
 ## How to run
 
