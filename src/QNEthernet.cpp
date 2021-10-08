@@ -188,8 +188,8 @@ void EthernetClass::end() {
 
   ethActive = false;
 
-  dhcp_release_and_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
+  dhcp_release_and_stop(netif_);
   netif_set_down(netif_);
 
   enet_deinit();
