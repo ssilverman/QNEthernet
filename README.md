@@ -59,6 +59,11 @@ and notes:
     * `onLinkState(cb)`
     * `onAddressChanged(cb)`
 * `EthernetServer::end()` is not in the Arduino API.
+* The following `EthernetClient` functions are not defined in the Arduino API:
+  * `writeFully(b)`
+  * `writeFully(s)`
+  * `writeFully(s, size)`
+  * `writeFully(buf, size)`
 * The following functions add a Boolean `reuse` parameter that controls the
   SO_REUSEADDR socket option. They are in addition to the equivalent functions
   having no `reuse` parameter.
