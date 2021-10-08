@@ -26,6 +26,9 @@ and this project adheres to
   3. Added the ability to use a static IP, and
   4. Added a list to the description at the top describing some additional
      things the program demonstrates.
+* In `EthernetClass::end()`, moved setting the DNS to 0 to before DHCP is
+  released. This ensures that any address-changed events happen after this.
+  i.e. the DNS address will be 0 when an address-changed event happens.
 
 ## [0.7.0]
 
