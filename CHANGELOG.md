@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.0-snapshot]
+## [0.8.0]
 
 ### Added
 * Added a check that `Entropy` has already been initialized before calling
@@ -15,6 +15,8 @@ and this project adheres to
   how to fully send data to clients.
 * Added `EthernetClient::writeFully()` functions that might help address
   problems with fully writing data to clients.
+* Added a new "Additional functions not in the Arduino API" section to
+  the README.
 
 ### Changed
 * Updated the `ServerWithAddressListener` example. It's more complete and could
