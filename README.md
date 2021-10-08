@@ -284,9 +284,7 @@ and successfully send `"45"`, returning `4`.
 Similarly, we have no idea what `print(const Printable &obj)` does because the
 `Printable` implementation passed to it is beyond our control. For example,
 Teensyduino's `IPAddress::printTo(Print &)` implementation prints the address
-without checking the return value of the `print` calls. It doesn't even return a
-value, so who knows what the compiler returns? (It should be returning a
-`size_t` value.)
+without checking the return value of the `print` calls.
 
 Also, most examples I've seen that use any of the `print` functions never check
 the return values. Common practice seems to stem from this style of usage.
