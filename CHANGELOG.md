@@ -25,8 +25,9 @@ and this project adheres to
   be used as a rudimentary basis for a complete server program.
   1. Added a "Content-Type" header to the response,
   2. It now looks for an empty line before sending the response to the client,
-  3. Added the ability to use a static IP, and
-  4. Added a list to the description at the top describing some additional
+  3. Added the ability to use a static IP,
+  4. Added client and shutdown timeouts, and
+  5. Added a list to the description at the top describing some additional
      things the program demonstrates.
 * In `EthernetClass::end()`, moved setting the DNS to 0 to before DHCP is
   released. This ensures that any address-changed events happen after this.
