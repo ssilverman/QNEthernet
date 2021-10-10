@@ -138,6 +138,8 @@ This section documents those functions.
 
 ### `EthernetClient`
 
+* `closeOutput()`: Shuts down the transmit side of the socket. This is a
+  half close operation.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).

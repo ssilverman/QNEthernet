@@ -170,6 +170,25 @@ void EthernetClient::stop() {
   conn_ = nullptr;
 }
 
+void EthernetClient::closeOutput() {
+  if (!static_cast<bool>(*this)) {
+    return;
+  }
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return;
+  }
+
+  // First try to flush any data
+  tcp_output(state->pcb);
+  EthernetClass::loop();  // Maybe some TCP data gets in
+  // NOTE: loop() requires a re-check of the state
+
+  if (state != nullptr) {
+    tcp_shutdown(state->pcb, 0, 1);
+  }
+}
+
 uint16_t EthernetClient::localPort() {
   if (!static_cast<bool>(*this)) {
     return 0;

@@ -46,6 +46,9 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
+  // Close the sending side of this connection.
+  void closeOutput();
+
   uint16_t localPort();
   IPAddress remoteIP();
   uint16_t remotePort();

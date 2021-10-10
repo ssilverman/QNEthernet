@@ -17,6 +17,8 @@ and this project adheres to
   problems with fully writing data to clients.
 * Added a new "Additional functions not in the Arduino API" section to
   the README.
+* Added `EthernetClient::closeOutput()` for performing a half close on the
+  client connection.
 
 ### Changed
 * Updated the `ServerWithAddressListener` example. It's more complete and could

@@ -40,6 +40,7 @@ connect	KEYWORD2	ClientConnect
 connected	KEYWORD2	ClientConnected
 setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
 stop	KEYWORD2
+closeOutput	KEYWORD2
 localPort	KEYWORD2	ClientLocalPort
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
