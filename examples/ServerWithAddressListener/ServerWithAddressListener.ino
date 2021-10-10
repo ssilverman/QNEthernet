@@ -11,8 +11,9 @@
 // 2. Setting a static IP if desired,
 // 3. Managing connections and attaching state to each connection,
 // 4. How to use `printf`,
-// 5. Very rudimentary HTTP server behaviour, and
-// 6. Client timeouts.
+// 5. Very rudimentary HTTP server behaviour,
+// 6. Client timeouts, and
+// 7. Use of a half closed connection.
 //
 // This is a rudimentary basis for a complete server program.
 //
@@ -34,7 +35,13 @@ using namespace qindesign::network;
 
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 constexpr uint16_t kServerPort = 80;
+
+// Timeout for waiting for input from the client.
 constexpr uint32_t kClientTimeout = 5000;  // 5 seconds
+
+// Timeout for waiting for a close from the client after a
+// half close.
+constexpr uint32_t kShutdownTimeout = 30000;  // 30 seconds
 
 // Set the static IP to something other than INADDR_NONE (zero)
 // to not use DHCP. The values here are just examples.
@@ -55,7 +62,12 @@ struct ClientState {
   bool closed = false;
 
   // For timeouts.
-  uint32_t lastRead = millis();  // Mark creation
+  uint32_t lastRead = millis();  // Mark creation time
+
+  // For half closed connections, after "Connection: close" was sent
+  // and closeOutput() was called
+  uint32_t closedTime = 0;    // When the output was shut down
+  bool outputClosed = false;  // Whether the output was shut down
 
   // Parsing state
   bool emptyLine = false;
@@ -201,7 +213,12 @@ void processClientData(ClientState &state) {
                           "\r\n"
                           "Hello, Client!\r\n");
   state.client.flush();
-  state.client.stop();
+
+  // Half close the connection, per
+  // [Tear-down](https://datatracker.ietf.org/doc/html/rfc7230#section-6.6)
+  state.client.closeOutput();
+  state.closedTime = millis();
+  state.outputClosed = true;
 }
 
 // Main program loop.
@@ -220,13 +237,28 @@ void loop() {
     if (!state.client.connected()) {
       state.closed = true;
       continue;
-    } else if (millis() - state.lastRead >= kClientTimeout) {
-      IPAddress ip = state.client.remoteIP();
-      printf("Client timeout: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-      state.client.stop();
-      state.closed = true;
-      continue;
     }
+
+    // Check if we need to force close the client
+    if (state.outputClosed) {
+      if (millis() - state.closedTime >= kShutdownTimeout) {
+        IPAddress ip = state.client.remoteIP();
+        printf("Client shutdown timeout: %u.%u.%u.%u\n",
+               ip[0], ip[1], ip[2], ip[3]);
+        state.client.stop();
+        state.closed = true;
+        continue;
+      }
+    } else {
+      if (millis() - state.lastRead >= kClientTimeout) {
+        IPAddress ip = state.client.remoteIP();
+        printf("Client timeout: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+        state.client.stop();
+        state.closed = true;
+        continue;
+      }
+    }
+
     processClientData(state);
   }
 
