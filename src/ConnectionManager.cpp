@@ -294,7 +294,7 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   return true;
 }
 
-bool ConnectionManager::isListening(uint16_t port) {
+bool ConnectionManager::isListening(uint16_t port) const {
   auto it = std::find_if(
       listeners_.begin(), listeners_.end(), [port](const auto &elem) {
         return (elem != nullptr) && (elem->local_port == port);
@@ -316,7 +316,7 @@ bool ConnectionManager::stopListening(uint16_t port) {
 }
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
-    uint16_t port) {
+    uint16_t port) const {
   auto it = std::find_if(
       connections_.begin(), connections_.end(), [port](const auto &elem) {
         const auto &state = elem->state;
@@ -330,7 +330,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
 
 // TODO: Should we implement some kind of fairness?
 std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
-    uint16_t port) {
+    uint16_t port) const {
   auto it = std::find_if(
       connections_.begin(), connections_.end(), [port](const auto &elem) {
         const auto &state = elem->state;
