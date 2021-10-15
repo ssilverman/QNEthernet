@@ -275,6 +275,8 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
+_Note that the library implements `writeFully`; you don't have to roll you own._
+
 Let's go back to our original statement about not using the `print` functions.
 Their implementation is opaque and they sometimes make assumptions that the data
 will be "written fully". For example, Teensyduino's current
@@ -297,7 +299,8 @@ faulty implementation). They attempt to send bytes and return the number of
 bytes actually sent.
 
 In summary, my ***strong*** suggestion is to use the `write` functions when
-sending network data, checking the return values and acting on them.
+sending network data, checking the return values and acting on them. Or you can
+use the library's `writeFully` functions.
 
 See the discussion at:
 https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
