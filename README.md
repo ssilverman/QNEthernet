@@ -199,7 +199,7 @@ Buffers might get full. There might be retries. Etcetera.
 ```c++
 void sendTestData(EthernetClient& client) {
   for (int i = 0; i < 250; i++) {
-    // 102 byte string (println appends CRLF)
+    // 102-byte string (println appends CRLF)
     client.println("1234567890"
                    "1234567890"
                    "1234567890"
@@ -221,7 +221,7 @@ might find that the message prints one or more times.
 ```c++
 void sendTestData(EthernetClient& client) {
   for (int i = 0; i < 250; i++) {
-    // 102 byte string (println appends CRLF)
+    // 102-byte string (println appends CRLF)
     size_t written = client.println("1234567890"
                                     "1234567890"
                                     "1234567890"
@@ -259,7 +259,7 @@ void writeFully(EthernetClient &client, const char *data, int len) {
 
 void sendTestData(EthernetClient& client) {
   for (int i = 0; i < 250; i++) {
-    // 102 byte string
+    // 102-byte string
     size_t written = writeFully(client, "1234567890"
                                         "1234567890"
                                         "1234567890"
@@ -276,6 +276,27 @@ void sendTestData(EthernetClient& client) {
 ```
 
 _Note that the library implements `writeFully`; you don't have to roll you own._
+
+Rewriting this to use the library function:
+
+```c++
+void sendTestData(EthernetClient& client) {
+  for (int i = 0; i < 250; i++) {
+    // 102-byte string
+    size_t written = client.writeFully("1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "1234567890"
+                                       "\r\n");
+  }
+}
+```
 
 Let's go back to our original statement about not using the `print` functions.
 Their implementation is opaque and they sometimes make assumptions that the data
