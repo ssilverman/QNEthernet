@@ -24,7 +24,7 @@ files provided with the lwIP release.
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
 3. [How to run](#how-to-run)
-4. [How to write data to clients](#how-to-write-data-to-clients)
+4. [How to write data to connections](#how-to-write-data-to-connections)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
 7. [mDNS services](#mdns-services)
@@ -182,10 +182,10 @@ here are a few steps to follow:
 
 Please see the examples for more things you can do with the API.
 
-## How to write data to clients
+## How to write data to connections
 
 I'll start with these statements:
-1. **Don't use the `print` functions when writing data to clients.**
+1. **Don't use the `print` functions when writing data to connections.**
 2. **Always check the `write` and `print` (and `println` and `printf`)
    return values, retrying if necessary.**
 
