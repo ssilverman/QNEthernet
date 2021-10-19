@@ -46,6 +46,10 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
+  // Close the connection. This works the same as stop(), but without waiting
+  // for the connection to close.
+  void close();
+
   // Close the sending side of this connection.
   void closeOutput();
 

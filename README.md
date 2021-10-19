@@ -138,6 +138,7 @@ This section documents those functions.
 
 ### `EthernetClient`
 
+* `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
   half close operation.
 * `writeFully(b)`: Writes a single byte.

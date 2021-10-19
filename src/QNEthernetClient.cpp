@@ -170,6 +170,33 @@ void EthernetClient::stop() {
   conn_ = nullptr;
 }
 
+void EthernetClient::close() {
+  if (conn_ == nullptr) {
+    return;
+  }
+
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    conn_ = nullptr;
+    return;
+  }
+
+  if (conn_->connected) {
+    // First try to flush any data
+    tcp_output(state->pcb);
+    EthernetClass::loop();  // Maybe some TCP data gets in
+    // NOTE: loop() requires a re-check of the state
+
+    if (state != nullptr) {
+      if (tcp_close(state->pcb) != ERR_OK) {
+        tcp_abort(state->pcb);
+      }
+    }
+  }
+
+  conn_ = nullptr;
+}
+
 void EthernetClient::closeOutput() {
   if (!static_cast<bool>(*this)) {
     return;
