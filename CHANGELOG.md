@@ -17,6 +17,7 @@ and this project adheres to
 ### Changed
 * Renamed the "How to write data to clients" README section to "How to write
   data to connections".
+* Increased the maximum number of UDP sockets to 8.
 
 ## [0.8.0]
 

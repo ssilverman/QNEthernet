@@ -38,7 +38,7 @@
 // #define MEMP_NUM_PBUF                      16
 // #define MEMP_NUM_RAW_PCB                   4
 // Add one to MEMP_NUM_UDP_PCB for mDNS:
-#define MEMP_NUM_UDP_PCB                   5
+#define MEMP_NUM_UDP_PCB                   8
 #define MEMP_NUM_TCP_PCB                   8
 // #define MEMP_NUM_TCP_PCB_LISTEN            8
 // #define MEMP_NUM_TCP_SEG                   16
