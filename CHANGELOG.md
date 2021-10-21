@@ -8,6 +8,16 @@ and this project adheres to
 
 ## [0.9.0]
 
+### Added
+* Added example that uses `client.writeFully()` to the "How to write data to
+  connections" README section.
+* Added `EthernetClient::close()` for closing a connection without waiting. It's
+  similar to `stop()`.
+
+### Changed
+* Renamed the "How to write data to clients" README section to "How to write
+  data to connections".
+
 ## [0.8.0]
 
 ### Added
