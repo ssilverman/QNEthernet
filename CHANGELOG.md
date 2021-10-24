@@ -13,11 +13,14 @@ and this project adheres to
   connections" README section.
 * Added `EthernetClient::close()` for closing a connection without waiting. It's
   similar to `stop()`.
+* Added `DNSClient` class for interfacing with lwIP's DNS functions.
 
 ### Changed
 * Renamed the "How to write data to clients" README section to "How to write
   data to connections".
 * Increased the maximum number of UDP sockets to 8.
+* Updated `EthernetClass`, `EthernetClient`, and `EthernetUDP` to use the new
+  `DNSClient` class for DNS lookup and DNS server address setting.
 
 ## [0.8.0]
 

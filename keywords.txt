@@ -12,6 +12,7 @@ EthernetClient	KEYWORD1	ClientConstructor
 EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
+DNSClient	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -59,6 +60,9 @@ endPacket	KEYWORD2	EthernetUDPEndPacket
 parsePacket	KEYWORD2	EthernetUDPParsePacket
 addService	KEYWORD2
 removeService	KEYWORD2
+getHostByName	KEYWORD2
+maxServers	KEYWORD2
+setServer	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
