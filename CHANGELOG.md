@@ -14,6 +14,7 @@ and this project adheres to
 * Added `EthernetClient::close()` for closing a connection without waiting. It's
   similar to `stop()`.
 * Added `DNSClient` class for interfacing with lwIP's DNS functions.
+* Added a "DNS" section to the README.
 
 ### Changed
 * Renamed the "How to write data to clients" README section to "How to write

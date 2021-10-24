@@ -28,11 +28,12 @@ files provided with the lwIP release.
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
 7. [mDNS services](#mdns-services)
-8. [stdio](#stdio)
-9. [Other notes](#other-notes)
-10. [To do](#to-do)
-11. [Code style](#code-style)
-12. [References](#references)
+8. [DNS](#dns)
+9. [stdio](#stdio)
+10. [Other notes](#other-notes)
+11. [To do](#to-do)
+12. [Code style](#code-style)
+13. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -400,6 +401,17 @@ It's possible to register mDNS services. Some notes:
     MDNS.begin("Device Name");
     MDNS.addService("_http", "_tcp", 80);
   ```
+
+## DNS
+
+The library interfaces with DNS using the `DNSClient` class. Note that all the
+functions are static.
+
+Things you can do:
+1. Look up an IP address by name, and
+2. Set multiple DNS servers.
+
+The `Ethernet.setDNSServerIP()` function sets the zeroth DNS server.
 
 ## stdio
 
