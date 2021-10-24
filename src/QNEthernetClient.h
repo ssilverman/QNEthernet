@@ -13,8 +13,6 @@
 #include <Client.h>
 #include <IPAddress.h>
 #include <Print.h>
-#include <WString.h>
-#include <lwip/ip_addr.h>
 #include "ConnectionHolder.h"
 
 namespace qindesign {
@@ -80,16 +78,8 @@ class EthernetClient final : public Client {
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<ConnectionHolder> holder);
 
-  static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                           void *callback_arg);
-
   // Connection state
   uint16_t connTimeout_;
-
-  // DNS lookups
-  String lookupHost_;   // For matching DNS lookups
-  IPAddress lookupIP_;  // Set by a DNS lookup
-  volatile bool lookupFound_;
 
   std::shared_ptr<ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we

@@ -14,6 +14,7 @@
 #include <lwip/igmp.h>
 #include <lwip/ip.h>
 #include <lwip/opt.h>
+#include "QNDNSClient.h"
 #include "QNEthernet.h"
 
 extern const int kMTU;
@@ -28,21 +29,6 @@ const size_t kMaxUDPSize = kMTU - 8 - 20;
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-
-void EthernetUDP::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                               void *callback_arg) {
-  if (callback_arg == nullptr || ipaddr == nullptr) {
-    return;
-  }
-
-  EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(callback_arg);
-
-  // Also check the host name in case there was some previous request pending
-  if (udp->lookupHost_ == name) {
-    udp->lookupIP_ = ipaddr->addr;
-    udp->lookupFound_ = true;
-  }
-}
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
@@ -239,28 +225,11 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
 }
 
 int EthernetUDP::beginPacket(const char *host, uint16_t port) {
-  ip_addr_t addr;
-  lookupHost_ = host;
-  lookupIP_ = INADDR_NONE;
-  lookupFound_ = false;
-  switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
-    case ERR_OK:
-      return beginPacket(addr.addr, port);
-    case ERR_INPROGRESS: {
-      elapsedMillis timer;
-      while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
-        // NOTE: Depends on Ethernet loop being called from yield()
-        yield();
-      }
-      if (lookupFound_) {
-        return beginPacket(lookupIP_, port);
-      }
-      return false;
-    }
-    case ERR_ARG:
-    default:
-      return false;
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
   }
+  return beginPacket(ip, port);
 }
 
 int EthernetUDP::endPacket() {

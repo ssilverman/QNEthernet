@@ -16,6 +16,7 @@
 #include <lwip/opt.h>
 #include <lwip/tcp.h>
 #include "ConnectionManager.h"
+#include "QNDNSClient.h"
 #include "QNEthernet.h"
 
 namespace qindesign {
@@ -25,28 +26,10 @@ namespace network {
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
 
-void EthernetClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                                  void *callback_arg) {
-  if (callback_arg == nullptr || ipaddr == nullptr) {
-    return;
-  }
-
-  EthernetClient *client = reinterpret_cast<EthernetClient *>(callback_arg);
-
-  // Also check the host name in case there was some previous request pending
-  if (client->lookupHost_ == name) {
-    client->lookupIP_ = ipaddr->addr;
-    client->lookupFound_ = true;
-  }
-}
-
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
 EthernetClient::EthernetClient(std::shared_ptr<ConnectionHolder> conn)
     : connTimeout_(1000),
-      lookupHost_{},
-      lookupIP_{INADDR_NONE},
-      lookupFound_(false),
       conn_(conn) {}
 
 EthernetClient::~EthernetClient() {
@@ -83,28 +66,11 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 }
 
 int EthernetClient::connect(const char *host, uint16_t port) {
-  ip_addr_t addr;
-  lookupHost_ = host;
-  lookupIP_ = INADDR_NONE;
-  lookupFound_ = false;
-  switch (dns_gethostbyname(host, &addr, &dnsFoundFunc, this)) {
-    case ERR_OK:
-      return connect(addr.addr, port);
-    case ERR_INPROGRESS: {
-      elapsedMillis timer;
-      while (lookupIP_ == INADDR_NONE && timer < kDNSLookupTimeout) {
-        // NOTE: Depends on Ethernet loop being called from yield()
-        yield();
-      }
-      if (lookupFound_) {
-        return connect(lookupIP_, port);
-      }
-      return false;
-    }
-    case ERR_ARG:
-    default:
-      return false;
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
   }
+  return connect(ip, port);
 }
 
 uint8_t EthernetClient::connected() {

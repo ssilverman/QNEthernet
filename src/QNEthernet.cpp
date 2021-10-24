@@ -16,6 +16,7 @@
 #include <lwip/ip_addr.h>
 #include <lwip/udp.h>
 #include "lwip_t41.h"
+#include "QNDNSClient.h"
 
 extern const int kMTU;
 
@@ -273,10 +274,7 @@ void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
   if (netif_ == nullptr) {
     return;
   }
-
-  const ip_addr_t dnsserver =
-      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(dnsServerIP)));
-  dns_setserver(0, &dnsserver);
+  DNSClient::setServer(0, dnsServerIP);
 }
 
 }  // namespace network
