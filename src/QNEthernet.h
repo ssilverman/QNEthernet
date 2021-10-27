@@ -145,6 +145,7 @@ class EthernetClass final {
   std::function<void()> addressChangedCB_ = nullptr;
 };
 
+// Instance for interacting with the library.
 extern EthernetClass Ethernet;
 
 // Lets user code use stdout.
