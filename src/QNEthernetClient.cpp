@@ -82,6 +82,7 @@ uint8_t EthernetClient::connected() {
     conn_ = nullptr;
     return false;
   }
+  EthernetClass::loop();  // Allow information to come in
   return true;
 }
 
@@ -95,6 +96,7 @@ EthernetClient::operator bool() {
     }
     return false;
   }
+  EthernetClass::loop();  // Allow information to come in
   return true;
 }
 

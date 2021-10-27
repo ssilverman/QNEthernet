@@ -14,6 +14,8 @@ and this project adheres to
 * Added new sections to the README:
   1. "Sending raw Ethernet frames", and
   2. "How to implement VLAN tagging".
+* Added calls to `loop()` in `EthernetClient::connected()`
+  and `operator bool()`.
 
 ### Changed
 * Changed `kMTU` type to be `size_t` everywhere.
