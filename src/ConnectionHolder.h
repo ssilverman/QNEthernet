@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <lwip/err.h>
+
 #include "ConnectionState.h"
 
 namespace qindesign {

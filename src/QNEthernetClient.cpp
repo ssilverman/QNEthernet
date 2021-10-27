@@ -15,6 +15,7 @@
 #include <lwip/netif.h>
 #include <lwip/opt.h>
 #include <lwip/tcp.h>
+
 #include "ConnectionManager.h"
 #include "QNDNSClient.h"
 #include "QNEthernet.h"

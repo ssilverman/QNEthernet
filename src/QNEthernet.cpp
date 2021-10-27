@@ -15,8 +15,9 @@
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
 #include <lwip/udp.h>
-#include "lwip_t41.h"
+
 #include "QNDNSClient.h"
+#include "lwip_t41.h"
 
 extern const size_t kMTU;
 

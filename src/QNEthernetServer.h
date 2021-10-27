@@ -12,6 +12,7 @@
 
 #include <Print.h>
 #include <Server.h>
+
 #include "QNEthernetClient.h"
 
 namespace qindesign {

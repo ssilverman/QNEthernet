@@ -13,6 +13,7 @@
 #include <Client.h>
 #include <IPAddress.h>
 #include <Print.h>
+
 #include "ConnectionHolder.h"
 
 namespace qindesign {

@@ -11,9 +11,11 @@
 
 #ifdef ARDUINO_TEENSY41
 
+// C includes
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>

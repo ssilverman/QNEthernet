@@ -11,6 +11,7 @@
 
 #include <core_pins.h>
 #include <lwip/ip.h>
+
 #include "ConnectionHolder.h"
 #include "QNEthernet.h"
 
