@@ -168,10 +168,8 @@ here are a few steps to follow:
    include already includes the header for EthernetUDP, so you can remove any
    `#include <EthernetUdp.h>`.
 2. Just below that, add: `using namespace qindesign::network;`
-3. Declare `extern Print *stdPrint;` where you put your other program variables
-   (outside the functions). In `setup()`, just after initializing `Serial`, set
-   `stdPrint = &Serial`. This enables some lwIP output and also `printf` for
-   your own code.
+3. In `setup()`, just after initializing `Serial`, set `stdPrint = &Serial`.
+   This enables some lwIP output and also `printf` for your own code.
 4. You likely don't want or need to set/choose your own MAC address, so just
    call `Ethernet.begin()` with no arguments. This version uses DHCP. The
    three-argument version (IP, subnet mask, gateway) sets those parameters
@@ -425,14 +423,12 @@ be set to something conforming to the `Print` interface. If it is not set,
 
 For example:
 ```c++
-extern Print *stdPrint;
-
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
     // Wait for Serial initialization
   }
-  stdPrint = &Serial;
+  qindesign::network::stdPrint = &Serial;
 }
 ```
 

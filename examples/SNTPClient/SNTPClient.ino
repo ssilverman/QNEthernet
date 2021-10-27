@@ -36,10 +36,6 @@ constexpr uint32_t kBreakTime = 2'085'978'496;
 // UDP port.
 EthernetUDP udp;
 
-// QNEthernet links this variable with lwIP's `printf` calls for
-// assertions and debugging. User code can also use `printf`.
-extern Print *stdPrint;
-
 // --------------------------------------------------------------------------
 //  Main program
 // --------------------------------------------------------------------------

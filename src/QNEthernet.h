@@ -147,6 +147,9 @@ class EthernetClass final {
 
 extern EthernetClass Ethernet;
 
+// Lets user code use stdout.
+extern Print *stdPrint;
+
 }  // namespace network
 }  // namespace qindesign
 

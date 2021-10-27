@@ -49,10 +49,6 @@ std::vector<ClientState> clients;
 // The server.
 EthernetServer server{kServerPort};
 
-// QNEthernet links this variable with lwIP's `printf` calls for
-// assertions and debugging. User code can also use `printf`.
-extern Print *stdPrint;
-
 // --------------------------------------------------------------------------
 //  Main program
 // --------------------------------------------------------------------------

@@ -21,7 +21,13 @@ u32_t sys_now(void) {
 
 // The user program can set this to something initialized. For example,
 // `Serial`, after `Serial.begin(speed)`.
+namespace qindesign {
+namespace network {
+
 Print *volatile stdPrint = nullptr;
+
+}  // namespace network
+}  // namespace qindesign
 
 extern "C" {
 // Define this function so that printf works; parts of lwIP may use printf.
@@ -34,7 +40,7 @@ int _write(int file, const void *buf, size_t len) {
 
   // Send both stdout and stderr to stdPrint
   if (file == stdout->_file || file == stderr->_file) {
-    out = stdPrint;
+    out = ::qindesign::network::stdPrint;
   } else {
     out = (Print *)file;
   }
