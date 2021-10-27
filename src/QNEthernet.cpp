@@ -18,7 +18,7 @@
 #include "lwip_t41.h"
 #include "QNDNSClient.h"
 
-extern const int kMTU;
+extern const size_t kMTU;
 
 namespace qindesign {
 namespace network {

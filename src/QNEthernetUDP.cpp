@@ -17,7 +17,7 @@
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
 
-extern const int kMTU;
+extern const size_t kMTU;
 
 namespace qindesign {
 namespace network {
