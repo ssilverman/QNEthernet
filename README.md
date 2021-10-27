@@ -123,6 +123,7 @@ This section documents those functions.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
 * `mtu()`: Returns the MTU.
+* `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
