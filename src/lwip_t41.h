@@ -11,6 +11,8 @@
 
 #ifdef ARDUINO_TEENSY41
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
@@ -55,6 +57,10 @@ int enet_link_speed();
 
 // Read the IEEE1588 timer.
 uint32_t read_1588_timer();
+
+// Output a raw ethernet frame. This returns false if frame is NULL or if the
+// length is not in the range 64-kMaxFrameLen.
+bool enet_output_frame(const uint8_t *frame, size_t len);
 
 #ifdef __cplusplus
 }  // extern "C"

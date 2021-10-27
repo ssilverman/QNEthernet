@@ -63,6 +63,7 @@ removeService	KEYWORD2
 getHostByName	KEYWORD2
 maxServers	KEYWORD2
 setServer	KEYWORD2
+sendRaw	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

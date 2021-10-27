@@ -277,5 +277,12 @@ void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
   DNSClient::setServer(0, dnsServerIP);
 }
 
+bool EthernetClass::sendRaw(const uint8_t *frame, size_t len) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  return enet_output_frame(frame, len);
+}
+
 }  // namespace network
 }  // namespace qindesign

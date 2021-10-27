@@ -10,8 +10,6 @@
 
 #include "lwip_t41.h"
 
-#include <stdbool.h>
-#include <stddef.h>
 #include <string.h>
 
 #include <core_pins.h>
@@ -406,14 +404,21 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   return p;
 }
 
-static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
+// Acquire a buffer descriptor. Meant to be used with update_bufdesc().
+static inline volatile enetbufferdesc_t *get_bufdesc() {
   volatile enetbufferdesc_t *bdPtr = p_txbd;
 
   while (bdPtr->status & kEnetTxBdReady) {
     // Wait until BD is free
   }
 
-  bdPtr->length = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
+  return bdPtr;
+}
+
+// Update a buffer descriptor. Meant to be used with get_bufdesc().
+static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
+                                  uint16_t len) {
+  bdPtr->length = len;
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
                   kEnetTxBdTransmitCrc |
                   kEnetTxBdLast |
@@ -428,7 +433,11 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   }
 
   LINK_STATS_INC(link.xmit);
+}
 
+static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
+  volatile enetbufferdesc_t *bdPtr = get_bufdesc();
+  update_bufdesc(bdPtr, pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0));
   return ERR_OK;
 }
 
@@ -633,6 +642,16 @@ uint32_t read_1588_timer() {
     // Wait for bit to clear
   }
   return ENET_ATVR;
+}
+
+bool enet_output_frame(const uint8_t *frame, size_t len) {
+  if (frame == NULL || len < 64 || kMaxFrameLen < len) {
+    return false;
+  }
+  volatile enetbufferdesc_t *bdPtr = get_bufdesc();
+  memcpy(bdPtr->buffer, frame, len);
+  update_bufdesc(bdPtr, len);
+  return true;
 }
 
 #endif  // ARDUINO_TEENSY41

@@ -8,6 +8,7 @@
 #define QNE_ETHERNET_H_
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 
@@ -120,6 +121,14 @@ class EthernetClass final {
   [[deprecated]] void setMACAddress(uint8_t mac[6]) {}
   [[deprecated]] void setRetransmissionCount(uint8_t number) {}
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
+
+  // Send a raw Ethernet frame. This returns whether the send was successful.
+  //
+  // This will return false if:
+  // 1. Ethernet was not started,
+  // 2. The frame is NULL, or
+  // 3. The length is not in the range 64-1522.
+  bool sendRaw(const uint8_t *frame, size_t len);
 
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
