@@ -13,6 +13,7 @@ EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
+stdPrint	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
