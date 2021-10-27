@@ -8,6 +8,18 @@ and this project adheres to
 
 ## [0.10.0]
 
+### Added
+* Added a way to send raw Ethernet frames. The new function
+  is `EthernetClass::sendRaw(frame, len)`.
+* Added new sections to the README:
+  1. "Sending raw Ethernet frames", and
+  2. "How to implement VLAN tagging".
+
+### Changed
+* Changed `kMTU` type to be `size_t` everywhere.
+* Added `stdPrint` as an `extern` variable to `QNEthernet.h` and moved it to the
+  `qindesign::network` namespace.
+
 ## [0.9.0]
 
 ### Added
