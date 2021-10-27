@@ -30,10 +30,12 @@ files provided with the lwIP release.
 7. [mDNS services](#mdns-services)
 8. [DNS](#dns)
 9. [stdio](#stdio)
-10. [Other notes](#other-notes)
-11. [To do](#to-do)
-12. [Code style](#code-style)
-13. [References](#references)
+10. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
+11. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+12. [Other notes](#other-notes)
+13. [To do](#to-do)
+14. [Code style](#code-style)
+15. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -433,6 +435,30 @@ void setup() {
 ```
 
 The side benefit is that user code can use `printf` too.
+
+## Sending raw Ethernet frames
+
+There is support for sending raw Ethernet frames. The
+`Ethernet.sendRaw(frame, len)` function takes two arguments: a `const uint8_t *`
+frame and a `size_t` length. It returns whether the send was successful.
+
+A send is considered successful unless:
+1. Ethernet has not been started,
+2. The frame is `NULL`, or
+3. The length is not in the range 64-1522.
+
+## How to implement VLAN tagging
+
+The lwIP stack supports VLAN tagging. Here are the steps for how to implement
+it. Note that all defines should go inside `lwipopts.h`. Documentation for these
+defines can be found in _src/lwip/opt.h_.
+
+1. Define `ETHARP_SUPPORT_VLAN` as `1`.
+2. To set VLAN tags, define `LWIP_HOOK_VLAN_SET`.
+3. To validate VLAN tags on input, define one of:
+   1. `LWIP_HOOK_VLAN_CHECK`, (see `LWIP_HOOK_VLAN_CHECK`)
+   2. `ETHARP_VLAN_CHECK_FN`, (see `ETHARP_SUPPORT_VLAN`)
+   3. `ETHARP_VLAN_CHECK`. (see `ETHARP_SUPPORT_VLAN`)
 
 ## Other notes
 
