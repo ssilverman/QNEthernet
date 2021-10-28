@@ -21,6 +21,15 @@ and this project adheres to
 * Changed `kMTU` type to be `size_t` everywhere.
 * Added `stdPrint` as an `extern` variable to `QNEthernet.h` and moved it to the
   `qindesign::network` namespace.
+* Changed transmit data buffers to be 64-byte aligned, for
+  "optimal performance".\
+  See: IMXRT1060RM_rev2.pdf, "Table 41-38. Enhanced transmit buffer descriptor
+  field definitions", page 2186.
+
+### Fixed
+* Changed receive data buffers to be 64-byte aligned.\
+  See: IMXRT1060RM_rev2.pdf, "Table 41-36. Receive buffer descriptor field
+  definitions", page 2183.
 
 ## [0.9.0]
 
