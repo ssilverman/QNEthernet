@@ -15,9 +15,11 @@
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
 #include <lwip/udp.h>
+
+#include "QNDNSClient.h"
 #include "lwip_t41.h"
 
-extern const int kMTU;
+extern const size_t kMTU;
 
 namespace qindesign {
 namespace network {
@@ -27,16 +29,14 @@ static EventResponder ethLoop;
 EthernetClass Ethernet;
 static bool ethActive = false;
 
-// Start the loop() call in yield() via EventResponder.
-void startLoopInYield() {
-  ethActive = true;
+// Attach the loop() call to yield() via EventResponder.
+static void attachLoopToYield() {
   ethLoop.attach([](EventResponderRef r) {
     EthernetClass::loop();
     if (ethActive) {
       r.triggerEvent();
     }
   });
-  ethLoop.triggerEvent();
 }
 
 void EthernetClass::netifEventFunc(struct netif *netif,
@@ -47,8 +47,8 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   }
 
   if (reason & LWIP_NSC_LINK_CHANGED) {
-    if (Ethernet.linkStatusCB_ != nullptr && args != nullptr) {
-      Ethernet.linkStatusCB_(args->link_changed.state != 0);
+    if (Ethernet.linkStateCB_ != nullptr && args != nullptr) {
+      Ethernet.linkStateCB_(args->link_changed.state != 0);
     }
   }
 
@@ -69,8 +69,17 @@ EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   }
 
   // Initialize randomness since this isn't done anymore in eth_init
-  Entropy.Initialize();
+#if defined(__IMXRT1062__)
+  bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
+#else
+  bool doEntropyInit = true;
+#endif
+  if (doEntropyInit) {
+    Entropy.Initialize();
+  }
   srand(Entropy.random());
+
+  attachLoopToYield();
 }
 
 EthernetClass::~EthernetClass() {
@@ -119,7 +128,15 @@ void EthernetClass::begin(const IPAddress &ip,
   enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
   netif_set_up(netif_);
 
-  startLoopInYield();
+  // If this is using a manual configuration then inform the network
+  if (!(const_cast<IPAddress &>(ip) == INADDR_NONE) ||
+      !(const_cast<IPAddress &>(mask) == INADDR_NONE) ||
+      !(const_cast<IPAddress &>(gateway) == INADDR_NONE)) {
+    dhcp_inform(netif_);
+  }
+
+  ethActive = true;
+  ethLoop.triggerEvent();
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) {
@@ -172,17 +189,20 @@ void EthernetClass::end() {
   }
 
   ethActive = false;
-  ethLoop.detach();
 
-  dhcp_stop(netif_);
   dns_setserver(0, IP_ADDR_ANY);
+  dhcp_release_and_stop(netif_);
   netif_set_down(netif_);
-  netif_ = nullptr;
 
   enet_deinit();
+  netif_ = nullptr;
 }
 
-bool EthernetClass::linkStatus() const {
+EthernetLinkStatus EthernetClass::linkStatus() const {
+  return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
+}
+
+bool EthernetClass::linkState() const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -255,10 +275,14 @@ void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
   if (netif_ == nullptr) {
     return;
   }
+  DNSClient::setServer(0, dnsServerIP);
+}
 
-  const ip_addr_t dnsserver =
-      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(dnsServerIP)));
-  dns_setserver(0, &dnsserver);
+bool EthernetClass::sendRaw(const uint8_t *frame, size_t len) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  return enet_output_frame(frame, len);
 }
 
 }  // namespace network

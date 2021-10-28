@@ -13,8 +13,7 @@
 #include <Client.h>
 #include <IPAddress.h>
 #include <Print.h>
-#include <WString.h>
-#include <lwip/ip_addr.h>
+
 #include "ConnectionHolder.h"
 
 namespace qindesign {
@@ -46,12 +45,24 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
+  // Close the connection. This works the same as stop(), but without waiting
+  // for the connection to close.
+  void close();
+
+  // Close the sending side of this connection.
+  void closeOutput();
+
   uint16_t localPort();
   IPAddress remoteIP();
   uint16_t remotePort();
 
   // Bring Print::write functions into scope
   using Print::write;
+
+  void writeFully(uint8_t b);
+  void writeFully(const char *s);
+  void writeFully(const char *s, size_t size);
+  void writeFully(const uint8_t *buf, size_t size);
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
@@ -68,16 +79,8 @@ class EthernetClient final : public Client {
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<ConnectionHolder> holder);
 
-  static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                           void *callback_arg);
-
   // Connection state
   uint16_t connTimeout_;
-
-  // DNS lookups
-  String lookupHost_;   // For matching DNS lookups
-  IPAddress lookupIP_;  // Set by a DNS lookup
-  volatile bool lookupFound_;
 
   std::shared_ptr<ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we

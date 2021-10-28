@@ -13,9 +13,9 @@
 
 #include <IPAddress.h>
 #include <Udp.h>
-#include <WString.h>
-#include <lwip/udp.h>
 #include <lwip/dns.h>
+#include <lwip/ip_addr.h>
+#include <lwip/udp.h>
 
 namespace qindesign {
 namespace network {
@@ -26,8 +26,12 @@ class EthernetUDP final : public UDP {
   ~EthernetUDP();
 
   // Start listening on a port. This returns true if successful and false if the
-  // port is in use.
+  // port is in use. This calls begin(localPort, false).
   uint8_t begin(uint16_t localPort) override;
+
+  // Start listening on a port and set the SO_REUSEADDR socket option according
+  // to the `reuse` parameter. This returns whether the attempt was successful.
+  uint8_t begin(uint16_t localPort, bool reuse);
 
   uint8_t beginMulticast(IPAddress ip, uint16_t port) override;
   void stop() override;
@@ -56,8 +60,6 @@ class EthernetUDP final : public UDP {
   uint16_t remotePort() override;
 
  private:
-  static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                           void *callback_arg);
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
@@ -79,11 +81,6 @@ class EthernetUDP final : public UDP {
   ip_addr_t outIpaddr_;
   uint16_t outPort_;
   std::vector<unsigned char> outPacket_;
-
-  // DNS lookups
-  String lookupHost_;   // For matching DNS lookups
-  IPAddress lookupIP_;  // Set by a DNS lookup
-  volatile bool lookupFound_;
 };
 
 }  // namespace network

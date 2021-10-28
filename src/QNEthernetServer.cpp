@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ConnectionManager.h"
+#include "QNEthernet.h"
 #include "QNEthernetClient.h"
 
 namespace qindesign {
@@ -24,7 +25,11 @@ EthernetServer::~EthernetServer() {
 }
 
 void EthernetServer::begin() {
-  listening_ = ConnectionManager::instance().listen(port_);
+  begin(false);
+}
+
+void EthernetServer::begin(bool reuse) {
+  listening_ = ConnectionManager::instance().listen(port_, reuse);
 }
 
 bool EthernetServer::end() {
@@ -34,6 +39,7 @@ bool EthernetServer::end() {
 EthernetClient EthernetServer::accept() const {
   std::shared_ptr<ConnectionHolder> conn =
       ConnectionManager::instance().findConnected(port_);
+  EthernetClass::loop();
   if (conn != nullptr) {
     ConnectionManager::instance().remove(conn);
     return EthernetClient{conn};
@@ -44,6 +50,7 @@ EthernetClient EthernetServer::accept() const {
 EthernetClient EthernetServer::available() const {
   std::shared_ptr<ConnectionHolder> conn =
       ConnectionManager::instance().findAvailable(port_);
+  EthernetClass::loop();
   if (conn != nullptr) {
     return EthernetClient{conn};
   }

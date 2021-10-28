@@ -8,6 +8,7 @@
 #define QNE_ETHERNET_H_
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 
@@ -15,12 +16,20 @@
 #include <elapsedMillis.h>
 #include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>
+
 #include "QNEthernetClient.h"
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 
 namespace qindesign {
 namespace network {
+
+// Define this enum because Arduino API.
+enum EthernetLinkStatus {
+  LinkOFF,
+  LinkON,
+  Unknown,
+};
 
 class EthernetClass final {
  public:
@@ -58,15 +67,19 @@ class EthernetClass final {
   // Shut down the Ethernet peripheral(s).
   void end();
 
-  // Return the link status, true for link and false for no link.
-  bool linkStatus() const;
+  // Return the link status, one of the EthernetLinkStatus enumerators. This
+  // will never return Unknown.
+  EthernetLinkStatus linkStatus() const;
+
+  // Return the link state, true for link and false for no link.
+  bool linkState() const;
 
   // Return the link speed in Mbps.
   int linkSpeed() const;
 
-  // Set a link status callback.
-  void onLinkStatus(std::function<void(bool state)> cb) {
-    linkStatusCB_ = cb;
+  // Set a link state callback.
+  void onLinkState(std::function<void(bool state)> cb) {
+    linkStateCB_ = cb;
   }
 
   // Set an address changed callback. This will be called if any of the three
@@ -110,6 +123,14 @@ class EthernetClass final {
   [[deprecated]] void setRetransmissionCount(uint8_t number) {}
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
 
+  // Send a raw Ethernet frame. This returns whether the send was successful.
+  //
+  // This will return false if:
+  // 1. Ethernet was not started,
+  // 2. The frame is NULL, or
+  // 3. The length is not in the range 64-1522.
+  bool sendRaw(const uint8_t *frame, size_t len);
+
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
@@ -120,11 +141,15 @@ class EthernetClass final {
   struct netif *netif_ = nullptr;
 
   // Callbacks
-  std::function<void(bool state)> linkStatusCB_ = nullptr;
+  std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
 };
 
+// Instance for interacting with the library.
 extern EthernetClass Ethernet;
+
+// Lets user code use stdout.
+extern Print *stdPrint;
 
 }  // namespace network
 }  // namespace qindesign

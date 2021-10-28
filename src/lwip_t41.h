@@ -11,7 +11,11 @@
 
 #ifdef ARDUINO_TEENSY41
 
+// C includes
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
 #include <lwip/prot/ethernet.h>
@@ -19,8 +23,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// typedef void (*rx_frame_fn)(void *);
 
 // Get the Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
@@ -45,9 +47,6 @@ void enet_deinit();
 // before the default netif has been assigned.
 struct netif *enet_netif();
 
-// // Sets the receive callback function.
-// void enet_set_receive_callback(rx_frame_fn rx_cb);
-
 // Process any Ethernet input. This is meant to be called often by the
 // main loop.
 void enet_proc_input(void);
@@ -60,6 +59,10 @@ int enet_link_speed();
 
 // Read the IEEE1588 timer.
 uint32_t read_1588_timer();
+
+// Output a raw ethernet frame. This returns false if frame is NULL or if the
+// length is not in the range 64-kMaxFrameLen.
+bool enet_output_frame(const uint8_t *frame, size_t len);
 
 #ifdef __cplusplus
 }  // extern "C"

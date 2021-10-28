@@ -12,6 +12,8 @@ EthernetClient	KEYWORD1	ClientConstructor
 EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
+DNSClient	KEYWORD1
+stdPrint	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -21,8 +23,13 @@ macAddress	KEYWORD2	EthernetMACAddress
 mtu	KEYWORD2
 loop	KEYWORD2
 begin	KEYWORD2
+waitForLocalIP	KEYWORD2
 end	KEYWORD2
-linkStatus	KEYWORD2
+linkStatus	KEYWORD2	EthernetLinkStatus
+linkState	KEYWORD2
+linkSpeed	KEYWORD2
+onLinkState	KEYWORD2
+onAddressChanged	KEYWORD2
 localIP	KEYWORD2	EthernetLocalIP
 subnetMask	KEYWORD2	EthernetSubnetMask
 gatewayIP	KEYWORD2	EthernetGatewayIP
@@ -35,12 +42,15 @@ connect	KEYWORD2	ClientConnect
 connected	KEYWORD2	ClientConnected
 setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
 stop	KEYWORD2
+close	KEYWORD2
+closeOutput	KEYWORD2
 localPort	KEYWORD2	ClientLocalPort
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
+writeFully	KEYWORD2
 write	KEYWORD2
 availableForWrite	KEYWORD2
-flush	KEYWORD2
+flush	KEYWORD2	ClientFlush
 available	KEYWORD2
 read	KEYWORD2
 peek	KEYWORD2
@@ -51,6 +61,10 @@ endPacket	KEYWORD2	EthernetUDPEndPacket
 parsePacket	KEYWORD2	EthernetUDPParsePacket
 addService	KEYWORD2
 removeService	KEYWORD2
+getHostByName	KEYWORD2
+maxServers	KEYWORD2
+setServer	KEYWORD2
+sendRaw	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

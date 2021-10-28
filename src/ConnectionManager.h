@@ -13,6 +13,7 @@
 
 #include <lwip/ip_addr.h>
 #include <lwip/tcp.h>
+
 #include "ConnectionHolder.h"
 
 namespace qindesign {
@@ -26,9 +27,12 @@ class ConnectionManager final {
   }
 
   std::shared_ptr<ConnectionHolder> connect(ip_addr_t *ipaddr, uint16_t port);
-  bool listen(uint16_t port);
 
-  bool isListening(uint16_t port);
+  // Listens on a port. The `reuse` parameter controls the SO_REUSEADDR flag.
+  // This returns whether the attempt was successful.
+  bool listen(uint16_t port, bool reuse);
+
+  bool isListening(uint16_t port) const;
 
   // Stop listening on the specified port. This returns true if the listener was
   // found and successfully stopped. This returns false if the listener was not
@@ -36,10 +40,10 @@ class ConnectionManager final {
   bool stopListening(uint16_t port);
 
   // Find a connection whose local port is the specified port.
-  std::shared_ptr<ConnectionHolder> findConnected(uint16_t port);
+  std::shared_ptr<ConnectionHolder> findConnected(uint16_t port) const;
 
   // Find a connection on the given port that has data available.
-  std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port);
+  std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port) const;
 
   // Remove the given connection and returns whether the connection existed in
   // the list and was removed.
