@@ -18,7 +18,8 @@ and this project adheres to
   and `operator bool()`.
 * Added `EthernetUDP::beginMulticast(ip, localPort, reuse)`, where `reuse`
   controls the SO_REUSEADDR socket option.
-* Added `EthernetClass::joinGroup(ip)` for joining a multicast group.
+* Added `EthernetClass::joinGroup(ip)` and `leaveGroup(ip)` for joining and
+  leaving a multicast group.
 
 ### Changed
 * Changed `kMTU` type to be `size_t` everywhere.

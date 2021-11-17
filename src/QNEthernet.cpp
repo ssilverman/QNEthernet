@@ -295,5 +295,14 @@ bool EthernetClass::joinGroup(const IPAddress &ip) {
   return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
+bool EthernetClass::leaveGroup(const IPAddress &ip) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  const ip_addr_t groupaddr =
+      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
+  return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+}
+
 }  // namespace network
 }  // namespace qindesign

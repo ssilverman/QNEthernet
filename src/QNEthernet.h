@@ -134,6 +134,9 @@ class EthernetClass final {
   // Join a multicast group. This returns whether the call was successful.
   bool joinGroup(const IPAddress &ip);
 
+  // Leave a multicast group. This returns whether the call was successful.
+  bool leaveGroup(const IPAddress &ip);
+
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
