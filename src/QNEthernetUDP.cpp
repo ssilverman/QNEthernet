@@ -11,7 +11,6 @@
 
 #include <elapsedMillis.h>
 #include <lwip/dns.h>
-#include <lwip/igmp.h>
 #include <lwip/ip.h>
 #include <lwip/opt.h>
 
@@ -118,8 +117,7 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
     return false;
   }
 
-  const ip_addr_t groupaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
-  if (igmp_joingroup(IP_ANY_TYPE, &groupaddr) != ERR_OK) {
+  if (!Ethernet.joinGroup(ip)) {
     stop();
     return false;
   }
