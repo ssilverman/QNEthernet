@@ -33,8 +33,10 @@ class EthernetUDP final : public UDP {
   // to the `reuse` parameter. This returns whether the attempt was successful.
   uint8_t begin(uint16_t localPort, bool reuse);
 
+  // Multicast functions make use of Ethernet.joinGroup()
   uint8_t beginMulticast(IPAddress ip, uint16_t port) override;
   uint8_t beginMulticast(IPAddress ip, uint16_t port, bool reuse);
+
   void stop() override;
 
   // Sending UDP packets
