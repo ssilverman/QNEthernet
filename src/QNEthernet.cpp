@@ -13,6 +13,7 @@
 #include <EventResponder.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
+#include <lwip/igmp.h>
 #include <lwip/ip_addr.h>
 #include <lwip/udp.h>
 
@@ -283,6 +284,15 @@ bool EthernetClass::sendRaw(const uint8_t *frame, size_t len) {
     return false;
   }
   return enet_output_frame(frame, len);
+}
+
+bool EthernetClass::joinGroup(const IPAddress &ip) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  const ip_addr_t groupaddr =
+      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
+  return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
 }  // namespace network

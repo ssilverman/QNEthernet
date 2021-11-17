@@ -122,6 +122,7 @@ This section documents those functions.
 * `end()`: Shuts down the library, including the Ethernet clocks.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
+* `joinGroup(ip)`: Joins a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
 * `mtu()`: Returns the MTU.

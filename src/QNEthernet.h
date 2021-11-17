@@ -131,6 +131,9 @@ class EthernetClass final {
   // 3. The length is not in the range 64-1522.
   bool sendRaw(const uint8_t *frame, size_t len);
 
+  // Join a multicast group. This returns whether the call was successful.
+  bool joinGroup(const IPAddress &ip);
+
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
