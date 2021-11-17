@@ -32,6 +32,7 @@ and this project adheres to
 * Updated lwIP to v2.1.3.
 * Changed `EthernetUDP::beginMulticast` to release resources if joining the
   group failed.
+* Increased MEMP_NUM_IGMP_GROUP to 9 to allow 8 multicast groups.
 
 ### Fixed
 * Changed receive data buffers to be 64-byte aligned.\
