@@ -160,6 +160,9 @@ This section documents those functions.
 
 * `begin(localPort, reuse)`: Similar to `begin(localPort)`, but the Boolean
   `reuse` parameter controls the SO_REUSEADDR socket option.
+* `beginMulticast(ip, localPort, reuse)`: Similar to
+  `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
+  the above.
 
 ## How to run
 

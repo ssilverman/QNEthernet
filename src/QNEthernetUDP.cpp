@@ -109,7 +109,12 @@ uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
 }
 
 uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
-  if (!begin(localPort)) {
+  return beginMulticast(ip, localPort, false);
+}
+
+uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
+                                    bool reuse) {
+  if (!begin(localPort, reuse)) {
     return false;
   }
 

@@ -16,6 +16,8 @@ and this project adheres to
   2. "How to implement VLAN tagging".
 * Added calls to `loop()` in `EthernetClient::connected()`
   and `operator bool()`.
+* Added `EthernetUDP::beginMulticast(ip, localPort, reuse)`, where `reuse`
+  controls the SO_REUSEADDR socket option.
 
 ### Changed
 * Changed `kMTU` type to be `size_t` everywhere.
