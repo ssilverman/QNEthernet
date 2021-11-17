@@ -120,7 +120,7 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
 
   const ip_addr_t groupaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
   if (igmp_joingroup(IP_ANY_TYPE, &groupaddr) != ERR_OK) {
-    udp_recv(pcb_, nullptr, nullptr);
+    stop();
     return false;
   }
   return true;

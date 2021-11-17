@@ -28,6 +28,8 @@ and this project adheres to
   See: IMXRT1060RM_rev2.pdf, "Table 41-38. Enhanced transmit buffer descriptor
   field definitions", page 2186.
 * Updated lwIP to v2.1.3.
+* Changed `EthernetUDP::beginMulticast` to release resources if joining the
+  group failed.
 
 ### Fixed
 * Changed receive data buffers to be 64-byte aligned.\
