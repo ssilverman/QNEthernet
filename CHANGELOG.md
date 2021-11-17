@@ -25,6 +25,7 @@ and this project adheres to
   "optimal performance".\
   See: IMXRT1060RM_rev2.pdf, "Table 41-38. Enhanced transmit buffer descriptor
   field definitions", page 2186.
+* Updated lwIP to v2.1.3.
 
 ### Fixed
 * Changed receive data buffers to be 64-byte aligned.\
