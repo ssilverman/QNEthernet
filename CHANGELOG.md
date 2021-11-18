@@ -38,6 +38,7 @@ and this project adheres to
 * Changed receive data buffers to be 64-byte aligned.\
   See: IMXRT1060RM_rev2.pdf, "Table 41-36. Receive buffer descriptor field
   definitions", page 2183.
+* Changed TA value in ENET_MMFR register to 2, per the chip docs.
 
 ## [0.9.0]
 

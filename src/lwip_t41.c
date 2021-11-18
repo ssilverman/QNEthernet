@@ -168,9 +168,8 @@ const char *lwip_strerr(err_t err) {
 
 // Read a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(int phyaddr, int regaddr) {
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(0) |
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr);
-  // TODO: what is the proper value for ENET_MMFR_TA ???
   // int count=0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++; // wait
@@ -184,10 +183,9 @@ uint16_t mdio_read(int phyaddr, int regaddr) {
 
 // Write a PHY register (using MDIO & MDC signals).
 void mdio_write(int phyaddr, int regaddr, uint16_t data) {
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(0) |
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr) |
               ENET_MMFR_DATA(data);
-  // TODO: what is the proper value for ENET_MMFR_TA ???
   // int count = 0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++;  // wait
