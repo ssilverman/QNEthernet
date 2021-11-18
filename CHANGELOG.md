@@ -34,6 +34,10 @@ and this project adheres to
   group failed.
 * Increased MEMP_NUM_IGMP_GROUP to 9 to allow 8 multicast groups.
 
+### Removed
+* Removed mention of the need to re-announce mDNS and adjusted the
+  docs accordingly.
+
 ### Fixed
 * Changed receive data buffers to be 64-byte aligned.\
   See: IMXRT1060RM_rev2.pdf, "Table 41-36. Receive buffer descriptor field

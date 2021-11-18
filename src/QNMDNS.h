@@ -52,7 +52,7 @@ class MDNSClass final {
   // Return the TTL, in seconds.
   uint32_t ttl() const;
 
-  // Perform the announcement.
+  // Perform an announcement. This isn't usually necessary for normal operation.
   void announce() const;
 
  private:

@@ -387,11 +387,6 @@ Some options:
 It's possible to register mDNS services. Some notes:
 * Similar to `Ethernet`, there is a global `MDNS` object. It too is in the
   `qindesign::network` namespace.
-* Registered services disappear after the TTL (currently set to 120 seconds),
-  and sometimes earlier. I'm not sure what the cause is yet. (Not receiving
-  multicast?) You might find yourself needing to re-announce things every _TTL_
-  seconds. This is the purpose of the `MDNS.ttl()` and `MDNS.announce()`
-  functions.
 * It's possible to add TXT items when adding a service. For example, the
   following code adds "path=/" to the TXT of an HTTP service:
   ```c++
@@ -481,7 +476,6 @@ Input is welcome.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
 * Make a test suite.
-* Understand why mDNS requires re-announcements.
 * I sometimes see
   `Assertion "tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT" failed at line 1442 in src/lwip/tcp.c`
   when sending a large amount of data. Either it's an lwIP bug or I'm doing
