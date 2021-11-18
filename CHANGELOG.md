@@ -39,6 +39,8 @@ and this project adheres to
   See: IMXRT1060RM_rev2.pdf, "Table 41-36. Receive buffer descriptor field
   definitions", page 2183.
 * Changed TA value in ENET_MMFR register to 2, per the chip docs.
+* Multicast reception now works. Had to set the ENET_GAUR and ENET_GALR
+  registers appropriately.
 
 ## [0.9.0]
 

@@ -292,7 +292,11 @@ bool EthernetClass::joinGroup(const IPAddress &ip) {
   }
   const ip_addr_t groupaddr =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
-  return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
+  if (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK) {
+    enet_join_group(&groupaddr);
+    return true;
+  }
+  return false;
 }
 
 bool EthernetClass::leaveGroup(const IPAddress &ip) {
@@ -301,7 +305,14 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
   }
   const ip_addr_t groupaddr =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
-  return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+  if (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK) {
+    // Low-level leave the group if there's no more use of the group
+    if (igmp_lookfor_group(netif_, &groupaddr) == nullptr) {
+      enet_leave_group(&groupaddr);
+    }
+    return true;
+  }
+  return false;
 }
 
 }  // namespace network

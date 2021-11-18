@@ -64,6 +64,10 @@ uint32_t read_1588_timer();
 // length is not in the range 64-kMaxFrameLen.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
+// For joining and leaving multicast groups.
+void enet_join_group(const ip_addr_t *group);
+void enet_leave_group(const ip_addr_t *group);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

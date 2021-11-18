@@ -510,6 +510,29 @@ static inline void check_link_status() {
   }
 }
 
+// CRC-32 routines for computing the FCS for multicast lookup
+
+static uint32_t kCRC32Lookup[256];
+
+// See: https://create.stephan-brumme.com/crc32/#sarwate
+static void generate_crc32_lookup() {
+  for (int i = 0; i < 256; i++) {
+    uint32_t crc = i;
+    for (int j = 0; j < 8; j++) {
+      crc = (crc >> 1) ^ (-(int)(crc & 1) & 0xEDB88320);
+    }
+    kCRC32Lookup[i] = crc;
+  }
+}
+
+static uint32_t crc32(uint32_t crc, const unsigned char *data, size_t len) {
+  crc = ~crc;
+  while (len--) {
+    crc = (crc >> 8) ^ kCRC32Lookup[(crc & 0xff) ^ *(data++)];
+  }
+  return crc;  // Why does this work without inversion?
+}
+
 // --------------------------------------------------------------------------
 //  Public interface
 // --------------------------------------------------------------------------
@@ -537,6 +560,7 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
   // Only execute the following code once
   if (isFirstInit) {
+    generate_crc32_lookup();
     lwip_init();
 
     isFirstInit = false;
@@ -651,6 +675,45 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   memcpy(bdPtr->buffer, frame, len);
   update_bufdesc(bdPtr, len);
   return true;
+}
+
+static uint8_t multicastMAC[6] = {
+    LL_IP4_MULTICAST_ADDR_0,
+    LL_IP4_MULTICAST_ADDR_1,
+    LL_IP4_MULTICAST_ADDR_2,
+    0,
+    0,
+    0,
+};
+
+static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
+  multicastMAC[3] = ip4_addr2(group) & 0x7f;
+  multicastMAC[4] = ip4_addr3(group);
+  multicastMAC[5] = ip4_addr4(group);
+
+  uint32_t crc = (crc32(0, multicastMAC, 6) >> 26) & 0x3f;
+  uint32_t value = 1 << (crc & 0x1f);
+  if (crc < 0x20) {
+    if (flag) {
+      ENET_GALR |= value;
+    } else {
+      ENET_GALR &= ~value;
+    }
+  } else {
+    if (flag) {
+      ENET_GAUR |= value;
+    } else {
+      ENET_GAUR &= ~value;
+    }
+  }
+}
+
+void enet_join_group(const ip_addr_t *group) {
+  enet_join_notleave_group(group, true);
+}
+
+void enet_leave_group(const ip_addr_t *group) {
+  enet_join_notleave_group(group, false);
 }
 
 #endif  // ARDUINO_TEENSY41
