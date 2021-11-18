@@ -20,6 +20,7 @@ and this project adheres to
   controls the SO_REUSEADDR socket option.
 * Added `EthernetClass::joinGroup(ip)` and `leaveGroup(ip)` for joining and
   leaving a multicast group.
+* Added a "How to use multicast" section to the README.
 
 ### Changed
 * Changed `kMTU` type to be `size_t` everywhere.

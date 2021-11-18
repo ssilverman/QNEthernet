@@ -27,15 +27,16 @@ files provided with the lwIP release.
 4. [How to write data to connections](#how-to-write-data-to-connections)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-7. [mDNS services](#mdns-services)
-8. [DNS](#dns)
-9. [stdio](#stdio)
-10. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
-11. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-12. [Other notes](#other-notes)
-13. [To do](#to-do)
-14. [Code style](#code-style)
-15. [References](#references)
+7. [How to use multicast](#how-to-use-multicast)
+8. [mDNS services](#mdns-services)
+9. [DNS](#dns)
+10. [stdio](#stdio)
+11. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
+12. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+13. [Other notes](#other-notes)
+14. [To do](#to-do)
+15. [Code style](#code-style)
+16. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -381,6 +382,25 @@ Some options:
 2. Same as the above, but without one of the two connection-status calls
    (`connected()` or `operator bool()`). The data will just run out after
    connection-closed and after the buffers are empty.
+
+## How to use multicast
+
+There are a few ways in the API to utilize multicast to send or receive packets.
+For reception, you must join a multicast group.
+
+The first is by using the `EthernetUDP::beginMulticast(ip, port)` function. This
+both binds to a specific port, for only receiving traffic on that port, and
+joins the specified group address. It's similar to
+`EthernetUDP::begin(localPort)` in that the socket will "own" the port.
+
+Since only one socket at a time can be bound to a specific port, you will need
+to use the same socket if you want to receive traffic sent to multiple groups on
+the same port. You can accomplish this by either calling
+`beginMulticast(ip, port)` multiple times, or by using `begin(localPort)` once,
+and then calling `Ethernet.joinGroup(ip)` for each group you want to join.
+
+To send multicast traffic, simply send to the appropriate IP address. There's no
+need to join a group.
 
 ## mDNS services
 
