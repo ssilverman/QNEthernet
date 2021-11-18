@@ -686,6 +686,10 @@ static uint8_t multicastMAC[6] = {
     0,
 };
 
+// Don't release bits that have had a collision. Track these here.
+static uint32_t collisionGALR = 0;
+static uint32_t collisionGAUR = 0;
+
 static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
   multicastMAC[3] = ip4_addr2(group) & 0x7f;
   multicastMAC[4] = ip4_addr3(group);
@@ -695,15 +699,25 @@ static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
   uint32_t value = 1 << (crc & 0x1f);
   if (crc < 0x20) {
     if (flag) {
-      ENET_GALR |= value;
+      if ((ENET_GALR & value) != 0) {
+        collisionGALR |= value;
+      } else {
+        ENET_GALR |= value;
+      }
     } else {
-      ENET_GALR &= ~value;
+      // Keep collided bits set
+      ENET_GALR &= ~value | collisionGALR;
     }
   } else {
     if (flag) {
-      ENET_GAUR |= value;
+      if ((ENET_GAUR & value) != 0) {
+        collisionGAUR |= value;
+      } else {
+        ENET_GAUR |= value;
+      }
     } else {
-      ENET_GAUR &= ~value;
+      // Keep collided bits set
+      ENET_GAUR &= ~value | collisionGAUR;
     }
   }
 }
