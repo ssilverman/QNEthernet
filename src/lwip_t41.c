@@ -677,6 +677,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   return true;
 }
 
+// Multicast MAC address.
 static uint8_t multicastMAC[6] = {
     LL_IP4_MULTICAST_ADDR_0,
     LL_IP4_MULTICAST_ADDR_1,
@@ -690,6 +691,8 @@ static uint8_t multicastMAC[6] = {
 static uint32_t collisionGALR = 0;
 static uint32_t collisionGAUR = 0;
 
+// Join or leave a multicast group. The flag should be true to join and false
+// to leave.
 static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
   multicastMAC[3] = ip4_addr2(group) & 0x7f;
   multicastMAC[4] = ip4_addr3(group);
