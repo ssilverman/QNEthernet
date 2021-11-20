@@ -21,7 +21,7 @@ namespace network {
 class DNSClient final {
  public:
   // Return the maximum number of DNS servers.
-  static int maxServers() {
+  static constexpr int maxServers() {
     return DNS_MAX_SERVERS;
   }
 
