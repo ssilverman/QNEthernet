@@ -8,6 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Implemented `EthernetClass::setMACAddress(mac)`.
+
+### Fixed
+* Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`
+  and `setMACAddress(mac)`) to ensure that a static IP won't get overwritten by
+  any previously running DHCP client. This also obviates the need to call
+  `Ethernet.end()` before re-calling `begin`.
+
 ## [0.10.0]
 
 ### Added

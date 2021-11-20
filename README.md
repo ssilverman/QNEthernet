@@ -63,7 +63,6 @@ and notes:
   * `hardwareStatus()`: returns zero (an `int`) and not `EthernetHardwareStatus`
   * `init(uint8_t sspin)`
   * `maintain()`: returns zero
-  * `setMACAddress(uint8_t mac[6])`
   * `setRetransmissionCount(uint8_t number)`
   * `setRetransmissionTimeout(uint16_t milliseconds)`
 * The following `Ethernet` functions are deprecated but call
@@ -181,15 +180,17 @@ here are a few steps to follow:
 4. You likely don't want or need to set/choose your own MAC address, so just
    call `Ethernet.begin()` with no arguments. This version uses DHCP. The
    three-argument version (IP, subnet mask, gateway) sets those parameters
-   instead of using DHCP. If you really want to set your own MAC address, for
-   now, consult the code.
+   instead of using DHCP, but starts DHCP if they're all zero (`INADDR_NONE`).
+   If you really want to set your own MAC address, see `setMACAddress(mac)`
+   or one of the `begin` functions that takes a MAC address parameter.
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
 6. `Ethernet.hardwareStatus()` always returns zero.
 7. Most other things should be the same.
 
-Please see the examples for more things you can do with the API.
+Please see the examples for more things you can do with the API, including using
+listeners to watch for network changes.
 
 ## How to write data to connections
 
