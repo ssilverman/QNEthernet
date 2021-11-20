@@ -35,7 +35,13 @@ class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
 
+  // Creates a new network interface. This sets the MAC address to the built-in
+  // MAC address. This calls the other constructor with a NULL address.
   EthernetClass();
+
+  // Creates a new network interface. This sets the MAC address to the given MAC
+  // address. If the given address is NULL then this uses the built-in
+  // MAC address.
   EthernetClass(const uint8_t mac[kMACAddrSize]);
 
   ~EthernetClass();
@@ -43,13 +49,19 @@ class EthernetClass final {
   // Retrieve the MAC address.
   void macAddress(uint8_t mac[kMACAddrSize]) const;
 
+  // Set the MAC address. If the address is different than the current address,
+  // and if the network interface is already up, then the network interface will
+  // be reset and any DHCP client will be restarted. This does nothing if the
+  // given array is NULL.
+  void setMACAddress(uint8_t mac[kMACAddrSize]);
+
   // Get the MTU.
   int mtu() const;
 
   // Call often.
   static void loop();
 
-  // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
+  // Start Ethernet and a DHCP client. This returns whether starting the DHCP
   // client was successful. Note that when this returns, an IP address may not
   // yet have been acquired.
   //
@@ -60,7 +72,13 @@ class EthernetClass final {
   // one was acquired.
   bool waitForLocalIP(uint32_t timeout);
 
-  void begin(const IPAddress &ipaddr,
+  // Start Ethernet with the given address configuration. If all of the
+  // addresses are INADDR_NONE then this will start a DHCP client and attempt
+  // to assign an address that way. Otherwise, no DHCP client will be started.
+  //
+  // This returns whether bringing up the interface, and possibly the DHCP
+  // client, was successful.
+  bool begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
              const IPAddress &gw);
 
@@ -119,7 +137,6 @@ class EthernetClass final {
   [[deprecated]] void setDnsServerIP(const IPAddress &dnsServerIP) {
     setDNSServerIP(dnsServerIP);
   }
-  [[deprecated]] void setMACAddress(uint8_t mac[6]) {}
   [[deprecated]] void setRetransmissionCount(uint8_t number) {}
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
 
@@ -140,6 +157,12 @@ class EthernetClass final {
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
+
+  // Start Ethernet. See the public version of this function, with IPAddress
+  // parameters, for information about what this does.
+  bool begin(const ip_addr_t *ipaddr,
+             const ip_addr_t *netmask,
+             const ip_addr_t *gw);
 
   static elapsedMillis loopTimer_;
 

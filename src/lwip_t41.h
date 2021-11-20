@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-// Get the Ethernet MAC address.
+// Get the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
 // Initialize Ethernet. This does not set the interface to "up".

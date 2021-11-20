@@ -91,6 +91,35 @@ void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
   std::copy_n(mac_, kMACAddrSize, mac);
 }
 
+void EthernetClass::setMACAddress(uint8_t mac[kMACAddrSize]) {
+  if (mac == nullptr) {
+    // Don't do anything
+    return;
+  }
+
+  if (std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
+    // Do nothing if there's no change
+    return;
+  }
+
+  std::copy_n(mac, kMACAddrSize, mac_);
+  if (netif_ == nullptr) {
+    return;
+  }
+
+  dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
+  netif_set_down(netif_);
+
+  ip_addr_t ipaddr;
+  ip_addr_t netmask;
+  ip_addr_t gw;
+  ip_addr_set(&ipaddr, netif_ip_addr4(netif_));
+  ip_addr_set(&netmask, netif_ip_netmask4(netif_));
+  ip_addr_set(&gw, netif_ip_gw4(netif_));
+
+  begin(&ipaddr, &netmask, &gw);
+}
+
 int EthernetClass::mtu() const {
   return kMTU;
 }
@@ -108,12 +137,10 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
-
-  return (dhcp_start(netif_) == ERR_OK);
+  return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
 }
 
-void EthernetClass::begin(const IPAddress &ip,
+bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway) {
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
@@ -124,11 +151,25 @@ void EthernetClass::begin(const IPAddress &ip,
   ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
+  if (netif_ != nullptr) {
+    // Stop any running DHCP client if we don't need one
+    if (ipaddr.addr != IPADDR_ANY ||
+        netmask.addr != IPADDR_ANY ||
+        gw.addr != IPADDR_ANY) {
+      dhcp_release_and_stop(netif_);
+    }
+    netif_set_down(netif_);
+  }
+
+  return begin(&ipaddr, &netmask, &gw);
+}
+
+bool EthernetClass::begin(const ip_addr_t *ipaddr,
+                          const ip_addr_t *netmask,
+                          const ip_addr_t *gw) {
   // Initialize Ethernet, set up the callback, and set the netif to UP
-  // Also stop any running DHCP client
   netif_ = enet_netif();
-  dhcp_release_and_stop(netif_);
-  enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
+  enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
 
   // Watch for final multicast joins and leaves so we can configure
   // them properly
@@ -150,15 +191,20 @@ void EthernetClass::begin(const IPAddress &ip,
 
   netif_set_up(netif_);
 
-  // If this is using a manual configuration then inform the network
-  if (!(const_cast<IPAddress &>(ip) == INADDR_NONE) ||
-      !(const_cast<IPAddress &>(mask) == INADDR_NONE) ||
-      !(const_cast<IPAddress &>(gateway) == INADDR_NONE)) {
+  // If this is using a manual configuration then inform the network,
+  // otherwise start DHCP
+  bool retval = true;
+  if (ipaddr->addr != IPADDR_ANY ||
+      netmask->addr != IPADDR_ANY ||
+      gw->addr != IPADDR_ANY) {
     dhcp_inform(netif_);
+  } else {
+    retval = (dhcp_start(netif_) == ERR_OK);
   }
 
   ethActive = true;
   ethLoop.triggerEvent();
+  return retval;
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) {
