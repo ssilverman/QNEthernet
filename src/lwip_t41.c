@@ -340,16 +340,19 @@ static void t41_low_level_init() {
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
-  ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
-  ENET_RDAR = ENET_RDAR_RDAR;
-  ENET_TDAR = ENET_TDAR_TDAR;
-
   // 1588 clocks
   ENET_ATCR = ENET_ATCR_RESET | ENET_ATCR_RSVD;   // Reset timer
   ENET_ATPER = 4294967295;                        // Wrap at 2^32-1
   ENET_ATINC = 1;                                 // Use as a cycle counter
   ENET_ATCOR = ENET_ATCOR_NOCORRECTION;
   ENET_ATCR = ENET_ATCR_RSVD | ENET_ATCR_ENABLE;  // Enable timer
+
+  // Last, enable the Ethernet MAC
+  ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
+
+  // Indicate there are empty RX buffers and available ready TX buffers
+  ENET_RDAR = ENET_RDAR_RDAR;
+  ENET_TDAR = ENET_TDAR_TDAR;
 
   // phy soft reset
   // phy_mdio_write(0, 0x00, 1 << 15);
