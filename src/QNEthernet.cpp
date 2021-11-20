@@ -125,7 +125,9 @@ void EthernetClass::begin(const IPAddress &ip,
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
+  // Also stop any running DHCP client
   netif_ = enet_netif();
+  dhcp_release_and_stop(netif_);
   enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
 
   // Watch for final multicast joins and leaves so we can configure
