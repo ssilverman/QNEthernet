@@ -11,8 +11,9 @@
 #include <vector>
 
 #include <WString.h>
-#include <lwip/netif.h>
-#include <lwip/apps/mdns_opts.h>
+
+#include "lwip/netif.h"
+#include "lwip/apps/mdns_opts.h"
 
 namespace qindesign {
 namespace network {

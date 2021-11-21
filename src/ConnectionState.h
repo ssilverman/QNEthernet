@@ -11,7 +11,7 @@
 #include <functional>
 #include <vector>
 
-#include <lwip/tcp.h>
+#include "lwip/tcp.h"
 
 namespace qindesign {
 namespace network {

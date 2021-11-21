@@ -11,11 +11,12 @@
 
 #include <Entropy.h>
 #include <EventResponder.h>
-#include <lwip/dhcp.h>
-#include <lwip/dns.h>
-#include <lwip/igmp.h>
-#include <lwip/ip_addr.h>
-#include <lwip/udp.h>
+
+#include "lwip/dhcp.h"
+#include "lwip/dns.h"
+#include "lwip/igmp.h"
+#include "lwip/ip_addr.h"
+#include "lwip/udp.h"
 
 #include "QNDNSClient.h"
 #include "lwip_t41.h"

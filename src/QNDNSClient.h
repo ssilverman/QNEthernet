@@ -11,8 +11,9 @@
 #include <functional>
 
 #include <IPAddress.h>
-#include <lwip/ip_addr.h>
-#include <lwip/opt.h>
+
+#include "lwip/ip_addr.h"
+#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {

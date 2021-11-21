@@ -9,7 +9,7 @@
 // C++ includes
 #include <algorithm>
 
-#include <lwip/apps/mdns.h>
+#include "lwip/apps/mdns.h"
 
 namespace qindesign {
 namespace network {

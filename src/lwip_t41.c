@@ -14,14 +14,15 @@
 #include <string.h>
 
 #include <core_pins.h>
-#include <lwip/err.h>
-#include <lwip/etharp.h>
-#include <lwip/init.h>
-#include <lwip/opt.h>
-#include <lwip/pbuf.h>
-#include <lwip/stats.h>
-#include <lwip/timeouts.h>
-#include <netif/ethernet.h>
+
+#include "lwip/err.h"
+#include "lwip/etharp.h"
+#include "lwip/init.h"
+#include "lwip/opt.h"
+#include "lwip/pbuf.h"
+#include "lwip/stats.h"
+#include "lwip/timeouts.h"
+#include "netif/ethernet.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino

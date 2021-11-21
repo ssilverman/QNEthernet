@@ -10,12 +10,12 @@
 #include <algorithm>
 
 #include <elapsedMillis.h>
-#include <lwip/dns.h>
-#include <lwip/ip.h>
-#include <lwip/opt.h>
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "lwip/dns.h"
+#include "lwip/ip.h"
+#include "lwip/opt.h"
 
 extern const size_t kMTU;
 

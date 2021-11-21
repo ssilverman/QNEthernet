@@ -16,9 +16,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <lwip/ip_addr.h>
-#include <lwip/netif.h>
-#include <lwip/prot/ethernet.h>
+#include "lwip/ip_addr.h"
+#include "lwip/netif.h"
+#include "lwip/prot/ethernet.h"
 
 #ifdef __cplusplus
 extern "C" {
