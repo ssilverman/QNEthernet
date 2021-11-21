@@ -291,7 +291,8 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
-_Note that the library implements `writeFully`; you don't have to roll you own._
+_Note that the library implements `writeFully`; you don't have to roll
+your own._
 
 Rewriting this to use the library function:
 
@@ -365,7 +366,7 @@ you've always hoped Teensy library examples could be.
 Hopefully this disambiguates some details about what each function does:
 1. `connected()`: Returns whether connected OR data is still available
    (or both).
-2. `operator bool`: Returns whether connected (at least in _QNEthernet_).
+2. `operator bool()`: Returns whether connected (at least in _QNEthernet_).
 3. `available()`: Returns the amount of data available, whether the connection
    is closed or not.
 4. `read`: Reads data if there's data available, whether the connection's closed
