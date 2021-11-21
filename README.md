@@ -159,6 +159,7 @@ This section documents those functions.
 * `begin(reuse)`: Similar to `begin()`, but the Boolean `reuse` parameter
   controls the SO_REUSEADDR socket option.
 * `end()`: Shuts down the server.
+* `port()`: Returns the server's port.
 * `static constexpr maxListeners()`: Returns the maximum number of
   TCP listeners.
 

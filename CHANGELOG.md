@@ -14,6 +14,7 @@ and this project adheres to
   `EthernetUDP::maxSockets()` so user code doesn't need to guess. These are
   `constexpr` functions that return the compile-time constants from the
   lwIP configuration.
+* Added `EthernetServer::port()` for returning the server's port.
 
 ### Fixed
 * Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`
