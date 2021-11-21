@@ -151,12 +151,16 @@ This section documents those functions.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
 * `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
+* `static constexpr maxSockets()`: Returns the maximum number of
+  TCP connections.
 
 ### `EthernetServer`
 
 * `begin(reuse)`: Similar to `begin()`, but the Boolean `reuse` parameter
   controls the SO_REUSEADDR socket option.
 * `end()`: Shuts down the server.
+* `static constexpr maxListeners()`: Returns the maximum number of
+  TCP listeners.
 
 ### `EthernetUDP`
 
@@ -165,6 +169,7 @@ This section documents those functions.
 * `beginMulticast(ip, localPort, reuse)`: Similar to
   `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
   the above.
+* `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
 
 ## How to run
 

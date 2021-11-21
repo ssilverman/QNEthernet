@@ -10,6 +10,10 @@ and this project adheres to
 
 ### Added
 * Implemented `EthernetClass::setMACAddress(mac)`.
+* Added `EthernetServer::maxListeners()`, `EthernetClient::maxSockets()`, and
+  `EthernetUDP::maxSockets()` so user code doesn't need to guess. These are
+  `constexpr` functions that return the compile-time constants from the
+  lwIP configuration.
 
 ### Fixed
 * Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`

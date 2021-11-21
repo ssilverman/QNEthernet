@@ -15,6 +15,7 @@
 #include <Print.h>
 
 #include "ConnectionHolder.h"
+#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {
@@ -34,6 +35,11 @@ class EthernetClient final : public Client {
   EthernetClient &operator=(const EthernetClient &) = default;
   EthernetClient(EthernetClient &&other) = default;
   EthernetClient &operator=(EthernetClient &&other) = default;
+
+  // Return the maximum number of TCP connections.
+  static constexpr int maxSockets() {
+    return MEMP_NUM_TCP_PCB;
+  }
 
   int connect(IPAddress ip, uint16_t port) override;
   int connect(const char *host, uint16_t port) override;

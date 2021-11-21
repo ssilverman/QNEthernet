@@ -14,6 +14,7 @@
 #include <Server.h>
 
 #include "QNEthernetClient.h"
+#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {
@@ -22,6 +23,11 @@ class EthernetServer final : public Server {
  public:
   EthernetServer(uint16_t port);
   ~EthernetServer();
+
+  // Return the maximum number of TCP listeners.
+  static constexpr int maxListeners() {
+    return MEMP_NUM_TCP_PCB_LISTEN;
+  }
 
   // Start listening on the server port. This calls begin(false).
   void begin() override;

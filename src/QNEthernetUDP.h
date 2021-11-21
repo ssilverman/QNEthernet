@@ -15,6 +15,7 @@
 #include <Udp.h>
 #include <lwip/dns.h>
 #include <lwip/ip_addr.h>
+#include "lwip/opt.h"
 #include <lwip/udp.h>
 
 namespace qindesign {
@@ -24,6 +25,11 @@ class EthernetUDP final : public UDP {
  public:
   EthernetUDP();
   ~EthernetUDP();
+
+  // Return the maximum number of UDP sockets.
+  static constexpr int maxSockets() {
+    return MEMP_NUM_UDP_PCB;
+  }
 
   // Start listening on a port. This returns true if successful and false if the
   // port is in use. This calls begin(localPort, false).
