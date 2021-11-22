@@ -12,13 +12,13 @@
 #include <Entropy.h>
 #include <EventResponder.h>
 
+#include "QNDNSClient.h"
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
 #include "lwip/igmp.h"
 #include "lwip/ip_addr.h"
+#include "lwip/opt.h"
 #include "lwip/udp.h"
-
-#include "QNDNSClient.h"
 #include "lwip_t41.h"
 
 extern const size_t kMTU;
@@ -370,6 +370,26 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
   const ip_addr_t groupaddr =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+}
+
+void EthernetClass::setHostname(const char *hostname) {
+#ifdef LWIP_NETIF_HOSTNAME
+  if (netif_ == nullptr) {
+    return;
+  }
+  netif_set_hostname(netif_, hostname);
+#endif
+}
+
+const char *EthernetClass::hostname() {
+#ifdef LWIP_NETIF_HOSTNAME
+  if (netif_ == nullptr) {
+    return nullptr;
+  }
+  return netif_get_hostname(netif_);
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace network

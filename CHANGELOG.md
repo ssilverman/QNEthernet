@@ -15,6 +15,8 @@ and this project adheres to
   `constexpr` functions that return the compile-time constants from the
   lwIP configuration.
 * Added `EthernetServer::port()` for returning the server's port.
+* Added `EthernetClass::setHostname(hostname)` and `hostname()` for setting and
+  getting the DHCP client option 12 hostname.
 
 ### Changed
 * Changed the default DHCP client option 12 hostname to NULL.

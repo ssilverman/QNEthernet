@@ -154,6 +154,12 @@ class EthernetClass final {
   // Leave a multicast group. This returns whether the call was successful.
   bool leaveGroup(const IPAddress &ip);
 
+  // Set the DHCP client option 12 hostname. The default is NULL.
+  void setHostname(const char *hostname);
+
+  // Get the DHCP client option 12 hostname. The default is NULL.
+  const char *hostname();
+
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);

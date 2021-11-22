@@ -120,6 +120,7 @@ This section documents those functions.
   internal MAC address, and uses the given parameters for the
   network configuration.
 * `end()`: Shuts down the library, including the Ethernet clocks.
+* `hostname()`: Gets the DHCP client option 12 hostname. The default is NULL.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
 * `joinGroup(ip)`: Joins a multicast group.
@@ -130,6 +131,7 @@ This section documents those functions.
 * `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
+* `setHostname(hostname)`: Sets the DHCP client option 12 hostname.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within
