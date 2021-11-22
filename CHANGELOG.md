@@ -16,6 +16,9 @@ and this project adheres to
   lwIP configuration.
 * Added `EthernetServer::port()` for returning the server's port.
 
+### Changed
+* Changed the default DHCP client option 12 hostname to NULL.
+
 ### Fixed
 * Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`
   and `setMACAddress(mac)`) to ensure that a static IP won't get overwritten by

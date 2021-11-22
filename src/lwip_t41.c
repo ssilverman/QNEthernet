@@ -456,7 +456,7 @@ static err_t t41_netif_init(struct netif *netif) {
   SMEMCPY(netif->hwaddr, mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 #if LWIP_NETIF_HOSTNAME
-  netif->hostname = "lwip";
+  netif_set_hostname(netif, NULL);
 #endif
   netif->name[0] = 'e';
   netif->name[1] = '0';
