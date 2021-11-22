@@ -17,6 +17,7 @@ and this project adheres to
 * Added `EthernetServer::port()` for returning the server's port.
 * Added `EthernetClass::setHostname(hostname)` and `hostname()` for setting and
   getting the DHCP client option 12 hostname.
+* Added `EthernetClass::maxMulticastGroups()` `constexpr` function.
 
 ### Changed
 * Changed the default DHCP client option 12 hostname to NULL.

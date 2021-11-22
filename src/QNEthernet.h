@@ -19,6 +19,7 @@
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 #include "lwip/netif.h"
+#include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
 
 namespace qindesign {
@@ -45,6 +46,16 @@ class EthernetClass final {
   EthernetClass(const uint8_t mac[kMACAddrSize]);
 
   ~EthernetClass();
+
+  // Return the maximum number of multicast groups. Note that mDNS will use
+  // one group.
+  static constexpr int maxMulticastGroups() {
+    // Exclude the "All Systems" group
+    if (MEMP_NUM_IGMP_GROUP > 0) {
+      return MEMP_NUM_IGMP_GROUP - 1;
+    }
+    return 0;
+  }
 
   // Retrieve the MAC address.
   void macAddress(uint8_t mac[kMACAddrSize]) const;

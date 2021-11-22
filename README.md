@@ -143,6 +143,8 @@ This section documents those functions.
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
     changed.
+* `static constexpr maxMulticastGroups()`: Returns the maximum number of
+  multicast groups.
 
 ### `EthernetClient`
 
