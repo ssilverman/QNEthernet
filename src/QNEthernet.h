@@ -13,6 +13,7 @@
 #include <functional>
 
 #include <IPAddress.h>
+#include <WString.h>
 #include <elapsedMillis.h>
 
 #include "QNEthernetClient.h"
@@ -184,6 +185,9 @@ class EthernetClass final {
   static elapsedMillis loopTimer_;
 
   uint8_t mac_[kMACAddrSize];
+#ifdef LWIP_NETIF_HOSTNAME
+  String hostname_{"teensy-lwip"};  // Empty means no hostname
+#endif
   struct netif *netif_ = nullptr;
 
   // Callbacks

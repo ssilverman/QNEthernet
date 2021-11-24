@@ -20,7 +20,7 @@ and this project adheres to
 * Added `EthernetClass::maxMulticastGroups()` `constexpr` function.
 
 ### Changed
-* Changed the default DHCP client option 12 hostname to NULL.
+* Changed the default DHCP client option 12 hostname to "teensy-lwip".
 
 ### Fixed
 * Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`
