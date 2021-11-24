@@ -166,15 +166,15 @@ class EthernetClass final {
   // Leave a multicast group. This returns whether the call was successful.
   bool leaveGroup(const IPAddress &ip);
 
-  // Set the DHCP client option 12 hostname. NULL and the empty string are
-  // considered the same thing. The default is "teensy-lwip".
+  // Set the DHCP client option 12 hostname. The empty string will set the
+  // hostname to nothing. The default is "teensy-lwip".
   //
   // To use something other than the default, call this before calling 'begin'.
-  void setHostname(const char *hostname);
+  void setHostname(const String &hostname);
 
-  // Get the DHCP client option 12 hostname. This will return either a non-empty
-  // string or NULL. The default is "teensy-lwip".
-  const char *hostname();
+  // Get the DHCP client option 12 hostname. An empty string means that no
+  // hostname is set. The default is "teensy-lwip".
+  String hostname();
 
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
