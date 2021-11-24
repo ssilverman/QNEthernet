@@ -166,10 +166,14 @@ class EthernetClass final {
   // Leave a multicast group. This returns whether the call was successful.
   bool leaveGroup(const IPAddress &ip);
 
-  // Set the DHCP client option 12 hostname. The default is NULL.
+  // Set the DHCP client option 12 hostname. NULL and the empty string are
+  // considered the same thing. The default is "teensy-lwip".
+  //
+  // To use something other than the default, call this before calling 'begin'.
   void setHostname(const char *hostname);
 
-  // Get the DHCP client option 12 hostname. The default is NULL.
+  // Get the DHCP client option 12 hostname. This will return either a non-empty
+  // string or NULL. The default is "teensy-lwip".
   const char *hostname();
 
  private:
