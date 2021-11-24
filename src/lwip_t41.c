@@ -694,14 +694,6 @@ int enet_link_speed() {
   return speed10Not100 ? 10 : 100;
 }
 
-uint32_t enet_read_1588_timer() {
-  ENET_ATCR |= ENET_ATCR_CAPTURE;
-  while (ENET_ATCR & ENET_ATCR_CAPTURE) {
-    // Wait for bit to clear
-  }
-  return ENET_ATVR;
-}
-
 bool enet_output_frame(const uint8_t *frame, size_t len) {
   if (isInitialized) {
     return false;
@@ -769,6 +761,18 @@ void enet_join_group(const ip_addr_t *group) {
 
 void enet_leave_group(const ip_addr_t *group) {
   enet_join_notleave_group(group, false);
+}
+
+// -----------
+//  IEEE 1588
+// -----------
+
+uint32_t enet_read_1588_timer() {
+  ENET_ATCR |= ENET_ATCR_CAPTURE;
+  while (ENET_ATCR & ENET_ATCR_CAPTURE) {
+    // Wait for bit to clear
+  }
+  return ENET_ATVR;
 }
 
 #endif  // ARDUINO_TEENSY41

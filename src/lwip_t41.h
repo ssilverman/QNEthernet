@@ -60,9 +60,6 @@ void enet_poll();
 // Returns the link speed in Mbps.
 int enet_link_speed();
 
-// Reads the IEEE 1588 timer.
-uint32_t enet_read_1588_timer();
-
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 64-kMaxFrameLen. This also returns false if
 // Ethernet is not initialized.
@@ -71,6 +68,13 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 // For joining and leaving multicast groups
 void enet_join_group(const ip_addr_t *group);
 void enet_leave_group(const ip_addr_t *group);
+
+// -----------
+//  IEEE 1588
+// -----------
+
+// Reads the IEEE 1588 timer.
+uint32_t enet_read_1588_timer();
 
 #ifdef __cplusplus
 }  // extern "C"
