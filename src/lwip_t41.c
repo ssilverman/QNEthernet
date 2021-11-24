@@ -694,7 +694,7 @@ int enet_link_speed() {
   return speed10Not100 ? 10 : 100;
 }
 
-uint32_t read_1588_timer() {
+uint32_t enet_read_1588_timer() {
   ENET_ATCR |= ENET_ATCR_CAPTURE;
   while (ENET_ATCR & ENET_ATCR_CAPTURE) {
     // Wait for bit to clear
