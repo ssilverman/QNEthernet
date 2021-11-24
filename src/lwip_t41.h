@@ -27,7 +27,7 @@ extern "C" {
 // Get the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
-// Initialize Ethernet. This does not set the interface to "up".
+// Initializes Ethernet. This does not set the interface to "up".
 //
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
@@ -40,31 +40,31 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip_addr_t *gw,
                netif_ext_callback_fn callback);
 
-// Disable Ethernet.
+// Disables Ethernet.
 void enet_deinit();
 
-// Get a pointer to the netif structure. This is useful for the netif callback
+// Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
 struct netif *enet_netif();
 
-// Process any Ethernet input. This is meant to be called often by the
+// Processes any Ethernet input. This is meant to be called often by the
 // main loop.
 void enet_proc_input(void);
 
-// Poll Ethernet link status.
+// Polls Ethernet link status.
 void enet_poll();
 
-// Return the link speed in Mbps.
+// Returns the link speed in Mbps.
 int enet_link_speed();
 
-// Read the IEEE1588 timer.
+// Reads the IEEE1588 timer.
 uint32_t read_1588_timer();
 
-// Output a raw ethernet frame. This returns false if frame is NULL or if the
+// Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 64-kMaxFrameLen.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
-// For joining and leaving multicast groups.
+// For joining and leaving multicast groups
 void enet_join_group(const ip_addr_t *group);
 void enet_leave_group(const ip_addr_t *group);
 

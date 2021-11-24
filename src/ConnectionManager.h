@@ -33,18 +33,18 @@ class ConnectionManager final {
 
   bool isListening(uint16_t port) const;
 
-  // Stop listening on the specified port. This returns true if the listener was
-  // found and successfully stopped. This returns false if the listener was not
-  // found or was found and not successfully stopped.
+  // Stops listening on the specified port. This returns true if the listener
+  // was found and successfully stopped. This returns false if the listener was
+  // not found or was found and not successfully stopped.
   bool stopListening(uint16_t port);
 
-  // Find a connection whose local port is the specified port.
+  // Finds a connection whose local port is the specified port.
   std::shared_ptr<ConnectionHolder> findConnected(uint16_t port) const;
 
-  // Find a connection on the given port that has data available.
+  // Finds a connection on the given port that has data available.
   std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port) const;
 
-  // Remove the given connection and returns whether the connection existed in
+  // Removes the given connection and returns whether the connection existed in
   // the list and was removed.
   bool remove(const std::shared_ptr<ConnectionHolder> &holder);
 
@@ -65,7 +65,7 @@ class ConnectionManager final {
                         err_t err);
   static err_t acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err);
 
-  // Add a created connection to the list. It is expected that the object is
+  // Adds a created connection to the list. It is expected that the object is
   // already set up.
   void addConnection(const std::shared_ptr<ConnectionHolder> &holder);
 

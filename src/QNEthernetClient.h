@@ -36,7 +36,7 @@ class EthernetClient final : public Client {
   EthernetClient(EthernetClient &&other) = default;
   EthernetClient &operator=(EthernetClient &&other) = default;
 
-  // Return the maximum number of TCP connections.
+  // Returns the maximum number of TCP connections.
   static constexpr int maxSockets() {
     return MEMP_NUM_TCP_PCB;
   }
@@ -51,11 +51,11 @@ class EthernetClient final : public Client {
 
   void stop() override;
 
-  // Close the connection. This works the same as stop(), but without waiting
+  // Closes the connection. This works the same as stop(), but without waiting
   // for the connection to close.
   void close();
 
-  // Close the sending side of this connection.
+  // Closes the sending side of this connection.
   void closeOutput();
 
   uint16_t localPort();
@@ -81,7 +81,7 @@ class EthernetClient final : public Client {
   int peek() override;
 
  private:
-  // Set up an already-connected client. If the holder is NULL then a new
+  // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<ConnectionHolder> holder);
 

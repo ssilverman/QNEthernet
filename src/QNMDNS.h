@@ -24,14 +24,14 @@ class MDNSClass final {
   MDNSClass() = default;
   ~MDNSClass();
 
-  // Start the mDNS responder. This returns whether the call was successful.
+  // Starts the mDNS responder. This returns whether the call was successful.
   bool begin(const String &host);
 
-  // Attempt to stop the mDNS responder. Returns whether the call
+  // Attempts to stop the mDNS responder. Returns whether the call
   // was successful.
   bool end();
 
-  // Add a service. The protocol will be set to "_udp" for anything other than
+  // Adds a service. The protocol will be set to "_udp" for anything other than
   // "_tcp". The strings should have a "_" prefix. This uses the host name as
   // the service name.
   //
@@ -43,17 +43,18 @@ class MDNSClass final {
   bool addService(const String &type, const String &protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)(void) = nullptr);
 
-  // Remove a service.
+  // Removes a service.
   bool removeService(const String &type, const String &protocol, uint16_t port);
 
   // The following functions are for periodically re-announcing the services.
   // Service entries seem to disappear after the TTL and sometimes earlier, so a
   // re-announcement may be required.
 
-  // Return the TTL, in seconds.
+  // Returns the TTL, in seconds.
   uint32_t ttl() const;
 
-  // Perform an announcement. This isn't usually necessary for normal operation.
+  // Performs an announcement. This isn't usually necessary for
+  // normal operation.
   void announce() const;
 
  private:
@@ -73,7 +74,7 @@ class MDNSClass final {
              (port == other.port);
     }
 
-    // Reset this service to be invalid and empty.
+    // Resets this service to be invalid and empty.
     void reset() {
       valid = false;
       type = "";
@@ -89,7 +90,7 @@ class MDNSClass final {
     std::vector<String> (*getTXTFunc)(void);
   };
 
-  // Find the slot for the given service. This returns -1 if the service could
+  // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
   int findService(const String &type, const String &protocol, uint16_t port);
 

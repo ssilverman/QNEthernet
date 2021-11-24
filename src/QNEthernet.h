@@ -48,7 +48,7 @@ class EthernetClass final {
 
   ~EthernetClass();
 
-  // Return the maximum number of multicast groups. Note that mDNS will use
+  // Returns the maximum number of multicast groups. Note that mDNS will use
   // one group.
   static constexpr int maxMulticastGroups() {
     // Exclude the "All Systems" group
@@ -58,10 +58,10 @@ class EthernetClass final {
     return 0;
   }
 
-  // Retrieve the MAC address.
+  // Retrieves the MAC address.
   void macAddress(uint8_t mac[kMACAddrSize]) const;
 
-  // Set the MAC address. If the address is different than the current address,
+  // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted. This does nothing if the
   // given array is NULL.
@@ -73,7 +73,7 @@ class EthernetClass final {
   // Call often.
   static void loop();
 
-  // Start Ethernet and a DHCP client. This returns whether starting the DHCP
+  // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
   // client was successful. Note that when this returns, an IP address may not
   // yet have been acquired.
   //
@@ -84,7 +84,7 @@ class EthernetClass final {
   // one was acquired.
   bool waitForLocalIP(uint32_t timeout);
 
-  // Start Ethernet with the given address configuration. If all of the
+  // Starts Ethernet with the given address configuration. If all of the
   // addresses are INADDR_NONE then this will start a DHCP client and attempt
   // to assign an address that way. Otherwise, no DHCP client will be started.
   //
@@ -94,25 +94,25 @@ class EthernetClass final {
              const IPAddress &netmask,
              const IPAddress &gw);
 
-  // Shut down the Ethernet peripheral(s).
+  // Shuts down the Ethernet peripheral(s).
   void end();
 
-  // Return the link status, one of the EthernetLinkStatus enumerators. This
+  // Returns the link status, one of the EthernetLinkStatus enumerators. This
   // will never return Unknown.
   EthernetLinkStatus linkStatus() const;
 
-  // Return the link state, true for link and false for no link.
+  // Returns the link state, true for link and false for no link.
   bool linkState() const;
 
-  // Return the link speed in Mbps.
+  // Returns the link speed in Mbps.
   int linkSpeed() const;
 
-  // Set a link state callback.
+  // Sets a link state callback.
   void onLinkState(std::function<void(bool state)> cb) {
     linkStateCB_ = cb;
   }
 
-  // Set an address changed callback. This will be called if any of the three
+  // Sets an address changed callback. This will be called if any of the three
   // addresses changed.
   void onAddressChanged(std::function<void()> cb) {
     addressChangedCB_ = cb;
@@ -152,7 +152,7 @@ class EthernetClass final {
   [[deprecated]] void setRetransmissionCount(uint8_t number) {}
   [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
 
-  // Send a raw Ethernet frame. This returns whether the send was successful.
+  // Sends a raw Ethernet frame. This returns whether the send was successful.
   //
   // This will return false if:
   // 1. Ethernet was not started,
@@ -160,13 +160,13 @@ class EthernetClass final {
   // 3. The length is not in the range 64-1522.
   bool sendRaw(const uint8_t *frame, size_t len);
 
-  // Join a multicast group. This returns whether the call was successful.
+  // Joins a multicast group. This returns whether the call was successful.
   bool joinGroup(const IPAddress &ip);
 
-  // Leave a multicast group. This returns whether the call was successful.
+  // Leaves a multicast group. This returns whether the call was successful.
   bool leaveGroup(const IPAddress &ip);
 
-  // Set the DHCP client option 12 hostname. The empty string will set the
+  // Sets the DHCP client option 12 hostname. The empty string will set the
   // hostname to nothing. The default is "teensy-lwip".
   //
   // The new hostname will take effect the next time a new configuration is
@@ -175,7 +175,7 @@ class EthernetClass final {
   // like the hostname to be set at system start.
   void setHostname(const String &hostname);
 
-  // Get the DHCP client option 12 hostname. An empty string means that no
+  // Gets the DHCP client option 12 hostname. An empty string means that no
   // hostname is set. The default is "teensy-lwip".
   String hostname();
 
@@ -183,7 +183,7 @@ class EthernetClass final {
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
 
-  // Start Ethernet. See the public version of this function, with IPAddress
+  // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does.
   bool begin(const ip_addr_t *ipaddr,
              const ip_addr_t *netmask,
