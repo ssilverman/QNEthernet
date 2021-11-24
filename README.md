@@ -133,8 +133,8 @@ This section documents those functions.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
-  set the hostname to nothing. To use something other than the default, call
-  this before calling `begin`.
+  set the hostname to nothing. To use something other than the default at system
+  start, call this before calling `begin`.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within

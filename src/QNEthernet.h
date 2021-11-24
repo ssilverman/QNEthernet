@@ -169,7 +169,10 @@ class EthernetClass final {
   // Set the DHCP client option 12 hostname. The empty string will set the
   // hostname to nothing. The default is "teensy-lwip".
   //
-  // To use something other than the default, call this before calling 'begin'.
+  // The new hostname will take effect the next time a new configuration is
+  // negotiated with the DHCP server. This could be at system start or when a
+  // renewal happens. Ideally, it should be called before 'begin()' if you'd
+  // like the hostname to be set at system start.
   void setHostname(const String &hostname);
 
   // Get the DHCP client option 12 hostname. An empty string means that no
