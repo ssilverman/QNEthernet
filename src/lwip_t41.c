@@ -404,6 +404,8 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
     p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
     if (p) {
       pbuf_take(p, bdPtr->buffer, p->tot_len);
+      p->timestampValid = ((bdPtr->status & kEnetRxBdLast) != 0);
+      p->timestamp = bdPtr->timestamp;
       LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
