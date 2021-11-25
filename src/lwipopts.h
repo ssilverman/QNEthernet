@@ -196,6 +196,9 @@
 #define LWIP_PBUF_CUSTOM_DATA \
   u8_t timestampValid;        \
   u32_t timestamp;
+#define LWIP_PBUF_CUSTOM_DATA_INIT(p) \
+  (p)->timestampValid = 0;            \
+  (p)->timestamp = 0;
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1
