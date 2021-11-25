@@ -1563,6 +1563,14 @@
 #if !defined LWIP_PBUF_CUSTOM_DATA || defined __DOXYGEN__
 #define LWIP_PBUF_CUSTOM_DATA
 #endif
+
+/**
+ * LWIP_PBUF_CUSTOM_DATA_INIT: Initialize the private pbuf data. The parameter
+ * 'p' is a 'struct pbuf *'.
+ */
+#if !defined LWIP_PBUF_CUSTOM_DATA_INIT || defined __DOXYGEN__
+#define LWIP_PBUF_CUSTOM_DATA_INIT(p)
+#endif
 /**
  * @}
  */
