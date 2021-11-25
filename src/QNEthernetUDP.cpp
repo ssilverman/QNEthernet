@@ -54,6 +54,9 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   udp->inAddr_ = addr->addr;
   udp->inPort_ = port;
 
+  udp->hasIEEE1588Timestamp_ = pHead->timestampValid;
+  udp->ieee1588Timestamp_ = pHead->timestamp;
+
   pbuf_free(pHead);
 }
 

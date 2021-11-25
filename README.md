@@ -193,6 +193,9 @@ This section documents those functions.
   the above.
 * `send(data, len)`: Sends a packet without having to use `beginPacket()`,
   `write()`, and `endPacket()`. It causes less overhead.
+* `hasIEEE1588Timestamp()`: Returns whether the received packet has an
+  IEEE 1588 timestamp.
+* `ieee1588Timestamp()`: Returns the IEEE 1588 timestamp if it's available.
 * `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
 
 ### `EthernetFrame`

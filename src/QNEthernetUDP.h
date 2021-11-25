@@ -74,6 +74,17 @@ class EthernetUDP final : public UDP {
   IPAddress remoteIP() override;
   uint16_t remotePort() override;
 
+  // Returns whether the received packet has an IEEE 1588 timestamp.
+  bool hasIEEE1588Timestamp() const {
+    return hasIEEE1588Timestamp_;
+  }
+
+  // Returns the IEEE 1588 timestamp if it's available. hasIEEE1588Timestamp()
+  // indicates whether the timestamp exists.
+  uint32_t ieee1588Timestamp() const {
+    return ieee1588Timestamp_;
+  }
+
  private:
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
@@ -93,6 +104,10 @@ class EthernetUDP final : public UDP {
   // Source of incoming packet
   IPAddress inAddr_;
   volatile uint16_t inPort_;
+
+  // IEEE 1588
+  bool hasIEEE1588Timestamp_ = false;
+  uint32_t ieee1588Timestamp_;
 
   // Outgoing packets
   bool hasOutPacket_;
