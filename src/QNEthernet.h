@@ -161,9 +161,15 @@ class EthernetClass final {
   bool sendRaw(const uint8_t *frame, size_t len);
 
   // Joins a multicast group. This returns whether the call was successful.
+  //
+  // The lwIP stack keeps track of a group "use count", so this function can be
+  // called multiple times, paired with a matching number of leaveGroup() calls.
   bool joinGroup(const IPAddress &ip);
 
   // Leaves a multicast group. This returns whether the call was successful.
+  //
+  // The lwIP stack keeps track of a group "use count", so calling this function
+  // should match the number of joinGroup() calls.
   bool leaveGroup(const IPAddress &ip);
 
   // Sets the DHCP client option 12 hostname. The empty string will set the

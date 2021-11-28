@@ -417,6 +417,13 @@ and then calling `Ethernet.joinGroup(ip)` for each group you want to join.
 To send multicast traffic, simply send to the appropriate IP address. There's no
 need to join a group.
 
+The lwIP stack keeps track of a group "use count". This means:
+1. That `joinGroup(ip)` can be called multiple times, it just needs to be paired
+   with a matching number of calls to `leaveGroup(ip)`. Each call increments an
+   internal count.
+2. Each call to `leaveGroup(ip)` decrements a count, and when that count reaches
+   zero, the stack actually leaves the group.
+
 ## mDNS services
 
 It's possible to register mDNS services. Some notes:
