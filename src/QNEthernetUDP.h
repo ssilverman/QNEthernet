@@ -50,6 +50,7 @@ class EthernetUDP final : public UDP {
   int beginPacket(IPAddress ip, uint16_t port) override;
   int beginPacket(const char *host, uint16_t port) override;
   int endPacket() override;
+  int endPacketWithTimestamp();
 
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
@@ -88,6 +89,8 @@ class EthernetUDP final : public UDP {
  private:
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
+
+  int endPacket(bool doTimestamp);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;

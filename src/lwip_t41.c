@@ -152,6 +152,10 @@ static bool speed10Not100 = false;
 // Is Ethernet initialized?
 static bool isInitialized = false;
 
+// IEEE 1588
+static volatile bool hasTxTimestamp = false;
+static volatile uint32_t txTimestamp = 0;
+
 void enet_isr();
 
 #ifdef LWIP_DEBUG
@@ -343,7 +347,7 @@ static void t41_low_level_init() {
   ENET_GAUR = 0;
   ENET_GALR = 0;
 
-  ENET_EIMR = ENET_EIMR_RXF;
+  ENET_EIMR = ENET_EIMR_RXF | ENET_EIMR_TS_AVAIL;
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
@@ -433,12 +437,21 @@ static inline volatile enetbufferdesc_t *get_bufdesc() {
 
 // Update a buffer descriptor. Meant to be used with get_bufdesc().
 static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
-                                  uint16_t len) {
+                                  uint16_t len,
+                                  bool doTimestamp) {
   bdPtr->length = len;
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
                   kEnetTxBdTransmitCrc |
                   kEnetTxBdLast |
                   kEnetTxBdReady;
+
+  // Timestamp PTP packets too
+
+  if (doTimestamp) {
+    bdPtr->extend1 |= kEnetTxBdTimestamp;
+  } else {
+    bdPtr->extend1 &= ~kEnetTxBdTimestamp;
+  }
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
@@ -453,7 +466,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
 
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
-  update_bufdesc(bdPtr, pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0));
+  update_bufdesc(bdPtr, pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0),
+                 p->timestampValid);
   return ERR_OK;
 }
 
@@ -503,6 +517,12 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 }
 
 void enet_isr() {
+  if (ENET_EIR & ENET_EIR_TS_AVAIL) {
+    hasTxTimestamp = true;
+    txTimestamp = ENET_ATSTMP;
+    ENET_EIR = ENET_EIR_TS_AVAIL;
+  }
+
   if (ENET_EIR & ENET_EIR_RXF) {
     ENET_EIR = ENET_EIR_RXF;
     rx_ready = 1;
@@ -705,7 +725,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   }
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
   memcpy(bdPtr->buffer, frame, len);
-  update_bufdesc(bdPtr, len);
+  update_bufdesc(bdPtr, len, false);
   return true;
 }
 

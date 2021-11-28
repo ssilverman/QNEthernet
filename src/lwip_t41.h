@@ -62,7 +62,7 @@ int enet_link_speed();
 
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 64-kMaxFrameLen. This also returns false if
-// Ethernet is not initialized.
+// Ethernet is not initialized. This does not timestamp the packet.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
 // For joining and leaving multicast groups

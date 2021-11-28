@@ -240,6 +240,14 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 }
 
 int EthernetUDP::endPacket() {
+  return endPacket(false);
+}
+
+int EthernetUDP::endPacketWithTimestamp() {
+  return endPacket(true);
+}
+
+int EthernetUDP::endPacket(bool doTimestamp) {
   if (!hasOutPacket_) {
     return false;
   }
@@ -257,6 +265,7 @@ int EthernetUDP::endPacket() {
   }
   pbuf_take(p, outPacket_.data(), outPacket_.size());
   outPacket_.clear();
+  p->timestampValid = doTimestamp;
   bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;
