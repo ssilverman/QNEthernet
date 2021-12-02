@@ -10,13 +10,12 @@
 #include <algorithm>
 
 #include <elapsedMillis.h>
-#include <lwip/dns.h>
-#include <lwip/igmp.h>
-#include <lwip/ip.h>
-#include <lwip/opt.h>
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "lwip/dns.h"
+#include "lwip/ip.h"
+#include "lwip/opt.h"
 
 extern const size_t kMTU;
 
@@ -109,13 +108,17 @@ uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
 }
 
 uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
-  if (!begin(localPort)) {
+  return beginMulticast(ip, localPort, false);
+}
+
+uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
+                                    bool reuse) {
+  if (!begin(localPort, reuse)) {
     return false;
   }
 
-  const ip_addr_t groupaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
-  if (igmp_joingroup(IP_ANY_TYPE, &groupaddr) != ERR_OK) {
-    udp_recv(pcb_, nullptr, nullptr);
+  if (!Ethernet.joinGroup(ip)) {
+    stop();
     return false;
   }
   return true;

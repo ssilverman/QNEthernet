@@ -13,9 +13,11 @@
 
 #include <IPAddress.h>
 #include <Udp.h>
-#include <lwip/dns.h>
-#include <lwip/ip_addr.h>
-#include <lwip/udp.h>
+
+#include "lwip/dns.h"
+#include "lwip/ip_addr.h"
+#include "lwip/opt.h"
+#include "lwip/udp.h"
 
 namespace qindesign {
 namespace network {
@@ -25,6 +27,11 @@ class EthernetUDP final : public UDP {
   EthernetUDP();
   ~EthernetUDP();
 
+  // Return the maximum number of UDP sockets.
+  static constexpr int maxSockets() {
+    return MEMP_NUM_UDP_PCB;
+  }
+
   // Start listening on a port. This returns true if successful and false if the
   // port is in use. This calls begin(localPort, false).
   uint8_t begin(uint16_t localPort) override;
@@ -33,7 +40,10 @@ class EthernetUDP final : public UDP {
   // to the `reuse` parameter. This returns whether the attempt was successful.
   uint8_t begin(uint16_t localPort, bool reuse);
 
+  // Multicast functions make use of Ethernet.joinGroup()
   uint8_t beginMulticast(IPAddress ip, uint16_t port) override;
+  uint8_t beginMulticast(IPAddress ip, uint16_t port, bool reuse);
+
   void stop() override;
 
   // Sending UDP packets

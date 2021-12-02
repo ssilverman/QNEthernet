@@ -46,7 +46,7 @@
 // #define MEMP_NUM_REASSDATA                 5
 // #define MEMP_NUM_FRAG_PBUF                 15
 // #define MEMP_NUM_ARP_QUEUE                 30
-// #define MEMP_NUM_IGMP_GROUP                8
+#define MEMP_NUM_IGMP_GROUP                9
 /* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                 \
 //   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \

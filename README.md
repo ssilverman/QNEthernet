@@ -2,7 +2,7 @@
 
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
-_Version: 0.10.0-snapshot_
+_Version: 0.11.0-snapshot_
 
 The _QNEthernet_ library provides Arduino-like `Ethernet` functionality for the
 Teensy 4.1. While it is mostly the same, there are a few key differences that
@@ -27,15 +27,16 @@ files provided with the lwIP release.
 4. [How to write data to connections](#how-to-write-data-to-connections)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-7. [mDNS services](#mdns-services)
-8. [DNS](#dns)
-9. [stdio](#stdio)
-10. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
-11. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-12. [Other notes](#other-notes)
-13. [To do](#to-do)
-14. [Code style](#code-style)
-15. [References](#references)
+7. [How to use multicast](#how-to-use-multicast)
+8. [mDNS services](#mdns-services)
+9. [DNS](#dns)
+10. [stdio](#stdio)
+11. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
+12. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+13. [Other notes](#other-notes)
+14. [To do](#to-do)
+15. [Code style](#code-style)
+16. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -62,7 +63,6 @@ and notes:
   * `hardwareStatus()`: returns zero (an `int`) and not `EthernetHardwareStatus`
   * `init(uint8_t sspin)`
   * `maintain()`: returns zero
-  * `setMACAddress(uint8_t mac[6])`
   * `setRetransmissionCount(uint8_t number)`
   * `setRetransmissionTimeout(uint16_t milliseconds)`
 * The following `Ethernet` functions are deprecated but call
@@ -120,14 +120,18 @@ This section documents those functions.
   internal MAC address, and uses the given parameters for the
   network configuration.
 * `end()`: Shuts down the library, including the Ethernet clocks.
+* `hostname()`: Gets the DHCP client option 12 hostname. The default is NULL.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
+* `joinGroup(ip)`: Joins a multicast group.
+* `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
 * `mtu()`: Returns the MTU.
 * `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
+* `setHostname(hostname)`: Sets the DHCP client option 12 hostname.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within
@@ -139,6 +143,8 @@ This section documents those functions.
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
     changed.
+* `static constexpr maxMulticastGroups()`: Returns the maximum number of
+  multicast groups.
 
 ### `EthernetClient`
 
@@ -149,17 +155,26 @@ This section documents those functions.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
 * `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
+* `static constexpr maxSockets()`: Returns the maximum number of
+  TCP connections.
 
 ### `EthernetServer`
 
 * `begin(reuse)`: Similar to `begin()`, but the Boolean `reuse` parameter
   controls the SO_REUSEADDR socket option.
 * `end()`: Shuts down the server.
+* `port()`: Returns the server's port.
+* `static constexpr maxListeners()`: Returns the maximum number of
+  TCP listeners.
 
 ### `EthernetUDP`
 
 * `begin(localPort, reuse)`: Similar to `begin(localPort)`, but the Boolean
   `reuse` parameter controls the SO_REUSEADDR socket option.
+* `beginMulticast(ip, localPort, reuse)`: Similar to
+  `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
+  the above.
+* `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
 
 ## How to run
 
@@ -175,15 +190,17 @@ here are a few steps to follow:
 4. You likely don't want or need to set/choose your own MAC address, so just
    call `Ethernet.begin()` with no arguments. This version uses DHCP. The
    three-argument version (IP, subnet mask, gateway) sets those parameters
-   instead of using DHCP. If you really want to set your own MAC address, for
-   now, consult the code.
+   instead of using DHCP, but starts DHCP if they're all zero (`INADDR_NONE`).
+   If you really want to set your own MAC address, see `setMACAddress(mac)`
+   or one of the `begin` functions that takes a MAC address parameter.
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
    see if that works for you.
 6. `Ethernet.hardwareStatus()` always returns zero.
 7. Most other things should be the same.
 
-Please see the examples for more things you can do with the API.
+Please see the examples for more things you can do with the API, including using
+listeners to watch for network changes.
 
 ## How to write data to connections
 
@@ -278,7 +295,8 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
-_Note that the library implements `writeFully`; you don't have to roll you own._
+_Note that the library implements `writeFully`; you don't have to roll
+your own._
 
 Rewriting this to use the library function:
 
@@ -352,7 +370,7 @@ you've always hoped Teensy library examples could be.
 Hopefully this disambiguates some details about what each function does:
 1. `connected()`: Returns whether connected OR data is still available
    (or both).
-2. `operator bool`: Returns whether connected (at least in _QNEthernet_).
+2. `operator bool()`: Returns whether connected (at least in _QNEthernet_).
 3. `available()`: Returns the amount of data available, whether the connection
    is closed or not.
 4. `read`: Reads data if there's data available, whether the connection's closed
@@ -377,16 +395,30 @@ Some options:
    (`connected()` or `operator bool()`). The data will just run out after
    connection-closed and after the buffers are empty.
 
+## How to use multicast
+
+There are a few ways in the API to utilize multicast to send or receive packets.
+For reception, you must join a multicast group.
+
+The first is by using the `EthernetUDP::beginMulticast(ip, port)` function. This
+both binds to a specific port, for only receiving traffic on that port, and
+joins the specified group address. It's similar to
+`EthernetUDP::begin(localPort)` in that the socket will "own" the port.
+
+Since only one socket at a time can be bound to a specific port, you will need
+to use the same socket if you want to receive traffic sent to multiple groups on
+the same port. You can accomplish this by either calling
+`beginMulticast(ip, port)` multiple times, or by using `begin(localPort)` once,
+and then calling `Ethernet.joinGroup(ip)` for each group you want to join.
+
+To send multicast traffic, simply send to the appropriate IP address. There's no
+need to join a group.
+
 ## mDNS services
 
 It's possible to register mDNS services. Some notes:
 * Similar to `Ethernet`, there is a global `MDNS` object. It too is in the
   `qindesign::network` namespace.
-* Registered services disappear after the TTL (currently set to 120 seconds),
-  and sometimes earlier. I'm not sure what the cause is yet. (Not receiving
-  multicast?) You might find yourself needing to re-announce things every _TTL_
-  seconds. This is the purpose of the `MDNS.ttl()` and `MDNS.announce()`
-  functions.
 * It's possible to add TXT items when adding a service. For example, the
   following code adds "path=/" to the TXT of an HTTP service:
   ```c++
@@ -476,7 +508,6 @@ Input is welcome.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
 * Make a test suite.
-* Understand why mDNS requires re-announcements.
 * I sometimes see
   `Assertion "tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT" failed at line 1442 in src/lwip/tcp.c`
   when sending a large amount of data. Either it's an lwIP bug or I'm doing

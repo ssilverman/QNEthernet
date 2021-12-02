@@ -1120,13 +1120,6 @@ dhcp_bind(struct netif *netif)
   }
 
   ip4_addr_copy(gw_addr, dhcp->offered_gw_addr);
-  /* gateway address not given? */
-  if (ip4_addr_isany_val(gw_addr)) {
-    /* copy network address */
-    ip4_addr_get_network(&gw_addr, &dhcp->offered_ip_addr, &sn_mask);
-    /* use first host address on network as gateway */
-    ip4_addr_set_u32(&gw_addr, ip4_addr_get_u32(&gw_addr) | PP_HTONL(0x00000001UL));
-  }
 
 #if LWIP_DHCP_AUTOIP_COOP
   if (dhcp->autoip_coop_state == DHCP_AUTOIP_COOP_STATE_ON) {
@@ -1354,6 +1347,7 @@ dhcp_release_and_stop(struct netif *netif)
     /* create and initialize the DHCP message header */
     struct pbuf *p_out;
     u16_t options_out_len;
+    dhcp_set_state(dhcp, DHCP_STATE_OFF);
     p_out = dhcp_create_msg(netif, dhcp, DHCP_RELEASE, &options_out_len);
     if (p_out != NULL) {
       struct dhcp_msg *msg_out = (struct dhcp_msg *)p_out->payload;
@@ -1373,6 +1367,8 @@ dhcp_release_and_stop(struct netif *netif)
 
     /* remove IP address from interface (prevents routing from selecting this interface) */
     netif_set_addr(netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  } else {
+     dhcp_set_state(dhcp, DHCP_STATE_OFF);
   }
 
 #if LWIP_DHCP_AUTOIP_COOP
@@ -1381,8 +1377,6 @@ dhcp_release_and_stop(struct netif *netif)
     dhcp->autoip_coop_state = DHCP_AUTOIP_COOP_STATE_OFF;
   }
 #endif /* LWIP_DHCP_AUTOIP_COOP */
-
-  dhcp_set_state(dhcp, DHCP_STATE_OFF);
 
   if (dhcp->pcb_allocated != 0) {
     dhcp_dec_pcb_refcount(); /* free DHCP PCB if not needed any more */
@@ -1514,6 +1508,7 @@ dhcp_parse_reply(struct pbuf *p, struct dhcp *dhcp)
   u8_t *options;
   u16_t offset;
   u16_t offset_max;
+  u16_t options_offset;
   u16_t options_idx;
   u16_t options_idx_max;
   struct pbuf *q;
@@ -1546,6 +1541,7 @@ dhcp_parse_reply(struct pbuf *p, struct dhcp *dhcp)
   options_idx_max = p->tot_len;
 again:
   q = p;
+  options_offset = options_idx;
   while ((q != NULL) && (options_idx >= q->len)) {
     options_idx = (u16_t)(options_idx - q->len);
     options_idx_max = (u16_t)(options_idx_max - q->len);
@@ -1619,7 +1615,7 @@ again:
       case (DHCP_OPTION_OVERLOAD):
         LWIP_DHCP_INPUT_ERROR("len == 1", len == 1, return ERR_VAL;);
         /* decode overload only in options, not in file/sname: invalid packet */
-        LWIP_DHCP_INPUT_ERROR("overload in file/sname", options_idx == DHCP_OPTIONS_OFS, return ERR_VAL;);
+        LWIP_DHCP_INPUT_ERROR("overload in file/sname", options_offset == DHCP_OPTIONS_OFS, return ERR_VAL;);
         decode_idx = DHCP_OPTION_IDX_OVERLOAD;
         break;
       case (DHCP_OPTION_MESSAGE_TYPE):

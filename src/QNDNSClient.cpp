@@ -7,7 +7,8 @@
 #include "QNDNSClient.h"
 
 #include <elapsedMillis.h>
-#include <lwip/dns.h>
+
+#include "lwip/dns.h"
 
 namespace qindesign {
 namespace network {

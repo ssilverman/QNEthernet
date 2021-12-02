@@ -16,15 +16,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <lwip/ip_addr.h>
-#include <lwip/netif.h>
-#include <lwip/prot/ethernet.h>
+#include "lwip/ip_addr.h"
+#include "lwip/netif.h"
+#include "lwip/prot/ethernet.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Get the Ethernet MAC address.
+// Get the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
 // Initialize Ethernet. This does not set the interface to "up".
@@ -63,6 +63,10 @@ uint32_t read_1588_timer();
 // Output a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 64-kMaxFrameLen.
 bool enet_output_frame(const uint8_t *frame, size_t len);
+
+// For joining and leaving multicast groups.
+void enet_join_group(const ip_addr_t *group);
+void enet_leave_group(const ip_addr_t *group);
 
 #ifdef __cplusplus
 }  // extern "C"

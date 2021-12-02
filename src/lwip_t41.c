@@ -14,14 +14,15 @@
 #include <string.h>
 
 #include <core_pins.h>
-#include <lwip/err.h>
-#include <lwip/etharp.h>
-#include <lwip/init.h>
-#include <lwip/opt.h>
-#include <lwip/pbuf.h>
-#include <lwip/stats.h>
-#include <lwip/timeouts.h>
-#include <netif/ethernet.h>
+
+#include "lwip/err.h"
+#include "lwip/etharp.h"
+#include "lwip/init.h"
+#include "lwip/opt.h"
+#include "lwip/pbuf.h"
+#include "lwip/stats.h"
+#include "lwip/timeouts.h"
+#include "netif/ethernet.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
@@ -168,9 +169,8 @@ const char *lwip_strerr(err_t err) {
 
 // Read a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(int phyaddr, int regaddr) {
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(0) |
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr);
-  // TODO: what is the proper value for ENET_MMFR_TA ???
   // int count=0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++; // wait
@@ -184,10 +184,9 @@ uint16_t mdio_read(int phyaddr, int regaddr) {
 
 // Write a PHY register (using MDIO & MDC signals).
 void mdio_write(int phyaddr, int regaddr, uint16_t data) {
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(0) |
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr) |
               ENET_MMFR_DATA(data);
-  // TODO: what is the proper value for ENET_MMFR_TA ???
   // int count = 0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++;  // wait
@@ -342,16 +341,19 @@ static void t41_low_level_init() {
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
-  ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
-  ENET_RDAR = ENET_RDAR_RDAR;
-  ENET_TDAR = ENET_TDAR_TDAR;
-
   // 1588 clocks
   ENET_ATCR = ENET_ATCR_RESET | ENET_ATCR_RSVD;   // Reset timer
   ENET_ATPER = 4294967295;                        // Wrap at 2^32-1
   ENET_ATINC = 1;                                 // Use as a cycle counter
   ENET_ATCOR = ENET_ATCOR_NOCORRECTION;
   ENET_ATCR = ENET_ATCR_RSVD | ENET_ATCR_ENABLE;  // Enable timer
+
+  // Last, enable the Ethernet MAC
+  ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
+
+  // Indicate there are empty RX buffers and available ready TX buffers
+  ENET_RDAR = ENET_RDAR_RDAR;
+  ENET_TDAR = ENET_TDAR_TDAR;
 
   // phy soft reset
   // phy_mdio_write(0, 0x00, 1 << 15);
@@ -454,7 +456,7 @@ static err_t t41_netif_init(struct netif *netif) {
   SMEMCPY(netif->hwaddr, mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 #if LWIP_NETIF_HOSTNAME
-  netif->hostname = "lwip";
+  netif_set_hostname(netif, NULL);
 #endif
   netif->name[0] = 'e';
   netif->name[1] = '0';
@@ -512,6 +514,29 @@ static inline void check_link_status() {
   }
 }
 
+// CRC-32 routines for computing the FCS for multicast lookup
+
+static uint32_t kCRC32Lookup[256];
+
+// See: https://create.stephan-brumme.com/crc32/#sarwate
+static void generate_crc32_lookup() {
+  for (int i = 0; i < 256; i++) {
+    uint32_t crc = i;
+    for (int j = 0; j < 8; j++) {
+      crc = (crc >> 1) ^ (-(int)(crc & 1) & 0xEDB88320);
+    }
+    kCRC32Lookup[i] = crc;
+  }
+}
+
+static uint32_t crc32(uint32_t crc, const unsigned char *data, size_t len) {
+  crc = ~crc;
+  while (len--) {
+    crc = (crc >> 8) ^ kCRC32Lookup[(crc & 0xff) ^ *(data++)];
+  }
+  return crc;  // Why does this work without inversion?
+}
+
 // --------------------------------------------------------------------------
 //  Public interface
 // --------------------------------------------------------------------------
@@ -539,6 +564,7 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
   // Only execute the following code once
   if (isFirstInit) {
+    generate_crc32_lookup();
     lwip_init();
 
     isFirstInit = false;
@@ -653,6 +679,62 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   memcpy(bdPtr->buffer, frame, len);
   update_bufdesc(bdPtr, len);
   return true;
+}
+
+// Multicast MAC address.
+static uint8_t multicastMAC[6] = {
+    LL_IP4_MULTICAST_ADDR_0,
+    LL_IP4_MULTICAST_ADDR_1,
+    LL_IP4_MULTICAST_ADDR_2,
+    0,
+    0,
+    0,
+};
+
+// Don't release bits that have had a collision. Track these here.
+static uint32_t collisionGALR = 0;
+static uint32_t collisionGAUR = 0;
+
+// Join or leave a multicast group. The flag should be true to join and false
+// to leave.
+static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
+  multicastMAC[3] = ip4_addr2(group) & 0x7f;
+  multicastMAC[4] = ip4_addr3(group);
+  multicastMAC[5] = ip4_addr4(group);
+
+  uint32_t crc = (crc32(0, multicastMAC, 6) >> 26) & 0x3f;
+  uint32_t value = 1 << (crc & 0x1f);
+  if (crc < 0x20) {
+    if (flag) {
+      if ((ENET_GALR & value) != 0) {
+        collisionGALR |= value;
+      } else {
+        ENET_GALR |= value;
+      }
+    } else {
+      // Keep collided bits set
+      ENET_GALR &= ~value | collisionGALR;
+    }
+  } else {
+    if (flag) {
+      if ((ENET_GAUR & value) != 0) {
+        collisionGAUR |= value;
+      } else {
+        ENET_GAUR |= value;
+      }
+    } else {
+      // Keep collided bits set
+      ENET_GAUR &= ~value | collisionGAUR;
+    }
+  }
+}
+
+void enet_join_group(const ip_addr_t *group) {
+  enet_join_notleave_group(group, true);
+}
+
+void enet_leave_group(const ip_addr_t *group) {
+  enet_join_notleave_group(group, false);
 }
 
 #endif  // ARDUINO_TEENSY41

@@ -10,9 +10,8 @@
 // C++ includes
 #include <memory>
 
-#include <lwip/err.h>
-
 #include "ConnectionState.h"
+#include "lwip/err.h"
 
 namespace qindesign {
 namespace network {

@@ -11,12 +11,13 @@
 
 #include <Entropy.h>
 #include <EventResponder.h>
-#include <lwip/dhcp.h>
-#include <lwip/dns.h>
-#include <lwip/ip_addr.h>
-#include <lwip/udp.h>
 
 #include "QNDNSClient.h"
+#include "lwip/dhcp.h"
+#include "lwip/dns.h"
+#include "lwip/igmp.h"
+#include "lwip/ip_addr.h"
+#include "lwip/udp.h"
 #include "lwip_t41.h"
 
 extern const size_t kMTU;
@@ -90,6 +91,35 @@ void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
   std::copy_n(mac_, kMACAddrSize, mac);
 }
 
+void EthernetClass::setMACAddress(uint8_t mac[kMACAddrSize]) {
+  if (mac == nullptr) {
+    // Don't do anything
+    return;
+  }
+
+  if (std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
+    // Do nothing if there's no change
+    return;
+  }
+
+  std::copy_n(mac, kMACAddrSize, mac_);
+  if (netif_ == nullptr) {
+    return;
+  }
+
+  dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
+  netif_set_down(netif_);
+
+  ip_addr_t ipaddr;
+  ip_addr_t netmask;
+  ip_addr_t gw;
+  ip_addr_set(&ipaddr, netif_ip_addr4(netif_));
+  ip_addr_set(&netmask, netif_ip_netmask4(netif_));
+  ip_addr_set(&gw, netif_ip_gw4(netif_));
+
+  begin(&ipaddr, &netmask, &gw);
+}
+
 int EthernetClass::mtu() const {
   return kMTU;
 }
@@ -107,12 +137,10 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
-
-  return (dhcp_start(netif_) == ERR_OK);
+  return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
 }
 
-void EthernetClass::begin(const IPAddress &ip,
+bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway) {
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
@@ -123,20 +151,60 @@ void EthernetClass::begin(const IPAddress &ip,
   ip_addr_t gw =
       IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(gateway)));
 
+  if (netif_ != nullptr) {
+    // Stop any running DHCP client if we don't need one
+    if (ipaddr.addr != IPADDR_ANY ||
+        netmask.addr != IPADDR_ANY ||
+        gw.addr != IPADDR_ANY) {
+      dhcp_release_and_stop(netif_);
+    }
+    netif_set_down(netif_);
+  }
+
+  return begin(&ipaddr, &netmask, &gw);
+}
+
+bool EthernetClass::begin(const ip_addr_t *ipaddr,
+                          const ip_addr_t *netmask,
+                          const ip_addr_t *gw) {
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  enet_init(mac_, &ipaddr, &netmask, &gw, &netifEventFunc);
+  enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
+
+  // Watch for final multicast joins and leaves so we can configure
+  // them properly
+  netif_set_igmp_mac_filter(netif_,
+                            [](struct netif *netif, const ip4_addr_t *group,
+                               enum netif_mac_filter_action action) -> err_t {
+                              switch (action) {
+                                case NETIF_ADD_MAC_FILTER:
+                                  enet_join_group(group);
+                                  break;
+                                case NETIF_DEL_MAC_FILTER:
+                                  enet_leave_group(group);
+                                  break;
+                                default:
+                                  break;
+                              }
+                              return ERR_OK;
+                            });
+
   netif_set_up(netif_);
 
-  // If this is using a manual configuration then inform the network
-  if (!(const_cast<IPAddress &>(ip) == INADDR_NONE) ||
-      !(const_cast<IPAddress &>(mask) == INADDR_NONE) ||
-      !(const_cast<IPAddress &>(gateway) == INADDR_NONE)) {
+  // If this is using a manual configuration then inform the network,
+  // otherwise start DHCP
+  bool retval = true;
+  if (ipaddr->addr != IPADDR_ANY ||
+      netmask->addr != IPADDR_ANY ||
+      gw->addr != IPADDR_ANY) {
     dhcp_inform(netif_);
+  } else {
+    retval = (dhcp_start(netif_) == ERR_OK);
   }
 
   ethActive = true;
   ethLoop.triggerEvent();
+  return retval;
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) {
@@ -283,6 +351,44 @@ bool EthernetClass::sendRaw(const uint8_t *frame, size_t len) {
     return false;
   }
   return enet_output_frame(frame, len);
+}
+
+bool EthernetClass::joinGroup(const IPAddress &ip) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  const ip_addr_t groupaddr =
+      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
+  return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
+}
+
+bool EthernetClass::leaveGroup(const IPAddress &ip) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  const ip_addr_t groupaddr =
+      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
+  return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+}
+
+void EthernetClass::setHostname(const char *hostname) {
+#ifdef LWIP_NETIF_HOSTNAME
+  if (netif_ == nullptr) {
+    return;
+  }
+  netif_set_hostname(netif_, hostname);
+#endif
+}
+
+const char *EthernetClass::hostname() {
+#ifdef LWIP_NETIF_HOSTNAME
+  if (netif_ == nullptr) {
+    return nullptr;
+  }
+  return netif_get_hostname(netif_);
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace network

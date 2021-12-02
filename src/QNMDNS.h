@@ -11,8 +11,9 @@
 #include <vector>
 
 #include <WString.h>
-#include <lwip/netif.h>
-#include <lwip/apps/mdns_opts.h>
+
+#include "lwip/netif.h"
+#include "lwip/apps/mdns_opts.h"
 
 namespace qindesign {
 namespace network {
@@ -52,7 +53,7 @@ class MDNSClass final {
   // Return the TTL, in seconds.
   uint32_t ttl() const;
 
-  // Perform the announcement.
+  // Perform an announcement. This isn't usually necessary for normal operation.
   void announce() const;
 
  private:

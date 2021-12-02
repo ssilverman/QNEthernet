@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+* Implemented `EthernetClass::setMACAddress(mac)`.
+* Added `EthernetServer::maxListeners()`, `EthernetClient::maxSockets()`, and
+  `EthernetUDP::maxSockets()` so user code doesn't need to guess. These are
+  `constexpr` functions that return the compile-time constants from the
+  lwIP configuration.
+* Added `EthernetServer::port()` for returning the server's port.
+* Added `EthernetClass::setHostname(hostname)` and `hostname()` for setting and
+  getting the DHCP client option 12 hostname.
+* Added `EthernetClass::maxMulticastGroups()` `constexpr` function.
+
+### Changed
+* Changed the default DHCP client option 12 hostname to NULL.
+
+### Fixed
+* Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`
+  and `setMACAddress(mac)`) to ensure that a static IP won't get overwritten by
+  any previously running DHCP client. This also obviates the need to call
+  `Ethernet.end()` before re-calling `begin`.
+
 ## [0.10.0]
 
 ### Added
@@ -16,6 +38,11 @@ and this project adheres to
   2. "How to implement VLAN tagging".
 * Added calls to `loop()` in `EthernetClient::connected()`
   and `operator bool()`.
+* Added `EthernetUDP::beginMulticast(ip, localPort, reuse)`, where `reuse`
+  controls the SO_REUSEADDR socket option.
+* Added `EthernetClass::joinGroup(ip)` and `leaveGroup(ip)` for joining and
+  leaving a multicast group.
+* Added a "How to use multicast" section to the README.
 
 ### Changed
 * Changed `kMTU` type to be `size_t` everywhere.
@@ -25,11 +52,22 @@ and this project adheres to
   "optimal performance".\
   See: IMXRT1060RM_rev2.pdf, "Table 41-38. Enhanced transmit buffer descriptor
   field definitions", page 2186.
+* Updated lwIP to v2.1.3.
+* Changed `EthernetUDP::beginMulticast` to release resources if joining the
+  group failed.
+* Increased MEMP_NUM_IGMP_GROUP to 9 to allow 8 multicast groups.
+
+### Removed
+* Removed mention of the need to re-announce mDNS and adjusted the
+  docs accordingly.
 
 ### Fixed
 * Changed receive data buffers to be 64-byte aligned.\
   See: IMXRT1060RM_rev2.pdf, "Table 41-36. Receive buffer descriptor field
   definitions", page 2183.
+* Changed TA value in ENET_MMFR register to 2, per the chip docs.
+* Multicast reception now works. Had to set the ENET_GAUR and ENET_GALR
+  registers appropriately.
 
 ## [0.9.0]
 
