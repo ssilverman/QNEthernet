@@ -18,6 +18,9 @@ and this project adheres to
 * Added `EthernetClass::setHostname(hostname)` and `hostname()` for setting and
   getting the DHCP client option 12 hostname.
 * Added `EthernetClass::maxMulticastGroups()` `constexpr` function.
+* Added a "Write immediacy" subsection to the README that addresses when data is
+  sent over a connection. It's under the "How to write data to
+  connections" section.
 
 ### Changed
 * Changed the default DHCP client option 12 hostname to "teensy-lwip".
