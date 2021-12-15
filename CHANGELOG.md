@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.11.0]
 
 ### Added
 * Implemented `EthernetClass::setMACAddress(mac)`.
@@ -18,9 +18,12 @@ and this project adheres to
 * Added `EthernetClass::setHostname(hostname)` and `hostname()` for setting and
   getting the DHCP client option 12 hostname.
 * Added `EthernetClass::maxMulticastGroups()` `constexpr` function.
+* Added a "Write immediacy" subsection to the README that addresses when data is
+  sent over a connection. It's under the "How to write data to
+  connections" section.
 
 ### Changed
-* Changed the default DHCP client option 12 hostname to NULL.
+* Changed the default DHCP client option 12 hostname to "teensy-lwip".
 
 ### Fixed
 * Stop the DHCP client when restarting `Ethernet` (in `begin(ip, mask, gateway)`

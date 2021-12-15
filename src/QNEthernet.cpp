@@ -170,6 +170,13 @@ bool EthernetClass::begin(const ip_addr_t *ipaddr,
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
   enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
+#ifdef LWIP_NETIF_HOSTNAME
+  if (hostname_.length() == 0) {
+    netif_set_hostname(netif_, nullptr);
+  } else {
+    netif_set_hostname(netif_, hostname_.c_str());
+  }
+#endif
 
   // Watch for final multicast joins and leaves so we can configure
   // them properly
@@ -371,23 +378,24 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
-void EthernetClass::setHostname(const char *hostname) {
+void EthernetClass::setHostname(const String &hostname) {
 #ifdef LWIP_NETIF_HOSTNAME
-  if (netif_ == nullptr) {
-    return;
+  hostname_ = hostname;
+  if (netif_ != nullptr) {
+    if (hostname.length() == 0) {
+      netif_set_hostname(netif_, nullptr);
+    } else {
+      netif_set_hostname(netif_, hostname.c_str());
+    }
   }
-  netif_set_hostname(netif_, hostname);
 #endif
 }
 
-const char *EthernetClass::hostname() {
+String EthernetClass::hostname() {
 #ifdef LWIP_NETIF_HOSTNAME
-  if (netif_ == nullptr) {
-    return nullptr;
-  }
-  return netif_get_hostname(netif_);
+  return hostname_;
 #else
-  return nullptr;
+  return "";
 #endif
 }
 

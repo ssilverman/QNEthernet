@@ -2,7 +2,7 @@
 
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
-_Version: 0.11.0-snapshot_
+_Version: 0.11.0_
 
 The _QNEthernet_ library provides Arduino-like `Ethernet` functionality for the
 Teensy 4.1. While it is mostly the same, there are a few key differences that
@@ -25,6 +25,7 @@ files provided with the lwIP release.
    4. [`EthernetUDP`](#ethernetudp)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
+   1. [Write immediacy](#write-immediacy)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
 7. [How to use multicast](#how-to-use-multicast)
@@ -120,7 +121,8 @@ This section documents those functions.
   internal MAC address, and uses the given parameters for the
   network configuration.
 * `end()`: Shuts down the library, including the Ethernet clocks.
-* `hostname()`: Gets the DHCP client option 12 hostname. The default is NULL.
+* `hostname()`: Gets the DHCP client hostname. An empty string means that no
+  hostname is set. The default is "teensy-lwip".
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
 * `joinGroup(ip)`: Joins a multicast group.
@@ -131,7 +133,9 @@ This section documents those functions.
 * `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
-* `setHostname(hostname)`: Sets the DHCP client option 12 hostname.
+* `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
+  set the hostname to nothing. To use something other than the default at system
+  start, call this before calling `begin`.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within
@@ -208,6 +212,7 @@ I'll start with these statements:
 1. **Don't use the `print` functions when writing data to connections.**
 2. **Always check the `write` and `print` (and `println` and `printf`)
    return values, retrying if necessary.**
+3. Data isn't necessarily sent immediately.
 
 The `write` and `print` functions in the `Print` API all return the number of
 bytes actually written. This means that you _must always check the return value,
@@ -347,6 +352,31 @@ use the library's `writeFully` functions.
 See the discussion at:
 https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
 
+### Write immediacy
+
+Data isn't necessarily completely sent across the wire after `write` or
+`writeFully` calls. Instead, data is merely enqueued until the internal buffer
+is full or a timer expires. Now, if the data to send is larger than the internal
+TCP buffer then data will be sent and the extra data will be enqueued. In other
+words, data is only sent when either the buffer is full or an internal timer
+has expired.
+
+To send any buffered data, call `flush()`.
+
+To quote lwIP's `tcp_write()` docs:
+> Write data for sending (but does not send it immediately).
+>
+> It waits in the expectation of more data being sent soon (as
+> it can send them more efficiently by combining them together).
+> To prompt the system to send data now, call tcp_output() after
+> calling tcp_write().
+
+`flush()` is what always calls `tcp_output()` internally. The `write` and
+`writeFully` functions only call this when the buffer is full. The suggestion is
+to call `flush()` when done sending a "packet" of data, for some definition of
+"packet" specific to your application. For example, after sending a web page to
+a client or after a chunk of data is ready for the server to process.
+
 ## A note on the examples
 
 The examples aren't meant to be simple. They're meant to be functional. There
@@ -413,6 +443,13 @@ and then calling `Ethernet.joinGroup(ip)` for each group you want to join.
 
 To send multicast traffic, simply send to the appropriate IP address. There's no
 need to join a group.
+
+The lwIP stack keeps track of a group "use count". This means:
+1. That `joinGroup(ip)` can be called multiple times, it just needs to be paired
+   with a matching number of calls to `leaveGroup(ip)`. Each call increments an
+   internal count.
+2. Each call to `leaveGroup(ip)` decrements a count, and when that count reaches
+   zero, the stack actually leaves the group.
 
 ## mDNS services
 

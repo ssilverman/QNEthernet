@@ -24,20 +24,20 @@ class EthernetServer final : public Server {
   EthernetServer(uint16_t port);
   ~EthernetServer();
 
-  // Return the maximum number of TCP listeners.
+  // Returns the maximum number of TCP listeners.
   static constexpr int maxListeners() {
     return MEMP_NUM_TCP_PCB_LISTEN;
   }
 
-  // Return the port.
+  // Returns the port.
   uint16_t port() const {
     return port_;
   }
 
-  // Start listening on the server port. This calls begin(false).
+  // Starts listening on the server port. This calls begin(false).
   void begin() override;
 
-  // Start listening on the server port and set the SO_REUSEADDR socket option
+  // Starts listening on the server port and set the SO_REUSEADDR socket option
   // according to the `reuse` parameter.
   void begin(bool reuse);
 
