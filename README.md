@@ -21,6 +21,7 @@ files provided with the lwIP release.
 2. [Additional functions not in the Arduino API](#additional-functions-not-in-the-arduino-api)
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
+      1. [TCP socket options](#tcp-socket-options)
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
 3. [How to run](#how-to-run)
@@ -163,6 +164,14 @@ This section documents those functions.
 * `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
 * `static constexpr maxSockets()`: Returns the maximum number of
   TCP connections.
+
+#### TCP socket options
+
+ * `setNoDelay(flag)`: Sets or clears the TCP_NODELAY flag in order to disable
+   or enable Nagle's algorithm, respectively. This must be changed for each
+   new connection.
+ * `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
+   connection. Returns false if not connected.
 
 ### `EthernetServer`
 

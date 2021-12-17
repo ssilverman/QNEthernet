@@ -80,6 +80,19 @@ class EthernetClient final : public Client {
   int read(uint8_t *buf, size_t size) override;
   int peek() override;
 
+  // ----------------
+  //  Socket options
+  // ----------------
+
+  // Disables or enables Nagle's algorithm. This sets or clears the TCP_NODELAY
+  // flag. If the flag is set then Nagle's algorithm is disabled, otherwise it
+  // is enabled. Note that this option must be set for each new connection.
+  void setNoDelay(bool flag);
+
+  // Returns the value of the TCP_NODELAY flag for the current connection. This
+  // returns false if not connected.
+  bool isNoDelay();
+
  private:
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.

@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added a way to disable and enable Nagle's algorithm. The new functions are
+  `EthernetClient::setNoDelay(flag)` and `isNoDelay()`.
+
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
 

@@ -104,6 +104,28 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
   connTimeout_ = timeout;
 }
 
+void EthernetClient::setNoDelay(bool flag) {
+  if (conn_ == nullptr) {
+    return;
+  }
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return;
+  }
+  state->pcb->flags |= TF_NODELAY;
+}
+
+bool EthernetClient::isNoDelay() {
+  if (conn_ == nullptr) {
+    return false;
+  }
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return false;
+  }
+  return ((state->pcb->flags & TF_NODELAY) != 0);
+}
+
 void EthernetClient::stop() {
   if (conn_ == nullptr) {
     return;
