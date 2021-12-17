@@ -8,12 +8,14 @@
 
 // C++ includes
 #include <algorithm>
+#include <limits>
 
 #include <core_pins.h>
 
 #include "ConnectionHolder.h"
 #include "QNEthernet.h"
 #include "lwip/ip.h"
+#include "lwip/tcp.h"
 
 namespace qindesign {
 namespace network {
@@ -418,6 +420,24 @@ void ConnectionManager::flush(uint16_t port) {
                   tcp_output(state->pcb);
                 });
   EthernetClass::loop();
+}
+
+int ConnectionManager::availableForWrite(uint16_t port) {
+  uint16_t min = std::numeric_limits<uint16_t>::max();
+  bool found = false;
+  std::for_each(connections_.begin(), connections_.end(),
+                [port, &min, &found](const auto &elem) {
+                  const auto &state = elem->state;
+                  if (state == nullptr || state->pcb->local_port != port) {
+                    return;
+                  }
+                  min = std::min(min, tcp_sndbuf(state->pcb));
+                  found = true;
+                });
+  if (!found) {
+    return 0;
+  }
+  return min;
 }
 
 }  // namespace network

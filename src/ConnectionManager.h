@@ -52,6 +52,7 @@ class ConnectionManager final {
   size_t write(uint16_t port, uint8_t b);
   size_t write(uint16_t port, const uint8_t *b, size_t len);
   void flush(uint16_t port);
+  int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
  private:
   static ConnectionManager manager;

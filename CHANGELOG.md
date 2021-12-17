@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added a way to disable and enable Nagle's algorithm. The new functions are
   `EthernetClient::setNoDelay(flag)` and `isNoDelay()`.
+* Implemented `EthernetServer::availableForWrite()` as the minimum availability
+  of all the connections, or zero if there's no connections.
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.

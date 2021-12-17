@@ -52,7 +52,8 @@ class EthernetServer final : public Server {
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
 
-  // Always returns zero.
+  // Returns the minimum availability of all the connections, or zero if there
+  // are no connections.
   int availableForWrite() override;
 
   void flush() override;

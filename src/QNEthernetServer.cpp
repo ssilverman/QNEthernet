@@ -74,7 +74,7 @@ size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
 }
 
 int EthernetServer::availableForWrite() {
-  return 0;
+  return ConnectionManager::instance().availableForWrite(port_);
 }
 
 void EthernetServer::flush() {
