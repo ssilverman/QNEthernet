@@ -17,9 +17,6 @@ and this project adheres to
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
 
-### Deprecated
-* `EthernetUDP::flush()` because it is ill-defined.
-
 ## [0.11.0]
 
 ### Added

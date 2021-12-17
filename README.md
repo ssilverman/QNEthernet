@@ -71,7 +71,7 @@ and notes:
   something equivalent:
   * `MACAddress(uint8_t mac[6])`
   * `setDnsServerIP(const IPAddress &dnsServerIP)`
-* The following `EthernetUDP` functions are deprecated and do nothing:
+* The following `EthernetUDP` functions do nothing:
   * `flush()` because it is ill-defined.
 * The system starts with the Teensy's actual MAC address. If you want to use
   that address with the deprecated API, you can collect it with

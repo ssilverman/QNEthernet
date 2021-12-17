@@ -64,7 +64,7 @@ class EthernetUDP final : public UDP {
   int read(unsigned char *buffer, size_t len) override;
   int read(char *buffer, size_t len) override;
   int peek() override;
-  [[deprecated]] void flush() override;
+  void flush() override;
 
   IPAddress remoteIP() override;
   uint16_t remotePort() override;
