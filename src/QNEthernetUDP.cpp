@@ -195,7 +195,9 @@ int EthernetUDP::peek() {
 }
 
 void EthernetUDP::flush() {
-  packetPos_ = -1;
+  // This flushes the input:
+  // packetPos_ = -1;
+  // Instead, do a no-op.
 }
 
 IPAddress EthernetUDP::remoteIP() {
