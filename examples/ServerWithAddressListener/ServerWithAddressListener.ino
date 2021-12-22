@@ -33,7 +33,10 @@ using namespace qindesign::network;
 //  Configuration
 // --------------------------------------------------------------------------
 
+// The DHCP timeout, in milliseconds. Set to zero to not wait and
+// instead rely on the listener to inform us of an address assignment.
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
+
 constexpr uint16_t kServerPort = 80;
 
 // Timeout for waiting for input from the client.
@@ -99,8 +102,9 @@ void setup() {
   stdPrint = &Serial;  // Make printf work
   printf("Starting...\n");
 
-  // Unlike the Arduino API (which you can still use), Ethernet uses
-  // the Teensy's internal MAC address by default
+  // Unlike the Arduino API (which you can still use), QNEthernet uses
+  // the Teensy's internal MAC address by default, so we can retrieve
+  // it here
   uint8_t mac[6];
   Ethernet.macAddress(mac);
   printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -112,7 +116,7 @@ void setup() {
 
   // Listen for link changes, for demonstration
   Ethernet.onLinkState([](bool state) {
-    printf("Ethernet: Link %s\n", state ? "ON" : "OFF");
+    printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
   });
 
   // Listen for address changes
@@ -120,7 +124,7 @@ void setup() {
     IPAddress ip = Ethernet.localIP();
     bool hasIP = !(ip == INADDR_NONE);  // IPAddress has no operator!=()
     if (hasIP) {
-      printf("Ethernet: Address changed:\n");
+      printf("[Ethernet] Address changed:\n");
 
       IPAddress ip = Ethernet.localIP();
       printf("    Local IP = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
@@ -133,7 +137,7 @@ void setup() {
         printf("    DNS      = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
       }
     } else {
-      printf("Ethernet: Address changed: No IP address\n");
+      printf("[Ethernet] Address changed: No IP address\n");
     }
 
     // Tell interested parties the state of the IP address, for
@@ -148,10 +152,15 @@ void setup() {
       printf("Failed to start Ethernet\n");
       return;
     }
-    if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-      printf("Failed to get IP address from DHCP\n");
-      // We may still get an address later, after the timeout,
-      // so continue instead of returning
+
+    // We can choose not to wait and rely on the listener to tell us
+    // when an address has been assigned
+    if (kDHCPTimeout > 0) {
+      if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
+        printf("Failed to get IP address from DHCP\n");
+        // We may still get an address later, after the timeout,
+        // so continue instead of returning
+      }
     }
   } else {
     printf("Starting Ethernet with static IP...\n");

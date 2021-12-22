@@ -62,8 +62,9 @@ void setup() {
   stdPrint = &Serial;  // Make printf work
   printf("Starting...\n");
 
-  // Unlike the Arduino API (which you can still use), Ethernet uses
-  // the Teensy's internal MAC address by default
+  // Unlike the Arduino API (which you can still use), QNEthernet uses
+  // the Teensy's internal MAC address by default, so we can retrieve
+  // it here
   uint8_t mac[6];
   Ethernet.macAddress(mac);
   printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -94,8 +95,8 @@ void setup() {
 
 // Process one message. This implementation simply dumps to Serial.
 //
-// We could pass just the buffer, but we're passing the whole state here so
-// we know which client it's from.
+// We could pass just the buffer, but we're passing the whole state
+// here so we know which client it's from.
 void processMessage(const ClientState &state) {
   printf("Message: ");
   fwrite(state.buf, sizeof(state.buf[0]), kMessageSize, stdout);
