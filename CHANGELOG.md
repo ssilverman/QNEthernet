@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
+* Reduced lwIP's `MEM_SIZE` to 16KiB from 24000.
 
 ## [0.11.0]
 
