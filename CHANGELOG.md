@@ -13,6 +13,7 @@ and this project adheres to
   `EthernetClient::setNoDelay(flag)` and `isNoDelay()`.
 * Implemented `EthernetServer::availableForWrite()` as the minimum availability
   of all the connections, or zero if there's no connections.
+* New `AppWithListenersTemplate` example.
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
