@@ -4,14 +4,15 @@
 // sys_arch.cpp provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
 
-#include <Arduino.h>
+// C++ includes
+#include <cstdint>
+#include <cstdio>
 
-extern "C" {
-#include <stdint.h>
-#include <stdio.h>
+#include <Print.h>
 
 #include "lwip/arch.h"
 
+extern "C" {
 extern volatile uint32_t systick_millis_count;
 
 u32_t sys_now(void) {
