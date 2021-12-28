@@ -18,6 +18,10 @@ and this project adheres to
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
 * Reduced lwIP's `MEM_SIZE` to 16KiB from 24000.
+* Split `MDNSClass::addService()` into two overloaded functions: one with three
+  arguments and one with four. No more defaulted TXT record function; the
+  three-argument version calls the four-argument version with NULL for
+  that function.
 
 ## [0.11.0]
 

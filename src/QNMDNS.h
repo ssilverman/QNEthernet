@@ -35,13 +35,21 @@ class MDNSClass final {
   // "_tcp". The strings should have a "_" prefix. This uses the host name as
   // the service name.
   //
+  // No TXT records are added. This simply calls
+  // `addService(type, protocol, port, nullptr)`.
+  bool addService(const String &type, const String &protocol, uint16_t port);
+
+  // Adds a service. The protocol will be set to "_udp" for anything other than
+  // "_tcp". The strings should have a "_" prefix. This uses the host name as
+  // the service name.
+  //
   // The `getTXTFunc` parameter is the function associated with this service to
   // retreive its TXT record parts. The entire TXT record can be a can be a
   // maximum of 255 bytes, including length bytes, and each item in the record
   // can be a maximum of 63 bytes. The function may be NULL, in which case no
   // items are added.
   bool addService(const String &type, const String &protocol, uint16_t port,
-                  std::vector<String> (*getTXTFunc)(void) = nullptr);
+                  std::vector<String> (*getTXTFunc)(void));
 
   // Removes a service.
   bool removeService(const String &type, const String &protocol, uint16_t port);

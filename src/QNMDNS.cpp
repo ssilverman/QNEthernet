@@ -91,6 +91,11 @@ enum mdns_sd_proto toProto(const String &protocol) {
 }
 
 bool MDNSClass::addService(const String &type, const String &protocol,
+                           uint16_t port) {
+  return addService(type, protocol, port, nullptr);
+}
+
+bool MDNSClass::addService(const String &type, const String &protocol,
                            uint16_t port,
                            std::vector<String> (*getTXTFunc)(void)) {
   if (netif_ == nullptr) {
