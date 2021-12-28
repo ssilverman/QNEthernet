@@ -129,13 +129,13 @@ void setup() {
     addressChanged(hasIP);
   });
 
+  bool startWithStatic = false;
+
   // This code shows a few ways you might want to set an IP address.
-  // It's just for illustration. Your program doesn't need to include
-  // everything here.
+  // **It's just for illustration. Your program doesn't need to
+  // include everything here.**
   if (kStartWithDHCP) {
     // Option 1 - Always start with DHCP
-
-    bool startWithStatic = false;
 
     printf("Starting Ethernet with DHCP...\n");
     if (kWaitForDHCP) {
@@ -159,15 +159,9 @@ void setup() {
       }
     }
 
-    if (startWithStatic) {
-      if (staticIP == INADDR_NONE) {
-        printf("Error: No static IP\n");
-        return;
-      }
-      printf("Starting Ethernet with static IP...\n");
-      Ethernet.setDNSServerIP(dnsServer);  // Set first so that the
-                                           // listener sees it
-      Ethernet.begin(staticIP, subnetMask, gateway);
+    if (startWithStatic && staticIP == INADDR_NONE) {
+      printf("Error: No static IP\n");
+      return;
     }
   } else {
     // Option 2 - staticIP determines
@@ -186,11 +180,15 @@ void setup() {
         }
       }
     } else {
-      printf("Starting Ethernet with static IP...\n");
-      Ethernet.setDNSServerIP(dnsServer);  // Set first so that the
-                                           // listener sees it
-      Ethernet.begin(staticIP, subnetMask, gateway);
+      startWithStatic = true;
     }
+  }
+
+  if (startWithStatic) {
+    printf("Starting Ethernet with static IP...\n");
+    Ethernet.setDNSServerIP(dnsServer);  // Set first so that the
+                                         // listener sees it
+    Ethernet.begin(staticIP, subnetMask, gateway);
   }
 
   // *** Additional setup code goes here
