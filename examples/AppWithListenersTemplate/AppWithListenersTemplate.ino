@@ -3,7 +3,8 @@
 
 // AppWithListenersTemplate shows one way to start writing a network
 // application using a listener approach. It doesn't do any network
-// communication, but it configures the network.
+// communication, but it configures the network and shows possible
+// places to hook in your own code.
 //
 // Not everything in this template needs to be included in your own
 // own application.
@@ -39,7 +40,7 @@ constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 // true then DHCP will always be attempted first, regardless of the
 // value of `staticIP`.
 //
-// This is for illustration.
+// **This is for illustration.**
 constexpr bool kStartWithDHCP = true;
 
 // Whether to wait for DHCP at program start. Note that the
