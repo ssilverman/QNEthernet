@@ -22,6 +22,7 @@ and this project adheres to
   arguments and one with four. No more defaulted TXT record function; the
   three-argument version calls the four-argument version with NULL for
   that function.
+* Updated `keywords.txt`.
 
 ## [0.11.0]
 

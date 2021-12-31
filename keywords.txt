@@ -13,13 +13,14 @@ EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
-stdPrint	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
+maxMulticastGroups	KEYWORD2
 macAddress	KEYWORD2	EthernetMACAddress
+setMACAddress	KEYWORD2	EthernetSetMACAddress
 mtu	KEYWORD2
 loop	KEYWORD2
 begin	KEYWORD2
@@ -38,6 +39,12 @@ setLocalIP	KEYWORD2	EthernetSetLocalIP
 setSubnetMask	KEYWORD2	EthernetSetSubnetMask
 setGatewayIP	KEYWORD2	EthernetSetGatewayIP
 setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
+sendRaw	KEYWORD2
+joinGroup	KEYWORD2
+leaveGroup	KEYWORD2
+setHostname	KEYWORD2
+hostname	KEYWORD2
+maxSockets	KEYWORD2
 connect	KEYWORD2	ClientConnect
 connected	KEYWORD2	ClientConnected
 setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
@@ -50,25 +57,31 @@ remotePort	KEYWORD2
 writeFully	KEYWORD2
 write	KEYWORD2
 availableForWrite	KEYWORD2
-flush	KEYWORD2	ClientFlush
+flush	KEYWORD2
 available	KEYWORD2
 read	KEYWORD2
 peek	KEYWORD2
+setNoDelay	KEYWORD2
+isNoDelay	KEYWORD2
+maxListeners	KEYWORD2
+port	KEYWORD2
 accept	KEYWORD2	EthernetServerAccept
-beginMulticast	KEYWORD2
+beginMulticast	KEYWORD2	WiFiNINAUDPBeginMulticast
 beginPacket	KEYWORD2	EthernetUDPBeginPacket
 endPacket	KEYWORD2	EthernetUDPEndPacket
 parsePacket	KEYWORD2	EthernetUDPParsePacket
 addService	KEYWORD2
 removeService	KEYWORD2
-getHostByName	KEYWORD2
+ttl	KEYWORD2
 maxServers	KEYWORD2
 setServer	KEYWORD2
-sendRaw	KEYWORD2
+getHostByName	KEYWORD2
 
 #######################################
-# Instances (KEYWORD2)
+# Instances and Structures (KEYWORD3)
 #######################################
+
+stdPrint	KEYWORD3
 
 #######################################
 # Constants (LITERAL1)
