@@ -16,6 +16,7 @@
 #include "lwip/dns.h"
 #include "lwip/ip.h"
 #include "lwip/opt.h"
+#include "lwip_t41.h"
 
 namespace qindesign {
 namespace network {
@@ -291,6 +292,10 @@ bool EthernetUDP::send(const uint8_t *data, size_t len) {
   bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;
+}
+
+bool EthernetUDP::ieee1588TXTimestamp(uint32_t *timestamp) {
+  return enet_read_1588_tx_timestamp(timestamp);
 }
 
 size_t EthernetUDP::write(uint8_t b) {
