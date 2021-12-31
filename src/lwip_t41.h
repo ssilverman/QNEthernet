@@ -76,6 +76,18 @@ void enet_leave_group(const ip_addr_t *group);
 // Reads the IEEE 1588 timer.
 uint32_t enet_read_1588_timer();
 
+// If an IEEE 1588 transmit timestamp is available, then it is assigned to
+// `*timestamp` and this returns true. Otherwise, this returns false.
+//
+// This function is used after sending a packet having its transmit timestamp
+// sent. Note that this only returns the latest value, so if a second
+// timestamped packet is sent before retrieving the timestamp for the first
+// then this will return the second timestamp (if already available).
+//
+// If no additional timestamped packets are sent then this will return the last
+// available value. The "availability" is not reset.
+bool enet_read_1588_tx_timestamp(uint32_t *timestamp);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
