@@ -717,7 +717,7 @@ int enet_link_speed() {
   return speed10Not100 ? 10 : 100;
 }
 
-bool enet_output_frame(const uint8_t *frame, size_t len) {
+bool enet_output_frame(const uint8_t *frame, size_t len, bool doTimestamp) {
   if (isInitialized) {
     return false;
   }
@@ -726,7 +726,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   }
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
   memcpy(bdPtr->buffer, frame, len);
-  update_bufdesc(bdPtr, len, false);
+  update_bufdesc(bdPtr, len, doTimestamp);
   return true;
 }
 
