@@ -394,5 +394,9 @@ EthernetClass::operator bool() {
   return (netif_ != nullptr);
 }
 
+uint32_t EthernetClass::readIEEE1588Timer() {
+  return enet_read_1588_timer();
+}
+
 }  // namespace network
 }  // namespace qindesign

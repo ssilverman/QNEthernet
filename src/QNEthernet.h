@@ -180,6 +180,9 @@ class EthernetClass final {
   // Tests if Ethernet is initialized.
   operator bool();
 
+  // Reads the current value of the IEEE 1588 timer.
+  static uint32_t readIEEE1588Timer();
+
  private:
   // Creates a new network interface. This sets the MAC address to the built-in
   // MAC address. This calls the other constructor with a NULL address.
