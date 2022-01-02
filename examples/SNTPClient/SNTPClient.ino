@@ -6,11 +6,6 @@
 //
 // This file is part of the QNEthernet library.
 
-// C++ includes
-#include <algorithm>
-#include <utility>
-#include <vector>
-
 #include <QNEthernet.h>
 #include <TimeLib.h>
 
@@ -35,6 +30,9 @@ constexpr uint32_t kBreakTime = 2'085'978'496;
 
 // UDP port.
 EthernetUDP udp;
+
+// Buffer.
+uint8_t buf[48];
 
 // --------------------------------------------------------------------------
 //  Main program
@@ -78,7 +76,6 @@ void setup() {
 
   // Send an SNTP request
 
-  uint8_t buf[48];
   memset(buf, 0, 48);
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
 
@@ -108,7 +105,6 @@ void loop() {
     return;
   }
 
-  uint8_t buf[48];
   if (udp.read(buf, 48) != 48) {
     printf("Not enough bytes\n");
     return;
@@ -118,7 +114,7 @@ void loop() {
   int mode = buf[0] & 0x07;
   if (((buf[0] & 0xc0) == 0xc0) ||  // LI == 3 (Alarm condition)
       (buf[1] == 0) ||              // Stratum == 0 (Kiss-o'-Death)
-      !(mode == 4 || mode == 5)) {  // Server or Broadcast modes
+      !(mode == 4 || mode == 5)) {  // Must be Server or Broadcast mode
     printf("Discarding reply\n");
     return;
   }
@@ -137,7 +133,10 @@ void loop() {
   } else {
     t -= kEpochDiff;
   }
-//  Teensy3Clock.set(t);  // Optionally set the RTC
+
+  // Set the RTC and time
+  Teensy3Clock.set(t);
+  setTime(t);
 
   // Print the time
   tmElements_t tm;

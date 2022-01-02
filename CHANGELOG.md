@@ -23,6 +23,8 @@ and this project adheres to
   three-argument version calls the four-argument version with NULL for
   that function.
 * Updated `keywords.txt`.
+* Updated `SNTPClient` example: Removed unneeded includes, made the packet
+  buffer a global variable, and added setting the RTC and time.
 
 ## [0.11.0]
 
