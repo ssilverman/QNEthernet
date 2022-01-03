@@ -297,7 +297,9 @@ bool EthernetUDP::send(const uint8_t *data, size_t len) {
 bool EthernetUDP::ieee1588Timestamp(uint32_t *timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (hasIEEE1588Timestamp_) {
-    *timestamp = ieee1588Timestamp_;
+    if (timestamp != nullptr) {
+      *timestamp = ieee1588Timestamp_;
+    }
     return true;
   }
   return false;

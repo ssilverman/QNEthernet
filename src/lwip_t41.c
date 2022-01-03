@@ -801,7 +801,9 @@ uint32_t enet_read_1588_timer() {
 bool enet_read_1588_tx_timestamp(uint32_t *timestamp) {
   // NOTE: This is not "concurrent safe"
   if (hasTxTimestamp) {
-    *timestamp = txTimestamp;
+    if (timestamp != NULL) {
+      *timestamp = txTimestamp;
+    }
     return true;
   }
   return false;
