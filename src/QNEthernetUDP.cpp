@@ -17,14 +17,12 @@
 #include "lwip/ip.h"
 #include "lwip/opt.h"
 
-extern const size_t kMTU;
-
 namespace qindesign {
 namespace network {
 
 // Maximum UDP packet size.
 // Subtract UDP header size and minimum IPv4 header size.
-const size_t kMaxUDPSize = kMTU - 8 - 20;
+constexpr size_t kMaxUDPSize = EthernetClass::mtu() - 8 - 20;
 
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
