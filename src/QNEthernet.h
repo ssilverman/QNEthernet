@@ -68,7 +68,7 @@ class EthernetClass final {
   void setMACAddress(uint8_t mac[kMACAddrSize]);
 
   // Get the MTU.
-  int mtu() const;
+  static size_t mtu();
 
   // Call often.
   static void loop();

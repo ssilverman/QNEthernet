@@ -120,7 +120,7 @@ void EthernetClass::setMACAddress(uint8_t mac[kMACAddrSize]) {
   begin(&ipaddr, &netmask, &gw);
 }
 
-int EthernetClass::mtu() const {
+size_t EthernetClass::mtu() {
   return kMTU;
 }
 

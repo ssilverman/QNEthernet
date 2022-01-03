@@ -25,6 +25,8 @@ and this project adheres to
 * Updated `keywords.txt`.
 * Updated `SNTPClient` example: Removed unneeded includes, made the packet
   buffer a global variable, and added setting the RTC and time.
+* Changed `EthernetClass::mtu()` to `static size_t`. It was non-static
+  and `int`.
 
 ## [0.11.0]
 
