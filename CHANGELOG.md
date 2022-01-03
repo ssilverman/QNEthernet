@@ -19,8 +19,8 @@ and this project adheres to
 * Changed `EthernetUDP::flush()` to be a no-op.
 * Reduced lwIP's `MEM_SIZE` to 16KiB from 24000.
 * Split `MDNSClass::addService()` into two overloaded functions: one with three
-  arguments and one with four. No more defaulted TXT record function; the
-  three-argument version calls the four-argument version with NULL for
+  arguments and one with four. No more defaulted TXT record function parameter;
+  the three-argument version calls the four-argument version with NULL for
   that function.
 * Updated `keywords.txt`.
 * Updated `SNTPClient` example: Removed unneeded includes, made the packet
