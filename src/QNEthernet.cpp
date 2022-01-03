@@ -18,9 +18,6 @@
 #include "lwip/igmp.h"
 #include "lwip/ip_addr.h"
 #include "lwip/udp.h"
-#include "lwip_t41.h"
-
-extern const size_t kMTU;
 
 namespace qindesign {
 namespace network {
@@ -118,10 +115,6 @@ void EthernetClass::setMACAddress(uint8_t mac[kMACAddrSize]) {
   ip_addr_set(&gw, netif_ip_gw4(netif_));
 
   begin(&ipaddr, &netmask, &gw);
-}
-
-size_t EthernetClass::mtu() {
-  return kMTU;
 }
 
 // Declare this static object.

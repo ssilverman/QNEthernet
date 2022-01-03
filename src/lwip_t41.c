@@ -132,7 +132,6 @@ typedef struct {
 } enetbufferdesc_t;
 
 static const size_t kMaxFrameLen = 1522;
-const size_t kMTU = 1500;
 
 static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
@@ -447,7 +446,7 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 static err_t t41_netif_init(struct netif *netif) {
   netif->linkoutput = t41_low_level_output;
   netif->output = etharp_output;
-  netif->mtu = kMTU;
+  netif->mtu = MTU;
   netif->flags = NETIF_FLAG_BROADCAST |
                  NETIF_FLAG_ETHARP |
                  NETIF_FLAG_ETHERNET |

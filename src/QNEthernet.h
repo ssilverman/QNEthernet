@@ -22,6 +22,7 @@
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
+#include "lwip_t41.h"
 
 namespace qindesign {
 namespace network {
@@ -58,6 +59,11 @@ class EthernetClass final {
     return 0;
   }
 
+  // Gets the MTU.
+  static constexpr size_t mtu() {
+    return MTU;
+  }
+
   // Retrieves the MAC address.
   void macAddress(uint8_t mac[kMACAddrSize]) const;
 
@@ -66,9 +72,6 @@ class EthernetClass final {
   // be reset and any DHCP client will be restarted. This does nothing if the
   // given array is NULL.
   void setMACAddress(uint8_t mac[kMACAddrSize]);
-
-  // Get the MTU.
-  static size_t mtu();
 
   // Call often.
   static void loop();

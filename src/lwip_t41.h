@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#define MTU 1500
+
 // Get the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
