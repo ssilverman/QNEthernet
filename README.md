@@ -132,7 +132,6 @@ This section documents those functions.
 * `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
-* `mtu()`: Returns the MTU.
 * `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
@@ -152,6 +151,7 @@ This section documents those functions.
     changed.
 * `static constexpr maxMulticastGroups()`: Returns the maximum number of
   multicast groups.
+* `static constexpr mtu()`: Returns the MTU.
 
 ### `EthernetClient`
 
