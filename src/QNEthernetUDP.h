@@ -75,16 +75,10 @@ class EthernetUDP final : public UDP {
   IPAddress remoteIP() override;
   uint16_t remotePort() override;
 
-  // Returns whether the received packet has an IEEE 1588 timestamp.
-  bool hasIEEE1588Timestamp() const {
-    return hasIEEE1588Timestamp_;
-  }
-
-  // Returns the IEEE 1588 timestamp if it's available. hasIEEE1588Timestamp()
-  // indicates whether the timestamp exists.
-  uint32_t ieee1588Timestamp() const {
-    return ieee1588Timestamp_;
-  }
+  // Gets the IEEE 1588 timestamp for the received packet and assigns to the
+  // `timestamp` parameter, if available. This returns whether the received
+  // packet has a timestamp.
+  bool ieee1588Timestamp(uint32_t *timestamp) const;
 
   // Attempts to retrieve the last transmitted timestamp and returns whether one
   // is available and was assigned to `*timestamp`.
