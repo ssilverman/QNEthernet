@@ -17,6 +17,7 @@
 #include <elapsedMillis.h>
 
 #include "QNEthernetClient.h"
+#include "QNEthernetFrame.h"
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 #include "lwip/netif.h"
@@ -164,6 +165,8 @@ class EthernetClass final {
   // 1. Ethernet was not started,
   // 2. The frame is NULL, or
   // 3. The length is not in the range 60-1518.
+  //
+  // See also: EthernetFrame API
   bool sendRaw(const uint8_t *frame, size_t len);
 
   // Joins a multicast group. This returns whether the call was successful.
@@ -216,6 +219,9 @@ class EthernetClass final {
 
 // Instance for interacting with the library.
 extern EthernetClass Ethernet;
+
+// Instance for using raw Ethernet frames.
+extern EthernetFrameClass &EthernetFrame;
 
 // Lets user code use stdout.
 extern Print *stdPrint;

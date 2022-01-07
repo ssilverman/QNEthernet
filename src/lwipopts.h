@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // lwIP configuration for QNEthernet library on Teensy 4.1.
@@ -337,6 +337,7 @@
 // #define LWIP_DHCP6_MAX_DNS_SERVERS      DNS_MAX_SERVERS
 
 // Hook options
+#define LWIP_HOOK_FILENAME "lwip_hooks.h"
 
 // Debugging options
 // #define LWIP_DEBUG
