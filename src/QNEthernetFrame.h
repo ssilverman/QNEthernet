@@ -39,9 +39,15 @@ class EthernetFrameClass final : public Stream {
   EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
 
   // Returns the maximum frame length. This includes any padding and the FCS
-  // (Frame Check Sequence, the CRC value).
+  // (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
   static constexpr int maxFrameLen() {
     return MAX_FRAME_LEN;
+  }
+
+  // Returns the minimum frame length. This includes any padding and the FCS
+  // (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  static constexpr int minFrameLen() {
+    return 64;
   }
 
   // Starts a fresh frame. This is similar to EthernetUDP::beginPacket().
