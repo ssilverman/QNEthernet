@@ -34,6 +34,10 @@ class EthernetFrameClass final : public Stream {
     return instance_;
   }
 
+  // EthernetFrameClass is neither copyable nor movable.
+  EthernetFrameClass(const EthernetFrameClass &) = delete;
+  EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
+
   // Returns the maximum frame length. This includes any padding and the FCS
   // (Frame Check Sequence, the CRC value).
   static constexpr int maxFrameLen() {
