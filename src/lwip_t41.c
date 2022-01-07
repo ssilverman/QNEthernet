@@ -669,7 +669,7 @@ uint32_t read_1588_timer() {
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
-  if (frame == NULL || len < 64 || MAX_FRAME_LEN < len) {
+  if (frame == NULL || len < 60 || MAX_FRAME_LEN - 4 < len) {
     return false;
   }
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();

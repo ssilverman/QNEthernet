@@ -157,10 +157,13 @@ class EthernetClass final {
 
   // Sends a raw Ethernet frame. This returns whether the send was successful.
   //
+  // The FCS (Frame Check Sequence, the CRC value) should not be included in the
+  // frame data.
+  //
   // This will return false if:
   // 1. Ethernet was not started,
   // 2. The frame is NULL, or
-  // 3. The length is not in the range 64-1522.
+  // 3. The length is not in the range 60-1518.
   bool sendRaw(const uint8_t *frame, size_t len);
 
   // Joins a multicast group. This returns whether the call was successful.

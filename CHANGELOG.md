@@ -28,6 +28,10 @@ and this project adheres to
 * Changed `EthernetClass::mtu()` to `static size_t`. It was non-static
   and `int`.
 
+### Fixed
+* Fixed the length check when sending raw Ethernet frames to exclude the FCS
+  field. It checks that the length is in the range 60-1518 instead of 64-1522.
+
 ## [0.11.0]
 
 ### Added
