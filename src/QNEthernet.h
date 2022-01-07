@@ -194,6 +194,9 @@ class EthernetClass final {
   // hostname is set. The default is "teensy-lwip".
   String hostname();
 
+  // Tests if Ethernet is initialized.
+  operator bool();
+
  private:
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);

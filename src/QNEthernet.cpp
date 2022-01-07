@@ -392,5 +392,9 @@ String EthernetClass::hostname() {
 #endif
 }
 
+EthernetClass::operator bool() {
+  return (netif_ != nullptr);
+}
+
 }  // namespace network
 }  // namespace qindesign
