@@ -144,6 +144,9 @@ static volatile uint32_t rx_ready;
 // PHY status, polled
 static bool speed10Not100 = false;
 
+// Is Ethernet initialized?
+static bool isInitialized = false;
+
 void enet_isr();
 
 #ifdef LWIP_DEBUG
@@ -354,6 +357,8 @@ static void t41_low_level_init() {
 
   // phy soft reset
   // phy_mdio_write(0, 0x00, 1 << 15);
+
+  isInitialized = true;
 }
 
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
@@ -496,6 +501,9 @@ void enet_isr() {
 }
 
 static inline void check_link_status() {
+  if (!isInitialized) {
+    return;
+  }
   uint16_t status = mdio_read(0, 0x01);
   uint8_t is_link_up = !!(status & (1 << 2));
   if (netif_is_link_up(&t41_netif) != is_link_up) {
@@ -603,6 +611,8 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
 }
 
 void enet_deinit() {
+  isInitialized = false;
+
   if (isNetifAdded) {
     netif_remove(&t41_netif);
     netif_remove_ext_callback(&netif_callback);
