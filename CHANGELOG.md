@@ -291,3 +291,7 @@ and this project adheres to
 
 ### Added
 * Initial release.
+
+---
+
+Copyright (c) 2021-2022 Shawn Silverman
