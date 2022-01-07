@@ -131,8 +131,6 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-static const size_t kMaxFrameLen = 1522;
-
 static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
@@ -285,7 +283,7 @@ static void t41_low_level_init() {
   ENET_EIMR = 0;
 
   ENET_RCR = ENET_RCR_NLC |
-             ENET_RCR_MAX_FL(kMaxFrameLen) |
+             ENET_RCR_MAX_FL(MAX_FRAME_LEN) |
              ENET_RCR_CFEN |
              ENET_RCR_CRCFWD |
              ENET_RCR_PADEN |
@@ -671,7 +669,7 @@ uint32_t read_1588_timer() {
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
-  if (frame == NULL || len < 64 || kMaxFrameLen < len) {
+  if (frame == NULL || len < 64 || MAX_FRAME_LEN < len) {
     return false;
   }
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
