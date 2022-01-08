@@ -34,7 +34,7 @@ files provided with the lwIP release.
 8. [mDNS services](#mdns-services)
 9. [DNS](#dns)
 10. [stdio](#stdio)
-11. [Sending raw Ethernet frames](#sending-raw-ethernet-frames)
+11. [Raw Ethernet frames](#raw-ethernet-frames)
 12. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 13. [Other notes](#other-notes)
 14. [To do](#to-do)
@@ -203,14 +203,15 @@ from a frame and the `Print` API can be used to write to the frame.
 
 * `beginFrame()`: Starts a new frame. New data can be added using the
   `Print` API. This is similar to `EthernetUDP::beginPacket()`.
-* `endFrame()`: Sends the frame. This returns whether the send is successful. A
-  frame must have been started and its data length must be in the range 60-1518.
-  This is similar to `EthernetUDP::endPacket()`.
+* `endFrame()`: Sends the frame. This returns whether the send was successful. A
+  frame must have been started, its data length must be in the range 60-1518,
+  and Ethernet must have been initialized. This is similar
+  to `EthernetUDP::endPacket()`.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
 * `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
-  `beginFrame()`/`write()`/`endFrame()`. This is similar to
-  `EthernetUDP::send(data, len)`.
+  `beginFrame()`/`write()`/`endFrame()`. This is similar
+  to `EthernetUDP::send(data, len)`.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the FCS. Subtract 4 to get the maximum length that can be sent or
   received using this API.
@@ -544,16 +545,10 @@ void setup() {
 
 The side benefit is that user code can use `printf` too.
 
-## Sending raw Ethernet frames
+## Raw Ethernet frames
 
-There is support for sending raw Ethernet frames. The
-`Ethernet.sendRaw(frame, len)` function takes two arguments: a `const uint8_t *`
-frame and a `size_t` length. It returns whether the send was successful.
-
-A send is considered successful unless:
-1. Ethernet has not been started,
-2. The frame is `NULL`, or
-3. The length is not in the range 64-1522.
+There is support for sending and receiving raw Ethernet frames. See the
+[`EthernetFrame`](#ethernetframe) API, above.
 
 ## How to implement VLAN tagging
 
