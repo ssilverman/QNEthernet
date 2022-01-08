@@ -100,7 +100,10 @@ class EthernetFrameClass final : public Stream {
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
 
+  // Received frame; updated every time one is received
   std::vector<unsigned char> inFrame_;  // Holds received frames
+
+  // Frame being processed by the caller
   std::vector<unsigned char> frame_;    // Holds the frame being read
   int framePos_ = -1;                   // -1 if not currently reading a frame
 

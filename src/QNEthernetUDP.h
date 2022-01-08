@@ -83,7 +83,10 @@ class EthernetUDP final : public UDP {
 
   udp_pcb *pcb_;
 
+  // Received packet; updated every time one is received
   std::vector<unsigned char> inPacket_;  // Holds received packets
+
+  // Packet being processed by the caller
   std::vector<unsigned char> packet_;    // Holds the packet being read
   int packetPos_;                        // -1 if not currently reading a packet
 
