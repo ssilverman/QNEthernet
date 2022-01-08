@@ -12,9 +12,17 @@
 
 using namespace qindesign::network;
 
+// VLAN EtherType constants
 constexpr uint16_t kEtherTypeVLAN = 0x8100u;
 constexpr uint16_t kEtherTypeQinQ = 0x88A8u;
 
+// Buffer for reading frames.
+uint8_t buf[EthernetFrame.maxFrameLen()];
+
+// Tracks the received frame count.
+int frameCount = 0;
+
+// Main program setup.
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
@@ -37,9 +45,7 @@ void setup() {
   }
 }
 
-uint8_t buf[EthernetFrame.maxFrameLen()];
-int frameCount = 0;
-
+// Main program loop.
 void loop() {
   int size = EthernetFrame.parseFrame();
   if (size <= 0) {
