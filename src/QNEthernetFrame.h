@@ -133,14 +133,12 @@ class EthernetFrameClass final : public Stream {
 
   // Received frame; updated every time one is received
   std::vector<unsigned char> inFrame_;  // Holds received frames
+  bool inHasIEEE1588Timestamp_ = false;
+  uint32_t inIEEE1588Timestamp_;
 
   // Frame being processed by the caller
   std::vector<unsigned char> frame_;    // Holds the frame being read
   int framePos_ = -1;                   // -1 if not currently reading a frame
-
-  // IEEE 1588
-  bool inHasIEEE1588Timestamp_ = false;  // Attached to inFrame_
-  uint32_t inIEEE1588Timestamp_;         // Attached to inFrame_
   bool hasIEEE1588Timestamp_ = false;
   uint32_t ieee1588Timestamp_;
 

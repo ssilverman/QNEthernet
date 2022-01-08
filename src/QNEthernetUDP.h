@@ -102,20 +102,18 @@ class EthernetUDP final : public UDP {
 
   // Received packet; updated every time one is received
   std::vector<unsigned char> inPacket_;  // Holds received packets
+  bool inHasIEEE1588Timestamp_ = false;
+  uint32_t inIEEE1588Timestamp_;
 
   // Packet being processed by the caller
   std::vector<unsigned char> packet_;    // Holds the packet being read
   int packetPos_;                        // -1 if not currently reading a packet
+  bool hasIEEE1588Timestamp_ = false;
+  uint32_t ieee1588Timestamp_;
 
   // Source of incoming packet
   IPAddress inAddr_;
   volatile uint16_t inPort_;
-
-  // IEEE 1588
-  bool inHasIEEE1588Timestamp_ = false;  // Attached to inPacket_
-  uint32_t inIEEE1588Timestamp_;         // Attached to inPacket_
-  bool hasIEEE1588Timestamp_ = false;
-  uint32_t ieee1588Timestamp_;
 
   // Outgoing packets
   bool hasOutPacket_;
