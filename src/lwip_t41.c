@@ -679,6 +679,9 @@ uint32_t read_1588_timer() {
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
+  if (isInitialized) {
+    return false;
+  }
   if (frame == NULL || len < 60 || MAX_FRAME_LEN - 4 < len) {
     return false;
   }

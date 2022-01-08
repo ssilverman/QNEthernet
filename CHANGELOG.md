@@ -36,6 +36,7 @@ and this project adheres to
   buffer a global variable, and added setting the RTC and time.
 * Changed `EthernetClass::mtu()` to `static size_t`. It was non-static
   and `int`.
+* Updated `enet_output_frame(frame, len)` to check if the system is initialized.
 
 ### Fixed
 * Fixed the length check when sending raw Ethernet frames to exclude the FCS
