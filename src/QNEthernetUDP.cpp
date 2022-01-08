@@ -55,8 +55,8 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   udp->inAddr_ = addr->addr;
   udp->inPort_ = port;
 
-  udp->hasIEEE1588Timestamp_ = pHead->timestampValid;
-  udp->ieee1588Timestamp_ = pHead->timestamp;
+  udp->inHasIEEE1588Timestamp_ = pHead->timestampValid;
+  udp->inIEEE1588Timestamp_ = pHead->timestamp;
 
   pbuf_free(pHead);
 }
@@ -143,8 +143,13 @@ int EthernetUDP::parsePacket() {
     return 0;
   }
 
+  // Copy the packet state
   packet_ = inPacket_;
+  hasIEEE1588Timestamp_ = inHasIEEE1588Timestamp_;
+  ieee1588Timestamp_ = inIEEE1588Timestamp_;
+
   inPacket_.clear();
+  inHasIEEE1588Timestamp_ = false;
 
   EthernetClass::loop();  // Allow the stack to move along
 
@@ -208,6 +213,17 @@ IPAddress EthernetUDP::remoteIP() {
 
 uint16_t EthernetUDP::remotePort() {
   return inPort_;
+}
+
+bool EthernetUDP::ieee1588Timestamp(uint32_t *timestamp) const {
+  // NOTE: This is not "concurrent safe"
+  if (hasIEEE1588Timestamp_) {
+    if (timestamp != nullptr) {
+      *timestamp = ieee1588Timestamp_;
+    }
+    return true;
+  }
+  return false;
 }
 
 // --------------------------------------------------------------------------
@@ -301,17 +317,6 @@ bool EthernetUDP::send(const uint8_t *data, size_t len, bool doTimestamp) {
   bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;
-}
-
-bool EthernetUDP::ieee1588Timestamp(uint32_t *timestamp) const {
-  // NOTE: This is not "concurrent safe"
-  if (hasIEEE1588Timestamp_) {
-    if (timestamp != nullptr) {
-      *timestamp = ieee1588Timestamp_;
-    }
-    return true;
-  }
-  return false;
 }
 
 bool EthernetUDP::ieee1588TXTimestamp(uint32_t *timestamp) {

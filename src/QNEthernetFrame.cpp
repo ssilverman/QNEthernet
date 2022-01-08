@@ -40,8 +40,8 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
     p = p->next;
   }
 
-  EthernetFrame.hasIEEE1588Timestamp_ = pHead->timestampValid;
-  EthernetFrame.ieee1588Timestamp_ = pHead->timestamp;
+  EthernetFrame.inHasIEEE1588Timestamp_ = pHead->timestampValid;
+  EthernetFrame.inIEEE1588Timestamp_ = pHead->timestamp;
 
   pbuf_free(pHead);
 
@@ -53,8 +53,13 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
 // --------------------------------------------------------------------------
 
 int EthernetFrameClass::parseFrame() {
+  // Copy the packet state
   frame_ = inFrame_;
+  hasIEEE1588Timestamp_ = inHasIEEE1588Timestamp_;
+  ieee1588Timestamp_ = inIEEE1588Timestamp_;
+
   inFrame_.clear();
+  inHasIEEE1588Timestamp_ = false;
 
   EthernetClass::loop();  // Allow the stack to move along
 
@@ -104,6 +109,17 @@ int EthernetFrameClass::peek() {
     return -1;
   }
   return frame_[framePos_];
+}
+
+bool EthernetFrameClass::ieee1588Timestamp(uint32_t *timestamp) const {
+  // NOTE: This is not "concurrent safe"
+  if (hasIEEE1588Timestamp_) {
+    if (timestamp != nullptr) {
+      *timestamp = ieee1588Timestamp_;
+    }
+    return true;
+  }
+  return false;
 }
 
 // --------------------------------------------------------------------------
@@ -171,17 +187,6 @@ bool EthernetFrameClass::sendWithTimestamp(const uint8_t *frame, size_t len) {
 bool EthernetFrameClass::send(const uint8_t *frame, size_t len,
                               bool doTimestamp) {
   return enet_output_frame(frame, len, doTimestamp);
-}
-
-bool EthernetFrameClass::ieee1588Timestamp(uint32_t *timestamp) const {
-  // NOTE: This is not "concurrent safe"
-  if (hasIEEE1588Timestamp_) {
-    if (timestamp != nullptr) {
-      *timestamp = ieee1588Timestamp_;
-    }
-    return true;
-  }
-  return false;
 }
 
 bool EthernetFrameClass::ieee1588TXTimestamp(uint32_t *timestamp) {

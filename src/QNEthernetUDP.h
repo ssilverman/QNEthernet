@@ -112,6 +112,8 @@ class EthernetUDP final : public UDP {
   volatile uint16_t inPort_;
 
   // IEEE 1588
+  bool inHasIEEE1588Timestamp_ = false;  // Attached to inPacket_
+  uint32_t inIEEE1588Timestamp_;         // Attached to inPacket_
   bool hasIEEE1588Timestamp_ = false;
   uint32_t ieee1588Timestamp_;
 

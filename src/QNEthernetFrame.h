@@ -139,6 +139,8 @@ class EthernetFrameClass final : public Stream {
   int framePos_ = -1;                   // -1 if not currently reading a frame
 
   // IEEE 1588
+  bool inHasIEEE1588Timestamp_ = false;  // Attached to inFrame_
+  uint32_t inIEEE1588Timestamp_;         // Attached to inFrame_
   bool hasIEEE1588Timestamp_ = false;
   uint32_t ieee1588Timestamp_;
 
