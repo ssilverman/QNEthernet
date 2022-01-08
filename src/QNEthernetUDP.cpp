@@ -242,6 +242,11 @@ int EthernetUDP::endPacket() {
   }
   hasOutPacket_ = false;
 
+  if (outPacket_.size() > UINT16_MAX) {
+    outPacket_.clear();
+    return false;
+  }
+
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, outPacket_.size(), PBUF_RAM);
   if (p == nullptr) {
