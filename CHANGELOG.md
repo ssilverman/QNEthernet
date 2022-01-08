@@ -38,6 +38,10 @@ and this project adheres to
   and `int`.
 * Updated `enet_output_frame(frame, len)` to check if the system is initialized.
 
+### Removed
+* Removed `EthernetClass::sendRaw(frame, len)` because there's a new
+  `EthernetFrame` API with a `send(frame, len)` function.
+
 ### Fixed
 * Fixed the length check when sending raw Ethernet frames to exclude the FCS
   field. It checks that the length is in the range 60-1518 instead of 64-1522.

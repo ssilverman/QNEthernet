@@ -133,7 +133,6 @@ This section documents those functions.
 * `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
-* `sendRaw(frame, len)`: Sends a raw Ethernet frame.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
