@@ -7,7 +7,6 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-Ethernet	KEYWORD1	Ethernet
 EthernetClient	KEYWORD1	ClientConstructor
 EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
@@ -39,7 +38,6 @@ setLocalIP	KEYWORD2	EthernetSetLocalIP
 setSubnetMask	KEYWORD2	EthernetSetSubnetMask
 setGatewayIP	KEYWORD2	EthernetSetGatewayIP
 setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
-sendRaw	KEYWORD2
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
 setHostname	KEYWORD2
@@ -76,12 +74,19 @@ ttl	KEYWORD2
 maxServers	KEYWORD2
 setServer	KEYWORD2
 getHostByName	KEYWORD2
+maxFrameLen	KEYWORD2
+minFrameLen	KEYWORD2
+beginFrame	KEYWORD2
+endFrame	KEYWORD2
+parseFrame	KEYWORD2
 
 #######################################
 # Instances and Structures (KEYWORD3)
 #######################################
 
+Ethernet	KEYWORD3	Ethernet
 stdPrint	KEYWORD3
+EthernetFrame	KEYWORD3
 
 #######################################
 # Constants (LITERAL1)
