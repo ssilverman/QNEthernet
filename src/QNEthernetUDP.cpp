@@ -273,6 +273,14 @@ int EthernetUDP::endPacket(bool doTimestamp) {
 }
 
 bool EthernetUDP::send(const uint8_t *data, size_t len) {
+  return send(data, len, false);
+}
+
+bool EthernetUDP::sendWithTimestamp(const uint8_t *data, size_t len) {
+  return send(data, len, true);
+}
+
+bool EthernetUDP::send(const uint8_t *data, size_t len, bool doTimestamp) {
   if (len > UINT16_MAX) {
     return false;
   }
@@ -289,6 +297,7 @@ bool EthernetUDP::send(const uint8_t *data, size_t len) {
     return false;
   }
   pbuf_take(p, data, len);
+  p->timestampValid = doTimestamp;
   bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;

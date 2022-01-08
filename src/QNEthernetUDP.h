@@ -57,6 +57,9 @@ class EthernetUDP final : public UDP {
   // causes less overhead.
   bool send(const uint8_t *data, size_t len);
 
+  // Same as `send(data, len)`, but adds a timestamp to the packet.
+  bool sendWithTimestamp(const uint8_t *data, size_t len);
+
   // Bring Print::write functions into scope
   using Print::write;
 
@@ -88,7 +91,9 @@ class EthernetUDP final : public UDP {
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
+  // Timestamping send functions
   int endPacket(bool doTimestamp);
+  bool send(const uint8_t *data, size_t len, bool doTimestamp);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
