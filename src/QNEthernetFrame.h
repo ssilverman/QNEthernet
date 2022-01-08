@@ -104,7 +104,7 @@ class EthernetFrameClass final : public Stream {
   std::vector<unsigned char> frame_;    // Holds the frame being read
   int framePos_ = -1;                   // -1 if not currently reading a frame
 
-  // Outgoing packets
+  // Outgoing frames
   bool hasOutFrame_ = false;
   std::vector<unsigned char> outFrame_;
 
