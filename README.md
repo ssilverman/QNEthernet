@@ -191,6 +191,8 @@ This section documents those functions.
 * `beginMulticast(ip, localPort, reuse)`: Similar to
   `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
   the above.
+* `send(data, len)`: Sends a packet without having to use `beginPacket()`,
+  `write()`, and `endPacket()`. It causes less overhead.
 * `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
 
 ### `EthernetFrame`

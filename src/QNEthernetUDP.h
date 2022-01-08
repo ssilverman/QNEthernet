@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernetUDP.h defines the UDP interface.
@@ -50,6 +50,11 @@ class EthernetUDP final : public UDP {
   int beginPacket(IPAddress ip, uint16_t port) override;
   int beginPacket(const char *host, uint16_t port) override;
   int endPacket() override;
+
+  // Sends a UDP packet and returns whether the attempt was successful. This
+  // combines the functions of beginPacket(), write(), and endPacket(), and
+  // causes less overhead.
+  bool send(const uint8_t *data, size_t len);
 
   // Bring Print::write functions into scope
   using Print::write;

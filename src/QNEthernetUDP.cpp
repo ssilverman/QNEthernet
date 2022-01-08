@@ -259,6 +259,28 @@ int EthernetUDP::endPacket() {
   return retval;
 }
 
+bool EthernetUDP::send(const uint8_t *data, size_t len) {
+  if (len > UINT16_MAX) {
+    return false;
+  }
+  if (pcb_ == nullptr) {
+    pcb_ = udp_new();
+  }
+  if (pcb_ == nullptr) {
+    return false;
+  }
+
+  // Note: Use PBUF_RAM for TX
+  struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
+  if (p == nullptr) {
+    return false;
+  }
+  pbuf_take(p, data, len);
+  bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
+  pbuf_free(p);
+  return retval;
+}
+
 size_t EthernetUDP::write(uint8_t b) {
   if (!hasOutPacket_) {
     return 0;

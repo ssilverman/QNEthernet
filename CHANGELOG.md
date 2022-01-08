@@ -20,6 +20,9 @@ and this project adheres to
   `EthernetFrame` instance (of `EthernetFrameClass`) that is used similarly
   to `EthernetUDP`.
 * New `RawFrameMonitor` example.
+* New `EthernetUDP::send(data, len)` function for sending a packet without
+  having to use `beginPacket()`/`write()`/`endPacket()`. It causes
+  less overhead.
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
