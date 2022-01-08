@@ -83,10 +83,6 @@ class EthernetUDP final : public UDP {
   // packet has a timestamp.
   bool ieee1588Timestamp(uint32_t *timestamp) const;
 
-  // Attempts to retrieve the last transmitted timestamp and returns whether one
-  // is available and was assigned to `*timestamp`.
-  static bool ieee1588TXTimestamp(uint32_t *timestamp);
-
  private:
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);

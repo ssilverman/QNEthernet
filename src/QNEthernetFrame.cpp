@@ -189,10 +189,6 @@ bool EthernetFrameClass::send(const uint8_t *frame, size_t len,
   return enet_output_frame(frame, len, doTimestamp);
 }
 
-bool EthernetFrameClass::ieee1588TXTimestamp(uint32_t *timestamp) {
-  return enet_read_1588_tx_timestamp(timestamp);
-}
-
 size_t EthernetFrameClass::write(uint8_t b) {
   if (!hasOutFrame_) {
     return 0;

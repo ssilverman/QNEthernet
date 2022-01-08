@@ -183,6 +183,11 @@ class EthernetClass final {
   // Reads the current value of the IEEE 1588 timer.
   static uint32_t readIEEE1588Timer();
 
+  // Attempts to retrieve the timestamp of the last transmitted frame and
+  // returns whether one is available. If available and the parameter is not
+  // NULL then the timestamp is assigned to `*timestamp`.
+  static bool ieee1588TXTimestamp(uint32_t *timestamp);
+
  private:
   // Creates a new network interface. This sets the MAC address to the built-in
   // MAC address. This calls the other constructor with a NULL address.

@@ -398,5 +398,9 @@ uint32_t EthernetClass::readIEEE1588Timer() {
   return enet_read_1588_timer();
 }
 
+bool EthernetClass::ieee1588TXTimestamp(uint32_t *timestamp) {
+  return enet_read_1588_tx_timestamp(timestamp);
+}
+
 }  // namespace network
 }  // namespace qindesign
