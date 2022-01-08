@@ -18,12 +18,13 @@ files provided with the lwIP release.
 ## Table of contents
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
-2. [Additional functions not in the Arduino API](#additional-functions-not-in-the-arduino-api)
+2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
       1. [TCP socket options](#tcp-socket-options)
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
+   5. [`EthernetFrame`](#ethernetframe)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -110,7 +111,7 @@ and notes:
 * All four address-setting functions (IP, subnet mask, gateway, DNS) do nothing
   unless the system has been initialized.
 
-## Additional functions not in the Arduino API
+## Additional functions and features not in the Arduino API
 
 _QNEthernet_ defines functions that don't exist in the Arduino API as it's
 currently defined. (See:
@@ -142,6 +143,7 @@ This section documents those functions.
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within
   the given timeout. Note that this also works for a static-assigned address.
+* `operator bool()`: Tests if Ethernet is initialized.
 * Callback functions: Note that callbacks should be registered before any other
   Ethernet functions are called. This ensures that all events are captured. This
   includes `Ethernet.begin(...)`.
@@ -191,6 +193,27 @@ This section documents those functions.
   the above.
 * `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
 
+### `EthernetFrame`
+
+This object adds the ability to send and receive raw Ethernet frames. It
+provides an API that is similar in feel to `EthernetUDP`. Because, like
+`EthernetUDP`, it derives from `Stream`, the `Stream` API can be used to read
+from a frame and the `Print` API can be used to write to the frame.
+
+* `beginFrame()`: Starts a new frame. New data can be added using the
+  `Print` API. This is similar to `EthernetUDP::beginPacket()`.
+* `endFrame()`: Sends the frame. This returns whether the send is successful. A
+  frame must have been started and its data length must be in the range 60-1518.
+  This is similar to `EthernetUDP::endPacket()`.
+* `parseFrame()`: Checks if a new frame is available. This is similar
+  to `EthernetUDP::parseFrame()`.
+* `static constexpr int maxFrameLen()`: Returns the maximum frame length
+  including the FCS. Subtract 4 to get the maximum length that can be sent or
+  received using this API.
+* `static constexpr int minFrameLen()`: Returns the minimum frame length
+  including the FCS. Subtract 4 to get the minimum length that can be sent or
+  received using this API.
+
 ## How to run
 
 This library works with both PlatformIO and Arduino. To use it with Arduino,
@@ -214,8 +237,9 @@ here are a few steps to follow:
 6. `Ethernet.hardwareStatus()` always returns zero.
 7. Most other things should be the same.
 
-Please see the examples for more things you can do with the API, including using
-listeners to watch for network changes.
+Please see the examples for more things you can do with the API, including:
+* Using listeners to watch for network changes, and
+* Monitoring raw Ethernet frames.
 
 ## How to write data to connections
 

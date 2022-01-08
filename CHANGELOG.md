@@ -16,6 +16,10 @@ and this project adheres to
 * New `AppWithListenersTemplate` example.
 * Added `EthernetClass::operator bool()` for testing whether Ethernet
   is initialized.
+* Added a new way to send and receive raw Ethernet frames. There's a new
+  `EthernetFrame` instance (of `EthernetFrameClass`) that is used similarly
+  to `EthernetUDP`.
+* New `RawFrameMonitor` example.
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
@@ -33,6 +37,8 @@ and this project adheres to
 ### Fixed
 * Fixed the length check when sending raw Ethernet frames to exclude the FCS
   field. It checks that the length is in the range 60-1518 instead of 64-1522.
+* Fixed `check_link_status()` to check if Ethernet is initialized before trying
+  to access the PHY.
 
 ## [0.11.0]
 
