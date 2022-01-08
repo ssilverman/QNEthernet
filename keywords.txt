@@ -67,6 +67,7 @@ accept	KEYWORD2	EthernetServerAccept
 beginMulticast	KEYWORD2	WiFiNINAUDPBeginMulticast
 beginPacket	KEYWORD2	EthernetUDPBeginPacket
 endPacket	KEYWORD2	EthernetUDPEndPacket
+send	KEYWORD2
 parsePacket	KEYWORD2	EthernetUDPParsePacket
 addService	KEYWORD2
 removeService	KEYWORD2
