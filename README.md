@@ -209,6 +209,9 @@ from a frame and the `Print` API can be used to write to the frame.
   This is similar to `EthernetUDP::endPacket()`.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
+* `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
+  `beginFrame()`/`write()`/`endFrame()`. This is similar to
+  `EthernetUDP::send(data, len)`.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the FCS. Subtract 4 to get the maximum length that can be sent or
   received using this API.

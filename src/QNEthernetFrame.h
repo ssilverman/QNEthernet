@@ -59,9 +59,22 @@ class EthernetFrameClass final : public Stream {
   // frame data.
   //
   // This will return false if:
-  // 1. The frame was not started, or
-  // 2. The length is not in the range 60-1518. This excludes the FCS field.
+  // 1. The frame was not started,
+  // 2. Ethernet was not started, or
+  // 3. The length is not in the range 60-1518.
   bool endFrame();
+
+  // Sends a frame and returns whether the send was successful. This causes less
+  // overhead than beginFrame()/write()/endFrame().
+  //
+  // The FCS (Frame Check Sequence, the CRC value) should not be included in the
+  // frame data.
+  //
+  // This will return false if:
+  // 1. Ethernet was not started,
+  // 2. The frame is NULL, or
+  // 3. The length is not in the range 60-1518.
+  bool send(const uint8_t *frame, size_t len);
 
   // Bring Print::write functions into scope
   using Print::write;

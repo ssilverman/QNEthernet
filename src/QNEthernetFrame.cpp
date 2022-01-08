@@ -126,6 +126,10 @@ bool EthernetFrameClass::endFrame() {
   return retval;
 }
 
+bool EthernetFrameClass::send(const uint8_t *frame, size_t len) {
+  return enet_output_frame(frame, len);
+}
+
 size_t EthernetFrameClass::write(uint8_t b) {
   if (!hasOutFrame_) {
     return 0;
