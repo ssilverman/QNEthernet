@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* New `EthernetFrame` convenience functions that also write the header:
+  * `beginFrame(dstAddr, srcAddr, typeOrLen)`
+  * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`
+
 ## [0.12.0]
 
 ### Added

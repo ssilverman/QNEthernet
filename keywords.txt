@@ -78,6 +78,7 @@ getHostByName	KEYWORD2
 maxFrameLen	KEYWORD2
 minFrameLen	KEYWORD2
 beginFrame	KEYWORD2
+beginVLANFrame	KEYWORD2
 endFrame	KEYWORD2
 parseFrame	KEYWORD2
 

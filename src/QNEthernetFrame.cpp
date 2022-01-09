@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "QNEthernet.h"
+#include "lwip/prot/ieee.h"
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {
@@ -113,6 +114,27 @@ void EthernetFrameClass::beginFrame() {
 
   hasOutFrame_ = true;
   outFrame_.clear();
+}
+
+void EthernetFrameClass::beginFrame(const uint8_t dstAddr[6],
+                                    const uint8_t srcAddr[6],
+                                    uint16_t typeOrLength) {
+  beginFrame();
+  write(dstAddr, 6);
+  write(srcAddr, 6);
+  write(static_cast<uint8_t>(typeOrLength >> 8));
+  write(static_cast<uint8_t>(typeOrLength));
+}
+
+void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[6],
+                                        const uint8_t srcAddr[6],
+                                        uint16_t vlanInfo,
+                                        uint16_t typeOrLength) {
+  beginFrame(dstAddr, srcAddr, ETHTYPE_VLAN);
+  write(static_cast<uint8_t>(vlanInfo >> 8));
+  write(static_cast<uint8_t>(vlanInfo));
+  write(static_cast<uint8_t>(typeOrLength >> 8));
+  write(static_cast<uint8_t>(typeOrLength));
 }
 
 bool EthernetFrameClass::endFrame() {

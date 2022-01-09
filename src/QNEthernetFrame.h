@@ -53,6 +53,16 @@ class EthernetFrameClass final : public Stream {
   // Starts a fresh frame. This is similar to EthernetUDP::beginPacket().
   void beginFrame();
 
+  // Starts a frame and writes the given addresses and EtherType/length. This is
+  // similar to EthernetUDP::beginPacket().
+  void beginFrame(const uint8_t dstAddr[6], const uint8_t srcAddr[6],
+                  uint16_t typeOrLen);
+
+  // Starts a VLAN-tagged frame and writes the given addresses, VLAN info, and
+  // EtherType/length. This is similar to EthernetUDP::beginPacket().
+  void beginVLANFrame(const uint8_t dstAddr[6], const uint8_t srcAddr[6],
+                      uint16_t vlanInfo, uint16_t typeOrLen);
+
   // Sends the frame. This is similar to EthernetUDP::endPacket().
   //
   // The FCS (Frame Check Sequence, the CRC value) should not be included in the

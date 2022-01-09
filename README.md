@@ -203,6 +203,11 @@ from a frame and the `Print` API can be used to write to the frame.
 
 * `beginFrame()`: Starts a new frame. New data can be added using the
   `Print` API. This is similar to `EthernetUDP::beginPacket()`.
+* `beginFrame(dstAddr, srcAddr, typeOrLen)`: Starts a new frame and writes the
+  given addresses and EtherType/length.
+* `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`: Starts a new
+  VLAN-tagged frame and writes the given addresses, VLAN info, and
+  EtherType/length.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
   frame must have been started, its data length must be in the range 60-1518,
   and Ethernet must have been initialized. This is similar
