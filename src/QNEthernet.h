@@ -23,6 +23,7 @@
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip_t41.h"
+#include "util/PrintUtils.h"
 
 namespace qindesign {
 namespace network {
