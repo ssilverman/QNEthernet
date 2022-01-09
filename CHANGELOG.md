@@ -13,6 +13,11 @@ and this project adheres to
   * `beginFrame(dstAddr, srcAddr, typeOrLen)`
   * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`
 
+### Changed
+* The `EthernetClient::writeFully()` functions were changed to return the number
+  of bytes actually written. These can break early if the connection was closed
+  while attempting to send the bytes.
+
 ## [0.12.0]
 
 ### Added

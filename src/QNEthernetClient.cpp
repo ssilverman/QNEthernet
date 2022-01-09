@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernetClient.cpp contains the EthernetClient implementation.
@@ -247,19 +247,21 @@ uint16_t EthernetClient::remotePort() {
 //  Transmission
 // --------------------------------------------------------------------------
 
-void EthernetClient::writeFully(uint8_t b) {
-  writeFully(&b, 1);
+size_t EthernetClient::writeFully(uint8_t b) {
+  return writeFully(&b, 1);
 }
 
-void EthernetClient::writeFully(const char *buf) {
-  writeFully(reinterpret_cast<const uint8_t *>(buf), strlen(buf));
+size_t EthernetClient::writeFully(const char *buf) {
+  return writeFully(reinterpret_cast<const uint8_t *>(buf), strlen(buf));
 }
 
-void EthernetClient::writeFully(const char *buf, size_t size) {
-  writeFully(reinterpret_cast<const uint8_t *>(buf), size);
+size_t EthernetClient::writeFully(const char *buf, size_t size) {
+  return writeFully(reinterpret_cast<const uint8_t *>(buf), size);
 }
 
-void EthernetClient::writeFully(const uint8_t *buf, size_t size) {
+size_t EthernetClient::writeFully(const uint8_t *buf, size_t size) {
+  size_t total = size;
+
   // Don't use client.connected() as the "connected" check because
   // that will return true if there's data available, and this loop
   // does not check for data available.
@@ -268,6 +270,8 @@ void EthernetClient::writeFully(const uint8_t *buf, size_t size) {
     size -= written;
     buf += written;
   }
+
+  return total - size;
 }
 
 size_t EthernetClient::write(uint8_t b) {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernetClient.h defines the TCP client interface.
@@ -8,6 +8,7 @@
 #define QNE_ETHERNETCLIENT_H_
 
 // C++ includes
+#include <cstddef>
 #include <memory>
 
 #include <Client.h>
@@ -65,10 +66,14 @@ class EthernetClient final : public Client {
   // Bring Print::write functions into scope
   using Print::write;
 
-  void writeFully(uint8_t b);
-  void writeFully(const char *s);
-  void writeFully(const char *s, size_t size);
-  void writeFully(const uint8_t *buf, size_t size);
+  // Functions that loop until all bytes are written. If the connection is
+  // closed before all bytes are sent then these break early and return the
+  // actual number of bytes sent. In other words, these only return a value less
+  // than the specified size if the connection was closed.
+  size_t writeFully(uint8_t b);
+  size_t writeFully(const char *s);
+  size_t writeFully(const char *s, size_t size);
+  size_t writeFully(const uint8_t *buf, size_t size);
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buf, size_t size) override;
