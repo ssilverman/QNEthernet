@@ -12,6 +12,10 @@ and this project adheres to
 * New `EthernetFrame` convenience functions that also write the header:
   * `beginFrame(dstAddr, srcAddr, typeOrLen)`
   * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`
+* New `qindesign::network::util` Print utility functions. The `breakf` function
+  parameter is used as the stopping condition in `writeFully()`.
+  * `writeFully(Print &, buf, size, breakf = nullptr)`
+  * `writeMagic(Print &, mac, breakf = nullptr)`
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number
