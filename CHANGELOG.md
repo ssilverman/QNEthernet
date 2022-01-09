@@ -23,6 +23,8 @@ and this project adheres to
   while attempting to send the bytes.
 * Changed `EthernetClient::writeFully()` functions to use the new `writeFully()`
   Print utility function.
+* Changed the `Ethernet` object to be a reference to a singleton. This matches
+  how the `EthernetFrame` object works.
 
 ## [0.12.0]
 

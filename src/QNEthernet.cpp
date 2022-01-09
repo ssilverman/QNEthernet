@@ -22,9 +22,14 @@
 namespace qindesign {
 namespace network {
 
+// Define the singleton instance.
+EthernetClass EthernetClass::instance_;
+
+// A reference to the singleton.
+EthernetClass &Ethernet = EthernetClass::instance();
+
 // Global definitions for Arduino
 static EventResponder ethLoop;
-EthernetClass Ethernet;
 static bool ethActive = false;
 
 // Attach the loop() call to yield() via EventResponder.

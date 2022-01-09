@@ -39,14 +39,10 @@ class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = 6;
 
-  // Creates a new network interface. This sets the MAC address to the built-in
-  // MAC address. This calls the other constructor with a NULL address.
-  EthernetClass();
-
-  // Creates a new network interface. This sets the MAC address to the given MAC
-  // address. If the given address is NULL then this uses the built-in
-  // MAC address.
-  EthernetClass(const uint8_t mac[6]);
+  // Accesses the singleton instance.
+  static EthernetClass &instance() {
+    return instance_;
+  }
 
   ~EthernetClass();
 
@@ -185,6 +181,15 @@ class EthernetClass final {
   operator bool();
 
  private:
+  // Creates a new network interface. This sets the MAC address to the built-in
+  // MAC address. This calls the other constructor with a NULL address.
+  EthernetClass();
+
+  // Creates a new network interface. This sets the MAC address to the given MAC
+  // address. If the given address is NULL then this uses the built-in
+  // MAC address.
+  EthernetClass(const uint8_t mac[6]);
+
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
 
@@ -205,10 +210,13 @@ class EthernetClass final {
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
+
+  // The singleton instance.
+  static EthernetClass instance_;
 };
 
 // Instance for interacting with the library.
-extern EthernetClass Ethernet;
+extern EthernetClass &Ethernet;
 
 // Instance for using raw Ethernet frames.
 extern EthernetFrameClass &EthernetFrame;
