@@ -25,6 +25,7 @@ files provided with the lwIP release.
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
    5. [`EthernetFrame`](#ethernetframe)
+   6. [Print utilities](#print-utilities)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -224,6 +225,27 @@ from a frame and the `Print` API can be used to write to the frame.
   including the FCS. Subtract 4 to get the minimum length that can be sent or
   received using this API.
 
+### Print utilities
+
+The `util/PrintUtils.h` file declares some useful output functions. Note that
+this file is included when `QNEthernet.h` is included; there's no need to
+include it separately.
+
+1. `writeFully(Print &, buf, size, breakf = nullptr)`: Attempts to completely
+   write bytes to the given `Print` object. The optional `breakf` function is
+   used as the stopping condition. It returns the number of bytes actually
+   written. The return value will be less than the requested size only if
+   `breakf` returned `true` before all bytes were written. Note that a NULL
+   `breakf` function is assumed to return `false`.
+
+   For example, the `EthernetClient::writeFully()` functions use this and pass
+   the "am I disconnected" condition as the `breakf` function.
+
+2. `writeMagic(Print &, mac, breakf = nullptr)`: Writes the payload for a
+   [Magic packet](#https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet) to
+   the given `Print` object. This uses `writeFully()` under the covers and
+   passes along the `breakf` function as the stopping condition.
+
 ## How to run
 
 This library works with both PlatformIO and Arduino. To use it with Arduino,
@@ -231,7 +253,8 @@ here are a few steps to follow:
 
 1. Change `#include <Ethernet.h>` to `#include <QNEthernet.h>`. Note that this
    include already includes the header for EthernetUDP, so you can remove any
-   `#include <EthernetUdp.h>`.
+   `#include <EthernetUdp.h>`. (i.e. There isn't a need to include the
+   `<QNEthernetUDP.h>` header.)
 2. Just below that, add: `using namespace qindesign::network;`
 3. In `setup()`, just after initializing `Serial`, set `stdPrint = &Serial`.
    This enables some lwIP output and also `printf` for your own code.
