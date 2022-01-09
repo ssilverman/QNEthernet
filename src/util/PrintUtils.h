@@ -4,6 +4,9 @@
 // PrintUtils.h declares Print utility functions.
 // This file is part of the QNEthernet library.
 
+#ifndef QNE_UTIL_PRINTUTILS_H_
+#define QNE_UTIL_PRINTUTILS_H_
+
 // C++ includes
 #include <cstddef>
 #include <cstdint>
@@ -37,3 +40,5 @@ size_t writeMagic(Print &p, uint8_t mac[6],
 }  // namespace util
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // QNE_UTIL_PRINTUTILS_H_
