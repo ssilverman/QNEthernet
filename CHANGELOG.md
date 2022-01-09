@@ -21,6 +21,8 @@ and this project adheres to
 * The `EthernetClient::writeFully()` functions were changed to return the number
   of bytes actually written. These can break early if the connection was closed
   while attempting to send the bytes.
+* Changed `EthernetClient::writeFully()` functions to use the new `writeFully()`
+  Print utility function.
 
 ## [0.12.0]
 

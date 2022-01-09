@@ -19,6 +19,7 @@
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/tcp.h"
+#include "util/PrintUtils.h"
 
 namespace qindesign {
 namespace network {
@@ -260,18 +261,12 @@ size_t EthernetClient::writeFully(const char *buf, size_t size) {
 }
 
 size_t EthernetClient::writeFully(const uint8_t *buf, size_t size) {
-  size_t total = size;
+  // Don't use connected() as the "connected" check because that will
+  // return true if there's data available, and the loop doesn't check
+  // for data available. Instead, use operator bool().
 
-  // Don't use client.connected() as the "connected" check because
-  // that will return true if there's data available, and this loop
-  // does not check for data available.
-  while (size > 0 && static_cast<bool>(*this)) {
-    size_t written = write(buf, size);
-    size -= written;
-    buf += written;
-  }
-
-  return total - size;
+  return util::writeFully(*this, buf, size,
+                          [&]() { return !static_cast<bool>(*this); });
 }
 
 size_t EthernetClient::write(uint8_t b) {
