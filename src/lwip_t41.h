@@ -89,7 +89,8 @@ void enet_write_1588_timer(uint32_t t);
 // then this will return the second timestamp (if already available).
 //
 // If no additional timestamped packets are sent then this will return the last
-// available value. The "availability" is not reset.
+// available value. The "availability" is not reset; it is only reset when
+// sending a timestamped packet.
 bool enet_read_1588_tx_timestamp(uint32_t *timestamp);
 
 #ifdef __cplusplus
