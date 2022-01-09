@@ -59,9 +59,9 @@ void EthernetClass::netifEventFunc(struct netif *netif,
 
 EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
+EthernetClass::EthernetClass(const uint8_t mac[6]) {
   if (mac != nullptr) {
-    std::copy_n(mac, kMACAddrSize, mac_);
+    std::copy_n(mac, 6, mac_);
   } else {
     enet_getmac(mac_);
   }
@@ -84,22 +84,22 @@ EthernetClass::~EthernetClass() {
   end();
 }
 
-void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
-  std::copy_n(mac_, kMACAddrSize, mac);
+void EthernetClass::macAddress(uint8_t mac[6]) const {
+  std::copy_n(mac_, 6, mac);
 }
 
-void EthernetClass::setMACAddress(uint8_t mac[kMACAddrSize]) {
+void EthernetClass::setMACAddress(uint8_t mac[6]) {
   if (mac == nullptr) {
     // Don't do anything
     return;
   }
 
-  if (std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
+  if (std::equal(&mac_[0], &mac_[6], &mac[0])) {
     // Do nothing if there's no change
     return;
   }
 
-  std::copy_n(mac, kMACAddrSize, mac_);
+  std::copy_n(mac, 6, mac_);
   if (netif_ == nullptr) {
     return;
   }
@@ -220,7 +220,7 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) {
 }
 
 int EthernetClass::begin(const uint8_t mac[6]) {
-  std::copy_n(mac, kMACAddrSize, mac_);
+  std::copy_n(mac, 6, mac_);
   return begin();
 }
 
@@ -245,7 +245,7 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
 void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
-  std::copy_n(mac, kMACAddrSize, mac_);
+  std::copy_n(mac, 6, mac_);
   begin(ip, subnet, gateway);
   setDNSServerIP(dns);
 }

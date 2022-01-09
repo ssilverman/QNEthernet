@@ -22,7 +22,6 @@
 #include "QNEthernetUDP.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
-#include "lwip/prot/ethernet.h"
 #include "lwip_t41.h"
 
 namespace qindesign {
@@ -37,7 +36,7 @@ enum EthernetLinkStatus {
 
 class EthernetClass final {
  public:
-  static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
+  static constexpr int kMACAddrSize = 6;
 
   // Creates a new network interface. This sets the MAC address to the built-in
   // MAC address. This calls the other constructor with a NULL address.
@@ -46,7 +45,7 @@ class EthernetClass final {
   // Creates a new network interface. This sets the MAC address to the given MAC
   // address. If the given address is NULL then this uses the built-in
   // MAC address.
-  EthernetClass(const uint8_t mac[kMACAddrSize]);
+  EthernetClass(const uint8_t mac[6]);
 
   ~EthernetClass();
 
@@ -66,13 +65,13 @@ class EthernetClass final {
   }
 
   // Retrieves the MAC address.
-  void macAddress(uint8_t mac[kMACAddrSize]) const;
+  void macAddress(uint8_t mac[6]) const;
 
   // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted. This does nothing if the
   // given array is NULL.
-  void setMACAddress(uint8_t mac[kMACAddrSize]);
+  void setMACAddress(uint8_t mac[6]);
 
   // Call often.
   static void loop();
@@ -196,7 +195,7 @@ class EthernetClass final {
 
   static elapsedMillis loopTimer_;
 
-  uint8_t mac_[kMACAddrSize];
+  uint8_t mac_[6];
 #ifdef LWIP_NETIF_HOSTNAME
   String hostname_{"teensy-lwip"};  // Empty means no hostname
 #endif
