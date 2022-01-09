@@ -398,6 +398,10 @@ uint32_t EthernetClass::readIEEE1588Timer() {
   return enet_read_1588_timer();
 }
 
+void EthernetClass::writeIEEE1588Timer(uint32_t t) {
+  enet_write_1588_timer(t);
+}
+
 bool EthernetClass::ieee1588TXTimestamp(uint32_t *timestamp) {
   return enet_read_1588_tx_timestamp(timestamp);
 }

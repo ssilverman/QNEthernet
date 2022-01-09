@@ -77,6 +77,9 @@ void enet_leave_group(const ip_addr_t *group);
 // Reads the IEEE 1588 timer.
 uint32_t enet_read_1588_timer();
 
+// Writes the IEEE 1588 timer.
+void enet_write_1588_timer(uint32_t t);
+
 // If an IEEE 1588 transmit timestamp is available, then it is assigned to
 // `*timestamp` and this returns true. Otherwise, this returns false.
 //

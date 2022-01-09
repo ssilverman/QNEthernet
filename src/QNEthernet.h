@@ -183,6 +183,9 @@ class EthernetClass final {
   // Reads the current value of the IEEE 1588 timer.
   static uint32_t readIEEE1588Timer();
 
+  // Sets the IEEE 1588 timer.
+  static void writeIEEE1588Timer(uint32_t t);
+
   // Attempts to retrieve the timestamp of the last transmitted frame and
   // returns whether one is available. If available and the parameter is not
   // NULL then the timestamp is assigned to `*timestamp`.

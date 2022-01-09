@@ -798,6 +798,10 @@ uint32_t enet_read_1588_timer() {
   return ENET_ATVR;
 }
 
+void enet_write_1588_timer(uint32_t t) {
+  ENET_ATVR = t;
+}
+
 bool enet_read_1588_tx_timestamp(uint32_t *timestamp) {
   // NOTE: This is not "concurrent safe"
   if (hasTxTimestamp) {
