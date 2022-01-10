@@ -37,17 +37,22 @@
 #define BUF_SIZE 1536
 #define IRQ_PRIORITY 64
 
-#define ENET_ATCR_SLAVE   (1 << 13)
-#define ENET_ATCR_CAPTURE (1 << 11)
-#define ENET_ATCR_RESET   (1 << 9)
-#define ENET_ATCR_PINPER  (1 << 7)
-#define ENET_ATCR_RSVD    (1 << 5)
-#define ENET_ATCR_PEREN   (1 << 4)
-#define ENET_ATCR_OFFRST  (1 << 3)
-#define ENET_ATCR_OFFEN   (1 << 2)
-#define ENET_ATCR_ENABLE  (1 << 0)
-#define ENET_ATINC_CORR_SHIFT 8
-#define ENET_ATCOR_NOCORRECTION 0
+#define ENET_ATCR_SLAVE    (1 << 13)
+#define ENET_ATCR_CAPTURE  (1 << 11)
+#define ENET_ATCR_RESTART  (1 << 9)
+#define ENET_ATCR_PINPER   (1 << 7)
+#define ENET_ATCR_Reserved (1 << 5)  // The spec says to always write a 1 here
+#define ENET_ATCR_PEREN    (1 << 4)
+#define ENET_ATCR_OFFRST   (1 << 3)
+#define ENET_ATCR_OFFEN    (1 << 2)
+#define ENET_ATCR_EN       (1 << 0)
+
+#define ENET_ATCOR_MASK        (0x7fffffffu)
+#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
+#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
+
+#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
+#define F_ENET_TS_CLK (25 * 1000 * 1000)
 
 // Defines the control and status region of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_status {
@@ -203,20 +208,21 @@ void mdio_write(int phyaddr, int regaddr, uint16_t data) {
 static void t41_low_level_init() {
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
   // Configure PLL6 for 50 MHz, pg 1118 (Rev. 2, 1173 Rev. 1)
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_POWERDOWN |
-                            CCM_ANALOG_PLL_ENET_BYPASS |
-                            0x0F;
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_ENABLE |
-                            CCM_ANALOG_PLL_ENET_BYPASS |
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3) |
+                            CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(3) |
+                            CCM_ANALOG_PLL_ENET_DIV_SELECT(3);
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN |
                             // CCM_ANALOG_PLL_ENET_ENET2_REF_EN |
-                            CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN |
+                            CCM_ANALOG_PLL_ENET_ENABLE |
                             // CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(1) |
                             CCM_ANALOG_PLL_ENET_DIV_SELECT(1);
-  while (!(CCM_ANALOG_PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK)) {
-    // wait for PLL lock
+  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_POWERDOWN;
+  while ((CCM_ANALOG_PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK) == 0) {
+    // Wait for PLL lock
   }
   CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS;
-  // Serial.printf("PLL6 = %08X (should be 80202001)\n", CCM_ANALOG_PLL_ENET);
+  // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG_PLL_ENET);
 
   // Configure REFCLK to be driven as output by PLL6, pg 329 (Rev. 2, 326 Rev. 1)
   CLRSET(IOMUXC_GPR_GPR1,
@@ -341,12 +347,15 @@ static void t41_low_level_init() {
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
-  // 1588 clocks
-  ENET_ATCR = ENET_ATCR_RESET | ENET_ATCR_RSVD;   // Reset timer
-  ENET_ATPER = 4294967295;                        // Wrap at 2^32-1
-  ENET_ATINC = 1;                                 // Use as a cycle counter
-  ENET_ATCOR = ENET_ATCOR_NOCORRECTION;
-  ENET_ATCR = ENET_ATCR_RSVD | ENET_ATCR_ENABLE;  // Enable timer
+  // IEEE 1588 configuration
+  ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
+  ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
+  ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET_ATCOR = 0;                                      // Start with no corr.
+  while ((ENET_ATCR & ENET_ATCR_RESTART) != 0) {
+    // Wait for bit to clear before being able to write to ATCR
+  }
+  ENET_ATCR = ENET_ATCR_Reserved | ENET_ATCR_EN;  // Enable timer
 
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
@@ -624,9 +633,7 @@ void enet_deinit() {
   GPIO7_DR_CLEAR = (1<<15);
 
   // Stop the PLL
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_ENABLE;
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
+  CCM_ANALOG_PLL_ENET = CCM_ANALOG_PLL_ENET_POWERDOWN;
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
