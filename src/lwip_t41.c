@@ -501,12 +501,17 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 }
 
 void enet_isr() {
-  // struct pbuf *p;
-  while (ENET_EIR & ENET_EIR_RXF) {
+  if (ENET_EIR & ENET_EIR_RXF) {
     ENET_EIR = ENET_EIR_RXF;
     rx_ready = 1;
-    asm("dsb");
   }
+
+  // Note from Section 4.3 "CM7 interrupts", pg. 44:
+  // "Due to the clock frequency difference between CPU and peripheral, in some
+  // corner case, peripheral interrupt flag may not be really cleared before CPU
+  // exit ISR. In such case, user should add DSB instruction right after
+  // instruction to clear interrupt flag."
+  asm("dsb");
 }
 
 static inline void check_link_status() {
