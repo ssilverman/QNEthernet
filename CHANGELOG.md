@@ -26,6 +26,9 @@ and this project adheres to
 * Changed the `Ethernet` object to be a reference to a singleton. This matches
   how the `EthernetFrame` object works.
 
+### Removed
+* Removed all IEEE 1588 features pending a cleaner future implementation.
+
 ## [0.12.0]
 
 ### Added

@@ -614,6 +614,7 @@ Input is welcome.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
 * IPv6.
+* IEEE 1588 features.
 
 ## Code style
 
