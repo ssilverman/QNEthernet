@@ -37,6 +37,23 @@
 #define BUF_SIZE 1536
 #define IRQ_PRIORITY 64
 
+#define ENET_ATCR_SLAVE    (1 << 13)
+#define ENET_ATCR_CAPTURE  (1 << 11)
+#define ENET_ATCR_RESTART  (1 << 9)
+#define ENET_ATCR_PINPER   (1 << 7)
+#define ENET_ATCR_Reserved (1 << 5)  // The spec says to always write a 1 here
+#define ENET_ATCR_PEREN    (1 << 4)
+#define ENET_ATCR_OFFRST   (1 << 3)
+#define ENET_ATCR_OFFEN    (1 << 2)
+#define ENET_ATCR_EN       (1 << 0)
+
+#define ENET_ATCOR_MASK        (0x7fffffffu)
+#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
+#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
+
+#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
+#define F_ENET_TS_CLK (25 * 1000 * 1000)
+
 // Defines the control and status region of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_status {
   kEnetRxBdEmpty           = 0x8000U,  // Empty bit
@@ -329,6 +346,16 @@ static void t41_low_level_init() {
   ENET_EIMR = ENET_EIMR_RXF;
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
+
+  // IEEE 1588 configuration
+  ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
+  ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
+  ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET_ATCOR = 0;                                      // Start with no corr.
+  while ((ENET_ATCR & ENET_ATCR_RESTART) != 0) {
+    // Wait for bit to clear before being able to write to ATCR
+  }
+  ENET_ATCR = ENET_ATCR_Reserved | ENET_ATCR_EN;  // Enable timer
 
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
@@ -665,6 +692,14 @@ void enet_poll() {
 
 int enet_link_speed() {
   return speed10Not100 ? 10 : 100;
+}
+
+uint32_t read_1588_timer() {
+  ENET_ATCR |= ENET_ATCR_CAPTURE;
+  while (ENET_ATCR & ENET_ATCR_CAPTURE) {
+    // Wait for bit to clear
+  }
+  return ENET_ATVR;
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
