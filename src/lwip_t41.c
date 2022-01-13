@@ -272,7 +272,7 @@ static void t41_low_level_init() {
   }
   tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
-  ENET_EIMR = 0;
+  ENET_EIMR = 0;  // This also deasserts all interrupts
 
   ENET_RCR = ENET_RCR_NLC |
              ENET_RCR_MAX_FL(MAX_FRAME_LEN) |
@@ -605,6 +605,18 @@ void enet_deinit() {
     netif_remove_ext_callback(&netif_callback);
     isNetifAdded = false;
   }
+
+  // Gracefully stop any transmission before disabling the Ethernet MAC
+  ENET_TCR |= ENET_TCR_GTS;
+  while ((ENET_EIR & ENET_EIR_GRA) == 0) {
+    // Wait until it's gracefully stopped
+  }
+  ENET_EIR = ENET_EIR_GRA;
+
+  // Disable the Ethernet MAC
+  // Note: All interrupts are cleared when Ethernet is reinitialized,
+  //       so nothing will be pending
+  ENET_ECR &= ~ENET_ECR_ETHEREN;
 
   // Power down the PHY
   GPIO7_GDIR |= (1<<15);

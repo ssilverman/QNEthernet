@@ -16,6 +16,8 @@ and this project adheres to
   parameter is used as the stopping condition in `writeFully()`.
   * `writeFully(Print &, buf, size, breakf = nullptr)`
   * `writeMagic(Print &, mac, breakf = nullptr)`
+* `enet_deinit()` now gracefully stops any transmission in progress before
+  shutting down Ethernet.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number
