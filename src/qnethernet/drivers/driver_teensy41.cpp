@@ -324,8 +324,10 @@ static uint32_t s_collisionGAUR = 0;
 static uint32_t s_collisionIALR = 0;
 static uint32_t s_collisionIAUR = 0;
 
-// Tracks seconds since the IEEE 1588 timer was started.
-static volatile uint32_t ieee1588Seconds = 0;
+// IEEE 1588
+static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
+static volatile bool hasTxTimestamp = false;
+static volatile uint32_t txTimestamp = 0;
 
 // Forward declarations
 static void enet_isr();
@@ -690,6 +692,8 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       LWIP_ASSERT("Expected space for pbuf fill",
                   pbuf_take(p, pBD->buffer, p->tot_len) == ERR_OK);
+      p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
+      p->timestamp = pBD->timestamp;
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
@@ -720,12 +724,20 @@ static inline volatile enetbufferdesc_t* get_bufdesc() {
 
 // Updates a buffer descriptor. Meant to be used with get_bufdesc().
 static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
-                                  const uint16_t len) {
+                                  const uint16_t len,
+                                  const bool doTimestamp) {
   pBD->length = len;
   pBD->status = (pBD->status & kEnetTxBdWrap) |
                 kEnetTxBdTransmitCrc          |
                 kEnetTxBdLast                 |
                 kEnetTxBdReady;
+
+  hasTxTimestamp = false;  // The timestamp isn't yet available
+  if (doTimestamp) {
+    pBD->extend1 |= kEnetTxBdTimestamp;
+  } else {
+    pBD->extend1 &= ~kEnetTxBdTimestamp;
+  }
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
@@ -767,6 +779,12 @@ static void enet_isr() {
   if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
     ENET_EIR = ENET_EIR_TS_TIMER;
     ieee1588Seconds++;
+  }
+
+  if ((ENET_EIR & ENET_EIR_TS_AVAIL) != 0) {
+    ENET_EIR = ENET_EIR_TS_AVAIL;
+    hasTxTimestamp = true;
+    txTimestamp = ENET_ATSTMP;
   }
 
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
@@ -1037,6 +1055,10 @@ FLASHMEM bool driver_init() {
   attachInterruptVector(IRQ_ENET, &enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
+  // Set the IEEE 1588 timestamp to zero, in case it's used but not enabled
+  ENET_ATVR = 0;
+  ieee1588Seconds = 0;
+
   // Last few things to do
   ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
   (void)std::atomic_flag_test_and_set(&s_rxNotAvail);
@@ -1194,12 +1216,13 @@ err_t driver_output(struct pbuf* const p) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, copied);
+  update_bufdesc(pBD, copied, p->timestampValid);
   return ERR_OK;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void* const frame, const size_t len) {
+bool driver_output_frame(const void* const frame, const size_t len,
+                         const bool doTimestamp) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
@@ -1218,7 +1241,7 @@ bool driver_output_frame(const void* const frame, const size_t len) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, static_cast<uint16_t>(len + ETH_PAD_SIZE));
+  update_bufdesc(pBD, static_cast<uint16_t>(len + ETH_PAD_SIZE), doTimestamp);
 
   return true;
 }
@@ -1378,7 +1401,7 @@ void enet_ieee1588_init(void) {
   ENET_ATCR = ENET_ATCR_PINPER | ENET_ATCR_Reserved | ENET_ATCR_PEREN |
               ENET_ATCR_EN;
 
-  ENET_EIMR |= ENET_EIMR_TS_TIMER;
+  ENET_EIMR |= ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER;
 }
 
 void enet_ieee1588_deinit(void) {
@@ -1425,6 +1448,18 @@ bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
+}
+
+bool enet_ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp) {
+  // NOTE: This is not "concurrent safe"
+  if (hasTxTimestamp) {
+    hasTxTimestamp = false;
+    if (timestamp != NULL) {
+      *timestamp = txTimestamp;
+    }
+    return true;
+  }
+  return false;
 }
 
 bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
