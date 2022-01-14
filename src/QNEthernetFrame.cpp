@@ -52,6 +52,9 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
     p = p->next;
   }
 
+  frame.hasTimestamp = pHead->timestampValid;
+  frame.timestamp = pHead->timestamp;
+
   // Increment the size
   if (EthernetFrame.inBufSize_ != 0 &&
       EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_) {
@@ -87,6 +90,8 @@ int EthernetFrameClass::parseFrame() {
   // Pop (from the tail)
   frame_ = inBuf_[inBufTail_];
   inBuf_[inBufTail_].data.clear();
+  inBuf_[inBufTail_].hasTimestamp = false;
+  inBuf_[inBufTail_].timestamp = 0;
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
@@ -179,6 +184,17 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   }
 }
 
+bool EthernetFrameClass::timestamp(uint32_t *timestamp) const {
+  // NOTE: This is not "concurrent safe"
+  if (frame_.hasTimestamp) {
+    if (timestamp != nullptr) {
+      *timestamp = frame_.timestamp;
+    }
+    return true;
+  }
+  return false;
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
@@ -214,18 +230,32 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[6],
 }
 
 bool EthernetFrameClass::endFrame() {
+  return endFrame(false);
+}
+
+bool EthernetFrameClass::endFrameWithTimestamp() {
+  return endFrame(true);
+}
+
+bool EthernetFrameClass::endFrame(bool doTimestamp) {
   if (!hasOutFrame_) {
     return false;
   }
   hasOutFrame_ = false;
 
-  bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size());
+  bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size(),
+                                  doTimestamp);
   outFrame_.data.clear();
   return retval;
 }
 
 bool EthernetFrameClass::send(const uint8_t *frame, size_t len) const {
-  return enet_output_frame(frame, len);
+  return enet_output_frame(frame, len, false);
+}
+
+bool EthernetFrameClass::sendWithTimestamp(const uint8_t *frame,
+                                           size_t len) const {
+  return enet_output_frame(frame, len, true);
 }
 
 size_t EthernetFrameClass::write(uint8_t b) {

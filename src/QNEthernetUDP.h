@@ -59,6 +59,11 @@ class EthernetUDP : public UDP {
   int beginPacket(const char *host, uint16_t port) final;
   int endPacket() final;
 
+  // Same as `endPacket()` but adds a timestamp.
+  //
+  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
+  bool endPacketWithTimestamp();
+
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
   // causes less overhead.
@@ -67,6 +72,18 @@ class EthernetUDP : public UDP {
 
   // Calls the other send() function after performing a DNS lookup.
   bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
+
+  // Same as `send(ip, port, data, len)` but adds a timestamp to the packet.
+  //
+  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
+  bool sendWithTimestamp(const IPAddress &ip, uint16_t port,
+                         const uint8_t *data, size_t len);
+
+  // Same as `send(host, port, data, len)` but adds a timestamp to the packet.
+  //
+  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
+  bool sendWithTimestamp(const char *host, uint16_t port,
+                         const uint8_t *data, size_t len);
 
   // Bring Print::write functions into scope
   using Print::write;
@@ -105,11 +122,18 @@ class EthernetUDP : public UDP {
   // Returns whether the socket is listening.
   explicit operator bool() const;
 
+  // Gets the IEEE 1588 timestamp for the received packet and assigns it to the
+  // `timestamp` parameter, if available. This returns whether the received
+  // packet has a timestamp.
+  bool timestamp(uint32_t *timestamp) const;
+
  private:
   struct Packet {
     std::vector<unsigned char> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
+    volatile bool hasTimestamp = false;
+    volatile uint32_t timestamp = 0;
   };
 
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
@@ -118,7 +142,11 @@ class EthernetUDP : public UDP {
   // ip_addr_t versions of transmission functions
   bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
   bool send(const ip_addr_t *ipaddr, uint16_t port,
-            const uint8_t *data, size_t len);
+            const uint8_t *data, size_t len,
+            bool doTimestamp);
+
+  // Timestamping send functions
+  bool endPacket(bool doTimestamp);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
