@@ -84,7 +84,7 @@ class EthernetFrameClass final : public Stream {
   // 1. Ethernet was not started,
   // 2. The frame is NULL, or
   // 3. The length is not in the range 60-1518.
-  bool send(const uint8_t *frame, size_t len);
+  bool send(const uint8_t *frame, size_t len) const;
 
   // Bring Print::write functions into scope
   using Print::write;
