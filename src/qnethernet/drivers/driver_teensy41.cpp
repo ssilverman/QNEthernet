@@ -1481,10 +1481,10 @@ bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   return true;
 }
 
-void ieee1588_adjust_freq(int nsps) {
+bool ieee1588_adjust_freq(int nsps) {
   if (nsps == 0) {
     ENET::ATCOR::COR = 0;
-    return;
+    return true;
   }
 
   uint32_t inc = NANOSECONDS_PER_SECOND / F_ENET_TS_CLK;
@@ -1497,7 +1497,7 @@ void ieee1588_adjust_freq(int nsps) {
     // Speed up
     inc++;
   }
-  ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+  return ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
 }
 
 // Channels
