@@ -150,14 +150,15 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 // `enet_ieee1588_adjust_timer()` under the hood.
 bool enet_ieee1588_adjust_freq(int nsps);
 
-// Sets the channel mode for a given channel. This returns whether successful.
+// Sets the channel mode for the given channel. This does not set the output
+// compare pulse modes. This returns whether successful.
 //
 // This will return false for an unknown channel or if the mode is one of the
 // output compare pulse modes.
 bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode);
 
-// Sets the output compare pulse mode and pulse width for a given channel. This
-// returns whether successful.
+// Sets the output compare pulse mode and pulse width for the given channel.
+// This returns whether successful.
 //
 // This will return false if:
 // 1. The channel is unknown,
