@@ -313,7 +313,7 @@ bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
 // `ieee1588_adjust_timer()` under the hood.
-void ieee1588_adjust_freq(int nsps);
+bool ieee1588_adjust_freq(int nsps);
 
 // Sets the channel mode for a given channel. This returns whether successful.
 //
