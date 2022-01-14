@@ -128,9 +128,13 @@ void enet_ieee1588_deinit();
 bool enet_ieee1588_is_enabled();
 
 // Reads the IEEE 1588 timer. This returns whether successful.
+//
+// This will return false if the argument is NULL.
 bool enet_ieee1588_read_timer(struct IEEE1588Time *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
+//
+// This will return false if the argument is NULL.
 bool enet_ieee1588_write_timer(const struct IEEE1588Time *t);
 
 // Directly adjust the correction increase and correction period. To adjust the
