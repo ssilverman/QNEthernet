@@ -273,8 +273,12 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define PBUF_LINK_ENCAPSULATION_HLEN  0
 // #define PBUF_POOL_BUFSIZE             LWIP_MEM_ALIGN_SIZE(TCP_MSS+PBUF_IP_HLEN+PBUF_TRANSPORT_HLEN+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
 // #define LWIP_PBUF_REF_T               u8_t
-// #define LWIP_PBUF_CUSTOM_DATA
-// #define LWIP_PBUF_CUSTOM_DATA_INIT(p)
+#define LWIP_PBUF_CUSTOM_DATA \
+  u8_t timestampValid;        \
+  u32_t timestamp;
+#define LWIP_PBUF_CUSTOM_DATA_INIT(p) \
+  (p)->timestampValid = 0;            \
+  (p)->timestamp = 0;
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1  /* 0 */
