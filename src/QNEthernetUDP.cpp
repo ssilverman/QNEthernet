@@ -57,10 +57,12 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
       inPacket_{},
-      packet_{},
-      packetPos_(-1),
       inAddr_{INADDR_NONE},
       inPort_(0),
+      packet_{},
+      packetPos_(-1),
+      addr_{INADDR_NONE},
+      port_(0),
       hasOutPacket_(false),
       outIpaddr_{0},
       outPort_(0),
@@ -125,6 +127,9 @@ void EthernetUDP::stop() {
   }
   udp_remove(pcb_);
   pcb_ = nullptr;
+
+  addr_ = INADDR_NONE;
+  port_ = 0;
 }
 
 // --------------------------------------------------------------------------
@@ -137,6 +142,8 @@ int EthernetUDP::parsePacket() {
   }
 
   packet_ = inPacket_;
+  addr_ = inAddr_;
+  port_ = inPort_;
   inPacket_.clear();
 
   EthernetClass::loop();  // Allow the stack to move along
@@ -196,11 +203,11 @@ void EthernetUDP::flush() {
 }
 
 IPAddress EthernetUDP::remoteIP() {
-  return inAddr_;
+  return addr_;
 }
 
 uint16_t EthernetUDP::remotePort() {
-  return inPort_;
+  return port_;
 }
 
 // --------------------------------------------------------------------------
