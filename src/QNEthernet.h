@@ -14,6 +14,7 @@
 
 #include <IPAddress.h>
 
+#include "QNEthernetIEEE1588.h"
 #include "lwip/apps/mdns_opts.h"
 #include "lwip/arch.h"
 #include "lwip/netif.h"
@@ -557,6 +558,9 @@ class EthernetClass final {
 
 // Instance for interacting with the library.
 STATIC_INIT_DECL(EthernetClass, Ethernet);
+
+// Instance for using IEEE 1588 functions.
+extern EthernetIEEE1588Class &EthernetIEEE1588;
 
 #if QNETHERNET_CUSTOM_WRITE
 // stdout output.
