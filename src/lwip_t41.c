@@ -130,7 +130,8 @@ static struct netif t41_netif;
 static volatile uint32_t rx_ready;
 
 // PHY status, polled
-static bool speed10Not100 = false;
+static bool linkSpeed10Not100 = false;
+static bool linkIsFullDuplex = false;
 
 // Is Ethernet initialized?
 static bool isInitialized = false;
@@ -499,7 +500,8 @@ static inline void check_link_status() {
 
       // TODO: Should we read the speed only at link UP or every time?
       status = mdio_read(0, 0x10);
-      speed10Not100 = (status & (1 << 1));
+      linkSpeed10Not100 = ((status & (1 << 1)) != 0);
+      linkIsFullDuplex = ((status & (1 << 2)) != 0);
     } else {
       netif_set_link_down(&t41_netif);
     }
@@ -664,7 +666,11 @@ void enet_poll() {
 }
 
 int enet_link_speed() {
-  return speed10Not100 ? 10 : 100;
+  return linkSpeed10Not100 ? 10 : 100;
+}
+
+bool enet_link_is_full_duplex() {
+  return linkIsFullDuplex;
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {

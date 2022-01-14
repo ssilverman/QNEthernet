@@ -130,6 +130,8 @@ This section documents those functions.
   hostname is set. The default is "teensy-lwip".
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
+* `linkIsFullDuplex()`: Returns whether the link is full duplex (`true`) or half
+  duplex (`false`).
 * `joinGroup(ip)`: Joins a multicast group.
 * `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.

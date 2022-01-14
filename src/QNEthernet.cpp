@@ -286,6 +286,10 @@ int EthernetClass::linkSpeed() const {
   return enet_link_speed();
 }
 
+bool EthernetClass::linkIsFullDuplex() const {
+  return enet_link_is_full_duplex();
+}
+
 IPAddress EthernetClass::localIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;

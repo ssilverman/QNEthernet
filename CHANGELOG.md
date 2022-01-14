@@ -18,6 +18,8 @@ and this project adheres to
   * `writeMagic(Print &, mac, breakf = nullptr)`
 * `enet_deinit()` now gracefully stops any transmission in progress before
   shutting down Ethernet.
+* New `EthernetClass::linkIsFullDuplex()` function, returns whether the link is
+  full duplex (`true`) or half duplex (`false`).
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number

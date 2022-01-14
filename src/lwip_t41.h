@@ -60,6 +60,9 @@ void enet_poll();
 // Returns the link speed in Mbps.
 int enet_link_speed();
 
+// Returns the link duplex mode, true for full and false for half.
+bool enet_link_is_full_duplex();
+
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 64-kMaxFrameLen. This also returns false if
 // Ethernet is not initialized.

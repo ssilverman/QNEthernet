@@ -107,6 +107,9 @@ class EthernetClass final {
   // Returns the link speed in Mbps.
   int linkSpeed() const;
 
+  // Returns the link duplex mode, true for full and false for half.
+  bool linkIsFullDuplex() const;
+
   // Sets a link state callback.
   void onLinkState(std::function<void(bool state)> cb) {
     linkStateCB_ = cb;
