@@ -34,10 +34,10 @@ class EthernetIEEE1588Class final {
   void end() const;
 
   // Reads the current IEEE 1588 timer value. This returns whether successful.
-  bool readTimer(IEEE1588Time &t) const;
+  bool readTimer(IEEE1588Timestamp &t) const;
 
   // Writes the current IEEE 1588 timer value. This returns whether successful.
-  bool writeTimer(const IEEE1588Time &t) const;
+  bool writeTimer(const IEEE1588Timestamp &t) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning
