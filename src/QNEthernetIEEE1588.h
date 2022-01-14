@@ -39,6 +39,12 @@ class EthernetIEEE1588Class final {
   // Writes the current IEEE 1588 timer value. This returns whether successful.
   bool writeTimer(const IEEE1588Timestamp &t) const;
 
+  // Attempts to retrieve the timestamp of the last transmitted frame and
+  // returns whether one is available. If available and the parameter is not
+  // NULL then the timestamp is assigned to `*timestamp`. This clears the
+  // timestamp state so that a subsequent call will return false.
+  bool readAndClearTxTimestamp(uint32_t *timestamp) const;
+
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning
   // no correction. This will return whether successful.
