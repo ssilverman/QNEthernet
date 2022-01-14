@@ -89,6 +89,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // 4. There's no room in the output buffers.
   bool endFrame();
 
+  // Same as `endFrame()` but also timestamps the frame.
+  bool endFrameWithTimestamp();
+
   // Sends a frame and returns whether the send was successful. This causes less
   // overhead than beginFrame()/write()/endFrame().
   //
@@ -102,6 +105,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
   bool send(const void* frame, size_t len) const;
+
+  // Same as `send(frame, len)`, but adds a timestamp to the frame.
+  bool sendWithTimestamp(const void *frame, size_t len) const;
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -215,10 +221,19 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Clears any outgoing packet and the incoming queue.
   void clear();
 
+  // Gets the IEEE 1588 timestamp for the received frame and assigns it to the
+  // `timestamp` parameter, if available. This returns whether the received
+  // frame has a timestamp.
+  bool timestamp(uint32_t *timestamp) const;
+
  private:
   struct Frame final {
     std::vector<uint8_t> data;
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
+
+    // IEEE 1588
+    volatile bool hasTimestamp = false;
+    volatile uint32_t timestamp = 0;
 
     // Clears all the data.
     void clear();
@@ -234,6 +249,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   EthernetFrameClass& operator=(EthernetFrameClass&&) = delete;
 
   static err_t recvFunc(struct pbuf* p, struct netif* netif);
+
+  // Ends the frame and optionally adds a timestamp.
+  bool endFrame(bool doTimestamp);
 
   // Checks if there's data still available in the packet.
   [[nodiscard]]
