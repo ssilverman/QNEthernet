@@ -32,6 +32,9 @@
 // [PHY Datasheet](https://www.pjrc.com/teensy/dp83825i.pdf)
 // [i.MX RT1062 Manual](https://www.pjrc.com/teensy/IMXRT1060RM_rev3.pdf)
 
+void qnethernet_hal_disable_interrupts();
+void qnethernet_hal_enable_interrupts();
+
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
@@ -309,6 +312,9 @@ static bool s_linkIsCrossover   = false;
 
 // Notification data
 static bool s_manualLinkState = false;  // True for sticky
+
+// Tracks seconds since the IEEE 1588 timer was started.
+static volatile uint32_t ieee1588Seconds = 0;
 
 // Forward declarations
 static void enet_isr(void);
@@ -725,6 +731,11 @@ static inline volatile enetbufferdesc_t *rxbd_next(void) {
 
 // The Ethernet ISR.
 static void enet_isr(void) {
+  if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
+    ENET_EIR = ENET_EIR_TS_TIMER;
+    ieee1588Seconds++;
+  }
+
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
     atomic_flag_clear(&s_rxNotAvail);
@@ -1004,6 +1015,8 @@ FLASHMEM bool driver_init(void) {
 void unused_interrupt_vector(void);  // startup.c
 
 FLASHMEM void driver_deinit(void) {
+  enet_ieee1588_deinit();
+
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1220,6 +1233,218 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
 void driver_notify_manual_link_state(const bool flag) {
   s_manualLinkState = flag;
+}
+
+// --------------------------------------------------------------------------
+//  IEEE 1588 functions
+// --------------------------------------------------------------------------
+
+#define ENET_ATCR_SLAVE    ((uint32_t)(1U << 13))
+#define ENET_ATCR_CAPTURE  ((uint32_t)(1U << 11))
+#define ENET_ATCR_RESTART  ((uint32_t)(1U << 9))
+#define ENET_ATCR_PINPER   ((uint32_t)(1U << 7))
+#define ENET_ATCR_Reserved ((uint32_t)(1U << 5))  // Spec says always write a 1
+#define ENET_ATCR_PEREN    ((uint32_t)(1U << 4))
+#define ENET_ATCR_OFFRST   ((uint32_t)(1U << 3))
+#define ENET_ATCR_OFFEN    ((uint32_t)(1U << 2))
+#define ENET_ATCR_EN       ((uint32_t)(1U << 0))
+
+#define ENET_ATCOR_COR_MASK    (0x7fffffffU)
+#define ENET_ATINC_INC_MASK    (0x00007f00U)
+#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
+#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
+
+#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
+#define F_ENET_TS_CLK (25 * 1000 * 1000)
+
+#define ENET_TCSR_TMODE_MASK (0x0000003cU)
+#define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+#define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
+#define ENET_TCSR_TF         ((uint32_t)(1U << 7))
+
+void enet_ieee1588_init(void) {
+  ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
+  ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
+  ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET_ATCOR = 0;                                      // Start with no corr.
+  while ((ENET_ATCR & ENET_ATCR_RESTART) != 0) {
+    // Wait for bit to clear before being able to write to ATCR
+  }
+
+  // Reset the seconds counter to zero
+  ieee1588Seconds = 0;
+
+  // Enable the timer and periodic event
+  ENET_ATCR = ENET_ATCR_PINPER | ENET_ATCR_Reserved | ENET_ATCR_PEREN |
+              ENET_ATCR_EN;
+
+  ENET_EIMR |= ENET_EIMR_TS_TIMER;
+}
+
+void enet_ieee1588_deinit(void) {
+  ENET_EIMR &= ~(ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER);
+  ENET_ATCR = ENET_ATCR_Reserved;
+}
+
+bool enet_ieee1588_is_enabled(void) {
+  return ((ENET_ATCR & ENET_ATCR_EN) != 0);
+}
+
+bool enet_ieee1588_read_timer(struct IEEE1588Time *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  qnethernet_hal_disable_interrupts();  // {
+  t->sec = ieee1588Seconds;
+
+  ENET_ATCR |= ENET_ATCR_CAPTURE;
+  while ((ENET_ATCR & ENET_ATCR_CAPTURE) != 0) {
+    // Wait for bit to clear
+  }
+  t->nsec = ENET_ATVR;
+
+  // The timer could have wrapped while we were doing stuff
+  // Leave the interrupt set so that our internal timer will catch it
+  if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
+    t->sec++;
+  }
+  qnethernet_hal_enable_interrupts();  // }
+
+  return true;
+}
+
+bool enet_ieee1588_write_timer(struct IEEE1588Time *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  qnethernet_hal_disable_interrupts();  // {
+  ieee1588Seconds = t->sec;
+  ENET_ATVR = t->nsec;
+  qnethernet_hal_enable_interrupts();  // }
+
+  return true;
+}
+
+void enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC(corrInc));
+  ENET_ATCOR = corrPeriod | ENET_ATCOR_COR_MASK;
+}
+
+void enet_ieee1588_adjust_freq(int nsps) {
+  if (nsps == 0) {
+    ENET_ATCOR = 0;
+    return;
+  }
+
+  uint32_t inc = NANOSECONDS_PER_SECOND / F_ENET_TS_CLK;
+
+  if (nsps < 0) {
+    // Slow down
+    inc--;
+    nsps = -nsps;
+  } else {
+    // Speed up
+    inc++;
+  }
+  enet_ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+}
+
+// Channels
+
+static volatile uint32_t *tcsrReg(int channel) {
+  switch (channel) {
+    case 0: return &ENET_TCSR0;
+    case 1: return &ENET_TCSR1;
+    case 2: return &ENET_TCSR2;
+    case 3: return &ENET_TCSR3;
+    default:
+      return NULL;
+  }
+}
+
+static volatile uint32_t *tccrReg(int channel) {
+  switch (channel) {
+    case 0: return &ENET_TCCR0;
+    case 1: return &ENET_TCCR1;
+    case 2: return &ENET_TCCR2;
+    case 3: return &ENET_TCCR3;
+    default:
+      return NULL;
+  }
+
+}
+
+bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode) {
+  switch (mode) {
+    case kTimerChannelPulseLowOnCompare:
+    case kTimerChannelPulseHighOnCompare:
+      return false;
+    default:
+      break;
+  }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+
+  *tcsr = 0;
+  while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
+    // Check until the channel is disabled
+  }
+  *tcsr = ENET_TCSR_TMODE(mode);
+
+  return true;
+}
+
+bool enet_ieee1588_set_channel_output_pulse_width(int channel,
+                                                  enum TimerChannelModes mode,
+                                                  int pulseWidth) {
+  switch (mode) {
+    case kTimerChannelPulseLowOnCompare:
+    case kTimerChannelPulseHighOnCompare:
+      break;
+    default:
+      return true;
+  }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+
+  *tcsr = 0;
+  while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
+    // Check until the channel is disabled
+  }
+  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth);
+
+  return true;
+}
+
+bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+  volatile uint32_t *tccr = tccrReg(channel);
+  if (tccr == NULL) {
+    return false;
+  }
+  *tccr = value;
+  return true;
+}
+
+bool enet_ieee1588_get_and_clear_channel_status(int channel) {
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  if ((*tcsr & ENET_TCSR_TF) != 0) {
+    *tcsr |= ENET_TCSR_TF;
+    ENET_TGSR = (1 << channel);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41
