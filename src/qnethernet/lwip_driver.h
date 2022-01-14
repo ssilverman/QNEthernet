@@ -76,6 +76,26 @@ namespace network {
 //  Types
 // --------------------------------------------------------------------------
 
+struct IEEE1588Time {
+  uint32_t sec;   // Seconds
+  uint32_t nsec;  // Nanoseconds, 0-999,999,999
+};
+
+enum TimerChannelModes {
+  kTimerChannelDisable = 0,
+  kTimerChannelCaptureOnRising = 1,
+  kTimerChannelCaptureOnFalling = 2,
+  kTimerChannelCaptureOnBoth = 3,
+  kTimerChannelSoftwareCompare = 4,
+  kTimerChannelToggleOnCompare = 5,
+  kTimerChannelClearOnCompare = 6,
+  kTimerChannelSetOnCompare = 7,
+  kTimerChannelClearOnCompareSetOnOverflow = 10,
+  kTimerChannelSetOnCompareClearOnOverflow = 11,
+  kTimerChannelPulseLowOnCompare = 14,
+  kTimerChannelPulseHighOnCompare = 15,
+};
+
 // Flags that indicate driver capabilities.
 struct DriverCapabilities {
   bool isMACSettable                = false;
@@ -257,6 +277,58 @@ void restart_auto_negotiation();
 //
 // See also: get_capabilities(dc)
 void reset_phy();
+
+// --------------------------------------------------------------------------
+//  IEEE 1588 functions
+// --------------------------------------------------------------------------
+
+// Initializes and enables the IEEE 1588 timer and functionality. The internal
+// time is reset to zero.
+void ieee1588_init(void);
+
+// Deinitializes and stops the IEEE 1588 timer.
+void ieee1588_deinit(void);
+
+// Tests if the IEEE 1588 timer is enabled.
+bool ieee1588_is_enabled(void);
+
+// Reads the IEEE 1588 timer. This returns whether successful.
+bool ieee1588_read_timer(struct IEEE1588Time *t);
+
+// Writes the IEEE 1588 timer. This returns whether successful.
+bool ieee1588_write_timer(struct IEEE1588Time *t);
+
+// Directly adjust the correction increase and correction period. To adjust the
+// timer in "nanoseconds per second", see `ieee1588_adjust_freq`.
+void ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
+
+// Adjust the correction in nanoseconds per second. This uses
+// `ieee1588_adjust_timer()` under the hood.
+void ieee1588_adjust_freq(int nsps);
+
+// Sets the channel mode for a given channel. This returns whether successful.
+//
+// This will return false for an unknown channel or if the mode is one of the
+// output compare pulse modes.
+bool ieee1588_set_channel_mode(size_t channel, enum TimerChannelModes mode);
+
+// Sets the output compare pulse mode and pulse width for a given channel. This
+// returns whether successful.
+//
+// This will return false for an unknown channel or if the mode is not one of
+// the output compare pulse modes.
+bool ieee1588_set_channel_output_pulse_width(size_t channel,
+                                             enum TimerChannelModes mode,
+                                             int pulseWidth);
+
+// Sets the channel compare value. This returns whether successful.
+//
+// This will return false for an unknown channel.
+bool ieee1588_set_channel_compare_value(size_t channel, uint32_t value);
+
+// Retrieves and then clears the status for the given channel. This will return
+// false for an unknown channel.
+bool ieee1588_get_and_clear_channel_status(size_t channel);
 
 }  // namespace driver
 
