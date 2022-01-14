@@ -296,7 +296,7 @@ bool ieee1588_is_enabled(void);
 bool ieee1588_read_timer(struct IEEE1588Time *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
-bool ieee1588_write_timer(struct IEEE1588Time *t);
+bool ieee1588_write_timer(const struct IEEE1588Time *t);
 
 // Directly adjust the correction increase and correction period. To adjust the
 // timer in "nanoseconds per second", see `ieee1588_adjust_freq`.
