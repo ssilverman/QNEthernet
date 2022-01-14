@@ -71,7 +71,7 @@ namespace qindesign {
 namespace network {
 #endif  // __cplusplus
 
-struct IEEE1588Time {
+struct IEEE1588Timestamp {
   uint32_t sec;   // Seconds
   uint32_t nsec;  // Nanoseconds, 0-999,999,999
 };
@@ -369,12 +369,12 @@ bool enet_ieee1588_is_enabled(void);
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_read_timer(struct IEEE1588Time *t);
+bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_write_timer(const struct IEEE1588Time *t);
+bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t);
 
 // Directly adjust the correction increase and correction period. To adjust the
 // timer in "nanoseconds per second", see `enet_ieee1588_adjust_freq`. This

@@ -23,11 +23,11 @@ void EthernetIEEE1588Class::end() const {
   enet_ieee1588_deinit();
 }
 
-bool EthernetIEEE1588Class::readTimer(IEEE1588Time &t) const {
+bool EthernetIEEE1588Class::readTimer(IEEE1588Timestamp &t) const {
   return enet_ieee1588_read_timer(&t);
 }
 
-bool EthernetIEEE1588Class::writeTimer(const IEEE1588Time &t) const {
+bool EthernetIEEE1588Class::writeTimer(const IEEE1588Timestamp &t) const {
   return enet_ieee1588_write_timer(&t);
 }
 
