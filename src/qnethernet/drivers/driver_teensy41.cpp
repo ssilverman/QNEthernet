@@ -1459,7 +1459,7 @@ bool ieee1588_read_timer(struct IEEE1588Time *t) {
   return true;
 }
 
-bool ieee1588_write_timer(struct IEEE1588Time *t) {
+bool ieee1588_write_timer(const struct IEEE1588Time *t) {
   if (t == NULL) {
     return false;
   }
@@ -1537,6 +1537,10 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel,
       return true;
   }
 
+  if (pulseWidth < 1 || 32 < pulseWidth) {
+    return false;
+  }
+
   volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
   *tcsr = 0;
@@ -1544,7 +1548,7 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel,
     // Check until the channel is disabled
   }
   *tcsr = ENET::CHANNEL::TCSR::vals::TMODE(mode) |
-          ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth);
+          ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth - 1);
 
   return true;
 }
