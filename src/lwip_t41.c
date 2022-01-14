@@ -936,7 +936,7 @@ bool enet_ieee1588_is_enabled() {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool enet_ieee1588_read_timer(struct IEEE1588Time *t) {
+bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t) {
   if (t == NULL) {
     return false;
   }
@@ -960,7 +960,7 @@ bool enet_ieee1588_read_timer(struct IEEE1588Time *t) {
   return true;
 }
 
-bool enet_ieee1588_write_timer(const struct IEEE1588Time *t) {
+bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
   if (t == NULL) {
     return false;
   }
