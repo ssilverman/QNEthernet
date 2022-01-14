@@ -390,7 +390,7 @@ String EthernetClass::hostname() {
 #endif
 }
 
-EthernetClass::operator bool() {
+EthernetClass::operator bool() const {
   return (netif_ != nullptr);
 }
 

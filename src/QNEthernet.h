@@ -178,7 +178,7 @@ class EthernetClass final {
   String hostname();
 
   // Tests if Ethernet is initialized.
-  operator bool();
+  operator bool() const;
 
  private:
   // Creates a new network interface. This sets the MAC address to the built-in
