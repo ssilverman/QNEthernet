@@ -77,6 +77,8 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
       pNext = pNext->next;
     }
   }
+  packet.hasTimestamp = p->timestampValid;
+  packet.timestamp = p->timestamp;
   packet.addr = *addr;
   packet.port = port;
   packet.destAddr = *ip4_current_dest_addr();
@@ -254,6 +256,8 @@ void EthernetUDP::Packet::clear() {
   port = 0;
   destAddr = *IP_ANY_TYPE;
   receivedTimestamp = 0;
+  hasTimestamp = false;
+  timestamp = 0;
 }
 
 // --------------------------------------------------------------------------
@@ -345,6 +349,17 @@ IPAddress EthernetUDP::destIP() const {
 #endif  // LWIP_IPV4
 }
 
+bool EthernetUDP::timestamp(uint32_t *timestamp) const {
+  // NOTE: This is not "concurrent safe"
+  if (packet_.hasTimestamp) {
+    if (timestamp != nullptr) {
+      *timestamp = packet_.timestamp;
+    }
+    return true;
+  }
+  return false;
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
@@ -393,6 +408,14 @@ bool EthernetUDP::beginPacket(const ip_addr_t* const ipaddr,
 }
 
 int EthernetUDP::endPacket() {
+  return endPacket(false);
+}
+
+bool EthernetUDP::endPacketWithTimestamp() {
+  return endPacket(true);
+}
+
+bool EthernetUDP::endPacket(bool doTimestamp) {
   if (!outPacket_.has_value) {
     return false;
   }
@@ -428,6 +451,8 @@ int EthernetUDP::endPacket() {
     return false;
   }
 
+  p->timestampValid = doTimestamp;
+
   err = udp_sendto(pcb_, p, &op.addr, op.port);
 
   outPacket_.has_value = false;
@@ -446,7 +471,18 @@ bool EthernetUDP::send(const IPAddress& ip, const uint16_t port,
                        const void* const data, const size_t len) {
 #if LWIP_IPV4
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return send(&ipaddr, port, data, len);
+  return send(&ipaddr, port, data, len, false);
+#else
+  return false;
+#endif  // LWIP_IPV4
+}
+
+bool EthernetUDP::sendWithTimestamp(const IPAddress &ip, const uint16_t port,
+                                    const uint8_t *const data,
+                                    const size_t len) {
+#if LWIP_IPV4
+  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  return send(&ipaddr, port, data, len, true);
 #else
   errno = ENOSYS;
   return false;
@@ -471,8 +507,20 @@ bool EthernetUDP::send(const char* const host, const uint16_t port,
 #endif  // LWIP_DNS
 }
 
+bool EthernetUDP::sendWithTimestamp(const char* const host, const uint16_t port,
+                                    const uint8_t* const data,
+                                    const size_t len) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip,
+                                QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
+    return false;
+  }
+  return sendWithTimestamp(ip, port, data, len);
+}
+
 bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
-                       const void* const data, const size_t len) {
+                       const void* const data, const size_t len,
+                       bool doTimestamp) {
   if (len > kMaxPossiblePayloadSize) {
     errno = ENOBUFS;
     return false;
@@ -500,6 +548,8 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
     errno = err_to_errno(err);
     return false;
   }
+
+  p->timestampValid = doTimestamp;
 
   err = udp_sendto(pcb_, p, ipaddr, port);
 
