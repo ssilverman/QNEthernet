@@ -1314,7 +1314,7 @@ bool enet_ieee1588_read_timer(struct IEEE1588Time *t) {
   return true;
 }
 
-bool enet_ieee1588_write_timer(struct IEEE1588Time *t) {
+bool enet_ieee1588_write_timer(const struct IEEE1588Time *t) {
   if (t == NULL) {
     return false;
   }
@@ -1410,6 +1410,10 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
       return true;
   }
 
+  if (pulseWidth < 1 || 32 < pulseWidth) {
+    return false;
+  }
+
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
@@ -1419,7 +1423,7 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth);
+  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1);
 
   return true;
 }
