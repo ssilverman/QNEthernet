@@ -9,13 +9,10 @@
 // C++ includes
 #include <algorithm>
 
-#include <elapsedMillis.h>
-
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
-#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {

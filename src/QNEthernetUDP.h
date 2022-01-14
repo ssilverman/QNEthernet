@@ -14,7 +14,6 @@
 #include <IPAddress.h>
 #include <Udp.h>
 
-#include "lwip/dns.h"
 #include "lwip/ip_addr.h"
 #include "lwip/opt.h"
 #include "lwip/udp.h"
