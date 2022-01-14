@@ -299,8 +299,13 @@ bool ieee1588_read_timer(struct IEEE1588Time *t);
 bool ieee1588_write_timer(const struct IEEE1588Time *t);
 
 // Directly adjust the correction increase and correction period. To adjust the
-// timer in "nanoseconds per second", see `ieee1588_adjust_freq`.
-void ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
+// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This
+// returns whether successful.
+//
+// This will return false if:
+// 1. The correction increment is not in the range 0-127, or
+// 2. The correction period is not in the range 0-(2^31-1).
+bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
 // `ieee1588_adjust_timer()` under the hood.
@@ -315,8 +320,10 @@ bool ieee1588_set_channel_mode(size_t channel, enum TimerChannelModes mode);
 // Sets the output compare pulse mode and pulse width for a given channel. This
 // returns whether successful.
 //
-// This will return false for an unknown channel or if the mode is not one of
-// the output compare pulse modes.
+// This will return false if:
+// 1. The channel is unknown,
+// 2. The mode is not one of the output compare pulse modes, or
+// 3. The pulse width is not in the range 1-32.
 bool ieee1588_set_channel_output_pulse_width(size_t channel,
                                              enum TimerChannelModes mode,
                                              int pulseWidth);

@@ -1470,9 +1470,13 @@ bool ieee1588_write_timer(const struct IEEE1588Time *t) {
   return true;
 }
 
-void ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+  if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
+    return false;
+  }
   ENET::ATINC::INC = corrInc;
   ENET::group->ATCOR = corrPeriod | ENET::ATCOR::COR.kMask;
+  return true;
 }
 
 void ieee1588_adjust_freq(int nsps) {
