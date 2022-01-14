@@ -10,7 +10,7 @@
 // C++ includes
 #include <cstdint>
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 namespace qindesign {
 namespace network {
@@ -34,10 +34,10 @@ class EthernetIEEE1588Class final {
   void end() const;
 
   // Reads the current IEEE 1588 timer value. This returns whether successful.
-  bool readTimer(IEEE1588Time &t) const;
+  bool readTimer(IEEE1588Timestamp &t) const;
 
   // Writes the current IEEE 1588 timer value. This returns whether successful.
-  bool writeTimer(const IEEE1588Time &t) const;
+  bool writeTimer(const IEEE1588Timestamp &t) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning
@@ -54,21 +54,21 @@ class EthernetIEEE1588Class final {
   //
   // This will return false for an unknown channel or if the mode is one of the
   // output compare pulse modes.
-  bool setChannelMode(int channel, TimerChannelModes mode) const;
+  bool setChannelMode(size_t channel, TimerChannelModes mode) const;
 
   // Sets the output compare pulse mode and pulse width for the given channel.
   // The pulse width must be in the range 1-32. This only sets the output
   // compare pulse modes. This returns whether successful.
-  bool setChannelOutputPulseWidth(int channel,
+  bool setChannelOutputPulseWidth(size_t channel,
                                   TimerChannelModes mode,
                                   int pulseWidth) const;
 
   // Sets the channel compare value. This returns whether successful.
-  bool setChannelCompareValue(int channel, uint32_t value) const;
+  bool setChannelCompareValue(size_t channel, uint32_t value) const;
 
   // Retrieves and then clears the status for the given channel. This will
   // return false for an unknown channel.
-  bool getAndClearChannelStatus(int channel) const;
+  bool getAndClearChannelStatus(size_t channel) const;
 
   // Tests if the IEEE 1588 timer has been started.
   operator bool() const;
