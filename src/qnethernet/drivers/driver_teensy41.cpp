@@ -42,6 +42,11 @@ namespace driver {
 
 using namespace qindesign::hardware::imxrt1060;
 
+extern "C" {
+void qnethernet_hal_disable_interrupts();
+void qnethernet_hal_enable_interrupts();
+}  // extern "C"
+
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
@@ -340,6 +345,9 @@ static uint32_t s_collisionIALR = 0;
 static uint32_t s_collisionIAUR = 0;
 
 SCB::VTOR::Vector s_prevENETVector = nullptr;
+
+// Tracks seconds since the IEEE 1588 timer was started.
+static volatile uint32_t ieee1588Seconds = 0;
 
 // Forward declarations
 static void enet_isr();
@@ -784,6 +792,11 @@ static inline volatile BufferDescriptor* rxbd_next() {
 
 // The Ethernet ISR.
 static void enet_isr() {
+  if (ENET::EIR::TS_TIMER != 0) {
+    ENET::EIR::TS_TIMER = 1;
+    ieee1588Seconds++;
+  }
+
   if (ENET::EIR::RXF != 0) {
     ENET::EIR::RXF = 1;
     std::atomic_flag_clear(&s_rxNotAvail);
@@ -1087,6 +1100,8 @@ FLASHMEM bool init() {
 }
 
 FLASHMEM void deinit() {
+  ieee1588_deinit();
+
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1363,6 +1378,199 @@ void reset_phy() {
 
   mdio_write(phy_regs::kLEDCR, phy_vals::kLEDCR_VALUE);
   mdio_write(phy_regs::kRCSR, phy_vals::kRCSR_VALUE);
+}
+
+// --------------------------------------------------------------------------
+//  IEEE 1588 functions
+// --------------------------------------------------------------------------
+
+#define ENET_ATCR_SLAVE    ((uint32_t)(1U << 13))
+#define ENET_ATCR_CAPTURE  ((uint32_t)(1U << 11))
+#define ENET_ATCR_RESTART  ((uint32_t)(1U << 9))
+#define ENET_ATCR_PINPER   ((uint32_t)(1U << 7))
+#define ENET_ATCR_Reserved ((uint32_t)(1U << 5))  // Spec says always write a 1
+#define ENET_ATCR_PEREN    ((uint32_t)(1U << 4))
+#define ENET_ATCR_OFFRST   ((uint32_t)(1U << 3))
+#define ENET_ATCR_OFFEN    ((uint32_t)(1U << 2))
+#define ENET_ATCR_EN       ((uint32_t)(1U << 0))
+
+#define ENET_ATCOR_COR_MASK    (0x7fffffffU)
+#define ENET_ATINC_INC_MASK    (0x00007f00U)
+#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
+#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
+
+#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
+#define F_ENET_TS_CLK (25 * 1000 * 1000)
+
+#define ENET_TCSR_TMODE_MASK (0x0000003cU)
+#define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+#define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
+#define ENET_TCSR_TF         ((uint32_t)(1U << 7))
+
+void ieee1588_init(void) {
+  ENET::ATCR::RESTART = 1;                       // Reset timer
+  ENET::ATPER::PERIOD = NANOSECONDS_PER_SECOND;  // Wrap at 10^9
+  ENET::group->ATINC = ENET::ATINC::INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET::ATCOR::COR = 0;                          // Start with no corr.
+  while (ENET::ATCR::RESTART != 0) {
+    // Wait for bit to clear before being able to write to ATCR
+  }
+
+  // Reset the seconds counter to zero
+  ieee1588Seconds = 0;
+
+  // Enable the timer and periodic event
+  ENET::group->ATCR = ENET::ATCR::PINPER(1) | ENET::ATCR::PEREN(1) |
+                      ENET::ATCR::EN(1) | ENET::ATCR::kWOO;
+
+  ENET::EIMR::TS_TIMER = 1;
+}
+
+void ieee1588_deinit(void) {
+  ENET::group->EIMR &= ~(ENET::EIMR::TS_AVAIL(1) | ENET::EIMR::TS_TIMER(1));
+  ENET::group->ATCR = ENET::ATCR::kWOO;
+}
+
+bool ieee1588_is_enabled(void) {
+  return (ENET::ATCR::EN != 0);
+}
+
+bool ieee1588_read_timer(struct IEEE1588Time *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  qnethernet_hal_disable_interrupts();  // {
+  t->sec = ieee1588Seconds;
+
+  ENET::ATCR::CAPTURE = 1;
+  while (ENET::ATCR::CAPTURE != 0) {
+    // Wait for bit to clear
+  }
+  t->nsec = *ENET::ATVR::ATIME;
+
+  // The timer could have wrapped while we were doing stuff
+  // Leave the interrupt set so that our internal timer will catch it
+  if (ENET::EIR::TS_TIMER != 0) {
+    t->sec++;
+  }
+  qnethernet_hal_enable_interrupts();  // }
+
+  return true;
+}
+
+bool ieee1588_write_timer(struct IEEE1588Time *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  qnethernet_hal_disable_interrupts();  // {
+  ieee1588Seconds = t->sec;
+  ENET::ATVR::ATIME = t->nsec;
+  qnethernet_hal_enable_interrupts();  // }
+
+  return true;
+}
+
+void ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+  ENET::ATINC::INC = corrInc;
+  ENET::group->ATCOR = corrPeriod | ENET::ATCOR::COR.kMask;
+}
+
+void ieee1588_adjust_freq(int nsps) {
+  if (nsps == 0) {
+    ENET::ATCOR::COR = 0;
+    return;
+  }
+
+  uint32_t inc = NANOSECONDS_PER_SECOND / F_ENET_TS_CLK;
+
+  if (nsps < 0) {
+    // Slow down
+    inc--;
+    nsps = -nsps;
+  } else {
+    // Speed up
+    inc++;
+  }
+  ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+}
+
+// Channels
+
+bool ieee1588_set_channel_mode(size_t channel, enum TimerChannelModes mode) {
+  if (channel >= kENET_CHANNEL_count) {
+    return false;
+  }
+
+  switch (mode) {
+    case kTimerChannelPulseLowOnCompare:
+    case kTimerChannelPulseHighOnCompare:
+      return false;
+    default:
+      break;
+  }
+
+  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+
+  *tcsr = 0;
+  while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
+    // Check until the channel is disabled
+  }
+  *tcsr = ENET::CHANNEL::TCSR::vals::TMODE(mode);
+
+  return true;
+}
+
+bool ieee1588_set_channel_output_pulse_width(size_t channel,
+                                             enum TimerChannelModes mode,
+                                             int pulseWidth) {
+  if (channel >= kENET_CHANNEL_count) {
+    return false;
+  }
+
+  switch (mode) {
+    case kTimerChannelPulseLowOnCompare:
+    case kTimerChannelPulseHighOnCompare:
+      break;
+    default:
+      return true;
+  }
+
+  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+
+  *tcsr = 0;
+  while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
+    // Check until the channel is disabled
+  }
+  *tcsr = ENET::CHANNEL::TCSR::vals::TMODE(mode) |
+          ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth);
+
+  return true;
+}
+
+bool ieee1588_set_channel_compare_value(size_t channel, uint32_t value) {
+  if (channel >= kENET_CHANNEL_count) {
+    return false;
+  }
+
+  ENET::group->CHANNEL[channel].TCCR = value;
+  return true;
+}
+
+bool ieee1588_get_and_clear_channel_status(size_t channel) {
+  if (channel >= kENET_CHANNEL_count) {
+    return false;
+  }
+
+  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  if ((*tcsr & ENET::CHANNEL::TCSR::vals::TF(1)) != 0) {
+    *tcsr |= ENET::CHANNEL::TCSR::vals::TF(1);
+    ENET::group->TGSR = (1 << channel);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 }  // namespace driver
