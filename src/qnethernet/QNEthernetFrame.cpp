@@ -58,6 +58,9 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   }
   frame.receivedTimestamp = timestamp;
 
+  frame.hasTimestamp = p->timestampValid;
+  frame.timestamp = p->timestamp;
+
   // Increment the size
   if ((EthernetFrame.inBufSize_ != 0) &&
       (EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_)) {
@@ -83,6 +86,8 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
 void EthernetFrameClass::Frame::clear() {
   data.clear();
   receivedTimestamp = 0;
+  hasTimestamp = false;
+  timestamp = 0;
 }
 
 void EthernetFrameClass::clear() {
@@ -223,6 +228,17 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
   inBuf_.shrink_to_fit();
 }
 
+bool EthernetFrameClass::timestamp(uint32_t *timestamp) const {
+  // NOTE: This is not "concurrent safe"
+  if (frame_.hasTimestamp) {
+    if (timestamp != nullptr) {
+      *timestamp = frame_.timestamp;
+    }
+    return true;
+  }
+  return false;
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
@@ -260,19 +276,33 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
 }
 
 bool EthernetFrameClass::endFrame() {
+  return endFrame(false);
+}
+
+bool EthernetFrameClass::endFrameWithTimestamp() {
+  return endFrame(true);
+}
+
+bool EthernetFrameClass::endFrame(bool doTimestamp) {
   if (!outFrame_.has_value) {
     return false;
   }
 
   const bool retval = enet_output_frame(outFrame_.value.data.data(),
-                                        outFrame_.value.data.size());
+                                        outFrame_.value.data.size(),
+                                        doTimestamp);
   outFrame_.has_value = false;
   outFrame_.value.clear();
   return retval;
 }
 
 bool EthernetFrameClass::send(const void* const frame, const size_t len) const {
-  return enet_output_frame(frame, len);
+  return enet_output_frame(frame, len, false);
+}
+
+bool EthernetFrameClass::sendWithTimestamp(const void* const frame,
+                                           const size_t len) const {
+  return enet_output_frame(frame, len, true);
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {

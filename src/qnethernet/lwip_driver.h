@@ -227,7 +227,9 @@ err_t driver_output(struct pbuf *p);
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add any extra padding bytes given by ETH_PAD_SIZE.
-bool driver_output_frame(const void *frame, size_t len);
+//
+// The `doTimestamp` parameter specifies whether to timestamp the packet.
+bool driver_output_frame(const void *frame, size_t len, bool doTimestamp);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -333,7 +335,9 @@ void enet_poll(void);
 // ranges exclude the 4-byte FCS (frame check sequence).
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
-bool enet_output_frame(const void *frame, size_t len);
+//
+// The `doTimestamp` parameter specifies whether to timestamp the packet.
+bool enet_output_frame(const void *frame, size_t len, bool doTimestamp);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
@@ -375,6 +379,16 @@ bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t);
 //
 // This will return false if the argument is NULL.
 bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t);
+
+// Returns whether an IEEE 1588 transmit timestamp is available. If available
+// and the parameter is not NULL then it is assigned to `*timestamp`. This
+// clears the timestamp state so that a subsequent call will return false.
+//
+// This function is used after sending a packet having its transmit timestamp
+// sent. Note that this only returns the latest value, so if a second
+// timestamped packet is sent before retrieving the timestamp for the first
+// then this will return the second timestamp (if already available).
+bool enet_ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
 // timer in "nanoseconds per second", see `enet_ieee1588_adjust_freq`. This
