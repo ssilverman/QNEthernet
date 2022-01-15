@@ -126,11 +126,6 @@ class EthernetUDP : public UDP,
   int beginPacket(const char* host, uint16_t port) final;
   int endPacket() final;  // Always clears accumulated data
 
-  // Same as `endPacket()` but adds a timestamp.
-  //
-  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
-  bool endPacketWithTimestamp();
-
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
   // causes less overhead.
@@ -142,18 +137,6 @@ class EthernetUDP : public UDP,
   //
   // If this returns false and there was an error then errno will be set.
   bool send(const char* host, uint16_t port, const void* data, size_t len);
-
-  // Same as `send(ip, port, data, len)` but adds a timestamp to the packet.
-  //
-  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
-  bool sendWithTimestamp(const IPAddress &ip, uint16_t port,
-                         const uint8_t *data, size_t len);
-
-  // Same as `send(host, port, data, len)` but adds a timestamp to the packet.
-  //
-  // Timestamping must have been enabled first with EthernetIEEE1588.begin().
-  bool sendWithTimestamp(const char *host, uint16_t port,
-                         const uint8_t *data, size_t len);
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -316,11 +299,7 @@ class EthernetUDP : public UDP,
   // If this returns false and there was an error then errno will be set.
   [[nodiscard]]
   bool send(const ip_addr_t* ipaddr, uint16_t port,
-            const void* data, size_t len,
-            bool doTimestamp);
-
-  // Timestamping send functions
-  bool endPacket(bool doTimestamp);
+            const void* data, size_t len);
 
   // Checks if there's data still available in the packet.
   [[nodiscard]]
