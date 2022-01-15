@@ -89,9 +89,6 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // 4. There's no room in the output buffers.
   bool endFrame();
 
-  // Same as `endFrame()` but also timestamps the frame.
-  bool endFrameWithTimestamp();
-
   // Sends a frame and returns whether the send was successful. This causes less
   // overhead than beginFrame()/write()/endFrame().
   //
@@ -105,9 +102,6 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
   bool send(const void* frame, size_t len) const;
-
-  // Same as `send(frame, len)`, but adds a timestamp to the frame.
-  bool sendWithTimestamp(const void *frame, size_t len) const;
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -249,9 +243,6 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   EthernetFrameClass& operator=(EthernetFrameClass&&) = delete;
 
   static err_t recvFunc(struct pbuf* p, struct netif* netif);
-
-  // Ends the frame and optionally adds a timestamp.
-  bool endFrame(bool doTimestamp);
 
   // Checks if there's data still available in the packet.
   [[nodiscard]]
