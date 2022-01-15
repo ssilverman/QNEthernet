@@ -294,14 +294,6 @@ bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
 }
 
 int EthernetUDP::endPacket() {
-  return endPacket(false);
-}
-
-bool EthernetUDP::endPacketWithTimestamp() {
-  return endPacket(true);
-}
-
-bool EthernetUDP::endPacket(bool doTimestamp) {
   if (!hasOutPacket_) {
     return false;
   }
@@ -319,7 +311,6 @@ bool EthernetUDP::endPacket(bool doTimestamp) {
   }
   pbuf_take(p, out_.data.data(), out_.data.size());
   out_.data.clear();
-  p->timestampValid = doTimestamp;
   bool retval = (udp_sendto(pcb_, p, &out_.addr, out_.port) == ERR_OK);
   pbuf_free(p);
   return retval;
@@ -328,13 +319,7 @@ bool EthernetUDP::endPacket(bool doTimestamp) {
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
                        const uint8_t *data, size_t len) {
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
-  return send(&ipaddr, port, data, len, false);
-}
-
-bool EthernetUDP::sendWithTimestamp(const IPAddress &ip, uint16_t port,
-                                    const uint8_t *data, size_t len) {
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
-  return send(&ipaddr, port, data, len, true);
+  return send(&ipaddr, port, data, len);
 }
 
 bool EthernetUDP::send(const char *host, uint16_t port,
@@ -346,18 +331,9 @@ bool EthernetUDP::send(const char *host, uint16_t port,
   return send(ip, port, data, len);
 }
 
-bool EthernetUDP::sendWithTimestamp(const char *host, uint16_t port,
-                                    const uint8_t *data, size_t len) {
-  IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return false;
-  }
-  return sendWithTimestamp(ip, port, data, len);
-}
 
 bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
-                       const uint8_t *data, size_t len,
-                       bool doTimestamp) {
+                       const uint8_t *data, size_t len) {
   if (len > UINT16_MAX) {
     return false;
   }
@@ -374,7 +350,6 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
     return false;
   }
   pbuf_take(p, data, len);
-  p->timestampValid = doTimestamp;
   bool retval = (udp_sendto(pcb_, p, ipaddr, port) == ERR_OK);
   pbuf_free(p);
   return retval;

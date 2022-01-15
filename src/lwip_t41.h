@@ -91,10 +91,10 @@ bool enet_link_is_full_duplex();
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 60-(MAX_FRAME_LEN-4) (excludes the FCS (frame
 // check sequence)). This also returns false if Ethernet is not initialized. The
-// `doTimestamp` parameter specifies whether to timestamp the packet.
+// frame is timestamped if `enet_timestamp_next_frame()` was called first.
 //
 // This adds any extra padding bytes given by ETH_PAD_SIZE.
-bool enet_output_frame(const uint8_t *frame, size_t len, bool doTimestamp);
+bool enet_output_frame(const uint8_t *frame, size_t len);
 
 #ifndef QNETHERNET_PROMISCUOUS_MODE
 // For joining and leaving multicast groups; these call
@@ -137,6 +137,9 @@ bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t);
 //
 // This will return false if the argument is NULL.
 bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t);
+
+// Tells the driver to timestamp the next transmitted frame.
+void enet_ieee1588_timestamp_next_frame();
 
 // Returns whether an IEEE 1588 transmit timestamp is available. If available
 // and the parameter is not NULL then it is assigned to `*timestamp`. This

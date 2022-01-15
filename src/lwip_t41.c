@@ -157,6 +157,7 @@ static bool isInitialized = false;
 
 // IEEE 1588
 static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
+static volatile bool doTimestampNext = false;
 static volatile bool hasTxTimestamp = false;
 static volatile uint32_t txTimestamp = 0;
 
@@ -440,8 +441,7 @@ static inline volatile enetbufferdesc_t *get_bufdesc() {
 
 // Update a buffer descriptor. Meant to be used with get_bufdesc().
 static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
-                                  uint16_t len,
-                                  bool doTimestamp) {
+                                  uint16_t len) {
   bdPtr->length = len;
   bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
                   kEnetTxBdTransmitCrc |
@@ -449,7 +449,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
                   kEnetTxBdReady;
 
   hasTxTimestamp = false;  // The timestamp isn't yet available
-  if (doTimestamp) {
+  if (doTimestampNext) {
+    doTimestampNext = false;
     bdPtr->extend1 |= kEnetTxBdTimestamp;
   } else {
     bdPtr->extend1 &= ~kEnetTxBdTimestamp;
@@ -475,7 +476,7 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, copied, p->timestampValid);
+  update_bufdesc(bdPtr, copied);
   return ERR_OK;
 }
 
@@ -728,7 +729,7 @@ bool enet_link_is_full_duplex() {
   return linkIsFullDuplex;
 }
 
-bool enet_output_frame(const uint8_t *frame, size_t len, bool doTimestamp) {
+bool enet_output_frame(const uint8_t *frame, size_t len) {
   if (!isInitialized) {
     return false;
   }
@@ -741,13 +742,13 @@ bool enet_output_frame(const uint8_t *frame, size_t len, bool doTimestamp) {
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, len + ETH_PAD_SIZE, doTimestamp);
+  update_bufdesc(bdPtr, len + ETH_PAD_SIZE);
 #else
   memcpy(bdPtr->buffer, frame, len);
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, len, doTimestamp);
+  update_bufdesc(bdPtr, len);
 #endif  // ETH_PAD_SIZE
   return true;
 }
@@ -993,6 +994,10 @@ bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
   }
 
   return true;
+}
+
+void enet_ieee1588_timestamp_next_frame() {
+  doTimestampNext = true;
 }
 
 bool enet_ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp) {

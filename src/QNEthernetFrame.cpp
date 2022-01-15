@@ -230,32 +230,18 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[6],
 }
 
 bool EthernetFrameClass::endFrame() {
-  return endFrame(false);
-}
-
-bool EthernetFrameClass::endFrameWithTimestamp() {
-  return endFrame(true);
-}
-
-bool EthernetFrameClass::endFrame(bool doTimestamp) {
   if (!hasOutFrame_) {
     return false;
   }
   hasOutFrame_ = false;
 
-  bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size(),
-                                  doTimestamp);
+  bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size());
   outFrame_.data.clear();
   return retval;
 }
 
 bool EthernetFrameClass::send(const uint8_t *frame, size_t len) const {
-  return enet_output_frame(frame, len, false);
-}
-
-bool EthernetFrameClass::sendWithTimestamp(const uint8_t *frame,
-                                           size_t len) const {
-  return enet_output_frame(frame, len, true);
+  return enet_output_frame(frame, len);
 }
 
 size_t EthernetFrameClass::write(uint8_t b) {
