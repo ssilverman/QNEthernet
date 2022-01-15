@@ -9,6 +9,7 @@
 
 // C++ includes
 #include <cstdint>
+#include <ctime>
 
 #include "lwip_t41.h"
 
@@ -34,10 +35,10 @@ class EthernetIEEE1588Class final {
   void end() const;
 
   // Reads the current IEEE 1588 timer value. This returns whether successful.
-  bool readTimer(IEEE1588Timestamp &t) const;
+  bool readTimer(timespec &t) const;
 
   // Writes the current IEEE 1588 timer value. This returns whether successful.
-  bool writeTimer(const IEEE1588Timestamp &t) const;
+  bool writeTimer(const timespec &t) const;
 
   // Tells the driver to timestamp the next transmitted frame. This should be
   // called before functions like `EthernetUDP::endPacket()`,
@@ -54,7 +55,7 @@ class EthernetIEEE1588Class final {
   //
   // In order for the "seconds" field to be accurate, this must be called as
   // soon as possible after sending the frame.
-  bool readAndClearTxTimestamp(IEEE1588Timestamp &timestamp) const;
+  bool readAndClearTxTimestamp(timespec &timestamp) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning

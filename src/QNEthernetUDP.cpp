@@ -57,11 +57,11 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   if (packet.hasTimestamp) {
     uint32_t ts = pHead->timestamp;
     EthernetIEEE1588.readTimer(packet.timestamp);
-    if (packet.timestamp.nsec < ts) {
+    if (static_cast<unsigned long>(packet.timestamp.tv_nsec) < ts) {
       // The timer has wrapped around
-      packet.timestamp.sec--;
+      packet.timestamp.tv_sec--;
     }
-    packet.timestamp.nsec = ts;
+    packet.timestamp.tv_nsec = ts;
   }
   packet.addr = *addr;
   packet.port = port;
@@ -156,8 +156,8 @@ void EthernetUDP::stop() {
   packet_.addr = *IP_ANY_TYPE;
   packet_.port = 0;
   packet_.hasTimestamp = false;
-  packet_.timestamp.sec = 0;
-  packet_.timestamp.nsec = 0;
+  packet_.timestamp.tv_sec = 0;
+  packet_.timestamp.tv_nsec = 0;
 }
 
 EthernetUDP::operator bool() const {
@@ -182,8 +182,8 @@ int EthernetUDP::parsePacket() {
   packet_ = inBuf_[inBufTail_];
   inBuf_[inBufTail_].data.clear();
   inBuf_[inBufTail_].hasTimestamp = false;
-  inBuf_[inBufTail_].timestamp.sec = 0;
-  inBuf_[inBufTail_].timestamp.nsec = 0;
+  inBuf_[inBufTail_].timestamp.tv_sec = 0;
+  inBuf_[inBufTail_].timestamp.tv_nsec = 0;
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
@@ -257,7 +257,7 @@ uint16_t EthernetUDP::remotePort() {
   return packet_.port;
 }
 
-bool EthernetUDP::timestamp(IEEE1588Timestamp &timestamp) const {
+bool EthernetUDP::timestamp(timespec &timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (packet_.hasTimestamp) {
     timestamp = packet_.timestamp;

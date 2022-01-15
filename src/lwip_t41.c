@@ -959,38 +959,38 @@ bool enet_ieee1588_is_enabled() {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t) {
+bool enet_ieee1588_read_timer(struct timespec *t) {
   if (t == NULL) {
     return false;
   }
 
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    t->sec = ieee1588Seconds;
+    t->tv_sec = ieee1588Seconds;
 
     ENET_ATCR |= ENET_ATCR_CAPTURE;
     while ((ENET_ATCR & ENET_ATCR_CAPTURE) != 0) {
       // Wait for bit to clear
     }
-    t->nsec = ENET_ATVR;
+    t->tv_nsec = ENET_ATVR;
 
     // The timer could have wrapped while we were doing stuff
     // Leave the interrupt set so that our internal timer will catch it
     if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
-      t->sec++;
+      t->tv_sec++;
     }
   }
 
   return true;
 }
 
-bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
+bool enet_ieee1588_write_timer(const struct timespec *t) {
   if (t == NULL) {
     return false;
   }
 
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    ieee1588Seconds = t->sec;
-    ENET_ATVR = t->nsec;
+    ieee1588Seconds = t->tv_sec;
+    ENET_ATVR = t->tv_nsec;
   }
 
   return true;
