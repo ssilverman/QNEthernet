@@ -1456,38 +1456,38 @@ bool ieee1588_is_enabled(void) {
   return (ENET::ATCR::EN != 0);
 }
 
-bool ieee1588_read_timer(struct IEEE1588Timestamp *t) {
+bool ieee1588_read_timer(struct timespec *t) {
   if (t == NULL) {
     return false;
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  t->sec = ieee1588Seconds;
+  t->tv_sec = ieee1588Seconds;
 
   ENET::ATCR::CAPTURE = 1;
   while (ENET::ATCR::CAPTURE != 0) {
     // Wait for bit to clear
   }
-  t->nsec = *ENET::ATVR::ATIME;
+  t->tv_nsec = *ENET::ATVR::ATIME;
 
   // The timer could have wrapped while we were doing stuff
   // Leave the interrupt set so that our internal timer will catch it
   if (ENET::EIR::TS_TIMER != 0) {
-    t->sec++;
+    t->tv_sec++;
   }
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
 }
 
-bool ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
+bool ieee1588_write_timer(const struct timespec *t) {
   if (t == NULL) {
     return false;
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  ieee1588Seconds = t->sec;
-  ENET::ATVR::ATIME = t->nsec;
+  ieee1588Seconds = t->tv_sec;
+  ENET::ATVR::ATIME = t->tv_nsec;
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
