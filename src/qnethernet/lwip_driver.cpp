@@ -277,8 +277,7 @@ void poll() {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool output_frame(const void* const frame, const size_t len,
-                  const bool doTimestamp) {
+bool output_frame(const void* const frame, const size_t len) {
   if ((frame == nullptr) || (len < (6 + 6 + 2))) {  // dst + src + len/type
     return false;
   }
@@ -329,7 +328,7 @@ bool output_frame(const void* const frame, const size_t len,
   }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
-  return driver::output_frame(frame, len, doTimestamp);
+  return driver::output_frame(frame, len);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 

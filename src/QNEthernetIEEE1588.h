@@ -39,10 +39,18 @@ class EthernetIEEE1588Class final {
   // Writes the current IEEE 1588 timer value. This returns whether successful.
   bool writeTimer(const IEEE1588Timestamp &t) const;
 
+  // Tells the driver to timestamp the next transmitted frame. This should be
+  // called before functions like `EthernetUDP::endPacket()`,
+  // `EthernetUDP::send()`, and any of the `EthernetFrame` send functions.
+  void timestampNextFrame() const;
+
   // Attempts to retrieve the timestamp of the last transmitted frame and
   // returns whether one is available. If available and the parameter is not
   // NULL then the timestamp is assigned to `*timestamp`. This clears the
   // timestamp state so that a subsequent call will return false.
+  //
+  // This will always returns false if `EthernetIEEE1588.timestampNextFrame()`
+  // was not called before this.
   bool readAndClearTxTimestamp(uint32_t *timestamp) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
