@@ -13,6 +13,7 @@
 // C++ includes
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 #include <vector>
 
 #include <Stream.h>
@@ -218,7 +219,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Gets the IEEE 1588 timestamp for the received frame and assigns it to the
   // `timestamp` parameter, if available. This returns whether the received
   // frame has a timestamp.
-  bool timestamp(IEEE1588Timestamp &timestamp) const;
+  bool timestamp(timespec &timestamp) const;
 
  private:
   struct Frame final {
@@ -227,7 +228,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
     // IEEE 1588
     volatile bool hasTimestamp = false;
-    IEEE1588Timestamp timestamp{0, 0};
+    timespec timestamp{0, 0};
 
     // Clears all the data.
     void clear();
