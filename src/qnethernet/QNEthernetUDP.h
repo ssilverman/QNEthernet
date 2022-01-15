@@ -13,6 +13,7 @@
 // C++ includes
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 #include <vector>
 
 #include <IPAddress.h>
@@ -263,7 +264,7 @@ class EthernetUDP : public UDP,
   // Gets the IEEE 1588 timestamp for the received packet and assigns it to the
   // `timestamp` parameter, if available. This returns whether the received
   // packet has a timestamp.
-  bool timestamp(IEEE1588Timestamp &timestamp) const;
+  bool timestamp(timespec &timestamp) const;
 
  private:
   // Packet holds packet data. destAddr is unused for outgoing packets.
@@ -278,7 +279,7 @@ class EthernetUDP : public UDP,
 
     // IEEE 1588
     volatile bool hasTimestamp = false;
-    IEEE1588Timestamp timestamp{0, 0};
+    timespec timestamp{0, 0};
 
     // Clears all the data.
     void clear();
