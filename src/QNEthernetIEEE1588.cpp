@@ -31,6 +31,10 @@ bool EthernetIEEE1588Class::writeTimer(const IEEE1588Timestamp &t) const {
   return enet_ieee1588_write_timer(&t);
 }
 
+void EthernetIEEE1588Class::timestampNextFrame() const {
+  enet_ieee1588_timestamp_next_frame();
+}
+
 bool EthernetIEEE1588Class::readAndClearTxTimestamp(uint32_t *timestamp) const {
   return enet_ieee1588_read_and_clear_tx_timestamp(timestamp);
 }
