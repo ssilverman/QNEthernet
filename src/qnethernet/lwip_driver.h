@@ -14,6 +14,7 @@
 #endif  // !C++ && (C < 23)
 #include <stddef.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
@@ -81,11 +82,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Types
 // --------------------------------------------------------------------------
-
-struct IEEE1588Timestamp {
-  uint32_t sec;   // Seconds
-  uint32_t nsec;  // Nanoseconds, 0-999,999,999
-};
 
 enum TimerChannelModes {
   kTimerChannelDisable = 0,
@@ -417,12 +413,12 @@ bool enet_ieee1588_is_enabled(void);
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_read_timer(struct IEEE1588Timestamp *t);
+bool enet_ieee1588_read_timer(struct timespec *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t);
+bool enet_ieee1588_write_timer(const struct timespec *t);
 
 // Tells the driver to timestamp the next transmitted frame.
 void enet_ieee1588_timestamp_next_frame();

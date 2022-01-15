@@ -23,11 +23,11 @@ void EthernetIEEE1588Class::end() const {
   enet_ieee1588_deinit();
 }
 
-bool EthernetIEEE1588Class::readTimer(IEEE1588Timestamp &t) const {
+bool EthernetIEEE1588Class::readTimer(timespec &t) const {
   return enet_ieee1588_read_timer(&t);
 }
 
-bool EthernetIEEE1588Class::writeTimer(const IEEE1588Timestamp &t) const {
+bool EthernetIEEE1588Class::writeTimer(const timespec &t) const {
   return enet_ieee1588_write_timer(&t);
 }
 
@@ -35,17 +35,17 @@ void EthernetIEEE1588Class::timestampNextFrame() const {
   enet_ieee1588_timestamp_next_frame();
 }
 
-bool EthernetIEEE1588Class::readAndClearTxTimestamp(IEEE1588Timestamp &timestamp) const {
+bool EthernetIEEE1588Class::readAndClearTxTimestamp(timespec &timestamp) const {
   uint32_t ts;
   if (!enet_ieee1588_read_and_clear_tx_timestamp(&ts)) {
     return false;
   }
 
   readTimer(timestamp);
-  if (timestamp.nsec < ts) {
-    timestamp.sec--;
+  if (static_cast<unsigned long>(timestamp.tv_nsec) < ts) {
+    timestamp.tv_sec--;
   }
-  timestamp.nsec = ts;
+  timestamp.tv_nsec = ts;
   return true;
 }
 
