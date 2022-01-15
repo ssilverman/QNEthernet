@@ -51,7 +51,10 @@ class EthernetIEEE1588Class final {
   //
   // This will always returns false if `EthernetIEEE1588.timestampNextFrame()`
   // was not called before this.
-  bool readAndClearTxTimestamp(uint32_t *timestamp) const;
+  //
+  // In order for the "seconds" field to be accurate, this must be called as
+  // soon as possible after sending the frame.
+  bool readAndClearTxTimestamp(IEEE1588Timestamp &timestamp) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning
