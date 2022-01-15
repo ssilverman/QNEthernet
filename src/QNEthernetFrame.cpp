@@ -53,7 +53,15 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
   }
 
   frame.hasTimestamp = pHead->timestampValid;
-  frame.timestamp = pHead->timestamp;
+  if (frame.hasTimestamp) {
+    uint32_t ts = pHead->timestamp;
+    EthernetIEEE1588.readTimer(frame.timestamp);
+    if (frame.timestamp.nsec < ts) {
+      // The timer has wrapped around
+      frame.timestamp.sec--;
+    }
+    frame.timestamp.nsec = ts;
+  }
 
   // Increment the size
   if (EthernetFrame.inBufSize_ != 0 &&
@@ -91,7 +99,8 @@ int EthernetFrameClass::parseFrame() {
   frame_ = inBuf_[inBufTail_];
   inBuf_[inBufTail_].data.clear();
   inBuf_[inBufTail_].hasTimestamp = false;
-  inBuf_[inBufTail_].timestamp = 0;
+  inBuf_[inBufTail_].timestamp.sec = 0;
+  inBuf_[inBufTail_].timestamp.nsec = 0;
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
@@ -184,12 +193,10 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   }
 }
 
-bool EthernetFrameClass::timestamp(uint32_t *timestamp) const {
+bool EthernetFrameClass::timestamp(IEEE1588Timestamp &timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (frame_.hasTimestamp) {
-    if (timestamp != nullptr) {
-      *timestamp = frame_.timestamp;
-    }
+    timestamp = frame_.timestamp;
     return true;
   }
   return false;
