@@ -224,10 +224,8 @@ err_t output(struct pbuf* p);
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add, to the start, any extra padding bytes given by ETH_PAD_SIZE.
-//
-// The `doTimestamp` parameter specifies whether to timestamp the packet.
 ATTRIBUTE_NODISCARD
-bool output_frame(const void* frame, size_t len, bool doTimestamp);
+bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // --------------------------------------------------------------------------
@@ -303,6 +301,9 @@ bool ieee1588_read_timer(struct IEEE1588Timestamp *t);
 //
 // This will return false if the argument is NULL.
 bool ieee1588_write_timer(const struct IEEE1588Timestamp *t);
+
+// Tells the driver to timestamp the next transmitted frame.
+void ieee1588_timestamp_next_frame();
 
 // Returns whether an IEEE 1588 transmit timestamp is available. If available
 // and the parameter is not NULL then it is assigned to `*timestamp`. This
@@ -432,9 +433,9 @@ void poll();
 //
 // This returns the result of driver::output_frame(), if the frame checks pass.
 //
-// The `doTimestamp` parameter specifies whether to timestamp the packet.
+// The frame is timestamped if `timestamp_next_frame()` was called first.
 ATTRIBUTE_NODISCARD
-bool output_frame(const void* frame, size_t len, bool doTimestamp);
+bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // --------------------------------------------------------------------------
