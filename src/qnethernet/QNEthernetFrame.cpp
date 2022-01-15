@@ -62,7 +62,15 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   frame.receivedTimestamp = timestamp;
 
   frame.hasTimestamp = p->timestampValid;
-  frame.timestamp = p->timestamp;
+  if (frame.hasTimestamp) {
+    uint32_t ts = p->timestamp;
+    EthernetIEEE1588.readTimer(frame.timestamp);
+    if (frame.timestamp.nsec < ts) {
+      // The timer has wrapped around
+      frame.timestamp.sec--;
+    }
+    frame.timestamp.nsec = ts;
+  }
 
   (void)pbuf_free(p);
   ++EthernetFrame.totalReceiveCount_;
@@ -77,7 +85,8 @@ void EthernetFrameClass::Frame::clear() {
   data.clear();
   receivedTimestamp = 0;
   hasTimestamp = false;
-  timestamp = 0;
+  timestamp.sec = 0;
+  timestamp.nsec = 0;
 }
 
 void EthernetFrameClass::clear() {
@@ -183,12 +192,10 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
   // }
 }
 
-bool EthernetFrameClass::timestamp(uint32_t *timestamp) const {
+bool EthernetFrameClass::timestamp(IEEE1588Timestamp &timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (frame_.hasTimestamp) {
-    if (timestamp != nullptr) {
-      *timestamp = frame_.timestamp;
-    }
+    timestamp = frame_.timestamp;
     return true;
   }
   return false;
