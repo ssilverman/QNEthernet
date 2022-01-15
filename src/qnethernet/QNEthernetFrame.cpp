@@ -276,33 +276,19 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
 }
 
 bool EthernetFrameClass::endFrame() {
-  return endFrame(false);
-}
-
-bool EthernetFrameClass::endFrameWithTimestamp() {
-  return endFrame(true);
-}
-
-bool EthernetFrameClass::endFrame(bool doTimestamp) {
   if (!outFrame_.has_value) {
     return false;
   }
 
   const bool retval = enet_output_frame(outFrame_.value.data.data(),
-                                        outFrame_.value.data.size(),
-                                        doTimestamp);
+                                        outFrame_.value.data.size());
   outFrame_.has_value = false;
   outFrame_.value.clear();
   return retval;
 }
 
 bool EthernetFrameClass::send(const void* const frame, const size_t len) const {
-  return enet_output_frame(frame, len, false);
-}
-
-bool EthernetFrameClass::sendWithTimestamp(const void* const frame,
-                                           const size_t len) const {
-  return enet_output_frame(frame, len, true);
+  return enet_output_frame(frame, len);
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {

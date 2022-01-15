@@ -315,6 +315,7 @@ static bool s_manualLinkState = false;  // True for sticky
 
 // IEEE 1588
 static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
+static volatile bool doTimestampNext = false;
 static volatile bool hasTxTimestamp = false;
 static volatile uint32_t txTimestamp = 0;
 
@@ -692,8 +693,7 @@ static inline volatile enetbufferdesc_t *get_bufdesc(void) {
 
 // Updates a buffer descriptor. Meant to be used with get_bufdesc().
 static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
-                                  const uint16_t len,
-                                  const bool doTimestamp) {
+                                  const uint16_t len) {
   pBD->length = len;
   pBD->status = (pBD->status & kEnetTxBdWrap) |
                 kEnetTxBdTransmitCrc          |
@@ -701,7 +701,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
                 kEnetTxBdReady;
 
   hasTxTimestamp = false;  // The timestamp isn't yet available
-  if (doTimestamp) {
+  if (doTimestampNext) {
+    doTimestampNext = false;
     pBD->extend1 |= kEnetTxBdTimestamp;
   } else {
     pBD->extend1 &= ~kEnetTxBdTimestamp;
@@ -1143,13 +1144,12 @@ err_t driver_output(struct pbuf *const p) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, copied, p->timestampValid);
+  update_bufdesc(pBD, copied);
   return ERR_OK;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void *const frame, const size_t len,
-                         const bool doTimestamp) {
+bool driver_output_frame(const void *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
@@ -1163,7 +1163,7 @@ bool driver_output_frame(const void *const frame, const size_t len,
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, len + ETH_PAD_SIZE, doTimestamp);
+  update_bufdesc(pBD, len + ETH_PAD_SIZE);
 
   return true;
 }
@@ -1348,6 +1348,10 @@ bool enet_ieee1588_write_timer(const struct IEEE1588Timestamp *t) {
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
+}
+
+void enet_ieee1588_timestamp_next_frame() {
+  doTimestampNext = true;
 }
 
 bool enet_ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp) {
