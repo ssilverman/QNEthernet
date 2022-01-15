@@ -74,11 +74,11 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   if (packet.hasTimestamp) {
     uint32_t ts = p->timestamp;
     EthernetIEEE1588.readTimer(packet.timestamp);
-    if (packet.timestamp.nsec < ts) {
+    if (static_cast<unsigned long>(packet.timestamp.tv_nsec) < ts) {
       // The timer has wrapped around
-      packet.timestamp.sec--;
+      packet.timestamp.tv_sec--;
     }
-    packet.timestamp.nsec = ts;
+    packet.timestamp.tv_nsec = ts;
   }
   packet.addr = *addr;
   packet.port = port;
@@ -297,8 +297,8 @@ void EthernetUDP::Packet::clear() {
   port = 0;
   receivedTimestamp = 0;
   hasTimestamp = false;
-  timestamp.sec = 0;
-  timestamp.nsec = 0;
+  timestamp.tv_sec = 0;
+  timestamp.tv_nsec = 0;
 }
 
 // --------------------------------------------------------------------------
@@ -384,7 +384,7 @@ IPAddress EthernetUDP::remoteIP() {
 #endif  // LWIP_IPV4
 }
 
-bool EthernetUDP::timestamp(IEEE1588Timestamp &timestamp) const {
+bool EthernetUDP::timestamp(timespec &timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (packet_.hasTimestamp) {
     timestamp = packet_.timestamp;
