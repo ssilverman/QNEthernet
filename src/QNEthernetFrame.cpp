@@ -83,10 +83,6 @@ int EthernetFrameClass::read() {
 }
 
 int EthernetFrameClass::read(unsigned char *buffer, size_t len) {
-  return read(reinterpret_cast<char *>(buffer), len);
-}
-
-int EthernetFrameClass::read(char *buffer, size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
@@ -94,6 +90,10 @@ int EthernetFrameClass::read(char *buffer, size_t len) {
   std::copy_n(&frame_.data()[framePos_], len, buffer);
   framePos_ += len;
   return len;
+}
+
+int EthernetFrameClass::read(char *buffer, size_t len) {
+  return read(reinterpret_cast<unsigned char *>(buffer), len);
 }
 
 int EthernetFrameClass::peek() {

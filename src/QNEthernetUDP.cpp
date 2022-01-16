@@ -176,10 +176,6 @@ int EthernetUDP::read() {
 }
 
 int EthernetUDP::read(unsigned char *buffer, size_t len) {
-  return read(reinterpret_cast<char *>(buffer), len);
-}
-
-int EthernetUDP::read(char *buffer, size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
@@ -187,6 +183,10 @@ int EthernetUDP::read(char *buffer, size_t len) {
   std::copy_n(&packet_.data()[packetPos_], len, buffer);
   packetPos_ += len;
   return len;
+}
+
+int EthernetUDP::read(char *buffer, size_t len) {
+  return read(reinterpret_cast<unsigned char *>(buffer), len);
 }
 
 int EthernetUDP::peek() {
