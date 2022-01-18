@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // LengthWidthServer demonstrates how to serve a protocol having a
@@ -80,7 +80,7 @@ void setup() {
   while (!Serial && millis() < 4000) {
     // Wait for Serial to initialize
   }
-  stdPrint = &Serial;  // Make printf work
+  stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
   printf("Starting...\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses

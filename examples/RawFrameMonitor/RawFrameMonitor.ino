@@ -28,7 +28,7 @@ void setup() {
   while (!Serial && millis() < 4000) {
     // Wait for Serial to initialize
   }
-  stdPrint = &Serial;  // Make printf work
+  stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
   printf("Starting...\n");
 
   // Print the MAC address
