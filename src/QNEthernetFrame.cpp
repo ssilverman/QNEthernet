@@ -103,6 +103,10 @@ int EthernetFrameClass::peek() {
   return frame_[framePos_];
 }
 
+const unsigned char *EthernetFrameClass::data() {
+  return frame_.data();
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------

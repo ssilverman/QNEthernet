@@ -202,6 +202,10 @@ void EthernetUDP::flush() {
   // Instead, do a no-op.
 }
 
+const unsigned char *EthernetUDP::data() {
+  return packet_.data();
+}
+
 IPAddress EthernetUDP::remoteIP() {
   return addr_;
 }

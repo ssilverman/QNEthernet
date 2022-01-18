@@ -20,6 +20,8 @@ and this project adheres to
   shutting down Ethernet.
 * New `EthernetClass::linkIsFullDuplex()` function, returns whether the link is
   full duplex (`true`) or half duplex (`false`).
+* New `EthernetUDP::data()` and `EthernetFrame::data()` functions that return a
+  pointer to the received data.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number

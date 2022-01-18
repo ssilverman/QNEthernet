@@ -101,6 +101,9 @@ class EthernetFrameClass final : public Stream {
   int peek() override;
   void flush() override {}
 
+  // Returns a pointer to the received frame data.
+  const unsigned char *data();
+
  private:
   EthernetFrameClass() = default;
   ~EthernetFrameClass() = default;

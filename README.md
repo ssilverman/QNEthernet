@@ -193,6 +193,7 @@ This section documents those functions.
 * `beginMulticast(ip, localPort, reuse)`: Similar to
   `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
   the above.
+* `data()`: Returns a pointer to the received packet data.
 * `send(data, len)`: Sends a packet without having to use `beginPacket()`,
   `write()`, and `endPacket()`. It causes less overhead.
 * `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
@@ -211,6 +212,7 @@ from a frame and the `Print` API can be used to write to the frame.
 * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`: Starts a new
   VLAN-tagged frame and writes the given addresses, VLAN info, and
   EtherType/length.
+* `data()`: Returns a pointer to the received frame data.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
   frame must have been started, its data length must be in the range 60-1518,
   and Ethernet must have been initialized. This is similar
