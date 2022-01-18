@@ -22,6 +22,8 @@ and this project adheres to
   full duplex (`true`) or half duplex (`false`).
 * New `EthernetUDP::data()` and `EthernetFrame::data()` functions that return a
   pointer to the received data.
+* New `EthernetClass::broadcastIP()` function that returns the broadcast IP
+  address associated with the current local IP and subnet mask.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number

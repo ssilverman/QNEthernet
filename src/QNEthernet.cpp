@@ -318,6 +318,14 @@ IPAddress EthernetClass::dnsServerIP() const {
   return IPAddress{dns_getserver(0)->addr};
 }
 
+IPAddress EthernetClass::broadcastIP() const {
+  if (netif_ == nullptr) {
+    return INADDR_NONE;
+  }
+  return IPAddress{netif_ip_addr4(netif_)->addr |
+                   ~netif_ip_netmask4(netif_)->addr};
+}
+
 void EthernetClass::setLocalIP(const IPAddress &localIP) {
   if (netif_ == nullptr) {
     return;

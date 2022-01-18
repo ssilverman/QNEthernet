@@ -125,6 +125,8 @@ This section documents those functions.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
   internal MAC address, and uses the given parameters for the
   network configuration.
+* `broadcastIP()`: Returns the broadcast IP address associated with the current
+  local IP and subnet mask.
 * `end()`: Shuts down the library, including the Ethernet clocks.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "teensy-lwip".

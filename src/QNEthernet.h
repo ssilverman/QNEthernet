@@ -126,6 +126,10 @@ class EthernetClass final {
   IPAddress gatewayIP() const;
   IPAddress dnsServerIP() const;
 
+  // Returns the broadcast IP address. This is equal to:
+  // localIP | ~subnetMask
+  IPAddress broadcastIP() const;
+
   // None of the following address setting functions do anything unless the
   // system is initialized after a `begin` call
   void setLocalIP(const IPAddress &localIP);
