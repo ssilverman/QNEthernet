@@ -35,8 +35,9 @@ class EthernetUDP final : public UDP {
   // the port is in use. This calls begin(localPort, false).
   uint8_t begin(uint16_t localPort) override;
 
-  // Starts listening on a port and set the SO_REUSEADDR socket option according
-  // to the `reuse` parameter. This returns whether the attempt was successful.
+  // Starts listening on a port and sets the SO_REUSEADDR socket option
+  // according to the `reuse` parameter. This returns whether the attempt
+  // was successful.
   uint8_t begin(uint16_t localPort, bool reuse);
 
   // Multicast functions make use of Ethernet.joinGroup()

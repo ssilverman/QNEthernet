@@ -37,7 +37,7 @@ class EthernetServer final : public Server {
   // Starts listening on the server port. This calls begin(false).
   void begin() override;
 
-  // Starts listening on the server port and set the SO_REUSEADDR socket option
+  // Starts listening on the server port and sets the SO_REUSEADDR socket option
   // according to the `reuse` parameter.
   void begin(bool reuse);
 
