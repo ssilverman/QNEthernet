@@ -14,7 +14,6 @@
 
 #include "QNDNSClient.h"
 #include "lwip/dhcp.h"
-#include "lwip/dns.h"
 #include "lwip/igmp.h"
 #include "lwip/ip_addr.h"
 #include "lwip/udp.h"
@@ -263,7 +262,7 @@ void EthernetClass::end() {
 
   ethActive = false;
 
-  dns_setserver(0, IP_ADDR_ANY);
+  DNSClient::setServer(0, INADDR_NONE);
   dhcp_release_and_stop(netif_);
   netif_set_down(netif_);
 
@@ -315,7 +314,7 @@ IPAddress EthernetClass::dnsServerIP() const {
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
-  return IPAddress{dns_getserver(0)->addr};
+  return DNSClient::getServer(0);
 }
 
 IPAddress EthernetClass::broadcastIP() const {
