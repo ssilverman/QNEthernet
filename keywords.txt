@@ -28,12 +28,14 @@ end	KEYWORD2
 linkStatus	KEYWORD2	EthernetLinkStatus
 linkState	KEYWORD2
 linkSpeed	KEYWORD2
+linkIsFullDuplex	KEYWORD2
 onLinkState	KEYWORD2
 onAddressChanged	KEYWORD2
 localIP	KEYWORD2	EthernetLocalIP
 subnetMask	KEYWORD2	EthernetSubnetMask
 gatewayIP	KEYWORD2	EthernetGatewayIP
 dnsServerIP	KEYWORD2	EthernetDnsServerIP
+broadcastIP	KEYWORD2
 setLocalIP	KEYWORD2	EthernetSetLocalIP
 setSubnetMask	KEYWORD2	EthernetSetSubnetMask
 setGatewayIP	KEYWORD2	EthernetSetGatewayIP
@@ -50,6 +52,7 @@ stop	KEYWORD2
 close	KEYWORD2
 closeOutput	KEYWORD2
 localPort	KEYWORD2	ClientLocalPort
+data	KEYWORD2
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
 writeFully	KEYWORD2
