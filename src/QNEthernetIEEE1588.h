@@ -11,14 +11,27 @@
 #include <cstdint>
 #include <ctime>
 
-#include "lwip_t41.h"
-
 namespace qindesign {
 namespace network {
 
 // Provides an API for raw Ethernet frames, similar to the UDP API.
 class EthernetIEEE1588Class final {
  public:
+  enum class TimerChannelModes {
+    kDisable = 0,
+    kCaptureOnRising = 1,
+    kCaptureOnFalling = 2,
+    kCaptureOnBoth = 3,
+    kSoftwareCompare = 4,
+    kToggleOnCompare = 5,
+    kClearOnCompare = 6,
+    kSetOnCompare = 7,
+    kClearOnCompareSetOnOverflow = 10,
+    kSetOnCompareClearOnOverflow = 11,
+    kPulseLowOnCompare = 14,
+    kPulseHighOnCompare = 15,
+  };
+
   // Accesses the singleton instance.
   static EthernetIEEE1588Class &instance() {
     return instance_;

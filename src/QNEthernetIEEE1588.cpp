@@ -6,6 +6,8 @@
 
 #include "QNEthernetIEEE1588.h"
 
+#include "lwip_t41.h"
+
 namespace qindesign {
 namespace network {
 
@@ -60,13 +62,14 @@ bool EthernetIEEE1588Class::adjustFreq(int nsps) const {
 
 bool EthernetIEEE1588Class::setChannelMode(int channel,
                                            TimerChannelModes mode) const {
-  return enet_ieee1588_set_channel_mode(channel, mode);
+  return enet_ieee1588_set_channel_mode(channel, static_cast<int>(mode));
 }
 
 bool EthernetIEEE1588Class::setChannelOutputPulseWidth(int channel,
                                                        TimerChannelModes mode,
                                                        int pulseWidth) const {
-  return enet_ieee1588_set_channel_output_pulse_width(channel, mode,
+  return enet_ieee1588_set_channel_output_pulse_width(channel,
+                                                      static_cast<int>(mode),
                                                       pulseWidth);
 }
 
