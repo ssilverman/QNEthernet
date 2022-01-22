@@ -81,6 +81,7 @@ removeService	KEYWORD2
 ttl	KEYWORD2
 maxServers	KEYWORD2
 setServer	KEYWORD2
+getServer	KEYWORD2
 getHostByName	KEYWORD2
 maxFrameLen	KEYWORD2
 minFrameLen	KEYWORD2

@@ -34,6 +34,13 @@ bool DNSClient::setServer(int index, const IPAddress &ip) {
   return true;
 }
 
+IPAddress DNSClient::getServer(int index) {
+  if (index < 0 || maxServers() <= index) {
+    return INADDR_NONE;
+  }
+  return IPAddress{dns_getserver(index)->addr};
+}
+
 bool DNSClient::getHostByName(const char *hostname,
                               std::function<void(IPAddress)> callback) {
   if (callback == nullptr) {

@@ -24,6 +24,8 @@ and this project adheres to
   pointer to the received data.
 * New `EthernetClass::broadcastIP()` function that returns the broadcast IP
   address associated with the current local IP and subnet mask.
+* New `DNSClient::getServer(index)` function for retrieving a specific DNS
+  server address.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number

@@ -31,6 +31,10 @@ class DNSClient final {
   // range [0, maxServers()).
   static bool setServer(int index, const IPAddress &ip);
 
+  // Gets the specified DNS server address. This will return INADDR_NONE if
+  // the address is not set or the index is out of range.
+  static IPAddress getServer(int index);
+
   // Looks up a host by name. This calls the callback when it has a result. This
   // returns whether the call was successful. If the call was not successful,
   // the callback is not called. Possible errors include:
