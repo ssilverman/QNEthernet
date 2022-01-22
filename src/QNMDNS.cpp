@@ -14,9 +14,6 @@
 namespace qindesign {
 namespace network {
 
-// Global definitions for Arduino
-MDNSClass MDNS;
-
 // Count array elements.
 template <typename T, size_t N>
 static constexpr size_t countof(const T (&)[N]) {
@@ -25,6 +22,12 @@ static constexpr size_t countof(const T (&)[N]) {
 
 // Recommended DNS TTL value, in seconds, per RFC 6762 "Multicast DNS".
 static constexpr uint32_t kTTL = 120;
+
+// Define the singleton instance.
+MDNSClass MDNSClass::instance_;
+
+// A reference to the singleton.
+MDNSClass &MDNS = MDNSClass::instance();
 
 static void srv_txt(struct mdns_service *service, void *txt_userdata) {
   if (txt_userdata == nullptr) {

@@ -21,7 +21,11 @@ namespace network {
 // MDNS provides mDNS responder functionality.
 class MDNSClass final {
  public:
-  MDNSClass() = default;
+  // Accesses the singleton instance.
+  static MDNSClass &instance() {
+    return instance_;
+  }
+
   ~MDNSClass();
 
   // Starts the mDNS responder. This returns whether the call was successful.
@@ -98,6 +102,8 @@ class MDNSClass final {
     std::vector<String> (*getTXTFunc)(void);
   };
 
+  MDNSClass() = default;
+
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
   int findService(const String &type, const String &protocol, uint16_t port);
@@ -107,9 +113,10 @@ class MDNSClass final {
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
-};
 
-extern MDNSClass MDNS;
+  // The singleton instance.
+  static MDNSClass instance_;
+};
 
 }  // namespace network
 }  // namespace qindesign
