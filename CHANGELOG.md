@@ -35,7 +35,7 @@ and this project adheres to
   how the `EthernetFrame` object works.
 
 ### Removed
-* Removed all IEEE 1588 features pending a cleaner future implementation.
+* Removed IEEE 1588 initialization and timer read.
 
 ## [0.12.0]
 
