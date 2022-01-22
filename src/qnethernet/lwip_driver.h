@@ -68,26 +68,6 @@
 //    make sure to use `extern "C"` around those functions.
 
 #ifdef __cplusplus
-namespace qindesign {
-namespace network {
-#endif  // __cplusplus
-
-enum TimerChannelModes {
-  kTimerChannelDisable = 0,
-  kTimerChannelCaptureOnRising = 1,
-  kTimerChannelCaptureOnFalling = 2,
-  kTimerChannelCaptureOnBoth = 3,
-  kTimerChannelSoftwareCompare = 4,
-  kTimerChannelToggleOnCompare = 5,
-  kTimerChannelClearOnCompare = 6,
-  kTimerChannelSetOnCompare = 7,
-  kTimerChannelClearOnCompareSetOnOverflow = 10,
-  kTimerChannelSetOnCompareClearOnOverflow = 11,
-  kTimerChannelPulseLowOnCompare = 14,
-  kTimerChannelPulseHighOnCompare = 15,
-};
-
-#ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
 
@@ -403,9 +383,11 @@ bool enet_ieee1588_adjust_freq(int nsps);
 // Sets the channel mode for the given channel. This does not set the output
 // compare pulse modes. This returns whether successful.
 //
-// This will return false for an unknown channel or if the mode is one of the
-// output compare pulse modes.
-bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode);
+// This will return false if:
+// 1. The channel is unknown,
+// 2. The mode is one of the output compare pulse modes, or
+// 3. The mode is a reserved value or unknown.
+bool enet_ieee1588_set_channel_mode(int channel, int mode);
 
 // Sets the output compare pulse mode and pulse width for the given channel.
 // This returns whether successful.
@@ -415,7 +397,7 @@ bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode);
 // 2. The mode is not one of the output compare pulse modes, or
 // 3. The pulse width is not in the range 1-32.
 bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  enum TimerChannelModes mode,
+                                                  int mode,
                                                   int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
@@ -429,9 +411,4 @@ bool enet_ieee1588_get_and_clear_channel_status(int channel);
 
 #ifdef __cplusplus
 }  // extern "C"
-#endif  // __cplusplus
-
-#ifdef __cplusplus
-}  // namespace network
-}  // namespace qindesign
 #endif  // __cplusplus
