@@ -4,6 +4,9 @@
 // sys_arch.cpp provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
 
+// C includes
+#include <unistd.h>
+
 // C++ includes
 #include <cstdint>
 #include <cstdio>
@@ -40,7 +43,7 @@ int _write(int file, const void *buf, size_t len) {
   Print *out;
 
   // Send both stdout and stderr to stdPrint
-  if (file == stdout->_file || file == stderr->_file) {
+  if (file == STDOUT_FILENO || file == STDERR_FILENO) {
     out = ::qindesign::network::stdPrint;
   } else {
     out = (Print *)file;
