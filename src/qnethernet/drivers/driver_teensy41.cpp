@@ -1541,16 +1541,21 @@ bool ieee1588_adjust_freq(int nsps) {
 
 // Channels
 
-bool ieee1588_set_channel_mode(size_t channel, enum TimerChannelModes mode) {
+bool ieee1588_set_channel_mode(size_t channel, int mode) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
 
   switch (mode) {
-    case kTimerChannelPulseLowOnCompare:
-    case kTimerChannelPulseHighOnCompare:
+    case 14:  // kTimerChannelPulseLowOnCompare
+    case 15:  // kTimerChannelPulseHighOnCompare
+    case 12:  // Reserved
+    case 13:  // Reserved
       return false;
     default:
+      if (mode < 0 || 0x0f < mode) {
+        return false;
+      }
       break;
   }
 
@@ -1566,15 +1571,15 @@ bool ieee1588_set_channel_mode(size_t channel, enum TimerChannelModes mode) {
 }
 
 bool ieee1588_set_channel_output_pulse_width(size_t channel,
-                                             enum TimerChannelModes mode,
+                                             int mode,
                                              int pulseWidth) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
 
   switch (mode) {
-    case kTimerChannelPulseLowOnCompare:
-    case kTimerChannelPulseHighOnCompare:
+    case 14:  // kTimerChannelPulseLowOnCompare
+    case 15:  // kTimerChannelPulseHighOnCompare
       break;
     default:
       return true;
