@@ -26,6 +26,7 @@ and this project adheres to
   address associated with the current local IP and subnet mask.
 * New `DNSClient::getServer(index)` function for retrieving a specific DNS
   server address.
+* New `OSCPrinter` example.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number
