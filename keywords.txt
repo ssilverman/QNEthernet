@@ -1,17 +1,21 @@
 #######################################
 # Syntax Coloring Map for QNEthernet
 # https://arduino.github.io/arduino-cli/latest/library-specification/#keywords
+# https://github.com/arduino/Arduino/blob/master/build/shared/lib/keywords.txt
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
+Ethernet	KEYWORD1	Ethernet
 EthernetClient	KEYWORD1	ClientConstructor
 EthernetServer	KEYWORD1	ServerConstructor
 EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
+stdPrint	KEYWORD1
+EthernetFrame	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -87,12 +91,8 @@ parseFrame	KEYWORD2
 writeMagic	KEYWORD2
 
 #######################################
-# Instances and Structures (KEYWORD3)
+# Structures (KEYWORD3)
 #######################################
-
-Ethernet	KEYWORD3	Ethernet
-stdPrint	KEYWORD3
-EthernetFrame	KEYWORD3
 
 #######################################
 # Constants (LITERAL1)
