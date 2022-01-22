@@ -1419,12 +1419,17 @@ static volatile uint32_t *tccrReg(int channel) {
 
 }
 
-bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode) {
+bool enet_ieee1588_set_channel_mode(int channel, int mode) {
   switch (mode) {
-    case kTimerChannelPulseLowOnCompare:
-    case kTimerChannelPulseHighOnCompare:
+    case 14:  // kTimerChannelPulseLowOnCompare
+    case 15:  // kTimerChannelPulseHighOnCompare
+    case 12:  // Reserved
+    case 13:  // Reserved
       return false;
     default:
+      if (mode < 0 || 0x0f < mode) {
+        return false;
+      }
       break;
   }
 
@@ -1443,11 +1448,11 @@ bool enet_ieee1588_set_channel_mode(int channel, enum TimerChannelModes mode) {
 }
 
 bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  enum TimerChannelModes mode,
+                                                  int mode,
                                                   int pulseWidth) {
   switch (mode) {
-    case kTimerChannelPulseLowOnCompare:
-    case kTimerChannelPulseHighOnCompare:
+    case 14:  // kTimerChannelPulseLowOnCompare
+    case 15:  // kTimerChannelPulseHighOnCompare
       break;
     default:
       return true;
