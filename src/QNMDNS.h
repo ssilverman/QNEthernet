@@ -26,6 +26,10 @@ class MDNSClass final {
     return instance_;
   }
 
+  // MDNSClass is neither copyable nor movable
+  MDNSClass(const MDNSClass &) = delete;
+  MDNSClass &operator=(const MDNSClass &) = delete;
+
   ~MDNSClass();
 
   // Starts the mDNS responder. This returns whether the call was successful.

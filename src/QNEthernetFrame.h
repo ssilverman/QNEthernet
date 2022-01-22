@@ -34,7 +34,7 @@ class EthernetFrameClass final : public Stream {
     return instance_;
   }
 
-  // EthernetFrameClass is neither copyable nor movable.
+  // EthernetFrameClass is neither copyable nor movable
   EthernetFrameClass(const EthernetFrameClass &) = delete;
   EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
 

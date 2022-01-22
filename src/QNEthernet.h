@@ -46,6 +46,10 @@ class EthernetClass final {
     return instance_;
   }
 
+  // EthernetClass is neither copyable nor movable
+  EthernetClass(const EthernetClass &) = delete;
+  EthernetClass &operator=(const EthernetClass &) = delete;
+
   ~EthernetClass();
 
   // Returns the maximum number of multicast groups. Note that mDNS will use
