@@ -32,8 +32,9 @@ class MDNSClass final {
 
   ~MDNSClass();
 
-  // Starts the mDNS responder. This returns whether the call was successful.
-  bool begin(const String &host);
+  // Starts the mDNS responder and uses the given hostname as the name. This
+  // returns whether the call was successful.
+  bool begin(const String &hostname);
 
   // Attempts to stop the mDNS responder. Returns whether the call
   // was successful.
@@ -113,7 +114,7 @@ class MDNSClass final {
   int findService(const String &type, const String &protocol, uint16_t port);
 
   struct netif *netif_;
-  String host_;
+  String hostname_;
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
