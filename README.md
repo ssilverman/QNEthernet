@@ -25,7 +25,9 @@ files provided with the lwIP release.
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
    5. [`EthernetFrame`](#ethernetframe)
-   6. [Print utilities](#print-utilities)
+   6. [`MDNS`](#mdns)
+   7. [`DNSClient`](#dnsclient)
+   8. [Print utilities](#print-utilities)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -121,6 +123,8 @@ This section documents those functions.
 
 ### `Ethernet`
 
+The `Ethernet` object is the main Ethernet interface.
+
 * `begin()`: Initializes the library and uses the Teensy's internal MAC address.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
   internal MAC address, and uses the given parameters for the
@@ -202,10 +206,10 @@ This section documents those functions.
 
 ### `EthernetFrame`
 
-This object adds the ability to send and receive raw Ethernet frames. It
-provides an API that is similar in feel to `EthernetUDP`. Because, like
-`EthernetUDP`, it derives from `Stream`, the `Stream` API can be used to read
-from a frame and the `Print` API can be used to write to the frame.
+The `EthernetFrame` object adds the ability to send and receive raw Ethernet
+frames. It provides an API that is similar in feel to `EthernetUDP`. Because,
+like `EthernetUDP`, it derives from `Stream`, the `Stream` API can be used to
+read from a frame and the `Print` API can be used to write to the frame.
 
 * `beginFrame()`: Starts a new frame. New data can be added using the
   `Print` API. This is similar to `EthernetUDP::beginPacket()`.
@@ -230,6 +234,30 @@ from a frame and the `Print` API can be used to write to the frame.
 * `static constexpr int minFrameLen()`: Returns the minimum frame length
   including the FCS. Subtract 4 to get the minimum length that can be sent or
   received using this API.
+
+### `MDNS`
+
+The `MDNS` object provides an mDNS API.
+
+* `begin(hostname)`: Starts the mDNS responder and uses the given hostname as
+  the name.
+* `end()`: Stops the mDNS responder.
+* `addService(type, protocol, port)`: Adds a service. The protocol will be set
+  to `"_udp"` for anything other than `"_tcp"`. The strings should have a `"_"`
+  prefix. Uses the hostname as the service name.
+* `addService(type, protocol, port, getTXTFunc)`: Adds a service and associated
+  TXT records.
+* `removeService(type, protocol, port)`: Removes a service.
+
+### `DNSClient`
+
+The `DNSClient` class provides an interface to the DNS client.
+
+* `setServer(index, ip)`: Sets a DNS server address.
+* `getServer(index)`: Gets a DNS server address.
+* `getHostByName(hostname, callback)`: Looks up a host by name and calls the
+  callback when there's a result.
+* `getHostByName(hostname, ip, timeout)`: Looks up a host by name.
 
 ### Print utilities
 
