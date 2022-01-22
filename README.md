@@ -265,6 +265,11 @@ The `util/PrintUtils.h` file declares some useful output functions. Note that
 this file is included when `QNEthernet.h` is included; there's no need to
 include it separately.
 
+The functions are in the `qindesign::network::util` namespace, so if you've
+already added `using namespace qindesign::network;` to your code, they can be
+called with `util::writeMagic()` syntax. Otherwise, they need to be fully
+qualified: `qindesign::network::util::writeMagic()`.
+
 1. `writeFully(Print &, buf, size, breakf = nullptr)`: Attempts to completely
    write bytes to the given `Print` object. The optional `breakf` function is
    used as the stopping condition. It returns the number of bytes actually
