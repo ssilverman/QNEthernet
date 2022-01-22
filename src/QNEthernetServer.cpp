@@ -7,8 +7,7 @@
 #include "QNEthernetServer.h"
 
 // C++ includes
-#include <algorithm>
-#include <utility>
+#include <memory>
 
 #include "ConnectionManager.h"
 #include "QNEthernet.h"

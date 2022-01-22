@@ -107,4 +107,4 @@ class EthernetUDP final : public UDP {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // #ifndef QNE_ETHERNETUDP_H_
+#endif  // QNE_ETHERNETUDP_H_

@@ -7,9 +7,6 @@
 #ifndef QNE_ETHERNETSERVER_H_
 #define QNE_ETHERNETSERVER_H_
 
-// C++ includes
-#include <memory>
-
 #include <Print.h>
 #include <Server.h>
 

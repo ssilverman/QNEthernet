@@ -133,4 +133,4 @@ class EthernetFrameClass final : public Stream {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // #ifndef QNE_ETHERNETFRAME_H_
+#endif  // QNE_ETHERNETFRAME_H_

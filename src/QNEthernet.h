@@ -21,6 +21,7 @@
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 #include "QNMDNS.h"
+#include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip_t41.h"
