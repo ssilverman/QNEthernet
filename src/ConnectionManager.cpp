@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // ConnectionManager.cpp implements the connection manager.
@@ -12,10 +12,8 @@
 
 #include <core_pins.h>
 
-#include "ConnectionHolder.h"
 #include "QNEthernet.h"
 #include "lwip/ip.h"
-#include "lwip/tcp.h"
 
 namespace qindesign {
 namespace network {
