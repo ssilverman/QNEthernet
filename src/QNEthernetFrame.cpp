@@ -87,7 +87,9 @@ int EthernetFrameClass::read(unsigned char *buffer, size_t len) {
     return 0;
   }
   len = std::min(len, frame_.size() - framePos_);
-  std::copy_n(&frame_.data()[framePos_], len, buffer);
+  if (buffer != nullptr) {
+    std::copy_n(&frame_.data()[framePos_], len, buffer);
+  }
   framePos_ += len;
   return len;
 }

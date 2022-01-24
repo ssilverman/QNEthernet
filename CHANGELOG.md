@@ -36,6 +36,8 @@ and this project adheres to
   Print utility function.
 * Changed the `Ethernet` object to be a reference to a singleton. This matches
   how the `EthernetFrame` object works.
+* Changed the `read(buf, len)` functions to allow a NULL buffer so that the
+  caller can skip data without having to read into a buffer.
 
 ### Removed
 * Removed IEEE 1588 initialization and timer read.

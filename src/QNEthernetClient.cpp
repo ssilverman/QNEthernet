@@ -434,7 +434,9 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
       return 0;
     }
     size = std::min(size, rem.size() - conn_->remainingPos);
-    std::copy_n(rem.cbegin() + conn_->remainingPos, size, buf);
+    if (buf != nullptr) {
+      std::copy_n(rem.cbegin() + conn_->remainingPos, size, buf);
+    }
     conn_->remainingPos += size;
     if (conn_->remainingPos >= rem.size()) {
       conn_->remaining.clear();
@@ -463,7 +465,9 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return 0;
   }
   size = std::min(size, state->buf.size() - state->bufPos);
-  std::copy_n(&state->buf.data()[state->bufPos], size, buf);
+  if (buf != nullptr) {
+    std::copy_n(&state->buf.data()[state->bufPos], size, buf);
+  }
   state->bufPos += size;
   return size;
 }

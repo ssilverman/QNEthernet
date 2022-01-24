@@ -66,8 +66,15 @@ class EthernetUDP final : public UDP {
   int parsePacket() override;
   int available() override;
   int read() override;
+
+  // A NULL buffer allows the caller to skip bytes without having to read into
+  // a buffer.
   int read(unsigned char *buffer, size_t len) override;
+
+  // A NULL buffer allows the caller to skip bytes without having to read into
+  // a buffer.
   int read(char *buffer, size_t len) override;
+
   int peek() override;
   void flush() override;
 

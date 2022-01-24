@@ -97,7 +97,11 @@ class EthernetFrameClass final : public Stream {
   int available() override;
   int read() override;
   int read(unsigned char *buffer, size_t len);
+
+  // A NULL buffer allows the caller to skip bytes without having to read into
+  // a buffer.
   int read(char *buffer, size_t len);
+
   int peek() override;
   void flush() override {}
 

@@ -180,7 +180,9 @@ int EthernetUDP::read(unsigned char *buffer, size_t len) {
     return 0;
   }
   len = std::min(len, packet_.size() - packetPos_);
-  std::copy_n(&packet_.data()[packetPos_], len, buffer);
+  if (buffer != nullptr) {
+    std::copy_n(&packet_.data()[packetPos_], len, buffer);
+  }
   packetPos_ += len;
   return len;
 }

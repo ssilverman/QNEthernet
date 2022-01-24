@@ -121,6 +121,10 @@ currently defined. (See:
 [Arduino Ethernet library](https://www.arduino.cc/en/Reference/Ethernet))
 This section documents those functions.
 
+Features:
+* The `read(buf, len)` functions allow a NULL buffer so that the caller can skip
+  data without having to read into a buffer.
+
 ### `Ethernet`
 
 The `Ethernet` object is the main Ethernet interface.

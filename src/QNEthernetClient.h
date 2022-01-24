@@ -82,7 +82,11 @@ class EthernetClient final : public Client {
 
   int available() override;
   int read() override;
+
+  // A NULL buffer allows the caller to skip bytes without having to read into
+  // a buffer.
   int read(uint8_t *buf, size_t size) override;
+
   int peek() override;
 
   // ----------------
