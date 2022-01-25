@@ -4,8 +4,8 @@
 // ConnectionManager.h defines the connection manager for all connections.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_CONNECTIONMANAGER_H_
-#define QNE_CONNECTIONMANAGER_H_
+#ifndef QNE_INTERNAL_CONNECTIONMANAGER_H_
+#define QNE_INTERNAL_CONNECTIONMANAGER_H_
 
 // C++ includes
 #include <memory>
@@ -17,6 +17,7 @@
 
 namespace qindesign {
 namespace network {
+namespace internal {
 
 // ConnectionState holds all the state needed for a connection.
 class ConnectionManager final {
@@ -76,7 +77,8 @@ class ConnectionManager final {
   friend class EthernetServer;
 };
 
+}  // namespace internal
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_CONNECTIONMANAGER_H_
+#endif  // QNE_INTERNAL_CONNECTIONMANAGER_H_

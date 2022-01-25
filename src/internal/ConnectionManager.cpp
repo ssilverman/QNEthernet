@@ -17,6 +17,7 @@
 
 namespace qindesign {
 namespace network {
+namespace internal {
 
 ConnectionManager ConnectionManager::manager;
 
@@ -438,5 +439,6 @@ int ConnectionManager::availableForWrite(uint16_t port) {
   return min;
 }
 
+}  // namespace internal
 }  // namespace network
 }  // namespace qindesign

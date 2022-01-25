@@ -4,8 +4,8 @@
 // ConnectionHolder.h holds everything needed to define a connection.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_CONNECTIONHOLDER_H_
-#define QNE_CONNECTIONHOLDER_H_
+#ifndef QNE_INTERNAL_CONNECTIONHOLDER_H_
+#define QNE_INTERNAL_CONNECTIONHOLDER_H_
 
 // C++ includes
 #include <memory>
@@ -15,6 +15,7 @@
 
 namespace qindesign {
 namespace network {
+namespace internal {
 
 // ConnectionHolder is effectively a connection proxy, useful because
 // connections need to be managed by both a server and client. This is the
@@ -31,7 +32,8 @@ struct ConnectionHolder final {
   // `remainingPos` should never be past the end of `remaining`
 };
 
+}  // namespace internal
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_CONNECTIONHOLDER_H_
+#endif  // QNE_INTERNAL_CONNECTIONHOLDER_H_

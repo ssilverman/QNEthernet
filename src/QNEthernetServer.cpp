@@ -9,9 +9,9 @@
 // C++ includes
 #include <memory>
 
-#include "ConnectionManager.h"
 #include "QNEthernet.h"
 #include "QNEthernetClient.h"
+#include "internal/ConnectionManager.h"
 
 namespace qindesign {
 namespace network {
@@ -28,27 +28,25 @@ void EthernetServer::begin() {
 }
 
 void EthernetServer::begin(bool reuse) {
-  listening_ = ConnectionManager::instance().listen(port_, reuse);
+  listening_ = internal::ConnectionManager::instance().listen(port_, reuse);
 }
 
 bool EthernetServer::end() {
-  return ConnectionManager::instance().stopListening(port_);
+  return internal::ConnectionManager::instance().stopListening(port_);
 }
 
 EthernetClient EthernetServer::accept() const {
-  std::shared_ptr<ConnectionHolder> conn =
-      ConnectionManager::instance().findConnected(port_);
+  auto conn = internal::ConnectionManager::instance().findConnected(port_);
   EthernetClass::loop();
   if (conn != nullptr) {
-    ConnectionManager::instance().remove(conn);
+    internal::ConnectionManager::instance().remove(conn);
     return EthernetClient{conn};
   }
   return EthernetClient{};
 }
 
 EthernetClient EthernetServer::available() const {
-  std::shared_ptr<ConnectionHolder> conn =
-      ConnectionManager::instance().findAvailable(port_);
+  auto conn = internal::ConnectionManager::instance().findAvailable(port_);
   EthernetClass::loop();
   if (conn != nullptr) {
     return EthernetClient{conn};
@@ -60,24 +58,24 @@ EthernetServer::operator bool() {
   if (!listening_) {
     return false;
   }
-  listening_ = ConnectionManager::instance().isListening(port_);
+  listening_ = internal::ConnectionManager::instance().isListening(port_);
   return listening_;
 }
 
 size_t EthernetServer::write(uint8_t b) {
-  return ConnectionManager::instance().write(port_, b);
+  return internal::ConnectionManager::instance().write(port_, b);
 }
 
 size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
-  return ConnectionManager::instance().write(port_, buffer, size);
+  return internal::ConnectionManager::instance().write(port_, buffer, size);
 }
 
 int EthernetServer::availableForWrite() {
-  return ConnectionManager::instance().availableForWrite(port_);
+  return internal::ConnectionManager::instance().availableForWrite(port_);
 }
 
 void EthernetServer::flush() {
-  ConnectionManager::instance().flush(port_);
+  internal::ConnectionManager::instance().flush(port_);
 }
 
 }  // namespace network

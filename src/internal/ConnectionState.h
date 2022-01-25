@@ -4,8 +4,8 @@
 // ConnectionState.h defines all the data needed to host a connection.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_CONNECTIONSTATE_H_
-#define QNE_CONNECTIONSTATE_H_
+#ifndef QNE_INTERNAL_CONNECTIONSTATE_H_
+#define QNE_INTERNAL_CONNECTIONSTATE_H_
 
 // C++ includes
 #include <functional>
@@ -15,6 +15,7 @@
 
 namespace qindesign {
 namespace network {
+namespace internal {
 
 // ConnectionState holds all the state needed for a connection.
 struct ConnectionState final {
@@ -46,7 +47,8 @@ struct ConnectionState final {
   std::function<void(ConnectionState *)> removeFunc = nullptr;
 };
 
+}  // namespace internal
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_CONNECTIONSTATE_H_
+#endif  // QNE_INTERNAL_CONNECTIONSTATE_H_

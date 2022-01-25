@@ -15,7 +15,7 @@
 #include <IPAddress.h>
 #include <Print.h>
 
-#include "ConnectionHolder.h"
+#include "internal/ConnectionHolder.h"
 #include "lwip/opt.h"
 
 namespace qindesign {
@@ -105,12 +105,12 @@ class EthernetClient final : public Client {
  private:
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
-  EthernetClient(std::shared_ptr<ConnectionHolder> holder);
+  EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // Connection state
   uint16_t connTimeout_;
 
-  std::shared_ptr<ConnectionHolder> conn_;
+  std::shared_ptr<internal::ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we
       // can't use NULL as a "connected" check. We also need to check
       // conn_->connected.

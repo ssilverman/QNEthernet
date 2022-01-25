@@ -38,6 +38,8 @@ and this project adheres to
   how the `EthernetFrame` object works.
 * Changed the `read(buf, len)` functions to allow a NULL buffer so that the
   caller can skip data without having to read into a buffer.
+* Moved internal classes and structs into an "internal" namespace to avoid any
+  potential contflicts with user declarations.
 
 ### Removed
 * Removed IEEE 1588 initialization and timer read.

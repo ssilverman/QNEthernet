@@ -12,9 +12,9 @@
 
 #include <elapsedMillis.h>
 
-#include "ConnectionManager.h"
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "internal/ConnectionManager.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
 #include "lwip/tcp.h"
@@ -29,7 +29,7 @@ static constexpr uint32_t kDNSLookupTimeout =
 
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
-EthernetClient::EthernetClient(std::shared_ptr<ConnectionHolder> conn)
+EthernetClient::EthernetClient(std::shared_ptr<internal::ConnectionHolder> conn)
     : connTimeout_(1000),
       conn_(conn) {}
 
@@ -47,7 +47,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   stop();
 
   ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
-  conn_ = ConnectionManager::instance().connect(&ipaddr, port);
+  conn_ = internal::ConnectionManager::instance().connect(&ipaddr, port);
   if (conn_ == nullptr) {
     return false;
   }
@@ -360,7 +360,8 @@ void EthernetClient::flush() {
 // --------------------------------------------------------------------------
 
 // Check if there's data available in the buffer.
-static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
+static inline bool isAvailable(
+    const std::unique_ptr<internal::ConnectionState> &state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
          (0 <= state->bufPos && state->bufPos < state->buf.size());
 }
