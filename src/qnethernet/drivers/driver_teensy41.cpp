@@ -350,7 +350,7 @@ SCB::VTOR::Vector s_prevENETVector = nullptr;
 static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
 static volatile bool doTimestampNext = false;
 static volatile bool hasTxTimestamp = false;
-static volatile uint32_t txTimestamp = 0;
+static volatile struct timespec txTimestamp = {0, 0};
 
 // Forward declarations
 static void enet_isr();
@@ -722,7 +722,14 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
         LWIP_PLATFORM_ASSERT("Expected space for pbuf fill");
       }
       p->timestampValid = ((pBD->status & rx_bd_status::kLast) != 0);
-      p->timestamp = pBD->timestamp;
+      if (p->timestampValid) {
+        ieee1588_read_timer(&p->timestamp);
+        if ((unsigned long)p->timestamp.tv_nsec < pBD->timestamp) {
+          // The timer has wrapped around
+          p->timestamp.tv_sec--;
+        }
+        p->timestamp.tv_nsec = pBD->timestamp;
+      }
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
@@ -813,7 +820,8 @@ static void enet_isr() {
   if (ENET::EIR::TS_AVAIL != 0) {
     ENET::EIR::TS_AVAIL = 1;
     hasTxTimestamp = true;
-    txTimestamp = ENET_ATSTMP;
+    txTimestamp.tv_sec = ieee1588Seconds;
+    txTimestamp.tv_nsec = ENET_ATSTMP;
   }
 
   if (ENET::EIR::RXF != 0) {
@@ -1499,14 +1507,16 @@ void ieee1588_timestamp_next_frame() {
   doTimestampNext = true;
 }
 
-bool ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp) {
-  // NOTE: This is not "concurrent safe"
-  if (hasTxTimestamp) {
-    hasTxTimestamp = false;
-    if (timestamp != NULL) {
-      *timestamp = txTimestamp;
+bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    if (hasTxTimestamp) {
+      hasTxTimestamp = false;
+      if (timestamp != NULL) {
+        timestamp->tv_sec = txTimestamp.tv_sec;
+        timestamp->tv_nsec = txTimestamp.tv_nsec;
+      }
+      return true;
     }
-    return true;
   }
   return false;
 }
