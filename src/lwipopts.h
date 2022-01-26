@@ -275,10 +275,11 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define LWIP_PBUF_REF_T               u8_t
 #define LWIP_PBUF_CUSTOM_DATA \
   u8_t timestampValid;        \
-  u32_t timestamp;
+  struct timespec timestamp;
 #define LWIP_PBUF_CUSTOM_DATA_INIT(p) \
   (p)->timestampValid = 0;            \
-  (p)->timestamp = 0;
+  (p)->timestamp.tv_sec = 0;          \
+  (p)->timestamp.tv_nsec = 0;
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1  /* 0 */

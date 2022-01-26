@@ -72,13 +72,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   }
   packet.hasTimestamp = p->timestampValid;
   if (packet.hasTimestamp) {
-    uint32_t ts = p->timestamp;
-    EthernetIEEE1588.readTimer(packet.timestamp);
-    if (static_cast<unsigned long>(packet.timestamp.tv_nsec) < ts) {
-      // The timer has wrapped around
-      packet.timestamp.tv_sec--;
-    }
-    packet.timestamp.tv_nsec = ts;
+    packet.timestamp = p->timestamp;
   }
   packet.addr = *addr;
   packet.port = port;
