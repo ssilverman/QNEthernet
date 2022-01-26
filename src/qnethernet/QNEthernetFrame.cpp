@@ -60,13 +60,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
 
   frame.hasTimestamp = p->timestampValid;
   if (frame.hasTimestamp) {
-    uint32_t ts = p->timestamp;
-    EthernetIEEE1588.readTimer(frame.timestamp);
-    if (static_cast<unsigned long>(frame.timestamp.tv_nsec) < ts) {
-      // The timer has wrapped around
-      frame.timestamp.tv_sec--;
-    }
-    frame.timestamp.tv_nsec = ts;
+    frame.timestamp = p->timestamp;
   }
 
   // Increment the size
