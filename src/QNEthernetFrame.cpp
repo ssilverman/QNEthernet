@@ -54,13 +54,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
 
   frame.hasTimestamp = pHead->timestampValid;
   if (frame.hasTimestamp) {
-    uint32_t ts = pHead->timestamp;
-    EthernetIEEE1588.readTimer(frame.timestamp);
-    if (static_cast<unsigned long>(frame.timestamp.tv_nsec) < ts) {
-      // The timer has wrapped around
-      frame.timestamp.tv_sec--;
-    }
-    frame.timestamp.tv_nsec = ts;
+    frame.timestamp = pHead->timestamp;
   }
 
   // Increment the size

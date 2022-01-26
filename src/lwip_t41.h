@@ -125,7 +125,7 @@ void enet_ieee1588_timestamp_next_frame();
 // sent. Note that this only returns the latest value, so if a second
 // timestamped packet is sent before retrieving the timestamp for the first
 // then this will return the second timestamp (if already available).
-bool enet_ieee1588_read_and_clear_tx_timestamp(uint32_t *timestamp);
+bool enet_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
 // timer in "nanoseconds per second", see `enet_ieee1588_adjust_freq`. This
