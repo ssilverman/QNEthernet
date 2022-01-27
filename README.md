@@ -204,6 +204,8 @@ The `Ethernet` object is the main Ethernet interface.
   `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
   the above.
 * `data()`: Returns a pointer to the received packet data.
+* `localPort()`: Returns the port to which the socket is bound, or zero if it is
+  not bound.
 * `send(data, len)`: Sends a packet without having to use `beginPacket()`,
   `write()`, and `endPacket()`. It causes less overhead.
 * `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.

@@ -121,6 +121,13 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
   return true;
 }
 
+uint16_t EthernetUDP::localPort() {
+  if (pcb_ == nullptr) {
+    return 0;
+  }
+  return pcb_->local_port;
+}
+
 void EthernetUDP::stop() {
   if (pcb_ == nullptr) {
     return;

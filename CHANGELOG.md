@@ -27,6 +27,8 @@ and this project adheres to
 * New `DNSClient::getServer(index)` function for retrieving a specific DNS
   server address.
 * New `OSCPrinter` example.
+* New `EthernetUDP::localPort()` function that returns the port to which the
+  socket is bound.
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number

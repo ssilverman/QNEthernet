@@ -44,6 +44,9 @@ class EthernetUDP final : public UDP {
   uint8_t beginMulticast(IPAddress ip, uint16_t port) override;
   uint8_t beginMulticast(IPAddress ip, uint16_t port, bool reuse);
 
+  // Returns the port to which this socket is bound, or zero if it is not bound.
+  uint16_t localPort();
+
   void stop() override;
 
   // Sending UDP packets
