@@ -9,26 +9,28 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-* New `EthernetFrame` convenience functions that also write the header:
+* `EthernetFrame` convenience functions that also write the header:
   * `beginFrame(dstAddr, srcAddr, typeOrLen)`
   * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`
-* New `qindesign::network::util` Print utility functions. The `breakf` function
+* `qindesign::network::util` Print utility functions. The `breakf` function
   parameter is used as the stopping condition in `writeFully()`.
   * `writeFully(Print &, buf, size, breakf = nullptr)`
   * `writeMagic(Print &, mac, breakf = nullptr)`
 * `enet_deinit()` now gracefully stops any transmission in progress before
   shutting down Ethernet.
-* New `EthernetClass::linkIsFullDuplex()` function, returns whether the link is
-  full duplex (`true`) or half duplex (`false`).
-* New `EthernetUDP::data()` and `EthernetFrame::data()` functions that return a
-  pointer to the received data.
-* New `EthernetClass::broadcastIP()` function that returns the broadcast IP
-  address associated with the current local IP and subnet mask.
-* New `DNSClient::getServer(index)` function for retrieving a specific DNS
+* `EthernetClass` functions:
+  * `linkIsFullDuplex()`: Returns whether the link is full duplex (`true`) or
+    half duplex (`false`).
+  * `broadcastIP()`: Returns the broadcast IP address associated with the
+    current local IP and subnet mask.
+* Functions that return a pointer to the received data:
+  * `EthernetUDP::data()`
+  * `EthernetFrame::data()`
+* `DNSClient::getServer(index)` function for retrieving a specific DNS
   server address.
-* New `OSCPrinter` example.
-* New `EthernetUDP::localPort()` function that returns the port to which the
-  socket is bound.
+* `EthernetUDP::localPort()`: Returns the port to which the socket is bound.
+* New examples:
+  * `OSCPrinter`
 
 ### Changed
 * The `EthernetClient::writeFully()` functions were changed to return the number
