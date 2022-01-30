@@ -276,7 +276,8 @@ int EthernetUDP::endPacket() {
   return retval;
 }
 
-bool EthernetUDP::send(const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
+                       const uint8_t *data, size_t len) {
   if (len > UINT16_MAX) {
     return false;
   }
@@ -292,10 +293,21 @@ bool EthernetUDP::send(const uint8_t *data, size_t len) {
   if (p == nullptr) {
     return false;
   }
+  ip_addr_t ipaddr =
+      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
   pbuf_take(p, data, len);
-  bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
+  bool retval = (udp_sendto(pcb_, p, &ipaddr, port) == ERR_OK);
   pbuf_free(p);
   return retval;
+}
+
+bool EthernetUDP::send(const char *host, uint16_t port,
+                       const uint8_t *data, size_t len) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
+  }
+  return send(ip, port, data, len);
 }
 
 size_t EthernetUDP::write(uint8_t b) {

@@ -57,7 +57,11 @@ class EthernetUDP final : public UDP {
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
   // causes less overhead.
-  bool send(const uint8_t *data, size_t len);
+  bool send(const IPAddress &ip, uint16_t port,
+            const uint8_t *data, size_t len);
+
+  // Calls the other send() function after performing a DNS lookup.
+  bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
 
   // Bring Print::write functions into scope
   using Print::write;

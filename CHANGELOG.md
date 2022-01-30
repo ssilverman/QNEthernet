@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+* Fixed `EthernetUDP::send()` function to take the host and port as arguments,
+  per its description. There's now two of them: one that takes an `IPAddress`
+  and another that takes a `char *` hostname.
+
 ## [0.13.0]
 
 ### Added
