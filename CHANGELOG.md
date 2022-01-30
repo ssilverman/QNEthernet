@@ -48,6 +48,10 @@ and this project adheres to
 ### Removed
 * Removed IEEE 1588 initialization and timer read.
 
+### Fixed
+* Fixed `EthernetClient::availableForWrite()` to re-check the state after the
+  call to `EthernetClass::loop()`.
+
 ## [0.12.0]
 
 ### Added

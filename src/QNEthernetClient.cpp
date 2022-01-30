@@ -339,6 +339,10 @@ int EthernetClient::availableForWrite() {
   }
 
   EthernetClass::loop();  // Loop to allow incoming TCP data
+  // NOTE: loop() requires a re-check of the state
+  if (state == nullptr) {
+    return 0;
+  }
   return tcp_sndbuf(state->pcb);
 }
 
