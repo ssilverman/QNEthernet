@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Updated `SNTPClient` example to use `EthernetUDP::send()` instead of
+  `beginPacket()`/`write()`/`endPacket()`.
+
 ### Fixed
 
 * Fixed `EthernetUDP::send()` function to take the host and port as arguments,

@@ -92,10 +92,16 @@ void setup() {
   buf[43] = t;
 
   // Send the packet
-  printf("Sending SNTP request to the gateway...\n");
-  udp.beginPacket(Ethernet.gatewayIP(), kNTPPort);
-  udp.write(buf, 48);
-  udp.endPacket();
+  printf("Sending SNTP request to the gateway...");
+  if (!udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48)) {
+    printf("ERROR.");
+  }
+  printf("\n");
+
+  // Alternative:
+  // udp.beginPacket(Ethernet.gatewayIP(), kNTPPort);
+  // udp.write(buf, 48);
+  // udp.endPacket();
 }
 
 // Main program loop.
