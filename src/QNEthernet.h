@@ -30,7 +30,12 @@
 namespace qindesign {
 namespace network {
 
-// Define this enum because Arduino API.
+// Define this enum because Arduino API. Use zero for `LinkOFF` so
+// `Ethernet.linkStatus()` can be used in Boolean expressions. `Unknown` is
+// never returned because, from the `EthernetLinkStatus` docs, it appears that
+// it's used when link detection is not available.
+//
+// See: https://www.arduino.cc/en/Reference/EthernetLinkStatus
 enum EthernetLinkStatus {
   LinkOFF,
   LinkON,
@@ -116,7 +121,7 @@ class EthernetClass final {
   void end();
 
   // Returns the link status, one of the EthernetLinkStatus enumerators. This
-  // will never return Unknown.
+  // will never return Unknown because link detection is not unavailable.
   EthernetLinkStatus linkStatus() const;
 
   // Returns the link state, true for link and false for no link.
