@@ -37,6 +37,18 @@ enum EthernetLinkStatus {
   Unknown,
 };
 
+// Define this enum because Arduino API. Use a new `EthernetOtherHardware` with
+// value -1 as the return value for anything not in the "official" Arduino list.
+//
+// See: https://www.arduino.cc/en/Reference/EthernetHardwareStatus
+enum EthernetHardwareStatus {
+  EthernetNoHardware = 0,
+  EthernetW5100,
+  EthernetW5200,
+  EthernetW5500,
+  EthernetOtherHardware = -1,
+};
+
 class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = 6;
@@ -155,7 +167,9 @@ class EthernetClass final {
                             const IPAddress &subnet);
 
   // Deprecated and unused functions
-  [[deprecated]] int hardwareStatus() const { return 0; }
+  [[deprecated]] EthernetHardwareStatus hardwareStatus() const {
+    return EthernetOtherHardware;
+  }
   [[deprecated]] void init(uint8_t sspin) const {}
   [[deprecated]] void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
   [[deprecated]] uint8_t maintain() const { return 0; }

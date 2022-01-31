@@ -13,6 +13,9 @@ and this project adheres to
   `beginPacket()`/`write()`/`endPacket()`.
 * Updated `PixelPusherServer` example to use the frame average for the
   update period.
+* Implemented `EthernetHardwareStatus` enum for the deprecated
+  `Ethernet.hardwareStatus()` function. This replaces the zero return value with
+  the new non-zero `EthernetOtherHardware`.
 
 ### Fixed
 
