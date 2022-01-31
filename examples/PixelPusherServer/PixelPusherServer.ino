@@ -40,7 +40,7 @@ constexpr uint32_t kPixelPusherFlags =
 // -------------------------------------------------------------------
 
 PixelPusherServer pp;
-OctoWS2811Receiver receiver(pp, kNumStrips, kPixelsPerStrip);
+OctoWS2811Receiver receiver{pp, kNumStrips, kPixelsPerStrip};
 
 // Forward declarations
 void addressChanged(bool hasIP);

@@ -11,6 +11,8 @@ and this project adheres to
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of
   `beginPacket()`/`write()`/`endPacket()`.
+* Updated `PixelPusherServer` example to use the frame average for the
+  update period.
 
 ### Fixed
 

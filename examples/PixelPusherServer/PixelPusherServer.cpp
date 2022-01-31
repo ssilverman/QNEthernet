@@ -101,6 +101,12 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
     }
   }
 
+  // Prepare the circular buffer
+  lastUpdateTimes_ = std::make_unique<CircularBuffer<uint32_t>>(
+      (numStrips + ppData1_.maxStripsPerPacket - 1)/
+      ppData1_.maxStripsPerPacket);
+  printf("k=%u\n", lastUpdateTimes_->capacity());
+
   if (started_) {
     end();
   }
@@ -114,6 +120,7 @@ void PixelPusherServer::end() {
   }
   started_ = false;
   pixelsUDP_.stop();
+  lastUpdateTimes_ = nullptr;
 }
 
 uint16_t PixelPusherServer::pixelsPort() {
@@ -195,7 +202,20 @@ void PixelPusherServer::loop() {
     ppData1_.deltaSequence += seqDiff;
   }
   lastSeq_ = seq;
-  ppData1_.updatePeriod = micros() - startTime;
+
+  // Take the average of the last 'k' times
+  uint32_t updateTime = micros() - startTime;
+  size_t k = lastUpdateTimes_->capacity();
+  if (lastUpdateTimes_->size() < k) {
+    avUpdateTime_ = (avUpdateTime_*lastUpdateTimes_->size() + updateTime)/
+                    static_cast<float>(lastUpdateTimes_->size() + 1);
+  } else {
+    avUpdateTime_ = avUpdateTime_ +
+                    static_cast<int32_t>(updateTime - lastUpdateTimes_->get())/
+                        static_cast<float>(k);
+  }
+  lastUpdateTimes_->put(updateTime);
+  ppData1_.updatePeriod = avUpdateTime_;
 }
 
 void PixelPusherServer::sendDiscovery() {

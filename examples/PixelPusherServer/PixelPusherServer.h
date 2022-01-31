@@ -19,6 +19,7 @@
 #include <QNEthernet.h>
 #include <elapsedMillis.h>
 
+#include "CircularBuffer.h"
 #include "Receiver.h"
 
 using namespace qindesign::network;
@@ -192,8 +193,9 @@ class PixelPusherServer final {
   // Computed packet data
   elapsedMillis discoveryTimer_;
   uint32_t lastSeq_ = 0;
-  uint32_t updatePeriod_ = 0;
-  uint32_t cumulativeDelta_ = 0;
+  std::unique_ptr<CircularBuffer<uint32_t>> lastUpdateTimes_;
+      // Used for averaging the last set of update times
+  float avUpdateTime_;
 
   // Packet data
   DeviceData deviceData_;
