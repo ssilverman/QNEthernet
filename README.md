@@ -1,4 +1,4 @@
-<a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" alt="Buy Me A Coffee donate button"></a>
+<a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me a Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" alt="Buy Me a Coffee donate button"></a>
 
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
@@ -64,13 +64,14 @@ and notes:
   `connected()` in that it doesn't check for unread data.
 * All the Arduino-defined `Ethernet.begin` functions that use the MAC address
   are deprecated.
-* The following `Ethernet` functions are deprecated and do nothing or
-  return zero:
-  * `hardwareStatus()`: returns zero (an `int`) and not `EthernetHardwareStatus`
-  * `init(uint8_t sspin)`
-  * `maintain()`: returns zero
-  * `setRetransmissionCount(uint8_t number)`
-  * `setRetransmissionTimeout(uint16_t milliseconds)`
+* The following `Ethernet` functions are deprecated and do nothing or return
+  some default value:
+  * `hardwareStatus()`: Returns `EthernetHardwareStatus::EthernetOtherHardware`
+    because zero might be interpreted as "no hardware".
+  * `init(uint8_t sspin)`: Does nothing.
+  * `maintain()`: Returns zero.
+  * `setRetransmissionCount(uint8_t number)`: Does nothing.
+  * `setRetransmissionTimeout(uint16_t milliseconds)`: Does nothing.
 * The following `Ethernet` functions are deprecated but call
   something equivalent:
   * `MACAddress(uint8_t mac[6])`
@@ -82,7 +83,8 @@ and notes:
   `Ethernet.macAddress` and then pass it to one of the deprecated `begin`
   functions.
 * All classes and objects are in the `qindesign::network` namespace. This means
-  you'll need to fully qualify any types. To avoid this, you could utilize a `using` directive:
+  you'll need to fully qualify any types. To avoid this, you could utilize a
+  `using` directive:
   ```c++
   using namespace qindesign::network;
 
