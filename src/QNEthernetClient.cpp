@@ -127,6 +127,14 @@ bool EthernetClient::isNoDelay() {
 }
 
 void EthernetClient::stop() {
+  close(true);
+}
+
+void EthernetClient::close() {
+  close(false);
+}
+
+void EthernetClient::close(bool wait) {
   if (conn_ == nullptr) {
     return;
   }
@@ -148,39 +156,12 @@ void EthernetClient::stop() {
     if (state != nullptr) {
       if (tcp_close(state->pcb) != ERR_OK) {
         tcp_abort(state->pcb);
-      } else {
+      } else if (wait) {
         elapsedMillis timer;
         while (conn_->connected && timer < connTimeout_) {
           // NOTE: Depends on Ethernet loop being called from yield()
           yield();
         }
-      }
-    }
-  }
-
-  conn_ = nullptr;
-}
-
-void EthernetClient::close() {
-  if (conn_ == nullptr) {
-    return;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    conn_ = nullptr;
-    return;
-  }
-
-  if (conn_->connected) {
-    // First try to flush any data
-    tcp_output(state->pcb);
-    EthernetClass::loop();  // Maybe some TCP data gets in
-    // NOTE: loop() requires a re-check of the state
-
-    if (state != nullptr) {
-      if (tcp_close(state->pcb) != ERR_OK) {
-        tcp_abort(state->pcb);
       }
     }
   }

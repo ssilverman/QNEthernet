@@ -107,6 +107,11 @@ class EthernetClient final : public Client {
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
+  // Closes the connection. The `wait` parameter indicates whether to wait for
+  // close or timeout. Set to true to wait and false to not wait. stop() calls
+  // this with true and close() calls this with false.
+  void close(bool wait);
+
   // Connection state
   uint16_t connTimeout_;
 
