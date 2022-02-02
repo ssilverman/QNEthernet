@@ -165,7 +165,7 @@ bool EthernetClass::begin(const ip_addr_t *ipaddr,
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
   enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
-#ifdef LWIP_NETIF_HOSTNAME
+#if LWIP_NETIF_HOSTNAME
   if (hostname_.length() == 0) {
     netif_set_hostname(netif_, nullptr);
   } else {
@@ -379,7 +379,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
 }
 
 void EthernetClass::setHostname(const String &hostname) {
-#ifdef LWIP_NETIF_HOSTNAME
+#if LWIP_NETIF_HOSTNAME
   hostname_ = hostname;
   if (netif_ != nullptr) {
     if (hostname.length() == 0) {
@@ -392,7 +392,7 @@ void EthernetClass::setHostname(const String &hostname) {
 }
 
 String EthernetClass::hostname() {
-#ifdef LWIP_NETIF_HOSTNAME
+#if LWIP_NETIF_HOSTNAME
   return hostname_;
 #else
   return "";

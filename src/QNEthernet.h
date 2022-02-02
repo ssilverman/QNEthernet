@@ -234,7 +234,7 @@ class EthernetClass final {
   static elapsedMillis loopTimer_;
 
   uint8_t mac_[6];
-#ifdef LWIP_NETIF_HOSTNAME
+#if LWIP_NETIF_HOSTNAME
   String hostname_{"teensy-lwip"};  // Empty means no hostname
 #endif
   struct netif *netif_ = nullptr;
