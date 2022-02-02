@@ -224,7 +224,7 @@ void PixelPusherServer::sendDiscovery() {
                       sizeof(deviceData_));
   discoveryUDP_.write(reinterpret_cast<unsigned char *>(&ppData1_),
                       sizeof(ppData1_));
-  
+
   // Mystery padding. Why?
   // The claim is that the compiler for later versions of PixelPusher
   // software aligns the strip flags, a byte array, on a 4-byte
