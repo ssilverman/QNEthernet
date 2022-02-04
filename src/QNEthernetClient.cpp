@@ -16,6 +16,7 @@
 #include "QNEthernet.h"
 #include "internal/ConnectionManager.h"
 #include "lwip/dns.h"
+#include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/tcp.h"
 #include "util/PrintUtils.h"
