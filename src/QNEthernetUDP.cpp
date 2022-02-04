@@ -13,6 +13,7 @@
 #include "QNEthernet.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
+#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {
@@ -48,7 +49,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
     udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
     p = p->next;
   }
-  udp->inAddr_ = addr->addr;
+  udp->inAddr_ = *addr;
   udp->inPort_ = port;
 
   pbuf_free(pHead);
@@ -57,14 +58,14 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
       inPacket_{},
-      inAddr_{INADDR_NONE},
+      inAddr_{*IP_ADDR_ANY},
       inPort_(0),
       packet_{},
       packetPos_(-1),
-      addr_{INADDR_NONE},
+      addr_{*IP_ADDR_ANY},
       port_(0),
       hasOutPacket_(false),
-      outIpaddr_{0},
+      outAddr_{*IP_ADDR_ANY},
       outPort_(0),
       outPacket_{} {}
 
@@ -88,7 +89,7 @@ uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (reuse) {
     ip_set_option(pcb_, SOF_REUSEADDR);
   }
-  if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
+  if (udp_bind(pcb_, IP_ADDR_ANY, localPort) != ERR_OK) {
     return false;
   }
 
@@ -135,7 +136,7 @@ void EthernetUDP::stop() {
   udp_remove(pcb_);
   pcb_ = nullptr;
 
-  addr_ = INADDR_NONE;
+  addr_ = *IP_ADDR_ANY;
   port_ = 0;
 }
 
@@ -216,7 +217,7 @@ const unsigned char *EthernetUDP::data() {
 }
 
 IPAddress EthernetUDP::remoteIP() {
-  return addr_;
+  return ip_addr_get_ip4_uint32(&addr_);
 }
 
 uint16_t EthernetUDP::remotePort() {
@@ -238,7 +239,7 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
     outPacket_.reserve(kMaxUDPSize);
   }
 
-  outIpaddr_ = IPADDR4_INIT(static_cast<uint32_t>(ip));
+  outAddr_ = IPADDR4_INIT(get_uint32(ip));
   outPort_ = port;
   hasOutPacket_ = true;
   outPacket_.clear();
@@ -271,7 +272,7 @@ int EthernetUDP::endPacket() {
   }
   pbuf_take(p, outPacket_.data(), outPacket_.size());
   outPacket_.clear();
-  bool retval = (udp_sendto(pcb_, p, &outIpaddr_, outPort_) == ERR_OK);
+  bool retval = (udp_sendto(pcb_, p, &outAddr_, outPort_) == ERR_OK);
   pbuf_free(p);
   return retval;
 }
@@ -293,8 +294,7 @@ bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
   if (p == nullptr) {
     return false;
   }
-  ip_addr_t ipaddr =
-      IPADDR4_INIT(static_cast<uint32_t>(const_cast<IPAddress &>(ip)));
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   pbuf_take(p, data, len);
   bool retval = (udp_sendto(pcb_, p, &ipaddr, port) == ERR_OK);
   pbuf_free(p);

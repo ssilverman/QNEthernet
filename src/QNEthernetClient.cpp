@@ -19,6 +19,7 @@
 #include "lwip/netif.h"
 #include "lwip/tcp.h"
 #include "util/PrintUtils.h"
+#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {
@@ -46,7 +47,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   // First close any existing connection
   stop();
 
-  ip_addr_t ipaddr = IPADDR4_INIT(static_cast<uint32_t>(ip));
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   conn_ = internal::ConnectionManager::instance().connect(&ipaddr, port);
   if (conn_ == nullptr) {
     return false;
@@ -209,7 +210,7 @@ IPAddress EthernetClient::remoteIP() {
   if (state == nullptr) {
     return INADDR_NONE;
   }
-  return state->pcb->remote_ip.addr;
+  return ip_addr_get_ip4_uint32(&state->pcb->remote_ip);
 }
 
 uint16_t EthernetClient::remotePort() {

@@ -227,9 +227,9 @@ class EthernetClass final {
 
   // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does.
-  bool begin(const ip_addr_t *ipaddr,
-             const ip_addr_t *netmask,
-             const ip_addr_t *gw);
+  bool begin(const ip4_addr_t *ipaddr,
+             const ip4_addr_t *netmask,
+             const ip4_addr_t *gw);
 
   static elapsedMillis loopTimer_;
 

@@ -38,9 +38,9 @@ void enet_getmac(uint8_t *mac);
 // It is suggested to initialize the random number generator with srand before
 // calling this.
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
-               const ip_addr_t *ipaddr,
-               const ip_addr_t *netmask,
-               const ip_addr_t *gw,
+               const ip4_addr_t *ipaddr,
+               const ip4_addr_t *netmask,
+               const ip4_addr_t *gw,
                netif_ext_callback_fn callback);
 
 // Disables Ethernet.
@@ -69,8 +69,8 @@ bool enet_link_is_full_duplex();
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
 // For joining and leaving multicast groups
-void enet_join_group(const ip_addr_t *group);
-void enet_leave_group(const ip_addr_t *group);
+void enet_join_group(const ip4_addr_t *group);
+void enet_leave_group(const ip4_addr_t *group);
 
 #ifdef __cplusplus
 }  // extern "C"

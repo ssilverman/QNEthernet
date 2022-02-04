@@ -42,7 +42,7 @@ class DNSClient final {
   // * The DNS client is not initialized
   // * The callback equates to nullptr
   static bool getHostByName(const char *hostname,
-                            std::function<void(IPAddress)> callback);
+                            std::function<void(const ip_addr_t *)> callback);
 
   // Looks up a host by name and wait for the given timeout, in milliseconds.
   // This returns whether the given IP address object was filled in and there
@@ -57,7 +57,7 @@ class DNSClient final {
   struct Request final {
     bool found = false;
     IPAddress ip;
-    std::function<void(IPAddress)> callback;
+    std::function<void(const ip_addr_t *)> callback;
   };
 
   DNSClient() = default;

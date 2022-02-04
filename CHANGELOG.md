@@ -16,6 +16,7 @@ and this project adheres to
 * Implemented `EthernetHardwareStatus` enum for the deprecated
   `Ethernet.hardwareStatus()` function. This replaces the zero return value with
   the new non-zero `EthernetOtherHardware`.
+* Cleaned up how internal IP addresses are used.
 
 ### Fixed
 

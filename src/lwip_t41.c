@@ -545,9 +545,9 @@ static bool isNetifAdded = false;
 NETIF_DECLARE_EXT_CALLBACK(netif_callback);
 
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
-               const ip_addr_t *ipaddr,
-               const ip_addr_t *netmask,
-               const ip_addr_t *gw,
+               const ip4_addr_t *ipaddr,
+               const ip4_addr_t *netmask,
+               const ip4_addr_t *gw,
                netif_ext_callback_fn callback) {
   // Only execute the following code once
   if (isFirstInit) {
@@ -557,9 +557,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     isFirstInit = false;
   }
 
-  if (ipaddr == NULL) ipaddr = IP_ADDR_ANY;
-  if (netmask == NULL) netmask = IP_ADDR_ANY;
-  if (gw == NULL) gw = IP_ADDR_ANY;
+  if (ipaddr == NULL) ipaddr = IP4_ADDR_ANY4;
+  if (netmask == NULL) netmask = IP4_ADDR_ANY4;
+  if (gw == NULL) gw = IP4_ADDR_ANY4;
 
   // First test if the MAC address has changed
   // If it's changed then remove the interface and start again
@@ -695,7 +695,7 @@ static uint32_t collisionGAUR = 0;
 
 // Join or leave a multicast group. The flag should be true to join and false
 // to leave.
-static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
+static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   multicastMAC[3] = ip4_addr2(group) & 0x7f;
   multicastMAC[4] = ip4_addr3(group);
   multicastMAC[5] = ip4_addr4(group);
@@ -727,11 +727,11 @@ static void enet_join_notleave_group(const ip_addr_t *group, bool flag) {
   }
 }
 
-void enet_join_group(const ip_addr_t *group) {
+void enet_join_group(const ip4_addr_t *group) {
   enet_join_notleave_group(group, true);
 }
 
-void enet_leave_group(const ip_addr_t *group) {
+void enet_leave_group(const ip4_addr_t *group) {
   enet_join_notleave_group(group, false);
 }
 

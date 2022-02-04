@@ -102,18 +102,18 @@ class EthernetUDP final : public UDP {
 
   // Received packet; updated every time one is received
   std::vector<unsigned char> inPacket_;  // Holds received packets
-  IPAddress inAddr_;
+  ip_addr_t inAddr_;
   volatile uint16_t inPort_;
 
   // Packet being processed by the caller
   std::vector<unsigned char> packet_;    // Holds the packet being read
   int packetPos_;                        // -1 if not currently reading a packet
-  IPAddress addr_;
+  ip_addr_t addr_;
   uint16_t port_;
 
   // Outgoing packets
   bool hasOutPacket_;
-  ip_addr_t outIpaddr_;
+  ip_addr_t outAddr_;
   uint16_t outPort_;
   std::vector<unsigned char> outPacket_;
 };
