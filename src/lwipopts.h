@@ -287,12 +287,12 @@
 #define CHECKSUM_GEN_UDP             0
 #define CHECKSUM_GEN_TCP             0
 #define CHECKSUM_GEN_ICMP            0
-#define CHECKSUM_GEN_ICMP6           0
+// #define CHECKSUM_GEN_ICMP6           1
 #define CHECKSUM_CHECK_IP            0
 #define CHECKSUM_CHECK_UDP           0
 #define CHECKSUM_CHECK_TCP           0
 #define CHECKSUM_CHECK_ICMP          0
-#define CHECKSUM_CHECK_ICMP6         0
+// #define CHECKSUM_CHECK_ICMP6         1
 // #define LWIP_CHECKSUM_ON_COPY        0
 
 // IPv6 options
