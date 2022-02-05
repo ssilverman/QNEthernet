@@ -58,14 +58,14 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
       inPacket_{},
-      inAddr_{*IP_ADDR_ANY},
+      inAddr_{*IP_ANY_TYPE},
       inPort_(0),
       packet_{},
       packetPos_(-1),
-      addr_{*IP_ADDR_ANY},
+      addr_{*IP_ANY_TYPE},
       port_(0),
       hasOutPacket_(false),
-      outAddr_{*IP_ADDR_ANY},
+      outAddr_{*IP_ANY_TYPE},
       outPort_(0),
       outPacket_{} {}
 
@@ -89,7 +89,7 @@ uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (reuse) {
     ip_set_option(pcb_, SOF_REUSEADDR);
   }
-  if (udp_bind(pcb_, IP_ADDR_ANY, localPort) != ERR_OK) {
+  if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
     return false;
   }
 
@@ -136,7 +136,7 @@ void EthernetUDP::stop() {
   udp_remove(pcb_);
   pcb_ = nullptr;
 
-  addr_ = *IP_ADDR_ANY;
+  addr_ = *IP_ANY_TYPE;
   port_ = 0;
 }
 
