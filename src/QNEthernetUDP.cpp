@@ -229,6 +229,19 @@ uint16_t EthernetUDP::remotePort() {
 // --------------------------------------------------------------------------
 
 int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  return beginPacket(&ipaddr, port);
+}
+
+int EthernetUDP::beginPacket(const char *host, uint16_t port) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
+  }
+  return beginPacket(ip, port);
+}
+
+bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   if (pcb_ == nullptr) {
     pcb_ = udp_new();
   }
@@ -239,19 +252,11 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
     outPacket_.reserve(kMaxUDPSize);
   }
 
-  outAddr_ = IPADDR4_INIT(get_uint32(ip));
+  outAddr_ = *ipaddr;
   outPort_ = port;
   hasOutPacket_ = true;
   outPacket_.clear();
   return true;
-}
-
-int EthernetUDP::beginPacket(const char *host, uint16_t port) {
-  IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return false;
-  }
-  return beginPacket(ip, port);
 }
 
 int EthernetUDP::endPacket() {
@@ -279,6 +284,21 @@ int EthernetUDP::endPacket() {
 
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
                        const uint8_t *data, size_t len) {
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  return send(&ipaddr, port, data, len);
+}
+
+bool EthernetUDP::send(const char *host, uint16_t port,
+                       const uint8_t *data, size_t len) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
+  }
+  return send(ip, port, data, len);
+}
+
+bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
+                       const uint8_t *data, size_t len) {
   if (len > UINT16_MAX) {
     return false;
   }
@@ -294,20 +314,10 @@ bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
   if (p == nullptr) {
     return false;
   }
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   pbuf_take(p, data, len);
-  bool retval = (udp_sendto(pcb_, p, &ipaddr, port) == ERR_OK);
+  bool retval = (udp_sendto(pcb_, p, ipaddr, port) == ERR_OK);
   pbuf_free(p);
   return retval;
-}
-
-bool EthernetUDP::send(const char *host, uint16_t port,
-                       const uint8_t *data, size_t len) {
-  IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return false;
-  }
-  return send(ip, port, data, len);
 }
 
 size_t EthernetUDP::write(uint8_t b) {

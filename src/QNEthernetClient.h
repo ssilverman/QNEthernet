@@ -16,6 +16,7 @@
 #include <Print.h>
 
 #include "internal/ConnectionHolder.h"
+#include "lwip/ip_addr.h"
 #include "lwip/opt.h"
 
 namespace qindesign {
@@ -106,6 +107,9 @@ class EthernetClient final : public Client {
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
+
+  // ip_addr_t version of connect() function.
+  bool connect(const ip_addr_t *ipaddr, uint16_t port);
 
   // Closes the connection. The `wait` parameter indicates whether to wait for
   // close or timeout. Set to true to wait and false to not wait. stop() calls

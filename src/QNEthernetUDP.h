@@ -95,6 +95,11 @@ class EthernetUDP final : public UDP {
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
+  // ip_addr_t versions of transmission functions
+  bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
+  bool send(const ip_addr_t *ipaddr, uint16_t port,
+            const uint8_t *data, size_t len);
+
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
 

@@ -45,11 +45,23 @@ EthernetClient::~EthernetClient() {
 // --------------------------------------------------------------------------
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  return connect(&ipaddr, port);
+}
+
+int EthernetClient::connect(const char *host, uint16_t port) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return false;
+  }
+  return connect(ip, port);
+}
+
+bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
   // First close any existing connection
   stop();
 
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
-  conn_ = internal::ConnectionManager::instance().connect(&ipaddr, port);
+  conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
     return false;
   }
@@ -66,14 +78,6 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
   }
 
   return true;
-}
-
-int EthernetClient::connect(const char *host, uint16_t port) {
-  IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return false;
-  }
-  return connect(ip, port);
 }
 
 uint8_t EthernetClient::connected() {
