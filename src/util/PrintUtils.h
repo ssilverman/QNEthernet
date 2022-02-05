@@ -10,6 +10,7 @@
 // C++ includes
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <functional>
 
 #include <Print.h>
@@ -37,7 +38,17 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 size_t writeMagic(Print &p, uint8_t mac[6],
                   std::function<bool()> breakf = nullptr);
 
+class StdoutPrint : public Print {
+  size_t write(uint8_t b) override;
+  size_t write(const uint8_t *buffer, size_t size) override;
+  int availableForWrite() override;
+  void flush() override;
+};
+
 }  // namespace util
+
+extern util::StdoutPrint stdoutPrint;
+
 }  // namespace network
 }  // namespace qindesign
 

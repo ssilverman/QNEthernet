@@ -8,6 +8,9 @@
 
 namespace qindesign {
 namespace network {
+
+util::StdoutPrint stdoutPrint;
+
 namespace util {
 
 static constexpr uint8_t kBroadcastMAC[6]{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -46,6 +49,32 @@ size_t writeMagic(Print &p, uint8_t mac[6], std::function<bool()> breakf) {
     }
   }
   return written;
+}
+
+size_t StdoutPrint::write(uint8_t b) {
+  if (std::putchar(b) == EOF) {
+    setWriteError();
+    return 0;
+  }
+  return 1;
+}
+
+size_t StdoutPrint::write(const uint8_t *buffer, size_t size) {
+  size_t retval = std::fwrite(buffer, 1, size, stdout);
+  if (std::ferror(stdout)) {
+    setWriteError();
+  }
+  return retval;
+}
+
+int StdoutPrint::availableForWrite() {
+  return 0;
+}
+
+void StdoutPrint::flush() {
+  if (std::fflush(stdout) == EOF) {
+    setWriteError();
+  }
 }
 
 }  // namespace util

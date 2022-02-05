@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added a `StdoutPrint` class and `stdoutPrint` instance that routes `Print`
+  functions to `stdout`. This is mainly to make it easy to use `Printable`
+  objects without needing a prior call to `fflush()`.
+
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of
   `beginPacket()`/`write()`/`endPacket()`.
