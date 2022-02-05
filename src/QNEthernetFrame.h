@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <vector>
 
-#include <IPAddress.h>
 #include <Stream.h>
 
 #include "lwip/err.h"
