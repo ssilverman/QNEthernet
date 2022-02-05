@@ -26,7 +26,8 @@ class ConnectionManager final {
     return manager;
   }
 
-  std::shared_ptr<ConnectionHolder> connect(ip_addr_t *ipaddr, uint16_t port);
+  std::shared_ptr<ConnectionHolder> connect(const ip_addr_t *ipaddr,
+                                            uint16_t port);
 
   // Listens on a port. The `reuse` parameter controls the SO_REUSEADDR flag.
   // This returns whether the attempt was successful.

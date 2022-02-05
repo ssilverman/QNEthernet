@@ -233,8 +233,8 @@ void ConnectionManager::addConnection(
   };
 }
 
-std::shared_ptr<ConnectionHolder> ConnectionManager::connect(ip_addr_t *ipaddr,
-                                                             uint16_t port) {
+std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
+    const ip_addr_t *ipaddr, uint16_t port) {
   // Try to allocate
   tcp_pcb *pcb = tcp_new();
   if (pcb == nullptr) {
