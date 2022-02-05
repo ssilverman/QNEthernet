@@ -17,6 +17,8 @@ and this project adheres to
   `Ethernet.hardwareStatus()` function. This replaces the zero return value with
   the new non-zero `EthernetOtherHardware`.
 * Cleaned up how internal IP addresses are used.
+* Changed `_write()` (stdio) to do nothing if the requested length is zero
+  because that's what `fwrite()` is specified to do.
 
 ### Fixed
 

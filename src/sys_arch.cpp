@@ -40,6 +40,10 @@ extern "C" {
 //       chosen by the linker, this one or the one defined in Print.cpp.
 // TODO: May have to revisit this if user code wants to define `_write`.
 int _write(int file, const void *buf, size_t len) {
+  if (len == 0) {
+    return 0;
+  }
+
   Print *out;
 
   // Send both stdout and stderr to stdPrint
@@ -52,7 +56,6 @@ int _write(int file, const void *buf, size_t len) {
   if (out == nullptr) {
     return len;
   }
-  // Don't check for len == 0 and return early in case there's side effects
   return out->write((const uint8_t *)buf, len);
 }
 
