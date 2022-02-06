@@ -9,7 +9,7 @@
 namespace qindesign {
 namespace network {
 
-util::StdoutPrint stdoutPrint;
+util::StdioPrint stdoutPrint{stdout};
 
 namespace util {
 
@@ -51,28 +51,28 @@ size_t writeMagic(Print &p, uint8_t mac[6], std::function<bool()> breakf) {
   return written;
 }
 
-size_t StdoutPrint::write(uint8_t b) {
-  if (std::putchar(b) == EOF) {
+size_t StdioPrint::write(uint8_t b) {
+  if (std::fputc(b, stream_) == EOF) {
     setWriteError();
     return 0;
   }
   return 1;
 }
 
-size_t StdoutPrint::write(const uint8_t *buffer, size_t size) {
-  size_t retval = std::fwrite(buffer, 1, size, stdout);
-  if (std::ferror(stdout)) {
+size_t StdioPrint::write(const uint8_t *buffer, size_t size) {
+  size_t retval = std::fwrite(buffer, 1, size, stream_);
+  if (std::ferror(stream_)) {
     setWriteError();
   }
   return retval;
 }
 
-int StdoutPrint::availableForWrite() {
-  return 0;
+int StdioPrint::availableForWrite() {
+  return stream_->_w;
 }
 
-void StdoutPrint::flush() {
-  if (std::fflush(stdout) == EOF) {
+void StdioPrint::flush() {
+  if (std::fflush(stream_) == EOF) {
     setWriteError();
   }
 }

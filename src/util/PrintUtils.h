@@ -38,16 +38,22 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 size_t writeMagic(Print &p, uint8_t mac[6],
                   std::function<bool()> breakf = nullptr);
 
-class StdoutPrint : public Print {
+class StdioPrint : public Print {
+ public:
+  StdioPrint(std::FILE *stream) : stream_(stream) {}
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
   int availableForWrite() override;
   void flush() override;
+
+ private:
+  std::FILE *stream_;
 };
 
 }  // namespace util
 
-extern util::StdoutPrint stdoutPrint;
+extern util::StdioPrint stdoutPrint;
 
 }  // namespace network
 }  // namespace qindesign
