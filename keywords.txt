@@ -76,6 +76,7 @@ beginPacket	KEYWORD2	EthernetUDPBeginPacket
 endPacket	KEYWORD2	EthernetUDPEndPacket
 send	KEYWORD2
 parsePacket	KEYWORD2	EthernetUDPParsePacket
+maxServices	KEYWORD2
 addService	KEYWORD2
 removeService	KEYWORD2
 ttl	KEYWORD2

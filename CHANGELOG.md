@@ -13,6 +13,7 @@ and this project adheres to
   functions to a specific `FILE*`. `stdoutPrint` is initialized with `stdout`.
   This is mainly to make it easy to use `Printable` objects without needing a
   prior call to `fflush()`.
+* Added `MDNSClass::maxServices()`.
 
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of

@@ -32,6 +32,11 @@ class MDNSClass final {
 
   ~MDNSClass();
 
+  // Returns the maximum number of services this can support.
+  static constexpr int maxServices() {
+    return MDNS_MAX_SERVICES;
+  }
+
   // Starts the mDNS responder and uses the given hostname as the name. This
   // returns whether the call was successful.
   bool begin(const String &hostname);

@@ -14,12 +14,6 @@
 namespace qindesign {
 namespace network {
 
-// Count array elements.
-template <typename T, size_t N>
-static constexpr size_t countof(const T (&)[N]) {
-  return N;
-}
-
 // Recommended DNS TTL value, in seconds, per RFC 6762 "Multicast DNS".
 static constexpr uint32_t kTTL = 120;
 
@@ -108,7 +102,7 @@ bool MDNSClass::addService(const String &type, const String &protocol,
   int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type.c_str(),
                                       toProto(protocol), port, kTTL, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
-  if (slot < 0 || countof(slots_) <= static_cast<size_t>(slot)) {
+  if (slot < 0 || maxServices() <= slot) {
     if (slot >= 0) {
       // Remove if the addition was successful but we couldn't add it
       mdns_resp_del_service(netif_, slot);
@@ -124,7 +118,7 @@ bool MDNSClass::addService(const String &type, const String &protocol,
 int MDNSClass::findService(const String &type, const String &protocol,
                            uint16_t port) {
   Service service{true, type, protocol, port, nullptr};
-  for (size_t i = 0; i < countof(slots_); i++) {
+  for (int i = 0; i < maxServices(); i++) {
     if (slots_[i] == service) {
       return i;
     }
@@ -144,7 +138,7 @@ bool MDNSClass::removeService(const String &type, const String &protocol,
   if (found < 0) {
     return false;
   }
-  if (static_cast<size_t>(found) < countof(slots_)) {
+  if (found < maxServices()) {
     slots_[found].reset();
   }
   return (mdns_resp_del_service(netif_, found) == ERR_OK);
