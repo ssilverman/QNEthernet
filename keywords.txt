@@ -16,6 +16,7 @@ MDNS	KEYWORD1
 DNSClient	KEYWORD1
 stdPrint	KEYWORD1
 EthernetFrame	KEYWORD1
+stdoutPrint	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
