@@ -165,9 +165,9 @@ The `Ethernet` object is the main Ethernet interface.
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
     changed.
-* `static constexpr maxMulticastGroups()`: Returns the maximum number of
+* `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   multicast groups.
-* `static constexpr mtu()`: Returns the MTU.
+* `static constexpr size_t mtu()`: Returns the MTU.
 
 ### `EthernetClient`
 
@@ -178,7 +178,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
 * `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
-* `static constexpr maxSockets()`: Returns the maximum number of
+* `static constexpr int maxSockets()`: Returns the maximum number of
   TCP connections.
 
 #### TCP socket options
@@ -195,7 +195,7 @@ The `Ethernet` object is the main Ethernet interface.
   controls the SO_REUSEADDR socket option.
 * `end()`: Shuts down the server.
 * `port()`: Returns the server's port.
-* `static constexpr maxListeners()`: Returns the maximum number of
+* `static constexpr int maxListeners()`: Returns the maximum number of
   TCP listeners.
 
 ### `EthernetUDP`
@@ -211,7 +211,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
-* `static constexpr maxSockets()`: Returns the maximum number of UDP sockets.
+* `static constexpr int maxSockets()`: Returns the maximum number of
+  UDP sockets.
 
 ### `EthernetFrame`
 
@@ -257,6 +258,8 @@ The `MDNS` object provides an mDNS API.
 * `addService(type, protocol, port, getTXTFunc)`: Adds a service and associated
   TXT records.
 * `removeService(type, protocol, port)`: Removes a service.
+* `static constexpr int maxServices()`: Returns the maximum number of
+  supported services.
 
 ### `DNSClient`
 
@@ -267,6 +270,8 @@ The `DNSClient` class provides an interface to the DNS client.
 * `getHostByName(hostname, callback)`: Looks up a host by name and calls the
   callback when there's a result.
 * `getHostByName(hostname, ip, timeout)`: Looks up a host by name.
+* `static constexpr int maxServers()`: Returns the maximum number of
+  DNS servers.
 
 ### Print utilities
 
