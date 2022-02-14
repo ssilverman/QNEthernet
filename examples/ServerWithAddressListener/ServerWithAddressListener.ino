@@ -122,7 +122,7 @@ void setup() {
   // Listen for address changes
   Ethernet.onAddressChanged([]() {
     IPAddress ip = Ethernet.localIP();
-    bool hasIP = !(ip == INADDR_NONE);  // IPAddress has no operator!=()
+    bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
       printf("[Ethernet] Address changed:\n");
 
@@ -133,7 +133,7 @@ void setup() {
       ip = Ethernet.gatewayIP();
       printf("    Gateway  = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
       ip = Ethernet.dnsServerIP();
-      if (!(ip == INADDR_NONE)) {  // May happen with static IP
+      if (ip != INADDR_NONE) {  // May happen with static IP
         printf("    DNS      = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
       }
     } else {

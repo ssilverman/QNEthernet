@@ -68,7 +68,7 @@ void setup() {
   // Listen for address changes
   Ethernet.onAddressChanged([]() {
     IPAddress ip = Ethernet.localIP();
-    bool hasIP = !(ip == INADDR_NONE);  // IPAddress has no operator!=()
+    bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
       IPAddress ip = Ethernet.localIP();
       IPAddress subnet = Ethernet.subnetMask();

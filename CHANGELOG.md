@@ -30,6 +30,7 @@ and this project adheres to
 * Cleaned up how internal IP addresses are used.
 * Changed `_write()` (stdio) to do nothing if the requested length is zero
   because that's what `fwrite()` is specified to do.
+* Updated examples to use new `operator!=()` for `IPAddress`.
 
 ### Fixed
 
