@@ -28,6 +28,7 @@ files provided with the lwIP release.
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
+   9. [`IPAddress operators`](#ipaddress-operators)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -305,6 +306,16 @@ having to worry about buffering and the need to flush any output before printing
 a `Printable` directly to, say, `Serial`. It is of type `util::StdioPrint` (if
 the `qindesign::network` namespace is already in scope), a more general `Print`
 class that can send output to any `FILE*`.
+
+### `IPAddress` operators
+
+The core library version of `IPAddress` is missing a `==` operator that can
+compare `const IPAddress` values. In addition, it is completely missing a `!=`
+operator. Provided in this library are these two operators. They are declared as
+follows in the usual namespace:
+
+1. `bool operator==(const IPAddress &a, const IPAddress &b);`
+2. `bool operator!=(const IPAddress &a, const IPAddress &b);`
 
 ## How to run
 

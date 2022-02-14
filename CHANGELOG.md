@@ -14,6 +14,10 @@ and this project adheres to
   This is mainly to make it easy to use `Printable` objects without needing a
   prior call to `fflush()`.
 * Added `MDNSClass::maxServices()`.
+* Added `operator==` and `operator!=` operators for `const IPAddress`. They are
+  in the usual namespace. These allow `==` to be used with `const IPAddress`
+  values without having to use `const_cast`, and also introduce the completely
+  missing `!=` operator.
 
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of
