@@ -17,6 +17,9 @@ and this project adheres to
   in the usual namespace. These allow `==` to be used with `const IPAddress`
   values without having to use `const_cast`, and also introduce the completely
   missing `!=` operator.
+* Added a way to declare the `_write()` function as weak via a new
+  `QNETHERNET_WEAK_WRITE` macro. Defining this macro will cause the function to
+  be declared as weak.
 
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of

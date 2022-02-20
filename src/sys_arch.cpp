@@ -36,9 +36,12 @@ Print *volatile stdPrint = nullptr;
 extern "C" {
 // Define this function so that printf works; parts of lwIP may use printf.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
-// Note: Can't define as weak because we don't know which `_write` would be
-//       chosen by the linker, this one or the one defined in Print.cpp.
-// TODO: May have to revisit this if user code wants to define `_write`.
+// Note: Can't define as weak by default because we don't know which `_write`
+//       would be chosen by the linker, this one or the one defined
+//       in Print.cpp.
+#ifdef QNETHERNET_WEAK_WRITE
+__attribute__((weak))
+#endif
 int _write(int file, const void *buf, size_t len) {
   if (len == 0) {
     return 0;

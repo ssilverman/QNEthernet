@@ -643,6 +643,10 @@ void setup() {
 
 The side benefit is that user code can use `printf` too.
 
+If your application wants to define its own `_write()` implementation, then the
+internal one needs to be declared as weak. To accomplish this, define the
+`QNETHERNET_WEAK_WRITE` macro.
+
 ## Raw Ethernet frames
 
 There is support for sending and receiving raw Ethernet frames. See the
