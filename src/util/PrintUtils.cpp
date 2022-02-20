@@ -9,8 +9,6 @@
 namespace qindesign {
 namespace network {
 
-util::StdioPrint stdoutPrint{stdout};
-
 namespace util {
 
 static constexpr uint8_t kBroadcastMAC[6]{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};

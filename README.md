@@ -300,12 +300,11 @@ qualified: `qindesign::network::util::writeMagic()`.
    the given `Print` object. This uses `writeFully()` under the covers and
    passes along the `breakf` function as the stopping condition.
 
-There is also a `stdoutPrint` object that provides a `Print` interface to
-`stdout`. This makes it easy to print `Printable` objects to `stdout` without
-having to worry about buffering and the need to flush any output before printing
-a `Printable` directly to, say, `Serial`. It is of type `util::StdioPrint` (if
-the `qindesign::network` namespace is already in scope), a more general `Print`
-class that can send output to any `FILE*`.
+There is also a `Print` decorator for `stdio` output files, `util::StdioPrint`
+(assuming the `qindesign::network` namespace is in scope). It provides a `Print`
+interface so that it is easy to print `Printable` objects to `stdout` or
+`stderr` without having to worry about buffering and the need to flush any
+output before printing a `Printable` directly to, say, `Serial`.
 
 ### `IPAddress` operators
 

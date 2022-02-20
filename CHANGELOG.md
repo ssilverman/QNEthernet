@@ -9,10 +9,9 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-* Added a `StdioPrint` class and `stdoutPrint` instance that route `Print`
-  functions to a specific `FILE*`. `stdoutPrint` is initialized with `stdout`.
-  This is mainly to make it easy to use `Printable` objects without needing a
-  prior call to `fflush()`.
+* Added a `util::StdioPrint` class, a `Print` decorator for stdio output files.
+  It routes `Print` functions to a specific `FILE*`. This exists mainly to make
+  it easy to use `Printable` objects without needing a prior call to `fflush()`.
 * Added `MDNSClass::maxServices()`.
 * Added `operator==` and `operator!=` operators for `const IPAddress`. They are
   in the usual namespace. These allow `==` to be used with `const IPAddress`

@@ -38,6 +38,7 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 size_t writeMagic(Print &p, uint8_t mac[6],
                   std::function<bool()> breakf = nullptr);
 
+// A Print decorator for stdio output files.
 class StdioPrint : public Print {
  public:
   StdioPrint(std::FILE *stream) : stream_(stream) {}
@@ -52,8 +53,6 @@ class StdioPrint : public Print {
 };
 
 }  // namespace util
-
-extern util::StdioPrint stdoutPrint;
 
 }  // namespace network
 }  // namespace qindesign
