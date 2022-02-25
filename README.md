@@ -28,7 +28,7 @@ files provided with the lwIP release.
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
-   9. [`IPAddress operators`](#ipaddress-operators)
+   9. [`IPAddress` operators](#ipaddress-operators)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
