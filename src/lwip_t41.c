@@ -275,20 +275,20 @@ static void t41_low_level_init() {
 
   ENET_EIMR = 0;  // This also deasserts all interrupts
 
-  ENET_RCR = ENET_RCR_NLC |
+  ENET_RCR = ENET_RCR_NLC |     // Payload length is checked
              ENET_RCR_MAX_FL(MAX_FRAME_LEN) |
-             ENET_RCR_CFEN |
-             ENET_RCR_CRCFWD |
-             ENET_RCR_PADEN |
+             ENET_RCR_CFEN |    // Discard non-pause MAC control frames
+             ENET_RCR_CRCFWD |  // CRC is stripped (ignored if PADEN)
+             ENET_RCR_PADEN |   // Padding is removed
              ENET_RCR_RMII_MODE |
-             ENET_RCR_FCE |
-             // ENET_RCR_PROM |
+             ENET_RCR_FCE |     // Flow control enable
+             // ENET_RCR_PROM |    // Promiscuous mode
              ENET_RCR_MII_MODE;
-  ENET_TCR = ENET_TCR_ADDINS |
+  ENET_TCR = ENET_TCR_ADDINS |  // Overwrite with programmed MAC address
              ENET_TCR_ADDSEL(0) |
              // ENET_TCR_RFC_PAUSE |
              // ENET_TCR_TFC_PAUSE |
-             ENET_TCR_FDEN;
+             ENET_TCR_FDEN;     // Enable full-duplex
 
   ENET_TACC = 0
 #if ETH_PAD_SIZE == 2
