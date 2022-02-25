@@ -13,8 +13,8 @@ and this project adheres to
   It routes `Print` functions to a specific `FILE*`. This exists mainly to make
   it easy to use `Printable` objects without needing a prior call to `fflush()`.
 * Added `MDNSClass::maxServices()`.
-* Added `operator==` and `operator!=` operators for `const IPAddress`. They are
-  in the usual namespace. These allow `==` to be used with `const IPAddress`
+* Added `operator==()` and `operator!=()` operators for `const IPAddress`. They
+  are in the usual namespace. These allow `==` to be used with `const IPAddress`
   values without having to use `const_cast`, and also introduce the completely
   missing `!=` operator.
 * Added a way to declare the `_write()` function as weak via a new
