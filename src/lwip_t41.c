@@ -291,17 +291,31 @@ static void t41_low_level_init() {
              ENET_TCR_FDEN;     // Enable full-duplex
 
   ENET_TACC = 0
+#if CHECKSUM_GEN_UDP == 0 || CHECKSUM_GEN_TCP == 0 || CHECKSUM_GEN_ICMP == 0
+      | ENET_TACC_PROCHK  // Insert protocol checksum
+#endif
+#if CHECKSUM_GEN_IP == 0
+      | ENET_TACC_IPCHK  // Insert IP header checksum
+#endif
 #if ETH_PAD_SIZE == 2
       | ENET_TACC_SHIFT16
 #endif
-// #if HW_CHKSUMS == 1
-      | ENET_TACC_IPCHK | ENET_TACC_PROCHK
-// #endif
       ;
 
   ENET_RACC = 0
 #if ETH_PAD_SIZE == 2
       | ENET_RACC_SHIFT16
+#endif
+      | ENET_RACC_LINEDIS  // Discard bad frames
+#if CHECKSUM_CHECK_UDP == 0 && \
+    CHECKSUM_CHECK_TCP == 0 && \
+    CHECKSUM_CHECK_ICMP == 0
+      | ENET_RACC_PRODIS  // Discard frames with incorrect protocol checksum
+                          // Requires RSFL == 0
+#endif
+#if CHECKSUM_CHECK_IP == 0
+      | ENET_RACC_IPDIS  // Discard frames with incorrect IPv4 header checksum
+                         // Requires RSFL == 0
 #endif
       | ENET_RACC_PADREM
       ;
