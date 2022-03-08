@@ -55,7 +55,7 @@ and notes:
   or `Ethernet.loop()` when waiting on conditions; waiting without calling these
   functions will cause the TCP/IP stack to never refresh. Note that many of the
   I/O functions call `loop()` so that there's less burden on the calling code.
-* `EthernetServer` write functions always return the write size requested. This
+* `EthernetServer::write` functions always return the write size requested. This
   is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
   https://www.arduino.cc/en/Reference/IfEthernetClient directly contradict each
@@ -111,11 +111,11 @@ and notes:
   * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
     more details).
   * _src/arch/cc.h_
-* The main include file, `QNEthernet.h`, in addition to including the `Ethernet`
-  instance, also includes the headers for `EthernetClient`, `EthernetServer`,
-  and `EthernetUDP`.
-* All four address-setting functions (IP, subnet mask, gateway, DNS) do nothing
-  unless the system has been initialized.
+* The main include file, `QNEthernet.h`, in addition to including the
+  `Ethernet`, `EthernetFrame`, and `MDNS` instances, also includes the headers
+  headers for `EthernetClient`, `EthernetServer`, and `EthernetUDP`.
+* Most of the `Ethernet` functions do nothing or return some form of
+  empty/nothing/false unless the system has been initialized.
 
 ## Additional functions and features not in the Arduino API
 
@@ -321,28 +321,28 @@ follows in the usual namespace:
 This library works with both PlatformIO and Arduino. To use it with Arduino,
 here are a few steps to follow:
 
-1. Change `#include <Ethernet.h>` to `#include <QNEthernet.h>`. Note that this
-   include already includes the header for EthernetUDP, so you can remove any
-   `#include <EthernetUdp.h>`. (i.e. There isn't a need to include the
-   `<QNEthernetUDP.h>` header.)
-2. Just below that, add: `using namespace qindesign::network;`
+1. Add `#include <QNEthernet.h>`. Note that this include already includes the
+   header for `EthernetUDP`. Some external examples also include `SPI.h`. This
+   is not needed unless you're actually using SPI in your program.
+2. Below that, add: `using namespace qindesign::network;`
 3. In `setup()`, just after initializing `Serial`, set `stdPrint = &Serial`.
    This enables some lwIP output and also `printf` for your own code.
 4. You likely don't want or need to set/choose your own MAC address, so just
-   call `Ethernet.begin()` with no arguments. This version uses DHCP. The
-   three-argument version (IP, subnet mask, gateway) sets those parameters
-   instead of using DHCP, but starts DHCP if they're all zero (`INADDR_NONE`).
-   If you really want to set your own MAC address, see `setMACAddress(mac)`
-   or one of the `begin` functions that takes a MAC address parameter.
+   call `Ethernet.begin()` with no arguments to use DHCP and the three-argument
+   version (IP, subnet mask, gateway) to set your own address. If you really
+   want to set your own MAC address, see `setMACAddress(mac)` or one of the
+   deprecated `begin` functions that takes a MAC address parameter.
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
-   be used to wait for DHCP to supply an address. Try 10 seconds (10000 ms) and
-   see if that works for you.
-6. `Ethernet.hardwareStatus()` always returns zero.
+   be used to wait for DHCP to supply an address because `Ethernet.begin()`
+   doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
+6. `Ethernet.hardwareStatus()` always returns `EthernetOtherHardware`. This
+   means that there is no reason to call this function.
 7. Most other things should be the same.
 
 Please see the examples for more things you can do with the API, including:
-* Using listeners to watch for network changes, and
-* Monitoring raw Ethernet frames.
+* Using listeners to watch for network changes,
+* Monitoring and sending raw Ethernet frames, and
+* Setting up an mDNS service.
 
 ## How to write data to connections
 
@@ -687,8 +687,6 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
-* IPv6.
-* IEEE 1588 features.
 
 ## Code style
 
