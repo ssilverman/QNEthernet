@@ -538,6 +538,22 @@ static uint32_t crc32(uint32_t crc, const unsigned char *data, size_t len) {
   return crc;  // Why does this work without inversion?
 }
 
+// Multicast filter for letting the hardware know which packets to let in.
+static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
+                              enum netif_mac_filter_action action) {
+  switch (action) {
+    case NETIF_ADD_MAC_FILTER:
+      enet_join_group(group);
+      break;
+    case NETIF_DEL_MAC_FILTER:
+      enet_leave_group(group);
+      break;
+    default:
+      break;
+  }
+  return ERR_OK;
+}
+
 // --------------------------------------------------------------------------
 //  Public interface
 // --------------------------------------------------------------------------
@@ -604,6 +620,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     netif_set_default(&t41_netif);
     isNetifAdded = true;
   }
+
+  // Multicast filtering, to allow desired multicast packets in
+  netif_set_igmp_mac_filter(&t41_netif, &multicast_filter);
 }
 
 void enet_deinit() {

@@ -166,24 +166,6 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   }
 #endif
 
-  // Watch for final multicast joins and leaves so we can configure
-  // them properly
-  netif_set_igmp_mac_filter(netif_,
-                            [](struct netif *netif, const ip4_addr_t *group,
-                               enum netif_mac_filter_action action) -> err_t {
-                              switch (action) {
-                                case NETIF_ADD_MAC_FILTER:
-                                  enet_join_group(group);
-                                  break;
-                                case NETIF_DEL_MAC_FILTER:
-                                  enet_leave_group(group);
-                                  break;
-                                default:
-                                  break;
-                              }
-                              return ERR_OK;
-                            });
-
   netif_set_up(netif_);
 
   // If this is using a manual configuration then inform the network,
