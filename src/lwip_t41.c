@@ -700,7 +700,7 @@ bool enet_link_is_full_duplex() {
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
-  if (isInitialized) {
+  if (!isInitialized) {
     return false;
   }
   if (frame == NULL || len < 60 || MAX_FRAME_LEN - 4 < len) {
