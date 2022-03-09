@@ -104,6 +104,9 @@ class EthernetFrameClass final : public Stream {
   int peek() override;
   void flush() override {}
 
+  // Returns max{(Ethernet.maxFrameLen() - 4) - "written", 0}.
+  int availableForWrite() override;
+
   // Returns a pointer to the received frame data.
   const unsigned char *data();
 

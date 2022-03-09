@@ -20,6 +20,7 @@ and this project adheres to
 * Added a way to declare the `_write()` function as weak via a new
   `QNETHERNET_WEAK_WRITE` macro. Defining this macro will cause the function to
   be declared as weak.
+* Implemented `EthernetFrameClass::availableForWrite()`.
 
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of

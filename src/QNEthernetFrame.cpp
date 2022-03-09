@@ -6,6 +6,9 @@
 
 #include "QNEthernetFrame.h"
 
+// C includes
+#include <sys/types.h>
+
 // C++ includes
 #include <algorithm>
 
@@ -177,6 +180,12 @@ size_t EthernetFrameClass::write(const uint8_t *buffer, size_t size) {
   // TODO: Limit vector size
   outFrame_.insert(outFrame_.end(), &buffer[0], &buffer[size]);
   return size;
+}
+
+int EthernetFrameClass::availableForWrite() {
+  // First cast to something we know is the same size as size_t
+  return std::max(static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.size()),
+                  0);
 }
 
 }  // namespace network
