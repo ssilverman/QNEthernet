@@ -70,7 +70,7 @@ class EthernetFrameClass final : public Stream {
   // This will return false if:
   // 1. The frame was not started,
   // 2. Ethernet was not started, or
-  // 3. The length is not in the range 60-1518.
+  // 3. The length is not in the range 60-(maxFrameLen()-4) (excludes the FCS).
   bool endFrame();
 
   // Sends a frame and returns whether the send was successful. This causes less
@@ -82,7 +82,7 @@ class EthernetFrameClass final : public Stream {
   // This will return false if:
   // 1. Ethernet was not started,
   // 2. The frame is NULL, or
-  // 3. The length is not in the range 60-1518.
+  // 3. The length is not in the range 60-(maxFrameLen()-4) (excludes the FCS).
   bool send(const uint8_t *frame, size_t len) const;
 
   // Bring Print::write functions into scope

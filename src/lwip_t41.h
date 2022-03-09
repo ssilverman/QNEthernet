@@ -64,8 +64,8 @@ int enet_link_speed();
 bool enet_link_is_full_duplex();
 
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
-// length is not in the range 64-kMaxFrameLen. This also returns false if
-// Ethernet is not initialized.
+// length is not in the range 60-(MAX_FRAME_LEN-4) (excludes the FCS (frame
+// check sequence)). This also returns false if Ethernet is not initialized.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
 // For joining and leaving multicast groups
