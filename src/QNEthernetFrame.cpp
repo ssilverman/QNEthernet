@@ -162,22 +162,20 @@ bool EthernetFrameClass::send(const uint8_t *frame, size_t len) const {
 }
 
 size_t EthernetFrameClass::write(uint8_t b) {
-  if (!hasOutFrame_) {
+  if (!hasOutFrame_ || availableForWrite() <= 0) {
     return 0;
   }
-  // TODO: Limit vector size
   outFrame_.push_back(b);
   return 1;
 }
 
 size_t EthernetFrameClass::write(const uint8_t *buffer, size_t size) {
-  if (!hasOutFrame_ || size == 0) {
+  int avail = availableForWrite();
+  if (!hasOutFrame_ || size == 0 || avail <= 0) {
     return 0;
   }
-  if (size > UINT16_MAX) {
-    size = UINT16_MAX;
-  }
-  // TODO: Limit vector size
+
+  size = std::min(size, static_cast<size_t>(avail));
   outFrame_.insert(outFrame_.end(), &buffer[0], &buffer[size]);
   return size;
 }

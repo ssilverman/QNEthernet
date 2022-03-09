@@ -88,6 +88,7 @@ class EthernetFrameClass final : public Stream {
   // Bring Print::write functions into scope
   using Print::write;
 
+  // The write functions limit the allowed size to Ethernet.maxFrameLen()-4
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
 
