@@ -24,7 +24,7 @@
 // #define MEMP_MEM_MALLOC                        0
 // #define MEMP_MEM_INIT                          0
 #define MEM_ALIGNMENT                          4
-#define MEM_SIZE                               (16 * 1024)
+#define MEM_SIZE                               24000
 // #define MEMP_OVERFLOW_CHECK                    0
 // #define MEMP_SANITY_CHECK                      0
 // #define MEM_OVERFLOW_CHECK                     0
