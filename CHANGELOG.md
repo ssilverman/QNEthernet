@@ -35,7 +35,7 @@ and this project adheres to
 * Changed `_write()` (stdio) to do nothing if the requested length is zero
   because that's what `fwrite()` is specified to do.
 * Updated examples to use new `operator!=()` for `IPAddress`.
-* Move lwIP's heap to RAM2 (DMAMEM).
+* Moved lwIP's heap to RAM2 (DMAMEM).
 
 ### Fixed
 
