@@ -44,6 +44,7 @@ and this project adheres to
   and another that takes a `char *` hostname.
 * Fixed `enet_output_frame()` to correctly return `false` if Ethernet is
   not initialized.
+* Fixed not being able to set the DNS server IP before starting Ethernet.
 
 ## [0.13.0]
 

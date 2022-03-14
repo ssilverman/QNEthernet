@@ -323,9 +323,6 @@ void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) {
 }
 
 void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
-  if (netif_ == nullptr) {
-    return;
-  }
   DNSClient::setServer(0, dnsServerIP);
 }
 
