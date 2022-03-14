@@ -34,6 +34,7 @@ files provided with the lwIP release.
    1. [Write immediacy](#write-immediacy)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
+   1. [Connections and link detection](#connections-and-link-detection)
 7. [How to use multicast](#how-to-use-multicast)
 8. [mDNS services](#mdns-services)
 9. [DNS](#dns)
@@ -154,6 +155,10 @@ The `Ethernet` object is the main Ethernet interface.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
   set the hostname to nothing. To use something other than the default at system
   start, call this before calling `begin`.
+* `waitForLink(timeout)`: Waits for the specified timeout (milliseconds) for
+  a link to be detected. This is useful when setting a static IP and making
+  connections as a client. Returns whether a link was detected within the
+  given timeout.
 * `waitForLocalIP(timeout)`: Waits for the specified timeout (milliseconds) for
   the system to have a local IP address. This is useful when waiting for a
   DHCP-assigned address. Returns whether the system obtained an address within
@@ -535,7 +540,7 @@ you've always hoped Teensy library examples could be.
 
 ## A survey of how connections (aka `EthernetClient`) work
 
-Hopefully this disambiguates some details about what each function does:
+Hopefully this section disambiguates some details about what each function does:
 1. `connected()`: Returns whether connected OR data is still available
    (or both).
 2. `operator bool()`: Returns whether connected (at least in _QNEthernet_).
@@ -562,6 +567,13 @@ Some options:
 2. Same as the above, but without one of the two connection-status calls
    (`connected()` or `operator bool()`). The data will just run out after
    connection-closed and after the buffers are empty.
+
+### Connections and link detection
+
+A link must be present before a connection can be made. Either call
+`Ethernet.waitForLink(timeout)` or check the link state before attempting to
+connect. Which approach you use will depend on how your code is structured or
+intended to be used.
 
 ## How to use multicast
 
