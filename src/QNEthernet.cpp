@@ -196,6 +196,18 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) {
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
 }
 
+bool EthernetClass::waitForLink(uint32_t timeout) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+
+  elapsedMillis timer;
+  while (!netif_is_link_up(netif_) && timer < timeout) {
+    yield();
+  }
+  return netif_is_link_up(netif_);
+}
+
 int EthernetClass::begin(const uint8_t mac[6]) {
   std::copy_n(mac, 6, mac_);
   return begin();

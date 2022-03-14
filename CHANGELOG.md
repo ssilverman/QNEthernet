@@ -22,6 +22,8 @@ and this project adheres to
   be declared as weak.
 * Implemented `EthernetFrameClass::availableForWrite()`.
 * Added size limiting to `EthernetFrameClass` write functions.
+* New `EthernetClass::waitForLink(timeout)` function that waits for a link to
+  be detected.
 
 ### Changed
 * Updated `SNTPClient` example to use `EthernetUDP::send()` instead of

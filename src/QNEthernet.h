@@ -118,6 +118,10 @@ class EthernetClass final {
              const IPAddress &netmask,
              const IPAddress &gw);
 
+  // Waits, up to the specified timeout, for a link to be detected. This returns
+  // whether a link was detected.
+  bool waitForLink(uint32_t timeout);
+
   // Shuts down the Ethernet peripheral(s).
   void end();
 
