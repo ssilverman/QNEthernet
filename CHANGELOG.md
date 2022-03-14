@@ -349,7 +349,7 @@ and this project adheres to
 * This CHANGELOG.
 * Instructions in the README for how to use with Arduino.
 * Added the ability to add TXT items to mDNS services.
-* New `Ethernet::waitForLocalIP(timeout)` function that waits for a
+* New `EthernetClass::waitForLocalIP(timeout)` function that waits for a
   DHCP-assigned address.
 * Added the ability to re-announce mDNS services. This is useful to prevent the
   entries from disappearing.
