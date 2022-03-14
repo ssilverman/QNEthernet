@@ -105,7 +105,7 @@ class EthernetClass final {
   bool begin();
 
   // Waits, up to the specified timeout, for an IP address and returns whether
-  // one was acquired.
+  // one was acquired. The timeout is in milliseconds.
   bool waitForLocalIP(uint32_t timeout);
 
   // Starts Ethernet with the given address configuration. If all of the
@@ -119,7 +119,7 @@ class EthernetClass final {
              const IPAddress &gw);
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
-  // whether a link was detected.
+  // whether a link was detected. The timeout is in milliseconds.
   bool waitForLink(uint32_t timeout);
 
   // Shuts down the Ethernet peripheral(s).
