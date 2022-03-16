@@ -38,6 +38,9 @@ and this project adheres to
   because that's what `fwrite()` is specified to do.
 * Updated examples to use new `operator!=()` for `IPAddress`.
 * Moved lwIP's heap to RAM2 (DMAMEM).
+* Updated `EthernetFrame`-related documentation to explain that the API doesn't
+  receive any known Ethernet frame types, including IPv4, ARP, and IPv6
+  (if enabled).
 
 ### Fixed
 

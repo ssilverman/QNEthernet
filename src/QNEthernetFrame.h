@@ -25,7 +25,12 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 namespace qindesign {
 namespace network {
 
-// Provides an API for raw Ethernet frames, similar to the UDP API.
+// Provides an API for unknown raw Ethernet frames, similar to the UDP API.
+//
+// The following known Ethernet frame types won't be received by this API:
+// 1. IPv4 (0x0800)
+// 2. ARP  (0x0806)
+// 3. IPv6 (0x86DD) (if enabled)
 class EthernetFrameClass final : public Stream {
  public:
   // Accesses the singleton instance.

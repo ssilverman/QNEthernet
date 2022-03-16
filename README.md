@@ -664,6 +664,11 @@ internal one needs to be declared as weak. To accomplish this, define the
 There is support for sending and receiving raw Ethernet frames. See the
 [`EthernetFrame`](#ethernetframe) API, above.
 
+This API doesn't receive any known Ethernet frame types. These include:
+1. IPv4 (0x0800)
+2. ARP  (0x0806)
+3. IPv6 (0x86DD) (if enabled)
+
 ## How to implement VLAN tagging
 
 The lwIP stack supports VLAN tagging. Here are the steps for how to implement

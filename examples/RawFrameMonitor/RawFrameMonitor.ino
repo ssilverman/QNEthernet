@@ -1,7 +1,11 @@
 // SPDX-FileCopyrightText: (c) 2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// RawFrameMonitor prints all unknown raw Ethernet frames.
+// RawFrameMonitor prints all unknown raw Ethernet frames. Known frame types
+// won't be printed and include:
+// 1. IPv4 (0x0800)
+// 2. ARP  (0x0806)
+// 3. IPv6 (0x86DD) (if enabled)
 //
 // This file is part of the QNEthernet library.
 
