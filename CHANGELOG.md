@@ -41,6 +41,7 @@ and this project adheres to
 * Updated `EthernetFrame`-related documentation to explain that the API doesn't
   receive any known Ethernet frame types, including IPv4, ARP, and IPv6
   (if enabled).
+* Clarified in the examples that `Ethernet.macAddress()` retrieves, not sets.
 
 ### Fixed
 
