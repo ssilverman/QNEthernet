@@ -48,6 +48,9 @@ files provided with the lwIP release.
 
 ## Differences, assumptions, and notes
 
+**Note: Please read the function docs in the relevant header files for
+more information.**
+
 This library mostly follows the Arduino Ethernet API, with these differences
 and notes:
 * Include the `QNEthernet.h` header instead of `Ethernet.h`.
