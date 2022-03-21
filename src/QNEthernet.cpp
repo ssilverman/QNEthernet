@@ -91,7 +91,7 @@ void EthernetClass::macAddress(uint8_t mac[6]) const {
   std::copy_n(mac_, 6, mac);
 }
 
-void EthernetClass::setMACAddress(uint8_t mac[6]) {
+void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   if (mac == nullptr) {
     // Don't do anything
     return;

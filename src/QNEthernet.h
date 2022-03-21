@@ -92,7 +92,7 @@ class EthernetClass final {
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted. This does nothing if the
   // given array is NULL.
-  void setMACAddress(uint8_t mac[6]);
+  void setMACAddress(const uint8_t mac[6]);
 
   // Call often.
   static void loop();
