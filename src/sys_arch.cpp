@@ -16,6 +16,9 @@
 
 extern "C" {
 #include "lwip/arch.h"
+#ifdef LWIP_DEBUG
+#include "lwip/err.h"
+#endif  // LWIP_DEBUG
 #include "lwip/opt.h"
 
 extern volatile uint32_t systick_millis_count;
@@ -30,6 +33,15 @@ void *ram_heap = the_heap;
 u32_t sys_now(void) {
   return systick_millis_count;
 }
+
+#ifdef LWIP_DEBUG
+// include\lwip\err.h
+const char *lwip_strerr(err_t err) {
+  static char buf[16];
+  snprintf(buf, sizeof(buf), "err %d", err);
+  return buf;
+}
+#endif  // LWIP_DEBUG
 }  // extern "C"
 
 // The user program can set this to something initialized. For example,
@@ -43,6 +55,7 @@ Print *volatile stdPrint = nullptr;
 }  // namespace qindesign
 
 extern "C" {
+
 // Define this function so that printf works; parts of lwIP may use printf.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
 // Note: Can't define as weak by default because we don't know which `_write`
