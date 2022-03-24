@@ -17,6 +17,10 @@
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {
+#if ETH_PAD_SIZE
+  pbuf_remove_header(p, ETH_PAD_SIZE);
+#endif  // ETH_PAD_SIZE
+
   return qindesign::network::EthernetFrameClass::recvFunc(p, netif);
 }
 }  // extern "C"

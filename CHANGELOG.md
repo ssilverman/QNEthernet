@@ -52,6 +52,7 @@ and this project adheres to
 * Fixed `enet_output_frame()` to correctly return `false` if Ethernet is
   not initialized.
 * Fixed not being able to set the DNS server IP before starting Ethernet.
+* Fixed raw frame API to consider any padding bytes.
 
 ## [0.13.0]
 

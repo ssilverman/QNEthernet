@@ -693,8 +693,13 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
     return false;
   }
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
+#if ETH_PAD_SIZE
+  memcpy(bdPtr->buffer + ETH_PAD_SIZE, frame, len);
+  update_bufdesc(bdPtr, len + ETH_PAD_SIZE);
+#else
   memcpy(bdPtr->buffer, frame, len);
   update_bufdesc(bdPtr, len);
+#endif  // ETH_PAD_SIZE
   return true;
 }
 
