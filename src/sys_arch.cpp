@@ -12,6 +12,7 @@
 #include <cstdio>
 
 #include <Print.h>
+#include <pgmspace.h>
 
 extern "C" {
 #include "lwip/arch.h"
