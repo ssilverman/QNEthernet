@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include <core_pins.h>
+#include <pgmspace.h>
 
 #include "lwip/err.h"
 #include "lwip/etharp.h"
@@ -503,7 +504,7 @@ static inline void check_link_status() {
 
 // CRC-32 routines for computing the FCS for multicast lookup
 
-static uint32_t kCRC32Lookup[256];
+static DMAMEM uint32_t kCRC32Lookup[256];
 
 // See: https://create.stephan-brumme.com/crc32/#sarwate
 static void generate_crc32_lookup() {
