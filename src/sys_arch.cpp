@@ -16,10 +16,10 @@
 
 extern "C" {
 #include "lwip/arch.h"
+#include "lwip/opt.h"
 #ifdef LWIP_DEBUG
 #include "lwip/err.h"
 #endif  // LWIP_DEBUG
-#include "lwip/opt.h"
 
 extern volatile uint32_t systick_millis_count;
 
