@@ -55,7 +55,6 @@ Print *volatile stdPrint = nullptr;
 }  // namespace qindesign
 
 extern "C" {
-
 // Define this function so that printf works; parts of lwIP may use printf.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
 // Note: Can't define as weak by default because we don't know which `_write`
