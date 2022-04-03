@@ -74,6 +74,15 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 void enet_join_group(const ip4_addr_t *group);
 void enet_leave_group(const ip4_addr_t *group);
 
+// Allows or disallows frames addressed to the specified MAC address. This is
+// not meant to be used for joining or leaving a multicast group; see
+// enet_join_group(group) and enet_leave(group) instead.
+//
+// Because the underlying system uses a hash of the MAC address, it's possible
+// for there to be collisions. This means that it's not always possible to
+// disallow an address once it's been allowed.
+void enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

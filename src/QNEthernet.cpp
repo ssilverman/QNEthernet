@@ -354,6 +354,14 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
+bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6], bool flag) {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  enet_set_mac_address_allowed(mac, flag);
+  return true;
+}
+
 void EthernetClass::setHostname(const String &hostname) {
 #if LWIP_NETIF_HOSTNAME
   hostname_ = hostname;

@@ -158,6 +158,9 @@ The `Ethernet` object is the main Ethernet interface.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
   set the hostname to nothing. To use something other than the default at system
   start, call this before calling `begin`.
+* `setMACAddressAllowed(mac, flag)`: Allows or disallows Ethernet frames
+  addressed to the specified MAC address. This is useful when processing raw
+  Ethernet frames.
 * `waitForLink(timeout)`: Waits for the specified timeout (milliseconds) for
   a link to be detected. This is useful when setting a static IP and making
   connections as a client. Returns whether a link was detected within the
@@ -671,6 +674,15 @@ This API doesn't receive any known Ethernet frame types. These include:
 1. IPv4 (0x0800)
 2. ARP  (0x0806)
 3. IPv6 (0x86DD) (if enabled)
+
+If frames are addressed to a MAC address that doesn't belong to the device and
+isn't a multicast group MAC address then it is necessary to tell the Ethernet
+stack about it. See the `Ethernet.setMACAddressAllowed(mac, flag)` function.
+
+An example that uses such MAC addresses is the Precision Time Protocol (PTP)
+over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
+01-80-C2-00-00-0E for non-forwardable frames. See
+[PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
 
 ## How to implement VLAN tagging
 

@@ -48,6 +48,7 @@ setGatewayIP	KEYWORD2	EthernetSetGatewayIP
 setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
+setMACAddressAllowed	KEYWORD2
 setHostname	KEYWORD2
 hostname	KEYWORD2
 maxSockets	KEYWORD2

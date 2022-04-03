@@ -717,6 +717,8 @@ static uint8_t multicastMAC[6] = {
 // Don't release bits that have had a collision. Track these here.
 static uint32_t collisionGALR = 0;
 static uint32_t collisionGAUR = 0;
+static uint32_t collisionIALR = 0;
+static uint32_t collisionIAUR = 0;
 
 // Join or leave a multicast group. The flag should be true to join and false
 // to leave.
@@ -725,29 +727,49 @@ static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   multicastMAC[4] = ip4_addr3(group);
   multicastMAC[5] = ip4_addr4(group);
 
-  uint32_t crc = (crc32(0, multicastMAC, 6) >> 26) & 0x3f;
+  enet_set_mac_address_allowed(multicastMAC, flag);
+}
+
+void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+  volatile uint32_t *lower;
+  volatile uint32_t *upper;
+  uint32_t *collisionLower;
+  uint32_t *collisionUpper;
+  if ((mac[0] & 0x01) != 0) {  // Group
+    lower = &ENET_GALR;
+    upper = &ENET_GAUR;
+    collisionLower = &collisionGALR;
+    collisionUpper = &collisionGAUR;
+  } else {  // Individual
+    lower = &ENET_IALR;
+    upper = &ENET_IAUR;
+    collisionLower = &collisionIALR;
+    collisionUpper = &collisionIAUR;
+  }
+
+  uint32_t crc = (crc32(0, mac, 6) >> 26) & 0x3f;
   uint32_t value = 1 << (crc & 0x1f);
   if (crc < 0x20) {
-    if (flag) {
-      if ((ENET_GALR & value) != 0) {
-        collisionGALR |= value;
+    if (allow) {
+      if ((*lower & value) != 0) {
+        *collisionLower |= value;
       } else {
-        ENET_GALR |= value;
+        *lower |= value;
       }
     } else {
       // Keep collided bits set
-      ENET_GALR &= ~value | collisionGALR;
+      *lower &= ~value | *collisionLower;
     }
   } else {
-    if (flag) {
-      if ((ENET_GAUR & value) != 0) {
-        collisionGAUR |= value;
+    if (allow) {
+      if ((*upper & value) != 0) {
+        *collisionUpper |= value;
       } else {
-        ENET_GAUR |= value;
+        *upper |= value;
       }
     } else {
       // Keep collided bits set
-      ENET_GAUR &= ~value | collisionGAUR;
+      *upper &= ~value | *collisionUpper;
     }
   }
 }

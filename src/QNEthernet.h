@@ -201,6 +201,16 @@ class EthernetClass final {
   // should match the number of joinGroup() calls.
   bool leaveGroup(const IPAddress &ip);
 
+  // Sets whether Ethernet frames addressed to the given MAC address are allowed
+  // or disallowed through the Ethernet filter. Note that this is not meant to
+  // be used for joining or leaving multicast groups; see `joinGroup(ip)` and
+  // `leaveGroup(ip)` instead.
+  //
+  // Because the underlying system uses a hash of the MAC address, it's possible
+  // for there to be collisions. This means that it's not always possible to
+  // disallow an address once it's been allowed.
+  bool setMACAddressAllowed(const uint8_t mac[6], bool flag);
+
   // Sets the DHCP client option 12 hostname. The empty string will set the
   // hostname to nothing. The default is "teensy-lwip".
   //
