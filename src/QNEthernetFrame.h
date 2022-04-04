@@ -114,7 +114,7 @@ class EthernetFrameClass final : public Stream {
   int availableForWrite() override;
 
   // Returns a pointer to the received frame data.
-  const unsigned char *data();
+  const unsigned char *data() const;
 
  private:
   EthernetFrameClass() = default;

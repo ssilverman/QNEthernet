@@ -184,7 +184,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   return retval;
 }
 
-bool EthernetClass::waitForLocalIP(uint32_t timeout) {
+bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -196,7 +196,7 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) {
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
 }
 
-bool EthernetClass::waitForLink(uint32_t timeout) {
+bool EthernetClass::waitForLink(uint32_t timeout) const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -310,7 +310,7 @@ IPAddress EthernetClass::broadcastIP() const {
          ~ip4_addr_get_u32(netif_ip4_netmask(netif_));
 }
 
-void EthernetClass::setLocalIP(const IPAddress &localIP) {
+void EthernetClass::setLocalIP(const IPAddress &localIP) const {
   if (netif_ == nullptr) {
     return;
   }
@@ -318,7 +318,7 @@ void EthernetClass::setLocalIP(const IPAddress &localIP) {
   netif_set_ipaddr(netif_, &ipaddr);
 }
 
-void EthernetClass::setSubnetMask(const IPAddress &subnetMask) {
+void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
   if (netif_ == nullptr) {
     return;
   }
@@ -326,7 +326,7 @@ void EthernetClass::setSubnetMask(const IPAddress &subnetMask) {
   netif_set_netmask(netif_, &netmask);
 }
 
-void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) {
+void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) const {
   if (netif_ == nullptr) {
     return;
   }
@@ -334,11 +334,11 @@ void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) {
   netif_set_gw(netif_, &gw);
 }
 
-void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) {
+void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
   DNSClient::setServer(0, dnsServerIP);
 }
 
-bool EthernetClass::joinGroup(const IPAddress &ip) {
+bool EthernetClass::joinGroup(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -346,7 +346,7 @@ bool EthernetClass::joinGroup(const IPAddress &ip) {
   return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
-bool EthernetClass::leaveGroup(const IPAddress &ip) {
+bool EthernetClass::leaveGroup(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -354,7 +354,8 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) {
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
 }
 
-bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6], bool flag) {
+bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
+                                         bool flag) const {
   if (netif_ == nullptr) {
     return false;
   }
@@ -375,7 +376,7 @@ void EthernetClass::setHostname(const String &hostname) {
 #endif
 }
 
-String EthernetClass::hostname() {
+String EthernetClass::hostname() const {
 #if LWIP_NETIF_HOSTNAME
   return hostname_;
 #else

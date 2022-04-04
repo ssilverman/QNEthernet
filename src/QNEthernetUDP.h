@@ -86,7 +86,7 @@ class EthernetUDP final : public UDP {
   void flush() override;
 
   // Returns a pointer to the received packet data.
-  const unsigned char *data();
+  const unsigned char *data() const;
 
   IPAddress remoteIP() override;
   uint16_t remotePort() override;

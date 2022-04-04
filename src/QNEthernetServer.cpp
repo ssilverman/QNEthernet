@@ -31,7 +31,7 @@ void EthernetServer::begin(bool reuse) {
   listening_ = internal::ConnectionManager::instance().listen(port_, reuse);
 }
 
-bool EthernetServer::end() {
+bool EthernetServer::end() const {
   return internal::ConnectionManager::instance().stopListening(port_);
 }
 

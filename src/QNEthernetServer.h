@@ -38,7 +38,7 @@ class EthernetServer final : public Server {
   // according to the `reuse` parameter.
   void begin(bool reuse);
 
-  bool end();
+  bool end() const;
 
   EthernetClient accept() const;
   EthernetClient available() const;

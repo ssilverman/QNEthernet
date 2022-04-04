@@ -212,7 +212,7 @@ void EthernetUDP::flush() {
   // Instead, do a no-op.
 }
 
-const unsigned char *EthernetUDP::data() {
+const unsigned char *EthernetUDP::data() const {
   return packet_.data();
 }
 

@@ -46,6 +46,7 @@ and this project adheres to
 * Clarified in the examples that `Ethernet.macAddress()` retrieves, not sets.
 * Changed `EthernetClass::setMACAddress(mac)` parameter to `const`.
 * Moved CRC-32 lookup table to RAM2 (DMAMEM).
+* Made const those functions which could be made const.
 
 ### Fixed
 

@@ -106,7 +106,7 @@ class EthernetClass final {
 
   // Waits, up to the specified timeout, for an IP address and returns whether
   // one was acquired. The timeout is in milliseconds.
-  bool waitForLocalIP(uint32_t timeout);
+  bool waitForLocalIP(uint32_t timeout) const;
 
   // Starts Ethernet with the given address configuration. If all of the
   // addresses are INADDR_NONE then this will start a DHCP client and attempt
@@ -120,7 +120,7 @@ class EthernetClass final {
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.
-  bool waitForLink(uint32_t timeout);
+  bool waitForLink(uint32_t timeout) const;
 
   // Shuts down the Ethernet peripheral(s).
   void end();
@@ -160,10 +160,10 @@ class EthernetClass final {
 
   // None of the following address setting functions do anything unless the
   // system is initialized after a `begin` call
-  void setLocalIP(const IPAddress &localIP);
-  void setSubnetMask(const IPAddress &subnetMask);
-  void setGatewayIP(const IPAddress &gatewayIP);
-  void setDNSServerIP(const IPAddress &dnsServerIP);
+  void setLocalIP(const IPAddress &localIP) const;
+  void setSubnetMask(const IPAddress &subnetMask) const;
+  void setGatewayIP(const IPAddress &gatewayIP) const;
+  void setDNSServerIP(const IPAddress &dnsServerIP) const;
 
   // The MAC addresses are used in the following begin() functions
   [[deprecated]] int begin(const uint8_t mac[6]);
@@ -183,23 +183,23 @@ class EthernetClass final {
   [[deprecated]] void init(uint8_t sspin) const {}
   [[deprecated]] void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
   [[deprecated]] uint8_t maintain() const { return 0; }
-  [[deprecated]] void setDnsServerIP(const IPAddress &dnsServerIP) {
+  [[deprecated]] void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
-  [[deprecated]] void setRetransmissionCount(uint8_t number) {}
-  [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) {}
+  [[deprecated]] void setRetransmissionCount(uint8_t number) const {}
+  [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) const {}
 
   // Joins a multicast group. This returns whether the call was successful.
   //
   // The lwIP stack keeps track of a group "use count", so this function can be
   // called multiple times, paired with a matching number of leaveGroup() calls.
-  bool joinGroup(const IPAddress &ip);
+  bool joinGroup(const IPAddress &ip) const;
 
   // Leaves a multicast group. This returns whether the call was successful.
   //
   // The lwIP stack keeps track of a group "use count", so calling this function
   // should match the number of joinGroup() calls.
-  bool leaveGroup(const IPAddress &ip);
+  bool leaveGroup(const IPAddress &ip) const;
 
   // Sets whether Ethernet frames addressed to the given MAC address are allowed
   // or disallowed through the Ethernet filter. Note that this is not meant to
@@ -209,7 +209,7 @@ class EthernetClass final {
   // Because the underlying system uses a hash of the MAC address, it's possible
   // for there to be collisions. This means that it's not always possible to
   // disallow an address once it's been allowed.
-  bool setMACAddressAllowed(const uint8_t mac[6], bool flag);
+  bool setMACAddressAllowed(const uint8_t mac[6], bool flag) const;
 
   // Sets the DHCP client option 12 hostname. The empty string will set the
   // hostname to nothing. The default is "teensy-lwip".
@@ -222,7 +222,7 @@ class EthernetClass final {
 
   // Gets the DHCP client option 12 hostname. An empty string means that no
   // hostname is set. The default is "teensy-lwip".
-  String hostname();
+  String hostname() const;
 
   // Tests if Ethernet is initialized.
   operator bool() const;

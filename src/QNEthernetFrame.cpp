@@ -112,7 +112,7 @@ int EthernetFrameClass::peek() {
   return frame_[framePos_];
 }
 
-const unsigned char *EthernetFrameClass::data() {
+const unsigned char *EthernetFrameClass::data() const {
   return frame_.data();
 }
 
