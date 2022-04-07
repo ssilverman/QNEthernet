@@ -7,6 +7,11 @@
 // 2. ARP  (0x0806)
 // 3. IPv6 (0x86DD) (if enabled)
 //
+// Currently, in order to receive frames not addressed to the device's MAC
+// address or to a subscribed multicast address, the destination address must be
+// tagged as "allowed".
+// See: Ethernet.setMACAddressAllowed(mac, flag)
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
