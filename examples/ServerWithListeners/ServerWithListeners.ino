@@ -37,6 +37,10 @@ using namespace qindesign::network;
 // instead rely on the listener to inform us of an address assignment.
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 
+// The link timeout, in milliseconds. Set to zero to not wait and
+// instead rely on the listener to inform us of a link.
+constexpr uint32_t kLinkTimeout = 5000;  // 5 seconds
+
 constexpr uint16_t kServerPort = 80;
 
 // Timeout for waiting for input from the client.
@@ -114,7 +118,7 @@ void setup() {
   // It's important to add these before doing anything with Ethernet
   // so no events are missed.
 
-  // Listen for link changes, for demonstration
+  // Listen for link changes
   Ethernet.onLinkState([](bool state) {
     printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
   });
@@ -143,6 +147,8 @@ void setup() {
     // Tell interested parties the state of the IP address, for
     // example, servers, SNTP clients, and other sub-programs that
     // need to know whether to stop/start/restart/etc
+    // Note: When setting a static IP, the address will be set but a
+    //       link might not yet exist
     tellServer(hasIP);
   });
 
@@ -165,6 +171,16 @@ void setup() {
   } else {
     printf("Starting Ethernet with static IP...\n");
     Ethernet.begin(staticIP, subnetMask, gateway);
+
+    // When setting a static IP, the address is changed immediately,
+    // but the link may not be up; optionally wait for the link here
+    if (kLinkTimeout > 0) {
+      if (!Ethernet.waitForLink(kLinkTimeout)) {
+        printf("Failed to get link\n");
+        // We may still see a link later, after the timeout, so
+        // continue instead of returning
+      }
+    }
   }
 }
 
@@ -173,10 +189,24 @@ void tellServer(bool hasIP) {
   // If there's no IP address, could optionally stop the server,
   // depending on your needs
   if (hasIP) {
-    if (!server) {
-      printf("Starting server...");
+    if (server) {
+      // Optional
+      printf("Address changed: Server already started\n");
+    } else {
+      printf("Starting server on port %u...", server.port());
+      fflush(stdout);  // Print what we have so far if line buffered
       server.begin();
-      printf("done.\n");
+      printf("%s\n", server ? "done." : "FAILED!");
+    }
+  } else {
+    // Stop the server if there's no IP address
+    if (!server) {
+      // Optional
+      printf("Address changed: Server already stopped\n");
+    } else {
+      printf("Stopping server...");
+      fflush(stdout);  // Print what we have so far if line buffered
+      printf("%s\n", server.end() ? "done." : "FAILED!");
     }
   }
 }

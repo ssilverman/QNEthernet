@@ -35,6 +35,10 @@ using namespace qindesign::network;
 // instead rely on the listener to inform us of an address assignment.
 constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
 
+// The link timeout, in milliseconds. Set to zero to not wait and
+// instead rely on the listener to inform us of a link.
+constexpr uint32_t kLinkTimeout = 5000;  // 5 seconds
+
 // Indicates whether to always try DHCP first. If this is false, then
 // the value of `staticIP` determines whether DHCP is tried first. If
 // true then DHCP will always be attempted first, regardless of the
@@ -64,7 +68,7 @@ IPAddress dnsServer = gateway;
 // --------------------------------------------------------------------------
 
 // Forward declarations
-void addressChanged(bool hasIP);
+void systemReady(bool hasIP, bool hasLink);
 
 // Main program setup.
 void setup() {
@@ -96,6 +100,11 @@ void setup() {
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
     printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
+
+    // When setting a static IP, the address will be set but a link
+    // might not yet exist
+    bool hasIP = (Ethernet.localIP() != INADDR_NONE);
+    systemReady(hasIP, state);
   });
 
   // Listen for address changes
@@ -124,10 +133,12 @@ void setup() {
       printf("[Ethernet] Address changed: No IP address\n");
     }
 
-    // Tell interested parties the state of the IP address, for
-    // example, servers, SNTP clients, and other sub-programs that
-    // need to know whether to stop/start/restart/etc
-    addressChanged(hasIP);
+    // Tell interested parties the state of the IP address and system
+    // readiness, for example, servers, SNTP clients, and other
+    // sub-programs that need to know whether to stop/start/restart/etc
+    // Note: When setting a static IP, the address will be set but a
+    //       link might not yet exist
+    systemReady(hasIP, Ethernet.linkState());
   });
 
   bool startWithStatic = false;
@@ -185,27 +196,38 @@ void setup() {
     }
   }
 
+  // At this point, a static IP is set to a valid value
   if (startWithStatic) {
     printf("Starting Ethernet with static IP...\n");
     Ethernet.setDNSServerIP(dnsServer);  // Set first so that the
                                          // listener sees it
     Ethernet.begin(staticIP, subnetMask, gateway);
+
+    // When setting a static IP, the address is changed immediately,
+    // but the link may not be up; optionally wait for the link here
+    if (kLinkTimeout > 0) {
+      if (!Ethernet.waitForLink(kLinkTimeout)) {
+        printf("Warning: No link detected\n");
+        // We may still see a link later, after the timeout, so
+        // continue instead of returning
+      }
+    }
   }
 
   // *** Additional setup code goes here
 }
 
-// There's been an IP address change. Start and stop things, or send
-// notifications as necessary.
-void addressChanged(bool hasIP) {
-  printf("Address changed: ");
-  if (hasIP) {
-    printf("Got an IP address\n");
-  } else {
-    printf("No IP address\n");
-  }
+// This is called when the system readiness has changed. The system is
+// considered ready if there's an IP address and the link is up.
+void systemReady(bool hasIP, bool hasLink) {
+  printf("System is%s ready\n", (hasIP && hasLink) ? "" : " not");
 
   // *** Notification or start/stop/restart code goes here
+
+  // For servers, it is suggested to follow the address state because
+  // they can be brought up and active even when there's no link,
+  // unlike clients and connections, which require both an address and
+  // a link.
 }
 
 // Main program loop.

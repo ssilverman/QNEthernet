@@ -245,17 +245,24 @@ void setup() {
 // The address has changed. For example, a DHCP address arrived.
 void addressChanged(bool hasIP) {
   if (hasIP) {
-    printf("Starting server on port %u...", server.port());
-    server.begin();
     if (server) {
-      printf("done.\n");
+      // Optional
+      printf("Address changed: Server already started\n");
     } else {
-      printf("FAILED.\n");
+      printf("Starting server on port %u...", server.port());
+      fflush(stdout);  // Print what we have so far if line buffered
+      server.begin();
+      printf("%s\n", server ? "done." : "FAILED!");
     }
   } else {
-    printf("Stopping server...");
-    server.end();
-    printf("done.\n");
+    if (!server) {
+      // Optional
+      printf("Address changed: Server already stopped\n");
+    } else {
+      printf("Stopping server...");
+      fflush(stdout);  // Print what we have so far if line buffered
+      printf("%s\n", server.end() ? "done." : "FAILED!");
+    }
   }
 }
 

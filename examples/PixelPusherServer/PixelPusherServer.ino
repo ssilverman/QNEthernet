@@ -107,13 +107,16 @@ void setup() {
 // The address has changed. For example, a DHCP address arrived.
 void addressChanged(bool hasIP) {
   if (!hasIP) {
-    printf("Stopping server and LEDs...\n");
+    printf("Stopping server and LEDs...");
+    fflush(stdout);  // Print what we have so far if line buffered
     pp.end();
     receiver.end();
+    printf("done.\n");
     return;
   }
 
-  printf("Starting server and LEDs...\n");
+  printf("Starting server and LEDs...");
+  fflush(stdout);  // Print what we have so far if line buffered
   if (!receiver.begin()) {
     printf("ERROR: Starting LEDs\n");
     return;
@@ -127,6 +130,7 @@ void addressChanged(bool hasIP) {
     return;
   }
 
+  printf("done.\n");
   printf("-----------------------\n");
   printf("Num strips:       %d\n", kNumStrips);
   printf("Pixels per strip: %d\n", kPixelsPerStrip);

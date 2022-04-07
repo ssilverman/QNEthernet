@@ -36,15 +36,16 @@ files provided with the lwIP release.
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link detection](#connections-and-link-detection)
 7. [How to use multicast](#how-to-use-multicast)
-8. [mDNS services](#mdns-services)
-9. [DNS](#dns)
-10. [stdio](#stdio)
-11. [Raw Ethernet frames](#raw-ethernet-frames)
-12. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-13. [Other notes](#other-notes)
-14. [To do](#to-do)
-15. [Code style](#code-style)
-16. [References](#references)
+8. [How to use listeners](#how-to-use-listeners)
+9. [mDNS services](#mdns-services)
+10. [DNS](#dns)
+11. [stdio](#stdio)
+12. [Raw Ethernet frames](#raw-ethernet-frames)
+13. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+14. [Other notes](#other-notes)
+15. [To do](#to-do)
+16. [Code style](#code-style)
+17. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -176,7 +177,7 @@ The `Ethernet` object is the main Ethernet interface.
   * `onLinkState(cb)`: The callback is called when the link changes state, for
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
-    changed.
+    changed. This might be called before the link is up if a static IP is set.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   multicast groups.
 * `static constexpr size_t mtu()`: Returns the MTU.
@@ -581,6 +582,10 @@ A link must be present before a connection can be made. Either call
 connect. Which approach you use will depend on how your code is structured or
 intended to be used.
 
+Be aware when using a listener approach to start or stop services that it's
+possible, when setting a static IP, for the _address-changed_ callback to be
+called before the link is up.
+
 ## How to use multicast
 
 There are a few ways in the API to utilize multicast to send or receive packets.
@@ -606,6 +611,34 @@ The lwIP stack keeps track of a group "use count". This means:
    internal count.
 2. Each call to `leaveGroup(ip)` decrements a count, and when that count reaches
    zero, the stack actually leaves the group.
+
+## How to use listeners
+
+Instead of waiting for certain state at system start, for example _link-up_ or
+_address-changed_, it's possible to watch for state changes using listeners, and
+then act on those state changes. This will make your application more robust and
+responsive to state changes during program operation.
+
+The relevant functions are (see the [`Ethernet`](#ethernet) section for further
+descriptions):
+1. `Ethernet.onLinkState(cb)`
+2. `Ethernet.onAddressChanged(cb)`
+
+_Link-state_ occurs when an Ethernet link is detected or lost.
+
+_Address-changed_ events occur when the IP address changes, but its effects are
+a little more subtle. When setting an address via DHCP, the link must already be
+up in order to receive the information. However, when setting a static IP
+address, the event may occur when the link is not yet up. This means that if a
+connection is attempted when it is detected that the address is valid, the
+attempt will fail.
+
+It is suggested, therefore, that when taking an action based on an
+_address-changed_ event, the link state is checked in addition.
+
+Servers, on the other hand, can be brought up even when there's no link.
+
+See: [Connections and link detection](#connections-and-link-detection)
 
 ## mDNS services
 

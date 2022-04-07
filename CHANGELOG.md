@@ -47,6 +47,8 @@ and this project adheres to
 * Changed `EthernetClass::setMACAddress(mac)` parameter to `const`.
 * Moved CRC-32 lookup table to RAM2 (DMAMEM).
 * Made const those functions which could be made const.
+* Updated examples and README to consider listeners and their relationship with
+  a static IP and link detection.
 
 ### Fixed
 
