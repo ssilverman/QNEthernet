@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// ServerWithAddressListener demonstrates how to use an address
-// listener to start and stop services. Do some testing, then connect
-// the Teensy to an entirely different network by moving the Ethernet
-// connection and the program will still work.
+// ServerWithListeners demonstrates how to use listeners to start and
+// stop services. Do some testing, then connect the Teensy to an
+// entirely different network by moving the Ethernet connection and
+// the program will still work.
 //
 // This also demonstrates:
 // 1. Using a link state listener,
