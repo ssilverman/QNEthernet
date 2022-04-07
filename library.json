@@ -1,6 +1,6 @@
 {
   "name": "QNEthernet",
-  "description": "An lwIP-based Ethernet library for Teensy 4.1. This mostly follows the Arduino-defined Ethernet API, but the library is more full-featured. Extras include: a more robust API and an mDNS resolver.",
+  "description": "An lwIP-based Ethernet library for Teensy 4.1. This mostly follows the Arduino-defined Ethernet API, but is more full-featured. Additional features include: a more robust and complete API, an mDNS resolver, and raw frame support.",
   "keywords": "ethernet, lwip",
   "authors": [
     {
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/ssilverman/QNEthernet"
   },
-  "version": "0.14.0-snapshot",
+  "version": "0.14.0",
   "license": "MIT",
   "homepage": "https://github.com/ssilverman/QNEthernet",
   "frameworks": "arduino",
