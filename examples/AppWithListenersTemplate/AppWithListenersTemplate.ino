@@ -150,25 +150,20 @@ void setup() {
     // Option 1 - Always start with DHCP
 
     printf("Starting Ethernet with DHCP...\n");
-    if (kWaitForDHCP) {
-      // Option 1.1 - Wait for a DHCP-assigned address
+    if (Ethernet.begin()) {
+      if (kWaitForDHCP) {
+        // Option 1.1 - Wait for a DHCP-assigned address
 
-      if (Ethernet.begin()) {
         if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
           printf("No address from DHCP; setting static IP...\n");
           startWithStatic = true;
         }
       } else {
-        printf("Error: DHCP not started\n");
-        startWithStatic = true;
+        // Option 1.2 - Don't wait for DHCP
       }
     } else {
-      // Option 1.2 - Don't wait for DHCP
-
-      if (!Ethernet.begin()) {
-        printf("Error: DHCP not started\n");
-        startWithStatic = true;
-      }
+      printf("Error: DHCP not started\n");
+      startWithStatic = true;
     }
 
     if (startWithStatic && staticIP == INADDR_NONE) {
