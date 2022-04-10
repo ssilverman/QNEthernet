@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Moved CRC-32 lookup table to PROGMEM.
+
 ## [0.14.0]
 
 ### Added
