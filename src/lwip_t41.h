@@ -70,13 +70,16 @@ bool enet_link_is_full_duplex();
 // This adds any extra padding bytes given by ETH_PAD_SIZE.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
-// For joining and leaving multicast groups
+// For joining and leaving multicast groups; these call
+// enet_set_mac_address_allowed() with the MAC addresses related to the given
+// multicast group. Note that this affects low-level MAC filtering and not the
+// IP stack's use of multicast groups.
 void enet_join_group(const ip4_addr_t *group);
 void enet_leave_group(const ip4_addr_t *group);
 
 // Allows or disallows frames addressed to the specified MAC address. This is
-// not meant to be used for joining or leaving a multicast group; see
-// enet_join_group(group) and enet_leave(group) instead.
+// not meant to be used for joining or leaving a multicast group at the IP
+// layer; use the IP stack for that.
 //
 // Because the underlying system uses a hash of the MAC address, it's possible
 // for there to be collisions. This means that it's not always possible to
