@@ -21,6 +21,7 @@
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 #include "QNMDNS.h"
+#include "lwip/apps/mdns_opts.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
@@ -265,8 +266,10 @@ class EthernetClass final {
 // Instance for interacting with the library.
 extern EthernetClass &Ethernet;
 
+#if LWIP_MDNS_RESPONDER
 // Instance for interacting with mDNS.
 extern MDNSClass &MDNS;
+#endif  // LWIP_MDNS_RESPONDER
 
 // Instance for using raw Ethernet frames.
 extern EthernetFrameClass &EthernetFrame;

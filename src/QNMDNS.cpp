@@ -11,6 +11,8 @@
 
 #include "lwip/apps/mdns.h"
 
+#if LWIP_MDNS_RESPONDER
+
 namespace qindesign {
 namespace network {
 
@@ -157,3 +159,5 @@ void MDNSClass::announce() const {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_MDNS_RESPONDER

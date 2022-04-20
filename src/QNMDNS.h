@@ -12,8 +12,10 @@
 
 #include <WString.h>
 
-#include "lwip/netif.h"
 #include "lwip/apps/mdns_opts.h"
+#include "lwip/netif.h"
+
+#if LWIP_MDNS_RESPONDER
 
 namespace qindesign {
 namespace network {
@@ -130,5 +132,7 @@ class MDNSClass final {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_MDNS_RESPONDER
 
 #endif  // QNE_MDNS_H_

@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added a way to enable promiscuous mode via a new `QNETHERNET_PROMISCUOUS_MODE`
   macro. Defining this macro will enable promiscuous mode.
+* Added a way to remove all the mDNS code via setting `LWIP_MDNS_RESPONDER` to
+  `0` in `lwipopts.h`.
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.
