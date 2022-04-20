@@ -269,7 +269,9 @@ static void t41_low_level_init() {
              ENET_RCR_PADEN |   // Padding is removed
              ENET_RCR_RMII_MODE |
              ENET_RCR_FCE |     // Flow control enable
-             // ENET_RCR_PROM |    // Promiscuous mode
+#ifdef QNETHERNET_PROMISCUOUS_MODE
+             ENET_RCR_PROM |    // Promiscuous mode
+#endif  // QNETHERNET_PROMISCUOUS_MODE
              ENET_RCR_MII_MODE;
   ENET_TCR = ENET_TCR_ADDINS |  // Overwrite with programmed MAC address
              ENET_TCR_ADDSEL(0) |
@@ -502,6 +504,7 @@ static inline void check_link_status() {
   }
 }
 
+#ifndef QNETHERNET_PROMISCUOUS_MODE
 // Multicast filter for letting the hardware know which packets to let in.
 static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
                               enum netif_mac_filter_action action) {
@@ -517,6 +520,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
   }
   return ERR_OK;
 }
+#endif  // !QNETHERNET_PROMISCUOUS_MODE
 
 // --------------------------------------------------------------------------
 //  Public interface
@@ -584,8 +588,10 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     isNetifAdded = true;
   }
 
+#ifndef QNETHERNET_PROMISCUOUS_MODE
   // Multicast filtering, to allow desired multicast packets in
   netif_set_igmp_mac_filter(&t41_netif, &multicast_filter);
+#endif  // !QNETHERNET_PROMISCUOUS_MODE
 }
 
 void enet_deinit() {
@@ -684,6 +690,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 //  MAC address filtering
 // --------------------------------------------------------------------------
 
+#ifndef QNETHERNET_PROMISCUOUS_MODE
 // CRC-32 routines for computing the FCS for multicast lookup
 
 static const uint32_t kCRC32Lookup[256] PROGMEM = {
@@ -828,5 +835,6 @@ void enet_join_group(const ip4_addr_t *group) {
 void enet_leave_group(const ip4_addr_t *group) {
   enet_join_notleave_group(group, false);
 }
+#endif  // !QNETHERNET_PROMISCUOUS_MODE
 
 #endif  // ARDUINO_TEENSY41

@@ -41,6 +41,7 @@ files provided with the lwIP release.
 10. [DNS](#dns)
 11. [stdio](#stdio)
 12. [Raw Ethernet frames](#raw-ethernet-frames)
+    1. [Promiscuous mode](#promiscuous-mode)
 13. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 14. [Other notes](#other-notes)
 15. [To do](#to-do)
@@ -716,6 +717,12 @@ An example that uses such MAC addresses is the Precision Time Protocol (PTP)
 over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 01-80-C2-00-00-0E for non-forwardable frames. See
 [PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
+
+### Promiscuous mode
+
+It's possible to enable promiscuous mode so that all frames are received, even
+ones whose destination MAC address would normally be filtered out by the
+Ethernet hardware. To do this, define the `QNETHERNET_PROMISCUOUS_MODE` macro.
 
 ## How to implement VLAN tagging
 

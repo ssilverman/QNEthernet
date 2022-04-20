@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added a way to enable promiscuous mode via a new `QNETHERNET_PROMISCUOUS_MODE`
+  macro. Defining this macro will enable promiscuous mode.
+
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.
 

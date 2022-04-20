@@ -70,6 +70,7 @@ bool enet_link_is_full_duplex();
 // This adds any extra padding bytes given by ETH_PAD_SIZE.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
+#ifndef QNETHERNET_PROMISCUOUS_MODE
 // For joining and leaving multicast groups; these call
 // enet_set_mac_address_allowed() with the MAC addresses related to the given
 // multicast group. Note that this affects low-level MAC filtering and not the
@@ -85,6 +86,7 @@ void enet_leave_group(const ip4_addr_t *group);
 // for there to be collisions. This means that it's not always possible to
 // disallow an address once it's been allowed.
 void enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
+#endif  // !QNETHERNET_PROMISCUOUS_MODE
 
 #ifdef __cplusplus
 }  // extern "C"
