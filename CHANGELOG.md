@@ -9,10 +9,10 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-* Added a way to enable promiscuous mode via a new `QNETHERNET_PROMISCUOUS_MODE`
-  macro. Defining this macro will enable promiscuous mode.
-* Added a way to remove all the mDNS code via setting `LWIP_MDNS_RESPONDER` to
-  `0` in `lwipopts.h`.
+* Added a way to enable promiscuous mode: define the
+  `QNETHERNET_PROMISCUOUS_MODE` macro.
+* Added a way to remove all the mDNS code: set `LWIP_MDNS_RESPONDER` to `0`
+  in `lwipopts.h`.
 * Added support for ".local" name lookups.
 
 ### Changed
