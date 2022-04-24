@@ -13,6 +13,7 @@ and this project adheres to
   macro. Defining this macro will enable promiscuous mode.
 * Added a way to remove all the mDNS code via setting `LWIP_MDNS_RESPONDER` to
   `0` in `lwipopts.h`.
+* Added support for ".local" name lookups.
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.

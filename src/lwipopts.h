@@ -145,7 +145,7 @@ extern void *ram_heap;
 //    LWIP_DNS_SECURE_RAND_SRC_PORT)*/
 // #define DNS_LOCAL_HOSTLIST            0
 // #define DNS_LOCAL_HOSTLIST_IS_DYNAMIC 0
-// #define LWIP_DNS_SUPPORT_MDNS_QUERIES 0
+#define LWIP_DNS_SUPPORT_MDNS_QUERIES 1
 
 // UDP options
 // #define LWIP_UDP             1
