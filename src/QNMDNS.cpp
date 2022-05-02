@@ -64,6 +64,7 @@ bool MDNSClass::begin(const String &hostname) {
     return false;
   }
   hostname_ = hostname;
+  serviceName_ = hostname;
   return true;
 }
 
@@ -87,6 +88,10 @@ enum mdns_sd_proto toProto(const String &protocol) {
   }
 }
 
+void MDNSClass::setServiceName(const char* serviceName) {
+  serviceName_ = serviceName; 
+}
+
 bool MDNSClass::addService(const String &type, const String &protocol,
                            uint16_t port) {
   return addService(type, protocol, port, nullptr);
@@ -99,7 +104,7 @@ bool MDNSClass::addService(const String &type, const String &protocol,
     return false;
   }
 
-  int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type.c_str(),
+  int8_t slot = mdns_resp_add_service(netif_, serviceName_.c_str(), type.c_str(),
                                       toProto(protocol), port, kTTL, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {

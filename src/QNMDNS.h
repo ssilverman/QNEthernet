@@ -38,24 +38,26 @@ class MDNSClass final {
   }
 
   // Starts the mDNS responder and uses the given hostname as the name. This
-  // returns whether the call was successful.
+  // returns whether the call was successful. Sets the host name as the
+  // service name.
   bool begin(const String &hostname);
 
   // Attempts to stop the mDNS responder. Returns whether the call
   // was successful.
   bool end();
 
+  // Override the default service name
+  void setServiceName(const char* serviceName);
+
   // Adds a service. The protocol will be set to "_udp" for anything other than
-  // "_tcp". The strings should have a "_" prefix. This uses the host name as
-  // the service name.
+  // "_tcp". The strings should have a "_" prefix.
   //
   // No TXT records are added. This simply calls
   // `addService(type, protocol, port, nullptr)`.
   bool addService(const String &type, const String &protocol, uint16_t port);
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
-  // "_tcp". The strings should have a "_" prefix. This uses the host name as
-  // the service name.
+  // "_tcp". The strings should have a "_" prefix.
   //
   // The `getTXTFunc` parameter is the function associated with this service to
   // retreive its TXT record parts. The entire TXT record can be a can be a
@@ -120,6 +122,7 @@ class MDNSClass final {
 
   struct netif *netif_;
   String hostname_;
+  String serviceName_;
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
