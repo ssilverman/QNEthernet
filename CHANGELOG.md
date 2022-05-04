@@ -18,6 +18,14 @@ and this project adheres to
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.
 
+### Removed
+* Removed some unneeded network interfaces:
+  * IEEE 802.1D MAC Bridge
+  * 6LowPAN
+  * PPP
+  * SLIP
+  * ZigBee Encapsulation Protocol
+
 ## [0.14.0]
 
 ### Added
