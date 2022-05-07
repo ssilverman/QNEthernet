@@ -61,7 +61,7 @@ bool MDNSClass::begin(const String &hostname) {
     initialized = true;
   }
 
-  if (mdns_resp_add_netif(netif_, hostname.c_str(), kTTL) != ERR_OK) {
+  if (mdns_resp_add_netif(netif_, hostname.c_str()) != ERR_OK) {
     netif_ = nullptr;
     return false;
   }
@@ -102,7 +102,7 @@ bool MDNSClass::addService(const String &type, const String &protocol,
   }
 
   int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type.c_str(),
-                                      toProto(protocol), port, kTTL, &srv_txt,
+                                      toProto(protocol), port, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {
     if (slot >= 0) {
