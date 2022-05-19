@@ -14,6 +14,8 @@ and this project adheres to
 * Added a way to remove all the mDNS code: set `LWIP_MDNS_RESPONDER` to `0`
   in `lwipopts.h`.
 * Added support for ".local" name lookups.
+* Added the ability, in the mDNS client, to specify a service name that's
+  different from the host name.
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.

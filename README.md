@@ -661,6 +661,12 @@ It's possible to register mDNS services. Some notes:
     MDNS.begin("Device Name");
     MDNS.addService("_http", "_tcp", 80);
   ```
+* The host name is normally used as the service name, but there are also
+  functions that let you specify the service name. For example:
+  ```c++
+  MDNS.begin("Host Name");
+  MDNS.addService("my-http-service", "_http", "_tcp", 80);
+  ```
 
 ## DNS
 

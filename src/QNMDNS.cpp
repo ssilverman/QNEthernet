@@ -91,11 +91,22 @@ enum mdns_sd_proto toProto(const String &protocol) {
 
 bool MDNSClass::addService(const String &type, const String &protocol,
                            uint16_t port) {
-  return addService(type, protocol, port, nullptr);
+  return addService(hostname_, type, protocol, port, nullptr);
+}
+
+bool MDNSClass::addService(const String &name, const String &type,
+                          const String &protocol, uint16_t port) {
+  return addService(name, type, protocol, port, nullptr);
 }
 
 bool MDNSClass::addService(const String &type, const String &protocol,
                            uint16_t port,
+                           std::vector<String> (*getTXTFunc)(void)) {
+  return addService(hostname_, type, protocol, port, getTXTFunc);
+}
+
+bool MDNSClass::addService(const String &name, const String &type,
+                           const String &protocol, uint16_t port,
                            std::vector<String> (*getTXTFunc)(void)) {
   if (netif_ == nullptr) {
     return false;
@@ -112,14 +123,14 @@ bool MDNSClass::addService(const String &type, const String &protocol,
     return false;
   }
 
-  Service service{true, type, protocol, port, getTXTFunc};
+  Service service{true, name, type, protocol, port, getTXTFunc};
   slots_[slot] = service;
   return true;
 }
 
-int MDNSClass::findService(const String &type, const String &protocol,
-                           uint16_t port) {
-  Service service{true, type, protocol, port, nullptr};
+int MDNSClass::findService(const String &name, const String &type,
+                           const String &protocol, uint16_t port) {
+  Service service{true, name, type, protocol, port, nullptr};
   for (int i = 0; i < maxServices(); i++) {
     if (slots_[i] == service) {
       return i;
@@ -130,13 +141,18 @@ int MDNSClass::findService(const String &type, const String &protocol,
 
 bool MDNSClass::removeService(const String &type, const String &protocol,
                               uint16_t port) {
+  return removeService(hostname_, type, protocol, port);
+}
+
+bool MDNSClass::removeService(const String &name, const String &type,
+                              const String &protocol, uint16_t port) {
   if (netif_ == nullptr) {
     // Return true for no netif
     return true;
   }
 
   // Find a matching service
-  int found = findService(type, protocol, port);
+  int found = findService(name, type, protocol, port);
   if (found < 0) {
     return false;
   }

@@ -48,27 +48,49 @@ class MDNSClass final {
   bool end();
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
-  // "_tcp". The strings should have a "_" prefix. This uses the host name as
-  // the service name.
+  // "_tcp". The strings should have a "_" prefix.
   //
-  // No TXT records are added. This simply calls
-  // `addService(type, protocol, port, nullptr)`.
+  // No TXT records are added.
+  //
+  // This calls `addService(name, type, protocol, port, nullptr)` with the host
+  // name as the service name.
   bool addService(const String &type, const String &protocol, uint16_t port);
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
-  // "_tcp". The strings should have a "_" prefix. This uses the host name as
-  // the service name.
+  // "_tcp". The strings should have a "_" prefix.
+  //
+  // No TXT records are added.
+  //
+  // This calls `addService(name, type, protocol, port, nullptr)`.
+  bool addService(const String &name, const String &type,
+                  const String &protocol, uint16_t port);
+
+  // Adds a service. The protocol will be set to "_udp" for anything other than
+  // "_tcp". The strings should have a "_" prefix.
+  //
+  // This calls `addService(name, type, protocol, port, getTXTFunc)` with the
+  // host name as the service name.
+  bool addService(const String &type, const String &protocol, uint16_t port,
+                  std::vector<String> (*getTXTFunc)(void));
+
+  // Adds a service. The protocol will be set to "_udp" for anything other than
+  // "_tcp". The strings should have a "_" prefix.
   //
   // The `getTXTFunc` parameter is the function associated with this service to
   // retreive its TXT record parts. The entire TXT record can be a can be a
   // maximum of 255 bytes, including length bytes, and each item in the record
   // can be a maximum of 63 bytes. The function may be NULL, in which case no
   // items are added.
-  bool addService(const String &type, const String &protocol, uint16_t port,
+  bool addService(const String &name, const String &type,
+                  const String &protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)(void));
 
-  // Removes a service.
+  // Removes a service. The host name is used as the service name.
   bool removeService(const String &type, const String &protocol, uint16_t port);
+
+  // Removes a service.
+  bool removeService(const String &name, const String &type,
+                     const String &protocol, uint16_t port);
 
   // The following functions are for periodically re-announcing the services.
   // Service entries seem to disappear after the TTL and sometimes earlier, so a
@@ -93,7 +115,8 @@ class MDNSClass final {
       }
 
       // Don't compare the functions
-      return (type == other.type) &&
+      return (name == other.name) &&
+             (type == other.type) &&
              (protocol == other.protocol) &&
              (port == other.port);
     }
@@ -108,6 +131,7 @@ class MDNSClass final {
     }
 
     bool valid = false;
+    String name;
     String type;
     String protocol;
     uint16_t port;
@@ -118,7 +142,8 @@ class MDNSClass final {
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
-  int findService(const String &type, const String &protocol, uint16_t port);
+  int findService(const String &name, const String &type,
+                  const String &protocol, uint16_t port);
 
   struct netif *netif_;
   String hostname_;
