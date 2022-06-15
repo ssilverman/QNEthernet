@@ -27,6 +27,7 @@ and this project adheres to
   * PPP
   * SLIP
   * ZigBee Encapsulation Protocol
+* Removed HTTPD options from `lwipopts.h`.
 
 ## [0.14.0]
 

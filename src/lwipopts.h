@@ -387,9 +387,7 @@ extern void *ram_heap;
 // #define LWIP_PERF 0
 
 // HTTPD options
-#define LWIP_HTTPD_DYNAMIC_HEADERS   1
-#define LWIP_HTTPD_CUSTOM_FILES      1
-#define LWIP_HTTPD_DYNAMIC_FILE_READ 1
+// #define LWIP_HTTPD_DYNAMIC_HEADERS 0
 
 // TFTP options
 #define TFTP_MAX_FILENAME_LEN 512
