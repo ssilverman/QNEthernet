@@ -16,6 +16,8 @@ and this project adheres to
 * Added support for ".local" name lookups.
 * Added the ability, in the mDNS client, to specify a service name that's
   different from the host name.
+* Added `EthernetClient::abort()` for killing connections without going through
+  the TCP close process.
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.

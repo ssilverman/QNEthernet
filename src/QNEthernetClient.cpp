@@ -194,6 +194,18 @@ void EthernetClient::closeOutput() {
   }
 }
 
+void EthernetClient::abort() {
+  if (conn_ == nullptr) {
+    return;
+  }
+
+  const auto &state = conn_->state;
+  if (state != nullptr) {
+    tcp_abort(state->pcb);
+  }
+  conn_ = nullptr;
+}
+
 uint16_t EthernetClient::localPort() {
   if (!static_cast<bool>(*this)) {
     return 0;

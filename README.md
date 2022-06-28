@@ -185,6 +185,7 @@ The `Ethernet` object is the main Ethernet interface.
 
 ### `EthernetClient`
 
+* `abort()`: Aborts a connection without going through the TCP close process.
 * `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
   half close operation.

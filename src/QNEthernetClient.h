@@ -60,6 +60,9 @@ class EthernetClient final : public Client {
   // Closes the sending side of this connection.
   void closeOutput();
 
+  // Kills the connection without going through the TCP close process.
+  void abort();
+
   uint16_t localPort();
   IPAddress remoteIP();
   uint16_t remotePort();
