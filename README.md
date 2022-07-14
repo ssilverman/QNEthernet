@@ -37,16 +37,17 @@ files provided with the lwIP release.
    1. [Connections and link detection](#connections-and-link-detection)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
-9. [mDNS services](#mdns-services)
-10. [DNS](#dns)
-11. [stdio](#stdio)
-12. [Raw Ethernet frames](#raw-ethernet-frames)
+9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
+10. [mDNS services](#mdns-services)
+11. [DNS](#dns)
+12. [stdio](#stdio)
+13. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
-13. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-14. [Other notes](#other-notes)
-15. [To do](#to-do)
-16. [Code style](#code-style)
-17. [References](#references)
+14. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+15. [Other notes](#other-notes)
+16. [To do](#to-do)
+17. [Code style](#code-style)
+18. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -641,6 +642,18 @@ _address-changed_ event, the link state is checked in addition.
 Servers, on the other hand, can be brought up even when there's no link.
 
 See: [Connections and link detection](#connections-and-link-detection)
+
+## How to change the number of sockets
+
+lwIP preallocates almost everything. This means that the number of sockets (UDP,
+TCP, etc.) the stack can handle is set at compile time. The following table
+shows how to change the number for each socket type.
+
+| Socket Type     | Macro in `lwipopts.h`     | Notes                 |
+| --------------- | ------------------------- | --------------------- |
+| UDP             | `MEMP_NUM_UDP_PCB`        |                       |
+| TCP             | `MEMP_NUM_TCP_PCB`        | Simultaneously active |
+| TCP (listening) | `MEMP_NUM_TCP_PCB_LISTEN` | Listening             |
 
 ## mDNS services
 
