@@ -209,11 +209,20 @@ The `Ethernet` object is the main Ethernet interface.
 ### `EthernetServer`
 
 * `begin(reuse)`: Similar to `begin()`, but the Boolean `reuse` parameter
-  controls the SO_REUSEADDR socket option.
-* `end()`: Shuts down the server.
-* `port()`: Returns the server's port.
+  controls the SO_REUSEADDR socket option. This returns whether the server was
+  successfully started.
+* `begin(port)`: Starts the server on the given port, first disconnecting any
+  existing server if it was listening on a different port. This returns whether
+  the server was successfully started.
+* `begin(port, reuse)`: Similar to `begin(port)`, but `reuse` controls the
+  SO_REUSEADDR socket option. This returns whether the server was
+  successfully started.
+* `end()`: Shuts down the server and returns whether it was stopped.
+* `port()`: Returns the server's port, a signed 32-bit value, where -1 means the
+  port is not set and a non-negative value is a 16-bit quantity.
 * `static constexpr int maxListeners()`: Returns the maximum number of
   TCP listeners.
+* `EthernetServer()`: Creates a placeholder server without a port.
 
 ### `EthernetUDP`
 

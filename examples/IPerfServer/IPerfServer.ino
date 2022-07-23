@@ -249,7 +249,7 @@ void addressChanged(bool hasIP) {
       // Optional
       printf("Address changed: Server already started\n");
     } else {
-      printf("Starting server on port %u...", server.port());
+      printf("Starting server on port %u...", kServerPort);
       fflush(stdout);  // Print what we have so far if line buffered
       server.begin();
       printf("%s\n", server ? "done." : "FAILED!");

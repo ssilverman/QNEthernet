@@ -21,9 +21,18 @@ and this project adheres to
 * New sections in the README:
   * "How to change the number of sockets", and
   * "On connections that hang around after cable disconnect".
+* An `EthernetServer` instance can now be created without setting the port.
+  There are two new `begin()` functions for setting the port:
+  * `begin(port)`
+  * `begin(port, reuse)`
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.
+* Changed in `EthernetServer`:
+  * `port()` returns an `int32_t` instead of a `uint16_t` so that -1 can
+    represent an unset port; non-negative values are still 16-bit quantities
+  * `begin(reuse)` now returns a `bool` instead of `void`, indicating success
+  * The `EthernetServer` destructor now calls `end()`
 
 ### Removed
 * Removed some unneeded network interfaces:
