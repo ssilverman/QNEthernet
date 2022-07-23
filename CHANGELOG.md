@@ -18,7 +18,9 @@ and this project adheres to
   different from the host name.
 * Added `EthernetClient::abort()` for killing connections without going through
   the TCP close process.
-* New section in the README showing how to change the number of sockets.
+* New sections in the README:
+  * "How to change the number of sockets", and
+  * "On connections that hang around after cable disconnect".
 
 ### Changed
 * Moved CRC-32 lookup table to PROGMEM.

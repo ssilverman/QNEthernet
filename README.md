@@ -44,10 +44,11 @@ files provided with the lwIP release.
 13. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
 14. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-15. [Other notes](#other-notes)
-16. [To do](#to-do)
-17. [Code style](#code-style)
-18. [References](#references)
+15. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+16. [Other notes](#other-notes)
+17. [To do](#to-do)
+18. [Code style](#code-style)
+19. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -756,6 +757,66 @@ defines can be found in _src/lwip/opt.h_.
    1. `LWIP_HOOK_VLAN_CHECK`, (see `LWIP_HOOK_VLAN_CHECK`)
    2. `ETHARP_VLAN_CHECK_FN`, (see `ETHARP_SUPPORT_VLAN`)
    3. `ETHARP_VLAN_CHECK`. (see `ETHARP_SUPPORT_VLAN`)
+
+## On connections that hang around after cable disconnect
+
+Ref: [EthernetServer accept no longer connects clients after unplugging/plugging ethernet cable ~7 times](https://github.com/ssilverman/QNEthernet/issues/15)
+
+TCP tries its best to maintain reliable communication between two endpoints,
+even when the physical link is unreliable. It uses techniques such as timeouts,
+retries, and exponential backoff. For example, if a cable is disconnected and
+then reconnected, there may be some packet loss during the disconnect time, so
+TCP will try to resend any lost packets by retrying at successively larger
+intervals.
+
+The TCP close process uses some two-way communication to properly shut down a
+connection, and therefore is also subject to physical link reliability. If the
+physical link is interrupted or the other side doesn't participate in the close
+process then the connection may appear to become "stuck", even when told to
+close. The TCP stack won't consider the connection closed until all timeouts and
+retries have elapsed.
+
+It turns out that some systems drop and forget a connection when the physical
+link is disconnected. This means that the other side may still be waiting to
+continue or close the connection, timing out and retrying until all attempts
+have failed. This can be as long as a half hour, or maybe more, depending on how
+the stack is configured.
+
+The above link contains a discussion where a user of this library couldn't
+accept any new connections, even when all the connections had been closed, until
+all the existing connections timed out after about a half hour. What happened
+was this: connections were being made, the Ethernet cable was disconnected and
+reconnected, and then more connections were made. When the cable was
+disconnected, all connections were closed using the `close()` function. The
+Teensy side still maintained connection state for all the connections, choosing
+to do what TCP does: make a best effort to maintain or properly close those
+connections. Once all the available sockets had been exhausted, no more
+connections could be accepted.
+
+Those connections couldn't be cleared and sockets made available until all the
+TCP retries had elapsed. The main problem was that the other side simply dropped
+the connections when it detected a link disconnect. If the other system had
+maintained those connections, it would have continued the close processes as
+normal when the Ethernet cable was reconnected. That's why tests on my system
+couldn't reproduce the issue: the IP stack on the Mac maintained state across
+cable disconnects/reconnects. The issue reporter was using Windows, and the IP
+stack there apparently drops a connection if the link disconnects. This left the
+Teensy side waiting for replies and retrying, and the Windows side no longer
+sending traffic.
+
+To mitigate this problem, there are a few possible solutions, including:
+1. Reduce the number of retransmission attempts by changing the `TCP_MAXRTX`
+   setting in `lwipopts.h`, or
+2. Abort connections upon link disconnect.
+
+To accomplish #2, there's an `EthernetClient::abort()` function that simply
+drops a TCP connection without going though the normal TCP close process. This
+could be called on connections when the link has been disconnected. (See also
+`Ethernet.onLinkState(cb)` or `Ethernet.linkState()`.)
+
+Fun links:
+* [Removing Exponential Backoff from TCP - acm sigcomm](http://www.sigcomm.org/node/2736)
+* [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
 ## Other notes
 
