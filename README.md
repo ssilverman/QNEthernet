@@ -24,6 +24,7 @@ files provided with the lwIP release.
       1. [TCP socket options](#tcp-socket-options)
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
+      1. [`parsePacket() return values`](#parsepacket-return-values)
    5. [`EthernetFrame`](#ethernetframe)
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
@@ -242,6 +243,35 @@ The `Ethernet` object is the main Ethernet interface.
 * `size()`: Returns the total size of the received packet data.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
+
+#### `parsePacket()` return values
+
+The `EthernetUDP::parsePacket()` function in _QNEthernet_ is able to detect
+zero-length UDP packets. This means that a zero return value indicates a
+valid packet.
+
+Many Arduino examples do the following to test whether there's packet data:
+
+```c++
+int packetSize = udp.parsePacket();
+if (packetSize) {  // <-- THIS IS NOT CORRECT
+  // ...do something...
+}
+```
+
+This is not correct because negative values mean that there's no packet
+available, and negative values are implicitly converted to a Boolean _true_.
+Instead, the code should look like this:
+
+```c++
+int packetSize = udp.parsePacket();
+if (packetSize >= 0) {  // (packetSize > 0) would also be correct
+  // ...do something...
+}
+```
+
+Note that `if (packetSize > 0)` would also be correct, or even something like
+`if (packetSize >= 4)`, just as long as the `if (packetSize)` form is not used.
 
 ### `EthernetFrame`
 
