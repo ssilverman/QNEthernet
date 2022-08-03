@@ -59,20 +59,21 @@ This library mostly follows the Arduino Ethernet API, with these differences
 and notes:
 * Include the `QNEthernet.h` header instead of `Ethernet.h`.
 * Ethernet `loop()` is called from `yield()`. The functions that wait for
-  timeouts rely on this. This also means that you must use `delay`, `yield()`,
-  or `Ethernet.loop()` when waiting on conditions; waiting without calling these
-  functions will cause the TCP/IP stack to never refresh. Note that many of the
-  I/O functions call `loop()` so that there's less burden on the calling code.
-* `EthernetServer::write` functions always return the write size requested. This
-  is because different clients may behave differently.
+  timeouts rely on this. This also means that you must use `delay(ms)`,
+  `yield()`, or `Ethernet.loop()` when waiting on conditions; waiting without
+  calling these functions will cause the TCP/IP stack to never refresh. Note
+  that many of the I/O functions call `loop()` so that there's less burden on
+  the calling code.
+* `EthernetServer::write(...)` functions always return the write size requested.
+  This is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
   https://www.arduino.cc/en/Reference/IfEthernetClient directly contradict each
   other with regard to what `operator bool()` means in `EthernetClient`. The
   first example uses it as "already connected", while the second uses it as
   "available to connect". "Connected" is the chosen concept, but different from
   `connected()` in that it doesn't check for unread data.
-* All the Arduino-defined `Ethernet.begin` functions that use the MAC address
-  are deprecated.
+* All the Arduino-defined `Ethernet.begin(...)` functions that use the MAC
+  address are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
   * `hardwareStatus()`: Returns `EthernetHardwareStatus::EthernetOtherHardware`
@@ -89,8 +90,8 @@ and notes:
   * `flush()` because it is ill-defined.
 * The system starts with the Teensy's actual MAC address. If you want to use
   that address with the deprecated API, you can collect it with
-  `Ethernet.macAddress` and then pass it to one of the deprecated `begin`
-  functions.
+  `Ethernet.macAddress(mac)` and then pass it to one of the deprecated
+  `begin(...)` functions.
 * All classes and objects are in the `qindesign::network` namespace. This means
   you'll need to fully qualify any types. To avoid this, you could utilize a
   `using` directive:
@@ -116,8 +117,8 @@ and notes:
   ```
 * Files that configure lwIP for our system:
   * *src/sys_arch.c*
-  * _src/lwipopts.h_ &larr; Use this one for tuning (see _src/lwip/opt.h_ for
-    more details).
+  * _src/lwipopts.h_ &larr; use this one for tuning (see _src/lwip/opt.h_ for
+    more details)
   * _src/arch/cc.h_
 * The main include file, `QNEthernet.h`, in addition to including the
   `Ethernet`, `EthernetFrame`, and `MDNS` instances, also includes the headers
@@ -140,10 +141,11 @@ Features:
 
 The `Ethernet` object is the main Ethernet interface.
 
-* `begin()`: Initializes the library and uses the Teensy's internal MAC address.
+* `begin()`: Initializes the library, uses the Teensy's internal MAC address,
+  and starts the DHCP client. This returns whether startup was successful.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
-  internal MAC address, and uses the given parameters for the
-  network configuration.
+  internal MAC address, and uses the given parameters for the network
+  configuration. This returns whether startup was successful.
 * `broadcastIP()`: Returns the broadcast IP address associated with the current
   local IP and subnet mask.
 * `end()`: Shuts down the library, including the Ethernet clocks.
@@ -161,7 +163,7 @@ The `Ethernet` object is the main Ethernet interface.
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
   set the hostname to nothing. To use something other than the default at system
-  start, call this before calling `begin`.
+  start, call this before calling `begin()`.
 * `setMACAddressAllowed(mac, flag)`: Allows or disallows Ethernet frames
   addressed to the specified MAC address. This is useful when processing raw
   Ethernet frames.
@@ -317,12 +319,12 @@ qualified: `qindesign::network::util::writeMagic()`.
    `breakf` returned `true` before all bytes were written. Note that a NULL
    `breakf` function is assumed to return `false`.
 
-   For example, the `EthernetClient::writeFully()` functions use this and pass
-   the "am I disconnected" condition as the `breakf` function.
+   For example, the `EthernetClient::writeFully(...)` functions use this and
+   pass the "am I disconnected" condition as the `breakf` function.
 
 2. `writeMagic(Print &, mac, breakf = nullptr)`: Writes the payload for a
    [Magic packet](#https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet) to
-   the given `Print` object. This uses `writeFully()` under the covers and
+   the given `Print` object. This uses `writeFully(...)` under the covers and
    passes along the `breakf` function as the stopping condition.
 
 There is also a `Print` decorator for `stdio` output files, `util::StdioPrint`
@@ -356,7 +358,7 @@ here are a few steps to follow:
    call `Ethernet.begin()` with no arguments to use DHCP and the three-argument
    version (IP, subnet mask, gateway) to set your own address. If you really
    want to set your own MAC address, see `setMACAddress(mac)` or one of the
-   deprecated `begin` functions that takes a MAC address parameter.
+   deprecated `begin(...)` functions that takes a MAC address parameter.
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
@@ -372,14 +374,16 @@ Please see the examples for more things you can do with the API, including:
 ## How to write data to connections
 
 I'll start with these statements:
-1. **Don't use the `print` functions when writing data to connections.**
-2. **Always check the `write` and `print` (and `println` and `printf`)
-   return values, retrying if necessary.**
+1. **Don't use the <code>print<em>X</em>(...)</code> functions when writing data
+   to connections.**
+2. **Always check the `write(...)` and <code>print<em>X</em>(...)</code> return
+   values, retrying if necessary.**
 3. Data isn't necessarily sent immediately.
 
-The `write` and `print` functions in the `Print` API all return the number of
-bytes actually written. This means that you _must always check the return value,
-retrying any missing bytes_ if you want all your data to get sent.
+The `write(...)` and <code>print<em>X</em>(...)</code> functions in the `Print`
+API all return the number of bytes actually written. This means that you _must
+always check the return value, retrying any missing bytes_ if you want all your
+data to get sent.
 
 For example, the following code won't necessarily send all 250&times;102 bytes.
 Buffers might get full. There might be retries. Etcetera.
@@ -428,8 +432,9 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
-The solution is to utilize the raw `write` functions and retry any bytes that
-aren't sent. Let's create a `writeFully` function and use that to send the data:
+The solution is to utilize the raw `write(...)` functions and retry any bytes
+that aren't sent. Let's create a `writeFully(...)` function and use that to send
+the data:
 
 ```c++
 // Keep writing until all the bytes are sent or the connection
@@ -463,7 +468,7 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
-_Note that the library implements `writeFully`; you don't have to roll
+_Note that the library implements `writeFully(...)`; you don't have to roll
 your own._
 
 Rewriting this to use the library function:
@@ -487,42 +492,43 @@ void sendTestData(EthernetClient& client) {
 }
 ```
 
-Let's go back to our original statement about not using the `print` functions.
-Their implementation is opaque and they sometimes make assumptions that the data
-will be "written fully". For example, Teensyduino's current
-`print(const String &)` implementation attempts to send all the bytes and
-returns the number of bytes sent, but it doesn't tell you _which_ bytes were
-sent. For the string `"12345"`, `print` might send `"12"`, fail to send `"3"`,
-and successfully send `"45"`, returning `4`.
+Let's go back to our original statement about not using the
+<code>print<em>X</em>(...)</code> functions. Their implementation is opaque and
+they sometimes make assumptions that the data will be "written fully". For
+example, Teensyduino's current `print(const String &)` implementation attempts
+to send all the bytes and returns the number of bytes sent, but it doesn't tell
+you _which_ bytes were sent. For the string `"12345"`, `print(s)` might send
+`"12"`, fail to send `"3"`, and successfully send `"45"`, returning the value 4.
 
 Similarly, we have no idea what `print(const Printable &obj)` does because the
 `Printable` implementation passed to it is beyond our control. For example,
 Teensyduino's `IPAddress::printTo(Print &)` implementation prints the address
-without checking the return value of the `print` calls.
+without checking the return value of the `print(...)` calls.
 
-Also, most examples I've seen that use any of the `print` functions never check
-the return values. Common practice seems to stem from this style of usage.
-Network applications work a little differently, and there's no guarantee all the data gets sent.
+Also, most examples I've seen that use any of the
+<code>print<em>X</em>(...)</code> functions never check the return values.
+Common practice seems to stem from this style of usage. Network applications
+work a little differently, and there's no guarantee all the data gets sent.
 
-The `write` functions don't have this problem (unless, of course, there's a
+The `write(...)` functions don't have this problem (unless, of course, there's a
 faulty implementation). They attempt to send bytes and return the number of
 bytes actually sent.
 
-In summary, my ***strong*** suggestion is to use the `write` functions when
+In summary, my ***strong*** suggestion is to use the `write(...)` functions when
 sending network data, checking the return values and acting on them. Or you can
-use the library's `writeFully` functions.
+use the library's `writeFully(...)` functions.
 
 See the discussion at:
 https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
 
 ### Write immediacy
 
-Data isn't necessarily completely sent across the wire after `write` or
-`writeFully` calls. Instead, data is merely enqueued until the internal buffer
-is full or a timer expires. Now, if the data to send is larger than the internal
-TCP buffer then data will be sent and the extra data will be enqueued. In other
-words, data is only sent when either the buffer is full or an internal timer
-has expired.
+Data isn't necessarily completely sent across the wire after `write(...)` or
+`writeFully(...)` calls. Instead, data is merely enqueued until the internal
+buffer is full or a timer expires. Now, if the data to send is larger than the
+internal TCP buffer then data will be sent and the extra data will be enqueued.
+In other words, data is only sent when either the buffer is full or an internal
+timer has expired.
 
 To send any buffered data, call `flush()`.
 
@@ -534,11 +540,12 @@ To quote lwIP's `tcp_write()` docs:
 > To prompt the system to send data now, call tcp_output() after
 > calling tcp_write().
 
-`flush()` is what always calls `tcp_output()` internally. The `write` and
-`writeFully` functions only call this when the buffer is full. The suggestion is
-to call `flush()` when done sending a "packet" of data, for some definition of
-"packet" specific to your application. For example, after sending a web page to
-a client or after a chunk of data is ready for the server to process.
+`flush()` is what always calls `tcp_output()` internally. The `write(...)` and
+`writeFully(...)` functions only call this when the buffer is full. The
+suggestion is to call `flush()` when done sending a "packet" of data, for some
+definition of "packet" specific to your application. For example, after sending
+a web page to a client or after a chunk of data is ready for the server
+to process.
 
 ## A note on the examples
 
@@ -566,8 +573,8 @@ Hopefully this section disambiguates some details about what each function does:
 2. `operator bool()`: Returns whether connected (at least in _QNEthernet_).
 3. `available()`: Returns the amount of data available, whether the connection
    is closed or not.
-4. `read`: Reads data if there's data available, whether the connection's closed
-   or not.
+4. `read(...)`: Reads data if there's data available, whether the connection is
+   closed or not.
 
 Connections will be closed automatically if the client shuts down a connection,
 and _QNEthernet_ will properly handle the state such that the API behaves as
@@ -578,12 +585,12 @@ a guide.
 
 Some options:
 
-1. Keep checking `connected()` (or `operator bool()`) and `available()`/`read`
-   to keep reading data. The data will run out when the connection is closed and
-   after all the buffers are empty. The calls to `connected()` (or
-   `operator bool()`) will indicate connection status (plus data available in
-   the case of `connected()` or just connection state in the case of
-   `operator bool()`).
+1. Keep checking `connected()` (or `operator bool()`) and
+   `available()`/`read(...)` to keep reading data. The data will run out when
+   the connection is closed and after all the buffers are empty. The calls to
+   `connected()` (or `operator bool()`) will indicate connection status (plus
+   data available in the case of `connected()` or just connection state in the
+   case of `operator bool()`).
 2. Same as the above, but without one of the two connection-status calls
    (`connected()` or `operator bool()`). The data will just run out after
    connection-closed and after the buffers are empty.
@@ -701,16 +708,16 @@ Things you can do:
 1. Look up an IP address by name, and
 2. Set multiple DNS servers.
 
-The `Ethernet.setDNSServerIP()` function sets the zeroth DNS server.
+The `Ethernet.setDNSServerIP(ip)` function sets the zeroth DNS server.
 
 ## stdio
 
-Internally, lwIP uses `printf` for debug output and assertions. The library
-defines `_write()` so that `printf` will work for `stdout` and `stderr`. It
-sends output to a custom variable, `Print *stdPrint`, that defaults to NULL. To
-enable any lwIP output, including assertion failure output, that variable must
-be set to something conforming to the `Print` interface. If it is not set,
-`printf` will still work, but there will be no output.
+Internally, lwIP uses `printf(...)` for debug output and assertions.
+_QNEthernet_ defines `_write()` so that `printf(...)` will work for `stdout` and
+`stderr`. It sends output to a custom variable, `Print *stdPrint`, that defaults
+to NULL. To enable any lwIP output, including assertion failure output, that
+variable must be set to something conforming to the `Print` interface. If it is
+not set, `printf(...)` will still work, but there will be no output.
 
 For example:
 ```c++
@@ -723,7 +730,7 @@ void setup() {
 }
 ```
 
-The side benefit is that user code can use `printf` too.
+The side benefit is that user code can use `printf(...)` too.
 
 If your application wants to define its own `_write()` implementation, then the
 internal one needs to be declared as weak. To accomplish this, define the
