@@ -265,7 +265,7 @@ Instead, the code should look like this:
 
 ```c++
 int packetSize = udp.parsePacket();
-if (packetSize >= 0) {  // (packetSize > 0) would also be correct
+if (packetSize >= non_negative_value) {  // non_negative_value >= 0
   // ...do something...
 }
 ```
