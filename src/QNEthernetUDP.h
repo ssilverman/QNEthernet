@@ -85,10 +85,12 @@ class EthernetUDP final : public UDP {
   int peek() override;
   void flush() override;
 
-  // Returns the total size of the received packet data.
+  // Returns the total size of the received packet data. This is only valid if a
+  // packet has been received with parsePacket().
   size_t size() const;
 
-  // Returns a pointer to the received packet data.
+  // Returns a pointer to the received packet data. This is only valid if a
+  // packet has been received with parsePacket().
   const unsigned char *data() const;
 
   IPAddress remoteIP() override;
