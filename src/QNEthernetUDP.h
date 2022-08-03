@@ -109,6 +109,7 @@ class EthernetUDP final : public UDP {
   std::vector<unsigned char> inPacket_;  // Holds received packets
   ip_addr_t inAddr_;
   volatile uint16_t inPort_;
+  bool hasNewInPacket_;
 
   // Packet being processed by the caller
   std::vector<unsigned char> packet_;    // Holds the packet being read

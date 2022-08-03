@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Changed `EthernetUDP::parsePacket()` to return zero for empty packets and -1
+  if nothing is available.
+
 ## [0.15.0]
 
 ### Added

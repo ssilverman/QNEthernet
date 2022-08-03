@@ -42,15 +42,18 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   struct pbuf *pHead = p;
 
   udp->inPacket_.clear();
-  udp->inPacket_.reserve(p->tot_len);
-  // TODO: Limit vector size
-  while (p != nullptr) {
-    unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-    udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
-    p = p->next;
+  if (p->tot_len > 0) {
+    udp->inPacket_.reserve(p->tot_len);
+    // TODO: Limit vector size
+    while (p != nullptr) {
+      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+      udp->inPacket_.insert(udp->inPacket_.end(), &data[0], &data[p->len]);
+      p = p->next;
+    }
   }
   udp->inAddr_ = *addr;
   udp->inPort_ = port;
+  udp->hasNewInPacket_ = true;
 
   pbuf_free(pHead);
 }
@@ -60,6 +63,7 @@ EthernetUDP::EthernetUDP()
       inPacket_{},
       inAddr_{*IP_ANY_TYPE},
       inPort_(0),
+      hasNewInPacket_(false),
       packet_{},
       packetPos_(-1),
       addr_{*IP_ANY_TYPE},
@@ -146,8 +150,14 @@ void EthernetUDP::stop() {
 
 int EthernetUDP::parsePacket() {
   if (pcb_ == nullptr) {
-    return 0;
+    return -1;
   }
+
+  if (!hasNewInPacket_) {
+    packetPos_ = -1;
+    return -1;
+  }
+  hasNewInPacket_ = false;
 
   packet_ = inPacket_;
   addr_ = inAddr_;
@@ -156,13 +166,8 @@ int EthernetUDP::parsePacket() {
 
   EthernetClass::loop();  // Allow the stack to move along
 
-  if (packet_.size() > 0) {
-    packetPos_ = 0;
-    return packet_.size();
-  } else {
-    packetPos_ = -1;
-    return 0;
-  }
+  packetPos_ = 0;
+  return packet_.size();
 }
 
 inline bool EthernetUDP::isAvailable() const {
