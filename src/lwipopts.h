@@ -10,8 +10,8 @@
 // NO SYS
 #define NO_SYS             1
 // #define NO_SYS_NO_TIMERS   0
-#define LWIP_TIMERS        1
-#define LWIP_TIMERS_CUSTOM 0
+// #define LWIP_TIMERS        1
+// #define LWIP_TIMERS_CUSTOM 0
 
 // Core locking
 // #define LWIP_MPU_COMPATIBLE           0
