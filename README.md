@@ -239,6 +239,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
+* `size()`: Returns the total size of the received packet data.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
 

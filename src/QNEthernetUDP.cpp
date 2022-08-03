@@ -217,6 +217,10 @@ void EthernetUDP::flush() {
   // Instead, do a no-op.
 }
 
+size_t EthernetUDP::size() const {
+  return packet_.size();
+}
+
 const unsigned char *EthernetUDP::data() const {
   return packet_.data();
 }

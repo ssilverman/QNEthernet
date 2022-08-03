@@ -85,6 +85,9 @@ class EthernetUDP final : public UDP {
   int peek() override;
   void flush() override;
 
+  // Returns the total size of the received packet data.
+  size_t size() const;
+
   // Returns a pointer to the received packet data.
   const unsigned char *data() const;
 

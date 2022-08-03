@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* `EthernetUDP::size()`: Returns the total size of the received packet data.
+
 ### Changed
 * Changed `EthernetUDP::parsePacket()` to return zero for empty packets and -1
   if nothing is available.
