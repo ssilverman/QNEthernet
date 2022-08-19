@@ -117,7 +117,8 @@ class EthernetClass final {
   // client, was successful.
   bool begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
-             const IPAddress &gw);
+             const IPAddress &gw,
+             const IPAddress &dns = INADDR_NONE);
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.

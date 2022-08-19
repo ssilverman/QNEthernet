@@ -133,7 +133,8 @@ bool EthernetClass::begin() {
 
 bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
-                          const IPAddress &gateway) {
+                          const IPAddress &gateway,
+                          const IPAddress &dns) {
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
   ip4_addr_t ipaddr{get_uint32(ip)};
   ip4_addr_t netmask{get_uint32(mask)};
@@ -149,6 +150,9 @@ bool EthernetClass::begin(const IPAddress &ip,
     netif_set_down(netif_);
   }
 
+  if (dns != INADDR_NONE) {
+    setDNSServerIP(dns);
+  }
   return begin(&ipaddr, &netmask, &gw);
 }
 

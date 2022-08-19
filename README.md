@@ -144,9 +144,16 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `begin()`: Initializes the library, uses the Teensy's internal MAC address,
   and starts the DHCP client. This returns whether startup was successful.
-* `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
-  internal MAC address, and uses the given parameters for the network
-  configuration. This returns whether startup was successful.
+* `begin(ipaddr, netmask, gw, dns=INADDR_NONE)`: Initializes the library, uses
+  the Teensy's internal MAC address, and uses the given parameters for the
+  network configuration. This returns whether startup was successful.
+
+  It's possible to pass three or four parameters, where the optional fourth
+  `dns` parameter defaults to unset. Passing `dns` ensures that the DNS server
+  IP is set before the _address-changed_ callback is called. The alternative
+  approach to ensure that the callback has all the information is to call
+  `setDNSServerIP(ip)` before the three-parameter version.
+
 * `broadcastIP()`: Returns the broadcast IP address associated with the current
   local IP and subnet mask.
 * `end()`: Shuts down the library, including the Ethernet clocks.

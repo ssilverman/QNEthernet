@@ -10,6 +10,9 @@ and this project adheres to
 
 ### Added
 * `EthernetUDP::size()`: Returns the total size of the received packet data.
+* Added an optional "dns" parameter to the three-parameter Ethernet.begin() that
+  defaults to unset. This ensures that the DNS server IP is set before the
+  address-changed callback is called.
 
 ### Changed
 * Changed `EthernetUDP::parsePacket()` to return zero for empty packets and -1
