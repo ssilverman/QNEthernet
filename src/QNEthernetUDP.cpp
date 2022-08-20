@@ -41,31 +41,36 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
   struct pbuf *pHead = p;
 
-  udp->in_.data.clear();
+  // Push (replace the head)
+  Packet &packet = udp->inBuf_[udp->inBufHead_];
+  packet.data.clear();
   if (p->tot_len > 0) {
-    udp->in_.data.reserve(p->tot_len);
+    packet.data.reserve(p->tot_len);
     // TODO: Limit vector size
     while (p != nullptr) {
       unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-      udp->in_.data.insert(udp->in_.data.end(), &data[0], &data[p->len]);
+      packet.data.insert(packet.data.end(), &data[0], &data[p->len]);
       p = p->next;
     }
   }
-  udp->in_.addr = *addr;
-  udp->in_.port = port;
-  udp->hasInPacket_ = true;
+  packet.addr = *addr;
+  packet.port = port;
+
+  // Increment the size
+  if (udp->inBufSize_ != 0 && udp->inBufTail_ == udp->inBufHead_) {
+    // Full
+    udp->inBufTail_ = (udp->inBufTail_ + 1) % udp->inBuf_.size();
+  } else {
+    udp->inBufSize_++;
+  }
+  udp->inBufHead_ = (udp->inBufHead_ + 1) % udp->inBuf_.size();
 
   pbuf_free(pHead);
 }
 
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
-      in_{},
-      hasInPacket_(false),
-      packet_{},
-      packetPos_(-1),
-      out_{},
-      hasOutPacket_(false) {}
+      packetPos_(-1) {}
 
 EthernetUDP::~EthernetUDP() {
   stop();
@@ -91,8 +96,8 @@ uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
     return false;
   }
 
-  if (in_.data.capacity() < kMaxUDPSize) {
-    in_.data.reserve(kMaxUDPSize);
+  for (Packet &p : inBuf_) {
+    p.data.reserve(kMaxUDPSize);
   }
   if (packet_.data.capacity() < kMaxUDPSize) {
     packet_.data.reserve(kMaxUDPSize);
@@ -147,14 +152,16 @@ int EthernetUDP::parsePacket() {
     return -1;
   }
 
-  if (!hasInPacket_) {
+  if (inBufSize_ == 0) {
     packetPos_ = -1;
     return -1;
   }
-  hasInPacket_ = false;
 
-  packet_ = in_;
-  in_.data.clear();
+  // Pop (from the tail)
+  packet_ = inBuf_[inBufTail_];
+  inBuf_[inBufTail_].data.clear();
+  inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
+  inBufSize_--;
 
   EthernetClass::loop();  // Allow the stack to move along
 

@@ -39,17 +39,18 @@ files provided with the lwIP release.
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
-10. [mDNS services](#mdns-services)
-11. [DNS](#dns)
-12. [stdio](#stdio)
-13. [Raw Ethernet frames](#raw-ethernet-frames)
+10. [UDP receive buffering](#udp-receive-buffering)
+11. [mDNS services](#mdns-services)
+12. [DNS](#dns)
+13. [stdio](#stdio)
+14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
-14. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-15. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-16. [Other notes](#other-notes)
-17. [To do](#to-do)
-18. [Code style](#code-style)
-19. [References](#references)
+15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
+16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+17. [Other notes](#other-notes)
+18. [To do](#to-do)
+19. [Code style](#code-style)
+20. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -709,6 +710,14 @@ shows how to change the number for each socket type.
 | UDP             | `MEMP_NUM_UDP_PCB`        |                       |
 | TCP             | `MEMP_NUM_TCP_PCB`        | Simultaneously active |
 | TCP (listening) | `MEMP_NUM_TCP_PCB_LISTEN` | Listening             |
+
+## UDP receive buffering
+
+If UDP packets come in at a faster rate than they are consumed, some may get
+dropped. To help mitigate this, the `QNETHERNET_UDP_EXTRA_BUF_SIZE` macro can be
+set to an additional buffer size, in packets. Its default is zero, meaning any
+new packets will cause any existing packet to get dropped. If it's set to 1 then
+there will be space for one additional packet, and so on.
 
 ## mDNS services
 

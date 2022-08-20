@@ -13,6 +13,8 @@ and this project adheres to
 * Added an optional "dns" parameter to the three-parameter Ethernet.begin() that
   defaults to unset. This ensures that the DNS server IP is set before the
   address-changed callback is called.
+* Added configurable packet buffering to UDP reception with the new
+  `QNETHERNET_UDP_EXTRA_BUF_SIZE` macro. Its default is zero.
 
 ### Changed
 * Changed `EthernetUDP::parsePacket()` to return zero for empty packets and -1

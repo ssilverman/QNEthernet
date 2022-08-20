@@ -8,6 +8,7 @@
 #define QNE_ETHERNETUDP_H_
 
 // C++ includes
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -20,6 +21,11 @@
 
 namespace qindesign {
 namespace network {
+
+#ifndef QNETHERNET_UDP_EXTRA_BUF_SIZE
+#define QNETHERNET_UDP_EXTRA_BUF_SIZE 0
+#endif  // QNETHERNET_UDP_EXTRA_BUF_SIZE
+// Note: Maximum list size is QNETHERNET_UDP_EXTRA_BUF_SIZE + 1
 
 class EthernetUDP final : public UDP {
  public:
@@ -117,8 +123,11 @@ class EthernetUDP final : public UDP {
   udp_pcb *pcb_;
 
   // Received packet; updated every time one is received
-  Packet in_;  // Holds received packets
-  bool hasInPacket_;
+  std::array<Packet, QNETHERNET_UDP_EXTRA_BUF_SIZE + 1> inBuf_;
+      // Holds received packets
+  size_t inBufTail_ = 0;
+  size_t inBufHead_ = 0;
+  size_t inBufSize_ = 0;
 
   // Packet being processed by the caller
   Packet packet_;    // Holds the packet being read
