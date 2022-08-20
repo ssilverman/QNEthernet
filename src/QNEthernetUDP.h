@@ -97,6 +97,12 @@ class EthernetUDP final : public UDP {
   uint16_t remotePort() override;
 
  private:
+  struct Packet {
+    std::vector<unsigned char> data;
+    ip_addr_t addr = *IP_ANY_TYPE;
+    volatile uint16_t port = 0;
+  };
+
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
@@ -111,22 +117,16 @@ class EthernetUDP final : public UDP {
   udp_pcb *pcb_;
 
   // Received packet; updated every time one is received
-  std::vector<unsigned char> inPacket_;  // Holds received packets
-  ip_addr_t inAddr_;
-  volatile uint16_t inPort_;
-  bool hasNewInPacket_;
+  Packet in_;  // Holds received packets
+  bool hasInPacket_;
 
   // Packet being processed by the caller
-  std::vector<unsigned char> packet_;    // Holds the packet being read
-  int packetPos_;                        // -1 if not currently reading a packet
-  ip_addr_t addr_;
-  uint16_t port_;
+  Packet packet_;    // Holds the packet being read
+  int packetPos_;    // -1 if not currently reading a packet
 
   // Outgoing packets
+  Packet out_;
   bool hasOutPacket_;
-  ip_addr_t outAddr_;
-  uint16_t outPort_;
-  std::vector<unsigned char> outPacket_;
 };
 
 }  // namespace network
