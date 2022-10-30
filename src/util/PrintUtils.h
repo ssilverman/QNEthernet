@@ -53,7 +53,6 @@ class StdioPrint : public Print {
 };
 
 }  // namespace util
-
 }  // namespace network
 }  // namespace qindesign
 
