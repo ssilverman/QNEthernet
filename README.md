@@ -45,6 +45,7 @@ files provided with the lwIP release.
 13. [stdio](#stdio)
 14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
+    2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 17. [Other notes](#other-notes)
@@ -807,6 +808,15 @@ over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 It's possible to enable promiscuous mode so that all frames are received, even
 ones whose destination MAC address would normally be filtered out by the
 Ethernet hardware. To do this, define the `QNETHERNET_PROMISCUOUS_MODE` macro.
+
+### Raw frame receive buffering
+
+Similar to [UDP buffering](#udp-receive-buffering), if raw frames come in at a
+faster rate than they are consumed, some may get dropped. To help mitigate this,
+the `QNETHERNET_FRAME_QUEUE_SIZE` macro can be set to a size >= 1. Its default
+is 1, meaning any new frames will cause any existing frame to get dropped. If
+it's set to 2 then there will be space for one additional frame for a total of
+2 frames, and so on.
 
 ## How to implement VLAN tagging
 

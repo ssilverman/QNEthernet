@@ -37,19 +37,39 @@ EthernetFrameClass &EthernetFrame = EthernetFrameClass::instance();
 err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
   struct pbuf *pHead = p;
 
-  EthernetFrame.inFrame_.clear();
-  EthernetFrame.inFrame_.reserve(p->tot_len);
+  // Push (replace the head)
+  std::vector<unsigned char> &frame =
+      EthernetFrame.inBuf_[EthernetFrame.inBufHead_];
+  frame.clear();
+  frame.reserve(p->tot_len);
   // TODO: Limit vector size
   while (p != nullptr) {
     unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-    EthernetFrame.inFrame_.insert(EthernetFrame.inFrame_.end(),
-                                  &data[0], &data[p->len]);
+    frame.insert(frame.end(), &data[0], &data[p->len]);
     p = p->next;
   }
+
+  // Increment the size
+  if (EthernetFrame.inBufSize_ != 0 &&
+      EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_) {
+    // Full
+    EthernetFrame.inBufTail_ =
+        (EthernetFrame.inBufTail_ + 1) % EthernetFrame.inBuf_.size();
+  } else {
+    EthernetFrame.inBufSize_++;
+  }
+  EthernetFrame.inBufHead_ =
+      (EthernetFrame.inBufHead_ + 1) % EthernetFrame.inBuf_.size();
 
   pbuf_free(pHead);
 
   return ERR_OK;
+}
+
+EthernetFrameClass::EthernetFrameClass() {
+  for (std::vector<unsigned char> &f : inBuf_) {
+    f.reserve(maxFrameLen());
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -57,8 +77,16 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
 // --------------------------------------------------------------------------
 
 int EthernetFrameClass::parseFrame() {
-  frame_ = inFrame_;
-  inFrame_.clear();
+  if (inBufSize_ == 0) {
+    framePos_ = -1;
+    return -1;
+  }
+
+  // Pop (from the tail)
+  frame_ = inBuf_[inBufTail_];
+  inBuf_[inBufTail_].clear();
+  inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
+  inBufSize_--;
 
   EthernetClass::loop();  // Allow the stack to move along
 

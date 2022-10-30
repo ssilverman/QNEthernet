@@ -8,6 +8,7 @@
 #define QNE_ETHERNETFRAME_H_
 
 // C++ includes
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -24,6 +25,13 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 
 namespace qindesign {
 namespace network {
+
+#if !defined(QNETHERNET_FRAME_QUEUE_SIZE)
+#define QNETHERNET_FRAME_QUEUE_SIZE 1
+#elif QNETHERNET_FRAME_QUEUE_SIZE < 1
+#error "QNETHERNET_FRAME_QUEUE_SIZE must be >= 1"
+#endif  // QNETHERNET_FRAME_QUEUE_SIZE
+// Note: Maximum list size is QNETHERNET_FRAME_QUEUE_SIZE
 
 // Provides an API for unknown raw Ethernet frames, similar to the UDP API.
 //
@@ -117,7 +125,7 @@ class EthernetFrameClass final : public Stream {
   const unsigned char *data() const;
 
  private:
-  EthernetFrameClass() = default;
+  EthernetFrameClass();
   ~EthernetFrameClass() = default;
 
   static err_t recvFunc(struct pbuf *p, struct netif *netif);
@@ -126,7 +134,11 @@ class EthernetFrameClass final : public Stream {
   bool isAvailable() const;
 
   // Received frame; updated every time one is received
-  std::vector<unsigned char> inFrame_;  // Holds received frames
+  std::array<std::vector<unsigned char>, QNETHERNET_FRAME_QUEUE_SIZE> inBuf_;
+      // Holds received frames
+  size_t inBufTail_ = 0;
+  size_t inBufHead_ = 0;
+  size_t inBufSize_ = 0;
 
   // Frame being processed by the caller
   std::vector<unsigned char> frame_;  // Holds the frame being read
