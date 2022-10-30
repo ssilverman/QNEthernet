@@ -22,8 +22,10 @@
 namespace qindesign {
 namespace network {
 
-#ifndef QNETHERNET_UDP_EXTRA_BUF_SIZE
+#if !defined(QNETHERNET_UDP_EXTRA_BUF_SIZE)
 #define QNETHERNET_UDP_EXTRA_BUF_SIZE 0
+#elif QNETHERNET_UDP_EXTRA_BUF_SIZE < 0
+#error "QNETHERNET_UDP_EXTRA_BUF_SIZE must be >= 0"
 #endif  // QNETHERNET_UDP_EXTRA_BUF_SIZE
 // Note: Maximum list size is QNETHERNET_UDP_EXTRA_BUF_SIZE + 1
 
