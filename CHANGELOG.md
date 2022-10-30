@@ -14,7 +14,7 @@ and this project adheres to
   defaults to unset. This ensures that the DNS server IP is set before the
   address-changed callback is called.
 * Added configurable packet buffering to UDP reception with the new
-  `QNETHERNET_UDP_EXTRA_BUF_SIZE` macro. Its default is zero.
+  `QNETHERNET_UDP_QUEUE_SIZE` macro. Its default is 1.
 
 ### Changed
 * Changed `EthernetUDP::parsePacket()` to return zero for empty packets and -1

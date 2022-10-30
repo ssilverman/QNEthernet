@@ -22,12 +22,12 @@
 namespace qindesign {
 namespace network {
 
-#if !defined(QNETHERNET_UDP_EXTRA_BUF_SIZE)
-#define QNETHERNET_UDP_EXTRA_BUF_SIZE 0
-#elif QNETHERNET_UDP_EXTRA_BUF_SIZE < 0
-#error "QNETHERNET_UDP_EXTRA_BUF_SIZE must be >= 0"
-#endif  // QNETHERNET_UDP_EXTRA_BUF_SIZE
-// Note: Maximum list size is QNETHERNET_UDP_EXTRA_BUF_SIZE + 1
+#if !defined(QNETHERNET_UDP_QUEUE_SIZE)
+#define QNETHERNET_UDP_QUEUE_SIZE 1
+#elif QNETHERNET_UDP_QUEUE_SIZE < 1
+#error "QNETHERNET_UDP_QUEUE_SIZE must be >= 1"
+#endif  // QNETHERNET_UDP_QUEUE_SIZE
+// Note: Maximum list size is QNETHERNET_UDP_QUEUE_SIZE
 
 class EthernetUDP final : public UDP {
  public:
@@ -125,7 +125,7 @@ class EthernetUDP final : public UDP {
   udp_pcb *pcb_;
 
   // Received packet; updated every time one is received
-  std::array<Packet, QNETHERNET_UDP_EXTRA_BUF_SIZE + 1> inBuf_;
+  std::array<Packet, QNETHERNET_UDP_QUEUE_SIZE> inBuf_;
       // Holds received packets
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;

@@ -714,10 +714,10 @@ shows how to change the number for each socket type.
 ## UDP receive buffering
 
 If UDP packets come in at a faster rate than they are consumed, some may get
-dropped. To help mitigate this, the `QNETHERNET_UDP_EXTRA_BUF_SIZE` macro can be
-set to an additional buffer size, in packets. Its default is zero, meaning any
-new packets will cause any existing packet to get dropped. If it's set to 1 then
-there will be space for one additional packet, and so on.
+dropped. To help mitigate this, the `QNETHERNET_UDP_QUEUE_SIZE` macro can be set
+to a size >= 1. Its default is 1, meaning any new packets will cause any
+existing packet to get dropped. If it's set to 2 then there will be space for
+one additional packet for a total of 2 packets, and so on.
 
 ## mDNS services
 
