@@ -239,8 +239,7 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
   std::copy_n(mac, 6, mac_);
-  begin(ip, subnet, gateway);
-  setDNSServerIP(dns);
+  begin(ip, subnet, gateway, dns);
 }
 #pragma GCC diagnostic pop
 
