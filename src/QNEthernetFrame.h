@@ -129,8 +129,8 @@ class EthernetFrameClass final : public Stream {
   std::vector<unsigned char> inFrame_;  // Holds received frames
 
   // Frame being processed by the caller
-  std::vector<unsigned char> frame_;    // Holds the frame being read
-  int framePos_ = -1;                   // -1 if not currently reading a frame
+  std::vector<unsigned char> frame_;  // Holds the frame being read
+  int framePos_ = -1;                 // -1 if not currently reading a frame
 
   // Outgoing frames
   bool hasOutFrame_ = false;

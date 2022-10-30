@@ -132,8 +132,8 @@ class EthernetUDP final : public UDP {
   size_t inBufSize_ = 0;
 
   // Packet being processed by the caller
-  Packet packet_;    // Holds the packet being read
-  int packetPos_;    // -1 if not currently reading a packet
+  Packet packet_;  // Holds the packet being read
+  int packetPos_;  // -1 if not currently reading a packet
 
   // Outgoing packets
   Packet out_;
