@@ -125,6 +125,10 @@ class EthernetFrameClass final : public Stream {
   const unsigned char *data() const;
 
  private:
+  struct Frame {
+    std::vector<unsigned char> data;
+  };
+
   EthernetFrameClass();
   ~EthernetFrameClass() = default;
 
@@ -134,19 +138,19 @@ class EthernetFrameClass final : public Stream {
   bool isAvailable() const;
 
   // Received frame; updated every time one is received
-  std::array<std::vector<unsigned char>, QNETHERNET_FRAME_QUEUE_SIZE> inBuf_;
+  std::array<Frame, QNETHERNET_FRAME_QUEUE_SIZE> inBuf_;
       // Holds received frames
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
   size_t inBufSize_ = 0;
 
   // Frame being processed by the caller
-  std::vector<unsigned char> frame_;  // Holds the frame being read
-  int framePos_ = -1;                 // -1 if not currently reading a frame
+  Frame frame_;        // Holds the frame being read
+  int framePos_ = -1;  // -1 if not currently reading a frame
 
   // Outgoing frames
   bool hasOutFrame_ = false;
-  std::vector<unsigned char> outFrame_;
+  Frame outFrame_;
 
   // The singleton instance.
   static EthernetFrameClass instance_;

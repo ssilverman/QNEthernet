@@ -38,14 +38,13 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
   struct pbuf *pHead = p;
 
   // Push (replace the head)
-  std::vector<unsigned char> &frame =
-      EthernetFrame.inBuf_[EthernetFrame.inBufHead_];
-  frame.clear();
-  frame.reserve(p->tot_len);
+  Frame &frame = EthernetFrame.inBuf_[EthernetFrame.inBufHead_];
+  frame.data.clear();
+  frame.data.reserve(p->tot_len);
   // TODO: Limit vector size
   while (p != nullptr) {
     unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
-    frame.insert(frame.end(), &data[0], &data[p->len]);
+    frame.data.insert(frame.data.end(), &data[0], &data[p->len]);
     p = p->next;
   }
 
@@ -67,8 +66,8 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
 }
 
 EthernetFrameClass::EthernetFrameClass() {
-  for (std::vector<unsigned char> &f : inBuf_) {
-    f.reserve(maxFrameLen());
+  for (Frame &f : inBuf_) {
+    f.data.reserve(maxFrameLen());
   }
 }
 
@@ -84,15 +83,15 @@ int EthernetFrameClass::parseFrame() {
 
   // Pop (from the tail)
   frame_ = inBuf_[inBufTail_];
-  inBuf_[inBufTail_].clear();
+  inBuf_[inBufTail_].data.clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
   EthernetClass::loop();  // Allow the stack to move along
 
-  if (frame_.size() > 0) {
+  if (frame_.data.size() > 0) {
     framePos_ = 0;
-    return frame_.size();
+    return frame_.data.size();
   } else {
     framePos_ = -1;
     return 0;
@@ -100,30 +99,31 @@ int EthernetFrameClass::parseFrame() {
 }
 
 inline bool EthernetFrameClass::isAvailable() const {
-  return (0 <= framePos_ && static_cast<size_t>(framePos_) < frame_.size());
+  return (0 <= framePos_ &&
+          static_cast<size_t>(framePos_) < frame_.data.size());
 }
 
 int EthernetFrameClass::available() {
   if (!isAvailable()) {
     return 0;
   }
-  return frame_.size() - framePos_;
+  return frame_.data.size() - framePos_;
 }
 
 int EthernetFrameClass::read() {
   if (!isAvailable()) {
     return -1;
   }
-  return frame_[framePos_++];
+  return frame_.data[framePos_++];
 }
 
 int EthernetFrameClass::read(unsigned char *buffer, size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
-  len = std::min(len, frame_.size() - framePos_);
+  len = std::min(len, frame_.data.size() - framePos_);
   if (buffer != nullptr) {
-    std::copy_n(&frame_.data()[framePos_], len, buffer);
+    std::copy_n(&frame_.data.data()[framePos_], len, buffer);
   }
   framePos_ += len;
   return len;
@@ -137,11 +137,11 @@ int EthernetFrameClass::peek() {
   if (!isAvailable()) {
     return -1;
   }
-  return frame_[framePos_];
+  return frame_.data[framePos_];
 }
 
 const unsigned char *EthernetFrameClass::data() const {
-  return frame_.data();
+  return frame_.data.data();
 }
 
 // --------------------------------------------------------------------------
@@ -149,12 +149,12 @@ const unsigned char *EthernetFrameClass::data() const {
 // --------------------------------------------------------------------------
 
 void EthernetFrameClass::beginFrame() {
-  if (outFrame_.capacity() < maxFrameLen()) {
-    outFrame_.reserve(maxFrameLen());
+  if (outFrame_.data.capacity() < maxFrameLen()) {
+    outFrame_.data.reserve(maxFrameLen());
   }
 
   hasOutFrame_ = true;
-  outFrame_.clear();
+  outFrame_.data.clear();
 }
 
 void EthernetFrameClass::beginFrame(const uint8_t dstAddr[6],
@@ -184,8 +184,8 @@ bool EthernetFrameClass::endFrame() {
   }
   hasOutFrame_ = false;
 
-  bool retval = enet_output_frame(outFrame_.data(), outFrame_.size());
-  outFrame_.clear();
+  bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size());
+  outFrame_.data.clear();
   return retval;
 }
 
@@ -197,7 +197,7 @@ size_t EthernetFrameClass::write(uint8_t b) {
   if (!hasOutFrame_ || availableForWrite() <= 0) {
     return 0;
   }
-  outFrame_.push_back(b);
+  outFrame_.data.push_back(b);
   return 1;
 }
 
@@ -208,14 +208,14 @@ size_t EthernetFrameClass::write(const uint8_t *buffer, size_t size) {
   }
 
   size = std::min(size, static_cast<size_t>(avail));
-  outFrame_.insert(outFrame_.end(), &buffer[0], &buffer[size]);
+  outFrame_.data.insert(outFrame_.data.end(), &buffer[0], &buffer[size]);
   return size;
 }
 
 int EthernetFrameClass::availableForWrite() {
   // First cast to something we know is the same size as size_t
-  return std::max(static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.size()),
-                  0);
+  return std::max(
+      static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.data.size()), 0);
 }
 
 }  // namespace network
