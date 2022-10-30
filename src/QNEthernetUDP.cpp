@@ -70,7 +70,8 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
 EthernetUDP::EthernetUDP()
     : pcb_(nullptr),
-      packetPos_(-1) {}
+      packetPos_(-1),
+      hasOutPacket_(false) {}
 
 EthernetUDP::~EthernetUDP() {
   stop();
