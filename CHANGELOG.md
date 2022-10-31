@@ -14,7 +14,7 @@ and this project adheres to
   defaults to unset. This ensures that the DNS server IP is set before the
   address-changed callback is called.
 * Added configurable packet buffering to UDP reception with the new
-  `QNETHERNET_UDP_QUEUE_SIZE` macro. Its default is 1.
+  `EthernetUDP(queueSize)` constructor. The default and minimum queue size is 1.
 * Added configurable frame buffering to raw frame reception with the new
   `QNETHERNET_FRAME_QUEUE_SIZE` macro. Its default is 1.
 * Added a new "Configuration macros" section to the README that summarizes all

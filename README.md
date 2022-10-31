@@ -253,6 +253,9 @@ The `Ethernet` object is the main Ethernet interface.
 * `size()`: Returns the total size of the received packet data.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
+* `EthernetUDP(queueSize)`: Creates a new UDP socket having the specified packet
+  queue size. The minimum possible value is 1 and the default is 1. If a value
+  of zero is used, it will default to 1.
 
 #### `parsePacket()` return values
 
@@ -716,10 +719,11 @@ shows how to change the number for each socket type.
 ## UDP receive buffering
 
 If UDP packets come in at a faster rate than they are consumed, some may get
-dropped. To help mitigate this, the `QNETHERNET_UDP_QUEUE_SIZE` macro can be set
-to a size >= 1. Its default is 1, meaning any new packets will cause any
-existing packet to get dropped. If it's set to 2 then there will be space for
-one additional packet for a total of 2 packets, and so on.
+dropped. To help mitigate this, the `EthernetUDP(queueSize)` constructor can be
+called with a size > 1. The minimum size is 1, meaning any new packets will
+cause any existing packet to get dropped. If it's set to 2 then there will be
+space for one additional packet for a total of 2 packets, and so on. Setting a
+value of zero will use the default of 1.
 
 ## mDNS services
 
@@ -900,7 +904,6 @@ There are several macros that can be used to configure the system:
 | ----------------------------- | --------------------------- | ----------------------------------------------------------- |
 | `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffering         | [Raw frame receive buffering](#raw-frame-receive-buffering) |
 | `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode     | [Promiscuous mode](#promiscuous-mode)                       |
-| `QNETHERNET_UDP_QUEUE_SIZE`   | UDP packet buffering        | [UDP receive buffering](#udp-receive-buffering)             |
 | `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()` | [stdio](#stdio)                                             |
 
 ## Other notes
@@ -925,8 +928,6 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
-* See if per-UDP socket queue size is more desirable than the same queue size
-  for all sockets.
 
 ## Code style
 

@@ -8,7 +8,6 @@
 #define QNE_ETHERNETUDP_H_
 
 // C++ includes
-#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -22,16 +21,9 @@
 namespace qindesign {
 namespace network {
 
-#if !defined(QNETHERNET_UDP_QUEUE_SIZE)
-#define QNETHERNET_UDP_QUEUE_SIZE 1
-#elif QNETHERNET_UDP_QUEUE_SIZE < 1
-#error "QNETHERNET_UDP_QUEUE_SIZE must be >= 1"
-#endif  // QNETHERNET_UDP_QUEUE_SIZE
-// Note: Maximum list size is QNETHERNET_UDP_QUEUE_SIZE
-
 class EthernetUDP final : public UDP {
  public:
-  EthernetUDP();
+  EthernetUDP(size_t queueSize = 1);
   ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.
@@ -125,8 +117,7 @@ class EthernetUDP final : public UDP {
   udp_pcb *pcb_;
 
   // Received packet; updated every time one is received
-  std::array<Packet, QNETHERNET_UDP_QUEUE_SIZE> inBuf_;
-      // Holds received packets
+  std::vector<Packet> inBuf_;  // Holds received packets
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
   size_t inBufSize_ = 0;
