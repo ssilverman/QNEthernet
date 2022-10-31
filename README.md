@@ -902,7 +902,7 @@ There are several macros that can be used to configure the system:
 
 | Macro                         | Description                 | Link                                                        |
 | ----------------------------- | --------------------------- | ----------------------------------------------------------- |
-| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffering         | [Raw frame receive buffering](#raw-frame-receive-buffering) |
+| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffer size       | [Raw frame receive buffering](#raw-frame-receive-buffering) |
 | `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode     | [Promiscuous mode](#promiscuous-mode)                       |
 | `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()` | [stdio](#stdio)                                             |
 
