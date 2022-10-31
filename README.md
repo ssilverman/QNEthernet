@@ -48,10 +48,11 @@ files provided with the lwIP release.
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-17. [Other notes](#other-notes)
-18. [To do](#to-do)
-19. [Code style](#code-style)
-20. [References](#references)
+17. [Configuration macros](#configuration-macros)
+18. [Other notes](#other-notes)
+19. [To do](#to-do)
+20. [Code style](#code-style)
+21. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -890,6 +891,17 @@ could be called on connections when the link has been disconnected. (See also
 Fun links:
 * [Removing Exponential Backoff from TCP - acm sigcomm](http://www.sigcomm.org/node/2736)
 * [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
+
+## Configuration macros
+
+There are several macros that can be used to configure the system:
+
+| Macro                         | Description                 | Link                                                        |
+| ----------------------------- | --------------------------- | ----------------------------------------------------------- |
+| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffering         | [Raw frame receive buffering](#raw-frame-receive-buffering) |
+| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode     | [Promiscuous mode](#promiscuous-mode)                       |
+| `QNETHERNET_UDP_QUEUE_SIZE`   | UDP packet buffering        | [UDP receive buffering](#udp-receive-buffering)             |
+| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()` | [stdio](#stdio)                                             |
 
 ## Other notes
 
