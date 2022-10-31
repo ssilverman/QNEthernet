@@ -913,6 +913,8 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
+* See if per-UDP socket queue size is more desirable than the same queue size
+  for all sockets.
 
 ## Code style
 
