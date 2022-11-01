@@ -35,8 +35,18 @@
 
 #define RX_SIZE 5
 #define TX_SIZE 5
-#define BUF_SIZE 1536
 #define IRQ_PRIORITY 64
+
+// Buffer size for transferring to and from the Ethernet MAC. The frame size is
+// either 1518 or 1522, assuming a 1500-byte payload, depending on whether VLAN
+// support is desired. VLAN support requires an extra 4 bytes. The ARM cache
+// management functions require 32-bit alignment, but the ENETx_MRBR max.
+// receive buffer size register says that the RX buffer size must be a multiple
+// of 64 and >= 256.
+//
+// [1518 or 1522 made into a multiple of 32 for ARM cache flush sizing and a
+// multiple of 64 for ENETx_MRBR.]
+#define BUF_SIZE ((1522 + 63) & 0xffffffc0)
 
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
 #define MULTIPLE_OF_32(x) (((x) + 31) & 0xffffffe0)
