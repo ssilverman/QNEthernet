@@ -38,6 +38,13 @@
 #define BUF_SIZE 1536
 #define IRQ_PRIORITY 64
 
+#ifndef QNETHERNET_BUFFERS_IN_RAM1
+#define MULTIPLE_OF_32(x) (((x) + 31) & 0xffffffe0)
+#define BUFFER_DMAMEM DMAMEM
+#else
+#define BUFFER_DMAMEM
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
+
 // Defines the control and status region of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_status {
   kEnetRxBdEmpty           = 0x8000U,  // Empty bit
@@ -123,8 +130,8 @@ typedef struct {
 static uint8_t mac[ETH_HWADDR_LEN];
 static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
-static uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
-static uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
+static BUFFER_DMAMEM uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
+static BUFFER_DMAMEM uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif;
@@ -380,6 +387,9 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   } else {
     p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
     if (p) {
+#ifndef QNETHERNET_BUFFERS_IN_RAM1
+      arm_dcache_delete(bdPtr->buffer, MULTIPLE_OF_32(p->tot_len));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
       pbuf_take(p, bdPtr->buffer, p->tot_len);
       LINK_STATS_INC(link.recv);
     } else {
@@ -428,7 +438,14 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
 
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
-  update_bufdesc(bdPtr, pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0));
+  uint16_t copied = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
+  if (copied == 0) {
+    return ERR_BUF;
+  }
+#ifndef QNETHERNET_BUFFERS_IN_RAM1
+  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(copied));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
+  update_bufdesc(bdPtr, copied);
   return ERR_OK;
 }
 
@@ -678,9 +695,15 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
 #if ETH_PAD_SIZE
   memcpy(bdPtr->buffer + ETH_PAD_SIZE, frame, len);
+#ifndef QNETHERNET_BUFFERS_IN_RAM1
+  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(bdPtr, len + ETH_PAD_SIZE);
 #else
   memcpy(bdPtr->buffer, frame, len);
+#ifndef QNETHERNET_BUFFERS_IN_RAM1
+  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(bdPtr, len);
 #endif  // ETH_PAD_SIZE
   return true;

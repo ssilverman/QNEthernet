@@ -48,11 +48,12 @@ files provided with the lwIP release.
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-17. [Configuration macros](#configuration-macros)
-18. [Other notes](#other-notes)
-19. [To do](#to-do)
-20. [Code style](#code-style)
-21. [References](#references)
+17. [Reducing RAM1 usage](#reducing-ram1-usage)
+18. [Configuration macros](#configuration-macros)
+19. [Other notes](#other-notes)
+20. [To do](#to-do)
+21. [Code style](#code-style)
+22. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -896,15 +897,25 @@ Fun links:
 * [Removing Exponential Backoff from TCP - acm sigcomm](http://www.sigcomm.org/node/2736)
 * [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
+## Reducing RAM1 usage
+
+***[ More TBD ]***
+
+By default, the Ethernet RX and TX buffers will go into RAM2. If, for whatever
+reason, you'd prefer to put them into RAM1, define the
+`QNETHERNET_BUFFERS_IN_RAM1` macro. _[As of this writing, no speed comparison
+tests have been done.]_
+
 ## Configuration macros
 
 There are several macros that can be used to configure the system:
 
-| Macro                         | Description                 | Link                                                        |
-| ----------------------------- | --------------------------- | ----------------------------------------------------------- |
-| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffer size       | [Raw frame receive buffering](#raw-frame-receive-buffering) |
-| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode     | [Promiscuous mode](#promiscuous-mode)                       |
-| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()` | [stdio](#stdio)                                             |
+| Macro                         | Description                         | Link                                                        |
+| ----------------------------- | ----------------------------------- | ----------------------------------------------------------- |
+| `QNETHERNET_BUFFERS_IN_RAM1`  | Put the RX and TX buffers into RAM1 | [Reducing RAM1 usage](#reducing-ram1-usage)                 |
+| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffer size               | [Raw frame receive buffering](#raw-frame-receive-buffering) |
+| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)                       |
+| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()`         | [stdio](#stdio)                                             |
 
 ## Other notes
 

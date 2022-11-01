@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* The library now, by default, puts the RX and TX buffers in RAM2 (DMAMEM).
+  This behaviour can be overridden by defining the new
+  `QNETHERNET_BUFFERS_IN_RAM1` macro.
+
 ## [0.16.0]
 
 ### Added
