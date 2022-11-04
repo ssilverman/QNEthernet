@@ -8,6 +8,9 @@
 #include <unistd.h>
 
 // C++ includes
+#include <cerrno>
+#undef errno
+extern int errno;
 #include <cstdint>
 #include <cstdio>
 
@@ -73,6 +76,9 @@ int _write(int file, const void *buf, size_t len) {
   // Send both stdout and stderr to stdPrint
   if (file == STDOUT_FILENO || file == STDERR_FILENO) {
     out = ::qindesign::network::stdPrint;
+  } else if (file == STDIN_FILENO) {
+    errno = EBADF;
+    return -1;
   } else {
     out = (Print *)file;
   }

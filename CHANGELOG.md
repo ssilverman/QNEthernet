@@ -13,6 +13,9 @@ and this project adheres to
   This behaviour can be overridden by defining the new
   `QNETHERNET_BUFFERS_IN_RAM1` macro.
 
+### Fixed
+* Disallow `stdin` in `_write()`.
+
 ## [0.16.0]
 
 ### Added
