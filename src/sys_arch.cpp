@@ -40,8 +40,34 @@ u32_t sys_now(void) {
 #ifdef LWIP_DEBUG
 // include\lwip\err.h
 const char *lwip_strerr(err_t err) {
-  static char buf[16];
-  snprintf(buf, sizeof(buf), "err %d", err);
+  switch (err) {
+    case ERR_OK:         return "err Ok";
+    case ERR_MEM:        return "err Out of Memory";
+    case ERR_BUF:        return "err Buffer";
+    case ERR_TIMEOUT:    return "err Timeout";
+    case ERR_RTE:        return "err Routing Problem";
+    case ERR_INPROGRESS: return "err Operation in Progress";
+    case ERR_VAL:        return "err Illegal Value";
+    case ERR_WOULDBLOCK: return "err Operation Would Block";
+    case ERR_USE:        return "err Address in Use";
+    case ERR_ALREADY:    return "err Already Connecting";
+    case ERR_ISCONN:     return "err Connection Already Established";
+    case ERR_CONN:       return "err Not Connected";
+    case ERR_IF:         return "err Low-Level netif";
+    case ERR_ABRT:       return "err Connection Aborted";
+    case ERR_RST:        return "err Connection Reset";
+    case ERR_CLSD:       return "err Connection Closed";
+    case ERR_ARG:        return "err Illegal Argument";
+    default:
+      break;
+  }
+
+  constexpr double kLog2 = 0.301029995663981;
+  // # digits = log_10(2^bits) = bits * log_10(2)
+  constexpr size_t kDigits = sizeof(err_t)*8*kLog2 + 1;  // Add 1 for ceiling
+  constexpr char kPrefix[]{"err "};
+  static char buf[sizeof(kPrefix) + kDigits];  // Includes the NUL
+  snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
   return buf;
 }
 #endif  // LWIP_DEBUG

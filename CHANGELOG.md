@@ -13,6 +13,10 @@ and this project adheres to
   This behaviour can be overridden by defining the new
   `QNETHERNET_BUFFERS_IN_RAM1` macro.
 
+### Changed
+* Improved error code messages in `lwip_strerr(err)`. This is used when
+  `LWIP_DEBUG` is defined.
+
 ### Fixed
 * Disallow `stdin` in `_write()`.
 
