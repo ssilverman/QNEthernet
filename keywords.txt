@@ -15,6 +15,7 @@ EthernetUDP	KEYWORD1	Ethernet
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
 stdPrint	KEYWORD1
+stderrPrint	KEYWORD1
 EthernetFrame	KEYWORD1
 StdioPrint	KEYWORD1
 
@@ -58,6 +59,7 @@ setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
 stop	KEYWORD2
 close	KEYWORD2
 closeOutput	KEYWORD2
+abort	KEYWORD2
 localPort	KEYWORD2	ClientLocalPort
 data	KEYWORD2
 remoteIP	KEYWORD2
