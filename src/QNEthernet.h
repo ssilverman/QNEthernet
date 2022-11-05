@@ -275,8 +275,12 @@ extern MDNSClass &MDNS;
 // Instance for using raw Ethernet frames.
 extern EthernetFrameClass &EthernetFrame;
 
-// Lets user code use stdout.
+// Lets user code use stdout and stderr.
 extern Print *stdPrint;
+
+// Lets user code separate stderr output from stdout output. Set to `nullptr`
+// to use `stdPrint` for output.
+extern Print *stderrPrint;
 
 }  // namespace network
 }  // namespace qindesign

@@ -79,6 +79,7 @@ namespace qindesign {
 namespace network {
 
 Print *volatile stdPrint = nullptr;
+Print *volatile stderrPrint = nullptr;
 
 }  // namespace network
 }  // namespace qindesign
@@ -100,8 +101,14 @@ int _write(int file, const void *buf, size_t len) {
   Print *out;
 
   // Send both stdout and stderr to stdPrint
-  if (file == STDOUT_FILENO || file == STDERR_FILENO) {
+  if (file == STDOUT_FILENO) {
     out = ::qindesign::network::stdPrint;
+  } else if (file == STDERR_FILENO) {
+    if (::qindesign::network::stderrPrint == nullptr) {
+      out = ::qindesign::network::stdPrint;
+    } else {
+      out = ::qindesign::network::stderrPrint;
+    }
   } else if (file == STDIN_FILENO) {
     errno = EBADF;
     return -1;

@@ -43,6 +43,7 @@ files provided with the lwIP release.
 11. [mDNS services](#mdns-services)
 12. [DNS](#dns)
 13. [stdio](#stdio)
+    1. [stdout and stderr](#stdout-and-stderr)
 14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
@@ -789,6 +790,46 @@ The side benefit is that user code can use `printf(...)` too.
 If your application wants to define its own `_write()` implementation, then the
 internal one needs to be declared as weak. To accomplish this, define the
 `QNETHERNET_WEAK_WRITE` macro.
+
+### stdout and stderr
+
+By default, all `stdout` and `stderr` output will be sent to `stdPrint`. The
+`stderr` output can be made separate by defining `stderrPrint` to something
+non-NULL.
+
+Cases:
+
+| `stdPrint` | `stderrPrint`                   | `stdout` output | `stderr` output |
+| ---------- | --------------------------------| --------------- | --------------- |
+| Non-NULL   | NULL                            | `stdPrint`      | `stdPrint`      |
+| Non-NULL   | Non-NULL                        | `stdPrint`      | `stderrPrint`   |
+| NULL       | Non-NULL                        | Nowhere         | `stderrPrint`   |
+| NULL       | NULL                            | Nowhere         | Nowhere         |
+| Non-NULL   | Custom "nowhere" `Print` object | `stdPrint`      | Nowhere         |
+
+The only way, currently, to have data go nowhere with `stderr` but somewhere
+with `stdout` is to create a custom `Print` derived class that sends data
+nowhere and assign it to `stderrPrint`. The reason for this is that the default
+behaviour was chosen to be to send both outputs to `stdPrint`.
+
+For example:
+```c++
+class NullPrint : public Print {
+ public:
+  size_t write(uint8_t b) override { return 1; }
+  size_t write(const uint8_t *buffer, size_t size) override { return size; }
+  int availableForWrite() override { return INT16_MAX; }
+} nullPrint;
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial && millis() < 4000) {
+    // Wait for Serial initialization
+  }
+  qindesign::network::stdPrint = &Serial;
+  qindesign::network::stderrPrint = &nullPrint;
+}
+```
 
 ## Raw Ethernet frames
 

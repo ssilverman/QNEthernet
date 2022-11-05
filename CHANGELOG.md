@@ -12,6 +12,8 @@ and this project adheres to
 * The library now, by default, puts the RX and TX buffers in RAM2 (DMAMEM).
   This behaviour can be overridden by defining the new
   `QNETHERNET_BUFFERS_IN_RAM1` macro.
+* Added separate `stderr` output support with the new `stderrPrint` variable.
+  If set to NULL, `stderr` defaults to the usual `stdPrint`.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when
