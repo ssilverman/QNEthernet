@@ -359,7 +359,7 @@ called with `util::writeMagic()` syntax. Otherwise, they need to be fully
 qualified: `qindesign::network::util::writeMagic()`.
 
 1. `writeFully(Print &, buf, size, breakf = nullptr)`: Attempts to completely
-   write bytes to the given `Print` object. The optional `breakf` function is
+   write bytes to the given `Print` object; the optional `breakf` function is
    used as the stopping condition. It returns the number of bytes actually
    written. The return value will be less than the requested size only if
    `breakf` returned `true` before all bytes were written. Note that a NULL
@@ -381,10 +381,9 @@ output before printing a `Printable` directly to, say, `Serial`.
 
 ### `IPAddress` operators
 
-The core library version of `IPAddress` is missing a `==` operator that can
-compare `const IPAddress` values. In addition, it is completely missing a `!=`
-operator. Provided in this library are these two operators. They are declared as
-follows in the usual namespace:
+The core library version of `IPAddress` is missing `==` and `!=` operators that
+can compare `const IPAddress` values. Provided in this library are these two
+operators. They are declared as follows in the usual namespace:
 
 1. `bool operator==(const IPAddress &a, const IPAddress &b);`
 2. `bool operator!=(const IPAddress &a, const IPAddress &b);`
@@ -408,6 +407,10 @@ here are a few steps to follow:
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
+
+   Alternatively, you can use [listeners](#how-to-use-listeners) to watch for
+   address and link changes. This obviates the need for waiting.
+
 6. `Ethernet.hardwareStatus()` always returns `EthernetOtherHardware`. This
    means that there is no reason to call this function.
 7. Most other things should be the same.
