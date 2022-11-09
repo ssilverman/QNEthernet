@@ -98,7 +98,7 @@ class MDNSClass final {
 
   // Returns whether mDNS has been started.
   operator bool() const {
-    return started_;
+    return netif_ != nullptr;
   }
 
   // The following functions are for periodically re-announcing the services.
@@ -152,8 +152,6 @@ class MDNSClass final {
   // not be found.
   int findService(const String &name, const String &type,
                   const String &protocol, uint16_t port);
-
-  bool started_ = false;
 
   struct netif *netif_ = nullptr;
   String hostname_;
