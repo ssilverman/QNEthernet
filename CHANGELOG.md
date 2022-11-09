@@ -14,10 +14,19 @@ and this project adheres to
   `QNETHERNET_BUFFERS_IN_RAM1` macro.
 * Added separate `stderr` output support with the new `stderrPrint` variable.
   If set to NULL, `stderr` defaults to the usual `stdPrint`.
+* Added `MDNSClass::operator bool()` for determining whether mDNS has
+  been started.
+* Added `MDNSClass::restart()` for when a cable has been disconnected for a
+  while and then reconnected.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when
   `LWIP_DEBUG` is defined.
+* Now shutting down mDNS too in `EthernetClass::end()`.
+* Now using overloads instead of default arguments in `EthernetClass`
+  and `EthernetUDP`.
+* Changed `EthernetClass` and `MDNSClass` `String` functions to take
+  `const char *` instead.
 
 ### Fixed
 * Disallow `stdin` in `_write()`.
