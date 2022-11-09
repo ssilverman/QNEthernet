@@ -380,14 +380,14 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
 #endif  // !QNETHERNET_PROMISCUOUS_MODE
 }
 
-void EthernetClass::setHostname(const String &hostname) {
+void EthernetClass::setHostname(const char *hostname) {
 #if LWIP_NETIF_HOSTNAME
   hostname_ = hostname;
   if (netif_ != nullptr) {
-    if (hostname.length() == 0) {
+    if (hostname_.length() == 0) {
       netif_set_hostname(netif_, nullptr);
     } else {
-      netif_set_hostname(netif_, hostname.c_str());
+      netif_set_hostname(netif_, hostname);
     }
   }
 #endif

@@ -230,7 +230,7 @@ class EthernetClass final {
   // negotiated with the DHCP server. This could be at system start or when a
   // renewal happens. Ideally, it should be called before 'begin()' if you'd
   // like the hostname to be set at system start.
-  void setHostname(const String &hostname);
+  void setHostname(const char *hostname);
 
   // Gets the DHCP client option 12 hostname. An empty string means that no
   // hostname is set. The default is "teensy-lwip".

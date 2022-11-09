@@ -8,6 +8,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cstring>
 
 #include "lwip/apps/mdns.h"
 
@@ -50,7 +51,7 @@ MDNSClass::~MDNSClass() {
   end();
 }
 
-bool MDNSClass::begin(const String &hostname) {
+bool MDNSClass::begin(const char *hostname) {
   netif_ = netif_default;
   if (netif_ == nullptr) {
     return false;
@@ -61,7 +62,7 @@ bool MDNSClass::begin(const String &hostname) {
     initialized = true;
   }
 
-  if (mdns_resp_add_netif(netif_, hostname.c_str(), kTTL) != ERR_OK) {
+  if (mdns_resp_add_netif(netif_, hostname, kTTL) != ERR_OK) {
     netif_ = nullptr;
     return false;
   }
@@ -88,38 +89,38 @@ void MDNSClass::restart() {
 
 // toProto converts a protocol to a protocol enum. This returns DNSSD_PROTO_TCP
 // for "_tcp" and DNSSD_PROTO_UDP for all else.
-enum mdns_sd_proto toProto(const String &protocol) {
-  if (protocol.equalsIgnoreCase("_tcp")) {
+static enum mdns_sd_proto toProto(const char *protocol) {
+  if (String{protocol}.equalsIgnoreCase("_tcp")) {
     return DNSSD_PROTO_TCP;
   } else {
     return DNSSD_PROTO_UDP;
   }
 }
 
-bool MDNSClass::addService(const String &type, const String &protocol,
+bool MDNSClass::addService(const char *type, const char *protocol,
                            uint16_t port) {
-  return addService(hostname_, type, protocol, port, nullptr);
+  return addService(hostname_.c_str(), type, protocol, port, nullptr);
 }
 
-bool MDNSClass::addService(const String &name, const String &type,
-                          const String &protocol, uint16_t port) {
+bool MDNSClass::addService(const char *name, const char *type,
+                           const char *protocol, uint16_t port) {
   return addService(name, type, protocol, port, nullptr);
 }
 
-bool MDNSClass::addService(const String &type, const String &protocol,
+bool MDNSClass::addService(const char *type, const char *protocol,
                            uint16_t port,
                            std::vector<String> (*getTXTFunc)(void)) {
-  return addService(hostname_, type, protocol, port, getTXTFunc);
+  return addService(hostname_.c_str(), type, protocol, port, getTXTFunc);
 }
 
-bool MDNSClass::addService(const String &name, const String &type,
-                           const String &protocol, uint16_t port,
+bool MDNSClass::addService(const char *name, const char *type,
+                           const char *protocol, uint16_t port,
                            std::vector<String> (*getTXTFunc)(void)) {
   if (netif_ == nullptr) {
     return false;
   }
 
-  int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type.c_str(),
+  int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type,
                                       toProto(protocol), port, kTTL, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {
@@ -135,8 +136,8 @@ bool MDNSClass::addService(const String &name, const String &type,
   return true;
 }
 
-int MDNSClass::findService(const String &name, const String &type,
-                           const String &protocol, uint16_t port) {
+int MDNSClass::findService(const char *name, const char *type,
+                           const char *protocol, uint16_t port) {
   Service service{true, name, type, protocol, port, nullptr};
   for (int i = 0; i < maxServices(); i++) {
     if (slots_[i] == service) {
@@ -146,13 +147,13 @@ int MDNSClass::findService(const String &name, const String &type,
   return -1;
 }
 
-bool MDNSClass::removeService(const String &type, const String &protocol,
+bool MDNSClass::removeService(const char *type, const char *protocol,
                               uint16_t port) {
-  return removeService(hostname_, type, protocol, port);
+  return removeService(hostname_.c_str(), type, protocol, port);
 }
 
-bool MDNSClass::removeService(const String &name, const String &type,
-                              const String &protocol, uint16_t port) {
+bool MDNSClass::removeService(const char *name, const char *type,
+                              const char *protocol, uint16_t port) {
   if (netif_ == nullptr) {
     // Return true for no netif
     return true;
