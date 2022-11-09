@@ -24,7 +24,11 @@ namespace network {
 class EthernetUDP final : public UDP {
  public:
   EthernetUDP();
+
+  // Creates a new UDP socket with the given receive queue size. It will be set
+  // to a minimum of 1.
   explicit EthernetUDP(size_t queueSize);
+
   ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.
