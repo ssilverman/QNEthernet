@@ -93,8 +93,7 @@ class MDNSClass final {
                      const String &protocol, uint16_t port);
 
   // The following functions are for periodically re-announcing the services.
-  // Service entries seem to disappear after the TTL and sometimes earlier, so a
-  // re-announcement may be required.
+  // They are not normally needed.
 
   // Returns the TTL, in seconds.
   uint32_t ttl() const;
