@@ -105,7 +105,7 @@ class EthernetFrameClass final : public Stream {
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
 
-  // Receiving UDP packets
+  // Receiving frames
   int parseFrame();
   int available() override;
   int read() override;
