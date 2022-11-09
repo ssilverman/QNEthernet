@@ -66,6 +66,7 @@ bool MDNSClass::begin(const String &hostname) {
     return false;
   }
   hostname_ = hostname;
+  started_ = true;
   return true;
 }
 
@@ -76,6 +77,7 @@ bool MDNSClass::end() {
   }
   bool retval = (mdns_resp_remove_netif(netif_) == ERR_OK);
   netif_ = nullptr;
+  started_ = false;
   return retval;
 }
 
