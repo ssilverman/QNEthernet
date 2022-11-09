@@ -151,7 +151,7 @@ class MDNSClass final {
 
   bool started_ = false;
 
-  struct netif *netif_;
+  struct netif *netif_ = nullptr;
   String hostname_;
 
   // Holds information about all the slots.
