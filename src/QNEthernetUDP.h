@@ -23,7 +23,8 @@ namespace network {
 
 class EthernetUDP final : public UDP {
  public:
-  explicit EthernetUDP(size_t queueSize = 1);
+  EthernetUDP();
+  explicit EthernetUDP(size_t queueSize);
   ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.

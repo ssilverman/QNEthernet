@@ -115,10 +115,20 @@ class EthernetClass final {
   //
   // This returns whether bringing up the interface, and possibly the DHCP
   // client, was successful.
+  //
+  // This calls `begin(ipaddr, netmask, gw, INADDR_NONE)`.
   bool begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
-             const IPAddress &gw,
-             const IPAddress &dns = INADDR_NONE);
+             const IPAddress &gateway);
+
+  // Starts Ethernet with the given address configuration. If ipaddr, netmask,
+  // and gateway are all INADDR_NONE then this will start a DHCP client.
+  //
+  // This returns whether starting Ethernet was successful.
+  bool begin(const IPAddress &ipaddr,
+             const IPAddress &netmask,
+             const IPAddress &gateway,
+             const IPAddress &dns);
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.

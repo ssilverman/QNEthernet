@@ -133,6 +133,12 @@ bool EthernetClass::begin() {
 
 bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
+                          const IPAddress &gateway) {
+  return begin(ip, mask, gateway, INADDR_NONE);
+}
+
+bool EthernetClass::begin(const IPAddress &ip,
+                          const IPAddress &mask,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress

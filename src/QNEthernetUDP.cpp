@@ -68,6 +68,8 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   pbuf_free(pHead);
 }
 
+EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
+
 EthernetUDP::EthernetUDP(size_t queueSize)
     : pcb_(nullptr),
       inBuf_(queueSize < 1 ? 1 : queueSize),
