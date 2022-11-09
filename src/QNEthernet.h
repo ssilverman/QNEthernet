@@ -124,7 +124,7 @@ class EthernetClass final {
   // whether a link was detected. The timeout is in milliseconds.
   bool waitForLink(uint32_t timeout) const;
 
-  // Shuts down the Ethernet peripheral(s).
+  // Shuts down the Ethernet peripheral(s) and stops all services.
   void end();
 
   // Returns the link status, one of the EthernetLinkStatus enumerators. This
