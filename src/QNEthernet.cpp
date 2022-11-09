@@ -250,6 +250,10 @@ void EthernetClass::end() {
 
   ethActive = false;
 
+#if LWIP_MDNS_RESPONDER
+  MDNS.end();
+#endif  // LWIP_MDNS_RESPONDER
+
   DNSClient::setServer(0, INADDR_NONE);
   dhcp_release_and_stop(netif_);
   netif_set_down(netif_);
