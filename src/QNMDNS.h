@@ -47,6 +47,10 @@ class MDNSClass final {
   // was successful.
   bool end();
 
+  // Restarts the responder. This is useful when the cable has been disconnected
+  // for a while and then reconnected.
+  void restart();
+
   // Adds a service. The protocol will be set to "_udp" for anything other than
   // "_tcp". The strings should have a "_" prefix.
   //

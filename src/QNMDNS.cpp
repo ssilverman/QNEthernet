@@ -81,6 +81,13 @@ bool MDNSClass::end() {
   return retval;
 }
 
+void MDNSClass::restart() {
+  if (netif_ == nullptr) {
+    return;
+  }
+  mdns_resp_restart(netif_);
+}
+
 // toProto converts a protocol to a protocol enum. This returns DNSSD_PROTO_TCP
 // for "_tcp" and DNSSD_PROTO_UDP for all else.
 enum mdns_sd_proto toProto(const String &protocol) {
