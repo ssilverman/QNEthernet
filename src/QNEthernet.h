@@ -122,7 +122,9 @@ class EthernetClass final {
              const IPAddress &gateway);
 
   // Starts Ethernet with the given address configuration. If ipaddr, netmask,
-  // and gateway are all INADDR_NONE then this will start a DHCP client.
+  // and gateway are all INADDR_NONE then this will start a DHCP client. This
+  // only sets the DNS server if `dns` is not INADDR_NONE; there is no change
+  // if `dns` is INADDR_NONE.
   //
   // This returns whether starting Ethernet was successful.
   bool begin(const IPAddress &ipaddr,
