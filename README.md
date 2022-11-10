@@ -206,7 +206,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `abort()`: Aborts a connection without going through the TCP close process.
 * `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
-  half close operation.
+  half-close operation.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
@@ -996,9 +996,9 @@ _QNEthernet_ library.
 11. IPv6-capable with some additions
 12. IEEE1588-capable with some additions
 13. [Client shutdown options](#ethernetclient): _close_ (start close process
-    without waiting), _closeOutput_ (close just the output side), _abort_ (shuts
-    down the connection without going through the TCP close process), _stop_
-    (close and wait)
+    without waiting), _closeOutput_ (close just the output side, also called a
+    "half-close"), _abort_ (shuts down the connection without going through the
+    TCP close process), _stop_ (close and wait)
 14. Ability to [fully write](#how-to-write-data-to-connections) data to a
     client connection
 15. [Multicast](#how-to-use-multicast) support
