@@ -18,6 +18,8 @@ and this project adheres to
   been started.
 * Added `MDNSClass::restart()` for when a cable has been disconnected for a
   while and then reconnected.
+* Added `EthernetFrameClass::setReceiveQueueSize(size)` for setting the receive
+  queue size. This replaces the `QNETHERNET_FRAME_QUEUE_SIZE` macro.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when
@@ -27,6 +29,10 @@ and this project adheres to
   and `EthernetUDP`.
 * Changed `EthernetClass` and `MDNSClass` `String` functions to take
   `const char *` instead.
+
+### Removed
+* Removed the `QNETHERNET_FRAME_QUEUE_SIZE` macro and replaced it with
+  `EthernetFrame.setReceiveQueueSize(size)`.
 
 ### Fixed
 * Disallow `stdin` in `_write()`.

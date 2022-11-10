@@ -312,6 +312,10 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
   `beginFrame()`/`write()`/`endFrame()`. This is similar
   to `EthernetUDP::send(data, len)`.
+* `setReceiveQueueSize(size)`: Sets the receive queue size. The minimum possible
+  value is 1 and the default is 1. If a value of zero is used, it will default
+  to 1. If the new size is smaller than the number of items in the queue then
+  all the oldest frames will get dropped.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the FCS. Subtract 4 to get the maximum length that can be sent or
   received using this API.
@@ -863,10 +867,14 @@ Ethernet hardware. To do this, define the `QNETHERNET_PROMISCUOUS_MODE` macro.
 
 Similar to [UDP buffering](#udp-receive-buffering), if raw frames come in at a
 faster rate than they are consumed, some may get dropped. To help mitigate this,
-the `QNETHERNET_FRAME_QUEUE_SIZE` macro can be set to a size >= 1. Its default
-is 1, meaning any new frames will cause any existing frame to get dropped. If
-it's set to 2 then there will be space for one additional frame for a total of
-2 frames, and so on.
+the receive queue size can be adjusted with the
+`EthernetFrame.setReceiveQueueSize(size)` function. The default queue size is 1
+and the minimum size is also 1 (if a zero is passed in then 1 will be used
+instead).
+
+For a size of 1, any new frames will cause any existing frame to get dropped. If
+the size is 2 then there will be space for one additional frame for a total of 2
+frames, and so on.
 
 ## How to implement VLAN tagging
 
@@ -952,12 +960,11 @@ tests have been done.]_
 
 There are several macros that can be used to configure the system:
 
-| Macro                         | Description                         | Link                                                        |
-| ----------------------------- | ----------------------------------- | ----------------------------------------------------------- |
-| `QNETHERNET_BUFFERS_IN_RAM1`  | Put the RX and TX buffers into RAM1 | [Notes on RAM1 usage](#notes-on-ram1-usage)                 |
-| `QNETHERNET_FRAME_QUEUE_SIZE` | Raw frame buffer size               | [Raw frame receive buffering](#raw-frame-receive-buffering) |
-| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)                       |
-| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()`         | [stdio](#stdio)                                             |
+| Macro                         | Description                         | Link                                        |
+| ----------------------------- | ----------------------------------- | ------------------------------------------- |
+| `QNETHERNET_BUFFERS_IN_RAM1`  | Put the RX and TX buffers into RAM1 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
+| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
+| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()`         | [stdio](#stdio)                             |
 
 ## Other notes
 

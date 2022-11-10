@@ -8,7 +8,6 @@
 #define QNE_ETHERNETFRAME_H_
 
 // C++ includes
-#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -25,13 +24,6 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 
 namespace qindesign {
 namespace network {
-
-#if !defined(QNETHERNET_FRAME_QUEUE_SIZE)
-#define QNETHERNET_FRAME_QUEUE_SIZE 1
-#elif QNETHERNET_FRAME_QUEUE_SIZE < 1
-#error "QNETHERNET_FRAME_QUEUE_SIZE must be >= 1"
-#endif  // QNETHERNET_FRAME_QUEUE_SIZE
-// Note: Maximum list size is QNETHERNET_FRAME_QUEUE_SIZE
 
 // Provides an API for unknown raw Ethernet frames, similar to the UDP API.
 //
@@ -124,6 +116,15 @@ class EthernetFrameClass final : public Stream {
   // Returns a pointer to the received frame data.
   const unsigned char *data() const;
 
+  // Sets the receive queue size. This will use a minimum of 1.
+  //
+  // If the new size is smaller than the number of elements in the queue then
+  // all the oldest frames that don't fit are dropped.
+  //
+  // This disables interrupts while changing the queue so as not to interfere
+  // with the receive function if called from an ISR.
+  void setReceiveQueueSize(size_t size);
+
  private:
   struct Frame {
     std::vector<unsigned char> data;
@@ -138,8 +139,7 @@ class EthernetFrameClass final : public Stream {
   bool isAvailable() const;
 
   // Received frame; updated every time one is received
-  std::array<Frame, QNETHERNET_FRAME_QUEUE_SIZE> inBuf_;
-      // Holds received frames
+  std::vector<Frame> inBuf_;  // Holds received frames
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
   size_t inBufSize_ = 0;
