@@ -22,6 +22,7 @@ and this project adheres to
   queue size. This replaces the `QNETHERNET_FRAME_QUEUE_SIZE` macro.
 * Added a way to disable raw frame support: define the new
   `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` macro.
+* Added a "Complete list of features" section to the README.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

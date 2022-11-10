@@ -51,10 +51,11 @@ files provided with the lwIP release.
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 17. [Notes on RAM1 usage](#notes-on-ram1-usage)
 18. [Configuration macros](#configuration-macros)
-19. [Other notes](#other-notes)
-20. [To do](#to-do)
-21. [Code style](#code-style)
-22. [References](#references)
+19. [Complete list of features](#complete-list-of-features)
+20. [Other notes](#other-notes)
+21. [To do](#to-do)
+22. [Code style](#code-style)
+23. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -972,6 +973,38 @@ There are several macros that can be used to configure the system:
 | `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` | Disable raw frame support           | [Raw Ethernet Frames](#raw-ethernet-frames) |
 | `QNETHERNET_PROMISCUOUS_MODE`          | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
 | `QNETHERNET_WEAK_WRITE`                | Allow overriding `_write()`         | [stdio](#stdio)                             |
+
+## Complete list of features
+
+This section is an attempt to provide a complete list of features in the
+_QNEthernet_ library.
+
+1. Mostly compatible with the Arduino Ethernet API
+2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
+3. Automatic MAC address detection; it's not necessary to initialize the library
+   with your own MAC address
+4. [mDNS](#mdns) support
+5. [Raw Ethernet frame](#raw-ethernet-frames) support
+6. [`stdio`](#stdio) output support for `stdout` and `stderr` &mdash;
+   implemented to support lwIP's `printf()` calls, but user code can use this
+   too
+7. [VLAN tagging](#how-to-implement-vlan-tagging) support
+8. [Zero-length UDP packets](#parsepacket-return-values)
+9. [UDP](#udp-receive-buffering) and [raw frame](#raw-frame-receive-buffering)
+   receive buffering
+10. [Listeners](#how-to-use-listeners) to watch link and address state
+11. IPv6-capable with some additions
+12. IEEE1588-capable with some additions
+13. [Client shutdown options](#ethernetclient): _close_ (start close process
+    without waiting), _closeOutput_ (close just the output side), _abort_ (shuts
+    down the connection without going through the TCP close process), _stop_
+    (close and wait)
+14. Ability to [fully write](#how-to-write-data-to-connections) data to a
+    client connection
+15. [Multicast](#how-to-use-multicast) support
+16. [Promiscuous mode](#promiscuous-mode)
+17. `SO_REUSEADDR` support
+18. [`TCP_NODELAY`](#tcp-socket-options) support
 
 ## Other notes
 
