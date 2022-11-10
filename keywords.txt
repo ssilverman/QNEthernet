@@ -83,6 +83,7 @@ send	KEYWORD2
 parsePacket	KEYWORD2	EthernetUDPParsePacket
 size	KEYWORD2
 maxServices	KEYWORD2
+restart	KEYWORD2
 addService	KEYWORD2
 removeService	KEYWORD2
 ttl	KEYWORD2
