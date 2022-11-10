@@ -860,6 +860,9 @@ over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 01-80-C2-00-00-0E for non-forwardable frames. See
 [PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
 
+To disable raw frame support, define the `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT`
+macro.
+
 ### Promiscuous mode
 
 It's possible to enable promiscuous mode so that all frames are received, even
@@ -963,11 +966,12 @@ tests have been done.]_
 
 There are several macros that can be used to configure the system:
 
-| Macro                         | Description                         | Link                                        |
-| ----------------------------- | ----------------------------------- | ------------------------------------------- |
-| `QNETHERNET_BUFFERS_IN_RAM1`  | Put the RX and TX buffers into RAM1 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
-| `QNETHERNET_PROMISCUOUS_MODE` | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
-| `QNETHERNET_WEAK_WRITE`       | Allow overriding `_write()`         | [stdio](#stdio)                             |
+| Macro                                  | Description                         | Link                                        |
+| -------------------------------------- | ----------------------------------- | ------------------------------------------- |
+| `QNETHERNET_BUFFERS_IN_RAM1`           | Put the RX and TX buffers into RAM1 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
+| `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` | Disable raw frame support           | [Raw Ethernet Frames](#raw-ethernet-frames) |
+| `QNETHERNET_PROMISCUOUS_MODE`          | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
+| `QNETHERNET_WEAK_WRITE`                | Allow overriding `_write()`         | [stdio](#stdio)                             |
 
 ## Other notes
 

@@ -7,6 +7,8 @@
 #ifndef QNE_ETHERNETFRAME_H_
 #define QNE_ETHERNETFRAME_H_
 
+#ifndef QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
+
 // C++ includes
 #include <cstdint>
 #include <vector>
@@ -160,5 +162,7 @@ class EthernetFrameClass final : public Stream {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // !QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
 
 #endif  // QNE_ETHERNETFRAME_H_

@@ -20,6 +20,8 @@ and this project adheres to
   while and then reconnected.
 * Added `EthernetFrameClass::setReceiveQueueSize(size)` for setting the receive
   queue size. This replaces the `QNETHERNET_FRAME_QUEUE_SIZE` macro.
+* Added a way to disable raw frame support: define the new
+  `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` macro.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

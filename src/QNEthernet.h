@@ -282,8 +282,10 @@ extern EthernetClass &Ethernet;
 extern MDNSClass &MDNS;
 #endif  // LWIP_MDNS_RESPONDER
 
+#ifndef QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
 // Instance for using raw Ethernet frames.
 extern EthernetFrameClass &EthernetFrame;
+#endif  // !QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
 
 // Lets user code use stdout and stderr.
 extern Print *stdPrint;

@@ -11,9 +11,13 @@
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
 
+#ifndef QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
+
 #define LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) \
   unknown_eth_protocol((p), (netif))
 
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
+
+#endif  // !QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
 
 #endif  // QNE_LWIPHOOKS_H_
