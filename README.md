@@ -340,6 +340,8 @@ The `MDNS` object provides an mDNS API.
   prefix. Uses the hostname as the service name.
 * `addService(type, protocol, port, getTXTFunc)`: Adds a service and associated
   TXT records.
+* `hostname()`: Returns the hostname if the responder is running and an empty
+  string otherwise.
 * `removeService(type, protocol, port)`: Removes a service.
 * `restart()`: Restarts the responder, for use when the cable has been
   disconnected for a while and then reconnected.

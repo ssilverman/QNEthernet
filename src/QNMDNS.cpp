@@ -77,6 +77,7 @@ bool MDNSClass::end() {
   }
   bool retval = (mdns_resp_remove_netif(netif_) == ERR_OK);
   netif_ = nullptr;
+  hostname_ = "";
   return retval;
 }
 

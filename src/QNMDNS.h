@@ -47,6 +47,12 @@ class MDNSClass final {
   // was successful.
   bool end();
 
+  // Returns the hostname. This will return an empty string if the responder
+  // is not currently running.
+  String hostname() const {
+    return hostname_;
+  }
+
   // Restarts the responder. This is useful when the cable has been disconnected
   // for a while and then reconnected.
   void restart();
