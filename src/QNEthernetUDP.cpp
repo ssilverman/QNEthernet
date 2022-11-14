@@ -354,5 +354,9 @@ size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
   return size;
 }
 
+int EthernetUDP::availableForWrite() {
+  return 0;
+}
+
 }  // namespace network
 }  // namespace qindesign

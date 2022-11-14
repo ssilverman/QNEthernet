@@ -24,7 +24,7 @@ namespace network {
 
 class EthernetServer;
 
-class EthernetClient final : public Client {
+class EthernetClient : public Client {
  public:
   EthernetClient();
   ~EthernetClient();
@@ -43,15 +43,15 @@ class EthernetClient final : public Client {
     return MEMP_NUM_TCP_PCB;
   }
 
-  int connect(IPAddress ip, uint16_t port) override;
-  int connect(const char *host, uint16_t port) override;
+  int connect(IPAddress ip, uint16_t port) final;
+  int connect(const char *host, uint16_t port) final;
 
-  uint8_t connected() override;
-  operator bool() override;
+  uint8_t connected() final;
+  operator bool() final;
 
   void setConnectionTimeout(uint16_t timeout);
 
-  void stop() override;
+  void stop() final;
 
   // Closes the connection. This works the same as stop(), but without waiting
   // for the connection to close.
@@ -79,19 +79,19 @@ class EthernetClient final : public Client {
   size_t writeFully(const char *s, size_t size);
   size_t writeFully(const uint8_t *buf, size_t size);
 
-  size_t write(uint8_t b) override;
-  size_t write(const uint8_t *buf, size_t size) override;
-  int availableForWrite() override;
-  void flush() override;
+  size_t write(uint8_t b) final;
+  size_t write(const uint8_t *buf, size_t size) final;
+  int availableForWrite() final;
+  void flush() final;
 
-  int available() override;
-  int read() override;
+  int available() final;
+  int read() final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(uint8_t *buf, size_t size) override;
+  int read(uint8_t *buf, size_t size) final;
 
-  int peek() override;
+  int peek() final;
 
   // ----------------
   //  Socket options

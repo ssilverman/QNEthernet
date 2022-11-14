@@ -21,7 +21,7 @@
 namespace qindesign {
 namespace network {
 
-class EthernetUDP final : public UDP {
+class EthernetUDP : public UDP {
  public:
   EthernetUDP();
 
@@ -38,7 +38,7 @@ class EthernetUDP final : public UDP {
 
   // Starts listening on a port. This returns true if successful and false if
   // the port is in use. This calls begin(localPort, false).
-  uint8_t begin(uint16_t localPort) override;
+  uint8_t begin(uint16_t localPort) final;
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option
   // according to the `reuse` parameter. This returns whether the attempt
@@ -46,18 +46,18 @@ class EthernetUDP final : public UDP {
   uint8_t begin(uint16_t localPort, bool reuse);
 
   // Multicast functions make use of Ethernet.joinGroup()
-  uint8_t beginMulticast(IPAddress ip, uint16_t port) override;
+  uint8_t beginMulticast(IPAddress ip, uint16_t port) final;
   uint8_t beginMulticast(IPAddress ip, uint16_t port, bool reuse);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort();
 
-  void stop() override;
+  void stop() final;
 
   // Sending UDP packets
-  int beginPacket(IPAddress ip, uint16_t port) override;
-  int beginPacket(const char *host, uint16_t port) override;
-  int endPacket() override;
+  int beginPacket(IPAddress ip, uint16_t port) final;
+  int beginPacket(const char *host, uint16_t port) final;
+  int endPacket() final;
 
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
@@ -71,24 +71,25 @@ class EthernetUDP final : public UDP {
   // Bring Print::write functions into scope
   using Print::write;
 
-  size_t write(uint8_t b) override;
-  size_t write(const uint8_t *buffer, size_t size) override;
+  size_t write(uint8_t b) final;
+  size_t write(const uint8_t *buffer, size_t size) final;
+  int availableForWrite() final;
 
   // Receiving UDP packets
-  int parsePacket() override;
-  int available() override;
-  int read() override;
+  int parsePacket() final;
+  int available() final;
+  int read() final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(unsigned char *buffer, size_t len) override;
+  int read(unsigned char *buffer, size_t len) final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(char *buffer, size_t len) override;
+  int read(char *buffer, size_t len) final;
 
-  int peek() override;
-  void flush() override;
+  int peek() final;
+  void flush() final;
 
   // Returns the total size of the received packet data. This is only valid if a
   // packet has been received with parsePacket().
@@ -98,8 +99,8 @@ class EthernetUDP final : public UDP {
   // packet has been received with parsePacket().
   const unsigned char *data() const;
 
-  IPAddress remoteIP() override;
-  uint16_t remotePort() override;
+  IPAddress remoteIP() final;
+  uint16_t remotePort() final;
 
  private:
   struct Packet {

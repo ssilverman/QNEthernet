@@ -19,7 +19,7 @@
 namespace qindesign {
 namespace network {
 
-class EthernetServer final : public Server {
+class EthernetServer : public Server {
  public:
   EthernetServer();
   EthernetServer(uint16_t port);
@@ -39,7 +39,7 @@ class EthernetServer final : public Server {
   }
 
   // Starts listening on the server port, if set. This calls begin(false).
-  void begin() override;
+  void begin() final;
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
   // socket option according to the `reuse` parameter. This returns whether the
@@ -79,18 +79,18 @@ class EthernetServer final : public Server {
 
   // Writes a byte to all the connections. This does nothing and returns 1 if
   // the port is not set.
-  size_t write(uint8_t b) override;
+  size_t write(uint8_t b) final;
 
   // Writes data to all the connections. This does nothing and returns size if
   // the port is not set.
-  size_t write(const uint8_t *buffer, size_t size) override;
+  size_t write(const uint8_t *buffer, size_t size) final;
 
   // Returns the minimum availability of all the connections, or zero if there
   // are no connections or if the port is not set.
-  int availableForWrite() override;
+  int availableForWrite() final;
 
   // Flushes all the connections, but does nothing is the port is not set.
-  void flush() override;
+  void flush() final;
 
   operator bool();
 
