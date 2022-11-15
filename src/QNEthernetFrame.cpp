@@ -147,6 +147,38 @@ const unsigned char *EthernetFrameClass::data() const {
   return frame_.data.data();
 }
 
+void EthernetFrameClass::setReceiveQueueSize(size_t size) {
+  if (size < 1) {
+    size = 1;
+  }
+
+  size_t oldSize = inBuf_.size();
+
+  // Keep all the newest elements
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    if (size <= inBufSize_) {
+      // Keep all the newest frames
+      if (inBufTail_ != 0) {
+        size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
+        std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
+      }
+      inBuf_.resize(size);
+      inBufHead_ = 0;
+      inBufSize_ = size;
+    } else {
+      if (inBufTail_ != 0) {
+        std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
+      }
+      inBuf_.resize(size);
+      inBufHead_ = inBufSize_;
+      for (size_t i = oldSize; i < size; i++) {
+        inBuf_[i].data.reserve(maxFrameLen());
+      }
+    }
+    inBufTail_ = 0;
+  }
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
@@ -219,38 +251,6 @@ int EthernetFrameClass::availableForWrite() {
   // First cast to something we know is the same size as size_t
   return std::max(
       static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.data.size()), 0);
-}
-
-void EthernetFrameClass::setReceiveQueueSize(size_t size) {
-  if (size < 1) {
-    size = 1;
-  }
-
-  size_t oldSize = inBuf_.size();
-
-  // Keep all the newest elements
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    if (size <= inBufSize_) {
-      // Keep all the newest frames
-      if (inBufTail_ != 0) {
-        size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
-        std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
-      }
-      inBuf_.resize(size);
-      inBufHead_ = 0;
-      inBufSize_ = size;
-    } else {
-      if (inBufTail_ != 0) {
-        std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
-      }
-      inBuf_.resize(size);
-      inBufHead_ = inBufSize_;
-      for (size_t i = oldSize; i < size; i++) {
-        inBuf_[i].data.reserve(maxFrameLen());
-      }
-    }
-    inBufTail_ = 0;
-  }
 }
 
 }  // namespace network
