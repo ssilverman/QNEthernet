@@ -47,7 +47,7 @@ class EthernetClient : public Client {
   int connect(const char *host, uint16_t port) final;
 
   uint8_t connected() final;
-  operator bool() final;
+  explicit operator bool() final;
 
   void setConnectionTimeout(uint16_t timeout);
 

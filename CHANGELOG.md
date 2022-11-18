@@ -34,6 +34,8 @@ and this project adheres to
   and `EthernetUDP`.
 * Changed `EthernetClass` and `MDNSClass` `String` functions to take
   `const char *` instead.
+* Made all `operator bool()` functions `explicit`.
+  See: https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem
 
 ### Removed
 * Removed the `QNETHERNET_FRAME_QUEUE_SIZE` macro and replaced it with

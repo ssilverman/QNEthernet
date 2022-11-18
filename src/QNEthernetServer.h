@@ -92,7 +92,7 @@ class EthernetServer : public Server {
   // Flushes all the connections, but does nothing is the port is not set.
   void flush() final;
 
-  operator bool();
+  explicit operator bool();
 
  private:
   int32_t port_;  // We also want to be able to represent a signed value

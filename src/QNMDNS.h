@@ -103,7 +103,7 @@ class MDNSClass final {
                      const char *protocol, uint16_t port);
 
   // Returns whether mDNS has been started.
-  operator bool() const {
+  explicit operator bool() const {
     return netif_ != nullptr;
   }
 
