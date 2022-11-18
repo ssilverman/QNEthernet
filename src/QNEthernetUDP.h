@@ -102,6 +102,9 @@ class EthernetUDP : public UDP {
   IPAddress remoteIP() final;
   uint16_t remotePort() final;
 
+  // Returns whether the socket is listening.
+  explicit operator bool() const;
+
  private:
   struct Packet {
     std::vector<unsigned char> data;

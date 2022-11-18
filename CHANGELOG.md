@@ -25,6 +25,7 @@ and this project adheres to
 * Added a "Complete list of features" section to the README.
 * Added `MDNSClass::hostname()` for the returning the hostname of the responder,
   if running.
+* Added `EthernetUDP::operator bool()`.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

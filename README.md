@@ -258,6 +258,7 @@ The `Ethernet` object is the main Ethernet interface.
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
 * `size()`: Returns the total size of the received packet data.
+* `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
 * `EthernetUDP(queueSize)`: Creates a new UDP socket having the specified packet
