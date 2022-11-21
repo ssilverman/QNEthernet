@@ -38,7 +38,10 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 size_t writeMagic(Print &p, uint8_t mac[6],
                   std::function<bool()> breakf = nullptr);
 
-// A Print decorator for stdio output files.
+// A Print decorator for stdio output files. The purpose of this is to utilize
+// the Print class's ability to print Printable objects but using the underlying
+// FILE*. This ensures that a Printable object gets printed using the same
+// settings and buffering that the file uses.
 class StdioPrint : public Print {
  public:
   StdioPrint(std::FILE *stream) : stream_(stream) {}
