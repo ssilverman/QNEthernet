@@ -130,7 +130,6 @@ void setup() {
     if (hasIP) {
       printf("[Ethernet] Address changed:\n");
 
-      IPAddress ip = Ethernet.localIP();
       printf("    Local IP = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
       ip = Ethernet.subnetMask();
       printf("    Subnet   = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);

@@ -70,7 +70,6 @@ void setup() {
     IPAddress ip = Ethernet.localIP();
     bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
-      IPAddress ip = Ethernet.localIP();
       IPAddress subnet = Ethernet.subnetMask();
       IPAddress broadcast = Ethernet.broadcastIP();
       IPAddress gw = Ethernet.gatewayIP();
