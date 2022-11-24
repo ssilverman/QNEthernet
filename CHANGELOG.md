@@ -23,7 +23,7 @@ and this project adheres to
 * Added a way to disable raw frame support: define the new
   `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` macro.
 * Added a "Complete list of features" section to the README.
-* Added `MDNSClass::hostname()` for the returning the hostname of the responder,
+* Added `MDNSClass::hostname()` for returning the hostname of the responder,
   if running.
 * Added `EthernetUDP::operator bool()`.
 
