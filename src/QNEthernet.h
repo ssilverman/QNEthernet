@@ -146,10 +146,11 @@ class EthernetClass final {
   // Returns the link state, true for link and false for no link.
   bool linkState() const;
 
-  // Returns the link speed in Mbps.
+  // Returns the link speed in Mbps. This is only valid if the link is up.
   int linkSpeed() const;
 
-  // Returns the link duplex mode, true for full and false for half.
+  // Returns the link duplex mode, true for full and false for half. This is
+  // only valid if the link is up.
   bool linkIsFullDuplex() const;
 
   // Sets a link state callback.
