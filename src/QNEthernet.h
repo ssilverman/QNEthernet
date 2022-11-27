@@ -159,7 +159,7 @@ class EthernetClass final {
   }
 
   // Sets an address changed callback. This will be called if any of the three
-  // addresses changed.
+  // addresses changed: IP address, subnet mask, or gateway.
   void onAddressChanged(std::function<void()> cb) {
     addressChangedCB_ = cb;
   }
