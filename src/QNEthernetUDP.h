@@ -103,7 +103,7 @@ class EthernetUDP : public UDP {
   uint16_t remotePort() final;
 
   // Returns whether the socket is listening.
-  explicit operator bool() const;
+  explicit operator bool() const final;
 
  private:
   struct Packet {
