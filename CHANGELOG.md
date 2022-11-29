@@ -27,6 +27,8 @@ and this project adheres to
   if running.
 * Added `EthernetUDP::operator bool()`.
 * Added an already-started check to `MDNSClass`.
+* New section in the README: "`operator bool()` and `explicit`". It addresses
+  problems that may arise with `explicit operator bool()`.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

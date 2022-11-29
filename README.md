@@ -30,6 +30,7 @@ files provided with the lwIP release.
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
    9. [`IPAddress` operators](#ipaddress-operators)
+   10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -402,6 +403,46 @@ operators. They are declared as follows in the usual namespace:
 
 1. `bool operator==(const IPAddress &a, const IPAddress &b);`
 2. `bool operator!=(const IPAddress &a, const IPAddress &b);`
+
+### `operator bool()` and `explicit`
+
+All the `operator bool()` functions in the API are marked as `explicit`. This
+means that you might get compiler errors in some circumstances when trying to
+use a boolean-convertible object.
+
+You can use the object as a boolean expression. For example in an `if` statement
+or ternary conditional.
+
+You can't return the object as a `bool` from a function. For example, the
+following code should give a compiler error:
+
+```c++
+EthernetClient client_;
+
+bool isConnected() {
+  return client_;
+}
+```
+
+Instead, use the following code; it fixes the problem:
+
+```c++
+EthernetClient client_;
+
+bool isConnected() {
+  return client_ ? true : false;
+  // Or this:
+  // if (client_) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+}
+```
+
+See also:
+1. [The safe bool problem](https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem)
+2. [`explicit` specifier](https://en.cppreference.com/w/cpp/language/explicit)
 
 ## How to run
 
