@@ -95,10 +95,11 @@ class MDNSClass final {
                   const char *protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)(void));
 
-  // Removes a service. The host name is used as the service name.
+  // Removes a service. The host name is used as the service name. This will
+  // return whether the service was removed.
   bool removeService(const char *type, const char *protocol, uint16_t port);
 
-  // Removes a service.
+  // Removes a service and returns whether the service was removed.
   bool removeService(const char *name, const char *type,
                      const char *protocol, uint16_t port);
 

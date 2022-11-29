@@ -26,6 +26,7 @@ and this project adheres to
 * Added `MDNSClass::hostname()` for returning the hostname of the responder,
   if running.
 * Added `EthernetUDP::operator bool()`.
+* Added an already-started check to `MDNSClass`.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when
@@ -37,6 +38,8 @@ and this project adheres to
   `const char *` instead.
 * Made all `operator bool()` functions `explicit`.
   See: https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem
+* `MDNSClass::removeService()` now returns `false` instead of `true` if mDNS has
+  not been started.
 
 ### Removed
 * Removed the `QNETHERNET_FRAME_QUEUE_SIZE` macro and replaced it with
