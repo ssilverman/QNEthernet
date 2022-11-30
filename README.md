@@ -52,6 +52,7 @@ files provided with the lwIP release.
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 17. [Notes on RAM1 usage](#notes-on-ram1-usage)
 18. [Configuration macros](#configuration-macros)
+    1. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
 19. [Complete list of features](#complete-list-of-features)
 20. [Other notes](#other-notes)
 21. [To do](#to-do)
@@ -1023,6 +1024,28 @@ There are several macros that can be used to configure the system:
 | `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` | Disable raw frame support           | [Raw Ethernet Frames](#raw-ethernet-frames) |
 | `QNETHERNET_PROMISCUOUS_MODE`          | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
 | `QNETHERNET_WEAK_WRITE`                | Allow overriding `_write()`         | [stdio](#stdio)                             |
+
+### Redefining macros in `lwipopts.h`
+
+The `lwipopts.h` file defines certain macros needed by the system. It is
+appropriate for the user to alter some of those macros if needed, for example,
+to change the number of UDP sockets or IGMP groups.
+
+These macros can either be modified directly in the file (`lwipopts.h`) or from
+the command line with a `-D` directive. The ones that can be modified from the
+command line are either wrapped in an `#ifndef` block or not defined at all.
+
+Useful macro list; please see further descriptions in `opt.h` and
+in `mdns_opts.h`:
+
+| Macro                     | Description                     |
+| ------------------------- | ------------------------------- |
+| `MEM_SIZE`                | Heap memory size                |
+| `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups      |
+| `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets |
+| `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets           |
+| `MEMP_NUM_UDP_PCB`        | Number of UDP sockets           |
+| `MDNS_MAX_SERVICES`       | Maximum number of mDNS services |
 
 ## Complete list of features
 
