@@ -210,10 +210,9 @@ extern void *ram_heap;
 #define LWIP_SINGLE_NETIF              1
 #define LWIP_NETIF_HOSTNAME            1
 // #define LWIP_NETIF_API                 0
-#define LWIP_NETIF_STATUS_CALLBACK     1
-// For mDNS:
+// #define LWIP_NETIF_STATUS_CALLBACK     0
 #define LWIP_NETIF_EXT_STATUS_CALLBACK 1
-#define LWIP_NETIF_LINK_CALLBACK       1
+// #define LWIP_NETIF_LINK_CALLBACK       0
 // #define LWIP_NETIF_REMOVE_CALLBACK     0
 // #define LWIP_NETIF_HWADDRHINT          0
 // #define LWIP_NETIF_TX_SINGLE_PBUF      0
