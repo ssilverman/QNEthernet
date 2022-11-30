@@ -348,7 +348,8 @@ The `MDNS` object provides an mDNS API.
   string otherwise.
 * `removeService(type, protocol, port)`: Removes a service.
 * `restart()`: Restarts the responder, for use when the cable has been
-  disconnected for a while and then reconnected.
+  disconnected for a while and then reconnected. This isn't normally needed
+  because the responder already watches for link reconnect.
 * `operator bool()`: Tests if the mDNS responder is operating.
 * `static constexpr int maxServices()`: Returns the maximum number of
   supported services.

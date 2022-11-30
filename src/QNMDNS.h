@@ -55,6 +55,9 @@ class MDNSClass final {
 
   // Restarts the responder. This is useful when the cable has been disconnected
   // for a while and then reconnected.
+  //
+  // This isn't normally needed because the responder already watches for
+  // link reconnect.
   void restart();
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
