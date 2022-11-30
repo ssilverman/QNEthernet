@@ -72,6 +72,7 @@ and notes:
   calling these functions will cause the TCP/IP stack to never refresh. Note
   that many of the I/O functions call `loop()` so that there's less burden on
   the calling code.
+* The `Ethernet.begin(...)` functions don't block.
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
@@ -465,7 +466,8 @@ here are a few steps to follow:
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
 
    Alternatively, you can use [listeners](#how-to-use-listeners) to watch for
-   address and link changes. This obviates the need for waiting.
+   address and link changes. This obviates the need for waiting and is the
+   preferred approach.
 
 6. `Ethernet.hardwareStatus()` always returns `EthernetOtherHardware`. This
    means that there is no reason to call this function.
