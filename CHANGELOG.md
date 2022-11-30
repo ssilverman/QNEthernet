@@ -42,6 +42,7 @@ and this project adheres to
   See: https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem
 * `MDNSClass::removeService()` now returns `false` instead of `true` if mDNS has
   not been started.
+* Enable definition of certain macros in `lwipopts.h` from the command line.
 
 ### Removed
 * Removed the `QNETHERNET_FRAME_QUEUE_SIZE` macro and replaced it with
