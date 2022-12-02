@@ -10,6 +10,7 @@
 #ifndef QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

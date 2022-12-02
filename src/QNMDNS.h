@@ -8,6 +8,7 @@
 #define QNE_MDNS_H_
 
 // C++ includes
+#include <cstdint>
 #include <vector>
 
 #include <WString.h>

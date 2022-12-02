@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <cstring>
 
 #include "lwip/apps/mdns.h"
 

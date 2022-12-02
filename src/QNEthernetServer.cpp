@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "QNEthernet.h"
-#include "QNEthernetClient.h"
 #include "internal/ConnectionManager.h"
 
 namespace qindesign {

@@ -8,6 +8,7 @@
 #define QNE_DNSCLIENT_H_
 
 // C++ includes
+#include <cstdint>
 #include <functional>
 
 #include <IPAddress.h>

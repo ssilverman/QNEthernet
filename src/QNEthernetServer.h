@@ -8,6 +8,7 @@
 #define QNE_ETHERNETSERVER_H_
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 
 #include <Print.h>

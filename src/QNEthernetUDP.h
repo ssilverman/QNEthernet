@@ -8,6 +8,7 @@
 #define QNE_ETHERNETUDP_H_
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

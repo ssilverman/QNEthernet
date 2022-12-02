@@ -15,7 +15,6 @@
 #include "QNDNSClient.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
-#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {
