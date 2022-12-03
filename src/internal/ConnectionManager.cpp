@@ -19,7 +19,10 @@ namespace qindesign {
 namespace network {
 namespace internal {
 
-ConnectionManager ConnectionManager::manager;
+ConnectionManager &ConnectionManager::instance() {
+  static ConnectionManager instance;
+  return instance;
+}
 
 // Connection state callback.
 err_t ConnectionManager::connectedFunc(void *arg, struct tcp_pcb *tpcb,

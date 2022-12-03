@@ -37,9 +37,7 @@ namespace network {
 class EthernetFrameClass final : public Stream {
  public:
   // Accesses the singleton instance.
-  static EthernetFrameClass &instance() {
-    return instance_;
-  }
+  static EthernetFrameClass &instance();
 
   // EthernetFrameClass is neither copyable nor movable
   EthernetFrameClass(const EthernetFrameClass &) = delete;
@@ -154,9 +152,6 @@ class EthernetFrameClass final : public Stream {
   // Outgoing frames
   bool hasOutFrame_ = false;
   Frame outFrame_;
-
-  // The singleton instance.
-  static EthernetFrameClass instance_;
 
   friend err_t ::unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 };

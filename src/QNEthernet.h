@@ -61,9 +61,7 @@ class EthernetClass final {
   static constexpr int kMACAddrSize = 6;
 
   // Accesses the singleton instance.
-  static EthernetClass &instance() {
-    return instance_;
-  }
+  static EthernetClass &instance();
 
   // EthernetClass is neither copyable nor movable
   EthernetClass(const EthernetClass &) = delete;
@@ -272,9 +270,6 @@ class EthernetClass final {
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
-
-  // The singleton instance.
-  static EthernetClass instance_;
 };
 
 // Instance for interacting with the library.

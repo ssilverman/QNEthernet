@@ -19,8 +19,10 @@
 namespace qindesign {
 namespace network {
 
-// Define the singleton instance.
-EthernetClass EthernetClass::instance_;
+EthernetClass &EthernetClass::instance() {
+  static EthernetClass instance;
+  return instance;
+}
 
 // A reference to the singleton.
 EthernetClass &Ethernet = EthernetClass::instance();

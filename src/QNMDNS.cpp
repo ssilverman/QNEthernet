@@ -19,8 +19,10 @@ namespace network {
 // Recommended DNS TTL value, in seconds, per RFC 6762 "Multicast DNS".
 static constexpr uint32_t kTTL = 120;
 
-// Define the singleton instance.
-MDNSClass MDNSClass::instance_;
+MDNSClass &MDNSClass::instance() {
+  static MDNSClass instance;
+  return instance;
+}
 
 // A reference to the singleton.
 MDNSClass &MDNS = MDNSClass::instance();

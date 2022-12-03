@@ -22,9 +22,8 @@ namespace internal {
 // ConnectionState holds all the state needed for a connection.
 class ConnectionManager final {
  public:
-  static ConnectionManager &instance() {
-    return manager;
-  }
+  // Accesses the singleton instance.
+  static ConnectionManager &instance();
 
   std::shared_ptr<ConnectionHolder> connect(const ip_addr_t *ipaddr,
                                             uint16_t port);
@@ -57,8 +56,6 @@ class ConnectionManager final {
   int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
  private:
-  static ConnectionManager manager;
-
   ConnectionManager() = default;
   ~ConnectionManager() = default;
 

@@ -25,9 +25,7 @@ namespace network {
 class MDNSClass final {
  public:
   // Accesses the singleton instance.
-  static MDNSClass &instance() {
-    return instance_;
-  }
+  static MDNSClass &instance();
 
   // MDNSClass is neither copyable nor movable
   MDNSClass(const MDNSClass &) = delete;
@@ -169,9 +167,6 @@ class MDNSClass final {
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
-
-  // The singleton instance.
-  static MDNSClass instance_;
 };
 
 }  // namespace network

@@ -32,8 +32,10 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {
 namespace qindesign {
 namespace network {
 
-// Define the singleton instance.
-EthernetFrameClass EthernetFrameClass::instance_;
+EthernetFrameClass &EthernetFrameClass::instance() {
+  static EthernetFrameClass instance;
+  return instance;
+}
 
 // A reference to the singleton.
 EthernetFrameClass &EthernetFrame = EthernetFrameClass::instance();
