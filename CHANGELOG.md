@@ -29,6 +29,8 @@ and this project adheres to
 * Added an already-started check to `MDNSClass`.
 * New section in the README: "`operator bool()` and `explicit`". It addresses
   problems that may arise with `explicit operator bool()`.
+* Added `EthernetClient::connectionId()` for identifying connections across
+  possibly multiple `EthernetClient` objects.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

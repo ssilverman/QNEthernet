@@ -214,6 +214,9 @@ The `Ethernet` object is the main Ethernet interface.
 * `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
   half-close operation.
+* `connectionId()`: Returns an ID for the connection to which the client refers.
+  It will return non-zero if connected and zero if not connected. Note that it's
+  possible for new connections to reuse previously-used IDs.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).

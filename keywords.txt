@@ -64,6 +64,7 @@ localPort	KEYWORD2	ClientLocalPort
 data	KEYWORD2
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
+connectionId	KEYWORD2
 writeFully	KEYWORD2
 write	KEYWORD2
 availableForWrite	KEYWORD2

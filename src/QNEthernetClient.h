@@ -68,6 +68,19 @@ class EthernetClient : public Client {
   IPAddress remoteIP();
   uint16_t remotePort();
 
+  // Returns an ID for the connection to which this client refers. It will
+  // return non-zero if connected and zero if not connected.
+  //
+  // This is useful because of the way EthernetClient objects can be passed
+  // around, copied, and moved, etc. Just taking an address of the object won't
+  // work because more than one object could refer to the same connection.
+  //
+  // Note that while multiple active connections won't share the same ID, it's
+  // possible for new connections to reuse IDs that aren't currently in use. In
+  // other words, there is a one-to-one correspondence between the set of
+  // connection IDs and currently active connections.
+  uintptr_t connectionId();
+
   // Bring Print::write functions into scope
   using Print::write;
 

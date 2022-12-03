@@ -241,6 +241,16 @@ uint16_t EthernetClient::remotePort() {
   return state->pcb->remote_port;
 }
 
+uintptr_t EthernetClient::connectionId() {
+  if (conn_ != nullptr && conn_->connected) {
+    const auto &state = conn_->state;
+    if (state != nullptr) {
+      return reinterpret_cast<uintptr_t>(state->pcb);
+    }
+  }
+  return 0;
+}
+
 // --------------------------------------------------------------------------
 //  Transmission
 // --------------------------------------------------------------------------
