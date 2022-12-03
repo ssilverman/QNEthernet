@@ -40,7 +40,7 @@ struct ConnectionState final {
   tcp_pcb *volatile pcb = nullptr;
 
   // Incoming data buffer
-  std::vector<unsigned char> buf;
+  std::vector<uint8_t> buf;
   volatile size_t bufPos = 0;
 
   // Called from the desctructor after the callback arg is deleted.

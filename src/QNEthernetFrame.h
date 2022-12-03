@@ -104,7 +104,7 @@ class EthernetFrameClass final : public Stream {
   int parseFrame();
   int available() override;
   int read() override;
-  int read(unsigned char *buffer, size_t len);
+  int read(uint8_t *buffer, size_t len);
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
@@ -117,7 +117,7 @@ class EthernetFrameClass final : public Stream {
   int availableForWrite() override;
 
   // Returns a pointer to the received frame data.
-  const unsigned char *data() const;
+  const uint8_t *data() const;
 
   // Sets the receive queue size. This will use a minimum of 1.
   //
@@ -130,7 +130,7 @@ class EthernetFrameClass final : public Stream {
 
  private:
   struct Frame {
-    std::vector<unsigned char> data;
+    std::vector<uint8_t> data;
   };
 
   EthernetFrameClass();

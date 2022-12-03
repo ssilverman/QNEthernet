@@ -48,7 +48,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
     packet.data.reserve(p->tot_len);
     // TODO: Limit vector size
     while (p != nullptr) {
-      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+      uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
       packet.data.insert(packet.data.end(), &data[0], &data[p->len]);
       p = p->next;
     }
@@ -196,7 +196,7 @@ int EthernetUDP::read() {
   return packet_.data[packetPos_++];
 }
 
-int EthernetUDP::read(unsigned char *buffer, size_t len) {
+int EthernetUDP::read(uint8_t *buffer, size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
@@ -209,7 +209,7 @@ int EthernetUDP::read(unsigned char *buffer, size_t len) {
 }
 
 int EthernetUDP::read(char *buffer, size_t len) {
-  return read(reinterpret_cast<unsigned char *>(buffer), len);
+  return read(reinterpret_cast<uint8_t *>(buffer), len);
 }
 
 int EthernetUDP::peek() {
@@ -229,7 +229,7 @@ size_t EthernetUDP::size() const {
   return packet_.data.size();
 }
 
-const unsigned char *EthernetUDP::data() const {
+const uint8_t *EthernetUDP::data() const {
   return packet_.data.data();
 }
 

@@ -47,7 +47,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
   frame.data.reserve(p->tot_len);
   // TODO: Limit vector size
   while (p != nullptr) {
-    unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+    uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
     frame.data.insert(frame.data.end(), &data[0], &data[p->len]);
     p = p->next;
   }
@@ -120,7 +120,7 @@ int EthernetFrameClass::read() {
   return frame_.data[framePos_++];
 }
 
-int EthernetFrameClass::read(unsigned char *buffer, size_t len) {
+int EthernetFrameClass::read(uint8_t *buffer, size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
@@ -133,7 +133,7 @@ int EthernetFrameClass::read(unsigned char *buffer, size_t len) {
 }
 
 int EthernetFrameClass::read(char *buffer, size_t len) {
-  return read(reinterpret_cast<unsigned char *>(buffer), len);
+  return read(reinterpret_cast<uint8_t *>(buffer), len);
 }
 
 int EthernetFrameClass::peek() {
@@ -143,7 +143,7 @@ int EthernetFrameClass::peek() {
   return frame_.data[framePos_];
 }
 
-const unsigned char *EthernetFrameClass::data() const {
+const uint8_t *EthernetFrameClass::data() const {
   return frame_.data.data();
 }
 

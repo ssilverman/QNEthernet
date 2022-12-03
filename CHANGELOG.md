@@ -43,6 +43,7 @@ and this project adheres to
 * `MDNSClass::removeService()` now returns `false` instead of `true` if mDNS has
   not been started.
 * Enable definition of certain macros in `lwipopts.h` from the command line.
+* Changed API uses of `unsigned char` to `uint8_t`, for consistency.
 
 ### Removed
 * Removed the `QNETHERNET_FRAME_QUEUE_SIZE` macro and replaced it with

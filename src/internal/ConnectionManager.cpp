@@ -120,7 +120,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
       if (p != nullptr) {
         // Copy pbuf contents
         while (p != nullptr) {
-          unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+          uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
           holder->remaining.insert(holder->remaining.end(),
                                    &data[0], &data[p->len]);
           p = p->next;
@@ -175,7 +175,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
 
     // Copy all the data from the pbuf
     while (p != nullptr) {
-      unsigned char *data = reinterpret_cast<unsigned char *>(p->payload);
+      uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
       v.insert(v.end(), &data[0], &data[p->len]);
       p = p->next;
     }

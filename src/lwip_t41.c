@@ -783,7 +783,7 @@ static const uint32_t kCRC32Lookup[256] PROGMEM = {
 //   }
 // }
 
-static uint32_t crc32(uint32_t crc, const unsigned char *data, size_t len) {
+static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   crc = ~crc;
   while (len--) {
     crc = (crc >> 8) ^ kCRC32Lookup[(crc ^ *(data++)) & 0xff];

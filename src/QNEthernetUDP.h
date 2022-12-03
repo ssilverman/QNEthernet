@@ -83,7 +83,7 @@ class EthernetUDP : public UDP {
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(unsigned char *buffer, size_t len) final;
+  int read(uint8_t *buffer, size_t len) final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
@@ -98,7 +98,7 @@ class EthernetUDP : public UDP {
 
   // Returns a pointer to the received packet data. This is only valid if a
   // packet has been received with parsePacket().
-  const unsigned char *data() const;
+  const uint8_t *data() const;
 
   IPAddress remoteIP() final;
   uint16_t remotePort() final;
@@ -108,7 +108,7 @@ class EthernetUDP : public UDP {
 
  private:
   struct Packet {
-    std::vector<unsigned char> data;
+    std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
   };
