@@ -31,8 +31,6 @@ class MDNSClass final {
   MDNSClass(const MDNSClass &) = delete;
   MDNSClass &operator=(const MDNSClass &) = delete;
 
-  ~MDNSClass();
-
   // Returns the maximum number of services this can support.
   static constexpr int maxServices() {
     return MDNS_MAX_SERVICES;
@@ -156,6 +154,7 @@ class MDNSClass final {
   };
 
   MDNSClass() = default;
+  ~MDNSClass();
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.

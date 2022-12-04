@@ -67,8 +67,6 @@ class EthernetClass final {
   EthernetClass(const EthernetClass &) = delete;
   EthernetClass &operator=(const EthernetClass &) = delete;
 
-  ~EthernetClass();
-
   // Returns the maximum number of multicast groups. Note that mDNS will use
   // one group.
   static constexpr int maxMulticastGroups() {
@@ -249,6 +247,8 @@ class EthernetClass final {
   // address. If the given address is NULL then this uses the built-in
   // MAC address.
   EthernetClass(const uint8_t mac[6]);
+
+  ~EthernetClass();
 
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
