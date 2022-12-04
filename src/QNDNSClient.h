@@ -62,6 +62,7 @@ class DNSClient final {
   };
 
   DNSClient() = default;
+  ~DNSClient() = default;
 
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
