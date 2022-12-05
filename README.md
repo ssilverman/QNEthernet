@@ -1060,28 +1060,30 @@ _QNEthernet_ library.
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
 3. Automatic MAC address detection; it's not necessary to initialize the library
    with your own MAC address
-4. [mDNS](#mdns) support
-5. [Raw Ethernet frame](#raw-ethernet-frames) support
-6. [`stdio`](#stdio) output support for `stdout` and `stderr` &mdash;
+4. A [DNS client](#dnsclient)
+5. [mDNS](#mdns) support
+6. [Raw Ethernet frame](#raw-ethernet-frames) support
+7. [`stdio`](#stdio) output support for `stdout` and `stderr` &mdash;
    implemented to support lwIP's `printf()` calls, but user code can use this
    too
-7. [VLAN tagging](#how-to-implement-vlan-tagging) support
-8. [Zero-length UDP packets](#parsepacket-return-values)
-9. [UDP](#udp-receive-buffering) and [raw frame](#raw-frame-receive-buffering)
-   receive buffering
-10. [Listeners](#how-to-use-listeners) to watch link and address state
-11. IPv6-capable with some additions
-12. IEEE1588-capable with some additions
-13. [Client shutdown options](#ethernetclient): _close_ (start close process
+8. [VLAN tagging](#how-to-implement-vlan-tagging) support
+9. [Zero-length UDP packets](#parsepacket-return-values)
+10. [UDP](#udp-receive-buffering) and [raw frame](#raw-frame-receive-buffering)
+    receive buffering
+11. [Listeners](#how-to-use-listeners) to watch link and address state
+12. IPv6-capable with some additions
+13. IEEE1588-capable with some additions
+14. [Client shutdown options](#ethernetclient): _close_ (start close process
     without waiting), _closeOutput_ (close just the output side, also called a
     "half-close"), _abort_ (shuts down the connection without going through the
     TCP close process), _stop_ (close and wait)
-14. Ability to [fully write](#how-to-write-data-to-connections) data to a
+15. Ability to [fully write](#how-to-write-data-to-connections) data to a
     client connection
-15. [Multicast](#how-to-use-multicast) support
-16. [Promiscuous mode](#promiscuous-mode)
-17. `SO_REUSEADDR` support
-18. [`TCP_NODELAY`](#tcp-socket-options) support
+16. [Multicast](#how-to-use-multicast) support
+17. [Promiscuous mode](#promiscuous-mode)
+18. `SO_REUSEADDR` support
+19. [`TCP_NODELAY`](#tcp-socket-options) support
+20. Configuration via [Configuration macros](#configuration-macros)
 
 ## Other notes
 
