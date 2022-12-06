@@ -42,7 +42,7 @@ class Receiver {
   virtual void handleCommand(int command,
                              const unsigned char *data, int len) {}
 
-  // Starts receiving pixels from a packet. The `complete` paameter
+  // Starts receiving pixels from a packet. The `complete` parameter
   // indicates whether the complete set of pixels will be included in
   // the pixel data.
   virtual void startPixels(bool complete) = 0;
