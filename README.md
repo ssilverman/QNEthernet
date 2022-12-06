@@ -918,7 +918,7 @@ over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 [PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
 
 To disable raw frame support, define the `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT`
-macro.
+macro. This will save some space.
 
 ### Promiscuous mode
 
