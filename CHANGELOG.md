@@ -31,6 +31,7 @@ and this project adheres to
   problems that may arise with `explicit operator bool()`.
 * Added `EthernetClient::connectionId()` for identifying connections across
   possibly multiple `EthernetClient` objects.
+* Added `EthernetClass::isDHCPActive()`.
 
 ### Changed
 * Improved error code messages in `lwip_strerr(err)`. This is used when

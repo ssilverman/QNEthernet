@@ -101,6 +101,11 @@ class EthernetClass final {
   // See: waitForLocalIP(timeout)
   bool begin();
 
+  // Returns whether DHCP is active.
+  bool isDHCPActive() const {
+    return dhcpActive_;
+  }
+
   // Waits, up to the specified timeout, for an IP address and returns whether
   // one was acquired. The timeout is in milliseconds.
   bool waitForLocalIP(uint32_t timeout) const;
@@ -266,6 +271,8 @@ class EthernetClass final {
   String hostname_{"teensy-lwip"};  // Empty means no hostname
 #endif
   struct netif *netif_ = nullptr;
+
+  bool dhcpActive_ = false;
 
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;

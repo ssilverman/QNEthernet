@@ -109,6 +109,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   }
 
   dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
+  dhcpActive_ = false;
   netif_set_down(netif_);
 
   begin(netif_ip4_addr(netif_),
@@ -153,6 +154,7 @@ bool EthernetClass::begin(const IPAddress &ip,
         !ip4_addr_isany_val(netmask) ||
         !ip4_addr_isany_val(gw)) {
       dhcp_release_and_stop(netif_);
+      dhcpActive_ = false;
     }
     netif_set_down(netif_);
   }
@@ -186,8 +188,10 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
       !ip4_addr_isany(netmask) ||
       !ip4_addr_isany(gw)) {
     dhcp_inform(netif_);
+    dhcpActive_ = false;
   } else {
     retval = (dhcp_start(netif_) == ERR_OK);
+    dhcpActive_ = retval;
   }
 
   ethActive = true;
@@ -263,6 +267,7 @@ void EthernetClass::end() {
 
   DNSClient::setServer(0, INADDR_NONE);
   dhcp_release_and_stop(netif_);
+  dhcpActive_ = false;
   netif_set_down(netif_);
 
   enet_deinit();

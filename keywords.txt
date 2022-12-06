@@ -29,6 +29,7 @@ setMACAddress	KEYWORD2	EthernetSetMACAddress
 mtu	KEYWORD2
 loop	KEYWORD2
 begin	KEYWORD2
+isDHCPActive	KEYWORD2
 waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2
 end	KEYWORD2
