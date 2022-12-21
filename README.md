@@ -1045,6 +1045,7 @@ in `mdns_opts.h`:
 
 | Macro                     | Description                     |
 | ------------------------- | ------------------------------- |
+| `LWIP_MDNS_RESPONDER`     | Zero to disable                 |
 | `MEM_SIZE`                | Heap memory size                |
 | `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups      |
 | `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets |
