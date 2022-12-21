@@ -132,7 +132,7 @@ and notes:
   * _src/arch/cc.h_
 * The main include file, `QNEthernet.h`, in addition to including the
   `Ethernet`, `EthernetFrame`, and `MDNS` instances, also includes the headers
-  headers for `EthernetClient`, `EthernetServer`, and `EthernetUDP`.
+  for `EthernetClient`, `EthernetServer`, and `EthernetUDP`.
 * Most of the `Ethernet` functions do nothing or return some form of
   empty/nothing/false unless the system has been initialized.
 
@@ -1082,7 +1082,8 @@ _QNEthernet_ library.
     client connection
 16. [Multicast](#how-to-use-multicast) support
 17. [Promiscuous mode](#promiscuous-mode)
-18. `SO_REUSEADDR` support
+18. `SO_REUSEADDR` support (see [`EthernetServer`](#ethernetserver)
+    and [`EthernetUDP`](#ethernetudp))
 19. [`TCP_NODELAY`](#tcp-socket-options) support
 20. Configuration via [Configuration macros](#configuration-macros)
 
