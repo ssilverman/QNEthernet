@@ -50,7 +50,9 @@ extern void *ram_heap;
 #ifndef MEMP_NUM_TCP_PCB
 #define MEMP_NUM_TCP_PCB                   8
 #endif  // MEMP_NUM_TCP_PCB
+// #ifndef MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_PCB_LISTEN            8
+// #endif  // MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_SEG                   16
 // #define MEMP_NUM_ALTCP_PCB                 MEMP_NUM_TCP_PCB
 // #define MEMP_NUM_REASSDATA                 5
