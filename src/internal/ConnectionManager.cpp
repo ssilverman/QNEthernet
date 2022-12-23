@@ -376,13 +376,13 @@ size_t ConnectionManager::write(uint16_t port, uint8_t b) {
                     if (tcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
-                    EthernetClass::loop();
+                    Ethernet.loop();
                   }
                   if (tcp_sndbuf(state->pcb) >= 1) {
                     tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
                   }
                 });
-  EthernetClass::loop();
+  Ethernet.loop();
   return 1;
 }
 
@@ -401,14 +401,14 @@ size_t ConnectionManager::write(uint16_t port, const uint8_t *b, size_t len) {
                     if (tcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
-                    EthernetClass::loop();
+                    Ethernet.loop();
                   }
                   uint16_t len = std::min(size16, tcp_sndbuf(state->pcb));
                   if (len > 0) {
                     tcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
                   }
                 });
-  EthernetClass::loop();
+  Ethernet.loop();
   return len;
 }
 
@@ -421,7 +421,7 @@ void ConnectionManager::flush(uint16_t port) {
                   }
                   tcp_output(state->pcb);
                 });
-  EthernetClass::loop();
+  Ethernet.loop();
 }
 
 int ConnectionManager::availableForWrite(uint16_t port) {

@@ -87,7 +87,7 @@ uint8_t EthernetClient::connected() {
     conn_ = nullptr;
     return false;
   }
-  EthernetClass::loop();  // Allow information to come in
+  Ethernet.loop();  // Allow information to come in
   return true;
 }
 
@@ -101,7 +101,7 @@ EthernetClient::operator bool() {
     }
     return false;
   }
-  EthernetClass::loop();  // Allow information to come in
+  Ethernet.loop();  // Allow information to come in
   return true;
 }
 
@@ -155,7 +155,7 @@ void EthernetClient::close(bool wait) {
   if (conn_->connected) {
     // First try to flush any data
     tcp_output(state->pcb);
-    EthernetClass::loop();  // Maybe some TCP data gets in
+    Ethernet.loop();  // Maybe some TCP data gets in
     // NOTE: loop() requires a re-check of the state
 
     if (state != nullptr) {
@@ -185,7 +185,7 @@ void EthernetClient::closeOutput() {
 
   // First try to flush any data
   tcp_output(state->pcb);
-  EthernetClass::loop();  // Maybe some TCP data gets in
+  Ethernet.loop();  // Maybe some TCP data gets in
   // NOTE: loop() requires a re-check of the state
 
   if (state != nullptr) {
@@ -297,7 +297,7 @@ size_t EthernetClient::write(uint8_t b) {
       written = 1;
     }
   }
-  EthernetClass::loop();  // Loop to allow incoming TCP data
+  Ethernet.loop();  // Loop to allow incoming TCP data
   return written;
 }
 
@@ -312,7 +312,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   }
 
   if (size == 0) {
-    EthernetClass::loop();  // Loop to allow incoming TCP data
+    Ethernet.loop();  // Loop to allow incoming TCP data
     return 0;
   }
 
@@ -328,7 +328,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     }
   }
 
-  EthernetClass::loop();  // Loop to allow incoming TCP data
+  Ethernet.loop();  // Loop to allow incoming TCP data
   return size;
 }
 
@@ -346,7 +346,7 @@ int EthernetClient::availableForWrite() {
     tcp_output(state->pcb);
   }
 
-  EthernetClass::loop();  // Loop to allow incoming TCP data
+  Ethernet.loop();  // Loop to allow incoming TCP data
   // NOTE: loop() requires a re-check of the state
   if (state == nullptr) {
     return 0;
@@ -364,7 +364,7 @@ void EthernetClient::flush() {
   }
 
   tcp_output(state->pcb);
-  EthernetClass::loop();  // Loop to allow incoming TCP data
+  Ethernet.loop();  // Loop to allow incoming TCP data
 }
 
 // --------------------------------------------------------------------------
@@ -396,7 +396,7 @@ int EthernetClient::available() {
   if (state == nullptr) {
     return 0;
   }
-  EthernetClass::loop();  // Allow data to come in
+  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
@@ -428,7 +428,7 @@ int EthernetClient::read() {
   if (state == nullptr) {
     return 0;
   }
-  EthernetClass::loop();  // Allow data to come in
+  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
@@ -468,7 +468,7 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return 0;
   }
 
-  EthernetClass::loop();  // Allow data to come in
+  Ethernet.loop();  // Allow data to come in
   if (size == 0) {
     return 0;
   }
@@ -503,7 +503,7 @@ int EthernetClient::peek() {
   if (state == nullptr) {
     return 0;
   }
-  EthernetClass::loop();  // Allow data to come in
+  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;

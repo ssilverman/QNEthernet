@@ -92,7 +92,7 @@ int EthernetFrameClass::parseFrame() {
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
-  EthernetClass::loop();  // Allow the stack to move along
+  Ethernet.loop();  // Allow the stack to move along
 
   if (frame_.data.size() > 0) {
     framePos_ = 0;

@@ -65,7 +65,7 @@ bool EthernetServer::end() {
 EthernetClient EthernetServer::accept() const {
   if (port_ >= 0) {
     auto conn = internal::ConnectionManager::instance().findConnected(port_);
-    EthernetClass::loop();
+    Ethernet.loop();
     if (conn != nullptr) {
       internal::ConnectionManager::instance().remove(conn);
       return EthernetClient{conn};
@@ -77,7 +77,7 @@ EthernetClient EthernetServer::accept() const {
 EthernetClient EthernetServer::available() const {
   if (port_ >= 0) {
     auto conn = internal::ConnectionManager::instance().findAvailable(port_);
-    EthernetClass::loop();
+    Ethernet.loop();
     if (conn != nullptr) {
       return EthernetClient{conn};
     }

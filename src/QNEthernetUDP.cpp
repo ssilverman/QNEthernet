@@ -171,7 +171,7 @@ int EthernetUDP::parsePacket() {
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
-  EthernetClass::loop();  // Allow the stack to move along
+  Ethernet.loop();  // Allow the stack to move along
 
   packetPos_ = 0;
   return packet_.data.size();

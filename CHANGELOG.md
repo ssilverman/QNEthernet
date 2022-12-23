@@ -11,6 +11,7 @@ and this project adheres to
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added
   it to the README.
+* Made `EthernetClass::loop()` non-static.
 
 ## [0.17.0]
 

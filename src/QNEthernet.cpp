@@ -34,7 +34,7 @@ static bool ethActive = false;
 // Attach the loop() call to yield() via EventResponder.
 static void attachLoopToYield() {
   ethLoop.attach([](EventResponderRef r) {
-    EthernetClass::loop();
+    Ethernet.loop();
     if (ethActive) {
       r.triggerEvent();
     }
@@ -116,9 +116,6 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
         netif_ip4_netmask(netif_),
         netif_ip4_gw(netif_));
 }
-
-// Declare this static object.
-elapsedMillis EthernetClass::pollTimer_;
 
 void EthernetClass::loop() {
   enet_proc_input();

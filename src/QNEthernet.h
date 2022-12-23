@@ -92,7 +92,7 @@ class EthernetClass final {
   void setMACAddress(const uint8_t mac[6]);
 
   // Call often.
-  static void loop();
+  void loop();
 
   // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
   // client was successful. Note that when this returns, an IP address may not
@@ -266,7 +266,7 @@ class EthernetClass final {
              const ip4_addr_t *netmask,
              const ip4_addr_t *gw);
 
-  static elapsedMillis pollTimer_;
+  elapsedMillis pollTimer_;
 
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME
