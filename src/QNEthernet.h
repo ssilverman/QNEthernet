@@ -266,7 +266,7 @@ class EthernetClass final {
              const ip4_addr_t *netmask,
              const ip4_addr_t *gw);
 
-  static elapsedMillis loopTimer_;
+  static elapsedMillis pollTimer_;
 
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME

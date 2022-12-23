@@ -118,14 +118,14 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
 }
 
 // Declare this static object.
-elapsedMillis EthernetClass::loopTimer_;
+elapsedMillis EthernetClass::pollTimer_;
 
 void EthernetClass::loop() {
   enet_proc_input();
 
-  if (loopTimer_ >= kPollInterval) {
+  if (pollTimer_ >= kPollInterval) {
     enet_poll();
-    loopTimer_ = 0;
+    pollTimer_ = 0;
   }
 }
 
