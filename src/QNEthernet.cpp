@@ -123,7 +123,7 @@ elapsedMillis EthernetClass::loopTimer_;
 void EthernetClass::loop() {
   enet_proc_input();
 
-  if (loopTimer_ >= 125) {
+  if (loopTimer_ >= kPollInterval) {
     enet_poll();
     loopTimer_ = 0;
   }

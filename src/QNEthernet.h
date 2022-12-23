@@ -244,6 +244,8 @@ class EthernetClass final {
   explicit operator bool() const;
 
  private:
+  static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
+
   // Creates a new network interface. This sets the MAC address to the built-in
   // MAC address. This calls the other constructor with a NULL address.
   EthernetClass();
