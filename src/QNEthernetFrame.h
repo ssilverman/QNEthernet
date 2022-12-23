@@ -127,7 +127,7 @@ class EthernetFrameClass final : public Stream {
   void setReceiveQueueSize(size_t size);
 
  private:
-  struct Frame {
+  struct Frame final {
     std::vector<uint8_t> data;
   };
 

@@ -119,7 +119,7 @@ class MDNSClass final {
   void announce() const;
 
  private:
-  struct Service {
+  struct Service final {
     bool operator==(const Service &other) {
       if (!valid || !other.valid) {
         // Invalid services compare unequal

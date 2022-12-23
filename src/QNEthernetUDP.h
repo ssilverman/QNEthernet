@@ -107,7 +107,7 @@ class EthernetUDP : public UDP {
   explicit operator bool() const;
 
  private:
-  struct Packet {
+  struct Packet final {
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
