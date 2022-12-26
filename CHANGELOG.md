@@ -12,6 +12,7 @@ and this project adheres to
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added
   it to the README.
 * Made `EthernetClass::loop()` non-static.
+* Changed serial output in examples to use CRLF line endings.
 
 ## [0.17.0]
 

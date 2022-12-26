@@ -38,18 +38,18 @@ void setup() {
     // Wait for Serial to initialize
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting...\n");
+  printf("Starting...\r\n");
 
   // Print the MAC address
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Initialize Ethernet, in this case with DHCP
-  printf("Starting Ethernet with DHCP...\n");
+  printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\n");
+    printf("Failed to start Ethernet\r\n");
     return;
   }
 }
@@ -69,7 +69,7 @@ void loop() {
     for (int i = 0; i < size; i++) {
       printf(" %02x", buf[i]);
     }
-    printf("\n");
+    printf("\r\n");
     return;
   }
 
@@ -88,7 +88,7 @@ void loop() {
   // Loop because there could be more than one of these
   while (tag == kEtherTypeQinQ) {  // IEEE 802.1ad (QinQ)
     if (payloadStart + 4 > size) {
-      printf(" TRUNCATED QinQ\n");
+      printf(" TRUNCATED QinQ\r\n");
       return;
     }
 
@@ -101,7 +101,7 @@ void loop() {
 
   if (tag == kEtherTypeVLAN) {  // IEEE 802.1Q (VLAN tagging)
     if (payloadStart + 4 > size) {
-      printf(" TRUNCATED VLAN\n");
+      printf(" TRUNCATED VLAN\r\n");
       return;
     }
 
@@ -121,9 +121,9 @@ void loop() {
 
   int payloadEnd = size;
   if (tag > EthernetFrame.maxFrameLen()) {
-    printf(" type=%04Xh\n", tag);
+    printf(" type=%04Xh\r\n", tag);
   } else {
-    printf(" length=%d\n", tag);
+    printf(" length=%d\r\n", tag);
     payloadEnd = std::min(payloadStart + tag, payloadEnd);
   }
 
@@ -131,5 +131,5 @@ void loop() {
   for (int i = payloadStart; i < payloadEnd; i++) {
     printf(" %02x", buf[i]);
   }
-  printf("\n");
+  printf("\r\n");
 }

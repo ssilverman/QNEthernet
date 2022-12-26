@@ -35,7 +35,7 @@ void setup() {
   // Print the MAC address
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  Serial.printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  Serial.printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Initialize Ethernet, in this case with DHCP
@@ -50,15 +50,15 @@ void setup() {
   }
 
   IPAddress ip = Ethernet.localIP();
-  Serial.printf("    Local IP     = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  Serial.printf("    Local IP     = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.subnetMask();
-  Serial.printf("    Subnet mask  = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  Serial.printf("    Subnet mask  = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.broadcastIP();
-  Serial.printf("    Broadcast IP = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  Serial.printf("    Broadcast IP = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.gatewayIP();
-  Serial.printf("    Gateway      = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  Serial.printf("    Gateway      = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.dnsServerIP();
-  Serial.printf("    DNS          = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  Serial.printf("    DNS          = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   // Listen on port and start an mDNS service
   udp.begin(kOSCPort);
@@ -69,10 +69,10 @@ void setup() {
     if (!MDNS.addService("_osc", "_udp", kOSCPort)) {
       Serial.println("ERROR: Adding service.");
     } else {
-      Serial.printf("Started mDNS service:\n"
-                    "    Name: %s\n"
-                    "    Type: _osc._udp\n"
-                    "    Port: %u\n",
+      Serial.printf("Started mDNS service:\r\n"
+                    "    Name: %s\r\n"
+                    "    Type: _osc._udp\r\n"
+                    "    Port: %u\r\n",
                     kServiceName, kOSCPort);
     }
   }

@@ -45,31 +45,31 @@ void setup() {
     // Wait for Serial to initialize
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting...\n");
+  printf("Starting...\r\n");
 
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-  printf("Starting Ethernet with DHCP...\n");
+  printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\n");
+    printf("Failed to start Ethernet\r\n");
     return;
   }
   if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-    printf("Failed to get IP address from DHCP\n");
+    printf("Failed to get IP address from DHCP\r\n");
     return;
   }
 
   IPAddress ip = Ethernet.localIP();
-  printf("    Local IP    = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  printf("    Local IP    = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.subnetMask();
-  printf("    Subnet mask = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  printf("    Subnet mask = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.gatewayIP();
-  printf("    Gateway     = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  printf("    Gateway     = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   ip = Ethernet.dnsServerIP();
-  printf("    DNS         = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  printf("    DNS         = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   // Start UDP listening on the NTP port
   udp.begin(kNTPPort);
@@ -96,7 +96,7 @@ void setup() {
   if (!udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48)) {
     printf("ERROR.");
   }
-  printf("\n");
+  printf("\r\n");
 
   // Alternative:
   // udp.beginPacket(Ethernet.gatewayIP(), kNTPPort);
@@ -112,7 +112,7 @@ void loop() {
   }
 
   if (udp.read(buf, 48) != 48) {
-    printf("Not enough bytes\n");
+    printf("Not enough bytes\r\n");
     return;
   }
 
@@ -121,7 +121,7 @@ void loop() {
   if (((buf[0] & 0xc0) == 0xc0) ||  // LI == 3 (Alarm condition)
       (buf[1] == 0) ||              // Stratum == 0 (Kiss-o'-Death)
       !(mode == 4 || mode == 5)) {  // Must be Server or Broadcast mode
-    printf("Discarding reply\n");
+    printf("Discarding reply\r\n");
     return;
   }
 
@@ -130,7 +130,7 @@ void loop() {
                (uint32_t{buf[42]} << 8) |
                uint32_t{buf[43]};
   if (t == 0) {
-    printf("Discarding reply\n");
+    printf("Discarding reply\r\n");
     return;  // Also discard when the Transmit Timestamp is zero
   }
   if ((t & 0x80000000U) == 0) {
@@ -147,7 +147,7 @@ void loop() {
   // Print the time
   tmElements_t tm;
   breakTime(t, tm);
-  printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\n",
+  printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\r\n",
          tm.Year + 1970, tm.Month, tm.Day,
          tm.Hour, tm.Minute, tm.Second);
 }

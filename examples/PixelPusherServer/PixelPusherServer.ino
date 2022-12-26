@@ -53,16 +53,16 @@ void setup() {
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
 
-  printf("Starting PixelPusherServer...\n");
+  printf("Starting PixelPusherServer...\r\n");
 
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
-    printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
+    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
   });
 
   // Listen for address changes
@@ -75,19 +75,19 @@ void setup() {
       IPAddress gw = Ethernet.gatewayIP();
       IPAddress dns = Ethernet.dnsServerIP();
 
-      printf("[Ethernet] Address changed:\n"
-             "    Local IP     = %u.%u.%u.%u\n"
-             "    Subnet       = %u.%u.%u.%u\n"
-             "    Broadcast IP = %u.%u.%u.%u\n"
-             "    Gateway      = %u.%u.%u.%u\n"
-             "    DNS          = %u.%u.%u.%u\n",
+      printf("[Ethernet] Address changed:\r\n"
+             "    Local IP     = %u.%u.%u.%u\r\n"
+             "    Subnet       = %u.%u.%u.%u\r\n"
+             "    Broadcast IP = %u.%u.%u.%u\r\n"
+             "    Gateway      = %u.%u.%u.%u\r\n"
+             "    DNS          = %u.%u.%u.%u\r\n",
              ip[0], ip[1], ip[2], ip[3],
              subnet[0], subnet[1], subnet[2], subnet[3],
              broadcast[0], broadcast[1], broadcast[2], broadcast[3],
              gw[0], gw[1], gw[2], gw[3],
              dns[0], dns[1], dns[2], dns[3]);
     } else {
-      printf("[Ethernet] Address changed: No IP address\n");
+      printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
     // Tell interested parties the state of the IP address, for
@@ -96,9 +96,9 @@ void setup() {
     addressChanged(hasIP);
   });
 
-  printf("Starting Ethernet with DHCP...\n");
+  printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
-    printf("ERROR: Failed to start Ethernet\n");
+    printf("ERROR: Failed to start Ethernet\r\n");
     return;
   }
 }
@@ -110,14 +110,14 @@ void addressChanged(bool hasIP) {
     fflush(stdout);  // Print what we have so far if line buffered
     pp.end();
     receiver.end();
-    printf("done.\n");
+    printf("done.\r\n");
     return;
   }
 
   printf("Starting server and LEDs...");
   fflush(stdout);  // Print what we have so far if line buffered
   if (!receiver.begin()) {
-    printf("ERROR: Starting LEDs\n");
+    printf("ERROR: Starting LEDs\r\n");
     return;
   }
   if (!pp.begin(&receiver, PixelPusherServer::kDefaultPixelsPort,
@@ -125,23 +125,23 @@ void addressChanged(bool hasIP) {
                 kVendorId, kProductId,
                 kHWRev,
                 kPixelPusherFlags)) {
-    printf("ERROR: Starting PixelPusher server\n");
+    printf("ERROR: Starting PixelPusher server\r\n");
     return;
   }
 
-  printf("done.\n");
-  printf("-----------------------\n");
-  printf("Num strips:       %d\n", kNumStrips);
-  printf("Pixels per strip: %d\n", kPixelsPerStrip);
-  printf("-----------------------\n");
-  printf("Port:        %u\n", pp.pixelsPort());
-  printf("Controller:  %d\n", kControllerNum);
-  printf("Group:       %d\n", kGroupNum);
-  printf("Vendor ID:   %04Xh\n", kVendorId);
-  printf("Product ID:  %04Xh\n", kProductId);
-  printf("HW revision: %u\n", kHWRev);
-  printf("Flags:       %08" PRIX32 "h\n", kPixelPusherFlags);
-  printf("-----------------------\n");
+  printf("done.\r\n");
+  printf("-----------------------\r\n");
+  printf("Num strips:       %d\r\n", kNumStrips);
+  printf("Pixels per strip: %d\r\n", kPixelsPerStrip);
+  printf("-----------------------\r\n");
+  printf("Port:        %u\r\n", pp.pixelsPort());
+  printf("Controller:  %d\r\n", kControllerNum);
+  printf("Group:       %d\r\n", kGroupNum);
+  printf("Vendor ID:   %04Xh\r\n", kVendorId);
+  printf("Product ID:  %04Xh\r\n", kProductId);
+  printf("HW revision: %u\r\n", kHWRev);
+  printf("Flags:       %08" PRIX32 "h\r\n", kPixelPusherFlags);
+  printf("-----------------------\r\n");
 }
 
 // Main program loop.

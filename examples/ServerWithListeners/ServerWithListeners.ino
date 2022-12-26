@@ -104,14 +104,14 @@ void setup() {
     // Wait for Serial to initialize
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting...\n");
+  printf("Starting...\r\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses
   // the Teensy's internal MAC address by default, so we can retrieve
   // it here
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Add listeners
@@ -120,7 +120,7 @@ void setup() {
 
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
-    printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
+    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
   });
 
   // Listen for address changes
@@ -128,19 +128,19 @@ void setup() {
     IPAddress ip = Ethernet.localIP();
     bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
-      printf("[Ethernet] Address changed:\n");
+      printf("[Ethernet] Address changed:\r\n");
 
-      printf("    Local IP = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+      printf("    Local IP = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
       ip = Ethernet.subnetMask();
-      printf("    Subnet   = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+      printf("    Subnet   = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
       ip = Ethernet.gatewayIP();
-      printf("    Gateway  = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+      printf("    Gateway  = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
       ip = Ethernet.dnsServerIP();
       if (ip != INADDR_NONE) {  // May happen with static IP
-        printf("    DNS      = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+        printf("    DNS      = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
       }
     } else {
-      printf("[Ethernet] Address changed: No IP address\n");
+      printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
     // Tell interested parties the state of the IP address, for
@@ -152,9 +152,9 @@ void setup() {
   });
 
   if (staticIP == INADDR_NONE) {
-    printf("Starting Ethernet with DHCP...\n");
+    printf("Starting Ethernet with DHCP...\r\n");
     if (!Ethernet.begin()) {
-      printf("Failed to start Ethernet\n");
+      printf("Failed to start Ethernet\r\n");
       return;
     }
 
@@ -162,20 +162,20 @@ void setup() {
     // when an address has been assigned
     if (kDHCPTimeout > 0) {
       if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-        printf("Failed to get IP address from DHCP\n");
+        printf("Failed to get IP address from DHCP\r\n");
         // We may still get an address later, after the timeout,
         // so continue instead of returning
       }
     }
   } else {
-    printf("Starting Ethernet with static IP...\n");
+    printf("Starting Ethernet with static IP...\r\n");
     Ethernet.begin(staticIP, subnetMask, gateway);
 
     // When setting a static IP, the address is changed immediately,
     // but the link may not be up; optionally wait for the link here
     if (kLinkTimeout > 0) {
       if (!Ethernet.waitForLink(kLinkTimeout)) {
-        printf("Failed to get link\n");
+        printf("Failed to get link\r\n");
         // We may still see a link later, after the timeout, so
         // continue instead of returning
       }
@@ -190,22 +190,22 @@ void tellServer(bool hasIP) {
   if (hasIP) {
     if (server) {
       // Optional
-      printf("Address changed: Server already started\n");
+      printf("Address changed: Server already started\r\n");
     } else {
       printf("Starting server on port %u...", kServerPort);
       fflush(stdout);  // Print what we have so far if line buffered
       server.begin();
-      printf("%s\n", server ? "done." : "FAILED!");
+      printf("%s\r\n", server ? "done." : "FAILED!");
     }
   } else {
     // Stop the server if there's no IP address
     if (!server) {
       // Optional
-      printf("Address changed: Server already stopped\n");
+      printf("Address changed: Server already stopped\r\n");
     } else {
       printf("Stopping server...");
       fflush(stdout);  // Print what we have so far if line buffered
-      printf("%s\n", server.end() ? "done." : "FAILED!");
+      printf("%s\r\n", server.end() ? "done." : "FAILED!");
     }
   }
 }
@@ -240,7 +240,7 @@ void processClientData(ClientState &state) {
   }
 
   IPAddress ip = state.client.remoteIP();
-  printf("Sending to client: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+  printf("Sending to client: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   state.client.writeFully("HTTP/1.1 200 OK\r\n"
                           "Connection: close\r\n"
                           "Content-Type: text/plain\r\n"
@@ -261,9 +261,9 @@ void loop() {
   if (client) {
     // We got a connection!
     IPAddress ip = client.remoteIP();
-    printf("Client connected: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     clients.emplace_back(std::move(client));
-    printf("Client count: %u\n", clients.size());
+    printf("Client count: %u\r\n", clients.size());
   }
 
   // Process data from each client
@@ -277,7 +277,7 @@ void loop() {
     if (state.outputClosed) {
       if (millis() - state.closedTime >= kShutdownTimeout) {
         IPAddress ip = state.client.remoteIP();
-        printf("Client shutdown timeout: %u.%u.%u.%u\n",
+        printf("Client shutdown timeout: %u.%u.%u.%u\r\n",
                ip[0], ip[1], ip[2], ip[3]);
         state.client.stop();
         state.closed = true;
@@ -286,7 +286,7 @@ void loop() {
     } else {
       if (millis() - state.lastRead >= kClientTimeout) {
         IPAddress ip = state.client.remoteIP();
-        printf("Client timeout: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+        printf("Client timeout: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
         state.client.stop();
         state.closed = true;
         continue;
@@ -302,6 +302,6 @@ void loop() {
                                [](const auto &state) { return state.closed; }),
                 clients.end());
   if (clients.size() != size) {
-    printf("New client count: %u\n", clients.size());
+    printf("New client count: %u\r\n", clients.size());
   }
 }

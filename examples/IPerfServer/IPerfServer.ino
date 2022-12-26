@@ -182,16 +182,16 @@ void setup() {
     // Wait for Serial to initialize
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting IPerfServer...\n");
+  printf("Starting IPerfServer...\r\n");
 
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
-    printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
+    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
   });
 
   // Listen for address changes
@@ -203,17 +203,17 @@ void setup() {
       IPAddress gw = Ethernet.gatewayIP();
       IPAddress dns = Ethernet.dnsServerIP();
 
-      printf("[Ethernet] Address changed:\n"
-             "    Local IP = %u.%u.%u.%u\n"
-             "    Subnet   = %u.%u.%u.%u\n"
-             "    Gateway  = %u.%u.%u.%u\n"
-             "    DNS      = %u.%u.%u.%u\n",
+      printf("[Ethernet] Address changed:\r\n"
+             "    Local IP = %u.%u.%u.%u\r\n"
+             "    Subnet   = %u.%u.%u.%u\r\n"
+             "    Gateway  = %u.%u.%u.%u\r\n"
+             "    DNS      = %u.%u.%u.%u\r\n",
              ip[0], ip[1], ip[2], ip[3],
              subnet[0], subnet[1], subnet[2], subnet[3],
              gw[0], gw[1], gw[2], gw[3],
              dns[0], dns[1], dns[2], dns[3]);
     } else {
-      printf("[Ethernet] Address changed: No IP address\n");
+      printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
     // Tell interested parties the state of the IP address, for
@@ -222,16 +222,16 @@ void setup() {
     addressChanged(hasIP);
   });
 
-  printf("Starting Ethernet with DHCP...\n");
+  printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\n");
+    printf("Failed to start Ethernet\r\n");
     return;
   }
 
   // We don't really need to do the following because the
   // address-changed listener will notify us
   // if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-  //   printf("Failed to get IP address from DHCP\n");
+  //   printf("Failed to get IP address from DHCP\r\n");
   //   return;
   // }
 
@@ -246,21 +246,21 @@ void addressChanged(bool hasIP) {
   if (hasIP) {
     if (server) {
       // Optional
-      printf("Address changed: Server already started\n");
+      printf("Address changed: Server already started\r\n");
     } else {
       printf("Starting server on port %u...", kServerPort);
       fflush(stdout);  // Print what we have so far if line buffered
       server.begin();
-      printf("%s\n", server ? "done." : "FAILED!");
+      printf("%s\r\n", server ? "done." : "FAILED!");
     }
   } else {
     if (!server) {
       // Optional
-      printf("Address changed: Server already stopped\n");
+      printf("Address changed: Server already stopped\r\n");
     } else {
       printf("Stopping server...");
       fflush(stdout);  // Print what we have so far if line buffered
-      printf("%s\n", server.end() ? "done." : "FAILED!");
+      printf("%s\r\n", server.end() ? "done." : "FAILED!");
     }
   }
 }
@@ -295,8 +295,8 @@ void loop() {
     IPAddress ip = client.remoteIP();
     uint16_t port = client.remotePort();
     conns.emplace_back(std::move(client), false);
-    printf("Connected: %u.%u.%u.%u:%u\n", ip[0], ip[1], ip[2], ip[3], port);
-    printf("Connection count: %u\n", conns.size());
+    printf("Connected: %u.%u.%u.%u:%u\r\n", ip[0], ip[1], ip[2], ip[3], port);
+    printf("Connection count: %u\r\n", conns.size());
   }
 
   std::vector<ConnectionState> list;  // Add new connections to here
@@ -304,7 +304,7 @@ void loop() {
   // Process data from each client
   for (ConnectionState &state : conns) {  // Use a reference so we don't copy
     if (!state.client.connected()) {
-      printf("Disconnected: %u.%u.%u.%u:%u\n",
+      printf("Disconnected: %u.%u.%u.%u:%u\r\n",
              state.remoteIP[0],
              state.remoteIP[1],
              state.remoteIP[2],
@@ -337,7 +337,7 @@ void loop() {
                              [](const auto &state) { return state.closed; }),
               conns.end());
   if (conns.size() != size) {
-    printf("Connection count: %u\n", conns.size());
+    printf("Connection count: %u\r\n", conns.size());
   }
 }
 
@@ -354,10 +354,10 @@ bool connectToClient(ConnectionState &state,
 
   EthernetClient client;
   if (!client.connect(state.remoteIP, state.settings.settingsV1.port)) {
-    printf("FAILED.\n");
+    printf("FAILED.\r\n");
     return false;
   }
-  printf("done.\n");
+  printf("done.\r\n");
 
   list.emplace_back(std::move(client), true);
   ConnectionState &newState = list[list.size() - 1];
@@ -378,7 +378,7 @@ void send(ConnectionState &state) {
       uint32_t time = -state.settings.settingsV1.amount * 10;
           // Convert to milliseconds (from centiseconds)
       if (diff >= time) {
-        printf("Closing client (time): %u.%u.%u.%u:%u\n",
+        printf("Closing client (time): %u.%u.%u.%u:%u\r\n",
                state.remoteIP[0],
                state.remoteIP[1],
                state.remoteIP[2],
@@ -391,7 +391,7 @@ void send(ConnectionState &state) {
       // The session is byte-limited
       if (state.byteCount >=
           static_cast<size_t>(state.settings.settingsV1.amount)) {
-        printf("Closing client (bytes): %u.%u.%u.%u:%u\n",
+        printf("Closing client (bytes): %u.%u.%u.%u:%u\r\n",
                state.remoteIP[0],
                state.remoteIP[1],
                state.remoteIP[2],
@@ -452,7 +452,7 @@ void processConnection(ConnectionState &state,
         if (s.flags == 0x30313233) {
           state.settingsSize = 0;
           state.ioState = IOStates::kRead;
-          printf("%u.%u.%u.%u:%u: Older version\n",
+          printf("%u.%u.%u.%u:%u: Older version\r\n",
                  state.remoteIP[0],
                  state.remoteIP[1],
                  state.remoteIP[2],
@@ -475,13 +475,13 @@ void processConnection(ConnectionState &state,
             connectToClient(state, list);
           }
 
-          printf("%u.%u.%u.%u:%u: Settings:\n"
-                "    flags=0x%08" PRIx32 "\n"
-                "    numThreads=%" PRIu32 "\n"
-                "    port=%" PRIu32 "\n"
-                "    bufLen=%" PRIu32 "\n"
-                "    winBand=%" PRIu32 "\n"
-                "    amount=%" PRId32 "\n",
+          printf("%u.%u.%u.%u:%u: Settings:\r\n"
+                "    flags=0x%08" PRIx32 "\r\n"
+                "    numThreads=%" PRIu32 "\r\n"
+                "    port=%" PRIu32 "\r\n"
+                "    bufLen=%" PRIu32 "\r\n"
+                "    winBand=%" PRIu32 "\r\n"
+                "    amount=%" PRId32 "\r\n",
                 state.remoteIP[0],
                 state.remoteIP[1],
                 state.remoteIP[2],
@@ -510,13 +510,13 @@ void processConnection(ConnectionState &state,
         // Do more setup
         state.settings.extSettings = s;
 
-        printf("%u.%u.%u.%u:%u: ExtSettings:\n"
-              "    type=%" PRId32 "\n"
-              "    length=%" PRId32 "\n"
-              "    flags=0x%04" PRIu16 "%04" PRIu16 "\n"
-              "    version=%u.%u.%u.%u\n"
-              "    rate=%" PRIu64 "\n"
-              "    tcpWritePrefetch=%" PRIu32 "\n",
+        printf("%u.%u.%u.%u:%u: ExtSettings:\r\n"
+              "    type=%" PRId32 "\r\n"
+              "    length=%" PRId32 "\r\n"
+              "    flags=0x%04" PRIu16 "%04" PRIu16 "\r\n"
+              "    version=%u.%u.%u.%u\r\n"
+              "    rate=%" PRIu64 "\r\n"
+              "    tcpWritePrefetch=%" PRIu32 "\r\n",
               state.remoteIP[0],
               state.remoteIP[1],
               state.remoteIP[2],
@@ -549,7 +549,7 @@ void processConnection(ConnectionState &state,
 
         // Compare with the existing settings
         if (std::memcmp(buf, state.settingsRaw, size) != 0) {
-          printf("%u.%u.%u.%u:%u: Settings error: bytes=%u\n",
+          printf("%u.%u.%u.%u:%u: Settings error: bytes=%u\r\n",
                  state.remoteIP[0],
                  state.remoteIP[1],
                  state.remoteIP[2],

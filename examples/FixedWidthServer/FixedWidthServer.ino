@@ -60,35 +60,35 @@ void setup() {
     // Wait for Serial to initialize
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting...\n");
+  printf("Starting...\r\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses
   // the Teensy's internal MAC address by default, so we can retrieve
   // it here
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-  printf("Starting Ethernet with DHCP...\n");
+  printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\n");
+    printf("Failed to start Ethernet\r\n");
     return;
   }
   if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-    printf("Failed to get IP address from DHCP\n");
+    printf("Failed to get IP address from DHCP\r\n");
   } else {
     IPAddress ip = Ethernet.localIP();
-    printf("    Local IP    = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("    Local IP    = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     ip = Ethernet.subnetMask();
-    printf("    Subnet mask = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("    Subnet mask = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     ip = Ethernet.gatewayIP();
-    printf("    Gateway     = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("    Gateway     = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     ip = Ethernet.dnsServerIP();
-    printf("    DNS         = %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("    DNS         = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
     // Start the server
-    printf("Listening for clients on port %u...\n", kServerPort);
+    printf("Listening for clients on port %u...\r\n", kServerPort);
     server.begin();
   }
 }
@@ -100,7 +100,7 @@ void setup() {
 void processMessage(const ClientState &state) {
   printf("Message: ");
   fwrite(state.buf, sizeof(state.buf[0]), kMessageSize, stdout);
-  printf("\n");
+  printf("\r\n");
 }
 
 // Main program loop.
@@ -108,9 +108,9 @@ void loop() {
   EthernetClient client = server.accept();
   if (client) {
     IPAddress ip = client.remoteIP();
-    printf("Client connected: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     clients.emplace_back(std::move(client));
-    printf("Client count: %u\n", clients.size());
+    printf("Client count: %u\r\n", clients.size());
   }
 
   // Process data from each client
@@ -137,6 +137,6 @@ void loop() {
                                [](const auto &state) { return state.closed; }),
                 clients.end());
   if (clients.size() != size) {
-    printf("Client count: %u\n", clients.size());
+    printf("Client count: %u\r\n", clients.size());
   }
 }

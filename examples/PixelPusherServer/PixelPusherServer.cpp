@@ -105,7 +105,7 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
   lastUpdateTimes_ = std::make_unique<CircularBuffer<uint32_t>>(
       (numStrips + ppData1_.maxStripsPerPacket - 1)/
       ppData1_.maxStripsPerPacket);
-  printf("k=%u\n", lastUpdateTimes_->capacity());
+  printf("k=%u\r\n", lastUpdateTimes_->capacity());
 
   if (started_) {
     end();
@@ -242,7 +242,7 @@ void PixelPusherServer::sendDiscovery() {
   discoveryUDP_.endPacket();
 
   // Some debug output
-  // printf("update=%" PRIu32 " delta=%" PRIu32 "\n",
+  // printf("update=%" PRIu32 " delta=%" PRIu32 "\r\n",
   //        ppData1_.updatePeriod, ppData1_.deltaSequence);
 
   ppData1_.deltaSequence = 0;

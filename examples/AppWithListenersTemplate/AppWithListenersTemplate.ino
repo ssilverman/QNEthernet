@@ -83,14 +83,14 @@ void setup() {
     CrashReport.clear();
   }
   stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
-  printf("Starting...\n");
+  printf("Starting...\r\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses
   // the Teensy's internal MAC address by default, so we can retrieve
   // it here
   uint8_t mac[6];
   Ethernet.macAddress(mac);  // This is informative; it retrieves, not sets
-  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\n",
+  printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // Add listeners
@@ -99,7 +99,7 @@ void setup() {
 
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
-    printf("[Ethernet] Link %s\n", state ? "ON" : "OFF");
+    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
 
     // When setting a static IP, the address will be set but a link
     // might not yet exist
@@ -119,17 +119,17 @@ void setup() {
       //       (zero) when setting a static IP, it must be set first
 
       printf(
-          "[Ethernet] Address changed:\n"
-          "    Local IP = %u.%u.%u.%u\n"
-          "    Subnet   = %u.%u.%u.%u\n"
-          "    Gateway  = %u.%u.%u.%u\n"
-          "    DNS      = %u.%u.%u.%u\n",
+          "[Ethernet] Address changed:\r\n"
+          "    Local IP = %u.%u.%u.%u\r\n"
+          "    Subnet   = %u.%u.%u.%u\r\n"
+          "    Gateway  = %u.%u.%u.%u\r\n"
+          "    DNS      = %u.%u.%u.%u\r\n",
           ip[0], ip[1], ip[2], ip[3],
           subnet[0], subnet[1], subnet[2], subnet[3],
           gw[0], gw[1], gw[2], gw[3],
           dns[0], dns[1], dns[2], dns[3]);
     } else {
-      printf("[Ethernet] Address changed: No IP address\n");
+      printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
     // Tell interested parties the state of the IP address and system
@@ -148,40 +148,40 @@ void setup() {
   if (kStartWithDHCP) {
     // Option 1 - Always start with DHCP
 
-    printf("Starting Ethernet with DHCP...\n");
+    printf("Starting Ethernet with DHCP...\r\n");
     if (Ethernet.begin()) {
       if (kWaitForDHCP) {
         // Option 1.1 - Wait for a DHCP-assigned address
 
         if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-          printf("No address from DHCP; setting static IP...\n");
+          printf("No address from DHCP; setting static IP...\r\n");
           startWithStatic = true;
         }
       } else {
         // Option 1.2 - Don't wait for DHCP
       }
     } else {
-      printf("Error: DHCP not started\n");
+      printf("Error: DHCP not started\r\n");
       startWithStatic = true;
     }
 
     if (startWithStatic && staticIP == INADDR_NONE) {
-      printf("Error: No static IP\n");
+      printf("Error: No static IP\r\n");
       return;
     }
   } else {
     // Option 2 - staticIP determines
 
     if (staticIP == INADDR_NONE) {
-      printf("Starting Ethernet with DHCP...\n");
+      printf("Starting Ethernet with DHCP...\r\n");
       if (!Ethernet.begin()) {
-        printf("Error: DHCP not started\n");
+        printf("Error: DHCP not started\r\n");
         return;
       }
 
       if (kWaitForDHCP) {
         if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-          printf("Warning: No address from DHCP\n");
+          printf("Warning: No address from DHCP\r\n");
           // An address could still come in later
         }
       }
@@ -192,7 +192,7 @@ void setup() {
 
   // At this point, a static IP is set to a valid value
   if (startWithStatic) {
-    printf("Starting Ethernet with static IP...\n");
+    printf("Starting Ethernet with static IP...\r\n");
     Ethernet.setDNSServerIP(dnsServer);  // Set first so that the
                                          // listener sees it
     Ethernet.begin(staticIP, subnetMask, gateway);
@@ -201,7 +201,7 @@ void setup() {
     // but the link may not be up; optionally wait for the link here
     if (kLinkTimeout > 0) {
       if (!Ethernet.waitForLink(kLinkTimeout)) {
-        printf("Warning: No link detected\n");
+        printf("Warning: No link detected\r\n");
         // We may still see a link later, after the timeout, so
         // continue instead of returning
       }
@@ -214,7 +214,7 @@ void setup() {
 // This is called when the system readiness has changed. The system is
 // considered ready if there's an IP address and the link is up.
 void systemReady(bool hasIP, bool hasLink) {
-  printf("System is%s ready\n", (hasIP && hasLink) ? "" : " not");
+  printf("System is%s ready\r\n", (hasIP && hasLink) ? "" : " not");
 
   // *** Notification or start/stop/restart code goes here
 
