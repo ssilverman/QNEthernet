@@ -13,6 +13,8 @@ and this project adheres to
   it to the README.
 * Made `EthernetClass::loop()` non-static.
 * Changed serial output in examples to use CRLF line endings.
+* Changed `EthernetClient::connect()` internals to call `close()` instead of
+  `stop()` so that any cleanup doesn't block.
 
 ## [0.17.0]
 

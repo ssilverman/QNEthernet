@@ -35,8 +35,7 @@ EthernetClient::EthernetClient(std::shared_ptr<internal::ConnectionHolder> conn)
       conn_(conn) {}
 
 EthernetClient::~EthernetClient() {
-  // Questionable not to call stop(), but copy semantics demand that we don't
-  // stop();
+  // Questionable not to call close(), but copy semantics demand that we don't
 }
 
 // --------------------------------------------------------------------------
@@ -57,8 +56,8 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 }
 
 bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
-  // First close any existing connection
-  stop();
+  // First close any existing connection (without waiting)
+  close();
 
   conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
@@ -72,7 +71,7 @@ bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
     yield();
   }
   if (!conn_->connected) {
-    stop();
+    close();
     return false;
   }
 
