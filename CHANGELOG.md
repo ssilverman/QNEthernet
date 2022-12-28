@@ -18,6 +18,8 @@ and this project adheres to
 * Changed serial output in examples to use CRLF line endings.
 * Changed `EthernetClient::connect()` internals to call `close()` instead of
   `stop()` so that any cleanup doesn't block.
+* Updated `EthernetClient::connect()` to return some of the error codes defined
+  at [Ethernet - client.connect()](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/).
 
 ## [0.17.0]
 

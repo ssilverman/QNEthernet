@@ -126,7 +126,7 @@ class EthernetClient : public Client {
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
-  bool connect(const ip_addr_t *ipaddr, uint16_t port);
+  int connect(const ip_addr_t *ipaddr, uint16_t port);
 
   // Closes the connection. The `wait` parameter indicates whether to wait for
   // close or timeout. Set to true to wait and false to not wait. stop() calls

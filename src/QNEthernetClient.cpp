@@ -24,6 +24,20 @@
 namespace qindesign {
 namespace network {
 
+// connect() return values.
+// See: https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/
+// Note: The example on that page is not correct. Because non-zero values,
+//       including negative values, are converted to a value of 'true' when
+//       using them as a bool, it assumes a successful connection even when
+//       connect() returns an error.
+enum class ConnectReturns {
+  SUCCESS = 1,
+  TIMED_OUT = -1,
+  INVALID_SERVER = -2,
+  TRUNCATED = -3,
+  INVALID_RESPONSE = -4,
+};
+
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
@@ -50,18 +64,18 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 int EthernetClient::connect(const char *host, uint16_t port) {
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return false;
+    return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connect(ip, port);
 }
 
-bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
+int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
   // First close any existing connection (without waiting)
   close();
 
   conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
-    return false;
+    return 0;
   }
 
   // Wait for a connection
@@ -72,10 +86,10 @@ bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
   }
   if (!conn_->connected) {
     close();
-    return false;
+    return static_cast<int>(ConnectReturns::TIMED_OUT);
   }
 
-  return true;
+  return static_cast<int>(ConnectReturns::SUCCESS);
 }
 
 uint8_t EthernetClient::connected() {
