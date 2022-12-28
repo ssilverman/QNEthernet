@@ -50,14 +50,15 @@ files provided with the lwIP release.
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-17. [Notes on RAM1 usage](#notes-on-ram1-usage)
-18. [Configuration macros](#configuration-macros)
+17. [Notes on ordering and timing](#notes-on-ordering-and-timing)
+18. [Notes on RAM1 usage](#notes-on-ram1-usage)
+19. [Configuration macros](#configuration-macros)
     1. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
-19. [Complete list of features](#complete-list-of-features)
-20. [Other notes](#other-notes)
-21. [To do](#to-do)
-22. [Code style](#code-style)
-23. [References](#references)
+20. [Complete list of features](#complete-list-of-features)
+21. [Other notes](#other-notes)
+22. [To do](#to-do)
+23. [Code style](#code-style)
+24. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -1011,6 +1012,14 @@ could be called on connections when the link has been disconnected. (See also
 Fun links:
 * [Removing Exponential Backoff from TCP - acm sigcomm](http://www.sigcomm.org/node/2736)
 * [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
+
+## Notes on ordering and timing
+
+* Link status is polled about 8 times a second.
+* For static IP addresses, the _address-changed_ callback is called before
+  lwIP's `netif_default` is set. `MDNS.begin()` relies on `netif_default`, so
+  that function and anything else that relies on `netif_default` should be
+  called after `Ethernet.begin(...)`, and not from the listener.
 
 ## Notes on RAM1 usage
 
