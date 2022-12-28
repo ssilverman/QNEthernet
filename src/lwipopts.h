@@ -26,7 +26,7 @@
 #define MEM_ALIGNMENT                          4
 #ifndef MEM_SIZE
 #define MEM_SIZE                               24000
-#endif  // MEM_SIZE
+#endif  // !MEM_SIZE
 // #define MEMP_OVERFLOW_CHECK                    0
 // #define MEMP_SANITY_CHECK                      0
 // #define MEM_OVERFLOW_CHECK                     0
@@ -46,13 +46,13 @@ extern void *ram_heap;
 // Add one to MEMP_NUM_UDP_PCB for mDNS:
 #ifndef MEMP_NUM_UDP_PCB
 #define MEMP_NUM_UDP_PCB                   8
-#endif  // MEMP_NUM_UDP_PCB
+#endif  // !MEMP_NUM_UDP_PCB
 #ifndef MEMP_NUM_TCP_PCB
 #define MEMP_NUM_TCP_PCB                   8
-#endif  // MEMP_NUM_TCP_PCB
+#endif  // !MEMP_NUM_TCP_PCB
 // #ifndef MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_PCB_LISTEN            8
-// #endif  // MEMP_NUM_TCP_PCB_LISTEN
+// #endif  // !MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_SEG                   16
 // #define MEMP_NUM_ALTCP_PCB                 MEMP_NUM_TCP_PCB
 // #define MEMP_NUM_REASSDATA                 5
@@ -60,7 +60,7 @@ extern void *ram_heap;
 // #define MEMP_NUM_ARP_QUEUE                 30
 #ifndef MEMP_NUM_IGMP_GROUP
 #define MEMP_NUM_IGMP_GROUP                9
-#endif  // MEMP_NUM_IGMP_GROUP
+#endif  // !MEMP_NUM_IGMP_GROUP
 /* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                 \
 //   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
@@ -311,7 +311,7 @@ extern void *ram_heap;
 // IPv6 options
 // #ifndef LWIP_IPV6
 // #define LWIP_IPV6                       0
-// #endif
+// #endif  // !LWIP_IPV6
 // #define IPV6_REASS_MAXAGE               60
 // #define LWIP_IPV6_SCOPES                (LWIP_IPV6 && !LWIP_SINGLE_NETIF)
 // #define LWIP_IPV6_SCOPES_DEBUG          0
@@ -426,11 +426,11 @@ extern void *ram_heap;
 // MDNS options
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP
-#endif  // LWIP_MDNS_RESPONDER
+#endif  // !LWIP_MDNS_RESPONDER
 // #define MDNS_RESP_USENETIF_EXTCALLBACK LWIP_NETIF_EXT_STATUS_CALLBACK
 #ifndef MDNS_MAX_SERVICES
 #define MDNS_MAX_SERVICES   3
-#endif  // MDNS_MAX_SERVICES
+#endif  // !MDNS_MAX_SERVICES
 // #define MDNS_DEBUG                       LWIP_DBG_OFF
 
 #endif  // LWIPTEENSY_LWIPOPTS_H_
