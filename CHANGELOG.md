@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 * Added a "Notes on ordering and timing" section to the README.
+* Added a README section that discusses `EthernetClient::connect()` and its
+  return values.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added

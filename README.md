@@ -37,6 +37,7 @@ files provided with the lwIP release.
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link detection](#connections-and-link-detection)
+   2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
@@ -720,6 +721,32 @@ Be aware when using a listener approach to start or stop services that it's
 possible, when setting a static IP, for the _address-changed_ callback to be
 called before the link is up.
 
+### `connect()` behaviour and its return values
+
+Firstly, `connect()` blocks. There's currently no non-blocking way to create a
+TCP connection. (Some thought has gone into this and it might appear in a
+future major release.)
+
+The Arduino API,
+[here](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/),
+defines a set of possible return values for this function. Note that the example
+on that page is not correct (at the time of this writing) because it assumes
+that only a return value of '1' will evaluate to `true`. The C++ spec,
+[here](https://en.cppreference.com/w/cpp/language/implicit_conversion#Boolean_conversions),
+however, says that all non-zero numeric values will be converted to `true`. The
+example, therefore, assumes that a successful connection has been made even if
+an error code was returned.
+
+Currently, _QNEthernet's_ implementation of this function will return one of the
+following values:
+
+| Value | Meaning                                                               | Arduino Name   |
+| ----: | --------------------------------------------------------------------- | -------------- |
+|     1 | Success                                                               | SUCCESS        |
+|     0 | Can't create connection (eg. no more sockets, network isn't up, etc.) | _None_         |
+|    -1 | Connection timeout                                                    | TIMED_OUT      |
+|    -2 | DNS lookup failed for the given name                                  | INVALID_SERVER |
+
 ## How to use multicast
 
 There are a few ways in the API to utilize multicast to send or receive packets.
@@ -1119,6 +1146,7 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
+* Non-blocking TCP connections.
 
 ## Code style
 
