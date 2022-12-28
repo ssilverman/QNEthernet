@@ -309,7 +309,9 @@ extern void *ram_heap;
 // #define LWIP_CHECKSUM_ON_COPY        0
 
 // IPv6 options
+// #ifndef LWIP_IPV6
 // #define LWIP_IPV6                       0
+// #endif
 // #define IPV6_REASS_MAXAGE               60
 // #define LWIP_IPV6_SCOPES                (LWIP_IPV6 && !LWIP_SINGLE_NETIF)
 // #define LWIP_IPV6_SCOPES_DEBUG          0
