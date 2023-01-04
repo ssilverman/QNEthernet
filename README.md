@@ -454,6 +454,14 @@ bool isConnected() {
 }
 ```
 
+This will also work:
+
+```c++
+bool isConnected() {
+  return static_cast<bool>(client_);
+}
+```
+
 See also:
 1. [The safe bool problem](https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem)
 2. [`explicit` specifier](https://en.cppreference.com/w/cpp/language/explicit)
