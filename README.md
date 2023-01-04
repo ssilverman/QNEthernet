@@ -1056,6 +1056,8 @@ Fun links:
   lwIP's `netif_default` is set. `MDNS.begin()` relies on `netif_default`, so
   that function and anything else that relies on `netif_default` should be
   called after `Ethernet.begin(...)`, and not from the listener.
+* The DNS lookup timeout is `DNS_MAX_RETRIES * DNS_TMR_INTERVAL`, where
+  `DNS_TMR_INTERVAL` is 1000.
 
 ## Notes on RAM1 usage
 
