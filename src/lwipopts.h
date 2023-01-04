@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // lwIP configuration for QNEthernet library on Teensy 4.1.
@@ -148,7 +148,9 @@ extern void *ram_heap;
 // #define DNS_TABLE_SIZE                4
 // #define DNS_MAX_NAME_LENGTH           256
 // #define DNS_MAX_SERVERS               2
+// #ifndef DNS_MAX_RETRIES
 // #define DNS_MAX_RETRIES               4
+// #endif  // !DNS_MAX_RETRIES
 // #define DNS_DOES_NAME_CHECK           1
 /* #define LWIP_DNS_SECURE                                                 \
 //   (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \

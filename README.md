@@ -1090,6 +1090,7 @@ in `mdns_opts.h`:
 
 | Macro                     | Description                     |
 | ------------------------- | ------------------------------- |
+| `DNS_MAX_RETRIES`         | Maximum number of DNS retries   |
 | `LWIP_MDNS_RESPONDER`     | Zero to disable                 |
 | `MEM_SIZE`                | Heap memory size                |
 | `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups      |
