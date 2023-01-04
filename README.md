@@ -422,9 +422,9 @@ operators. They are declared as follows in the usual namespace:
 
 All the `operator bool()` functions in the API are marked as `explicit`. This
 means that you might get compiler errors in some circumstances when trying to
-use a boolean-convertible object.
+use a Boolean-convertible object.
 
-You can use the object as a boolean expression. For example in an `if` statement
+You can use the object as a Boolean expression. For example in an `if` statement
 or ternary conditional.
 
 You can't return the object as a `bool` from a function. For example, the
