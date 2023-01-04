@@ -38,7 +38,7 @@ files provided with the lwIP release.
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link detection](#connections-and-link-detection)
    2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
-   3. [`connectNoWait()` doesn't wait](#connectnowait-doesnt-wait)
+   3. [Non-blocking connection functions, `connectNoWait()`](#non-blocking-connection-functions-connectnowait)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
@@ -751,10 +751,17 @@ following values:
 |    -1 | Connection timeout                                                    | TIMED_OUT      |
 |    -2 | DNS lookup failed for the given name                                  | INVALID_SERVER |
 
-### `connectNoWait()` doesn't wait
+### Non-blocking connection functions, `connectNoWait()`
 
-These functions behave similarly to `connect()`, however they do not block. Note
-that DNS lookups for hostnames will still wait.
+The `connectNoWait()` functions implement non-blocking TCP connections. These
+functions behave similarly to `connect()`, however they do not wait for the
+connection to be established.
+
+To check for connection establishment, simply call either `connected()` or the
+Boolean operator. If a connection can't be established then `close()` must be
+called on the object.
+
+Note that DNS lookups for hostnames will still wait.
 
 ## How to use multicast
 
