@@ -1123,6 +1123,8 @@ _QNEthernet_ library.
     and [`EthernetUDP`](#ethernetudp))
 19. [`TCP_NODELAY`](#tcp-socket-options) support
 20. Configuration via [Configuration macros](#configuration-macros)
+21. UDP and raw frame queueing for when data arrives in bursts that are faster
+    than the ability of the program to process them
 
 ## Other notes
 
@@ -1172,4 +1174,4 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 
 ---
 
-Copyright (c) 2021-2022 Shawn Silverman
+Copyright (c) 2021-2023 Shawn Silverman
