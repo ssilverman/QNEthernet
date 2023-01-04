@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernetClient.cpp contains the EthernetClient implementation.
@@ -58,7 +58,7 @@ EthernetClient::~EthernetClient() {
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
-  return connect(&ipaddr, port);
+  return connect(&ipaddr, port, true);
 }
 
 int EthernetClient::connect(const char *host, uint16_t port) {
@@ -69,7 +69,20 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   return connect(ip, port);
 }
 
-int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
+int EthernetClient::connectNoWait(IPAddress ip, uint16_t port) {
+  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  return connect(&ipaddr, port, false);
+}
+
+int EthernetClient::connectNoWait(const char *host, uint16_t port) {
+  IPAddress ip;
+  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+    return static_cast<int>(ConnectReturns::INVALID_SERVER);
+  }
+  return connectNoWait(ip, port);
+}
+
+int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
   // First close any existing connection (without waiting)
   close();
 
@@ -79,14 +92,16 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port) {
   }
 
   // Wait for a connection
-  elapsedMillis timer;
-  while (!conn_->connected && timer < connTimeout_) {
-    // NOTE: Depends on Ethernet loop being called from yield()
-    yield();
-  }
-  if (!conn_->connected) {
-    close();
-    return static_cast<int>(ConnectReturns::TIMED_OUT);
+  if (wait) {
+    elapsedMillis timer;
+    while (!conn_->connected && timer < connTimeout_) {
+      // NOTE: Depends on Ethernet loop being called from yield()
+      yield();
+    }
+    if (!conn_->connected) {
+      close();
+      return static_cast<int>(ConnectReturns::TIMED_OUT);
+    }
   }
 
   return static_cast<int>(ConnectReturns::SUCCESS);

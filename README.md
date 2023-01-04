@@ -38,6 +38,7 @@ files provided with the lwIP release.
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link detection](#connections-and-link-detection)
    2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
+   3. [`connectNoWait()` doesn't wait](#connectnowait-doesnt-wait)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
@@ -220,6 +221,10 @@ The `Ethernet` object is the main Ethernet interface.
 * `connectionId()`: Returns an ID for the connection to which the client refers.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
+* `connectNoWait(ip, port)`: Similar to `connect(ip, port)`, but it doesn't
+  wait for a connection.
+* `connectNoWait(host, port)`: Similar to `connect(host, port)`, but it doesn't
+  wait for a connection. Note that the DNS lookup will still wait.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
@@ -723,9 +728,8 @@ called before the link is up.
 
 ### `connect()` behaviour and its return values
 
-Firstly, `connect()` blocks. There's currently no non-blocking way to create a
-TCP connection. (Some thought has gone into this and it might appear in a
-future major release.)
+Firstly, `connect()` blocks. See the [next section](#connectnowait-doesnt-wait)
+for a non-blocking way to connect.
 
 The Arduino API,
 [here](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/),
@@ -746,6 +750,11 @@ following values:
 |     0 | Can't create connection (eg. no more sockets, network isn't up, etc.) | _None_         |
 |    -1 | Connection timeout                                                    | TIMED_OUT      |
 |    -2 | DNS lookup failed for the given name                                  | INVALID_SERVER |
+
+### `connectNoWait()` doesn't wait
+
+These functions behave similarly to `connect()`, however they do not block. Note
+that DNS lookups for hostnames will still wait.
 
 ## How to use multicast
 
@@ -1125,6 +1134,7 @@ _QNEthernet_ library.
 20. Configuration via [Configuration macros](#configuration-macros)
 21. UDP and raw frame queueing for when data arrives in bursts that are faster
     than the ability of the program to process them
+22. Non-blocking TCP connections.
 
 ## Other notes
 
@@ -1148,7 +1158,6 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
-* Non-blocking TCP connections.
 
 ## Code style
 

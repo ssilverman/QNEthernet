@@ -55,6 +55,7 @@ setHostname	KEYWORD2
 hostname	KEYWORD2
 maxSockets	KEYWORD2
 connect	KEYWORD2	ClientConnect
+connectNoWait	KEYWORD2
 connected	KEYWORD2	ClientConnected
 setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
 stop	KEYWORD2

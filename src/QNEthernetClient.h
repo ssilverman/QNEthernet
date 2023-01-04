@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernetClient.h defines the TCP client interface.
@@ -46,6 +46,12 @@ class EthernetClient : public Client {
 
   int connect(IPAddress ip, uint16_t port) final;
   int connect(const char *host, uint16_t port) final;
+
+  // These functions start the connection process but don't wait for the
+  // connection to be complete. Note that DNS lookup might still take some time.
+  // Neither of these will return TIMED_OUT (-1).
+  int connectNoWait(IPAddress ip, uint16_t port);
+  int connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;
   explicit operator bool() final;
@@ -126,7 +132,7 @@ class EthernetClient : public Client {
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
-  int connect(const ip_addr_t *ipaddr, uint16_t port);
+  int connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);
 
   // Closes the connection. The `wait` parameter indicates whether to wait for
   // close or timeout. Set to true to wait and false to not wait. stop() calls

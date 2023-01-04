@@ -12,6 +12,9 @@ and this project adheres to
 * Added a "Notes on ordering and timing" section to the README.
 * Added a README section that discusses `EthernetClient::connect()` and its
   return values.
+* Added non-blocking TCP connection functions, `connectNoWait()`, that are
+  equivalent to the `connect()` functions but don't wait for the connection
+  to complete.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added
@@ -537,4 +540,4 @@ and this project adheres to
 
 ---
 
-Copyright (c) 2021-2022 Shawn Silverman
+Copyright (c) 2021-2023 Shawn Silverman
