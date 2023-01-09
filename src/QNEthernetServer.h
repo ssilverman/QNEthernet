@@ -23,7 +23,7 @@ namespace network {
 class EthernetServer : public Server {
  public:
   EthernetServer();
-  EthernetServer(uint16_t port);
+  explicit EthernetServer(uint16_t port);
 
   ~EthernetServer();
 
