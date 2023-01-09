@@ -78,6 +78,7 @@ setNoDelay	KEYWORD2
 isNoDelay	KEYWORD2
 maxListeners	KEYWORD2
 port	KEYWORD2
+beginWithReuse	KEYWORD2
 accept	KEYWORD2	EthernetServerAccept
 beginMulticast	KEYWORD2	WiFiNINAUDPBeginMulticast
 beginPacket	KEYWORD2	EthernetUDPBeginPacket

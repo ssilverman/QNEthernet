@@ -25,6 +25,9 @@ and this project adheres to
   `stop()` so that any cleanup doesn't block.
 * Updated `EthernetClient::connect()` to return some of the error codes defined
   at [Ethernet - client.connect()](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/).
+* Changed `EthernetServer::begin()`-with-Boolean-_reuse_-parameters to be named
+  `beginWithReuse()`. This avoids too many overloads with mysterious
+  Boolean arguments.
 
 ## [0.17.0]
 

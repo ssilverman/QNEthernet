@@ -39,29 +39,29 @@ class EthernetServer : public Server {
     return port_;
   }
 
-  // Starts listening on the server port, if set. This calls begin(false).
+  // Starts listening on the server port, if set. This does not set the
+  // SO_REUSEADDR socket option.
   void begin() final;
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
-  // socket option according to the `reuse` parameter. This returns whether the
-  // server started listening. This will always return false if the port is
-  // not set.
-  bool begin(bool reuse);
+  // socket option. This returns whether the server started listening. This will
+  // always return false if the port is not set.
+  bool beginWithReuse();
 
-  // Starts listening on the specified port. This calls begin(port, false).
+  // Starts listening on the specified port. This does not set the SO_REUSEADDR
+  // socket option. This returns whether the server started listening.
   //
-  // If the port is already set and the server is listening, then it is first
-  // stopped with a call to end().
+  // If the port is already set to something else and the server is listening,
+  // then it is first stopped with a call to end().
   bool begin(uint16_t port);
 
   // Starts listening on the specified port, if set, and sets the SO_REUSEADDR
-  // socket option according to the `reuse` parameter. This returns whether the
-  // server started listening.
+  // socket option. This returns whether the server started listening.
   //
-  // If the port is already set and the server is listening, then it is first
-  // stopped with a call to end(). This is to prevent a single server object
-  // from representing more than one listening socket.
-  bool begin(uint16_t port, bool reuse);
+  // If the port is already set to something else and the server is listening,
+  // then it is first stopped with a call to end(). This is to prevent a single
+  // server object from representing more than one listening socket.
+  bool beginWithReuse(uint16_t port);
 
   // Stops listening and returns whether the server is stopped. This will always
   // return true if the port is not set.
@@ -96,6 +96,8 @@ class EthernetServer : public Server {
   explicit operator bool();
 
  private:
+  bool begin(uint16_t port, bool reuse);
+
   int32_t port_;  // We also want to be able to represent a signed value
                   // Non-negative is 16 bits
   bool listening_;

@@ -28,18 +28,25 @@ EthernetServer::~EthernetServer() {
 }
 
 void EthernetServer::begin() {
-  begin(false);
+  if (port_ < 0) {
+    return;
+  }
+  begin(static_cast<uint16_t>(port_), false);
 }
 
-bool EthernetServer::begin(bool reuse) {
+bool EthernetServer::beginWithReuse() {
   if (port_ < 0) {
     return false;
   }
-  return begin(port_, reuse);
+  return begin(static_cast<uint16_t>(port_), true);
 }
 
 bool EthernetServer::begin(uint16_t port) {
   return begin(port, false);
+}
+
+bool EthernetServer::beginWithReuse(uint16_t port) {
+  return begin(port, true);
 }
 
 bool EthernetServer::begin(uint16_t port, bool reuse) {
