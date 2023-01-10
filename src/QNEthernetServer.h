@@ -41,26 +41,28 @@ class EthernetServer : public Server {
 
   // Starts listening on the server port, if set. This does not set the
   // SO_REUSEADDR socket option.
+  //
+  // This first calls end().
   void begin() final;
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
   // socket option. This returns whether the server started listening. This will
   // always return false if the port is not set.
+  //
+  // This first calls end().
   bool beginWithReuse();
 
   // Starts listening on the specified port. This does not set the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
-  // If the port is already set to something else and the server is listening,
-  // then it is first stopped with a call to end().
+  // This first calls end().
   bool begin(uint16_t port);
 
   // Starts listening on the specified port, if set, and sets the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
-  // If the port is already set to something else and the server is listening,
-  // then it is first stopped with a call to end(). This is to prevent a single
-  // server object from representing more than one listening socket.
+  // This first calls end() to prevent a single server object from representing
+  // more than one listening socket.
   bool beginWithReuse(uint16_t port);
 
   // Stops listening and returns whether the server is stopped. This will always

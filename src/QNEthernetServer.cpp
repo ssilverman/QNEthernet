@@ -50,9 +50,10 @@ bool EthernetServer::beginWithReuse(uint16_t port) {
 }
 
 bool EthernetServer::begin(uint16_t port, bool reuse) {
-  if (port_ >= 0 && port_ != port) {
-    end();  // TODO: Should we call end() only if the new begin is successful?
-  }
+  // Call end() always
+  // TODO: Is this the best choice?
+  end();  // TODO: Should we call end() only if the new begin is successful?
+
   port_ = port;
   listening_ = internal::ConnectionManager::instance().listen(port_, reuse);
   return listening_;
