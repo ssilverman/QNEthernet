@@ -84,7 +84,11 @@ uint8_t EthernetUDP::begin(uint16_t localPort) {
   return begin(localPort, false);
 }
 
-uint8_t EthernetUDP::begin(uint16_t localPort, bool reuse) {
+uint8_t EthernetUDP::beginWithReuse(uint16_t localPort) {
+  return begin(localPort, true);
+}
+
+bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (pcb_ == nullptr) {
     pcb_ = udp_new();
   }
@@ -116,8 +120,12 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
   return beginMulticast(ip, localPort, false);
 }
 
-uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
-                                    bool reuse) {
+uint8_t EthernetUDP::beginMulticastWithReuse(IPAddress ip, uint16_t localPort) {
+  return beginMulticast(ip, localPort, true);
+}
+
+bool EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
+                                 bool reuse) {
   if (!begin(localPort, reuse)) {
     return false;
   }

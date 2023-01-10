@@ -81,6 +81,7 @@ port	KEYWORD2
 beginWithReuse	KEYWORD2
 accept	KEYWORD2	EthernetServerAccept
 beginMulticast	KEYWORD2	WiFiNINAUDPBeginMulticast
+beginMulticastWithReuse	KEYWORD2
 beginPacket	KEYWORD2	EthernetUDPBeginPacket
 endPacket	KEYWORD2	EthernetUDPEndPacket
 send	KEYWORD2

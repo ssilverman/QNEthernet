@@ -262,11 +262,10 @@ All the `begin()` functions call `end()` first.
 
 ### `EthernetUDP`
 
-* `begin(localPort, reuse)`: Similar to `begin(localPort)`, but the Boolean
-  `reuse` parameter controls the SO_REUSEADDR socket option.
-* `beginMulticast(ip, localPort, reuse)`: Similar to
-  `beginMulticast(ip, localPort)`, but with a `reuse` parameter, similar to
-  the above.
+* `beginWithReuse(localPort)`: Similar to `begin(localPort)`, but also sets the
+  SO_REUSEADDR socket option.
+* `beginMulticastWithReuse(ip, localPort)`: Similar to
+  `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.

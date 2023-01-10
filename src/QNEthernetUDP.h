@@ -41,14 +41,13 @@ class EthernetUDP : public UDP {
   // the port is in use. This calls begin(localPort, false).
   uint8_t begin(uint16_t localPort) final;
 
-  // Starts listening on a port and sets the SO_REUSEADDR socket option
-  // according to the `reuse` parameter. This returns whether the attempt
-  // was successful.
-  uint8_t begin(uint16_t localPort, bool reuse);
+  // Starts listening on a port and sets the SO_REUSEADDR socket option. This
+  // returns whether the attempt was successful.
+  uint8_t beginWithReuse(uint16_t localPort);
 
   // Multicast functions make use of Ethernet.joinGroup()
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;
-  uint8_t beginMulticast(IPAddress ip, uint16_t port, bool reuse);
+  uint8_t beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort();
@@ -115,6 +114,14 @@ class EthernetUDP : public UDP {
 
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
+
+  // Starts listening on a port and sets the SO_REUSEADDR socket option
+  // according to the `reuse` parameter. This returns whether the attempt
+  // was successful.
+  bool begin(uint16_t localPort, bool reuse);
+
+  // Multicast functions make use of Ethernet.joinGroup()
+  bool beginMulticast(IPAddress ip, uint16_t port, bool reuse);
 
   // ip_addr_t versions of transmission functions
   bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);

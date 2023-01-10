@@ -15,6 +15,7 @@ and this project adheres to
 * Added non-blocking TCP connection functions, `connectNoWait()`, that are
   equivalent to the `connect()` functions but don't wait for the connection
   to complete.
+* Added EthernetUDP::beginWithReuse() and beginMulticastWithReuse() functions.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added
