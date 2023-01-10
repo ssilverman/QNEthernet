@@ -317,7 +317,10 @@ bool ConnectionManager::stopListening(uint16_t port) {
   }
   tcp_pcb *pcb = *it;
   listeners_.erase(it);
-  return (tcp_close(pcb) == ERR_OK);
+  if (tcp_close(pcb) != ERR_OK) {
+    tcp_abort(pcb);
+  }
+  return true;
 }
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
