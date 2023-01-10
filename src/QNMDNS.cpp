@@ -16,9 +16,6 @@
 namespace qindesign {
 namespace network {
 
-// Recommended DNS TTL value, in seconds, per RFC 6762 "Multicast DNS".
-static constexpr uint32_t kTTL = 120;
-
 MDNSClass &MDNSClass::instance() {
   static MDNSClass instance;
   return instance;
@@ -67,7 +64,7 @@ bool MDNSClass::begin(const char *hostname) {
   if (netifAdded) {
     return false;
   }
-  if (mdns_resp_add_netif(netif_default, hostname, kTTL) != ERR_OK) {
+  if (mdns_resp_add_netif(netif_default, hostname) != ERR_OK) {
     return false;
   }
   netifAdded = true;
@@ -130,7 +127,7 @@ bool MDNSClass::addService(const char *name, const char *type,
   }
 
   int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type,
-                                      toProto(protocol), port, kTTL, &srv_txt,
+                                      toProto(protocol), port, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {
     if (slot >= 0) {
@@ -177,10 +174,6 @@ bool MDNSClass::removeService(const char *name, const char *type,
     slots_[found].reset();
   }
   return (mdns_resp_del_service(netif_, found) == ERR_OK);
-}
-
-uint32_t MDNSClass::ttl() const {
-  return kTTL;
 }
 
 void MDNSClass::announce() const {
