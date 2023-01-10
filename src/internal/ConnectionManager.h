@@ -71,8 +71,6 @@ class ConnectionManager final {
 
   std::vector<std::shared_ptr<ConnectionHolder>> connections_;
   std::vector<struct tcp_pcb *> listeners_;
-
-  friend class EthernetServer;
 };
 
 }  // namespace internal
