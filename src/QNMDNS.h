@@ -113,9 +113,6 @@ class MDNSClass final {
   // The following functions are for periodically re-announcing the services.
   // They are not normally needed.
 
-  // Returns the TTL, in seconds.
-  uint32_t ttl() const;
-
   // Performs an announcement. This isn't usually necessary for
   // normal operation.
   void announce() const;
