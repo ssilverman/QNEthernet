@@ -101,7 +101,6 @@ maxServices	KEYWORD2
 restart	KEYWORD2
 addService	KEYWORD2
 removeService	KEYWORD2
-ttl	KEYWORD2
 maxServers	KEYWORD2
 setServer	KEYWORD2
 getServer	KEYWORD2

@@ -25,6 +25,10 @@ and this project adheres to
   divisionless algorithm.
 * Updated lwIP to v2.2.0-rc1.
 
+### Removed
+* Removed TTL concept from `MDNSClass`. This enables it to compile with the
+  latest lwIP.
+
 ### Fixed
 * Fixed `SNTP_SET_SYSTEM_TIME_US(sec, us)` definition to set the RTC directly
   because `settimeofday()` doesn't exist here.
