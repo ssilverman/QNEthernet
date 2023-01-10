@@ -31,6 +31,10 @@ and this project adheres to
   Boolean arguments.
 * All the `EthernetServer::begin()` functions now always call `end()` first.
 
+### Removed
+* `EthernetServer` and `EthernetUDP` begin functions that take a Boolean
+  `reuse` parameter.
+
 ## [0.17.0]
 
 ### Added
