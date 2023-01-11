@@ -258,7 +258,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `EthernetServer()`: Creates a placeholder server without a port. This form is
   useful when you don't know the port in advance.
 
-All the `begin()` functions call `end()` first.
+All the `begin()` functions call `end()` first if the server is currently
+listening and if any of the parameters have changed.
 
 ### `EthernetUDP`
 

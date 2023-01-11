@@ -15,12 +15,13 @@
 namespace qindesign {
 namespace network {
 
-EthernetServer::EthernetServer()
-    : port_(-1),
-      listening_(false) {}
+EthernetServer::EthernetServer() : EthernetServer(int32_t{-1}) {}
 
-EthernetServer::EthernetServer(uint16_t port)
+EthernetServer::EthernetServer(uint16_t port) : EthernetServer(int32_t{port}) {}
+
+EthernetServer::EthernetServer(int32_t port)
     : port_(port),
+      reuse_(false),
       listening_(false) {}
 
 EthernetServer::~EthernetServer() {
@@ -50,24 +51,29 @@ bool EthernetServer::beginWithReuse(uint16_t port) {
 }
 
 bool EthernetServer::begin(uint16_t port, bool reuse) {
-  // Call end() always
-  // TODO: Is this the best choice?
-  end();  // TODO: Should we call end() only if the new begin is successful?
+  // Only call end() if parameters have changed
+  if (listening_) {
+    if (port_ == port && reuse_ == reuse) {
+      return true;
+    }
+    end();  // TODO: Should we call end() only if the new begin is successful?
+  }
 
-  port_ = port;
+  // Only change the port if listening was successful
   listening_ = internal::ConnectionManager::instance().listen(port_, reuse);
+  if (listening_) {
+    port_ = port;
+    reuse_ = reuse;
+  }
   return listening_;
 }
 
 bool EthernetServer::end() {
-  if (port_ < 0) {
+  if (!listening_) {
     return true;
   }
-  if (internal::ConnectionManager::instance().stopListening(port_)) {
-    listening_ = false;
-    return true;
-  }
-  return false;
+  listening_ = false;
+  return internal::ConnectionManager::instance().stopListening(port_);
 }
 
 EthernetClient EthernetServer::accept() const {
@@ -94,10 +100,6 @@ EthernetClient EthernetServer::available() const {
 }
 
 EthernetServer::operator bool() {
-  if (!listening_ || port_ < 0) {
-    return false;
-  }
-  listening_ = internal::ConnectionManager::instance().isListening(port_);
   return listening_;
 }
 

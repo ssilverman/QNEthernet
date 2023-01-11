@@ -42,27 +42,28 @@ class EthernetServer : public Server {
   // Starts listening on the server port, if set. This does not set the
   // SO_REUSEADDR socket option.
   //
-  // This first calls end().
+  // This first calls end() if the _reuse_ socket option differs.
   void begin() final;
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
   // socket option. This returns whether the server started listening. This will
   // always return false if the port is not set.
   //
-  // This first calls end().
+  // This first calls end() if the _reuse_ socket option differs.
   bool beginWithReuse();
 
   // Starts listening on the specified port. This does not set the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
-  // This first calls end().
+  // This first calls end() if the port or _reuse_ socket option differ.
   bool begin(uint16_t port);
 
   // Starts listening on the specified port, if set, and sets the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
-  // This first calls end() to prevent a single server object from representing
-  // more than one listening socket.
+  // If the port or _reuse_ socket option differ then this first calls end() to
+  // prevent a single server object from representing more than one
+  // listening socket.
   bool beginWithReuse(uint16_t port);
 
   // Stops listening and returns whether the server is stopped. This will always
@@ -98,10 +99,13 @@ class EthernetServer : public Server {
   explicit operator bool();
 
  private:
+  explicit EthernetServer(int32_t port);
+
   bool begin(uint16_t port, bool reuse);
 
   int32_t port_;  // We also want to be able to represent a signed value
                   // Non-negative is 16 bits
+  bool reuse_;    // Whether the SO_REUSEADDR socket option is set
   bool listening_;
 };
 
