@@ -126,7 +126,7 @@ void loop() {
 void loopOSC() {
   int size = udp.parsePacket();
   if (size > 0) {
-    unsigned char buf[size];
+    uint8_t buf[size];
     udp.read(buf, size);
     printOSC(Serial, buf, size);
   }

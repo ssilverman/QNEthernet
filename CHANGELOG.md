@@ -35,6 +35,8 @@ and this project adheres to
 * Changed `MDNSClass::begin(hostname)` and `DNSClient::getHostByName()` to treat
   a NULL hostname as an error; they now explicitly return false in this case.
 * Changed `MDNSClass::end()` to return `void` instead of `bool`.
+* Changed examples that use `unsigned char` to use `uint8_t` in
+  appropriate places.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

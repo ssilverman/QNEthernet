@@ -163,7 +163,7 @@ class PixelPusherServer final {
     uint8_t stripFlags(int stripNum) const override { return 0; }
 
     void startPixels(bool complete) override {}
-    void pixels(int stripNum, const unsigned char *pixels,
+    void pixels(int stripNum, const uint8_t *pixels,
                 int pixelsPerStrip) override {}
     void endPixels() override {}
     void loop() override {}

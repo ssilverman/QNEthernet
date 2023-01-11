@@ -164,7 +164,7 @@ void PixelPusherServer::loop() {
     return;
   }
 
-  const unsigned char *data = pixelsUDP_.data();
+  const uint8_t *data = pixelsUDP_.data();
 
   uint32_t seq;
   std::memcpy(&seq, data, 4);

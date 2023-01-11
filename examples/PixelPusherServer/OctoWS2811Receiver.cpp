@@ -41,8 +41,7 @@ uint8_t OctoWS2811Receiver::stripFlags(int stripNum) const {
 }
 
 void OctoWS2811Receiver::handleCommand(int command,
-                                       const unsigned char *data,
-                                       int len) {
+                                       const uint8_t *data, int len) {
   switch (command) {
     case PixelPusherServer::Commands::GLOBALBRIGHTNESS_SET:
       if (len >= 2) {
@@ -77,7 +76,7 @@ static inline uint8_t scale8(uint8_t b, uint8_t scale) {
   return (uint16_t{b} * (1 + uint16_t{scale})) >> 8;
 }
 
-void OctoWS2811Receiver::pixels(int stripNum, const unsigned char *pixels,
+void OctoWS2811Receiver::pixels(int stripNum, const uint8_t *pixels,
                                 int pixelsPerStrip) {
   if (stripNum < 0 || numStrips_ <= stripNum) {
     return;

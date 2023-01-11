@@ -145,9 +145,9 @@ struct ConnectionState {
   IOStates ioState;
 
   Settings settings;
-  unsigned char settingsRaw[sizeof(Settings)];  // For raw comparisons
-                                                // without having to
-                                                // consider ordering
+  uint8_t settingsRaw[sizeof(Settings)];  // For raw comparisons
+                                          // without having to
+                                          // consider ordering
 
   size_t settingsSize = 0;
   size_t repeatSize = kDefaultRepeatSize;
@@ -160,7 +160,7 @@ struct ConnectionState {
 // -------------------------------------------------------------------
 
 // Digits buffer.
-unsigned char kDigitsBuf[TCP_SND_BUF + 10];
+uint8_t kDigitsBuf[TCP_SND_BUF + 10];
 
 // Keeps track of what and where belong to whom.
 std::vector<ConnectionState> conns;
@@ -402,7 +402,7 @@ void send(ConnectionState &state) {
       }
     }
 
-    const unsigned char *buf;
+    const uint8_t *buf;
     size_t len;
 
     int avail = state.client.availableForWrite();
@@ -543,7 +543,7 @@ void processConnection(ConnectionState &state,
         }
 
         // Read settings
-        unsigned char buf[size];
+        uint8_t buf[size];
         state.client.read(buf, size);
         state.byteCount += size;
 
