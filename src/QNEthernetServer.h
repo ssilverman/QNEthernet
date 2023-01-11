@@ -66,9 +66,9 @@ class EthernetServer : public Server {
   // listening socket.
   bool beginWithReuse(uint16_t port);
 
-  // Stops listening and returns whether the server is stopped. This will always
-  // return true if the port is not set.
-  bool end();
+  // Stops listening. This does nothing if the port is not set or the server is
+  // not listening.
+  void end();
 
   // Accepts a connection and returns a client, possibly unconnected. This
   // returns an unconnected client if the port is not set.

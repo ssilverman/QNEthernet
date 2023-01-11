@@ -68,12 +68,11 @@ bool EthernetServer::begin(uint16_t port, bool reuse) {
   return listening_;
 }
 
-bool EthernetServer::end() {
-  if (!listening_) {
-    return true;
+void EthernetServer::end() {
+  if (listening_) {
+    listening_ = false;
+    internal::ConnectionManager::instance().stopListening(port_);
   }
-  listening_ = false;
-  return internal::ConnectionManager::instance().stopListening(port_);
 }
 
 EthernetClient EthernetServer::accept() const {

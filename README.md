@@ -250,7 +250,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `beginWithReuse(port)`: Similar to `begin(port)`, but also sets the
   SO_REUSEADDR socket option. This returns whether the server was
   successfully started.
-* `end()`: Shuts down the server and returns whether it was stopped.
+* `end()`: Shuts down the server.
 * `port()`: Returns the server's port, a signed 32-bit value, where -1 means the
   port is not set and a non-negative value is a 16-bit quantity.
 * `static constexpr int maxListeners()`: Returns the maximum number of
