@@ -99,7 +99,7 @@ EthernetClient EthernetServer::available() const {
   return EthernetClient{};
 }
 
-EthernetServer::operator bool() {
+EthernetServer::operator bool() const {
   return listening_;
 }
 

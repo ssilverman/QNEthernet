@@ -30,6 +30,7 @@ and this project adheres to
 * Changed `EthernetServer::begin()`-with-Boolean-_reuse_-parameters to be named
   `beginWithReuse()`. This avoids too many overloads with mysterious
   Boolean arguments.
+* Changed `EthernetServer::operator bool()` to be `const`.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

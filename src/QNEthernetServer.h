@@ -96,7 +96,7 @@ class EthernetServer : public Server {
   // Flushes all the connections, but does nothing is the port is not set.
   void flush() final;
 
-  explicit operator bool();
+  explicit operator bool() const;
 
  private:
   explicit EthernetServer(int32_t port);
