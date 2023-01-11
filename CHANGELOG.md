@@ -32,6 +32,8 @@ and this project adheres to
   Boolean arguments.
 * Changed `EthernetServer::operator bool()` to be `const`.
 * Changed `EthernetServer::end()` to return `void` instead of `bool`.
+* Changed `MDNSClass::begin(hostname)` and `DNSClient::getHostByName()` to treat
+  a NULL hostname as an error; they now explicitly return false in this case.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

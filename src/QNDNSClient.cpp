@@ -43,7 +43,7 @@ IPAddress DNSClient::getServer(int index) {
 
 bool DNSClient::getHostByName(const char *hostname,
                               std::function<void(const ip_addr_t *)> callback) {
-  if (callback == nullptr) {
+  if (callback == nullptr || hostname == nullptr) {
     return false;
   }
 

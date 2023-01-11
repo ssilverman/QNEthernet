@@ -64,6 +64,11 @@ bool MDNSClass::begin(const char *hostname) {
     initialized = true;
   }
 
+  // Treat nullptr hostname as not allowed
+  if (hostname == nullptr) {
+    return false;
+  }
+
   if (netifAdded) {
     return false;
   }
