@@ -81,16 +81,13 @@ bool MDNSClass::begin(const char *hostname) {
   return true;
 }
 
-bool MDNSClass::end() {
-  if (!netifAdded) {
-    // Return true for no netif
-    return true;
+void MDNSClass::end() {
+  if (netifAdded) {
+    mdns_resp_remove_netif(netif_);
+    netifAdded = false;
+    netif_ = nullptr;
+    hostname_ = "";
   }
-  bool retval = (mdns_resp_remove_netif(netif_) == ERR_OK);
-  netifAdded = false;
-  netif_ = nullptr;
-  hostname_ = "";
-  return retval;
 }
 
 void MDNSClass::restart() {

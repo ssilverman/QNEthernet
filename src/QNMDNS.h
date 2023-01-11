@@ -40,9 +40,8 @@ class MDNSClass final {
   // returns whether the call was successful.
   bool begin(const char *hostname);
 
-  // Attempts to stop the mDNS responder. Returns whether the call
-  // was successful.
-  bool end();
+  // Stops the mDNS responder.
+  void end();
 
   // Returns the hostname. This will return an empty string if the responder
   // is not currently running.
