@@ -122,12 +122,12 @@ typedef enum _enet_tx_bd_control_extend1 {
 typedef struct {
   uint16_t length;
   uint16_t status;
-  void *buffer;
+  void     *buffer;
   uint16_t extend0;
   uint16_t extend1;
   uint16_t checksum;
-  uint8_t prototype;
-  uint8_t headerlen;
+  uint8_t  prototype;
+  uint8_t  headerlen;
   uint16_t unused0;
   uint16_t extend2;
   uint32_t timestamp;
@@ -149,7 +149,7 @@ static volatile uint32_t rx_ready;
 
 // PHY status, polled
 static bool linkSpeed10Not100 = false;
-static bool linkIsFullDuplex = false;
+static bool linkIsFullDuplex  = false;
 
 // Is Ethernet initialized?
 static bool isInitialized = false;
@@ -220,8 +220,8 @@ static void t41_low_level_init() {
   // Configure pins
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.14
-  GPIO7_GDIR |= (1 << 14) | (1 << 15);
-  GPIO7_DR_SET = (1 << 15);    // Power on
+  GPIO7_GDIR    |= (1 << 14) | (1 << 15);
+  GPIO7_DR_SET   = (1 << 15);  // Power on
   GPIO7_DR_CLEAR = (1 << 14);  // Reset PHY chip
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[0] = 0
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[1] = 1
@@ -261,16 +261,16 @@ static void t41_low_level_init() {
   memset(tx_ring, 0, sizeof(tx_ring));
 
   for (int i = 0; i < RX_SIZE; i++) {
-    rx_ring[i].buffer = &rxbufs[i * BUF_SIZE];
-    rx_ring[i].status = kEnetRxBdEmpty;
+    rx_ring[i].buffer  = &rxbufs[i * BUF_SIZE];
+    rx_ring[i].status  = kEnetRxBdEmpty;
     rx_ring[i].extend1 = kEnetRxBdInterrupt;
   }
   // The last buffer descriptor should be set with the wrap flag
   rx_ring[RX_SIZE - 1].status |= kEnetRxBdWrap;
 
   for (int i=0; i < TX_SIZE; i++) {
-    tx_ring[i].buffer = &txbufs[i * BUF_SIZE];
-    tx_ring[i].status = kEnetTxBdTransmitCrc;
+    tx_ring[i].buffer  = &txbufs[i * BUF_SIZE];
+    tx_ring[i].status  = kEnetTxBdTransmitCrc;
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
                          kEnetTxBdProtChecksum |
                          kEnetTxBdIpHdrChecksum;
@@ -301,7 +301,7 @@ static void t41_low_level_init() {
       | ENET_TACC_PROCHK  // Insert protocol checksum
 #endif
 #if CHECKSUM_GEN_IP == 0
-      | ENET_TACC_IPCHK  // Insert IP header checksum
+      | ENET_TACC_IPCHK   // Insert IP header checksum
 #endif
 #if ETH_PAD_SIZE == 2
       | ENET_TACC_SHIFT16
@@ -316,12 +316,12 @@ static void t41_low_level_init() {
 #if CHECKSUM_CHECK_UDP == 0 && \
     CHECKSUM_CHECK_TCP == 0 && \
     CHECKSUM_CHECK_ICMP == 0
-      | ENET_RACC_PRODIS  // Discard frames with incorrect protocol checksum
-                          // Requires RSFL == 0
+      | ENET_RACC_PRODIS   // Discard frames with incorrect protocol checksum
+                           // Requires RSFL == 0
 #endif
 #if CHECKSUM_CHECK_IP == 0
-      | ENET_RACC_IPDIS  // Discard frames with incorrect IPv4 header checksum
-                         // Requires RSFL == 0
+      | ENET_RACC_IPDIS    // Discard frames with incorrect IPv4 header checksum
+                           // Requires RSFL == 0
 #endif
       | ENET_RACC_PADREM
       ;
@@ -524,7 +524,7 @@ static inline void check_link_status() {
       // TODO: Should we read the speed only at link UP or every time?
       status = mdio_read(0, 0x10);
       linkSpeed10Not100 = ((status & (1 << 1)) != 0);
-      linkIsFullDuplex = ((status & (1 << 2)) != 0);
+      linkIsFullDuplex  = ((status & (1 << 2)) != 0);
     } else {
       netif_set_link_down(&t41_netif);
     }
@@ -581,9 +581,9 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
     isFirstInit = false;
   }
 
-  if (ipaddr == NULL) ipaddr = IP4_ADDR_ANY4;
+  if (ipaddr == NULL)  ipaddr  = IP4_ADDR_ANY4;
   if (netmask == NULL) netmask = IP4_ADDR_ANY4;
-  if (gw == NULL) gw = IP4_ADDR_ANY4;
+  if (gw == NULL)      gw      = IP4_ADDR_ANY4;
 
   // First test if the MAC address has changed
   // If it's changed then remove the interface and start again
@@ -643,7 +643,7 @@ void enet_deinit() {
   ENET_ECR &= ~ENET_ECR_ETHEREN;
 
   // Power down the PHY
-  GPIO7_GDIR |= (1 << 15);
+  GPIO7_GDIR    |= (1 << 15);
   GPIO7_DR_CLEAR = (1 << 15);
 
   // Stop the PLL
