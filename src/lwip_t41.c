@@ -220,9 +220,9 @@ static void t41_low_level_init() {
   // Configure pins
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.14
-  GPIO7_GDIR |= (1<<14) | (1<<15);
-  GPIO7_DR_SET = (1<<15);    // Power on
-  GPIO7_DR_CLEAR = (1<<14);  // Reset PHY chip
+  GPIO7_GDIR |= (1 << 14) | (1 << 15);
+  GPIO7_DR_SET = (1 << 15);    // Power on
+  GPIO7_DR_CLEAR = (1 << 14);  // Reset PHY chip
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[0] = 0
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[1] = 1
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_INPUT_PULLUP;    // Master/Slave = slave mode
@@ -248,7 +248,7 @@ static void t41_low_level_init() {
   IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // GPIO_B1_11_ALT3, pg 799 (Rev. 2, 795 Rev. 1)
   IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6, pg 795 (Rev. 2, 791 Rev. 1)
   delayMicroseconds(2);
-  GPIO7_DR_SET = (1<<14);  // Start PHY chip
+  GPIO7_DR_SET = (1 << 14);  // Start PHY chip
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);
   delayMicroseconds(5);
 
@@ -335,8 +335,8 @@ static void t41_low_level_init() {
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  ENET_PALR = mac[0] << 24 | mac[1] << 16 | mac[2] << 8 | mac[3];
-  ENET_PAUR = mac[4] << 24 | mac[5] << 16 | 0x8808;
+  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
@@ -643,8 +643,8 @@ void enet_deinit() {
   ENET_ECR &= ~ENET_ECR_ETHEREN;
 
   // Power down the PHY
-  GPIO7_GDIR |= (1<<15);
-  GPIO7_DR_CLEAR = (1<<15);
+  GPIO7_GDIR |= (1 << 15);
+  GPIO7_DR_CLEAR = (1 << 15);
 
   // Stop the PLL
   CCM_ANALOG_PLL_ENET = CCM_ANALOG_PLL_ENET_POWERDOWN;
