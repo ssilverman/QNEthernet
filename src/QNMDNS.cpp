@@ -70,7 +70,10 @@ bool MDNSClass::begin(const char *hostname) {
   }
 
   if (netifAdded) {
-    return false;
+    if (hostname_ == hostname) {
+      return true;
+    }
+    end();
   }
   if (mdns_resp_add_netif(netif_default, hostname, kTTL) != ERR_OK) {
     return false;

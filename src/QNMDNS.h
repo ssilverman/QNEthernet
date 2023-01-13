@@ -38,6 +38,9 @@ class MDNSClass final {
 
   // Starts the mDNS responder and uses the given hostname as the name. This
   // returns whether the call was successful.
+  //
+  // This first calls end() if the responder is already running and the hostname
+  // is different.
   bool begin(const char *hostname);
 
   // Stops the mDNS responder.

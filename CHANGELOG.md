@@ -39,6 +39,8 @@ and this project adheres to
   appropriate places.
 * `EthernetUDP::begin` functions now call `stop()` if the socket is listening
   and the parameters have changed.
+* `MDNSClass::begin(hostname)` now calls `end()` if the responder is running and
+  the hostname changed.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

@@ -353,7 +353,8 @@ read from a frame and the `Print` API can be used to write to the frame.
 The `MDNS` object provides an mDNS API.
 
 * `begin(hostname)`: Starts the mDNS responder and uses the given hostname as
-  the name.
+  the name. This first calls `end()` only if the responder is currently running
+  and the hostname is different.
 * `end()`: Stops the mDNS responder.
 * `addService(type, protocol, port)`: Adds a service. The protocol will be set
   to `"_udp"` for anything other than `"_tcp"`. The strings should have a `"_"`
