@@ -258,8 +258,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `EthernetServer()`: Creates a placeholder server without a port. This form is
   useful when you don't know the port in advance.
 
-All the `begin()` functions call `end()` first if the server is currently
-listening and if any of the parameters have changed.
+All the `begin` functions call `end()` first only if the server is currently
+listening and the port or _reuse_ options have changed.
 
 ### `EthernetUDP`
 
@@ -280,6 +280,9 @@ listening and if any of the parameters have changed.
 * `EthernetUDP(queueSize)`: Creates a new UDP socket having the specified packet
   queue size. The minimum possible value is 1 and the default is 1. If a value
   of zero is used, it will default to 1.
+
+All the `begin` functions call `stop()` first only if the socket is currently
+listening and the local port or _reuse_ options have changed.
 
 #### `parsePacket()` return values
 
