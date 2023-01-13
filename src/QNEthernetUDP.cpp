@@ -72,6 +72,8 @@ EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
 
 EthernetUDP::EthernetUDP(size_t queueSize)
     : pcb_(nullptr),
+      listening_(false),
+      listenReuse_(false),
       inBuf_(queueSize < 1 ? 1 : queueSize),
       packetPos_(-1),
       hasOutPacket_(false) {}
@@ -89,6 +91,12 @@ uint8_t EthernetUDP::beginWithReuse(uint16_t localPort) {
 }
 
 bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
+  if (listening_) {
+    if (pcb_->local_port == localPort && listenReuse_ == reuse) {
+      return true;
+    }
+    stop();
+  }
   if (pcb_ == nullptr) {
     pcb_ = udp_new();
   }
@@ -103,6 +111,8 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
     return false;
   }
+  listening_ = true;
+  listenReuse_ = reuse;
 
   for (Packet &p : inBuf_) {
     p.data.reserve(kMaxUDPSize);
@@ -150,13 +160,15 @@ void EthernetUDP::stop() {
   }
   udp_remove(pcb_);
   pcb_ = nullptr;
+  listening_ = false;
+  listenReuse_ = false;
 
   packet_.addr = *IP_ANY_TYPE;
   packet_.port = 0;
 }
 
 EthernetUDP::operator bool() const {
-  return (pcb_ != nullptr);
+  return listening_;
 }
 
 // --------------------------------------------------------------------------

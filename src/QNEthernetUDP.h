@@ -39,13 +39,20 @@ class EthernetUDP : public UDP {
 
   // Starts listening on a port. This returns true if successful and false if
   // the port is in use. This calls begin(localPort, false).
+  //
+  // This first calls stop() if the socket is already listening and the port or
+  // _reuse_ socket option differ.
   uint8_t begin(uint16_t localPort) final;
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option. This
   // returns whether the attempt was successful.
+  //
+  // This first calls stop() if the socket is already listening and the port or
+  // _reuse_ socket option differ.
   uint8_t beginWithReuse(uint16_t localPort);
 
-  // Multicast functions make use of Ethernet.joinGroup()
+  // Multicast functions make use of Ethernet.joinGroup(). These first call the
+  // appropriate `begin` functions.
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;
   uint8_t beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
@@ -132,6 +139,10 @@ class EthernetUDP : public UDP {
   bool isAvailable() const;
 
   udp_pcb *pcb_;
+
+  // Listening parameters
+  bool listening_;
+  bool listenReuse_;
 
   // Received packet; updated every time one is received
   std::vector<Packet> inBuf_;  // Holds received packets

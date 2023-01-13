@@ -37,6 +37,8 @@ and this project adheres to
 * Changed `MDNSClass::end()` to return `void` instead of `bool`.
 * Changed examples that use `unsigned char` to use `uint8_t` in
   appropriate places.
+* `EthernetUDP::begin` functions now call `stop()` if the socket is listening
+  and the parameters have changed.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean
