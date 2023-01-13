@@ -109,6 +109,7 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     ip_set_option(pcb_, SOF_REUSEADDR);
   }
   if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
+    stop();
     return false;
   }
   listening_ = true;

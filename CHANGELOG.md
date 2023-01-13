@@ -44,6 +44,9 @@ and this project adheres to
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean
   `reuse` parameter.
 
+### Fixed
+* `EthernetUDP::begin` functions now call `stop()` if there was a bind error.
+
 ## [0.17.0]
 
 ### Added
