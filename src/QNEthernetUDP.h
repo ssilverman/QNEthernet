@@ -30,6 +30,12 @@ class EthernetUDP : public UDP {
   // to a minimum of 1.
   explicit EthernetUDP(size_t queueSize);
 
+  // Disallow copying but allow moving
+  EthernetUDP(const EthernetUDP &) = delete;
+  EthernetUDP &operator=(const EthernetUDP &) = delete;
+  EthernetUDP(EthernetUDP &&) = default;
+  EthernetUDP &operator=(EthernetUDP &&) = default;
+
   ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.

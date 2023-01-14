@@ -41,6 +41,8 @@ and this project adheres to
   and the parameters have changed.
 * `MDNSClass::begin(hostname)` now calls `end()` if the responder is running and
   the hostname changed.
+* Changed both `EthernetServer` and `EthernetUDP` to disallow copying but
+  allow moving.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

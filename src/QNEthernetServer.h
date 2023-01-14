@@ -25,6 +25,12 @@ class EthernetServer : public Server {
   EthernetServer();
   explicit EthernetServer(uint16_t port);
 
+  // Disallow copying but allow moving
+  EthernetServer(const EthernetServer &) = delete;
+  EthernetServer &operator=(const EthernetServer &) = delete;
+  EthernetServer(EthernetServer &&) = default;
+  EthernetServer &operator=(EthernetServer &&) = default;
+
   ~EthernetServer();
 
   // Returns the maximum number of TCP listeners.
