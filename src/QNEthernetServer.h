@@ -105,8 +105,6 @@ class EthernetServer : public Server {
   explicit operator bool() const;
 
  private:
-  explicit EthernetServer(int32_t port);
-
   bool begin(uint16_t port, bool reuse);
 
   int32_t port_;  // We also want to be able to represent a signed value
