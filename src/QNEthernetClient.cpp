@@ -69,7 +69,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   return connect(ip, port);
 }
 
-int EthernetClient::connectNoWait(IPAddress ip, uint16_t port) {
+int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, false);
 }

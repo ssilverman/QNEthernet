@@ -50,7 +50,7 @@ class EthernetClient : public Client {
   // These functions start the connection process but don't wait for the
   // connection to be complete. Note that DNS lookup might still take some time.
   // Neither of these will return TIMED_OUT (-1).
-  int connectNoWait(IPAddress ip, uint16_t port);
+  int connectNoWait(const IPAddress &ip, uint16_t port);
   int connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;
