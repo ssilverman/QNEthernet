@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // RawFrameMonitor prints all unknown raw Ethernet frames. Known frame types
@@ -123,7 +123,7 @@ void loop() {
   if (tag > EthernetFrame.maxFrameLen()) {
     printf(" type=%04Xh\r\n", tag);
   } else {
-    printf(" length=%d\r\n", tag);
+    printf(" length=%u\r\n", tag);
     payloadEnd = std::min(payloadStart + tag, payloadEnd);
   }
 
