@@ -5,6 +5,9 @@
 //
 // This file is part of the QNEthernet library.
 
+#ifndef CIRCULARBUFFER_H_
+#define CIRCULARBUFFER_H_
+
 #include <cstddef>
 #include <memory>
 
@@ -72,3 +75,5 @@ class CircularBuffer {
   size_t head_;
   size_t tail_;
 };
+
+#endif  // CIRCULARBUFFER_H_
