@@ -191,7 +191,13 @@ void setup() {
 
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
-    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
+    if (state) {
+      printf("[Ethernet] Link ON, %d Mbps, %s duplex\r\n",
+             Ethernet.linkSpeed(),
+             Ethernet.linkIsFullDuplex() ? "Full" : "Half");
+    } else {
+      printf("[Ethernet] Link OFF\r\n");
+    }
   });
 
   // Listen for address changes

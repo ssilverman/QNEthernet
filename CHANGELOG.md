@@ -17,6 +17,7 @@ and this project adheres to
   to complete.
 * Added `EthernetUDP::beginWithReuse()` and `beginMulticastWithReuse()`
   functions to replace the corresponding begin-with-_reuse_-parameter versions.
+* Added printing the link speed and duplex in the IPerfServer example.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added
