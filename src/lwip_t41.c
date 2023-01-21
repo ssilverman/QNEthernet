@@ -169,9 +169,9 @@ void enet_isr();
 #define PHY_PHYSTS 0x10
 
 // Reads a PHY register (using MDIO & MDC signals).
-uint16_t mdio_read(int phyaddr, int regaddr) {
+uint16_t mdio_read(int regaddr) {
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
-              ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr);
+              ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr);
   // int count=0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++; // wait
@@ -184,9 +184,9 @@ uint16_t mdio_read(int phyaddr, int regaddr) {
 }
 
 // Writes a PHY register (using MDIO & MDC signals).
-void mdio_write(int phyaddr, int regaddr, uint16_t data) {
+void mdio_write(int regaddr, uint16_t data) {
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
-              ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr) |
+              ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr) |
               ENET_MMFR_DATA(data);
   // int count = 0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
@@ -261,9 +261,9 @@ static void t41_low_level_init() {
   delayMicroseconds(5);
 
   // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
-  mdio_write(0, PHY_LEDCR, 0x0280);  // LED shows link status, active high
+  mdio_write(PHY_LEDCR, 0x0280);  // LED shows link status, active high
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
-  mdio_write(0, PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
+  mdio_write(PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
 
   memset(rx_ring, 0, sizeof(rx_ring));
   memset(tx_ring, 0, sizeof(tx_ring));
@@ -367,7 +367,7 @@ static void t41_low_level_init() {
   ENET_TDAR = ENET_TDAR_TDAR;
 
   // phy soft reset
-  // phy_mdio_write(0, PHY_BMCR, 1 << 15);
+  // phy_mdio_write(PHY_BMCR, 1 << 15);
 
   isInitialized = true;
 }
@@ -523,14 +523,14 @@ static inline void check_link_status() {
   if (!isInitialized) {
     return;
   }
-  uint16_t status = mdio_read(0, PHY_BMSR);
+  uint16_t status = mdio_read(PHY_BMSR);
   uint8_t is_link_up = !!(status & (1 << 2));
   if (netif_is_link_up(&t41_netif) != is_link_up) {
     if (is_link_up) {
       netif_set_link_up(&t41_netif);
 
       // TODO: Should we read the speed only at link UP or every time?
-      status = mdio_read(0, PHY_PHYSTS);
+      status = mdio_read(PHY_PHYSTS);
       linkSpeed10Not100 = ((status & (1 << 1)) != 0);
       linkIsFullDuplex  = ((status & (1 << 2)) != 0);
     } else {
