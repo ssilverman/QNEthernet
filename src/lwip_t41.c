@@ -168,7 +168,7 @@ void enet_isr();
 #define PHY_BMSR   0x01
 #define PHY_PHYSTS 0x10
 
-// Read a PHY register (using MDIO & MDC signals).
+// Reads a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(int phyaddr, int regaddr) {
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr);
@@ -183,7 +183,7 @@ uint16_t mdio_read(int phyaddr, int regaddr) {
   return data;
 }
 
-// Write a PHY register (using MDIO & MDC signals).
+// Writes a PHY register (using MDIO & MDC signals).
 void mdio_write(int phyaddr, int regaddr, uint16_t data) {
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(phyaddr) | ENET_MMFR_RA(regaddr) |
