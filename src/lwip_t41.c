@@ -160,6 +160,14 @@ void enet_isr();
 //  PHY_MDIO
 // --------------------------------------------------------------------------
 
+// PHY register definitions
+#define PHY_REGCR  0x0D
+#define PHY_ADDAR  0x0E
+#define PHY_LEDCR  0x18
+#define PHY_RCSR   0x17
+#define PHY_BMSR   0x01
+#define PHY_PHYSTS 0x10
+
 // Read a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(int phyaddr, int regaddr) {
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
@@ -253,9 +261,9 @@ static void t41_low_level_init() {
   delayMicroseconds(5);
 
   // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
-  mdio_write(0, 0x18, 0x0280);  // LED shows link status, active high
+  mdio_write(0, PHY_LEDCR, 0x0280);  // LED shows link status, active high
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
-  mdio_write(0, 0x17, 0x0081);  // Config for 50 MHz clock input
+  mdio_write(0, PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
 
   memset(rx_ring, 0, sizeof(rx_ring));
   memset(tx_ring, 0, sizeof(tx_ring));
@@ -359,7 +367,7 @@ static void t41_low_level_init() {
   ENET_TDAR = ENET_TDAR_TDAR;
 
   // phy soft reset
-  // phy_mdio_write(0, 0x00, 1 << 15);
+  // phy_mdio_write(0, PHY_BMCR, 1 << 15);
 
   isInitialized = true;
 }
@@ -515,14 +523,14 @@ static inline void check_link_status() {
   if (!isInitialized) {
     return;
   }
-  uint16_t status = mdio_read(0, 0x01);
+  uint16_t status = mdio_read(0, PHY_BMSR);
   uint8_t is_link_up = !!(status & (1 << 2));
   if (netif_is_link_up(&t41_netif) != is_link_up) {
     if (is_link_up) {
       netif_set_link_up(&t41_netif);
 
       // TODO: Should we read the speed only at link UP or every time?
-      status = mdio_read(0, 0x10);
+      status = mdio_read(0, PHY_PHYSTS);
       linkSpeed10Not100 = ((status & (1 << 1)) != 0);
       linkIsFullDuplex  = ((status & (1 << 2)) != 0);
     } else {
