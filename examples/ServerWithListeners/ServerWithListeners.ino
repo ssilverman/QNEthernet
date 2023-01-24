@@ -205,7 +205,8 @@ void tellServer(bool hasIP) {
     } else {
       printf("Stopping server...");
       fflush(stdout);  // Print what we have so far if line buffered
-      printf("%s\r\n", server.end() ? "done." : "FAILED!");
+      server.end();
+      printf("done.\r\n");
     }
   }
 }
