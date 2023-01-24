@@ -61,7 +61,7 @@ bool EthernetServer::begin(uint16_t port, bool reuse) {
   }
 
   // Only change the port if listening was successful
-  listening_ = internal::ConnectionManager::instance().listen(port_, reuse);
+  listening_ = internal::ConnectionManager::instance().listen(port, reuse);
   if (listening_) {
     port_ = port;
     reuse_ = reuse;
