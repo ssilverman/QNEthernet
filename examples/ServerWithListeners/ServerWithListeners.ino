@@ -280,7 +280,7 @@ void loop() {
         IPAddress ip = state.client.remoteIP();
         printf("Client shutdown timeout: %u.%u.%u.%u\r\n",
                ip[0], ip[1], ip[2], ip[3]);
-        state.client.stop();
+        state.client.close();
         state.closed = true;
         continue;
       }
@@ -288,7 +288,7 @@ void loop() {
       if (millis() - state.lastRead >= kClientTimeout) {
         IPAddress ip = state.client.remoteIP();
         printf("Client timeout: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
-        state.client.stop();
+        state.client.close();
         state.closed = true;
         continue;
       }
