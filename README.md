@@ -79,12 +79,13 @@ and notes:
 * The `Ethernet.begin(...)` functions don't block.
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
-* The examples in https://www.arduino.cc/en/Reference/EthernetServerAccept and
-  https://www.arduino.cc/en/Reference/IfEthernetClient directly contradict each
-  other with regard to what `operator bool()` means in `EthernetClient`. The
-  first example uses it as "already connected", while the second uses it as
-  "available to connect". "Connected" is the chosen concept, but different from
-  `connected()` in that it doesn't check for unread data.
+* The examples at
+  https://www.arduino.cc/reference/en/libraries/ethernet/server.accept/ and
+  https://www.arduino.cc/reference/en/libraries/ethernet/if-ethernetclient/
+  directly contradict each other with regard to what `operator bool()` means in
+  `EthernetClient`. The first example uses it as "already connected", while the
+  second uses it as "available to connect". "Connected" is the chosen concept,
+  but different from `connected()` in that it doesn't check for unread data.
 * All the Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address are deprecated.
 * The following `Ethernet` functions are deprecated and do nothing or return
@@ -143,7 +144,7 @@ and notes:
 
 _QNEthernet_ defines functions that don't exist in the Arduino API as it's
 currently defined. (See:
-[Arduino Ethernet library](https://www.arduino.cc/en/Reference/Ethernet))
+[Arduino Ethernet library](https://www.arduino.cc/reference/en/libraries/ethernet/))
 This section documents those functions.
 
 Features:
@@ -1203,7 +1204,7 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
   https://github.com/ddrown/teensy41_ethernet
 * Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library:
   https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library
-* [Arduino Ethernet library](https://www.arduino.cc/en/Reference/Ethernet)
+* [Arduino Ethernet library](https://www.arduino.cc/reference/en/libraries/ethernet/)
 
 ---
 
