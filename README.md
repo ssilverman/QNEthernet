@@ -41,7 +41,7 @@ files provided with the lwIP release.
    3. [Non-blocking connection functions, `connectNoWait()`](#non-blocking-connection-functions-connectnowait)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
-9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)]
+9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)
 10. [UDP receive buffering](#udp-receive-buffering)
 11. [mDNS services](#mdns-services)
 12. [DNS](#dns)
