@@ -4,7 +4,7 @@
 // QNEthernetFrame.cpp contains an EthernetFrame implementation.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
+#ifdef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #include "QNEthernetFrame.h"
 
@@ -258,4 +258,4 @@ int EthernetFrameClass::availableForWrite() {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // !QNETHERNET_DISABLE_RAW_FRAME_SUPPORT
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT

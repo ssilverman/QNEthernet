@@ -44,6 +44,9 @@ and this project adheres to
   the hostname changed.
 * Changed both `EthernetServer` and `EthernetUDP` to disallow copying but
   allow moving.
+* Changed raw frame support to be excluded by default. This changed the
+  `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` macro to
+  `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean
