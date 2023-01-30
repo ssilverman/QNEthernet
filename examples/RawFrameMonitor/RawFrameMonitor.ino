@@ -12,6 +12,9 @@
 // tagged as "allowed".
 // See: Ethernet.setMACAddressAllowed(mac, flag)
 //
+// In order to use this example, define the QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+// macro.
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
