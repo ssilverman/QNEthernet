@@ -146,9 +146,9 @@ void EthernetClient::setNoDelay(bool flag) {
     return;
   }
   if (flag) {
-    state->pcb->flags |= TF_NODELAY;
+    tcp_nagle_disable(state->pcb);
   } else {
-    state->pcb->flags &= ~TF_NODELAY;
+    tcp_nagle_enable(state->pcb);
   }
 }
 
@@ -160,7 +160,7 @@ bool EthernetClient::isNoDelay() {
   if (state == nullptr) {
     return false;
   }
-  return ((state->pcb->flags & TF_NODELAY) != 0);
+  return tcp_nagle_disabled(state->pcb);
 }
 
 void EthernetClient::stop() {
@@ -246,7 +246,10 @@ uint16_t EthernetClient::localPort() {
   if (state == nullptr) {
     return 0;
   }
-  return state->pcb->local_port;
+
+  uint16_t port;
+  tcp_tcp_get_tcp_addrinfo(state->pcb, 1, nullptr, &port);
+  return port;
 }
 
 IPAddress EthernetClient::remoteIP() {
@@ -258,7 +261,10 @@ IPAddress EthernetClient::remoteIP() {
   if (state == nullptr) {
     return INADDR_NONE;
   }
-  return ip_addr_get_ip4_uint32(&state->pcb->remote_ip);
+
+  ip_addr_t ip;
+  tcp_tcp_get_tcp_addrinfo(state->pcb, 0, &ip, nullptr);
+  return ip_addr_get_ip4_uint32(&ip);
 }
 
 uint16_t EthernetClient::remotePort() {
@@ -270,7 +276,10 @@ uint16_t EthernetClient::remotePort() {
   if (state == nullptr) {
     return 0;
   }
-  return state->pcb->remote_port;
+
+  uint16_t port;
+  tcp_tcp_get_tcp_addrinfo(state->pcb, 0, nullptr, &port);
+  return port;
 }
 
 uintptr_t EthernetClient::connectionId() {

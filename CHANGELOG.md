@@ -48,6 +48,8 @@ and this project adheres to
 * Changed raw frame support to be excluded by default. This changed the
   `QNETHERNET_DISABLE_RAW_FRAME_SUPPORT` macro to
   `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`.
+* Changed `tcp_pcb` member accesses to use appropriate TCP API function calls.
+  This fixes use of the altcp API.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean
