@@ -512,14 +512,15 @@ not limited to:
 ### Asynchronous use is not supported
 
 Asynchronous use of _QNEthernet_ is not currently supported. This includes ISR
-approaches and multi-threading approaches. There is a group of libraries that
-claims to use _QNEthernet_ and that claims to provide asynchronous support.
-Neither of these claims is true.
+approaches and multi-threading approaches.
 
 First, the underlying lwIP stack must be configured and used a certain way in
 order to provide asynchronous support. _QNEthernet_ does not configure lwIP for
 this. Second, the _QNEthernet_ API, the layer on top of lwIP, isn't designed for
 asynchronous use.
+
+Note that there is a group of libraries that claims to use _QNEthernet_ and that
+claims to provide asynchronous support. Neither of these claims is true.
 
 ## How to write data to connections
 
