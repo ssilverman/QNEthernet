@@ -52,16 +52,18 @@ files provided with the lwIP release.
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-17. [Notes on ordering and timing](#notes-on-ordering-and-timing)
-18. [Notes on RAM1 usage](#notes-on-ram1-usage)
-19. [Configuration macros](#configuration-macros)
+16. [Application layered TCP: TLS, etc.](#application-layered-tcp-tls-etc)
+    1. [About the allocator function](#about-the-allocator-function)
+17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
+19. [Notes on RAM1 usage](#notes-on-ram1-usage)
+20. [Configuration macros](#configuration-macros)
     1. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
-20. [Complete list of features](#complete-list-of-features)
-21. [Other notes](#other-notes)
-22. [To do](#to-do)
-23. [Code style](#code-style)
-24. [References](#references)
+21. [Complete list of features](#complete-list-of-features)
+22. [Other notes](#other-notes)
+23. [To do](#to-do)
+24. [Code style](#code-style)
+25. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -1050,6 +1052,31 @@ defines can be found in _src/lwip/opt.h_.
    1. `LWIP_HOOK_VLAN_CHECK`, (see `LWIP_HOOK_VLAN_CHECK`)
    2. `ETHARP_VLAN_CHECK_FN`, (see `ETHARP_SUPPORT_VLAN`)
    3. `ETHARP_VLAN_CHECK`. (see `ETHARP_SUPPORT_VLAN`)
+
+## Application layered TCP: TLS, etc.
+
+lwIP provides a way to decorate the TCP layer. It's called "Application Layered
+TCP." It enables an application to add things like TLS without changing the
+source code.
+
+Here are the steps to add TLS:
+1. Set `LWIP_ALTCP` and `LWIP_ALTCP_TLS` to `1` in `lwipopts.h`,
+2. Implement a function somewhere in your code having this name and signature:
+   `std::function<altcp_allocator_t *(const ip_addr_t *ipaddr, uint16_t port)> qnethernet_allocatorf`
+   (you'll likely need to include `<lwip/altcp.h>`),
+   and
+3. Implement all the functions declared in _src/lwip/altcp_tls.h_.
+
+See _src/lwip/altcp.c_ for more information.
+
+### About the allocator function
+
+The function from step 2 returns the allocator needed by altcp. It is not
+required to use the `ipaddr` and `port` parameters; they are there in case the
+information is needed. They indicate what the calling code is trying to do:
+
+1. If `ipaddr` is NULL then the application is trying to listen.
+2. If `ipaddr` is not NULL then the application is trying to connect.
 
 ## On connections that hang around after cable disconnect
 

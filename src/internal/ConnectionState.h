@@ -11,7 +11,7 @@
 #include <functional>
 #include <vector>
 
-#include "lwip/tcp.h"
+#include "lwip/altcp.h"
 
 namespace qindesign {
 namespace network {
@@ -21,8 +21,8 @@ namespace internal {
 struct ConnectionState final {
   // Creates a new object and sets `arg` as the pcb's arg. This also reserves
   // TCP_WND bytes as buffer space.
-  ConnectionState(tcp_pcb *tpcb, void *arg) : pcb(tpcb) {
-    tcp_arg(tpcb, arg);
+  ConnectionState(altcp_pcb *tpcb, void *arg) : pcb(tpcb) {
+    altcp_arg(tpcb, arg);
     buf.reserve(TCP_WND);
   }
 
@@ -30,14 +30,14 @@ struct ConnectionState final {
   // object should be deleted before more 'tcp' functions are called.
   ~ConnectionState() {
     // Ensure callbacks are no longer called with this as the argument
-    tcp_arg(pcb, nullptr);
+    altcp_arg(pcb, nullptr);
 
     if (removeFunc != nullptr) {
       removeFunc(this);
     }
   }
 
-  tcp_pcb *volatile pcb = nullptr;
+  altcp_pcb *volatile pcb = nullptr;
 
   // Incoming data buffer
   std::vector<uint8_t> buf;

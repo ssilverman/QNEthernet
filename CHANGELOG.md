@@ -72,6 +72,10 @@ and this project adheres to
   `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`.
 * Changed `tcp_pcb` member accesses to use appropriate TCP API function calls.
   This fixes use of the altcp API.
+* Changed "tcp" calls to "altcp" calls so that it's easier to add TLS support.
+  There's an accompanying `qnethernet_allocatorf(ipaddr, port)` function that
+  needs to be defined by the application code if the `LWIP_ALTCP` option macro
+  is enabled.
 
 ### Removed
 * `EthernetServer` and `EthernetUDP` begin functions that take a Boolean

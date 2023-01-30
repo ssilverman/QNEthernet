@@ -8,12 +8,33 @@
 
 // C++ includes
 #include <algorithm>
+#if LWIP_ALTCP
+#include <functional>
+#endif  // LWIP_ALTCP
 #include <limits>
 
 #include <core_pins.h>
 
 #include "QNEthernet.h"
 #include "lwip/ip.h"
+#if LWIP_ALTCP
+#include "lwip/tcp.h"
+#endif  // LWIP_ALTCP
+
+#if LWIP_ALTCP
+// This is a function that returns the allocator function used by altcp.
+//
+// The arguments indicate what the calling code is trying to do:
+// 1. If ipaddr is NULL then the application is trying to listen.
+// 2. If ipaddr is not NULL then the application is trying to connect.
+//
+// The function isn't required to use the arguments.
+extern std::function<altcp_allocator_t *(const ip_addr_t *ipaddr,
+                                         uint16_t port)>
+    qnethernet_allocatorf;
+#else
+#define qnethernet_allocatorf(ipaddr, port)
+#endif  // LWIP_ALTCP
 
 namespace qindesign {
 namespace network {
@@ -25,7 +46,7 @@ ConnectionManager &ConnectionManager::instance() {
 }
 
 // Connection state callback.
-err_t ConnectionManager::connectedFunc(void *arg, struct tcp_pcb *tpcb,
+err_t ConnectionManager::connectedFunc(void *arg, struct altcp_pcb *tpcb,
                                        err_t err) {
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_ARG;
@@ -40,8 +61,8 @@ err_t ConnectionManager::connectedFunc(void *arg, struct tcp_pcb *tpcb,
     holder->state = nullptr;
 
     if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(tpcb) != ERR_OK) {
-        tcp_abort(tpcb);
+      if (altcp_close(tpcb) != ERR_OK) {
+        altcp_abort(tpcb);
         return ERR_ABRT;
       }
     }
@@ -91,7 +112,7 @@ void ConnectionManager::errFunc(void *arg, err_t err) {
 }
 
 // Data reception callback.
-err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
+err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
                                   struct pbuf *p, err_t err) {
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_ARG;
@@ -125,15 +146,15 @@ err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
     }
 
     if (pHead != nullptr) {
-      tcp_recved(tpcb, pHead->tot_len);
+      altcp_recved(tpcb, pHead->tot_len);
       pbuf_free(pHead);
     }
 
     holder->state = nullptr;
 
     if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(tpcb) != ERR_OK) {
-        tcp_abort(tpcb);
+      if (altcp_close(tpcb) != ERR_OK) {
+        altcp_abort(tpcb);
         return ERR_ABRT;
       }
     }
@@ -152,7 +173,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
     // Check that we can store all the data
     size_t rem = v.capacity() - v.size() + state->bufPos;
     if (rem < p->tot_len) {
-      tcp_recved(tpcb, rem);
+      altcp_recved(tpcb, rem);
       return ERR_INPROGRESS;  // ERR_MEM? Other?
     }
 
@@ -177,14 +198,14 @@ err_t ConnectionManager::recvFunc(void *arg, struct tcp_pcb *tpcb,
     }
   }
 
-  tcp_recved(tpcb, pHead->tot_len);
+  altcp_recved(tpcb, pHead->tot_len);
   pbuf_free(pHead);
 
   return ERR_OK;
 }
 
 // Accepted connection callback.
-err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
+err_t ConnectionManager::acceptFunc(void *arg, struct altcp_pcb *newpcb,
                                     err_t err) {
   if (newpcb == nullptr || arg == nullptr) {
     return ERR_ARG;
@@ -194,8 +215,8 @@ err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
 
   if (err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(newpcb) != ERR_OK) {
-        tcp_abort(newpcb);
+      if (altcp_close(newpcb) != ERR_OK) {
+        altcp_abort(newpcb);
         return ERR_ABRT;
       }
     }
@@ -208,8 +229,8 @@ err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
   holder->lastError = err;
   holder->connected = true;
   holder->state = std::make_unique<ConnectionState>(newpcb, holder.get());
-  tcp_err(newpcb, &errFunc);
-  tcp_recv(newpcb, &recvFunc);
+  altcp_err(newpcb, &errFunc);
+  altcp_recv(newpcb, &recvFunc);
   m->addConnection(holder);
 
   return ERR_OK;
@@ -231,28 +252,32 @@ void ConnectionManager::addConnection(
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
     const ip_addr_t *ipaddr, uint16_t port) {
+  if (ipaddr == nullptr) {
+    return nullptr;
+  }
+
   // Try to allocate
-  tcp_pcb *pcb = tcp_new();
+  altcp_pcb *pcb = altcp_new(qnethernet_allocatorf(ipaddr, port));
   if (pcb == nullptr) {
     return nullptr;
   }
 
   // Try to bind
-  if (tcp_bind(pcb, IP_ANY_TYPE, 0) != ERR_OK) {
-    tcp_abort(pcb);
+  if (altcp_bind(pcb, IP_ANY_TYPE, 0) != ERR_OK) {
+    altcp_abort(pcb);
     return nullptr;
   }
 
   // Connect listeners
   auto holder = std::make_shared<ConnectionHolder>();
   holder->state = std::make_unique<ConnectionState>(pcb, holder.get());
-  tcp_err(pcb, &errFunc);
-  tcp_recv(pcb, &recvFunc);
+  altcp_err(pcb, &errFunc);
+  altcp_recv(pcb, &recvFunc);
 
   // Try to connect
-  if (tcp_connect(pcb, ipaddr, port, &connectedFunc) != ERR_OK) {
+  if (altcp_connect(pcb, ipaddr, port, &connectedFunc) != ERR_OK) {
     // holder->state will be removed when holder is removed
-    tcp_abort(pcb);
+    altcp_abort(pcb);
     return nullptr;
   }
 
@@ -262,41 +287,49 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
 
 bool ConnectionManager::listen(uint16_t port, bool reuse) {
   // Try to allocate
-  tcp_pcb *pcb = tcp_new();
+  altcp_pcb *pcb = altcp_new(qnethernet_allocatorf(nullptr, port));
   if (pcb == nullptr) {
     return false;
   }
 
   // Try to bind
   if (reuse) {
+#if LWIP_ALTCP
+    ip_set_option(reinterpret_cast<struct tcp_pcb *>(pcb->state), SOF_REUSEADDR);
+#else
     ip_set_option(pcb, SOF_REUSEADDR);
+#endif  // LWIP_ALTCP
   }
-  if (tcp_bind(pcb, IP_ANY_TYPE, port) != ERR_OK) {
-    tcp_abort(pcb);
+  if (altcp_bind(pcb, IP_ANY_TYPE, port) != ERR_OK) {
+    altcp_abort(pcb);
     return false;
   }
 
   // Try to listen
-  tcp_pcb *pcbNew = tcp_listen(pcb);
+  altcp_pcb *pcbNew = altcp_listen(pcb);
   if (pcbNew == nullptr) {
-    tcp_abort(pcb);
+    altcp_abort(pcb);
     return false;
   }
   pcb = pcbNew;
 
   // Finally, accept connections
   listeners_.push_back(pcb);
-  tcp_arg(pcb, this);
-  tcp_accept(pcb, &acceptFunc);
+  altcp_arg(pcb, this);
+  altcp_accept(pcb, &acceptFunc);
 
   return true;
 }
 
 // Gets the local port from the given tcp_pcb.
-static uint16_t getLocalPort(tcp_pcb *pcb) {
+static uint16_t getLocalPort(altcp_pcb *pcb) {
+#if LWIP_ALTCP
+  return altcp_get_port(pcb, 1);
+#else
   uint16_t port;
-  tcp_tcp_get_tcp_addrinfo(pcb, 1, nullptr, &port);
+  altcp_get_tcp_addrinfo(pcb, 1, nullptr, &port);
   return port;
+#endif  // LWIP_ALTCP
 }
 
 bool ConnectionManager::isListening(uint16_t port) const {
@@ -315,10 +348,10 @@ bool ConnectionManager::stopListening(uint16_t port) {
   if (it == listeners_.end()) {
     return false;
   }
-  tcp_pcb *pcb = *it;
+  altcp_pcb *pcb = *it;
   listeners_.erase(it);
-  if (tcp_close(pcb) != ERR_OK) {
-    tcp_abort(pcb);
+  if (altcp_close(pcb) != ERR_OK) {
+    altcp_abort(pcb);
   }
   return true;
 }
@@ -375,14 +408,14 @@ size_t ConnectionManager::write(uint16_t port, uint8_t b) {
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
                   }
-                  if (tcp_sndbuf(state->pcb) < 1) {
-                    if (tcp_output(state->pcb) != ERR_OK) {
+                  if (altcp_sndbuf(state->pcb) < 1) {
+                    if (altcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
                     Ethernet.loop();
                   }
-                  if (tcp_sndbuf(state->pcb) >= 1) {
-                    tcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
+                  if (altcp_sndbuf(state->pcb) >= 1) {
+                    altcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
                   }
                 });
   Ethernet.loop();
@@ -400,15 +433,15 @@ size_t ConnectionManager::write(uint16_t port, const uint8_t *b, size_t len) {
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
                   }
-                  if (tcp_sndbuf(state->pcb) < size16) {
-                    if (tcp_output(state->pcb) != ERR_OK) {
+                  if (altcp_sndbuf(state->pcb) < size16) {
+                    if (altcp_output(state->pcb) != ERR_OK) {
                       return;
                     }
                     Ethernet.loop();
                   }
-                  uint16_t len = std::min(size16, tcp_sndbuf(state->pcb));
+                  uint16_t len = std::min(size16, altcp_sndbuf(state->pcb));
                   if (len > 0) {
-                    tcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
+                    altcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
                   }
                 });
   Ethernet.loop();
@@ -422,7 +455,7 @@ void ConnectionManager::flush(uint16_t port) {
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
                   }
-                  tcp_output(state->pcb);
+                  altcp_output(state->pcb);
                 });
   Ethernet.loop();
 }
@@ -436,7 +469,7 @@ int ConnectionManager::availableForWrite(uint16_t port) {
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
                   }
-                  min = std::min(min, tcp_sndbuf(state->pcb));
+                  min = std::min(min, altcp_sndbuf(state->pcb));
                   found = true;
                 });
   if (!found) {
