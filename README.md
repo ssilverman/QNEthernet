@@ -485,10 +485,11 @@ here are a few steps to follow:
 3. In `setup()`, just after initializing `Serial`, set `stdPrint = &Serial`.
    This enables some lwIP output and also `printf` for your own code.
 4. You likely don't want or need to set/choose your own MAC address, so just
-   call `Ethernet.begin()` with no arguments to use DHCP and the three-argument
-   version (IP, subnet mask, gateway) to set your own address. If you really
-   want to set your own MAC address, see `setMACAddress(mac)` or one of the
-   deprecated `begin(...)` functions that takes a MAC address parameter.
+   call `Ethernet.begin()` with no arguments to use DHCP, and the three- or
+   four-argument version (IP, subnet mask, gateway[, DNS]) to set your own
+   address. If you really want to set your own MAC address, see
+   `setMACAddress(mac)` or one of the deprecated `begin(...)` functions that
+   takes a MAC address parameter.
 5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
@@ -501,7 +502,8 @@ here are a few steps to follow:
    means that there is no reason to call this function.
 7. Most other things should be the same.
 
-Please see the examples for more things you can do with the API, including:
+Please see the examples for more things you can do with the API, including but
+not limited to:
 * Using listeners to watch for network changes,
 * Monitoring and sending raw Ethernet frames, and
 * Setting up an mDNS service.
