@@ -32,6 +32,7 @@ files provided with the lwIP release.
    9. [`IPAddress` operators](#ipaddress-operators)
    10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
 3. [How to run](#how-to-run)
+   1. [Asynchronous use is not supported](#asynchronous-use-is-not-supported)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
 5. [A note on the examples](#a-note-on-the-examples)
@@ -507,6 +508,18 @@ not limited to:
 * Using listeners to watch for network changes,
 * Monitoring and sending raw Ethernet frames, and
 * Setting up an mDNS service.
+
+### Asynchronous use is not supported
+
+Asynchronous use of _QNEthernet_ is not currently supported. This includes ISR
+approaches and multi-threading approaches. There is a group of libraries that
+claims to use _QNEthernet_ and that claims to provide asynchronous support.
+Neither of these claims is true.
+
+First, the underlying lwIP stack must be configured and used a certain way in
+order to provide asynchronous support. _QNEthernet_ does not configure lwIP for
+this. Second, the _QNEthernet_ API, the layer on top of lwIP, isn't designed for
+asynchronous use.
 
 ## How to write data to connections
 
