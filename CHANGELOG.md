@@ -55,6 +55,9 @@ and this project adheres to
 
 ### Fixed
 * `EthernetUDP::begin` functions now call `stop()` if there was a bind error.
+* Fixed `EthernetClient::setNoDelay(flag)` to actually use the `flag` argument.
+  The function was always setting the TCP flag, regardless of the value of
+  the argument.
 
 ## [0.17.0]
 

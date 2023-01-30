@@ -145,7 +145,11 @@ void EthernetClient::setNoDelay(bool flag) {
   if (state == nullptr) {
     return;
   }
-  state->pcb->flags |= TF_NODELAY;
+  if (flag) {
+    state->pcb->flags |= TF_NODELAY;
+  } else {
+    state->pcb->flags &= ~TF_NODELAY;
+  }
 }
 
 bool EthernetClient::isNoDelay() {
