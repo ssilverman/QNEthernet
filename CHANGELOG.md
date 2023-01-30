@@ -31,6 +31,10 @@ and this project adheres to
 * There's now `Print` objects for each of `stdout` and `stderr`: `stdoutPrint`
   and `stderrPrint`.
 * Improved `RawFrameMonitor` example.
+* Changed "tcp" calls to "altcp" calls so that it's easier to add TLS support.
+  There's an accompanying `qnethernet_allocatorf(ipaddr, port)` function that
+  needs to be defined by the application code if the `LWIP_ALTCP` and
+  `LWIP_ALTCP_TLS` option macros are enabled.
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's

@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "ConnectionHolder.h"
+#include "lwip/altcp.h"
 #include "lwip/ip_addr.h"
-#include "lwip/tcp.h"
 
 namespace qindesign {
 namespace network {
@@ -59,18 +59,18 @@ class ConnectionManager final {
   ConnectionManager() = default;
   ~ConnectionManager() = default;
 
-  static err_t connectedFunc(void *arg, struct tcp_pcb *tpcb, err_t err);
+  static err_t connectedFunc(void *arg, struct altcp_pcb *tpcb, err_t err);
   static void errFunc(void *arg, err_t err);
-  static err_t recvFunc(void *arg, struct tcp_pcb *tpcb, struct pbuf *p,
+  static err_t recvFunc(void *arg, struct altcp_pcb *tpcb, struct pbuf *p,
                         err_t err);
-  static err_t acceptFunc(void *arg, struct tcp_pcb *newpcb, err_t err);
+  static err_t acceptFunc(void *arg, struct altcp_pcb *newpcb, err_t err);
 
   // Adds a created connection to the list. It is expected that the object is
   // already set up.
   void addConnection(const std::shared_ptr<ConnectionHolder> &holder);
 
   std::vector<std::shared_ptr<ConnectionHolder>> connections_;
-  std::vector<struct tcp_pcb *> listeners_;
+  std::vector<struct altcp_pcb *> listeners_;
 };
 
 }  // namespace internal
