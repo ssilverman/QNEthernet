@@ -245,7 +245,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   }
 
   // Try to bind
-  if (tcp_bind(pcb, IP_ADDR_ANY, 0) != ERR_OK) {
+  if (tcp_bind(pcb, IP_ANY_TYPE, 0) != ERR_OK) {
     tcp_abort(pcb);
     return nullptr;
   }
@@ -278,7 +278,7 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   if (reuse) {
     ip_set_option(pcb, SOF_REUSEADDR);
   }
-  if (tcp_bind(pcb, IP_ADDR_ANY, port) != ERR_OK) {
+  if (tcp_bind(pcb, IP_ANY_TYPE, port) != ERR_OK) {
     tcp_abort(pcb);
     return false;
   }
