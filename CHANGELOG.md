@@ -60,6 +60,7 @@ and this project adheres to
 * Fixed `EthernetClient::setNoDelay(flag)` to actually use the `flag` argument.
   The function was always setting the TCP flag, regardless of the value of
   the argument.
+* Fixed printing unknown netif name characters in some debug messages.
 
 ## [0.17.0]
 

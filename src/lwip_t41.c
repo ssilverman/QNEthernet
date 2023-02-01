@@ -144,7 +144,7 @@ static BUFFER_DMAMEM uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(6
 static BUFFER_DMAMEM uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
 volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
 volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
-static struct netif t41_netif;
+static struct netif t41_netif = { .name = {'e', '0'} };
 static volatile uint32_t rx_ready;
 
 // PHY status, polled
@@ -481,8 +481,6 @@ static err_t t41_netif_init(struct netif *netif) {
 #if LWIP_NETIF_HOSTNAME
   netif_set_hostname(netif, NULL);
 #endif
-  netif->name[0] = 'e';
-  netif->name[1] = '0';
 
   t41_low_level_init();
 
