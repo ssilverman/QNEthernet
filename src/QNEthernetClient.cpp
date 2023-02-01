@@ -94,11 +94,12 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
   // Wait for a connection
   if (wait) {
     elapsedMillis timer;
-    while (!conn_->connected && timer < connTimeout_) {
+    // NOTE: conn_ could be set to NULL somewhere during the yield
+    while (conn_ != nullptr && !conn_->connected && timer < connTimeout_) {
       // NOTE: Depends on Ethernet loop being called from yield()
       yield();
     }
-    if (!conn_->connected) {
+    if (conn_ == nullptr || !conn_->connected) {
       close();
       return static_cast<int>(ConnectReturns::TIMED_OUT);
     }
@@ -195,7 +196,8 @@ void EthernetClient::close(bool wait) {
         tcp_abort(state->pcb);
       } else if (wait) {
         elapsedMillis timer;
-        while (conn_->connected && timer < connTimeout_) {
+        // NOTE: conn_ could be set to NULL somewhere during the yield
+        while (conn_ != nullptr && conn_->connected && timer < connTimeout_) {
           // NOTE: Depends on Ethernet loop being called from yield()
           yield();
         }

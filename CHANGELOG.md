@@ -63,6 +63,8 @@ and this project adheres to
   The function was always setting the TCP flag, regardless of the value of
   the argument.
 * Fixed printing unknown netif name characters in some debug messages.
+* Fixed `EthernetClient::connect()` and `close()` operations to check the
+  internal connection object for NULL across `yield()` calls.
 
 ## [0.17.0]
 
