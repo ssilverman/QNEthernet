@@ -836,20 +836,31 @@ The relevant functions are (see the [`Ethernet`](#ethernet) section for further
 descriptions):
 1. `Ethernet.onLinkState(cb)`
 2. `Ethernet.onAddressChanged(cb)`
+3. `Ethernet.onInterfaceStatus(cb)`
 
-_Link-state_ occurs when an Ethernet link is detected or lost.
+_Link-state_ events occur when an Ethernet link is detected or lost.
 
 _Address-changed_ events occur when the IP address changes, but its effects are
-a little more subtle. When setting an address via DHCP, the link must already be
-up in order to receive the information. However, when setting a static IP
-address, the event may occur when the link is not yet up. This means that if a
-connection is attempted when it is detected that the address is valid, the
-attempt will fail.
+a little more subtle. When setting an address via DHCP, the link and network
+interface must already be up in order to receive the information. However, when
+setting a static IP address, the event may occur before the link or network
+interface is up. This means that if a connection or DNS lookup is attempted when
+it is detected that the address is valid, the attempt will fail.
+
+_Interface-status_ events happen when the network interface comes up or goes
+down. No network operations can happen before the interface is up. For example,
+when setting a static IP address, the _address-changed_ event may occur before
+the network interface has come up. This means that, for example, any connection
+attempts or DNS lookup attempts will fail.
 
 It is suggested, therefore, that when taking an action based on an
-_address-changed_ event, the link state is checked in addition.
+_address-changed_ event, the link state and interface status are checked
+in addition.
 
 Servers, on the other hand, can be brought up even when there's no link.
+
+In summary, no network operations can be done before all three of _link-up_,
+_address_changed-to-valid_, and _interface-up_ occur.
 
 See: [Connections and link detection](#connections-and-link-detection)
 
