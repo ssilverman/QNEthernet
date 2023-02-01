@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // AppWithListenersTemplate shows one way to start writing a network
@@ -6,13 +6,14 @@
 // communication, but it configures the network and shows possible
 // places to hook in your own code.
 //
-// Not everything in this template needs to be included in your own
+// Not everything in this template needs to be included in your
 // own application.
 //
 // This demonstrates:
 // 1. Using Ethernet listeners,
-// 2. Using `printf`, and
-// 3. Configuring an IP address.
+// 2. Using `printf`,
+// 3. Configuring an IP address, and
+// 4. How to properly start using the network.
 //
 // This file is part of the QNEthernet library.
 
@@ -64,11 +65,17 @@ IPAddress gateway{192, 168, 1, 1};
 IPAddress dnsServer = gateway;
 
 // --------------------------------------------------------------------------
-//  Main program
+//  Program State
+// --------------------------------------------------------------------------
+
+volatile bool networkReadyLatch = false;
+
+// --------------------------------------------------------------------------
+//  Main Program
 // --------------------------------------------------------------------------
 
 // Forward declarations
-void systemReady(bool hasIP, bool hasLink);
+void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp);
 
 // Main program setup.
 void setup() {
@@ -104,7 +111,7 @@ void setup() {
     // When setting a static IP, the address will be set but a link
     // might not yet exist
     bool hasIP = (Ethernet.localIP() != INADDR_NONE);
-    systemReady(hasIP, state);
+    setNetworkReady(hasIP, state, Ethernet.interfaceStatus());
   });
 
   // Listen for address changes
@@ -137,7 +144,15 @@ void setup() {
     // sub-programs that need to know whether to stop/start/restart/etc
     // Note: When setting a static IP, the address will be set but a
     //       link might not yet exist
-    systemReady(hasIP, Ethernet.linkState());
+    setNetworkReady(hasIP, Ethernet.linkState(), Ethernet.interfaceStatus());
+  });
+
+  // Listen for network interface status changes
+  Ethernet.onInterfaceStatus([](bool status) {
+    // When setting a static IP, the address will be set but the
+    // network interface might not yet be up
+    bool hasIP = (Ethernet.localIP() != INADDR_NONE);
+    setNetworkReady(hasIP, Ethernet.linkState(), Ethernet.interfaceStatus());
   });
 
   bool startWithStatic = false;
@@ -211,20 +226,39 @@ void setup() {
   // *** Additional setup code goes here
 }
 
-// This is called when the system readiness has changed. The system is
-// considered ready if there's an IP address and the link is up.
-void systemReady(bool hasIP, bool hasLink) {
-  printf("System is%s ready\r\n", (hasIP && hasLink) ? "" : " not");
+// This is called when the network readiness has changed. The network
+// is considered ready if there's an IP address and the link and network
+// interface are up.
+void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp) {
+  networkReadyLatch = hasIP && hasLink && interfaceUp;
+
+  printf("Network is%s ready\r\n", networkReadyLatch ? "" : " not");
 
   // *** Notification or start/stop/restart code goes here
 
-  // For servers, it is suggested to follow the address state because
-  // they can be brought up and active even when there's no link,
-  // unlike clients and connections, which require both an address and
-  // a link.
+  // There's two choices here for startup operations:
+  // 1. Test the latch somewhere in the main loop, and, if it is true,
+  //    perform any network operations and then set the latch to
+  //    false, or
+  // 2. Perform the network operations after testing for all
+  //    three conditions.
+
+  // Similar logic could be applied for when the network is not ready.
+
+  // Servers technically only need the address state because they can
+  // be brought up and active even when there's no link or no active
+  // network interface, unlike clients and connections, which require
+  // all of an address, link, and active network interface.
 }
 
 // Main program loop.
 void loop() {
   // *** Main program code goes here
+
+  // One option for performing any network startup:
+  if (networkReadyLatch) {
+    // *** Do any startup network operations that must run when the
+    // *** network comes up
+    networkReadyLatch = false;
+  }
 }

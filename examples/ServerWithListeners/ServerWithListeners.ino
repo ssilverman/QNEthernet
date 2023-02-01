@@ -147,7 +147,7 @@ void setup() {
     // example, servers, SNTP clients, and other sub-programs that
     // need to know whether to stop/start/restart/etc
     // Note: When setting a static IP, the address will be set but a
-    //       link might not yet exist
+    //       link or active network interface might not yet exist
     tellServer(hasIP);
   });
 
