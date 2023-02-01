@@ -19,6 +19,8 @@ and this project adheres to
   functions to replace the corresponding begin-with-_reuse_-parameter versions.
 * Added printing the link speed and duplex in the IPerfServer example.
 * Added an "Asynchronous use is not supported" section to the README.
+* New `EthernetClass::onInterfaceStatus(callback)` and `interfaceStatus()`
+  functions for tracking the network interface status.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added

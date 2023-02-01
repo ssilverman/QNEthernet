@@ -165,6 +165,15 @@ class EthernetClass final {
     addressChangedCB_ = cb;
   }
 
+  // Sets an interface status callback. This will be called AFTER the interface
+  // is up but BEFORE the interface goes down.
+  void onInterfaceStatus(std::function<void(bool status)> cb) {
+    interfaceStatusCB_ = cb;
+  }
+
+  // Returns the interface status, true for UP and false for DOWN.
+  bool interfaceStatus() const;
+
   IPAddress localIP() const;
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
@@ -279,6 +288,7 @@ class EthernetClass final {
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
+  std::function<void(bool status)> interfaceStatusCB_ = nullptr;
 };
 
 // Instance for interacting with the library.

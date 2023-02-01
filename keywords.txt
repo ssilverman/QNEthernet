@@ -39,6 +39,8 @@ linkSpeed	KEYWORD2
 linkIsFullDuplex	KEYWORD2
 onLinkState	KEYWORD2
 onAddressChanged	KEYWORD2
+onInterfaceStatus	KEYWORD2
+interfaceStatus	KEYWORD2
 localIP	KEYWORD2	EthernetLocalIP
 subnetMask	KEYWORD2	EthernetSubnetMask
 gatewayIP	KEYWORD2	EthernetGatewayIP

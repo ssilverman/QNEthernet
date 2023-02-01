@@ -177,6 +177,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `end()`: Shuts down the library, including the Ethernet clocks.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "teensy-lwip".
+* `interfaceStatus()`: Returns the interface status, `true` for UP and `false`
+  for DOWN.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
@@ -210,6 +212,9 @@ The `Ethernet` object is the main Ethernet interface.
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
     changed. This might be called before the link is up if a static IP is set.
+  * `onInterfaceStatus(cb)`: The callback is called when the interface status
+    changes. It is called _after_ the interface is up but _before_ the interface
+    does down.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   multicast groups.
 * `static constexpr size_t mtu()`: Returns the MTU.

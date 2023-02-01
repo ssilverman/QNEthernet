@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // QNEthernet.cpp contains the Teensy 4.1 Ethernet implementation.
@@ -57,6 +57,12 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   if (reason & LWIP_NSC_IPV4_SETTINGS_CHANGED) {
     if (Ethernet.addressChangedCB_ != nullptr) {
       Ethernet.addressChangedCB_();
+    }
+  }
+
+  if (reason & LWIP_NSC_STATUS_CHANGED) {
+    if (Ethernet.interfaceStatusCB_ != nullptr && args != nullptr) {
+      Ethernet.interfaceStatusCB_(args->status_changed.state != 0);
     }
   }
 }
@@ -288,6 +294,13 @@ int EthernetClass::linkSpeed() const {
 
 bool EthernetClass::linkIsFullDuplex() const {
   return enet_link_is_full_duplex();
+}
+
+bool EthernetClass::interfaceStatus() const {
+  if (netif_ == nullptr) {
+    return false;
+  }
+  return netif_is_up(netif_);
 }
 
 IPAddress EthernetClass::localIP() const {
