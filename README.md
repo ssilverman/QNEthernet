@@ -37,7 +37,7 @@ files provided with the lwIP release.
    1. [Write immediacy](#write-immediacy)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
-   1. [Connections and link detection](#connections-and-link-detection)
+   1. [Connections and link/interface detection](#connections-and-linkinterface-detection)
    2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
    3. [Non-blocking connection functions, `connectNoWait()`](#non-blocking-connection-functions-connectnowait)
 7. [How to use multicast](#how-to-use-multicast)
@@ -177,8 +177,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `end()`: Shuts down the library, including the Ethernet clocks.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "teensy-lwip".
-* `interfaceStatus()`: Returns the interface status, `true` for UP and `false`
-  for DOWN.
+* `interfaceStatus()`: Returns the network interface status, `true` for UP and
+  `false` for DOWN.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
@@ -211,10 +211,11 @@ The `Ethernet` object is the main Ethernet interface.
   * `onLinkState(cb)`: The callback is called when the link changes state, for
     example when the Ethernet cable is unplugged.
   * `onAddressChanged(cb)`: The callback is called when any IP settings have
-    changed. This might be called before the link is up if a static IP is set.
-  * `onInterfaceStatus(cb)`: The callback is called when the interface status
-    changes. It is called _after_ the interface is up but _before_ the interface
-    does down.
+    changed. This might be called before the link or network interface is up if
+    a static IP is set.
+  * `onInterfaceStatus(cb)`: The callback is called when the network interface
+    status changes. It is called _after_ the interface is up but _before_ the
+    interface goes down.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   multicast groups.
 * `static constexpr size_t mtu()`: Returns the MTU.
@@ -501,8 +502,8 @@ here are a few steps to follow:
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
 
    Alternatively, you can use [listeners](#how-to-use-listeners) to watch for
-   address and link changes. This obviates the need for waiting and is the
-   preferred approach.
+   address, link, and network interface activity changes. This obviates the need
+   for waiting and is the preferred approach.
 
 6. `Ethernet.hardwareStatus()` always returns `EthernetOtherHardware`. This
    means that there is no reason to call this function.
@@ -751,16 +752,18 @@ Some options:
    (`connected()` or `operator bool()`). The data will just run out after
    connection-closed and after the buffers are empty.
 
-### Connections and link detection
+### Connections and link/interface detection
 
-A link must be present before a connection can be made. Either call
-`Ethernet.waitForLink(timeout)` or check the link state before attempting to
-connect. Which approach you use will depend on how your code is structured or
-intended to be used.
+A link and active network interface must be present before a connection can be
+made. Either call `Ethernet.waitForLink(timeout)` or check the link state or
+network interface status before attempting to connect. Which approach you use
+will depend on how your code is structured or intended to be used.
 
 Be aware when using a listener approach to start or stop services that it's
 possible, when setting a static IP, for the _address-changed_ callback to be
-called before the link is up.
+called before the link or network interface is up.
+
+Note that this section also applies to the DNS client.
 
 ### `connect()` behaviour and its return values
 
@@ -848,13 +851,13 @@ interface is up. This means that if a connection or DNS lookup is attempted when
 it is detected that the address is valid, the attempt will fail.
 
 _Interface-status_ events happen when the network interface comes up or goes
-down. No network operations can happen before the interface is up. For example,
-when setting a static IP address, the _address-changed_ event may occur before
-the network interface has come up. This means that, for example, any connection
-attempts or DNS lookup attempts will fail.
+down. No network operations can happen before the network interface is up. For
+example, when setting a static IP address, the _address-changed_ event may occur
+before the network interface has come up. This means that, for example, any
+connection attempts or DNS lookup attempts will fail.
 
 It is suggested, therefore, that when taking an action based on an
-_address-changed_ event, the link state and interface status are checked
+_address-changed_ event, the link state and network interface status are checked
 in addition.
 
 Servers, on the other hand, can be brought up even when there's no link or
@@ -866,7 +869,7 @@ _address_changed-to-valid_, and _interface-up_ occur.
 Last, no network tasks should be performed inside the listeners. Instead, set a
 flag and then process that flag somewhere in the main loop.
 
-See: [Connections and link detection](#connections-and-link-detection)
+See: [Connections and link/interface detection](#connections-and-linkinterface-detection)
 
 ## How to change the number of sockets
 
@@ -1178,7 +1181,8 @@ _QNEthernet_ library.
 9. [Zero-length UDP packets](#parsepacket-return-values)
 10. [UDP](#udp-receive-buffering) and [raw frame](#raw-frame-receive-buffering)
     receive buffering
-11. [Listeners](#how-to-use-listeners) to watch link and address state
+11. [Listeners](#how-to-use-listeners) to watch link, network interface, and
+    address state
 12. IPv6-capable with some additions
 13. IEEE1588-capable with some additions
 14. [Client shutdown options](#ethernetclient): _close_ (start close process
