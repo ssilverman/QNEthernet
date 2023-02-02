@@ -827,7 +827,7 @@ The lwIP stack keeps track of a group "use count". This means:
 
 ## How to use listeners
 
-Instead of waiting for certain state at system start, for example _link-up_ or
+Instead of waiting for certain states at system start, for example _link-up_ or
 _address-changed_, it's possible to watch for state changes using listeners, and
 then act on those state changes. This will make your application more robust and
 responsive to state changes during program operation.
@@ -857,10 +857,14 @@ It is suggested, therefore, that when taking an action based on an
 _address-changed_ event, the link state and interface status are checked
 in addition.
 
-Servers, on the other hand, can be brought up even when there's no link.
+Servers, on the other hand, can be brought up even when there's no link or
+active network interface.
 
 In summary, no network operations can be done before all three of _link-up_,
 _address_changed-to-valid_, and _interface-up_ occur.
+
+Last, no network tasks should be performed inside the listeners. Instead, set a
+flag and then process that flag somewhere in the main loop.
 
 See: [Connections and link detection](#connections-and-link-detection)
 

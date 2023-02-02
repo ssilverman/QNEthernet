@@ -232,16 +232,12 @@ void setup() {
 void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp) {
   networkReadyLatch = hasIP && hasLink && interfaceUp;
 
-  printf("Network is%s ready\r\n", networkReadyLatch ? "" : " not");
+  printf("Network is%s READY\r\n", networkReadyLatch ? "" : " NOT");
 
-  // *** Notification or start/stop/restart code goes here
-
-  // There's two choices here for startup operations:
-  // 1. Test the latch somewhere in the main loop, and, if it is true,
-  //    perform any network operations and then set the latch to
-  //    false, or
-  // 2. Perform the network operations after testing for all
-  //    three conditions.
+  // To successfully perform network startup tasks, test the latch
+  // somewhere in the main loop, and, if it is true, perform any
+  // network tasks and then set the latch to false. No network calls
+  // should be done from inside a listener.
 
   // Similar logic could be applied for when the network is not ready.
 
@@ -255,10 +251,10 @@ void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp) {
 void loop() {
   // *** Main program code goes here
 
-  // One option for performing any network startup:
+  // Perform any network startup:
   if (networkReadyLatch) {
-    // *** Do any startup network operations that must run when the
-    // *** network comes up
+    // *** Do any network startup tasks that must run when the network
+    // *** comes up
     networkReadyLatch = false;
   }
 }

@@ -155,18 +155,24 @@ class EthernetClass final {
   bool linkIsFullDuplex() const;
 
   // Sets a link state callback.
+  //
+  // Note that no network tasks should be done from inside the listener.
   void onLinkState(std::function<void(bool state)> cb) {
     linkStateCB_ = cb;
   }
 
   // Sets an address changed callback. This will be called if any of the three
   // addresses changed: IP address, subnet mask, or gateway.
+  //
+  // Note that no network tasks should be done from inside the listener.
   void onAddressChanged(std::function<void()> cb) {
     addressChangedCB_ = cb;
   }
 
   // Sets an interface status callback. This will be called AFTER the interface
   // is up but BEFORE the interface goes down.
+  //
+  // Note that no network tasks should be done from inside the listener.
   void onInterfaceStatus(std::function<void(bool status)> cb) {
     interfaceStatusCB_ = cb;
   }
