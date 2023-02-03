@@ -66,7 +66,7 @@ const char *lwip_strerr(err_t err) {
   // # digits = log_10(2^bits) = bits * log_10(2)
   constexpr size_t kDigits = sizeof(err_t)*8*kLog2 + 1;  // Add 1 for ceiling
   constexpr char kPrefix[]{"err "};
-  static char buf[sizeof(kPrefix) + kDigits];  // Includes the NUL
+  static char buf[sizeof(kPrefix) + kDigits + 1];  // Includes the NUL and sign
   snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
   return buf;
 }

@@ -65,6 +65,7 @@ and this project adheres to
 * Fixed printing unknown netif name characters in some debug messages.
 * Fixed `EthernetClient::connect()` and `close()` operations to check the
   internal connection object for NULL across `yield()` calls.
+* Fixed `lwip_strerr()` buffer size to include the potential sign.
 
 ## [0.17.0]
 
