@@ -21,6 +21,7 @@ and this project adheres to
 * Added an "Asynchronous use is not supported" section to the README.
 * New `EthernetClass::onInterfaceStatus(callback)` and `interfaceStatus()`
   functions for tracking the network interface status.
+* Added a check to ensure lwIP isn't called from an interrupt context.
 
 ### Changed
 * Wrapped `LWIP_MDNS_RESPONDER` option in `lwipopts.h` with `#ifndef` and added

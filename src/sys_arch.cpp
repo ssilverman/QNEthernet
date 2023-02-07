@@ -19,6 +19,7 @@ extern int errno;
 
 extern "C" {
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/opt.h"
 #ifdef LWIP_DEBUG
 #include "lwip/err.h"
@@ -85,6 +86,7 @@ Print *volatile stderrPrint = nullptr;
 }  // namespace qindesign
 
 extern "C" {
+
 // Define this function so that printf works; parts of lwIP may use printf.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
 // Note: Can't define as weak by default because we don't know which `_write`
@@ -130,4 +132,11 @@ sys_prot_t sys_arch_protect(void) {
 void sys_arch_unprotect(sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
+
+void sys_check_core_locking(void) {
+  uint32_t ipsr;
+  __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
+  LWIP_ASSERT("Function called from interrupt context", (ipsr == 0));
+}
+
 }  // extern "C"
