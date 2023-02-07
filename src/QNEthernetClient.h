@@ -114,7 +114,7 @@ class EthernetClient : public Client {
   int peek() final;
 
   // ----------------
-  //  Socket options
+  //  Socket Options
   // ----------------
 
   // Disables or enables Nagle's algorithm. This sets or clears the TCP_NODELAY

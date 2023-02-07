@@ -36,7 +36,7 @@ constexpr uint32_t kPixelPusherFlags =
     PixelPusherServer::PusherFlags::GLOBALBRIGHTNESS;
 
 // -------------------------------------------------------------------
-//  Main program
+//  Main Program
 // -------------------------------------------------------------------
 
 PixelPusherServer pp;

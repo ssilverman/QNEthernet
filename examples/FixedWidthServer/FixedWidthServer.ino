@@ -40,7 +40,7 @@ struct ClientState {
 };
 
 // --------------------------------------------------------------------------
-//  Program state
+//  Program State
 // --------------------------------------------------------------------------
 
 // Keeps track of what and where belong to whom.
@@ -50,7 +50,7 @@ std::vector<ClientState> clients;
 EthernetServer server{kServerPort};
 
 // --------------------------------------------------------------------------
-//  Main program
+//  Main Program
 // --------------------------------------------------------------------------
 
 // Program setup.

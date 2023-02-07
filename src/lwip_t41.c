@@ -198,7 +198,7 @@ void mdio_write(int regaddr, uint16_t data) {
 }
 
 // --------------------------------------------------------------------------
-//  Low-level
+//  Low-Level
 // --------------------------------------------------------------------------
 
 static void t41_low_level_init() {
@@ -556,7 +556,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 #endif  // !QNETHERNET_PROMISCUOUS_MODE
 
 // --------------------------------------------------------------------------
-//  Public interface
+//  Public Interface
 // --------------------------------------------------------------------------
 
 void enet_getmac(uint8_t *mac) {
@@ -726,7 +726,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 }
 
 // --------------------------------------------------------------------------
-//  MAC address filtering
+//  MAC Address Filtering
 // --------------------------------------------------------------------------
 
 #ifndef QNETHERNET_PROMISCUOUS_MODE
