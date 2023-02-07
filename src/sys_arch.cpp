@@ -18,6 +18,7 @@ extern int errno;
 #include <pgmspace.h>
 
 extern "C" {
+
 #include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/opt.h"
@@ -72,7 +73,12 @@ const char *lwip_strerr(err_t err) {
   return buf;
 }
 #endif  // LWIP_DEBUG
+
 }  // extern "C"
+
+// --------------------------------------------------------------------------
+//  stdio
+// --------------------------------------------------------------------------
 
 // The user program can set this to something initialized. For example,
 // `Serial`, after `Serial.begin(speed)`.
@@ -123,6 +129,10 @@ int _write(int file, const void *buf, size_t len) {
   }
   return out->write((const uint8_t *)buf, len);
 }
+
+// --------------------------------------------------------------------------
+//  Core Locking
+// --------------------------------------------------------------------------
 
 #if SYS_LIGHTWEIGHT_PROT
 sys_prot_t sys_arch_protect(void) {
