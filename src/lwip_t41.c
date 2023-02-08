@@ -178,7 +178,7 @@ uint16_t mdio_read(int regaddr) {
   }
   // print("mdio read waited ", count);
   uint16_t data = ENET_MMFR;
-  ENET_EIR = ENET_EIR_MII;
+  ENET_EIR |= ENET_EIR_MII;
   // printhex("mdio read:", data);
   return data;
 }
@@ -192,7 +192,7 @@ void mdio_write(int regaddr, uint16_t data) {
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++;  // wait
   }
-  ENET_EIR = ENET_EIR_MII;
+  ENET_EIR |= ENET_EIR_MII;
   // print("mdio write waited ", count);
   // printhex("mdio write :", data);
 }
@@ -359,6 +359,8 @@ static void t41_low_level_init() {
   attachInterruptVector(IRQ_ENET, enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
+  ENET_EIR = 0;  // Clear any pending interrupts before setting ETHEREN
+
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
 
@@ -511,8 +513,8 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 }
 
 void enet_isr() {
-  if (ENET_EIR & ENET_EIR_RXF) {
-    ENET_EIR = ENET_EIR_RXF;
+  if ((ENET_EIR & ENET_EIR_RXF) != 0) {
+    ENET_EIR |= ENET_EIR_RXF;
     rx_ready = 1;
   }
 }
@@ -641,7 +643,7 @@ void enet_deinit() {
   while ((ENET_EIR & ENET_EIR_GRA) == 0) {
     // Wait until it's gracefully stopped
   }
-  ENET_EIR = ENET_EIR_GRA;
+  ENET_EIR |= ENET_EIR_GRA;
 
   // Disable the Ethernet MAC
   // Note: All interrupts are cleared when Ethernet is reinitialized,
