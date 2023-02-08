@@ -67,6 +67,7 @@ and this project adheres to
 * Fixed `EthernetClient::connect()` and `close()` operations to check the
   internal connection object for NULL across `yield()` calls.
 * Fixed `lwip_strerr()` buffer size to include the potential sign.
+* Don't close the TCP pcb on error since it's already been freed.
 
 ## [0.17.0]
 

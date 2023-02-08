@@ -86,14 +86,7 @@ void ConnectionManager::errFunc(void *arg, err_t err) {
     // Copy any buffered data
     maybeCopyRemaining(holder);
 
-    tcp_pcb *pcb = holder->state->pcb;
     holder->state = nullptr;
-
-    if (err != ERR_CLSD && err != ERR_ABRT) {
-      if (tcp_close(pcb) != ERR_OK) {
-        tcp_abort(pcb);
-      }
-    }
   }
 }
 
