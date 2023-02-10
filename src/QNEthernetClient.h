@@ -4,8 +4,8 @@
 // QNEthernetClient.h defines the TCP client interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_ETHERNETCLIENT_H_
-#define QNE_ETHERNETCLIENT_H_
+#ifndef QNETHERNET_ETHERNETCLIENT_H_
+#define QNETHERNET_ETHERNETCLIENT_H_
 
 // C++ includes
 #include <cstddef>
@@ -153,4 +153,4 @@ class EthernetClient : public Client {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_ETHERNETCLIENT_H_
+#endif  // QNETHERNET_ETHERNETCLIENT_H_

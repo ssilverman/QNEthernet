@@ -4,8 +4,8 @@
 // QNEthernetServer.h defines the TCP server interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_ETHERNETSERVER_H_
-#define QNE_ETHERNETSERVER_H_
+#ifndef QNETHERNET_ETHERNETSERVER_H_
+#define QNETHERNET_ETHERNETSERVER_H_
 
 // C++ includes
 #include <cstddef>
@@ -116,4 +116,4 @@ class EthernetServer : public Server {
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_ETHERNETSERVER_H_
+#endif  // QNETHERNET_ETHERNETSERVER_H_

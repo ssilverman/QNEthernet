@@ -4,8 +4,8 @@
 // QNEthernet.h defines an Arduino-style Ethernet driver for Teensy 4.1.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_ETHERNET_H_
-#define QNE_ETHERNET_H_
+#ifndef QNETHERNET_ETHERNET_H_
+#define QNETHERNET_ETHERNET_H_
 
 // C++ includes
 #include <cstddef>
@@ -320,4 +320,4 @@ extern Print *stderrPrint;
 }  // namespace network
 }  // namespace qindesign
 
-#endif  // QNE_ETHERNET_H_
+#endif  // QNETHERNET_ETHERNET_H_

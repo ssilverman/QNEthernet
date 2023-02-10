@@ -4,8 +4,8 @@
 // QNMDNS.h defines an mDNS implementation.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_MDNS_H_
-#define QNE_MDNS_H_
+#ifndef QNETHERNET_MDNS_H_
+#define QNETHERNET_MDNS_H_
 
 // C++ includes
 #include <cstdint>
@@ -175,4 +175,4 @@ class MDNSClass final {
 
 #endif  // LWIP_MDNS_RESPONDER
 
-#endif  // QNE_MDNS_H_
+#endif  // QNETHERNET_MDNS_H_

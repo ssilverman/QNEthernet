@@ -4,8 +4,8 @@
 // lwIP hooks for QNEthernet library on Teensy 4.1.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_LWIPHOOKS_H_
-#define QNE_LWIPHOOKS_H_
+#ifndef QNETHERNET_LWIPHOOKS_H_
+#define QNETHERNET_LWIPHOOKS_H_
 
 #include "lwip/err.h"
 #include "lwip/netif.h"
@@ -20,4 +20,4 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
-#endif  // QNE_LWIPHOOKS_H_
+#endif  // QNETHERNET_LWIPHOOKS_H_

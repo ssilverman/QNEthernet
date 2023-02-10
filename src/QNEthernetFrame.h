@@ -4,8 +4,8 @@
 // QNEthernetFrame.h defines the raw frame interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_ETHERNETFRAME_H_
-#define QNE_ETHERNETFRAME_H_
+#ifndef QNETHERNET_ETHERNETFRAME_H_
+#define QNETHERNET_ETHERNETFRAME_H_
 
 #ifdef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
@@ -161,4 +161,4 @@ class EthernetFrameClass final : public Stream {
 
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
-#endif  // QNE_ETHERNETFRAME_H_
+#endif  // QNETHERNET_ETHERNETFRAME_H_

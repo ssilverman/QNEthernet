@@ -6,8 +6,8 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_LWIP_T41_H_
-#define QNE_LWIP_T41_H_
+#ifndef QNETHERNET_LWIP_T41_H_
+#define QNETHERNET_LWIP_T41_H_
 
 #ifdef ARDUINO_TEENSY41
 
@@ -94,4 +94,4 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // ARDUINO_TEENSY41
 
-#endif  // QNE_LWIP_T41_H_
+#endif  // QNETHERNET_LWIP_T41_H_
