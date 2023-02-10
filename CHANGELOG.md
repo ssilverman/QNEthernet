@@ -206,7 +206,7 @@ and this project adheres to
 * Changed `_write()` (stdio) to do nothing if the requested length is zero
   because that's what `fwrite()` is specified to do.
 * Updated examples to use new `operator!=()` for `IPAddress`.
-* Moved lwIP's heap to RAM2 (DMAMEM).
+* Moved lwIP's heap to RAM2 (DMAMEM) and increased `MEM_SIZE` back to 24000.
 * Updated `EthernetFrame`-related documentation to explain that the API doesn't
   receive any known Ethernet frame types, including IPv4, ARP, and IPv6
   (if enabled).
@@ -214,6 +214,7 @@ and this project adheres to
 * Changed `EthernetClass::setMACAddress(mac)` parameter to `const`.
 * Moved CRC-32 lookup table to RAM2 (DMAMEM).
 * Made const those functions which could be made const.
+* Renamed `ServerWithAddressListener` example to `ServerWithListeners`.
 * Updated examples and README to consider listeners and their relationship with
   a static IP and link detection.
 
