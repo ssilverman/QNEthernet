@@ -135,6 +135,8 @@ int _write(int file, const void *buf, size_t len) {
 // --------------------------------------------------------------------------
 
 #if SYS_LIGHTWEIGHT_PROT
+typedef uint32_t sys_prot_t;
+
 sys_prot_t sys_arch_protect(void) {
   return 0;
 }
