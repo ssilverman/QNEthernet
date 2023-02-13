@@ -173,8 +173,8 @@ void enet_isr();
 uint16_t mdio_read(int regaddr) {
   ENET_EIR = ENET_EIR_MII;  // Clear status
 
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
-              ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr);
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
+              ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
   // int count=0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++; // wait
@@ -190,8 +190,8 @@ uint16_t mdio_read(int regaddr) {
 void mdio_write(int regaddr, uint16_t data) {
   ENET_EIR = ENET_EIR_MII;  // Clear status
 
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
-              ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr) |
+  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
+              ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2) |
               ENET_MMFR_DATA(data);
   // int count = 0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
