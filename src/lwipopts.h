@@ -205,12 +205,10 @@ extern void *ram_heap;
 // #define LWIP_ALTCP_TLS             0
 
 // Pbuf options
-#define PBUF_LINK_HLEN (14 + ETH_PAD_SIZE)
-#define PBUF_LINK_ENCAPSULATION_HLEN 0
-#define PBUF_POOL_BUFSIZE                                            \
-  LWIP_MEM_ALIGN_SIZE(TCP_MSS + PBUF_IP_HLEN + PBUF_TRANSPORT_HLEN + \
-                      PBUF_LINK_ENCAPSULATION_HLEN + PBUF_LINK_HLEN)
-#define LWIP_PBUF_REF_T u8_t
+// #define PBUF_LINK_HLEN               (14 + ETH_PAD_SIZE) or (18 + ETH_PAD_SIZE)
+// #define PBUF_LINK_ENCAPSULATION_HLEN 0
+// #define PBUF_POOL_BUFSIZE            LWIP_MEM_ALIGN_SIZE(TCP_MSS+PBUF_IP_HLEN+PBUF_TRANSPORT_HLEN+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
+// #define LWIP_PBUF_REF_T              u8_t
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1
