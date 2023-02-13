@@ -223,7 +223,9 @@ extern void *ram_heap;
 // #define LWIP_NETIF_HWADDRHINT          0
 // #define LWIP_NETIF_TX_SINGLE_PBUF      0
 // Add one for mDNS:
+#if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 #define LWIP_NUM_NETIF_CLIENT_DATA     1
+#endif  // LWIP_MDNS_RESPONDER
 
 // LOOPIF options
 // #define LWIP_HAVE_LOOPIF (LWIP_NETIF_LOOPBACK && !LWIP_SINGLE_NETIF)
@@ -430,6 +432,7 @@ extern void *ram_heap;
 // MDNS options
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP
+// If you change this to zero here then reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
 #endif  // !LWIP_MDNS_RESPONDER
 // #define MDNS_RESP_USENETIF_EXTCALLBACK LWIP_NETIF_EXT_STATUS_CALLBACK
 #ifndef MDNS_MAX_SERVICES
