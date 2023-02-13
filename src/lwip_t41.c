@@ -171,6 +171,8 @@ void enet_isr();
 
 // Reads a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(int regaddr) {
+  ENET_EIR = ENET_EIR_MII;  // Clear status
+
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr);
   // int count=0;
@@ -179,13 +181,15 @@ uint16_t mdio_read(int regaddr) {
   }
   // print("mdio read waited ", count);
   uint16_t data = ENET_MMFR;
-  ENET_EIR |= ENET_EIR_MII;
+  ENET_EIR = ENET_EIR_MII;
   // printhex("mdio read:", data);
   return data;
 }
 
 // Writes a PHY register (using MDIO & MDC signals).
 void mdio_write(int regaddr, uint16_t data) {
+  ENET_EIR = ENET_EIR_MII;  // Clear status
+
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_TA(2) |
               ENET_MMFR_PA(0/*phyaddr*/) | ENET_MMFR_RA(regaddr) |
               ENET_MMFR_DATA(data);
@@ -193,7 +197,7 @@ void mdio_write(int regaddr, uint16_t data) {
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
     // count++;  // wait
   }
-  ENET_EIR |= ENET_EIR_MII;
+  ENET_EIR = ENET_EIR_MII;
   // print("mdio write waited ", count);
   // printhex("mdio write :", data);
 }
@@ -517,7 +521,7 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 
 void enet_isr() {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
-    ENET_EIR |= ENET_EIR_RXF;
+    ENET_EIR = ENET_EIR_RXF;
     atomic_flag_clear(&rx_not_avail);
   }
 }
@@ -642,11 +646,14 @@ void enet_deinit() {
   }
 
   // Gracefully stop any transmission before disabling the Ethernet MAC
+  ENET_EIR = ENET_EIR_GRA;  // Clear status
   ENET_TCR |= ENET_TCR_GTS;
   while ((ENET_EIR & ENET_EIR_GRA) == 0) {
     // Wait until it's gracefully stopped
   }
-  ENET_EIR |= ENET_EIR_GRA;
+  ENET_EIR = ENET_EIR_GRA;
+
+  ENET_EIMR = 0;  // Disable interrupts
 
   // Disable the Ethernet MAC
   // Note: All interrupts are cleared when Ethernet is reinitialized,
