@@ -47,6 +47,7 @@
 //
 // [1518 or 1522 made into a multiple of 32 for ARM cache flush sizing and a
 // multiple of 64 for ENETx_MRBR.]
+// NOTE: BUF_SIZE will be 1536 whether we use 1518 or 1522
 #define BUF_SIZE ((1522 + 63) & (uintptr_t)(-64))
 
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
