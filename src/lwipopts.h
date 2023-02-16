@@ -68,7 +68,11 @@ extern void *ram_heap;
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 // Add 3 for mDNS. This value seems to work:
-#define MEMP_NUM_SYS_TIMEOUT ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
+#if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
+#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
+#else
+// #define MEMP_NUM_SYS_TIMEOUT               LWIP_NUM_SYS_TIMEOUT_INTERNAL
+#endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // #define MEMP_NUM_NETBUF                    2
 // #define MEMP_NUM_NETCONN                   4
 // #define MEMP_NUM_SELECT_CB                 4
@@ -127,9 +131,14 @@ extern void *ram_heap;
 // #define LWIP_DHCP_MAX_DNS_SERVERS DNS_MAX_SERVERS
 
 // AUTOIP options
+#if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Add both for mDNS:
 #define LWIP_AUTOIP                 1
 #define LWIP_DHCP_AUTOIP_COOP       1
+#else
+// #define LWIP_AUTOIP                 0
+// #define LWIP_DHCP_AUTOIP_COOP       0
+#endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // #define LWIP_DHCP_AUTOIP_COOP_TRIES 9
 
 // ACD options
@@ -223,7 +232,9 @@ extern void *ram_heap;
 // Add one for mDNS:
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 #define LWIP_NUM_NETIF_CLIENT_DATA     1
-#endif  // LWIP_MDNS_RESPONDER
+#else
+// #define LWIP_NUM_NETIF_CLIENT_DATA     0
+#endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 
 // LOOPIF options
 // #define LWIP_HAVE_LOOPIF (LWIP_NETIF_LOOPBACK && !LWIP_SINGLE_NETIF)
@@ -430,7 +441,10 @@ extern void *ram_heap;
 // MDNS options
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP
-// If you change this to zero here then reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
+// If you change this to zero here then:
+// 1. Reduce MEMP_NUM_SYS_TIMEOUT by 3
+// 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
+// 3. Reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
 #endif  // !LWIP_MDNS_RESPONDER
 // #define MDNS_RESP_USENETIF_EXTCALLBACK LWIP_NETIF_EXT_STATUS_CALLBACK
 #ifndef MDNS_MAX_SERVICES
