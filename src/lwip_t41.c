@@ -181,7 +181,7 @@ uint16_t mdio_read(int regaddr) {
     // count++; // wait
   }
   // print("mdio read waited ", count);
-  uint16_t data = ENET_MMFR;
+  uint16_t data = ENET_MMFR_DATA(ENET_MMFR);
   ENET_EIR = ENET_EIR_MII;
   // printhex("mdio read:", data);
   return data;
