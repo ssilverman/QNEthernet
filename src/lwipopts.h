@@ -210,8 +210,8 @@ extern void *ram_heap;
 // #define LWIP_WND_SCALE             0
 // #define TCP_RCV_SCALE              0
 // #define LWIP_TCP_PCB_NUM_EXT_ARGS  0
-// #define LWIP_ALTCP                 0
-// #define LWIP_ALTCP_TLS             0
+#define LWIP_ALTCP                 1
+#define LWIP_ALTCP_TLS             1
 
 // Pbuf options
 // #define PBUF_LINK_HLEN               (14 + ETH_PAD_SIZE) or (18 + ETH_PAD_SIZE)
