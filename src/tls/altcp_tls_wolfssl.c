@@ -18,6 +18,7 @@
 #include "lwip/altcp_tls.h"
 #include "lwip/err.h"
 #include "lwip/priv/altcp_priv.h"
+#include "lwip_t41.h"
 
 struct altcp_tls_config {
   WOLFSSL_METHOD *method;
@@ -32,8 +33,13 @@ struct altcp_tls_config {
 };
 
 struct altcp_wolfssl_state {
+  // Context
   WOLFSSL_CTX *ctx;
   WOLFSSL     *ssl;
+
+  // Incoming data
+  struct pbuf *pbuf;
+  int          read;  // The number of bytes read from pbuf
 };
 
 struct altcp_tls_config *altcp_tls_create_config_server(uint8_t cert_count) {
@@ -61,7 +67,7 @@ err_t altcp_tls_config_server_add_privkey_cert(
   config->privkey          = privkey;
   config->privkey_len      = privkey_len;
   config->privkey_pass     = privkey_pass;
-  config->privkey_pass_len = privkey_pass_len
+  config->privkey_pass_len = privkey_pass_len;
   config->cert             = cert;
   config->cert_len         = cert_len;
 
@@ -137,7 +143,78 @@ void altcp_tls_free_entropy(void) {
 
 }
 
-static const struct altcp_functions altcp_wolfssl_functions;
+// --------------------------------------------------------------------------
+//  Inner Callback Functions
+// --------------------------------------------------------------------------
+
+static err_t altcp_wolfssl_inner_recv(void *arg, struct altcp_pcb *inner_conn,
+                                      struct pbuf *p, err_t err) {
+  if (arg == NULL || inner_conn == NULL) {
+    return ERR_ARG;
+  }
+
+  struct altcp_pcb *conn = (struct altcp_pcb *)arg;
+  struct altcp_wolfssl_state *state = (struct altcp_wolfssl_state *)conn->state;
+
+  LWIP_ASSERT("pcb mismatch", conn->inner_conn == inner_conn);
+
+  // Some error or already closed
+  if (err != ERR_OK || state == NULL) {
+    if (p != NULL) {
+      pbuf_free(p);
+    }
+    if (err != ERR_CLSD && err != ERR_ABRT) {
+      if (altcp_close(conn) != ERR_OK) {
+        altcp_abort(conn);
+        // Note: If closing conn, then the implementation MUST abort inner_conn
+        return ERR_ABRT;
+      }
+    }
+    return ERR_OK;
+  }
+
+  // Closed by remote
+  if (p == NULL) {
+    altcp_close(conn);
+    return ERR_OK;
+  }
+
+  // Append data
+  if (state->pbuf == NULL) {
+    state->pbuf = p;
+  } else {
+    if (state->pbuf != p) {
+      tcp_recved(inner_conn, p->tot_len);
+      pbuf_cat(state->pbuf, p);
+    }
+  }
+
+  return ERR_OK;
+}
+
+static err_t altcp_wolfssl_inner_sent(void *arg, struct altcp_pcb *inner_conn,
+                                      u16_t len) {
+  if (arg == NULL || inner_conn == NULL) {
+    return ERR_ARG;
+  }
+  return ERR_OK;
+}
+
+static err_t altcp_wolfssl_inner_err(void *arg, err_t err) {
+  if (arg == NULL) {
+    return ERR_ARG;
+  }
+  struct altcp_pcb *conn = arg;  // TODO
+  conn->inner_conn = NULL;  // This has already been freed, according to tcp_err()
+  if (conn->err) {
+    conn->err(conn->arg, err);
+  }
+  altcp_free(conn);
+}
+
+// --------------------------------------------------------------------------
+//  wolfSSL Callbacks
+// --------------------------------------------------------------------------
 
 static int altcp_wolfssl_passwd_cb(char *passwd, int sz, int rw,
                                    void *userdata) {
@@ -149,6 +226,109 @@ static int altcp_wolfssl_passwd_cb(char *passwd, int sz, int rw,
   return config->privkey_pass_len;
 }
 
+static int altcp_wolfssl_recv_cb(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
+  if (sz <= 0) {
+    return 0;
+  }
+
+  struct altcp_pcb *inner_conn = (struct altcp_pcb *)ctx;  // Inner pcb
+
+  if (inner_conn == NULL) {
+    return WOLFSSL_CBIO_ERR_GENERAL;
+  }
+  if (inner_conn->state == NULL) {
+    return WOLFSSL_CBIO_ERR_CONN_CLOSE;
+  }
+
+  struct altcp_wolfssl_state *state =
+      (struct altcp_wolfssl_state *)inner_conn->state;
+  struct pbuf *p = state->pbuf;
+  if (p == NULL || sz > p->tot_len) {
+    // An alternative is to return what's available and call Ethernet.loop()
+    return WOLFSSL_CBIO_ERR_WANT_READ;
+  }
+
+  struct pbuf *pHead = p;
+  int read = 0;
+
+  while (p != NULL) {
+    int toRead = LWIP_MIN(p->len - state->read, sz);
+    if (read + toRead > sz) {  // Sanity check
+      return WOLFSSL_CBIO_ERR_GENERAL;
+    }
+    XMEMCPY(&buf[read], &((const char *)p->payload)[state->read], toRead);
+    state->read += toRead;
+    if (state->read >= p->len) {
+      state->pbuf = p->next;
+      p = state->pbuf;
+      state->read = 0;
+    }
+    read += toRead;
+
+    if (read >= sz) {
+      // Free all until the current pbuf
+      if (p != NULL) {
+        pbuf_ref(p);
+      }
+      pbuf_free(pHead);
+    }
+  }
+
+  return read;
+}
+
+static int altcp_wolfssl_send_cb(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
+  if (sz <= 0) {
+    return 0;
+  }
+
+  struct altcp_pcb *inner_conn = (struct altcp_pcb *)ctx;  // Inner pcb
+
+  if (inner_conn == NULL) {
+    return WOLFSSL_CBIO_ERR_GENERAL;
+  }
+  if (inner_conn->state == NULL) {
+    return WOLFSSL_CBIO_ERR_CONN_CLOSE;
+  }
+
+  size_t size = sz;
+  size_t sent = 0;
+
+  while (size > 0) {
+    u16_t sndBufSize = altcp_sndbuf(inner_conn);
+    if (sndBufSize == 0) {
+      // TODO: Need input processing here?
+      enet_proc_input();
+      if (sent > 0) {
+        return sent;
+      }
+      return WOLFSSL_CBIO_ERR_WANT_WRITE;
+    }
+    u16_t toWrite = LWIP_MIN(size, sndBufSize);
+    switch (altcp_write(inner_conn, buf, toWrite, TCP_WRITE_FLAG_COPY)) {
+      case ERR_OK:
+        sent += toWrite;
+        size -= toWrite;
+        break;
+      case ERR_MEM:
+        // TODO: Need input processing here?
+        enet_proc_input();
+        if (sent > 0) {
+          return sent;
+        }
+        return WOLFSSL_CBIO_ERR_WANT_WRITE;
+      default:
+        return WOLFSSL_CBIO_ERR_GENERAL;
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+//  More altcp Function Implementations
+// --------------------------------------------------------------------------
+
+static const struct altcp_functions altcp_wolfssl_functions;
+
 struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
   if (config == NULL || inner_pcb == NULL) {
@@ -156,7 +336,7 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
   }
 
   struct altcp_wolfssl_state *state = NULL;
-  struct altcp_pcb *ret             = NULL;
+  struct altcp_pcb *pcb             = NULL;
   WOLFSSL_CTX *ctx                  = NULL;
   WOLFSSL *ssl                      = NULL;
 
@@ -165,8 +345,8 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
     goto altcp_tls_wrap_cleanup;
   }
 
-  ret = altcp_alloc();
-  if (ret == NULL) {
+  pcb = altcp_alloc();
+  if (pcb == NULL) {
     goto altcp_tls_wrap_cleanup;
   }
 
@@ -204,14 +384,24 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                        CERT_TYPE);
   }
 
+  // wolfSSL_SetIO_LwIP(ssl, inner_pcb, NULL, NULL, NULL);
+  wolfSSL_CTX_SetIORecv(ctx, &altcp_wolfssl_recv_cb);
+  wolfSSL_SetIOReadCtx(ssl, inner_pcb);
+  wolfSSL_CTX_SetIOSend(ctx, &altcp_wolfssl_send_cb);
+  wolfSSL_SetIOWriteCtx(ssl, inner_pcb);
+
   state->ctx = ctx;
   state->ssl = ssl;
 
-  ret->fns        = &altcp_wolfssl_functions;
-  ret->inner_conn = inner_pcb;
-  ret->state      = state;
+  altcp_arg(inner_pcb, pcb);
+  altcp_recv(inner_pcb, altcp_wolfssl_inner_recv);
+  altcp_sent(inner_pcb, altcp_wolfssl_inner_sent);
+  altcp_err(inner_pcb, altcp_wolfssl_inner_err);
+  pcb->fns        = &altcp_wolfssl_functions;
+  pcb->inner_conn = inner_pcb;
+  pcb->state      = state;
 
-  return ret;
+  return pcb;
 
 altcp_tls_wrap_cleanup:
   if (ssl != NULL) {
@@ -220,8 +410,8 @@ altcp_tls_wrap_cleanup:
   if (ctx != NULL) {
     wolfSSL_CTX_free(ctx);
   }
-  if (ret != NULL) {
-    altcp_free(ret);
+  if (pcb != NULL) {
+    altcp_free(pcb);
   }
   if (state != NULL) {
     mem_free(state);
@@ -230,7 +420,7 @@ altcp_tls_wrap_cleanup:
 }
 
 void *altcp_tls_context(struct altcp_pcb *conn) {
-  if (conn) {
+  if (conn != NULL) {
     return conn->state;
   }
   return NULL;
@@ -239,6 +429,18 @@ void *altcp_tls_context(struct altcp_pcb *conn) {
 // --------------------------------------------------------------------------
 //  altcp_pcb Functions
 // --------------------------------------------------------------------------
+
+static err_t altcp_wolfssl_inner_poll(void *arg, struct altcp_pcb *conn) {
+  if (conn) {
+
+  }
+}
+
+static void altcp_wolfssl_set_poll(struct altcp_pcb *conn, u8_t interval) {
+  if (conn) {
+    altcp_poll(conn, &altcp_wolfssl_inner_poll, interval);
+  }
+}
 
 static void altcp_wolfssl_abort(struct altcp_pcb *conn) {
   // TODO
@@ -274,7 +476,7 @@ static void altcp_wolfssl_dealloc(struct altcp_pcb *conn) {
 }
 
 static const struct altcp_functions altcp_wolfssl_functions = {
-    NULL,
+    &altcp_wolfssl_set_poll,
     NULL,
     &altcp_default_bind,
     NULL,
