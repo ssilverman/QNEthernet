@@ -331,6 +331,7 @@ size_t EthernetClient::write(uint8_t b) {
   size_t sndBufSize = tcp_sndbuf(state->pcb);
   if (sndBufSize == 0) {  // Possibly flush if there's no space
     tcp_output(state->pcb);
+    Ethernet.loop();  // Loop to allow incoming data
     sndBufSize = tcp_sndbuf(state->pcb);
   }
 
@@ -362,6 +363,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   size_t sndBufSize = tcp_sndbuf(state->pcb);
   if (sndBufSize == 0) {  // Possibly flush if there's no space
     tcp_output(state->pcb);
+    Ethernet.loop();  // Loop to allow incoming data
     sndBufSize = tcp_sndbuf(state->pcb);
   }
   size = std::min(size, sndBufSize);
