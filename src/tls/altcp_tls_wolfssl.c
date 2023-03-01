@@ -19,6 +19,10 @@
 #include "lwip/priv/altcp_priv.h"
 #include "lwip_t41.h"
 
+#ifndef ALTCP_WOLFSSL_DEBUG
+#define ALTCP_WOLFSSL_DEBUG LWIP_DBG_OFF
+#endif
+
 // --------------------------------------------------------------------------
 //  Structure Definitions
 // --------------------------------------------------------------------------
@@ -40,6 +44,10 @@ struct altcp_tls_config {
   struct altcp_tls_cert *cert_list;
   size_t                 cert_list_size;
   size_t                 cert_list_capacity;
+
+  // All the certificates, concatenated
+  const u8_t *certs;
+  size_t certs_len;
 
   const u8_t *ca;
   size_t      ca_len;
@@ -129,7 +137,9 @@ err_t altcp_tls_config_server_add_privkey_cert(
   c->privkey_pass_len = privkey_pass_len;
   c->cert             = cert;
   c->cert_len         = cert_len;
+
   config->cert_list_size++;
+  config->certs_len += cert_len;
 
   return ERR_OK;
 }
@@ -214,7 +224,8 @@ void altcp_tls_free_entropy(void) {
 //  Inner Callback Functions
 // --------------------------------------------------------------------------
 
-// Closes or aborts the given connection.
+// Closes or aborts the given connection. This returns either ERR_ABRT
+// or ERR_OK.
 static err_t closeOrAbort(struct altcp_pcb *conn, err_t err) {
   if (err != ERR_CLSD && err != ERR_ABRT) {
     if (altcp_close(conn) != ERR_OK) {
@@ -443,9 +454,9 @@ static int altcp_wolfssl_recv_cb(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
 
   while (p != NULL) {
     int toRead = LWIP_MIN(p->len - state->read, sz);
-    if (read + toRead > sz) {  // Sanity check
-      return WOLFSSL_CBIO_ERR_GENERAL;
-    }
+    LWIP_ERROR("altcp_wolfssl_recv_cb: Read would exceed\r\n",
+               read + toRead <= sz,  // Sanity check
+               return WOLFSSL_CBIO_ERR_GENERAL);
     XMEMCPY(&buf[read], &((const char *)p->payload)[state->read], toRead);
     state->read += toRead;
     if (state->read >= p->len) {
@@ -487,7 +498,11 @@ static int altcp_wolfssl_send_cb(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
   while (size > 0) {
     u16_t sndBufSize = altcp_sndbuf(inner_conn);
     if (sndBufSize == 0) {
-      // TODO: Need input processing here?
+      altcp_output(inner_conn);
+      enet_proc_input();
+      sndBufSize = altcp_sndbuf(inner_conn);
+    }
+    if (sndBufSize == 0) {
       enet_proc_input();
       if (sent > 0) {
         return sent;
@@ -501,7 +516,6 @@ static int altcp_wolfssl_send_cb(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
         size -= toWrite;
         break;
       case ERR_MEM:
-        // TODO: Need input processing here?
         enet_proc_input();
         if (sent > 0) {
           return sent;
@@ -530,8 +544,8 @@ static void altcp_wolfssl_remove_callbacks(struct tcp_pcb *inner_conn) {
   altcp_poll(inner_conn, NULL, inner_conn->pollinterval);
 }
 
-static void altcp_tcp_setup_callbacks(struct altcp_pcb *conn,
-                                      struct altcp_pcb *inner_conn) {
+static void altcp_wolfssl_setup_callbacks(struct altcp_pcb *conn,
+                                          struct altcp_pcb *inner_conn) {
   altcp_arg(inner_conn, conn);
   altcp_recv(inner_conn, &altcp_wolfssl_inner_recv);
   altcp_sent(inner_conn, &altcp_wolfssl_inner_sent);
@@ -666,10 +680,10 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
 }
 
 void *altcp_tls_context(struct altcp_pcb *conn) {
-  if (conn != NULL) {
-    return conn->state;
+  if (conn == NULL) {
+    return NULL;
   }
-  return NULL;
+  return conn->state;
 }
 
 // --------------------------------------------------------------------------
@@ -734,8 +748,46 @@ static void altcp_wolfssl_abort(struct altcp_pcb *conn) {
 static err_t altcp_wolfssl_write(struct altcp_pcb *conn,
                                  const void *dataptr, u16_t len,
                                  u8_t apiflags) {
-  if (wolfSSL_write(NULL, dataptr, len) != len) {
-    return ERR_MEM;
+  if (conn == NULL) {
+    return ERR_VAL;
+  }
+
+  struct altcp_wolfssl_state *state = conn->state;
+  if (state == NULL) {
+    return ERR_CLSD;
+  }
+
+  if (len == 0) {
+    return ERR_OK;
+  }
+
+  // lwIP doesn't have the idea of partial writes, but wolfSSL_write() may do a
+  // partial write, so loop here.
+  while (len > 0) {  // TODO: Is a while loop appropriate here?
+    int ret = wolfSSL_write(state->ssl, dataptr, len);
+    if (ret <= 0) {
+      switch (wolfSSL_get_error(state->ssl, ret)) {
+        case WOLFSSL_ERROR_WANT_WRITE:
+          continue;
+        default:
+          LWIP_DEBUGF(ALTCP_WOLFSSL_DEBUG, ("altcp_wolfssl_write: aborting\r\n"));
+          if (conn->err != NULL) {
+            conn->err(conn->arg, ERR_ABRT);
+          }
+          altcp_abort(conn);
+          return ERR_ABRT;
+      }
+      continue;
+    }
+    LWIP_ASSERT("bogus sent length", (u32_t)ret <= len);
+    if (ret > len) {
+      if (conn->err != NULL) {
+        conn->err(conn->arg, ERR_ABRT);
+      }
+      altcp_abort(conn);
+      return ERR_ABRT;
+    }
+    len -= ret;
   }
   return ERR_OK;
 }
