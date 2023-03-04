@@ -665,8 +665,9 @@ void enet_deinit() {
   GPIO7_GDIR    |= (1 << 15);
   GPIO7_DR_CLEAR = (1 << 15);
 
-  // Stop the PLL
-  CCM_ANALOG_PLL_ENET = CCM_ANALOG_PLL_ENET_POWERDOWN;
+  // Stop the PLL (first bypassing)
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
