@@ -207,10 +207,9 @@ class EthernetClass final {
                             const IPAddress &dns, const IPAddress &gateway,
                             const IPAddress &subnet);
 
+  EthernetHardwareStatus hardwareStatus() const;
+
   // Deprecated and unused functions
-  [[deprecated]] EthernetHardwareStatus hardwareStatus() const {
-    return EthernetOtherHardware;
-  }
   [[deprecated]] void init(uint8_t sspin) const {}
   [[deprecated]] void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
   [[deprecated]] uint8_t maintain() const { return 0; }

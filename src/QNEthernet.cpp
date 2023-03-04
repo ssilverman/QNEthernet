@@ -367,6 +367,13 @@ void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
   DNSClient::setServer(0, dnsServerIP);
 }
 
+EthernetHardwareStatus EthernetClass::hardwareStatus() const {
+  if (enet_has_hardware()) {
+    return EthernetOtherHardware;
+  }
+  return EthernetNoHardware;
+}
+
 bool EthernetClass::joinGroup(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return false;

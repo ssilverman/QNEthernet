@@ -153,9 +153,6 @@ static atomic_flag rx_not_avail = ATOMIC_FLAG_INIT;
 static bool linkSpeed10Not100 = false;
 static bool linkIsFullDuplex  = false;
 
-// Is Ethernet initialized?
-static bool isInitialized = false;
-
 void enet_isr();
 
 // --------------------------------------------------------------------------
@@ -207,7 +204,22 @@ void mdio_write(int regaddr, uint16_t data) {
 //  Low-Level
 // --------------------------------------------------------------------------
 
-static void t41_low_level_init() {
+typedef enum enet_init_states {
+  kInitStateStart,
+  kInitStateNoHardware,
+  kInitStatePHYInitialized,
+  kInitStateInitialized,
+} enet_init_states_t;
+
+// Ethernet initialization state.
+static enet_init_states_t initState = kInitStateStart;
+
+// Initial check for hardware
+static void t41_init_phy() {
+  if (initState != kInitStateStart) {
+    return;
+  }
+
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
   // Configure PLL6 for 50 MHz, pg 1112 (Rev. 3, 1118 Rev. 2, 1173 Rev. 1)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
@@ -232,35 +244,22 @@ static void t41_low_level_init() {
          IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
 
   // Configure pins
+
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.14
   GPIO7_GDIR    |= (1 << 14) | (1 << 15);
   GPIO7_DR_SET   = (1 << 15);  // Power on
   GPIO7_DR_CLEAR = (1 << 14);  // Reset PHY chip
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[0] = 0
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[1] = 1
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_INPUT_PULLUP;    // Master/Slave = slave mode
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_INPUT_PULLDOWN;  // Auto MDIX Enable
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_INPUT_PULLUP;
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_INPUT_PULLUP;
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_INPUT_PULLUP;
+
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = 3;  // RXD1    B1_05 Alt3, pg 525 (Rev. 3, 529 Rev. 2, 525 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = 3;  // RXD0    B1_04 Alt3, pg 524 (Rev. 3, 528 Rev. 2, 524 Rev. 1)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = 6 | 0x10;  // REFCLK    B1_10 Alt6, pg 530 (Rev. 3, 534 Rev. 2, 530 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = 3;  // RXER    B1_11 Alt3, pg 531 (Rev. 3, 535 Rev. 2, 531 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = 3;  // RXEN    B1_06 Alt3, pg 526 (Rev. 3, 530 Rev. 2, 526 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = 3;  // TXEN    B1_09 Alt3, pg 529 (Rev. 3, 533 Rev. 2, 529 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = 3;  // TXD0    B1_07 Alt3, pg 527 (Rev. 3, 531 Rev. 2, 527 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = 3;  // TXD1    B1_08 Alt3, pg 528 (Rev. 3, 532 Rev. 2, 528 Rev. 1)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = 0;  // MDIO    B1_15 Alt0, pg 535 (Rev. 3, 539 Rev. 2, 535 Rev. 1)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = 0;  // MDC     B1_14 Alt0, pg 534 (Rev. 3, 538 Rev. 2, 534 Rev. 1)
-  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;     // GPIO_B1_15_ALT0, pg 791 (Rev. 3, 795 Rev. 2, 792 Rev. 1)
-  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_04_ALT3, pg 792 (Rev. 3, 796 Rev. 2, 792 Rev. 1)
-  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_05_ALT3, pg 793 (Rev. 3, 797 Rev. 2, 793 Rev. 1)
-  IOMUXC_ENET_RXEN_SELECT_INPUT = 1;     // GPIO_B1_06_ALT3, pg 794 (Rev. 3, 798 Rev. 2, 794 Rev. 1)
-  IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // GPIO_B1_11_ALT3, pg 795 (Rev. 3, 799 Rev. 2, 795 Rev. 1)
+
+  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0, pg 791 (Rev. 3, 795 Rev. 2, 792 Rev. 1)
+
   IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6, pg 791 (Rev. 3, 795 Rev. 2, 791 Rev. 1)
+
   delayMicroseconds(2);
   GPIO7_DR_SET = (1 << 14);  // Start PHY chip
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);
@@ -268,6 +267,52 @@ static void t41_low_level_init() {
 
   // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
   mdio_write(PHY_LEDCR, 0x0280);  // LED shows link status, active high
+
+  // Check for PHY presence
+  if (mdio_read(PHY_LEDCR) != 0x0280) {
+    // Power down the PHY
+    GPIO7_DR_CLEAR = (1 << 15);
+
+    // Stop the PLL (first bypassing)
+    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
+
+    // Disable the clock for ENET
+    CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+
+    initState = kInitStateNoHardware;
+    return;
+  }
+
+  initState = kInitStatePHYInitialized;
+}
+
+static void t41_low_level_init() {
+  t41_init_phy();
+  if (initState != kInitStatePHYInitialized) {
+    return;
+  }
+
+  // Configure pins
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[0] = 0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[1] = 1
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_INPUT_PULLUP;    // Master/Slave = slave mode
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_INPUT_PULLDOWN;  // Auto MDIX Enable
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_INPUT_PULLUP;
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_INPUT_PULLUP;
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_INPUT_PULLUP;
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = 3;  // RXD1    B1_05 Alt3, pg 525 (Rev. 3, 529 Rev. 2, 525 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = 3;  // RXD0    B1_04 Alt3, pg 524 (Rev. 3, 528 Rev. 2, 524 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = 3;  // RXER    B1_11 Alt3, pg 531 (Rev. 3, 535 Rev. 2, 531 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = 3;  // RXEN    B1_06 Alt3, pg 526 (Rev. 3, 530 Rev. 2, 526 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = 3;  // TXEN    B1_09 Alt3, pg 529 (Rev. 3, 533 Rev. 2, 529 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = 3;  // TXD0    B1_07 Alt3, pg 527 (Rev. 3, 531 Rev. 2, 527 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = 3;  // TXD1    B1_08 Alt3, pg 528 (Rev. 3, 532 Rev. 2, 528 Rev. 1)
+  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_04_ALT3, pg 792 (Rev. 3, 796 Rev. 2, 792 Rev. 1)
+  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_05_ALT3, pg 793 (Rev. 3, 797 Rev. 2, 793 Rev. 1)
+  IOMUXC_ENET_RXEN_SELECT_INPUT = 1;     // GPIO_B1_06_ALT3, pg 794 (Rev. 3, 798 Rev. 2, 794 Rev. 1)
+  IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // GPIO_B1_11_ALT3, pg 795 (Rev. 3, 799 Rev. 2, 795 Rev. 1)
+
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
   mdio_write(PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
 
@@ -379,7 +424,7 @@ static void t41_low_level_init() {
   // phy soft reset
   // phy_mdio_write(PHY_BMCR, 1 << 15);
 
-  isInitialized = true;
+  initState = kInitStateInitialized;
 }
 
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
@@ -528,9 +573,10 @@ void enet_isr() {
 }
 
 static inline void check_link_status() {
-  if (!isInitialized) {
+  if (initState != kInitStateInitialized) {
     return;
   }
+
   uint16_t status = mdio_read(PHY_BMSR);
   uint8_t is_link_up = !!(status & (1 << 2));
   if (netif_is_link_up(&t41_netif) != is_link_up) {
@@ -585,6 +631,11 @@ static bool isNetifAdded = false;
 
 NETIF_DECLARE_EXT_CALLBACK(netif_callback);
 
+bool enet_has_hardware() {
+  t41_init_phy();
+  return (initState != kInitStateNoHardware);
+}
+
 void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
                const ip4_addr_t *ipaddr,
                const ip4_addr_t *netmask,
@@ -638,39 +689,45 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
 }
 
 void enet_deinit() {
-  isInitialized = false;
-
   if (isNetifAdded) {
     netif_remove(&t41_netif);
     netif_remove_ext_callback(&netif_callback);
     isNetifAdded = false;
   }
 
-  // Gracefully stop any transmission before disabling the Ethernet MAC
-  ENET_EIR = ENET_EIR_GRA;  // Clear status
-  ENET_TCR |= ENET_TCR_GTS;
-  while ((ENET_EIR & ENET_EIR_GRA) == 0) {
-    // Wait until it's gracefully stopped
+  if (initState == kInitStateInitialized) {
+    // Gracefully stop any transmission before disabling the Ethernet MAC
+    ENET_EIR = ENET_EIR_GRA;  // Clear status
+    ENET_TCR |= ENET_TCR_GTS;
+    while ((ENET_EIR & ENET_EIR_GRA) == 0) {
+      // Wait until it's gracefully stopped
+    }
+    ENET_EIR = ENET_EIR_GRA;
+
+    ENET_EIMR = 0;  // Disable interrupts
+
+    // Disable the Ethernet MAC
+    // Note: All interrupts are cleared when Ethernet is reinitialized,
+    //       so nothing will be pending
+    ENET_ECR &= ~ENET_ECR_ETHEREN;
+
+    initState = kInitStatePHYInitialized;
   }
-  ENET_EIR = ENET_EIR_GRA;
 
-  ENET_EIMR = 0;  // Disable interrupts
+  if (initState == kInitStatePHYInitialized) {
+    // Power down the PHY
+    GPIO7_GDIR    |= (1 << 15);
+    GPIO7_DR_CLEAR = (1 << 15);
 
-  // Disable the Ethernet MAC
-  // Note: All interrupts are cleared when Ethernet is reinitialized,
-  //       so nothing will be pending
-  ENET_ECR &= ~ENET_ECR_ETHEREN;
+    // Stop the PLL (first bypassing)
+    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
 
-  // Power down the PHY
-  GPIO7_GDIR    |= (1 << 15);
-  GPIO7_DR_CLEAR = (1 << 15);
+    // Disable the clock for ENET
+    CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
 
-  // Stop the PLL (first bypassing)
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
-
-  // Disable the clock for ENET
-  CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+    initState = kInitStateStart;
+  }
 }
 
 struct netif *enet_netif() {
@@ -715,12 +772,14 @@ bool enet_link_is_full_duplex() {
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
-  if (!isInitialized) {
+  if (initState != kInitStateInitialized) {
     return false;
   }
+
   if (frame == NULL || len < 60 || MAX_FRAME_LEN - 4 < len) {
     return false;
   }
+
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
 #if ETH_PAD_SIZE
   memcpy(bdPtr->buffer + ETH_PAD_SIZE, frame, len);

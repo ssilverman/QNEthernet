@@ -89,10 +89,11 @@ and notes:
   but different from `connected()` in that it doesn't check for unread data.
 * All the Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address are deprecated.
+* `Ethernet.hardwareStatus()`: Returns either
+  `EthernetHardwareStatus::EthernetOtherHardware` or
+  `EthernetHardwareStatus::EthernetNoHardware`.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
-  * `hardwareStatus()`: Returns `EthernetHardwareStatus::EthernetOtherHardware`
-    because zero might be interpreted as "no hardware".
   * `init(uint8_t sspin)`: Does nothing.
   * `maintain()`: Returns zero.
   * `setRetransmissionCount(uint8_t number)`: Does nothing.

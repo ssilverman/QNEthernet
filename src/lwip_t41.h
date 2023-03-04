@@ -30,6 +30,9 @@ extern "C" {
 // Get the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
+// Determines if there's Ethernet hardware.
+bool enet_has_hardware();
+
 // Initializes Ethernet. This does not set the interface to "up".
 //
 // This may be called more than once, but if the MAC address has changed then
