@@ -76,6 +76,10 @@ EthernetClass::EthernetClass(const uint8_t mac[6]) {
     enet_getmac(mac_);
   }
 
+  if (!enet_has_hardware()) {
+    return;
+  }
+
   // Initialize randomness since this isn't done anymore in eth_init
 #if defined(__IMXRT1062__)
   bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
@@ -171,6 +175,10 @@ bool EthernetClass::begin(const IPAddress &ip,
 bool EthernetClass::begin(const ip4_addr_t *ipaddr,
                           const ip4_addr_t *netmask,
                           const ip4_addr_t *gw) {
+  if (!enet_has_hardware()) {
+    return false;
+  }
+
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
   enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
