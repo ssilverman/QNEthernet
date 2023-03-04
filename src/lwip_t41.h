@@ -27,7 +27,7 @@ extern "C" {
 #define MTU 1500
 #define MAX_FRAME_LEN 1522
 
-// Get the built-in Ethernet MAC address.
+// Gets the built-in Ethernet MAC address.
 void enet_getmac(uint8_t *mac);
 
 // Determines if there's Ethernet hardware.
