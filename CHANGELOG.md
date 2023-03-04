@@ -8,6 +8,20 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `Ethernet.loop()` calls to the `EthernetClient::write()` functions when
+  the send buffer is full.
+* Added Ethernet hardware detection to support the Teensy 4.1 NE.
+
+### Changed
+* Updated _lwipopts.h_ to examine `LWIP_MDNS_RESPONDER` when setting
+  certain values.
+
+### Fixed
+* Reverted how interrupts were being cleared to use assignment instead of OR'ing
+  the bits. This seemed to fix an apparent freeze. (See this issue:
+  https://github.com/ssilverman/QNEthernet/issues/26)
+
 ## [0.18.0]
 
 ### Added
