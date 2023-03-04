@@ -54,6 +54,7 @@ enum EthernetHardwareStatus {
   EthernetW5200,
   EthernetW5500,
   EthernetOtherHardware = -1,
+      // TODO: Should we also have a Teensy 4.1-specific value?
 };
 
 class EthernetClass final {
