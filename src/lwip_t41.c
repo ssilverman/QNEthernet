@@ -31,9 +31,52 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
 
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
-#define RMII_PAD_INPUT_PULLDOWN 0x30E9
-#define RMII_PAD_INPUT_PULLUP   0xB0E9
-#define RMII_PAD_CLOCK          0x0031
+
+#define RMII_PAD_PULLDOWN (IOMUXC_PAD_PUS(0)   | \
+                           IOMUXC_PAD_PUE      | \
+                           IOMUXC_PAD_PKE      | \
+                           IOMUXC_PAD_SPEED(3) | \
+                           IOMUXC_PAD_DSE(5)   | \
+                           IOMUXC_PAD_SRE)
+    // 0x30E9
+    // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+    // HYS_0_Hysteresis_Disabled
+    // PUS_0_100K_Ohm_Pull_Down
+    // PUE_1_Pull
+    // PKE_1_Pull_Keeper_Enabled
+    // ODE_0_Open_Drain_Disabled
+    // SPEED_3_max_200MHz
+    // DSE_5_R0_5
+    // SRE_1_Fast_Slew_Rate
+
+#define RMII_PAD_PULLUP (IOMUXC_PAD_PUS(2)   | \
+                         IOMUXC_PAD_PUE      | \
+                         IOMUXC_PAD_PKE      | \
+                         IOMUXC_PAD_SPEED(3) | \
+                         IOMUXC_PAD_DSE(5)   | \
+                         IOMUXC_PAD_SRE)
+    // 0xB0E9
+    // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+    // HYS_0_Hysteresis_Disabled
+    // PUS_2_100K_Ohm_Pull_Up
+    // PUE_1_Pull
+    // PKE_1_Pull_Keeper_Enabled
+    // ODE_0_Open_Drain_Disabled
+    // SPEED_3_max_200MHz
+    // DSE_5_R0_5
+    // SRE_1_Fast_Slew_Rate
+
+#define RMII_PAD_CLOCK (IOMUXC_PAD_DSE(6) | IOMUXC_PAD_SRE)
+    // 0x0031
+    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
+    // HYS_0_Hysteresis_Disabled
+    // PUS_0_100K_Ohm_Pull_Down
+    // PUE_0_Keeper
+    // PKE_0_Pull_Keeper_Disabled
+    // ODE_0_Open_Drain_Disabled
+    // SPEED_0_low_50MHz
+    // DSE_6_R0_6
+    // SRE_1_Fast_Slew_Rate
 
 #define RX_SIZE 5
 #define TX_SIZE 5
@@ -250,20 +293,67 @@ static void t41_init_phy() {
 
   // Configure pins
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.15
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.14
+  // PHY strap configuration (before power up or reset)
+  // Note: The datasheet suggests 2.49kOhms, but we can only do 100kOhm pull-down
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;    // Master/Slave = RMII Slave Mode
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable
+
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.14
+      // SION:0 MUX_MODE:0101
+      // DISABLED
+      // ALT5 (GPIO2_IO14)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.15
+      // SION:0 MUX_MODE:0101
+      // DISABLED
+      // ALT5 (GPIO2_IO15)
+
   GPIO7_GDIR    |= (1 << 14) | (1 << 15);
   GPIO7_DR_SET   = (1 << 15);  // Power on
   GPIO7_DR_CLEAR = (1 << 14);  // Reset PHY chip
 
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = 6 | 0x10;  // REFCLK    B1_10 Alt6, pg 530 (Rev. 3, 534 Rev. 2, 530 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = 0;  // MDIO    B1_15 Alt0, pg 535 (Rev. 3, 539 Rev. 2, 535 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = 0;  // MDC     B1_14 Alt0, pg 534 (Rev. 3, 538 Rev. 2, 534 Rev. 1)
 
-  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0, pg 791 (Rev. 3, 795 Rev. 2, 792 Rev. 1)
+  // Configure the MDIO and MDC pins
+  // Note: The original code didn't have these
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = IOMUXC_PAD_PUS(2) |
+                                     IOMUXC_PAD_PUE    |
+                                     IOMUXC_PAD_PKE    |
+                                     IOMUXC_PAD_DSE(5) |
+                                     IOMUXC_PAD_SRE;
+      // 0xB029 (RMII_PAD_PULLUP, but with low speed)
+      // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:1
+      // HYS_0_Hysteresis_Disabled
+      // PUS_2_100K_Ohm_Pull_Up
+      // PUE_1_Pull
+      // PKE_1_Pull_Keeper_Enabled
+      // ODE_1_Open_Drain_Disabled (because only one PHY)
+      // SPEED_0_low_50MHz
+      // DSE_5_R0_5
+      // SRE_1_Fast_Slew_Rate
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;
 
-  IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6, pg 791 (Rev. 3, 795 Rev. 2, 791 Rev. 1)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = 6 | 0x10;  // REFCLK, pg 530 (Rev. 3, 534 Rev. 2, 530 Rev. 1)
+      // SION:1 MUX_MODE:0110
+      // ENABLED
+      // ALT6 (ENET_REF_CLK)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = 0;  // MDIO, pg 535 (Rev. 3, 539 Rev. 2, 535 Rev. 1)
+      // SION:0 MUX_MODE:0000
+      // DISABLED
+      // ALT0 (ENET_MDIO)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = 0;  // MDC, pg 534 (Rev. 3, 538 Rev. 2, 534 Rev. 1)
+      // SION:0 MUX_MODE:0000
+      // DISABLED
+      // ALT0 (ENET_MDC)
+
+  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // pg 791 (Rev. 3, 795 Rev. 2, 792 Rev. 1)
+      // DAISY:10
+      // GPIO_B1_15_ALT0
+
+  IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // pg 791 (Rev. 3, 795 Rev. 2, 791 Rev. 1)
+      // DAISY:1
+      // GPIO_B1_10_ALT6
 
   delayMicroseconds(2);
   GPIO7_DR_SET = (1 << 14);  // Start PHY chip
@@ -299,24 +389,57 @@ static void t41_low_level_init() {
   }
 
   // Configure pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[0] = 0
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_INPUT_PULLDOWN;  // PhyAdd[1] = 1
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_INPUT_PULLUP;    // Master/Slave = slave mode
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_INPUT_PULLDOWN;  // Auto MDIX Enable
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_INPUT_PULLUP;
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_INPUT_PULLUP;
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_INPUT_PULLUP;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = 3;  // RXD1    B1_05 Alt3, pg 525 (Rev. 3, 529 Rev. 2, 525 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = 3;  // RXD0    B1_04 Alt3, pg 524 (Rev. 3, 528 Rev. 2, 524 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = 3;  // RXER    B1_11 Alt3, pg 531 (Rev. 3, 535 Rev. 2, 531 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = 3;  // RXEN    B1_06 Alt3, pg 526 (Rev. 3, 530 Rev. 2, 526 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = 3;  // TXEN    B1_09 Alt3, pg 529 (Rev. 3, 533 Rev. 2, 529 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = 3;  // TXD0    B1_07 Alt3, pg 527 (Rev. 3, 531 Rev. 2, 527 Rev. 1)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = 3;  // TXD1    B1_08 Alt3, pg 528 (Rev. 3, 532 Rev. 2, 528 Rev. 1)
-  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_04_ALT3, pg 792 (Rev. 3, 796 Rev. 2, 792 Rev. 1)
-  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_05_ALT3, pg 793 (Rev. 3, 797 Rev. 2, 793 Rev. 1)
-  IOMUXC_ENET_RXEN_SELECT_INPUT = 1;     // GPIO_B1_06_ALT3, pg 794 (Rev. 3, 798 Rev. 2, 794 Rev. 1)
-  IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // GPIO_B1_11_ALT3, pg 795 (Rev. 3, 799 Rev. 2, 795 Rev. 1)
+  // TODO: What should these actually be? Why pull-ups? Note that the reference code uses pull-ups.
+  // Note: The original code left RXD0, RXEN, and RXER with PULLDOWN
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLUP;  // Reset this (RXEN)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLUP;  // Reset this (RXER)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_PULLUP;  // TXD0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_PULLUP;  // TXD1
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_PULLUP;  // TXEN
+
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = 3;  // RXD1, pg 525 (Rev. 3, 529 Rev. 2, 525 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_RX_DATA01)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = 3;  // RXD0, pg 524 (Rev. 3, 528 Rev. 2, 524 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_RX_DATA00)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = 3;  // RXER, pg 531 (Rev. 3, 535 Rev. 2, 531 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_RX_ER)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = 3;  // RXEN, pg 526 (Rev. 3, 530 Rev. 2, 526 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_RX_EN)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = 3;  // TXEN, pg 529 (Rev. 3, 533 Rev. 2, 529 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_TX_EN)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = 3;  // TXD0, pg 527 (Rev. 3, 531 Rev. 2, 527 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_TX_DATA00)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = 3;  // TXD1, pg 528 (Rev. 3, 532 Rev. 2, 528 Rev. 1)
+      // SION:0 MUX_MODE:0011
+      // DISABLED
+      // ALT3 (ENET_TX_DATA01)
+
+  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // pg 792 (Rev. 3, 796 Rev. 2, 792 Rev. 1)
+      // DAISY:1
+      // GPIO_B1_04_ALT3
+  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // pg 793 (Rev. 3, 797 Rev. 2, 793 Rev. 1)
+      // DAISY:1
+      // GPIO_B1_05_ALT3
+  IOMUXC_ENET_RXEN_SELECT_INPUT = 1;     // pg 794 (Rev. 3, 798 Rev. 2, 794 Rev. 1)
+      // DAISY:1
+      // GPIO_B1_06_ALT3
+  IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // pg 795 (Rev. 3, 799 Rev. 2, 795 Rev. 1)
+      // DAISY:1
+      // GPIO_B1_11_ALT3
 
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
   mdio_write(PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
