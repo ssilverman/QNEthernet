@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include <core_pins.h>
+#include <imxrt.h>
 #include <pgmspace.h>
 
 #include "lwip/err.h"
