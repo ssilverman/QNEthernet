@@ -80,12 +80,8 @@ EthernetClass::EthernetClass(const uint8_t mac[6]) {
     return;
   }
 
-  // Initialize randomness since this isn't done anymore in eth_init
-#if defined(__IMXRT1062__)
+  // Initialize randomness
   bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
-#else
-  bool doEntropyInit = true;
-#endif
   if (doEntropyInit) {
     Entropy.Initialize();
   }
