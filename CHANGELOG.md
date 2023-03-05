@@ -16,6 +16,8 @@ and this project adheres to
 ### Changed
 * Updated _lwipopts.h_ to examine `LWIP_MDNS_RESPONDER` when setting
   certain values.
+* `Ethernet.loop()` calls are now attached/detached to/from _yield_ in
+  `Ethernet.begin(...)`/`end()`.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing

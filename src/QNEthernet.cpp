@@ -29,15 +29,17 @@ EthernetClass &Ethernet = EthernetClass::instance();
 
 // Global definitions for Arduino
 static EventResponder ethLoop;
-static bool ethActive = false;
+static bool loopAttached = false;
 
 // Attach the loop() call to yield() via EventResponder.
 static void attachLoopToYield() {
+  if (loopAttached) {
+    return;
+  }
+  loopAttached = true;
   ethLoop.attach([](EventResponderRef r) {
     Ethernet.loop();
-    if (ethActive) {
-      r.triggerEvent();
-    }
+    r.triggerEvent();
   });
 }
 
@@ -76,18 +78,12 @@ EthernetClass::EthernetClass(const uint8_t mac[6]) {
     enet_getmac(mac_);
   }
 
-  if (!enet_has_hardware()) {
-    return;
-  }
-
   // Initialize randomness
   bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
   if (doEntropyInit) {
     Entropy.Initialize();
   }
   srand(Entropy.random());
-
-  attachLoopToYield();
 }
 
 EthernetClass::~EthernetClass() {
@@ -201,7 +197,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
     dhcpActive_ = retval;
   }
 
-  ethActive = true;
+  attachLoopToYield();
   ethLoop.triggerEvent();
   return retval;
 }
@@ -266,7 +262,10 @@ void EthernetClass::end() {
     return;
   }
 
-  ethActive = false;
+  if (loopAttached) {
+    loopAttached = false;
+    ethLoop.detach();
+  }
 
 #if LWIP_MDNS_RESPONDER
   MDNS.end();
