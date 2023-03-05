@@ -214,13 +214,17 @@ typedef enum enet_init_states {
 // Ethernet initialization state.
 static enet_init_states_t initState = kInitStateStart;
 
-// Initial check for hardware
+// Initial check for hardware. This does nothing if the init state isn't at
+// START. After this function returns, the init state will either be NO_HARDWARE
+// or PHY_INITIALIZED, unless it wasn't START when called.
 static void t41_init_phy() {
   if (initState != kInitStateStart) {
     return;
   }
 
+  // Enable the Ethernet clock
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
+
   // Configure PLL6 for 50 MHz, pg 1112 (Rev. 3, 1118 Rev. 2, 1173 Rev. 1)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
   CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3) |
