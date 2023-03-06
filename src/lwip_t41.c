@@ -197,7 +197,7 @@ static atomic_flag rx_not_avail = ATOMIC_FLAG_INIT;
 static bool linkSpeed10Not100 = false;
 static bool linkIsFullDuplex  = false;
 
-void enet_isr();
+static void enet_isr();
 
 // --------------------------------------------------------------------------
 //  PHY_MDIO
@@ -693,7 +693,7 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
   return p_bd;
 }
 
-void enet_isr() {
+static void enet_isr() {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
     atomic_flag_clear(&rx_not_avail);
