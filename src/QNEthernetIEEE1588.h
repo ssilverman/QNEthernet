@@ -92,9 +92,16 @@ class EthernetIEEE1588Class final {
   // Sets the channel compare value. This returns whether successful.
   bool setChannelCompareValue(int channel, uint32_t value) const;
 
+  // Gets the channel compare value. This returns whether successful.
+  bool getChannelCompareValue(int channel, uint32_t &value) const;
+
   // Retrieves and then clears the status for the given channel. This will
   // return false for an unknown channel.
   bool getAndClearChannelStatus(int channel) const;
+
+  // Enables or disables timer interrupt generation for a channel. This will
+  // return false for an unknown channel.
+  bool setChannelInterruptEnable(int channel, bool enable) const;
 
   // Tests if the IEEE 1588 timer has been started.
   operator bool() const;

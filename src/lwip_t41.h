@@ -163,9 +163,18 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
 // This will return false for an unknown channel.
 bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value);
 
-// Retrieves and then clears the status for the given channel. This will return
-// false for an unknown channel.
+// Gets the channel compare value. This returns whether successful.
+//
+// This will return false for an unknown channel.
+bool enet_ieee1588_get_channel_compare_value(int channel, uint32_t *value);
+
+// Retrieves and then clears the status for the given channel. This will
+// return false for an unknown channel.
 bool enet_ieee1588_get_and_clear_channel_status(int channel);
+
+// Enables or disables timer interrupt generation for a channel. This will
+// return false for an unknown channel.
+bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable);
 
 #ifdef __cplusplus
 }  // extern "C"

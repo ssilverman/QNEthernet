@@ -942,6 +942,9 @@ void enet_leave_group(const ip4_addr_t *group) {
 
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
+#define ENET_TCSR_TIE_MASK   ((uint32_t)(1U << 6))
+#define ENET_TCSR_TIE(n)     ((uint32_t)(((n) & 0x01) << 6))
+
 void enet_ieee1588_init() {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
   ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
@@ -1144,7 +1147,22 @@ bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   return true;
 }
 
+bool enet_ieee1588_get_channel_compare_value(int channel, uint32_t *value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+  volatile uint32_t *tccr = tccrReg(channel);
+  if (tccr == NULL) {
+    return false;
+  }
+  *value = *tccr;
+  return true;
+}
+
 bool enet_ieee1588_get_and_clear_channel_status(int channel) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
@@ -1156,6 +1174,18 @@ bool enet_ieee1588_get_and_clear_channel_status(int channel) {
   } else {
     return false;
   }
+}
+
+bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable){
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  CLRSET(*tcsr,ENET_TCSR_TIE_MASK,ENET_TCSR_TIE(enable));
 }
 
 #endif  // ARDUINO_TEENSY41
