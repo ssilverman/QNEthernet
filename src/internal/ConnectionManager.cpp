@@ -18,23 +18,26 @@
 #include "QNEthernet.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
+#include "lwip/altcp_tcp.h"
+#if LWIP_ALTCP_TLS
+#include "lwip/altcp_tls.h"
+#endif  // LWIP_ALTCP_TLS
 #include "lwip/tcp.h"
 #endif  // LWIP_ALTCP
 
-#if LWIP_ALTCP
-// This is a function that returns the allocator function used by altcp.
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+// This is a function that returns the argument to the allocator function used
+// by altcp. If this returns nullptr then a TCP connection will be used.
+// Otherwise, a TLS connection will be used.
 //
 // The arguments indicate what the calling code is trying to do:
 // 1. If ipaddr is NULL then the application is trying to listen.
 // 2. If ipaddr is not NULL then the application is trying to connect.
 //
 // The function isn't required to use the arguments.
-extern std::function<altcp_allocator_t *(const ip_addr_t *ipaddr,
-                                         uint16_t port)>
-    qnethernet_allocatorf;
-#else
-#define qnethernet_allocatorf(ipaddr, port)
-#endif  // LWIP_ALTCP
+extern std::function<void *(const ip_addr_t *ipaddr, uint16_t port)>
+    qnethernet_allocator_arg;
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
 
 namespace qindesign {
 namespace network {
@@ -251,15 +254,32 @@ void ConnectionManager::addConnection(
   };
 }
 
+static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
+                                   u8_t ip_type) {
+#if LWIP_ALTCP
+  altcp_new_fn newf;
+  void *arg;
+#if LWIP_ALTCP_TLS
+  arg = qnethernet_allocator_arg(ipaddr, port);
+  newf = (arg == nullptr) ? &altcp_tcp_alloc : &altcp_tls_alloc;
+#else
+  newf = &altcp_tcp_alloc;
+  arg = nullptr;
+#endif  // LWIP_ALTCP_TLS
+  altcp_allocator_t allocator{ newf, arg };
+  return altcp_new_ip_type(&allocator, ip_type);
+#else
+  return altcp_new_ip_type(nullptr, ip_type);
+#endif  // LWIP_ALTCP
+}
+
 std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
     const ip_addr_t *ipaddr, uint16_t port) {
   if (ipaddr == nullptr) {
     return nullptr;
   }
 
-  // Try to allocate
-  altcp_pcb *pcb = altcp_new_ip_type(qnethernet_allocatorf(ipaddr, port),
-                                     IP_GET_TYPE(ipaddr));
+  altcp_pcb *pcb = create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
   if (pcb == nullptr) {
     return nullptr;
   }
@@ -288,9 +308,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
 }
 
 bool ConnectionManager::listen(uint16_t port, bool reuse) {
-  // Try to allocate
-  altcp_pcb *pcb = altcp_new_ip_type(qnethernet_allocatorf(nullptr, port),
-                                     IPADDR_TYPE_ANY);
+  altcp_pcb *pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
   if (pcb == nullptr) {
     return false;
   }

@@ -1053,8 +1053,7 @@ source code.
 Here are the steps to add TLS:
 1. Set `LWIP_ALTCP` and `LWIP_ALTCP_TLS` to `1` in `lwipopts.h`,
 2. Implement a function somewhere in your code having this name and signature:
-   `std::function<altcp_allocator_t *(const ip_addr_t *ipaddr, uint16_t port)> qnethernet_allocatorf`
-   (you'll likely need to include `<lwip/altcp.h>`),
+   `std::function<void *(const ip_addr_t *ipaddr, uint16_t port)> qnethernet_allocator_arg`,
    and
 3. Implement all the functions declared in _src/lwip/altcp_tls.h_.
 
