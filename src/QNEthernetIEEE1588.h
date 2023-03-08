@@ -84,11 +84,9 @@ class EthernetIEEE1588Class final {
   // output compare pulse modes.
   bool setChannelMode(int channel, TimerChannelModes mode) const;
 
-  // Sets the output compare pulse mode and pulse width for the given channel.
-  // The pulse width must be in the range 1-32. This only sets the output
-  // compare pulse modes. This returns whether successful.
+  // Sets the output compare pulse width for the given channel.
+  // The pulse width must be in the range 1-32. This returns whether successful.
   bool setChannelOutputPulseWidth(int channel,
-                                  TimerChannelModes mode,
                                   int pulseWidth) const;
 
   // Sets the channel compare value. This returns whether successful.

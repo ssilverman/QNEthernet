@@ -936,7 +936,10 @@ void enet_leave_group(const ip4_addr_t *group) {
 
 #define ENET_TCSR_TMODE_MASK (0x0000003cU)
 #define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+
+#define ENET_TCSR_TPWC_MASK  ((uint32_t)(0x1f << 11))
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
+
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
 void enet_ieee1588_init() {
@@ -1076,44 +1079,38 @@ static volatile uint32_t *tccrReg(int channel) {
 }
 
 bool enet_ieee1588_set_channel_mode(int channel, int mode) {
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-    case 12:  // Reserved
-    case 13:  // Reserved
-      return false;
-    default:
-      if (mode < 0 || 0x0f < mode) {
-        return false;
-      }
-      break;
+  if (channel < 0 || channel > 3){
+    return false;
   }
-
+  
+  if (mode < 0 || mode > 15 || mode == 8 || mode == 12 || mode == 13) {//Check for reserverd modes
+    return false;
+  }
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
 
+  uint32_t state = *tcsr; // Backup current state
   *tcsr = 0;
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode);
+  CLRSET(state,ENET_TCSR_TMODE_MASK,ENET_TCSR_TMODE(mode));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
 
   return true;
 }
 
 bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  int mode,
-                                                  int pulseWidth) {
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-      break;
-    default:
-      return true;
+                                                  int pulseWidth) {       
+  if (channel < 0 || channel > 3){
+    return false;
   }
-
+  
   if (pulseWidth < 1 || 32 < pulseWidth) {
     return false;
   }
@@ -1122,17 +1119,23 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   if (tcsr == NULL) {
     return false;
   }
-
+  uint32_t state = *tcsr; // Backup current state
   *tcsr = 0;
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1);
-
+  CLRSET(state,ENET_TCSR_TPWC_MASK,ENET_TCSR_TPWC(pulseWidth - 1));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
   return true;
 }
 
 bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
   volatile uint32_t *tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
