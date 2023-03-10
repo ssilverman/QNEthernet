@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// lwIP hooks for QNEthernet library on Teensy 4.1.
+// lwip_hooks.h contains lwIP hook declarations.
 // This file is part of the QNEthernet library.
 
 #ifndef QNETHERNET_LWIPHOOKS_H_
