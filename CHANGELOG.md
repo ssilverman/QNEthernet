@@ -19,7 +19,9 @@ and this project adheres to
   certain values.
 * `Ethernet.loop()` calls are now attached/detached to/from _yield_ in
   `Ethernet.begin(...)`/`end()`.
+* Improved pin configurations and comments.
 * Disabled `LWIP_STATS` option by default. Saves a little memory.
+* Updated Arduino Ethernet API links in _keywords.txt_.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
