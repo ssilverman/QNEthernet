@@ -83,7 +83,7 @@ void setup() {
 // Main program loop.
 void loop() {
   int size = udp.parsePacket();
-  if (0 < size && size <= sizeof(buf)) {
+  if (0 < size && static_cast<unsigned int>(size) <= sizeof(buf)) {
     udp.read(buf, size);
     printOSC(Serial, buf, size);
   }

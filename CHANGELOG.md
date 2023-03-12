@@ -28,6 +28,7 @@ and this project adheres to
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
   the bits. This seemed to fix an apparent freeze. (See this issue:
   https://github.com/ssilverman/QNEthernet/issues/26)
+* Fixed a signedness comparison warning in `OSCPrinter` example.
 
 ## [0.18.0]
 
