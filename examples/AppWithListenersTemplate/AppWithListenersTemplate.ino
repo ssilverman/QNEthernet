@@ -49,9 +49,10 @@ constexpr uint32_t kLinkTimeout = 5000;  // 5 seconds
 constexpr bool kStartWithDHCP = true;
 
 // Whether to wait for DHCP at program start. Note that the
-// `addressChanged(hasIP)` function will always be called when the
-// address changes, so starting DHCP and not waiting for an IP address
-// is sufficient. In other words, you don't necessarily need to wait;
+// `setNetworkReady(hasIP, linkState, interfaceUp)` function will
+// always be called when the address, link, or interface status
+// changes, so starting DHCP and not waiting for an IP address is
+// sufficient. In other words, you don't necessarily need to wait;
 // you can rely on the listener telling you.
 constexpr bool kWaitForDHCP = true;
 
