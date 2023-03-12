@@ -45,8 +45,8 @@ extern void *ram_heap;
 // Internal Memory Pool Sizes
 // #define MEMP_NUM_PBUF                      16
 // #define MEMP_NUM_RAW_PCB                   4
-// Add one to MEMP_NUM_UDP_PCB for mDNS:
 #ifndef MEMP_NUM_UDP_PCB
+// Increment MEMP_NUM_UDP_PCB by 1 for mDNS, if needed:
 #define MEMP_NUM_UDP_PCB                   8
 #endif  // !MEMP_NUM_UDP_PCB
 #ifndef MEMP_NUM_TCP_PCB
@@ -67,7 +67,6 @@ extern void *ram_heap;
 //   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
-// Add 3 for mDNS. This value seems to work:
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Increment MEMP_NUM_SYS_TIMEOUT by 3
 #define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
@@ -230,7 +229,6 @@ extern void *ram_heap;
 // #define LWIP_NETIF_REMOVE_CALLBACK     0
 // #define LWIP_NETIF_HWADDRHINT          0
 // #define LWIP_NETIF_TX_SINGLE_PBUF      0
-// Add one for mDNS:
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Increment LWIP_NUM_NETIF_CLIENT_DATA by 1
 #define LWIP_NUM_NETIF_CLIENT_DATA     1
@@ -449,6 +447,7 @@ extern void *ram_heap;
 // 1. Reduce MEMP_NUM_SYS_TIMEOUT by 3
 // 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
 // 3. Reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
+// 4. Optionally reduce MEMP_NUM_UDP_PCB by 1
 #endif  // !LWIP_MDNS_RESPONDER
 // #define MDNS_RESP_USENETIF_EXTCALLBACK LWIP_NETIF_EXT_STATUS_CALLBACK
 #ifndef MDNS_MAX_SERVICES
