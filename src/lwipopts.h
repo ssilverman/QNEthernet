@@ -289,7 +289,9 @@ extern void *ram_heap;
 // #define LWIP_SOCKET_POLL                  1
 
 // Statistics options
-// #define LWIP_STATS         1
+#ifndef LWIP_STATS
+#define LWIP_STATS         0
+#endif  // LWIP_STATS
 // #define LWIP_STATS_DISPLAY 0
 // #define LINK_STATS         1
 // #define ETHARP_STATS       (LWIP_ARP)

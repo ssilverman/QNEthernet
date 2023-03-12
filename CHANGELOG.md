@@ -19,6 +19,7 @@ and this project adheres to
   certain values.
 * `Ethernet.loop()` calls are now attached/detached to/from _yield_ in
   `Ethernet.begin(...)`/`end()`.
+* Disabled `LWIP_STATS` option by default. Saves a little memory.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
