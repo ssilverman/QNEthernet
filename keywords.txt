@@ -24,9 +24,9 @@ StdioPrint	KEYWORD1
 #######################################
 
 maxMulticastGroups	KEYWORD2
+mtu	KEYWORD2
 macAddress	KEYWORD2	EthernetMACAddress
 setMACAddress	KEYWORD2	EthernetSetMACAddress
-mtu	KEYWORD2
 loop	KEYWORD2
 begin	KEYWORD2
 isDHCPActive	KEYWORD2
@@ -50,6 +50,7 @@ setLocalIP	KEYWORD2	EthernetSetLocalIP
 setSubnetMask	KEYWORD2	EthernetSetSubnetMask
 setGatewayIP	KEYWORD2	EthernetSetGatewayIP
 setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
+hardwareStatus	KEYWORD2	EthernetHardwareStatus
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
