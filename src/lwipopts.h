@@ -68,8 +68,8 @@ extern void *ram_heap;
 //    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
-// Increment MEMP_NUM_SYS_TIMEOUT by 3
-#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
+// Increment MEMP_NUM_SYS_TIMEOUT by 1
+#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (1))
 #else
 // #define MEMP_NUM_SYS_TIMEOUT               LWIP_NUM_SYS_TIMEOUT_INTERNAL
 #endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
@@ -444,7 +444,7 @@ extern void *ram_heap;
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP
 // If you change this to zero here then:
-// 1. Reduce MEMP_NUM_SYS_TIMEOUT by 3
+// 1. Reduce MEMP_NUM_SYS_TIMEOUT by 1
 // 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
 // 3. Reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
 // 4. Optionally reduce MEMP_NUM_UDP_PCB by 1
