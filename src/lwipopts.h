@@ -52,9 +52,9 @@ extern void *ram_heap;
 #ifndef MEMP_NUM_TCP_PCB
 #define MEMP_NUM_TCP_PCB                   8
 #endif  // !MEMP_NUM_TCP_PCB
-// #ifndef MEMP_NUM_TCP_PCB_LISTEN
+#ifndef MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_PCB_LISTEN            8
-// #endif  // !MEMP_NUM_TCP_PCB_LISTEN
+#endif  // !MEMP_NUM_TCP_PCB_LISTEN
 // #define MEMP_NUM_TCP_SEG                   16
 // #define MEMP_NUM_ALTCP_PCB                 MEMP_NUM_TCP_PCB
 // #define MEMP_NUM_REASSDATA                 5
@@ -159,9 +159,9 @@ extern void *ram_heap;
 // #define DNS_TABLE_SIZE                4
 // #define DNS_MAX_NAME_LENGTH           256
 // #define DNS_MAX_SERVERS               2
-// #ifndef DNS_MAX_RETRIES
+#ifndef DNS_MAX_RETRIES
 // #define DNS_MAX_RETRIES               4
-// #endif  // !DNS_MAX_RETRIES
+#endif  // !DNS_MAX_RETRIES
 // #define DNS_DOES_NAME_CHECK           1
 /* #define LWIP_DNS_SECURE                                                 \
 //   (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
@@ -326,9 +326,9 @@ extern void *ram_heap;
 // #define LWIP_CHECKSUM_ON_COPY        0
 
 // IPv6 options
-// #ifndef LWIP_IPV6
+#ifndef LWIP_IPV6
 // #define LWIP_IPV6                       0
-// #endif  // !LWIP_IPV6
+#endif  // !LWIP_IPV6
 // #define IPV6_REASS_MAXAGE               60
 // #define LWIP_IPV6_SCOPES                (LWIP_IPV6 && !LWIP_SINGLE_NETIF)
 // #define LWIP_IPV6_SCOPES_DEBUG          0
