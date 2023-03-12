@@ -43,7 +43,7 @@ PixelPusherServer pp;
 OctoWS2811Receiver receiver{pp, kNumStrips, kPixelsPerStrip};
 
 // Forward declarations
-void addressChanged(bool hasIP);
+void networkChanged(bool hasIP, bool linkState);
 
 // Program setup.
 void setup() {
@@ -63,6 +63,7 @@ void setup() {
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
     printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
+    networkChanged(Ethernet.localIP() != INADDR_NONE, state);
   });
 
   // Listen for address changes
@@ -90,10 +91,10 @@ void setup() {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
-    // Tell interested parties the state of the IP address, for
-    // example, servers, SNTP clients, and other sub-programs that
-    // need to know whether to stop/start/restart/etc
-    addressChanged(hasIP);
+    // Tell interested parties the network state, for example, servers,
+    // SNTP clients, and other sub-programs that need to know whether
+    // to stop/start/restart/etc
+    networkChanged(hasIP, Ethernet.linkState());
   });
 
   printf("Starting Ethernet with DHCP...\r\n");
@@ -103,9 +104,9 @@ void setup() {
   }
 }
 
-// The address has changed. For example, a DHCP address arrived.
-void addressChanged(bool hasIP) {
-  if (!hasIP) {
+// The address or link has changed. For example, a DHCP address arrived.
+void networkChanged(bool hasIP, bool linkState) {
+  if (!hasIP || !linkState) {
     printf("Stopping server and LEDs...");
     fflush(stdout);  // Print what we have so far if line buffered
     pp.end();

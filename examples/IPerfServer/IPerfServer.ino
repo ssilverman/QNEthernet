@@ -169,7 +169,7 @@ std::vector<ConnectionState> conns;
 EthernetServer server{kServerPort};
 
 // Forward declarations
-void addressChanged(bool hasIP);
+void networkChanged(bool hasIP, bool linkState);
 bool connectToClient(ConnectionState &state,
                      std::vector<ConnectionState> &list);
 void processConnection(ConnectionState &state,
@@ -198,6 +198,7 @@ void setup() {
     } else {
       printf("[Ethernet] Link OFF\r\n");
     }
+    networkChanged(Ethernet.localIP() != INADDR_NONE, state);
   });
 
   // Listen for address changes
@@ -222,10 +223,10 @@ void setup() {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
-    // Tell interested parties the state of the IP address, for
-    // example, servers, SNTP clients, and other sub-programs that
-    // need to know whether to stop/start/restart/etc
-    addressChanged(hasIP);
+    // Tell interested parties the network state, for example, servers,
+    // SNTP clients, and other sub-programs that need to know whethe
+    // to stop/start/restart/etc
+    networkChanged(hasIP, Ethernet.linkState());
   });
 
   printf("Starting Ethernet with DHCP...\r\n");
@@ -247,28 +248,18 @@ void setup() {
   }
 }
 
-// The address has changed. For example, a DHCP address arrived.
-void addressChanged(bool hasIP) {
-  if (hasIP) {
-    if (server) {
-      // Optional
-      printf("Address changed: Server already started\r\n");
-    } else {
-      printf("Starting server on port %u...", kServerPort);
-      fflush(stdout);  // Print what we have so far if line buffered
-      server.begin();
-      printf("%s\r\n", server ? "done." : "FAILED!");
-    }
-  } else {
-    if (!server) {
-      // Optional
-      printf("Address changed: Server already stopped\r\n");
-    } else {
-      printf("Stopping server...");
-      fflush(stdout);  // Print what we have so far if line buffered
-      server.end();
-      printf("done.\r\n");
-    }
+// The address or link has changed. For example, a DHCP address arrived.
+void networkChanged(bool hasIP, bool linkState) {
+  if (!hasIP || !linkState) {
+    return;
+  }
+
+  // Start the server and keep it up
+  if (!server) {
+    printf("Starting server on port %u...", kServerPort);
+    fflush(stdout);  // Print what we have so far if line buffered
+    server.begin();
+    printf("%s\r\n", server ? "done." : "FAILED!");
   }
 }
 

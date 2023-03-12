@@ -95,7 +95,7 @@ EthernetServer server{kServerPort};
 // --------------------------------------------------------------------------
 
 // Forward declarations
-void tellServer(bool hasIP);
+void tellServer(bool hasIP, bool linkState);
 
 // Program setup.
 void setup() {
@@ -143,12 +143,12 @@ void setup() {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
 
-    // Tell interested parties the state of the IP address, for
-    // example, servers, SNTP clients, and other sub-programs that
+    // Tell interested parties the state of the IP address and link,
+    // for example, servers, SNTP clients, and other sub-programs that
     // need to know whether to stop/start/restart/etc
     // Note: When setting a static IP, the address will be set but a
     //       link or active network interface might not yet exist
-    tellServer(hasIP);
+    tellServer(hasIP, Ethernet.linkState());
   });
 
   if (staticIP == INADDR_NONE) {
@@ -183,11 +183,11 @@ void setup() {
   }
 }
 
-// Tell the server there's been an IP address change.
-void tellServer(bool hasIP) {
-  // If there's no IP address, could optionally stop the server,
-  // depending on your needs
-  if (hasIP) {
+// Tell the server there's been an IP address or link state change.
+void tellServer(bool hasIP, bool linkState) {
+  // If there's no IP address or link, could optionally stop the
+  // server, depending on your needs
+  if (hasIP && linkState) {
     if (server) {
       // Optional
       printf("Address changed: Server already started\r\n");

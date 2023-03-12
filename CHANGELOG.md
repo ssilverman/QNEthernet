@@ -23,6 +23,8 @@ and this project adheres to
 * Disabled `LWIP_STATS` option by default. Saves a little memory.
 * Updated Arduino Ethernet API links in _keywords.txt_.
 * Only add 1 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 3.
+* Updated examples to use both address and link state on network changes. This
+  accommodates when a static IP is used.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
