@@ -69,7 +69,7 @@ class EthernetClass final {
   EthernetClass &operator=(const EthernetClass &) = delete;
 
   // Returns the maximum number of multicast groups. Note that mDNS will use
-  // one group.
+  // one group. Also note that this does not include the "all systems" group.
   static constexpr int maxMulticastGroups() {
     // Exclude the "All Systems" group
     if (MEMP_NUM_IGMP_GROUP > 0) {

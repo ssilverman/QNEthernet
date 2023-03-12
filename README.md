@@ -218,7 +218,7 @@ The `Ethernet` object is the main Ethernet interface.
     status changes. It is called _after_ the interface is up but _before_ the
     interface goes down.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
-  multicast groups.
+  available multicast groups, not including the "all systems" group.
 * `static constexpr size_t mtu()`: Returns the MTU.
 
 ### `EthernetClient`
