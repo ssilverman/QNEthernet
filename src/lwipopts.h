@@ -69,6 +69,7 @@ extern void *ram_heap;
 //    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 // Add 3 for mDNS. This value seems to work:
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
+// Increment MEMP_NUM_SYS_TIMEOUT by 3
 #define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (3))
 #else
 // #define MEMP_NUM_SYS_TIMEOUT               LWIP_NUM_SYS_TIMEOUT_INTERNAL
@@ -231,6 +232,7 @@ extern void *ram_heap;
 // #define LWIP_NETIF_TX_SINGLE_PBUF      0
 // Add one for mDNS:
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
+// Increment LWIP_NUM_NETIF_CLIENT_DATA by 1
 #define LWIP_NUM_NETIF_CLIENT_DATA     1
 #else
 // #define LWIP_NUM_NETIF_CLIENT_DATA     0
@@ -452,6 +454,6 @@ extern void *ram_heap;
 #ifndef MDNS_MAX_SERVICES
 #define MDNS_MAX_SERVICES   3
 #endif  // !MDNS_MAX_SERVICES
-// #define MDNS_DEBUG                       LWIP_DBG_OFF
+// #define MDNS_DEBUG          LWIP_DBG_OFF
 
 #endif  // QNETHERNET_LWIPOPTS_H_
