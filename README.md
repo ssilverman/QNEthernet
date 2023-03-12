@@ -1164,6 +1164,10 @@ in `mdns_opts.h`:
 | `MEMP_NUM_UDP_PCB`        | Number of UDP sockets           |
 | `MDNS_MAX_SERVICES`       | Maximum number of mDNS services |
 
+Some extra conditions to keep in mind:
+* `MEMP_NUM_IGMP_GROUP`: Count must include one for the "all systems" group.
+* `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
+
 ## Complete list of features
 
 This section is an attempt to provide a complete list of features in the
