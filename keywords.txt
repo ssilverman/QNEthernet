@@ -9,9 +9,9 @@
 #######################################
 
 Ethernet	KEYWORD1	Ethernet
-EthernetClient	KEYWORD1	ClientConstructor
-EthernetServer	KEYWORD1	ServerConstructor
-EthernetUDP	KEYWORD1	Ethernet
+EthernetClient	KEYWORD1	EthernetClient
+EthernetServer	KEYWORD1	EthernetServer
+EthernetUDP	KEYWORD1	EthernetUDP
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
 stdPrint	KEYWORD1
@@ -25,15 +25,15 @@ StdioPrint	KEYWORD1
 
 maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
-macAddress	KEYWORD2	EthernetMACAddress
-setMACAddress	KEYWORD2	EthernetSetMACAddress
+macAddress	KEYWORD2	Ethernet.MACAddress
+setMACAddress	KEYWORD2	Ethernet.setMACAddress
 loop	KEYWORD2
 begin	KEYWORD2
 isDHCPActive	KEYWORD2
 waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2
 end	KEYWORD2
-linkStatus	KEYWORD2	EthernetLinkStatus
+linkStatus	KEYWORD2	Ethernet.linkStatus
 linkState	KEYWORD2
 linkSpeed	KEYWORD2
 linkIsFullDuplex	KEYWORD2
@@ -41,31 +41,31 @@ onLinkState	KEYWORD2
 onAddressChanged	KEYWORD2
 onInterfaceStatus	KEYWORD2
 interfaceStatus	KEYWORD2
-localIP	KEYWORD2	EthernetLocalIP
-subnetMask	KEYWORD2	EthernetSubnetMask
-gatewayIP	KEYWORD2	EthernetGatewayIP
-dnsServerIP	KEYWORD2	EthernetDnsServerIP
+localIP	KEYWORD2	Ethernet.localIP
+subnetMask	KEYWORD2	Ethernet.subnetMask
+gatewayIP	KEYWORD2	Ethernet.gatewayIP
+dnsServerIP	KEYWORD2	Ethernet.dnsServerIP
 broadcastIP	KEYWORD2
-setLocalIP	KEYWORD2	EthernetSetLocalIP
-setSubnetMask	KEYWORD2	EthernetSetSubnetMask
-setGatewayIP	KEYWORD2	EthernetSetGatewayIP
-setDNSServerIP	KEYWORD2	EthernetSetDnsServerIP
-hardwareStatus	KEYWORD2	EthernetHardwareStatus
+setLocalIP	KEYWORD2	Ethernet.setLocalIP
+setSubnetMask	KEYWORD2	Ethernet.setSubnetMask
+setGatewayIP	KEYWORD2	Ethernet.setGatewayIP
+setDNSServerIP	KEYWORD2	Ethernet.setDnsServerIP
+hardwareStatus	KEYWORD2	Ethernet.hardwareStatus
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
 setHostname	KEYWORD2
 hostname	KEYWORD2
 maxSockets	KEYWORD2
-connect	KEYWORD2	ClientConnect
+connect	KEYWORD2	client.connect
 connectNoWait	KEYWORD2
-connected	KEYWORD2	ClientConnected
-setConnectionTimeout	KEYWORD2	EthernetClientSetConnectionTimeout
+connected	KEYWORD2	client.connected
+setConnectionTimeout	KEYWORD2	client.setConnectionTimeout
 stop	KEYWORD2
 close	KEYWORD2
 closeOutput	KEYWORD2
 abort	KEYWORD2
-localPort	KEYWORD2	ClientLocalPort
+localPort	KEYWORD2	client.localPort
 data	KEYWORD2
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
@@ -82,13 +82,13 @@ isNoDelay	KEYWORD2
 maxListeners	KEYWORD2
 port	KEYWORD2
 beginWithReuse	KEYWORD2
-accept	KEYWORD2	EthernetServerAccept
-beginMulticast	KEYWORD2	WiFiNINAUDPBeginMulticast
+accept	KEYWORD2	server.accept
+beginMulticast	KEYWORD2	WiFiUDP.beginMulticast
 beginMulticastWithReuse	KEYWORD2
-beginPacket	KEYWORD2	EthernetUDPBeginPacket
-endPacket	KEYWORD2	EthernetUDPEndPacket
+beginPacket	KEYWORD2	EthernetUDP.beginPacket
+endPacket	KEYWORD2	EthernetUDP.endPacket
 send	KEYWORD2
-parsePacket	KEYWORD2	EthernetUDPParsePacket
+parsePacket	KEYWORD2	EthernetUDP.parsePacket
 size	KEYWORD2
 maxServices	KEYWORD2
 restart	KEYWORD2
