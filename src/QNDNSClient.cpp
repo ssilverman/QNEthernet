@@ -14,7 +14,8 @@
 namespace qindesign {
 namespace network {
 
-void DNSClient::dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
+void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
+                             const ip_addr_t *ipaddr,
                              void *callback_arg) {
   if (callback_arg == nullptr || ipaddr == nullptr) {
     return;

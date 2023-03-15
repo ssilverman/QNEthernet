@@ -33,6 +33,7 @@ and this project adheres to
   the bits. This seemed to fix an apparent freeze. (See this issue:
   https://github.com/ssilverman/QNEthernet/issues/26)
 * Fixed a signedness comparison warning in `OSCPrinter` example.
+* Addressed "extra" (`-Wextra`) and pedantic (`-Wpedantic`) warnings.
 
 ## [0.18.0]
 

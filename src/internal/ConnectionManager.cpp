@@ -51,7 +51,7 @@ err_t ConnectionManager::connectedFunc(void *arg, struct tcp_pcb *tpcb,
 
 // Check if there's data available in the buffer.
 static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
-  return (0 <= state->bufPos && state->bufPos < state->buf.size());
+  return (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
 }
 
 // Copy any remaining data from the state to the "remaining" buffer. This first
@@ -218,7 +218,8 @@ err_t ConnectionManager::acceptFunc(void *arg, struct tcp_pcb *newpcb,
 void ConnectionManager::addConnection(
     const std::shared_ptr<ConnectionHolder> &holder) {
   connections_.push_back(holder);
-  holder->state->removeFunc = [this, holder](ConnectionState *state) {
+  holder->state->removeFunc = [this, holder](
+                                  [[maybe_unused]] ConnectionState *state) {
     // Remove the connection from the list
     auto it =
         std::find_if(connections_.begin(), connections_.end(),

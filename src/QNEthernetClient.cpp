@@ -420,7 +420,7 @@ void EthernetClient::flush() {
 static inline bool isAvailable(
     const std::unique_ptr<internal::ConnectionState> &state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
-         (0 <= state->bufPos && state->bufPos < state->buf.size());
+         (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
 }
 
 int EthernetClient::available() {

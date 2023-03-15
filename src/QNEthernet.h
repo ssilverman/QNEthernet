@@ -211,14 +211,16 @@ class EthernetClass final {
   EthernetHardwareStatus hardwareStatus() const;
 
   // Deprecated and unused functions
-  [[deprecated]] void init(uint8_t sspin) const {}
+  [[deprecated]] void init([[maybe_unused]] uint8_t sspin) const {}
   [[deprecated]] void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
   [[deprecated]] uint8_t maintain() const { return 0; }
   [[deprecated]] void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
-  [[deprecated]] void setRetransmissionCount(uint8_t number) const {}
-  [[deprecated]] void setRetransmissionTimeout(uint16_t milliseconds) const {}
+  [[deprecated]]
+  void setRetransmissionCount([[maybe_unused]] uint8_t number) const {}
+  [[deprecated]]
+  void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
 
   // Joins a multicast group. This returns whether the call was successful.
   //

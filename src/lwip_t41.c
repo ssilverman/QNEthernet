@@ -18,6 +18,7 @@
 #include <imxrt.h>
 #include <pgmspace.h>
 
+#include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/etharp.h"
 #include "lwip/init.h"
@@ -188,8 +189,8 @@ static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
 static BUFFER_DMAMEM uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
 static BUFFER_DMAMEM uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
-volatile static enetbufferdesc_t *p_rxbd = &rx_ring[0];
-volatile static enetbufferdesc_t *p_txbd = &tx_ring[0];
+static volatile enetbufferdesc_t *p_rxbd = &rx_ring[0];
+static volatile enetbufferdesc_t *p_txbd = &tx_ring[0];
 static struct netif t41_netif = { .name = {'e', '0'} };
 static atomic_flag rx_not_avail = ATOMIC_FLAG_INIT;
 
@@ -638,6 +639,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
 }
 
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
+  LWIP_UNUSED_ARG(netif);
+
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
   uint16_t copied = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
   if (copied == 0) {
@@ -725,6 +728,8 @@ static inline void check_link_status() {
 // Multicast filter for letting the hardware know which packets to let in.
 static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
                               enum netif_mac_filter_action action) {
+  LWIP_UNUSED_ARG(netif);
+
   switch (action) {
     case NETIF_ADD_MAC_FILTER:
       enet_join_group(group);
@@ -757,7 +762,7 @@ void enet_getmac(uint8_t *mac) {
 static bool isFirstInit = true;
 static bool isNetifAdded = false;
 
-NETIF_DECLARE_EXT_CALLBACK(netif_callback);
+NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
 bool enet_has_hardware() {
   t41_init_phy();
@@ -910,7 +915,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
 #if ETH_PAD_SIZE
-  memcpy(bdPtr->buffer + ETH_PAD_SIZE, frame, len);
+  memcpy((uint8_t *)bdPtr->buffer + ETH_PAD_SIZE, frame, len);
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
