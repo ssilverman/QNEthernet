@@ -98,7 +98,7 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     stop();
   }
   if (pcb_ == nullptr) {
-    pcb_ = udp_new();
+    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
     return false;
@@ -281,7 +281,7 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 
 bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   if (pcb_ == nullptr) {
-    pcb_ = udp_new();
+    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
     return false;
@@ -341,7 +341,7 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
     return false;
   }
   if (pcb_ == nullptr) {
-    pcb_ = udp_new();
+    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
     return false;
