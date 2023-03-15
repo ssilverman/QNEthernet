@@ -25,8 +25,8 @@ and this project adheres to
 * Only add 1 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 3.
 * Updated examples to use both address and link state on network changes. This
   accommodates when a static IP is used.
-* Changed UDP and TCP PCB creation to use `IPADDR_ANY_TYPE` instead of the
-  unspecified default.
+* Changed UDP and TCP PCB creation to use an appropriate `ip_addr_t` type
+  instead of the unspecified default.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
