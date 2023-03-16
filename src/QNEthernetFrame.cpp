@@ -14,6 +14,7 @@
 // C++ includes
 #include <algorithm>
 
+#include <pgmspace.h>
 #include <util/atomic.h>
 
 #include "QNEthernet.h"
@@ -71,7 +72,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p, struct netif *netif) {
   return ERR_OK;
 }
 
-EthernetFrameClass::EthernetFrameClass()
+FLASHMEM EthernetFrameClass::EthernetFrameClass()
     : inBuf_(1) {
   setReceiveQueueSize(1);
 }

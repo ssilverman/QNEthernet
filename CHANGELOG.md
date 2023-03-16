@@ -30,6 +30,8 @@ and this project adheres to
 * Changed CRC-32 function for multicast lookup to not use a lookup table. This
   saves 1KiB of flash but makes the calculation about 4.5x slower
   (~0.1µs -> ~0.45µs).
+* Moved `EthernetClass`, `EthernetFrameClass`, and `MDNSClass` constructors and
+  destructors to `FLASHMEM` (where possible). This saves a little RAM1 space.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing

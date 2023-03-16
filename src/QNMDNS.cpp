@@ -9,6 +9,8 @@
 // C++ includes
 #include <algorithm>
 
+#include <pgmspace.h>
+
 #include "lwip/apps/mdns.h"
 
 #if LWIP_MDNS_RESPONDER
@@ -49,7 +51,7 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
 static bool initialized = false;
 static bool netifAdded = false;
 
-MDNSClass::~MDNSClass() {
+FLASHMEM MDNSClass::~MDNSClass() {
   end();
 }
 

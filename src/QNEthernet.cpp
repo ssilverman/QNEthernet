@@ -11,6 +11,7 @@
 
 #include <Entropy.h>
 #include <EventResponder.h>
+#include <pgmspace.h>
 
 #include "QNDNSClient.h"
 #include "lwip/dhcp.h"
@@ -69,9 +70,9 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   }
 }
 
-EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
+FLASHMEM EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-EthernetClass::EthernetClass(const uint8_t mac[6]) {
+FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   if (mac != nullptr) {
     std::copy_n(mac, 6, mac_);
   } else {
@@ -86,7 +87,7 @@ EthernetClass::EthernetClass(const uint8_t mac[6]) {
   srand(Entropy.random());
 }
 
-EthernetClass::~EthernetClass() {
+FLASHMEM EthernetClass::~EthernetClass() {
   end();
 }
 
