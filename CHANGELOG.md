@@ -27,6 +27,9 @@ and this project adheres to
   accommodates when a static IP is used.
 * Changed UDP and TCP PCB creation to use an appropriate `ip_addr_t` type
   instead of the unspecified default.
+* Changed CRC-32 function for multicast lookup to not use a lookup table. This
+  saves 1KiB of flash but makes the calculation about 4.5x slower
+  (~0.1µs -> ~0.45µs).
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
