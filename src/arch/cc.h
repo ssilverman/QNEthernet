@@ -9,6 +9,11 @@
 
 #include <stdlib.h>
 
+#include <pgmspace.h>
+
 #define LWIP_RAND() ((u32_t)rand())
+
+#define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
+  u8_t variable_name[(size)] DMAMEM __attribute__((aligned(4)))
 
 #endif  // QNETHERNET_ARCH_CC_H_

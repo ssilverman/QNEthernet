@@ -32,6 +32,8 @@ and this project adheres to
   (~0.1µs -> ~0.45µs).
 * Moved `EthernetClass`, `EthernetFrameClass`, and `MDNSClass` constructors and
   destructors to `FLASHMEM` (where possible). This saves a little RAM1 space.
+* Moved lwIP's memory pools into 4-byte aligned `DMAMEM` (RAM2). This saves
+  a lot of RAM1 space, about 27KiB with the current configuration.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
