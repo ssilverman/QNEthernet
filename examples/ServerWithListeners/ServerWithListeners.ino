@@ -17,6 +17,9 @@
 //
 // This is a rudimentary basis for a complete server program.
 //
+// Note that the configuration code and logic is just for illustration.
+// Your program doesn't need to include everything here.
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
@@ -32,6 +35,8 @@ using namespace qindesign::network;
 // --------------------------------------------------------------------------
 //  Configuration
 // --------------------------------------------------------------------------
+
+// NOTE: Not all the code here is needed
 
 // The DHCP timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of an address assignment.
