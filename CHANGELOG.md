@@ -28,8 +28,8 @@ and this project adheres to
 * Changed UDP and TCP PCB creation to use an appropriate `ip_addr_t` type
   instead of the unspecified default.
 * Changed CRC-32 function for multicast lookup to not use a lookup table. This
-  saves 1KiB of flash but makes the calculation about 4.5x slower
-  (~0.1µs -> ~0.45µs).
+  saves 1KiB of flash but makes the calculation about 4.7x slower but still in
+  the microsecond range (~0.090µs -> ~0.42µs).
 * Moved `EthernetClass`, `EthernetFrameClass`, and `MDNSClass` constructors and
   destructors to `FLASHMEM` (where possible). This saves a little RAM1 space.
 * Moved lwIP's memory pools into 4-byte aligned `DMAMEM` (RAM2). This saves
