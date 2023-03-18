@@ -1,6 +1,6 @@
 /**
  * @file
- * Application layered TCP connection API (to be used from TCPIP thread)\n
+ * Application layered TCP connection API (to be used from TCPIP thread)
  *
  * This file contains the generic API.
  * For more details see @ref altcp_api.
@@ -80,7 +80,8 @@ struct altcp_pcb {
   u8_t pollinterval;
 };
 
-/** @ingroup altcp */
+/** @ingroup altcp
+ *  Struct containing an allocator and its state. */
 typedef struct altcp_allocator_s {
   /** Allocator function */
   altcp_new_fn  alloc;
@@ -194,7 +195,7 @@ enum tcp_state altcp_dbg_get_tcp_state(struct altcp_pcb *conn);
 #define altcp_nagle_disabled tcp_nagle_disabled
 #define altcp_setprio tcp_setprio
 
-#define altcp_get_tcp_addrinfo tcp_tcp_get_tcp_addrinfo
+#define altcp_get_tcp_addrinfo tcp_get_tcp_addrinfo
 #define altcp_get_ip(pcb, local) ((local) ? (&(pcb)->local_ip) : (&(pcb)->remote_ip))
 
 #ifdef LWIP_DEBUG
