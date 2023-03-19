@@ -34,7 +34,7 @@ using namespace qindesign::network;
 
 // The DHCP timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of an address assignment.
-constexpr uint32_t kDHCPTimeout = 10000;  // 10 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // The link timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of a link.

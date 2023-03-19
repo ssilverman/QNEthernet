@@ -36,6 +36,7 @@ and this project adheres to
   a lot of RAM1 space, about 27KiB with the current configuration.
 * Changed the promiscuous mode macro name from `QNETHERNET_PROMISCUOUS_MODE`
   to `QNETHERNET_ENABLE_PROMISCUOUS_MODE`.
+* Changed all the DHCP timeouts in the examples to 15 seconds.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
