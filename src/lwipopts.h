@@ -23,7 +23,6 @@
 #define SYS_LIGHTWEIGHT_PROT          0
 void sys_check_core_locking(void);
 #define LWIP_ASSERT_CORE_LOCKED() sys_check_core_locking()
-// #define LWIP_MARK_TCPIP_THREAD()
 
 // Memory options
 // #define MEM_LIBC_MALLOC                        0
@@ -67,10 +66,10 @@ extern void *ram_heap;
 #ifndef MEMP_NUM_IGMP_GROUP
 #define MEMP_NUM_IGMP_GROUP                9
 #endif  // !MEMP_NUM_IGMP_GROUP
-/* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                  \
-   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + \
-    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                           \
-    (LWIP_IPV6*(1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD)))*/
+/* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                \
+   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_ACD + \
+    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                        \
+    (LWIP_IPV6*(1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Increment MEMP_NUM_SYS_TIMEOUT by 1
 #define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (1))
@@ -97,6 +96,7 @@ extern void *ram_heap;
 // #define ARP_QUEUEING                  0
 // #define ARP_QUEUE_LEN                 3
 // #define ETHARP_SUPPORT_VLAN           0
+// #define LWIP_VLAN_PCP                 0
 // #define LWIP_ETHERNET                 LWIP_ARP
 #define ETH_PAD_SIZE                  2
 // #define ETHARP_SUPPORT_STATIC_ENTRIES 0
@@ -127,7 +127,7 @@ extern void *ram_heap;
 
 // DHCP options
 #define LWIP_DHCP                 1
-// #define DHCP_DOES_ARP_CHECK       (LWIP_DHCP && LWIP_ARP)
+// #define LWIP_DHCP_DOES_ACD_CHECK  LWIP_DHCP
 // #define LWIP_DHCP_BOOTP_FILE      0
 // #define LWIP_DHCP_GET_NTP_SRV     0
 // #define LWIP_DHCP_MAX_NTP_SERVERS 1
@@ -143,6 +143,9 @@ extern void *ram_heap;
 // #define LWIP_DHCP_AUTOIP_COOP       0
 #endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // #define LWIP_DHCP_AUTOIP_COOP_TRIES 9
+
+// ACD options
+// #define LWIP_ACD (LWIP_AUTOIP || LWIP_DHCP_DOES_ACD_CHECK)
 
 // SNMP MIB2 support
 // #define LWIP_MIB2_CALLBACKS 0
@@ -190,6 +193,7 @@ extern void *ram_heap;
 // #define LWIP_TCP_MAX_SACK_NUM      4
 #define TCP_MSS                    1460
 // #define TCP_CALCULATE_EFF_SEND_MSS 1
+// #define LWIP_TCP_RTO_TIME          3000
 #define TCP_SND_BUF                (4 * TCP_MSS)
 // #define TCP_SND_QUEUELEN           ((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
 /* #define TCP_SNDLOWAT \
@@ -277,6 +281,7 @@ extern void *ram_heap;
 // #define LWIP_COMPAT_SOCKETS               1
 // #define LWIP_POSIX_SOCKETS_IO_NAMES       1
 // #define LWIP_SOCKET_OFFSET                0
+// #define LWIP_SOCKET_EXTERNAL_HEADERS      0
 // #define LWIP_TCP_KEEPALIVE                0
 // #define LWIP_SO_SNDTIMEO                  0
 // #define LWIP_SO_RCVTIMEO                  0
@@ -430,6 +435,7 @@ extern void *ram_heap;
 // #define SLIP_DEBUG         LWIP_DBG_OFF
 // #define DHCP_DEBUG         LWIP_DBG_OFF
 // #define AUTOIP_DEBUG       LWIP_DBG_OFF
+// #define ACD_DEBUG          LWIP_DBG_OFF
 // #define DNS_DEBUG          LWIP_DBG_OFF
 // #define IP6_DEBUG          LWIP_DBG_OFF
 // #define DHCP6_DEBUG        LWIP_DBG_OFF
