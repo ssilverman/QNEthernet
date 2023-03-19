@@ -155,20 +155,23 @@ extern void *ram_heap;
 #define LWIP_IGMP 1
 
 // DNS options
-#define LWIP_DNS                      1
-// #define DNS_TABLE_SIZE                4
-// #define DNS_MAX_NAME_LENGTH           256
-// #define DNS_MAX_SERVERS               2
+#define LWIP_DNS                                1
+// #define DNS_TABLE_SIZE                          4
+// #define DNS_MAX_NAME_LENGTH                     256
+// #define DNS_MAX_SERVERS                         2
 #ifndef DNS_MAX_RETRIES
-// #define DNS_MAX_RETRIES               4
+// #define DNS_MAX_RETRIES                         4
 #endif  // !DNS_MAX_RETRIES
-// #define DNS_DOES_NAME_CHECK           1
+// #define DNS_DOES_NAME_CHECK                     1
 /* #define LWIP_DNS_SECURE                                                 \
 //   (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
 //    LWIP_DNS_SECURE_RAND_SRC_PORT)*/
-// #define DNS_LOCAL_HOSTLIST            0
-// #define DNS_LOCAL_HOSTLIST_IS_DYNAMIC 0
-#define LWIP_DNS_SUPPORT_MDNS_QUERIES 1
+// #define LWIP_DNS_SECURE_RAND_XID                1
+// #define LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING 2
+// #define LWIP_DNS_SECURE_RAND_SRC_PORT           4
+// #define DNS_LOCAL_HOSTLIST                      0
+// #define DNS_LOCAL_HOSTLIST_IS_DYNAMIC           0
+#define LWIP_DNS_SUPPORT_MDNS_QUERIES           1
 
 // UDP options
 // #define LWIP_UDP             1
