@@ -281,7 +281,10 @@ listening and the port or _reuse_ options have changed.
   not bound.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
-  host can be either an IP address or a hostname.
+  host can be either an IP address or a hostname. Note that this behaves
+  differently from `endPacket()` in that it returns an lwIP error code (see
+  _src/lwip/err.h_) and not a 1-or-0 Boolean value. Zero (`ERR_OK`)
+  indicates success. This should make it easier to diagnose any problems.
 * `size()`: Returns the total size of the received packet data.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of

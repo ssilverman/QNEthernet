@@ -37,6 +37,9 @@ and this project adheres to
 * Changed the promiscuous mode macro name from `QNETHERNET_PROMISCUOUS_MODE`
   to `QNETHERNET_ENABLE_PROMISCUOUS_MODE`.
 * Changed all the DHCP timeouts in the examples to 15 seconds.
+* Changed `EthernetUDP::send()` functions to return an lwIP error code instead
+  of a 1-or-0 Boolean value. Zero (`ERR_OK`) means no error. This makes it
+  easier to diagnose any problems.
 
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
