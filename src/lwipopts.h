@@ -8,10 +8,13 @@
 #define QNETHERNET_LWIPOPTS_H_
 
 // NO SYS
-#define NO_SYS             1
-// #define NO_SYS_NO_TIMERS   0
-// #define LWIP_TIMERS        1
-// #define LWIP_TIMERS_CUSTOM 0
+#define NO_SYS                 1
+// #define NO_SYS_NO_TIMERS       0
+// #define LWIP_TIMERS            1
+// #define LWIP_TIMERS_CUSTOM     0
+// #define MEMCPY(dst, src, len)  memcpy(dst, src, len)
+// #define SMEMCPY(dst, src, len) memcpy(dst, src, len)
+// #define MEMMOVE(dst, src, len) memmove(dst, src, len)
 
 // Core locking
 // #define LWIP_MPU_COMPATIBLE           0
@@ -20,6 +23,7 @@
 #define SYS_LIGHTWEIGHT_PROT          0
 void sys_check_core_locking(void);
 #define LWIP_ASSERT_CORE_LOCKED() sys_check_core_locking()
+// #define LWIP_MARK_TCPIP_THREAD()
 
 // Memory options
 // #define MEM_LIBC_MALLOC                        0
@@ -63,10 +67,10 @@ extern void *ram_heap;
 #ifndef MEMP_NUM_IGMP_GROUP
 #define MEMP_NUM_IGMP_GROUP                9
 #endif  // !MEMP_NUM_IGMP_GROUP
-/* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                 \
-//   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2 * LWIP_DHCP) + LWIP_ACD + \
-//    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                          \
-//    (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
+/* #define LWIP_NUM_SYS_TIMEOUT_INTERNAL                                  \
+   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + \
+    LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                           \
+    (LWIP_IPV6*(1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD)))*/
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Increment MEMP_NUM_SYS_TIMEOUT by 1
 #define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (1))
@@ -93,7 +97,6 @@ extern void *ram_heap;
 // #define ARP_QUEUEING                  0
 // #define ARP_QUEUE_LEN                 3
 // #define ETHARP_SUPPORT_VLAN           0
-// #define LWIP_VLAN_PCP                 0
 // #define LWIP_ETHERNET                 LWIP_ARP
 #define ETH_PAD_SIZE                  2
 // #define ETHARP_SUPPORT_STATIC_ENTRIES 0
@@ -124,7 +127,7 @@ extern void *ram_heap;
 
 // DHCP options
 #define LWIP_DHCP                 1
-// #define LWIP_DHCP_DOES_ACD_CHECK  LWIP_DHCP
+// #define DHCP_DOES_ARP_CHECK       (LWIP_DHCP && LWIP_ARP)
 // #define LWIP_DHCP_BOOTP_FILE      0
 // #define LWIP_DHCP_GET_NTP_SRV     0
 // #define LWIP_DHCP_MAX_NTP_SERVERS 1
@@ -141,15 +144,12 @@ extern void *ram_heap;
 #endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // #define LWIP_DHCP_AUTOIP_COOP_TRIES 9
 
-// ACD options
-// #define LWIP_ACD (LWIP_AUTOIP || LWIP_DHCP_DOES_ACD_CHECK)
-
 // SNMP MIB2 support
 // #define LWIP_MIB2_CALLBACKS 0
 
 // Multicast options
 /* #define LWIP_MULTICAST_TX_OPTIONS \
-//   ((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))*/
+   ((LWIP_IGMP || LWIP_IPV6_MLD) && (LWIP_UDP || LWIP_RAW))*/
 
 // IGMP options
 #define LWIP_IGMP 1
@@ -164,8 +164,8 @@ extern void *ram_heap;
 #endif  // !DNS_MAX_RETRIES
 // #define DNS_DOES_NAME_CHECK                     1
 /* #define LWIP_DNS_SECURE                                                 \
-//   (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
-//    LWIP_DNS_SECURE_RAND_SRC_PORT)*/
+  (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | \
+   LWIP_DNS_SECURE_RAND_SRC_PORT)*/
 // #define LWIP_DNS_SECURE_RAND_XID                1
 // #define LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING 2
 // #define LWIP_DNS_SECURE_RAND_SRC_PORT           4
@@ -191,9 +191,9 @@ extern void *ram_heap;
 #define TCP_MSS                    1460
 // #define TCP_CALCULATE_EFF_SEND_MSS 1
 #define TCP_SND_BUF                (4 * TCP_MSS)
-// #define TCP_SND_QUEUELEN ((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
+// #define TCP_SND_QUEUELEN           ((4 * (TCP_SND_BUF) + (TCP_MSS - 1))/(TCP_MSS))
 /* #define TCP_SNDLOWAT \
-//   LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF)-1)*/
+   LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF) - 1)*/
 // #define TCP_SNDQUEUELOWAT LWIP_MAX(((TCP_SND_QUEUELEN)/2), 5)
 // #define TCP_OOSEQ_MAX_BYTES        0
 // #if TCP_OOSEQ_MAX_BYTES
@@ -207,7 +207,7 @@ extern void *ram_heap;
 // #define TCP_DEFAULT_LISTEN_BACKLOG 0xff
 // #define TCP_OVERSIZE               TCP_MSS
 // #define LWIP_TCP_TIMESTAMPS        0
-// #define TCP_WND_UPDATE_THRESHOLD LWIP_MIN((TCP_WND / 4), (TCP_MSS * 4))
+// #define TCP_WND_UPDATE_THRESHOLD   LWIP_MIN((TCP_WND / 4), (TCP_MSS * 4))
 // #define LWIP_EVENT_API             0
 // #define LWIP_CALLBACK_API          1
 // #define LWIP_WND_SCALE             0
@@ -221,6 +221,7 @@ extern void *ram_heap;
 // #define PBUF_LINK_ENCAPSULATION_HLEN 0
 // #define PBUF_POOL_BUFSIZE            LWIP_MEM_ALIGN_SIZE(TCP_MSS+PBUF_IP_HLEN+PBUF_TRANSPORT_HLEN+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
 // #define LWIP_PBUF_REF_T              u8_t
+// #define LWIP_PBUF_CUSTOM_DATA
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1
@@ -276,7 +277,6 @@ extern void *ram_heap;
 // #define LWIP_COMPAT_SOCKETS               1
 // #define LWIP_POSIX_SOCKETS_IO_NAMES       1
 // #define LWIP_SOCKET_OFFSET                0
-// #define LWIP_SOCKET_EXTERNAL_HEADERS      0
 // #define LWIP_TCP_KEEPALIVE                0
 // #define LWIP_SO_SNDTIMEO                  0
 // #define LWIP_SO_RCVTIMEO                  0
@@ -373,46 +373,67 @@ extern void *ram_heap;
 
 // Hook options
 #define LWIP_HOOK_FILENAME "lwip_hooks.h"
+// #define LWIP_HOOK_TCP_ISN(local_ip, local_port, remote_ip, remote_port)
+// #define LWIP_HOOK_TCP_INPACKET_PCB(pcb, hdr, optlen, opt1len, opt2, p)
+// #define LWIP_HOOK_TCP_OUT_TCPOPT_LENGTH(pcb, internal_len)
+// #define LWIP_HOOK_TCP_OUT_ADD_TCPOPTS(p, hdr, pcb, opts)
+// #define LWIP_HOOK_IP4_INPUT(pbuf, input_netif)
+// #define LWIP_HOOK_IP4_ROUTE()
+// #define LWIP_HOOK_IP4_ROUTE_SRC(src, dest)
+// #define LWIP_HOOK_IP4_CANFORWARD(src, dest)
+// #define LWIP_HOOK_ETHARP_GET_GW(netif, dest)
+// #define LWIP_HOOK_IP6_INPUT(pbuf, input_netif)
+// #define LWIP_HOOK_IP6_ROUTE(src, dest)
+// #define LWIP_HOOK_ND6_GET_GW(netif, dest)
+// #define LWIP_HOOK_VLAN_CHECK(netif, eth_hdr, vlan_hdr)
+// #define LWIP_HOOK_VLAN_SET(netif, p, src, dst, eth_type)
+// #define LWIP_HOOK_MEMP_AVAILABLE(memp_t_type)
+// #define LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(pbuf, netif)
+// #define LWIP_HOOK_DHCP_APPEND_OPTIONS(netif, dhcp, state, msg, msg_type, options_len_ptr)
+// #define LWIP_HOOK_DHCP_PARSE_OPTION(netif, dhcp, state, msg, msg_type, option, len, pbuf, offset)
+// #define LWIP_HOOK_DHCP6_APPEND_OPTIONS(netif, dhcp6, state, msg, msg_type, options_len_ptr, max_len)
+// #define LWIP_HOOK_SOCKETS_SETSOCKOPT(s, sock, level, optname, optval, optlen, err)
+// #define LWIP_HOOK_SOCKETS_GETSOCKOPT(s, sock, level, optname, optval, optlen, err)
+// #define LWIP_HOOK_NETCONN_EXTERNAL_RESOLVE(name, addr, addrtype, err)
 
 // Debugging options
 // #define LWIP_DEBUG
-// #define LWIP_DBG_MIN_LEVEL              LWIP_DBG_LEVEL_ALL
-// #define LWIP_DBG_TYPES_ON               LWIP_DBG_ON
-// #define ETHARP_DEBUG                    LWIP_DBG_OFF
-// #define NETIF_DEBUG                     LWIP_DBG_OFF
-// #define PBUF_DEBUG                      LWIP_DBG_OFF
-// #define API_LIB_DEBUG                   LWIP_DBG_OFF
-// #define API_MSG_DEBUG                   LWIP_DBG_OFF
-// #define SOCKETS_DEBUG                   LWIP_DBG_OFF
-// #define ICMP_DEBUG                      LWIP_DBG_OFF
-// #define IGMP_DEBUG                      LWIP_DBG_OFF
-// #define INET_DEBUG                      LWIP_DBG_OFF
-// #define IP_DEBUG                        LWIP_DBG_OFF
-// #define IP_REASS_DEBUG                  LWIP_DBG_OFF
-// #define RAW_DEBUG                       LWIP_DBG_OFF
-// #define MEM_DEBUG                       LWIP_DBG_OFF
-// #define MEMP_DEBUG                      LWIP_DBG_OFF
-// #define SYS_DEBUG                       LWIP_DBG_OFF
-// #define TIMERS_DEBUG                    LWIP_DBG_OFF
-// #define TCP_DEBUG                       LWIP_DBG_OFF
-// #define TCP_INPUT_DEBUG                 LWIP_DBG_OFF
-// #define TCP_FR_DEBUG                    LWIP_DBG_OFF
-// #define TCP_RTO_DEBUG                   LWIP_DBG_OFF
-// #define TCP_CWND_DEBUG                  LWIP_DBG_OFF
-// #define TCP_WND_DEBUG                   LWIP_DBG_OFF
-// #define TCP_OUTPUT_DEBUG                LWIP_DBG_OFF
-// #define TCP_RST_DEBUG                   LWIP_DBG_OFF
-// #define TCP_QLEN_DEBUG                  LWIP_DBG_OFF
-// #define UDP_DEBUG                       LWIP_DBG_OFF
-// #define TCPIP_DEBUG                     LWIP_DBG_OFF
-// #define SLIP_DEBUG                      LWIP_DBG_OFF
-// #define DHCP_DEBUG                      LWIP_DBG_OFF
-// #define AUTOIP_DEBUG                    LWIP_DBG_OFF
-// #define ACD_DEBUG                       LWIP_DBG_OFF
-// #define DNS_DEBUG                       LWIP_DBG_OFF
-// #define IP6_DEBUG                       LWIP_DBG_OFF
-// #define DHCP6_DEBUG                     LWIP_DBG_OFF
-// #define LWIP_TESTMODE                   0
+// #define LWIP_DBG_MIN_LEVEL LWIP_DBG_LEVEL_ALL
+// #define LWIP_DBG_TYPES_ON  LWIP_DBG_ON
+// #define ETHARP_DEBUG       LWIP_DBG_OFF
+// #define NETIF_DEBUG        LWIP_DBG_OFF
+// #define PBUF_DEBUG         LWIP_DBG_OFF
+// #define API_LIB_DEBUG      LWIP_DBG_OFF
+// #define API_MSG_DEBUG      LWIP_DBG_OFF
+// #define SOCKETS_DEBUG      LWIP_DBG_OFF
+// #define ICMP_DEBUG         LWIP_DBG_OFF
+// #define IGMP_DEBUG         LWIP_DBG_OFF
+// #define INET_DEBUG         LWIP_DBG_OFF
+// #define IP_DEBUG           LWIP_DBG_OFF
+// #define IP_REASS_DEBUG     LWIP_DBG_OFF
+// #define RAW_DEBUG          LWIP_DBG_OFF
+// #define MEM_DEBUG          LWIP_DBG_OFF
+// #define MEMP_DEBUG         LWIP_DBG_OFF
+// #define SYS_DEBUG          LWIP_DBG_OFF
+// #define TIMERS_DEBUG       LWIP_DBG_OFF
+// #define TCP_DEBUG          LWIP_DBG_OFF
+// #define TCP_INPUT_DEBUG    LWIP_DBG_OFF
+// #define TCP_FR_DEBUG       LWIP_DBG_OFF
+// #define TCP_RTO_DEBUG      LWIP_DBG_OFF
+// #define TCP_CWND_DEBUG     LWIP_DBG_OFF
+// #define TCP_WND_DEBUG      LWIP_DBG_OFF
+// #define TCP_OUTPUT_DEBUG   LWIP_DBG_OFF
+// #define TCP_RST_DEBUG      LWIP_DBG_OFF
+// #define TCP_QLEN_DEBUG     LWIP_DBG_OFF
+// #define UDP_DEBUG          LWIP_DBG_OFF
+// #define TCPIP_DEBUG        LWIP_DBG_OFF
+// #define SLIP_DEBUG         LWIP_DBG_OFF
+// #define DHCP_DEBUG         LWIP_DBG_OFF
+// #define AUTOIP_DEBUG       LWIP_DBG_OFF
+// #define DNS_DEBUG          LWIP_DBG_OFF
+// #define IP6_DEBUG          LWIP_DBG_OFF
+// #define DHCP6_DEBUG        LWIP_DBG_OFF
+// #define LWIP_TESTMODE      0
 
 // Performance tracking options
 // #define LWIP_PERF 0
