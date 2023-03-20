@@ -53,7 +53,7 @@ files provided with the lwIP release.
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [Application layered TCP: TLS, etc.](#application-layered-tcp-tls-etc)
-    1. [About the allocator function](#about-the-allocator-function)
+    1. [About the allocator arg function](#about-the-allocator-arg-function)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
@@ -1059,11 +1059,12 @@ Here are the steps to add TLS:
 
 See _src/lwip/altcp.c_ for more information.
 
-### About the allocator function
+### About the allocator arg function
 
-The function from step 2 returns the allocator needed by altcp. It is not
-required to use the `ipaddr` and `port` parameters; they are there in case the
-information is needed. They indicate what the calling code is trying to do:
+The function from step 2 returns the argument given to the allocator function by
+altcp. It is not required to use the `ipaddr` and `port` parameters; they are
+there in case the information is needed. They indicate what the calling code is
+trying to do:
 
 1. If `ipaddr` is NULL then the application is trying to listen.
 2. If `ipaddr` is not NULL then the application is trying to connect.
