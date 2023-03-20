@@ -568,9 +568,11 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   // Determine if a frame has been received
   if (bdPtr->status & err_mask) {
 #if LINK_STATS
+    // Either truncated or others
     if (bdPtr->status & kEnetRxBdTrunc) {
       LINK_STATS_INC(link.lenerr);
-    } else {  // Either truncated or others
+    } else if (bdPtr->status & kEnetRxBdLast) {
+      // The others are only valid if the 'L' bit is set
       if (bdPtr->status & kEnetRxBdOverrun) {
         LINK_STATS_INC(link.err);
       } else {  // Either overrun and others zero, or others
@@ -596,6 +598,7 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
       LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
+      LINK_STATS_INC(link.memerr);
     }
   }
 
@@ -644,6 +647,7 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   volatile enetbufferdesc_t *bdPtr = get_bufdesc();
   uint16_t copied = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
   if (copied == 0) {
+    LINK_STATS_INC(link.drop);
     return ERR_BUF;
   }
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
