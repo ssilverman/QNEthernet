@@ -1054,6 +1054,7 @@ Here are the steps to add TLS:
 1. Set `LWIP_ALTCP` and `LWIP_ALTCP_TLS` to `1` in `lwipopts.h`,
 2. Implement a function somewhere in your code having this name and signature:
    `std::function<void *(const ip_addr_t *ipaddr, uint16_t port)> qnethernet_allocator_arg`,
+   and that returns a pointer of type `struct altcp_tls_config *`,
    and
 3. Implement all the functions declared in _src/lwip/altcp_tls.h_.
 
@@ -1068,6 +1069,8 @@ trying to do:
 
 1. If `ipaddr` is NULL then the application is trying to listen.
 2. If `ipaddr` is not NULL then the application is trying to connect.
+
+It must return a pointer of type `struct altcp_tls_config *`.
 
 ## On connections that hang around after cable disconnect
 
