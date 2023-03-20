@@ -267,7 +267,13 @@ static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
   arg = nullptr;
 #endif  // LWIP_ALTCP_TLS
   altcp_allocator_t allocator{ newf, arg };
-  return altcp_new_ip_type(&allocator, ip_type);
+  altcp_pcb *pcb = altcp_new_ip_type(&allocator, ip_type);
+#if LWIP_ALTCP_TLS
+  if (pcb == nullptr && arg != nullptr) {
+    altcp_tls_free_config(static_cast<altcp_tls_config *>(arg));
+  }
+#endif  // LWIP_ALTCP_TLS
+  return pcb;
 #else
   return altcp_new_ip_type(nullptr, ip_type);
 #endif  // LWIP_ALTCP
