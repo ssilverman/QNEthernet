@@ -6,6 +6,8 @@
 
 #include "PrintUtils.h"
 
+#include <cerrno>
+
 namespace qindesign {
 namespace network {
 
@@ -49,18 +51,25 @@ size_t writeMagic(Print &p, uint8_t mac[6], std::function<bool()> breakf) {
   return written;
 }
 
+// NOTE: It's not possible to override clearWriteError(), so check it in
+//       each function
+
 size_t StdioPrint::write(uint8_t b) {
+  checkAndClearErr();
+
   if (std::fputc(b, stream_) == EOF) {
-    setWriteError();
+    setWriteError(errno);
     return 0;
   }
   return 1;
 }
 
 size_t StdioPrint::write(const uint8_t *buffer, size_t size) {
+  checkAndClearErr();
+
   size_t retval = std::fwrite(buffer, 1, size, stream_);
-  if (std::ferror(stream_)) {
-    setWriteError();
+  if (std::ferror(stream_) != 0) {
+    setWriteError(errno);
   }
   return retval;
 }
@@ -70,8 +79,16 @@ int StdioPrint::availableForWrite() {
 }
 
 void StdioPrint::flush() {
+  checkAndClearErr();
+
   if (std::fflush(stream_) == EOF) {
-    setWriteError();
+    setWriteError(errno);
+  }
+}
+
+void StdioPrint::checkAndClearErr() {
+  if (std::ferror(stream_) != 0 && getWriteError() == 0) {
+    std::clearerr(stream_);
   }
 }
 

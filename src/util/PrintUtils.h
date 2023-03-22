@@ -42,6 +42,12 @@ size_t writeMagic(Print &p, uint8_t mac[6],
 // the Print class's ability to print Printable objects but using the underlying
 // FILE*. This ensures that a Printable object gets printed using the same
 // settings and buffering that the file uses.
+//
+// On errors, the "write error" gets set to 'errno'. Also, calling
+// 'clearWriteError()' will cause future calls to clear any error via
+// 'std::clearerr()'.
+//
+// See: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html
 class StdioPrint : public Print {
  public:
   StdioPrint(std::FILE *stream) : stream_(stream) {}
@@ -52,6 +58,9 @@ class StdioPrint : public Print {
   void flush() override;
 
  private:
+  // Checks and clears any error because clearWriteError() is not overridable.
+  void checkAndClearErr();
+
   std::FILE *stream_;
 };
 

@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Updated `StdioPrint` adapter to use errors better. `errno` is set for the
+  "write error" value and the stdio error state is cleared appropriately when
+  the functions detect that "write error" is back to zero.
+
 ## [0.19.0]
 
 ### Added
