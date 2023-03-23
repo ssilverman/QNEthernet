@@ -213,7 +213,7 @@ static void enet_isr();
 #define PHY_PHYSTS 0x10
 
 // Reads a PHY register (using MDIO & MDC signals).
-uint16_t mdio_read(int regaddr) {
+uint16_t mdio_read(uint16_t regaddr) {
   ENET_EIR = ENET_EIR_MII;  // Clear status
 
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
@@ -230,7 +230,7 @@ uint16_t mdio_read(int regaddr) {
 }
 
 // Writes a PHY register (using MDIO & MDC signals).
-void mdio_write(int regaddr, uint16_t data) {
+void mdio_write(uint16_t regaddr, uint16_t data) {
   ENET_EIR = ENET_EIR_MII;  // Clear status
 
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
