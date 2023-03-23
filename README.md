@@ -132,7 +132,7 @@ and notes:
   }
   ```
 * Files that configure lwIP for our system:
-  * *src/sys_arch.c*
+  * *src/sys_arch.cpp*
   * _src/lwipopts.h_ &larr; use this one for tuning (see _src/lwip/opt.h_ for
     more details)
   * _src/arch/cc.h_
