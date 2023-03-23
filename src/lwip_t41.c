@@ -536,7 +536,7 @@ static void t41_low_level_init() {
   ENET_GALR = 0;
 
   ENET_EIMR = ENET_EIMR_RXF;
-  attachInterruptVector(IRQ_ENET, enet_isr);
+  attachInterruptVector(IRQ_ENET, &enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
   // Last few things to do
@@ -825,6 +825,8 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 }
 
+extern void unused_interrupt_vector(void);  // startup.c
+
 void enet_deinit() {
   if (isNetifAdded) {
     netif_remove(&t41_netif);
@@ -833,6 +835,10 @@ void enet_deinit() {
   }
 
   if (initState == kInitStateInitialized) {
+    NVIC_DISABLE_IRQ(IRQ_ENET);
+    attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
+    ENET_EIMR = 0;  // Disable interrupts
+
     // Gracefully stop any transmission before disabling the Ethernet MAC
     ENET_EIR = ENET_EIR_GRA;  // Clear status
     ENET_TCR |= ENET_TCR_GTS;
@@ -840,8 +846,6 @@ void enet_deinit() {
       // Wait until it's gracefully stopped
     }
     ENET_EIR = ENET_EIR_GRA;
-
-    ENET_EIMR = 0;  // Disable interrupts
 
     // Disable the Ethernet MAC
     // Note: All interrupts are cleared when Ethernet is reinitialized,
