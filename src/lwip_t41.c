@@ -218,14 +218,14 @@ uint16_t mdio_read(int regaddr) {
 
   ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
               ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
-  // int count=0;
+  // int count = 0;
   while ((ENET_EIR & ENET_EIR_MII) == 0) {
-    // count++; // wait
+    // count++;  // Wait
   }
-  // print("mdio read waited ", count);
+  // printf("mdio read waited %d\r\n", count);
   uint16_t data = ENET_MMFR_DATA(ENET_MMFR);
   ENET_EIR = ENET_EIR_MII;
-  // printhex("mdio read:", data);
+  // printf("mdio read (%04xh): %04xh\r\n", regaddr, data);
   return data;
 }
 
@@ -456,7 +456,7 @@ static void t41_low_level_init() {
   // The last buffer descriptor should be set with the wrap flag
   rx_ring[RX_SIZE - 1].status |= kEnetRxBdWrap;
 
-  for (int i=0; i < TX_SIZE; i++) {
+  for (int i = 0; i < TX_SIZE; i++) {
     tx_ring[i].buffer  = &txbufs[i * BUF_SIZE];
     tx_ring[i].status  = kEnetTxBdTransmitCrc;
     tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
@@ -550,8 +550,8 @@ static void t41_low_level_init() {
   ENET_RDAR = ENET_RDAR_RDAR;
   ENET_TDAR = ENET_TDAR_TDAR;
 
-  // phy soft reset
-  // phy_mdio_write(PHY_BMCR, 1 << 15);
+  // PHY soft reset
+  // mdio_write(PHY_BMCR, 1 << 15);
 
   initState = kInitStateInitialized;
 }
