@@ -13,6 +13,10 @@ and this project adheres to
   "write error" value and the stdio error state is cleared appropriately when
   the functions detect that "write error" is back to zero.
 
+### Fixed
+* Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the
+  event responder.
+
 ## [0.19.0]
 
 ### Added

@@ -42,6 +42,7 @@ static void attachLoopToYield() {
     Ethernet.loop();
     r.triggerEvent();
   });
+  ethLoop.triggerEvent();
 }
 
 void EthernetClass::netifEventFunc(struct netif *netif,
@@ -199,7 +200,6 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   }
 
   attachLoopToYield();
-  ethLoop.triggerEvent();
   return retval;
 }
 
@@ -265,6 +265,7 @@ void EthernetClass::end() {
 
   if (loopAttached) {
     loopAttached = false;
+    ethLoop.clearEvent();
     ethLoop.detach();
   }
 
