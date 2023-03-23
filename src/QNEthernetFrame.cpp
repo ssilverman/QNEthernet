@@ -146,6 +146,10 @@ int EthernetFrameClass::peek() {
   return frame_.data[framePos_];
 }
 
+size_t EthernetFrameClass::size() const {
+  return frame_.data.size();
+}
+
 const uint8_t *EthernetFrameClass::data() const {
   return frame_.data.data();
 }

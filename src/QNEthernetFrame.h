@@ -114,7 +114,12 @@ class EthernetFrameClass final : public Stream {
   // Returns max{(Ethernet.maxFrameLen() - 4) - "written", 0}.
   int availableForWrite() override;
 
-  // Returns a pointer to the received frame data.
+  // Returns the total size of the received packet data. This is only valid if a
+  // frame has been received with parseFrame().
+  size_t size() const;
+
+  // Returns a pointer to the received frame data. This is only valid if a frame
+  // has been received with parseFrame().
   const uint8_t *data() const;
 
   // Sets the receive queue size. This will use a minimum of 1.

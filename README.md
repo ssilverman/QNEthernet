@@ -353,6 +353,7 @@ read from a frame and the `Print` API can be used to write to the frame.
   value is 1 and the default is 1. If a value of zero is used, it will default
   to 1. If the new size is smaller than the number of items in the queue then
   all the oldest frames will get dropped.
+* `size()`: Returns the total size of the received frame data.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the FCS. Subtract 4 to get the maximum length that can be sent or
   received using this API.

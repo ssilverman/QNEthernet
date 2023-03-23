@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `EthernetFrameClass::size()`, for parity with `EthernetUDP`.
+
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the
   "write error" value and the stdio error state is cleared appropriately when
