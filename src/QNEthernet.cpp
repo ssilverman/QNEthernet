@@ -9,13 +9,18 @@
 // C++ includes
 #include <algorithm>
 
+#ifdef QNETHERNET_USE_ENTROPY_LIB
 #include <Entropy.h>
+#endif  // QNETHERNET_USE_ENTROPY_LIB
 #include <EventResponder.h>
 #include <pgmspace.h>
 
 #include "QNDNSClient.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
+#ifndef QNETHERNET_USE_ENTROPY_LIB
+#include "security/entropy.h"
+#endif  // !QNETHERNET_USE_ENTROPY_LIB
 
 namespace qindesign {
 namespace network {
@@ -81,11 +86,22 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   }
 
   // Initialize randomness
-  bool doEntropyInit = (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) == 0;
+#ifndef QNETHERNET_USE_ENTROPY_LIB
+  if (!trng_is_started()) {
+    trng_init();
+  }
+  unsigned int seed;
+  if (trng_data((uint8_t *)&seed, sizeof(seed))) {
+    srand(seed);
+  }
+#else
+  bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
+                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY));
   if (doEntropyInit) {
     Entropy.Initialize();
   }
   srand(Entropy.random());
+#endif  // !QNETHERNET_USE_ENTROPY_LIB
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {

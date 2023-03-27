@@ -4,6 +4,8 @@
 // entropy.cpp implements the TRNG functions.
 // This file is part of the QNEthernet library.
 
+#ifndef QNETHERNET_USE_ENTROPY_LIB
+
 #include "entropy.h"
 
 #include <string.h>
@@ -292,3 +294,5 @@ TRNG_SEC_CFG: 0
 TRNG_SEC_CFG_NO_PRGM[1](0) [sdk_2.13.0: 0]
 
 */
+
+#endif  // !QNETHERNET_USE_ENTROPY_LIB

@@ -55,13 +55,14 @@ files provided with the lwIP release.
 16. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 17. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 18. [Notes on RAM1 usage](#notes-on-ram1-usage)
-19. [Configuration macros](#configuration-macros)
+19. [Entropy collection](#entropy-collection)
+20. [Configuration macros](#configuration-macros)
     1. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
-20. [Complete list of features](#complete-list-of-features)
-21. [Other notes](#other-notes)
-22. [To do](#to-do)
-23. [Code style](#code-style)
-24. [References](#references)
+21. [Complete list of features](#complete-list-of-features)
+22. [Other notes](#other-notes)
+23. [To do](#to-do)
+24. [Code style](#code-style)
+25. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -1133,16 +1134,28 @@ reason, you'd prefer to put them into RAM1, define the
 `QNETHERNET_BUFFERS_IN_RAM1` macro. _[As of this writing, no speed comparison
 tests have been done.]_
 
+## Entropy collection
+
+This library defines functions for accessing the processor's internal "true
+random number generator" (TRNG) for entropy. If your project needs to use the
+_Entropy_ library instead, define the `QNETHERNET_USE_ENTROPY_LIB` so that any
+internal entropy collection doesn't interfere with your project's
+entropy collection.
+
+The _Entropy_ library does the essentially same things as the internal TRNG
+functions, it just requires an additional dependency.
+
 ## Configuration macros
 
 There are several macros that can be used to configure the system:
 
-| Macro                                 | Description                         | Link                                        |
-| ------------------------------------- | ----------------------------------- | ------------------------------------------- |
-| `QNETHERNET_BUFFERS_IN_RAM1`          | Put the RX and TX buffers into RAM1 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support            | [Raw Ethernet Frames](#raw-ethernet-frames) |
-| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode             | [Promiscuous mode](#promiscuous-mode)       |
-| `QNETHERNET_WEAK_WRITE`               | Allow overriding `_write()`         | [stdio](#stdio)                             |
+| Macro                                 | Description                                         | Link                                        |
+| ------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
+| `QNETHERNET_BUFFERS_IN_RAM1`          | Put the RX and TX buffers into RAM1                 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |
+| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
+| `QNETHERNET_USE_ENTROPY_LIB`          | Use _Entropy_ library instead of internal functions | [Entropy collection](#entropy-collection)   |
+| `QNETHERNET_WEAK_WRITE`               | Allow overriding `_write()`                         | [stdio](#stdio)                             |
 
 ### Redefining macros in `lwipopts.h`
 
