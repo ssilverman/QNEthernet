@@ -1145,6 +1145,9 @@ entropy collection.
 The _Entropy_ library does the essentially same things as the internal TRNG
 functions, it just requires an additional dependency.
 
+See the function declarations in _src/security/entropy.h_ if you want to use
+them yourself.
+
 ## Configuration macros
 
 There are several macros that can be used to configure the system:

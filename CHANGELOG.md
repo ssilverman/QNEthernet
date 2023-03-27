@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 * Added `EthernetFrameClass::size()`, for parity with `EthernetUDP`.
+* Added internal entropy functions to remove the _Entropy_ library dependency.
 
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the
