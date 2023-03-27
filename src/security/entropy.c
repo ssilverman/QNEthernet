@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <imxrt.h>
+#include <pgmspace.h>
 
 // Clock settings
 #define TRNG_CONFIG_CLOCK_MODE   0  // 0=Ring Oscillator, 1=System Clock (test use only)
@@ -65,7 +66,7 @@
 // Entropy storage
 #define ENTROPY_COUNT       16  // In dwords
 #define ENTROPY_COUNT_BYTES ((ENTROPY_COUNT) << 2)  // In bytes
-static uint32_t s_entropy[ENTROPY_COUNT];
+static uint32_t s_entropy[ENTROPY_COUNT] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
 bool trng_is_started() {
