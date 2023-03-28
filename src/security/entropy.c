@@ -82,7 +82,7 @@ static void restartEntropy() {
   s_entropySizeBytes = 0;
 }
 
-void trng_init() {
+FLASHMEM void trng_init() {
   // Enable the clock
   CCM_CCGR6 |= CCM_CCGR6_TRNG(CCM_CCGR_ON);
 
@@ -138,7 +138,7 @@ void trng_init() {
   restartEntropy();
 }
 
-void trng_deinit() {
+FLASHMEM void trng_deinit() {
   TRNG_MCTL |= TRNG_MCTL_PRGM;  // Move to program mode; stop entropy generation
 
   // Check this bit before stopping the clock
