@@ -16,38 +16,38 @@
 // Clock settings
 #define TRNG_CONFIG_CLOCK_MODE   0  // 0=Ring Oscillator, 1=System Clock (test use only)
 #define TRNG_CONFIG_RING_OSC_DIV 0  // Divide by 2^n
-#define TRNG_CONFIG_SAMPLE_MODE  0  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
+#define TRNG_CONFIG_SAMPLE_MODE  2  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
 
 // Seed control
 #define TRNG_CONFIG_ENTROPY_DELAY    3200
-#define TRNG_CONFIG_SAMPLE_SIZE      512//2500//512
+#define TRNG_CONFIG_SAMPLE_SIZE      2500//512
 #define TRNG_CONFIG_SPARSE_BIT_LIMIT 63
 
 // Statistical check parameters
 #define TRNG_CONFIG_RETRY_COUNT   1
-#define TRNG_CONFIG_RUN_MAX_LIMIT 32//34//32
+#define TRNG_CONFIG_RUN_MAX_LIMIT 34//32
 
-#define TRNG_CONFIG_MONOBIT_MAX       317//1384//317
-#define TRNG_CONFIG_MONOBIT_RANGE     122//268//122
-#define TRNG_CONFIG_RUNBIT1_MAX       107//405//107
-#define TRNG_CONFIG_RUNBIT1_RANGE     80//178//80
-#define TRNG_CONFIG_RUNBIT2_MAX       62//220//62
-#define TRNG_CONFIG_RUNBIT2_RANGE     55//122//55
-#define TRNG_CONFIG_RUNBIT3_MAX       39//125//39
-#define TRNG_CONFIG_RUNBIT3_RANGE     39//88//39
-#define TRNG_CONFIG_RUNBIT4_MAX       26//75//26
-#define TRNG_CONFIG_RUNBIT4_RANGE     26//64//26
-#define TRNG_CONFIG_RUNBIT5_MAX       18//47//18
-#define TRNG_CONFIG_RUNBIT5_RANGE     18//46//18
-#define TRNG_CONFIG_RUNBIT6PLUS_MAX   17//47//17
-#define TRNG_CONFIG_RUNBIT6PLUS_RANGE 17//46//17
+#define TRNG_CONFIG_MONOBIT_MAX       1384//317
+#define TRNG_CONFIG_MONOBIT_RANGE     268//122
+#define TRNG_CONFIG_RUNBIT1_MAX       405//107
+#define TRNG_CONFIG_RUNBIT1_RANGE     178//80
+#define TRNG_CONFIG_RUNBIT2_MAX       220//62
+#define TRNG_CONFIG_RUNBIT2_RANGE     122//55
+#define TRNG_CONFIG_RUNBIT3_MAX       125//39
+#define TRNG_CONFIG_RUNBIT3_RANGE     88//39
+#define TRNG_CONFIG_RUNBIT4_MAX       75//26
+#define TRNG_CONFIG_RUNBIT4_RANGE     64//26
+#define TRNG_CONFIG_RUNBIT5_MAX       47//18
+#define TRNG_CONFIG_RUNBIT5_RANGE     46//18
+#define TRNG_CONFIG_RUNBIT6PLUS_MAX   47//17
+#define TRNG_CONFIG_RUNBIT6PLUS_RANGE 46//17
 
 // Limits for statistical check of "Poker Test"
-#define TRNG_CONFIG_POKER_MAX   1600//26912//1600
-#define TRNG_CONFIG_POKER_RANGE 570//2467//570
+#define TRNG_CONFIG_POKER_MAX   26912//1600
+#define TRNG_CONFIG_POKER_RANGE 2467//570
 
 // Limits for statistical check of entropy sample frequency count
-#define TRNG_CONFIG_FREQUENCY_MAX 30000//25600//30000
+#define TRNG_CONFIG_FREQUENCY_MAX 25600//30000
 #define TRNG_CONFIG_FREQUENCY_MIN 1600
 
 // Security configuration
