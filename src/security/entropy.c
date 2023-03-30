@@ -187,6 +187,10 @@ static bool fillEntropy() {
 //   return true;
 // }
 
+size_t trng_available() {
+  return s_entropySizeBytes;
+}
+
 // See: https://gcc.gnu.org/onlinedocs/gcc/Typeof.html
 #define min(a, b) __extension__ ({   \
   typeof(a) _a = (a);  \
