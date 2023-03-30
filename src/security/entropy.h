@@ -26,7 +26,8 @@ void trng_deinit();
 // Returns whether the TRNG has been started. This checks the clock.
 bool trng_is_started();
 
-// Fills data from the entropy pool. This returns whether successful.
+// Fills data from the entropy pool and keeps refreshing the pool until the
+// requested size has been reached. This returns whether successful.
 bool trng_data(uint8_t *data, size_t size);
 
 #ifdef __cplusplus
