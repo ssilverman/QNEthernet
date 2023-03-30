@@ -16,12 +16,14 @@
 // Clock settings
 #define TRNG_CONFIG_CLOCK_MODE   0  // 0=Ring Oscillator, 1=System Clock (test use only)
 #define TRNG_CONFIG_RING_OSC_DIV 0  // Divide by 2^n
-#define TRNG_CONFIG_SAMPLE_MODE  2  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
+
+// Sampling
+#define TRNG_CONFIG_SAMPLE_MODE      2  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
+#define TRNG_CONFIG_SPARSE_BIT_LIMIT 63
 
 // Seed control
-#define TRNG_CONFIG_ENTROPY_DELAY    3200
-#define TRNG_CONFIG_SAMPLE_SIZE      2500//512
-#define TRNG_CONFIG_SPARSE_BIT_LIMIT 63
+#define TRNG_CONFIG_ENTROPY_DELAY 3200
+#define TRNG_CONFIG_SAMPLE_SIZE   2500//512
 
 // Statistical check parameters
 #define TRNG_CONFIG_RETRY_COUNT   1
@@ -116,15 +118,15 @@ FLASHMEM void trng_init() {
          TRNG_CONFIG_CLOCK_MODE ? TRNG_MCTL_FOR_SCLK : 0);
   CLRSET(TRNG_MCTL, TRNG_MCTL_OSC_DIV(3),
          TRNG_MCTL_OSC_DIV(TRNG_CONFIG_RING_OSC_DIV));
+
+  // Sampling
   CLRSET(TRNG_MCTL, TRNG_MCTL_SAMP_MODE(3),
          TRNG_MCTL_SAMP_MODE(TRNG_CONFIG_SAMPLE_MODE));
+  TRNG_SBLIM = TRNG_SBLIM_SB_LIM(TRNG_CONFIG_SPARSE_BIT_LIMIT);
 
   // Seed control
   TRNG_SDCTL = TRNG_SDCTL_ENT_DLY(TRNG_CONFIG_ENTROPY_DELAY) |
                TRNG_SDCTL_SAMP_SIZE(TRNG_CONFIG_SAMPLE_SIZE);
-
-  // Sparse bit limit
-  TRNG_SBLIM = TRNG_SBLIM_SB_LIM(TRNG_CONFIG_SPARSE_BIT_LIMIT);
 
   // CLRSET(TRNG_SCMISC, TRNG_SCMISC_LRUN_MAX, TRNG_CONFIG_RUN_MAX_LIMIT);
 
