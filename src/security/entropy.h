@@ -27,7 +27,8 @@ void trng_deinit();
 bool trng_is_started();
 
 // Returns the number of bytes available in the entropy pool without having to
-// restart entropy generation.
+// restart entropy generation. Once the pool is empty, entropy generation will
+// be restarted automatically.
 size_t trng_available();
 
 // Fills data from the entropy pool and keeps refreshing the pool until the
