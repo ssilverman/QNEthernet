@@ -31,8 +31,10 @@ bool trng_is_started();
 size_t trng_available();
 
 // Fills data from the entropy pool and keeps refreshing the pool until the
-// requested size has been reached. This returns whether successful.
-bool trng_data(uint8_t *data, size_t size);
+// requested size has been reached or a failure was encountered. This returns
+// the number of bytes filled. If the value is less than 'size' then there was
+// an entropy generation error.
+size_t trng_data(uint8_t *data, size_t size);
 
 #ifdef __cplusplus
 }  // extern "C"

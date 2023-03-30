@@ -198,7 +198,7 @@ size_t trng_available() {
   (_a < _b) ? _a : _b; \
 })
 
-bool trng_data(uint8_t *data, size_t size) {
+size_t trng_data(uint8_t *data, size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
@@ -209,9 +209,11 @@ bool trng_data(uint8_t *data, size_t size) {
     restartEntropy();
   }
 
+  size_t origSize = size;
+
   while (size > 0) {
     if (!fillEntropy()) {
-      return false;
+      return origSize - size;
     }
     size_t toCopy = min(size, s_entropySizeBytes);
     memcpy(data,
@@ -222,7 +224,7 @@ bool trng_data(uint8_t *data, size_t size) {
     size -= toCopy;
   }
 
-  return true;
+  return origSize;
 }
 
 #undef min
