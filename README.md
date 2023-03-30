@@ -938,15 +938,33 @@ The `Ethernet.setDNSServerIP(ip)` function sets the zeroth DNS server.
 
 ## stdio
 
-Internally, lwIP uses `printf(...)` for debug output and assertions.
-_QNEthernet_ defines `_write()` so that `printf(...)` will work for `stdout` and
-`stderr`. It sends output to a custom variable, `Print *stdPrint`, that defaults
+Internally, lwIP uses `printf` for debug output and assertions. _QNEthernet_
+defines its own `_write()` function so that it has more control over `stdout`
+and `stderr` than that provided by the internal output support.
+
+Note: As of Teensyduino 1.58-beta4, there's internal support for `printf`,
+partially obviating the need for _QNEthernet_ to define its own. However, it
+always maps all of `stdin`, `stdout`, and `stderr` specifically to `Serial`.
+
+Compared to the internal `printf` support, the _QNEthernet_ version:
+1. Can map output to any `Print` interface, not just `Serial`.
+2. Can separate `stdout` and `stderr`, if needed.
+3. Disallows `stdin` as a valid output.
+
+To enable the _QNEthernet_ version, define the `QNETHERNET_ENABLE_CUSTOM_WRITE`
+macro and set the `stdPrint` variable. It's not included by default. Note that
+if the feature is disabled, then neither `stdPrint` nor `stderrPrint` will
+be defined.
+
+There, the output is sent to a custom variable, `Print *stdPrint`, that defaults
 to NULL. To enable any lwIP output, including assertion failure output, that
 variable must be set to something conforming to the `Print` interface. If it is
-not set, `printf(...)` will still work, but there will be no output.
+not set, `printf` will still work, but there will be no output.
 
 For example:
 ```c++
+// Define QNETHERNET_ENABLE_CUSTOM_WRITE somewhere
+
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
@@ -956,17 +974,15 @@ void setup() {
 }
 ```
 
-The side benefit is that user code can use `printf(...)` too.
-
-If your application wants to define its own `_write()` implementation, then the
-internal one needs to be declared as weak. To accomplish this, define the
-`QNETHERNET_WEAK_WRITE` macro.
+If your application wants to define its own `_write()` implementation or to use
+the system default, then leave the `QNETHERNET_ENABLE_CUSTOM_WRITE`
+macro undefined.
 
 ### stdout and stderr
 
-By default, all `stdout` and `stderr` output will be sent to `stdPrint`. The
-`stderr` output can be made separate by defining `stderrPrint` to something
-non-NULL.
+If `QNETHERNET_ENABLE_CUSTOM_WRITE` is defined then, by default, all `stdout`
+and `stderr` output will be sent to `stdPrint`. The `stderr` output can be made
+separate by defining `stderrPrint` to something non-NULL.
 
 Cases:
 
@@ -1157,8 +1173,8 @@ There are several macros that can be used to configure the system:
 | `QNETHERNET_BUFFERS_IN_RAM1`          | Put the RX and TX buffers into RAM1                 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
+| `QNETHERNET_ENABLE_CUSTOM_WRITE`      | Use expanded `stdio` output behaviour               | [stdio](#stdio)                             |
 | `QNETHERNET_USE_ENTROPY_LIB`          | Use _Entropy_ library instead of internal functions | [Entropy collection](#entropy-collection)   |
-| `QNETHERNET_WEAK_WRITE`               | Allow overriding `_write()`                         | [stdio](#stdio)                             |
 
 ### Redefining macros in `lwipopts.h`
 

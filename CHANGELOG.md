@@ -11,11 +11,19 @@ and this project adheres to
 ### Added
 * Added `EthernetFrameClass::size()`, for parity with `EthernetUDP`.
 * Added internal entropy functions to remove the _Entropy_ library dependency.
+* New `QNETHERNET_ENABLE_CUSTOM_WRITE` macro for enabling the inclusion of the
+  expanded `stdio` output behaviour.
 
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the
   "write error" value and the stdio error state is cleared appropriately when
   the functions detect that "write error" is back to zero.
+* Changed default `stdio` output behaviour to use the new system default. (This
+  exists as of Teensyduino 1.58-beta4.)
+
+### Removed
+* `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's
+  internal `_write()` definition.
 
 ### Fixed
 * Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the

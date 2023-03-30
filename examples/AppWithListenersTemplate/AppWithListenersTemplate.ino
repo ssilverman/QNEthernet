@@ -90,7 +90,6 @@ void setup() {
     Serial.println(CrashReport);
     CrashReport.clear();
   }
-  stdPrint = &Serial;  // Make printf work (a QNEthernet feature)
   printf("Starting...\r\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses

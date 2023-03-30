@@ -312,12 +312,14 @@ extern MDNSClass &MDNS;
 extern EthernetFrameClass &EthernetFrame;
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
+#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
 // Lets user code use stdout and stderr.
 extern Print *stdPrint;
 
 // Lets user code separate stderr output from stdout output. Set to `nullptr`
 // to use `stdPrint` for output.
 extern Print *stderrPrint;
+#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
 }  // namespace network
 }  // namespace qindesign

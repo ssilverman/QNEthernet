@@ -22,7 +22,6 @@ void setup() {
   while (!Serial && millis() < 4000) {
     // Wait for Serial
   }
-  stdPrint = &Serial;
   printf("Waiting for %" PRIu32 "ms...\r\n", kStartupDelay);
   delay(kStartupDelay);
 
