@@ -17,7 +17,7 @@ namespace network {
 void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
                              const ip_addr_t *ipaddr,
                              void *callback_arg) {
-  if (callback_arg == nullptr || ipaddr == nullptr) {
+  if (callback_arg == nullptr) {
     return;
   }
 
@@ -70,17 +70,22 @@ bool DNSClient::getHostByName(const char *hostname,
 
 bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
                               uint32_t timeout) {
-  bool found = false;
-  if (!DNSClient::getHostByName(hostname,
-                                [&found, &ip](const ip_addr_t *foundIP) {
-                                  found = true;
-                                  ip = ip_addr_get_ip4_uint32(foundIP);
-                                })) {
+  volatile bool found = false;
+  volatile bool lookupDone = false;
+  if (!DNSClient::getHostByName(
+          hostname,
+          [&lookupDone, &found, &ip](const ip_addr_t *foundIP) {
+            if (foundIP != nullptr) {
+              found = true;
+              ip = ip_addr_get_ip4_uint32(foundIP);
+            }
+            lookupDone = true;
+          })) {
     return false;
   }
 
   elapsedMillis timer;
-  while (!found && timer < timeout) {
+  while (!lookupDone && timer < timeout) {
     // NOTE: Depends on Ethernet loop being called from yield()
     yield();
   }

@@ -42,6 +42,9 @@ class DNSClient final {
   // * Invalid hostname
   // * The DNS client is not initialized
   // * The callback equates to nullptr
+  //
+  // The callback will be passed a NULL IP address if the lookup failed or if
+  // there was any other error.
   static bool getHostByName(const char *hostname,
                             std::function<void(const ip_addr_t *)> callback);
 

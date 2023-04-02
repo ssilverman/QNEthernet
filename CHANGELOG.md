@@ -28,6 +28,7 @@ and this project adheres to
 ### Fixed
 * Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the
   event responder.
+* Fixed DNS client to be aware of lookup failures.
 
 ## [0.19.0]
 
