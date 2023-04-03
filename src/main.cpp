@@ -10,6 +10,8 @@
 #include <Arduino.h>
 
 #include "QNEthernet.h"
+#include "QNDNSClient.h"
+#include "lwip/dns.h"
 
 using namespace qindesign::network;
 
@@ -18,6 +20,11 @@ static constexpr uint32_t kStartupDelay = 2000;
 
 // Timeouts
 static constexpr uint32_t kDHCPTimeout = 15000;
+static constexpr uint32_t kDNSLookupTimeout =
+    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+
+// Flag that indicates something about the network changed.
+static volatile bool networkChanged = false;
 
 // Main program setup.
 void setup() {
@@ -49,6 +56,7 @@ void setup() {
     } else {
       printf("[Ethernet] Link: OFF\r\n");
     }
+    networkChanged = true;
   });
 
   Ethernet.onAddressChanged([]() {
@@ -70,6 +78,7 @@ void setup() {
     } else {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
+    networkChanged = true;
   });
 
   // Start DHCP
@@ -97,6 +106,21 @@ void setup() {
 
 // Main program loop.
 void loop() {
+  // Check for a network change
+  if (networkChanged) {
+    networkChanged = false;
+
+    if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
+      // Do network things here, but only if there's an address and a link
+
+      IPAddress ip;
+      if (!DNSClient::getHostByName("dns.google", ip, kDNSLookupTimeout)) {
+        printf("[Main] Lookup failed\r\n");
+      } else {
+        printf("[Main] Lookup: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+      }
+    }
+  }
 }
 
 #endif  // MAIN_TEST_PROGRAM
