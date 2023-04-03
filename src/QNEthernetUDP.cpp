@@ -182,6 +182,8 @@ int EthernetUDP::parsePacket() {
     return -1;
   }
 
+  Ethernet.loop();  // Allow the stack to move along
+
   if (inBufSize_ == 0) {
     packetPos_ = -1;
     return -1;
@@ -192,8 +194,6 @@ int EthernetUDP::parsePacket() {
   inBuf_[inBufTail_].data.clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
-
-  Ethernet.loop();  // Allow the stack to move along
 
   packetPos_ = 0;
   return packet_.data.size();

@@ -31,6 +31,8 @@ and this project adheres to
 * Fixed DNS client to be aware of lookup failures.
 * Added set-no-address and link-down calls to `EthernetClass::end()` before
   bringing the interface down. This ensures all the callbacks are called.
+* Fixed `EthernetUDP::parsePacket()` to also call `Ethernet.loop()` when there's
+  no packet available.
 
 ## [0.19.0]
 
