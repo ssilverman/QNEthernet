@@ -857,7 +857,6 @@ void enet_deinit() {
 
   if (initState == kInitStatePHYInitialized) {
     // Power down the PHY
-    GPIO7_GDIR    |= (1 << 15);
     GPIO7_DR_CLEAR = (1 << 15);
 
     // Stop the PLL (first bypassing)
