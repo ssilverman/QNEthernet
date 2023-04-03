@@ -16,6 +16,9 @@ using namespace qindesign::network;
 // Startup delay, in milliseconds.
 static constexpr uint32_t kStartupDelay = 2000;
 
+// Timeouts
+static constexpr uint32_t kDHCPTimeout = 15000;
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -85,6 +88,11 @@ void setup() {
     }
   }
 #endif  // LWIP_MDNS_RESPONDER
+
+  if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
+    printf("[Main] ERROR: Failed to get DHCP address within %" PRIu32 "ms\r\n",
+           kDHCPTimeout);
+  }
 }
 
 // Main program loop.
