@@ -40,7 +40,7 @@ bool enet_has_hardware();
 //
 // It is suggested to initialize the random number generator with srand before
 // calling this.
-void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
+void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                const ip4_addr_t *ipaddr,
                const ip4_addr_t *netmask,
                const ip4_addr_t *gw,

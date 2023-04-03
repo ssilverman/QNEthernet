@@ -184,19 +184,19 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-static uint8_t mac[ETH_HWADDR_LEN];
-static enetbufferdesc_t rx_ring[RX_SIZE] __attribute__((aligned(64)));
-static enetbufferdesc_t tx_ring[TX_SIZE] __attribute__((aligned(64)));
-static BUFFER_DMAMEM uint8_t rxbufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
-static BUFFER_DMAMEM uint8_t txbufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
-static volatile enetbufferdesc_t *p_rxbd = &rx_ring[0];
-static volatile enetbufferdesc_t *p_txbd = &tx_ring[0];
-static struct netif t41_netif = { .name = {'e', '0'} };
-static atomic_flag rx_not_avail = ATOMIC_FLAG_INIT;
+static uint8_t s_mac[ETH_HWADDR_LEN];
+static enetbufferdesc_t s_rxRing[RX_SIZE] __attribute__((aligned(64)));
+static enetbufferdesc_t s_txRing[TX_SIZE] __attribute__((aligned(64)));
+static BUFFER_DMAMEM uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
+static BUFFER_DMAMEM uint8_t s_txBufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
+static volatile enetbufferdesc_t *s_pRxBD = &s_rxRing[0];
+static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
+static struct netif s_t41_netif = { .name = {'e', '0'} };
+static atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
 
 // PHY status, polled
-static bool linkSpeed10Not100 = false;
-static bool linkIsFullDuplex  = false;
+static bool s_linkSpeed10Not100 = false;
+static bool s_linkIsFullDuplex  = false;
 
 static void enet_isr();
 
@@ -257,13 +257,13 @@ typedef enum enet_init_states {
 } enet_init_states_t;
 
 // Ethernet initialization state.
-static enet_init_states_t initState = kInitStateStart;
+static enet_init_states_t s_initState = kInitStateStart;
 
 // Initial check for hardware. This does nothing if the init state isn't at
 // START. After this function returns, the init state will either be NO_HARDWARE
 // or PHY_INITIALIZED, unless it wasn't START when called.
 static void t41_init_phy() {
-  if (initState != kInitStateStart) {
+  if (s_initState != kInitStateStart) {
     return;
   }
 
@@ -376,16 +376,16 @@ static void t41_init_phy() {
     // Disable the clock for ENET
     CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
 
-    initState = kInitStateNoHardware;
+    s_initState = kInitStateNoHardware;
     return;
   }
 
-  initState = kInitStatePHYInitialized;
+  s_initState = kInitStatePHYInitialized;
 }
 
 static void t41_low_level_init() {
   t41_init_phy();
-  if (initState != kInitStatePHYInitialized) {
+  if (s_initState != kInitStatePHYInitialized) {
     return;
   }
 
@@ -445,25 +445,25 @@ static void t41_low_level_init() {
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
   mdio_write(PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
 
-  memset(rx_ring, 0, sizeof(rx_ring));
-  memset(tx_ring, 0, sizeof(tx_ring));
+  memset(s_rxRing, 0, sizeof(s_rxRing));
+  memset(s_txRing, 0, sizeof(s_txRing));
 
   for (int i = 0; i < RX_SIZE; i++) {
-    rx_ring[i].buffer  = &rxbufs[i * BUF_SIZE];
-    rx_ring[i].status  = kEnetRxBdEmpty;
-    rx_ring[i].extend1 = kEnetRxBdInterrupt;
+    s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
+    s_rxRing[i].status  = kEnetRxBdEmpty;
+    s_rxRing[i].extend1 = kEnetRxBdInterrupt;
   }
   // The last buffer descriptor should be set with the wrap flag
-  rx_ring[RX_SIZE - 1].status |= kEnetRxBdWrap;
+  s_rxRing[RX_SIZE - 1].status |= kEnetRxBdWrap;
 
   for (int i = 0; i < TX_SIZE; i++) {
-    tx_ring[i].buffer  = &txbufs[i * BUF_SIZE];
-    tx_ring[i].status  = kEnetTxBdTransmitCrc;
-    tx_ring[i].extend1 = kEnetTxBdTxInterrupt |
-                         kEnetTxBdProtChecksum |
-                         kEnetTxBdIpHdrChecksum;
+    s_txRing[i].buffer  = &s_txBufs[i * BUF_SIZE];
+    s_txRing[i].status  = kEnetTxBdTransmitCrc;
+    s_txRing[i].extend1 = kEnetTxBdTxInterrupt |
+                          kEnetTxBdProtChecksum |
+                          kEnetTxBdIpHdrChecksum;
   }
-  tx_ring[TX_SIZE - 1].status |= kEnetTxBdWrap;
+  s_txRing[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
   ENET_EIMR = 0;  // This also deasserts all interrupts
 
@@ -517,14 +517,14 @@ static void t41_low_level_init() {
   ENET_TFWR = ENET_TFWR_STRFWD;
   ENET_RSFL = 0;
 
-  ENET_RDSR = (uint32_t)rx_ring;
-  ENET_TDSR = (uint32_t)tx_ring;
+  ENET_RDSR = (uint32_t)s_rxRing;
+  ENET_TDSR = (uint32_t)s_txRing;
   ENET_MRBR = BUF_SIZE;
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  ENET_PALR = (s_mac[0] << 24) | (s_mac[1] << 16) | (s_mac[2] << 8) | s_mac[3];
+  ENET_PAUR = (s_mac[4] << 24) | (s_mac[5] << 16) | 0x8808;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
@@ -541,7 +541,7 @@ static void t41_low_level_init() {
 
   // Last few things to do
   ENET_EIR = 0;  // Clear any pending interrupts before setting ETHEREN
-  atomic_flag_test_and_set(&rx_not_avail);
+  atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
@@ -553,10 +553,10 @@ static void t41_low_level_init() {
   // PHY soft reset
   // mdio_write(PHY_BMCR, 1 << 15);
 
-  initState = kInitStateInitialized;
+  s_initState = kInitStateInitialized;
 }
 
-static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
+static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *pBD) {
   const u16_t err_mask = kEnetRxBdTrunc |
                          kEnetRxBdOverrun |
                          kEnetRxBdCrc |
@@ -566,22 +566,22 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   struct pbuf *p = NULL;
 
   // Determine if a frame has been received
-  if (bdPtr->status & err_mask) {
+  if (pBD->status & err_mask) {
 #if LINK_STATS
     // Either truncated or others
-    if (bdPtr->status & kEnetRxBdTrunc) {
+    if (pBD->status & kEnetRxBdTrunc) {
       LINK_STATS_INC(link.lenerr);
-    } else if (bdPtr->status & kEnetRxBdLast) {
+    } else if (pBD->status & kEnetRxBdLast) {
       // The others are only valid if the 'L' bit is set
-      if (bdPtr->status & kEnetRxBdOverrun) {
+      if (pBD->status & kEnetRxBdOverrun) {
         LINK_STATS_INC(link.err);
       } else {  // Either overrun and others zero, or others
-        if (bdPtr->status & kEnetRxBdNonOctet) {
+        if (pBD->status & kEnetRxBdNonOctet) {
           LINK_STATS_INC(link.err);
-        } else if (bdPtr->status & kEnetRxBdCrc) {  // Non-octet or CRC
+        } else if (pBD->status & kEnetRxBdCrc) {  // Non-octet or CRC
           LINK_STATS_INC(link.chkerr);
         }
-        if (bdPtr->status & kEnetRxBdLengthViolation) {
+        if (pBD->status & kEnetRxBdLengthViolation) {
           LINK_STATS_INC(link.lenerr);
         }
       }
@@ -589,12 +589,12 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
     LINK_STATS_INC(link.drop);
 #endif
   } else {
-    p = pbuf_alloc(PBUF_RAW, bdPtr->length, PBUF_POOL);
+    p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
     if (p) {
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
-      arm_dcache_delete(bdPtr->buffer, MULTIPLE_OF_32(p->tot_len));
+      arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-      pbuf_take(p, bdPtr->buffer, p->tot_len);
+      pbuf_take(p, pBD->buffer, p->tot_len);
       LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
@@ -603,7 +603,7 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
   }
 
   // Set rx bd empty
-  bdPtr->status = (bdPtr->status & kEnetRxBdWrap) | kEnetRxBdEmpty;
+  pBD->status = (pBD->status & kEnetRxBdWrap) | kEnetRxBdEmpty;
 
   ENET_RDAR = ENET_RDAR_RDAR;
 
@@ -612,30 +612,30 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *bdPtr) {
 
 // Acquire a buffer descriptor. Meant to be used with update_bufdesc().
 static inline volatile enetbufferdesc_t *get_bufdesc() {
-  volatile enetbufferdesc_t *bdPtr = p_txbd;
+  volatile enetbufferdesc_t *pBD = s_pTxBD;
 
-  while (bdPtr->status & kEnetTxBdReady) {
+  while (pBD->status & kEnetTxBdReady) {
     // Wait until BD is free
   }
 
-  return bdPtr;
+  return pBD;
 }
 
 // Update a buffer descriptor. Meant to be used with get_bufdesc().
-static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
+static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
                                   uint16_t len) {
-  bdPtr->length = len;
-  bdPtr->status = (bdPtr->status & kEnetTxBdWrap) |
-                  kEnetTxBdTransmitCrc |
-                  kEnetTxBdLast |
-                  kEnetTxBdReady;
+  pBD->length = len;
+  pBD->status = (pBD->status & kEnetTxBdWrap) |
+                kEnetTxBdTransmitCrc |
+                kEnetTxBdLast |
+                kEnetTxBdReady;
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
-  if (bdPtr->status & kEnetTxBdWrap) {
-    p_txbd = &tx_ring[0];
+  if (pBD->status & kEnetTxBdWrap) {
+    s_pTxBD = &s_txRing[0];
   } else {
-    p_txbd++;
+    s_pTxBD++;
   }
 
   LINK_STATS_INC(link.xmit);
@@ -644,16 +644,16 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *bdPtr,
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
 
-  volatile enetbufferdesc_t *bdPtr = get_bufdesc();
-  uint16_t copied = pbuf_copy_partial(p, bdPtr->buffer, p->tot_len, 0);
+  volatile enetbufferdesc_t *pBD = get_bufdesc();
+  uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
     LINK_STATS_INC(link.drop);
     return ERR_BUF;
   }
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(copied));
+  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, copied);
+  update_bufdesc(pBD, copied);
   return ERR_OK;
 }
 
@@ -666,7 +666,7 @@ static err_t t41_netif_init(struct netif *netif) {
                  NETIF_FLAG_ETHERNET |
                  NETIF_FLAG_IGMP;
 
-  SMEMCPY(netif->hwaddr, mac, ETH_HWADDR_LEN);
+  SMEMCPY(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 #if LWIP_NETIF_HOSTNAME
   netif_set_hostname(netif, NULL);
@@ -679,51 +679,51 @@ static err_t t41_netif_init(struct netif *netif) {
 
 // Find the next non-empty BD.
 static inline volatile enetbufferdesc_t *rxbd_next() {
-  volatile enetbufferdesc_t *p_bd = p_rxbd;
+  volatile enetbufferdesc_t *pBD = s_pRxBD;
 
-  while (p_bd->status & kEnetRxBdEmpty) {
-    if (p_bd->status & kEnetRxBdWrap) {
-      p_bd = &rx_ring[0];
+  while (pBD->status & kEnetRxBdEmpty) {
+    if (pBD->status & kEnetRxBdWrap) {
+      pBD = &s_rxRing[0];
     } else {
-      p_bd++;
+      pBD++;
     }
-    if (p_bd == p_rxbd) {
+    if (pBD == s_pRxBD) {
       return NULL;
     }
   }
 
-  if (p_rxbd->status & kEnetRxBdWrap) {
-    p_rxbd = &rx_ring[0];
+  if (s_pRxBD->status & kEnetRxBdWrap) {
+    s_pRxBD = &s_rxRing[0];
   } else {
-    p_rxbd++;
+    s_pRxBD++;
   }
-  return p_bd;
+  return pBD;
 }
 
 static void enet_isr() {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
-    atomic_flag_clear(&rx_not_avail);
+    atomic_flag_clear(&s_rxNotAvail);
   }
 }
 
 static inline void check_link_status() {
-  if (initState != kInitStateInitialized) {
+  if (s_initState != kInitStateInitialized) {
     return;
   }
 
   uint16_t status = mdio_read(PHY_BMSR);
   uint8_t is_link_up = !!(status & (1 << 2));
-  if (netif_is_link_up(&t41_netif) != is_link_up) {
+  if (netif_is_link_up(&s_t41_netif) != is_link_up) {
     if (is_link_up) {
-      netif_set_link_up(&t41_netif);
+      netif_set_link_up(&s_t41_netif);
 
       // TODO: Should we read the speed only at link UP or every time?
       status = mdio_read(PHY_PHYSTS);
-      linkSpeed10Not100 = ((status & (1 << 1)) != 0);
-      linkIsFullDuplex  = ((status & (1 << 2)) != 0);
+      s_linkSpeed10Not100 = ((status & (1 << 1)) != 0);
+      s_linkIsFullDuplex  = ((status & (1 << 2)) != 0);
     } else {
-      netif_set_link_down(&t41_netif);
+      netif_set_link_down(&s_t41_netif);
     }
   }
 }
@@ -763,26 +763,26 @@ void enet_getmac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-static bool isFirstInit = true;
-static bool isNetifAdded = false;
+static bool s_isFirstInit = true;
+static bool s_isNetifAdded = false;
 
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
 bool enet_has_hardware() {
   t41_init_phy();
-  return (initState != kInitStateNoHardware);
+  return (s_initState != kInitStateNoHardware);
 }
 
-void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
+void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                const ip4_addr_t *ipaddr,
                const ip4_addr_t *netmask,
                const ip4_addr_t *gw,
                netif_ext_callback_fn callback) {
   // Only execute the following code once
-  if (isFirstInit) {
+  if (s_isFirstInit) {
     lwip_init();
 
-    isFirstInit = false;
+    s_isFirstInit = false;
   }
 
   if (ipaddr == NULL)  ipaddr  = IP4_ADDR_ANY4;
@@ -792,49 +792,49 @@ void enet_init(const uint8_t macaddr[ETH_HWADDR_LEN],
   // First test if the MAC address has changed
   // If it's changed then remove the interface and start again
   uint8_t m[ETH_HWADDR_LEN];
-  if (macaddr == NULL) {
+  if (mac == NULL) {
     enet_getmac(m);
   } else {
-    SMEMCPY(m, macaddr, ETH_HWADDR_LEN);
+    SMEMCPY(m, mac, ETH_HWADDR_LEN);
   }
-  if (memcmp(mac, m, ETH_HWADDR_LEN)) {
+  if (memcmp(s_mac, m, ETH_HWADDR_LEN)) {
     // MAC address has changed
 
-    if (isNetifAdded) {
+    if (s_isNetifAdded) {
       // Remove any previous configuration
-      netif_remove(&t41_netif);
+      netif_remove(&s_t41_netif);
       netif_remove_ext_callback(&netif_callback);
-      isNetifAdded = false;
+      s_isNetifAdded = false;
     }
-    SMEMCPY(mac, m, ETH_HWADDR_LEN);
+    SMEMCPY(s_mac, m, ETH_HWADDR_LEN);
   }
 
-  if (isNetifAdded) {
-    netif_set_addr(&t41_netif, ipaddr, netmask, gw);
+  if (s_isNetifAdded) {
+    netif_set_addr(&s_t41_netif, ipaddr, netmask, gw);
   } else {
     netif_add_ext_callback(&netif_callback, callback);
-    netif_add(&t41_netif, ipaddr, netmask, gw,
+    netif_add(&s_t41_netif, ipaddr, netmask, gw,
               NULL, t41_netif_init, ethernet_input);
-    netif_set_default(&t41_netif);
-    isNetifAdded = true;
+    netif_set_default(&s_t41_netif);
+    s_isNetifAdded = true;
   }
 
 #ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
   // Multicast filtering, to allow desired multicast packets in
-  netif_set_igmp_mac_filter(&t41_netif, &multicast_filter);
+  netif_set_igmp_mac_filter(&s_t41_netif, &multicast_filter);
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 }
 
 extern void unused_interrupt_vector(void);  // startup.c
 
 void enet_deinit() {
-  if (isNetifAdded) {
-    netif_remove(&t41_netif);
+  if (s_isNetifAdded) {
+    netif_remove(&s_t41_netif);
     netif_remove_ext_callback(&netif_callback);
-    isNetifAdded = false;
+    s_isNetifAdded = false;
   }
 
-  if (initState == kInitStateInitialized) {
+  if (s_initState == kInitStateInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
     attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
     ENET_EIMR = 0;  // Disable interrupts
@@ -852,10 +852,10 @@ void enet_deinit() {
     //       so nothing will be pending
     ENET_ECR &= ~ENET_ECR_ETHEREN;
 
-    initState = kInitStatePHYInitialized;
+    s_initState = kInitStatePHYInitialized;
   }
 
-  if (initState == kInitStatePHYInitialized) {
+  if (s_initState == kInitStatePHYInitialized) {
     // Power down the PHY
     GPIO7_DR_CLEAR = (1 << 15);
 
@@ -866,12 +866,12 @@ void enet_deinit() {
     // Disable the clock for ENET
     CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
 
-    initState = kInitStateStart;
+    s_initState = kInitStateStart;
   }
 }
 
 struct netif *enet_netif() {
-  return &t41_netif;
+  return &s_t41_netif;
 }
 
 // Get the next chunk of input data.
@@ -881,16 +881,16 @@ static struct pbuf *enet_rx_next() {
 }
 
 // Process one chunk of input data.
-static void enet_input(struct pbuf *p_frame) {
-  if (t41_netif.input(p_frame, &t41_netif) != ERR_OK) {
-    pbuf_free(p_frame);
+static void enet_input(struct pbuf *pFrame) {
+  if (s_t41_netif.input(pFrame, &s_t41_netif) != ERR_OK) {
+    pbuf_free(pFrame);
   }
 }
 
 void enet_proc_input(void) {
   struct pbuf *p;
 
-  if (atomic_flag_test_and_set(&rx_not_avail)) {
+  if (atomic_flag_test_and_set(&s_rxNotAvail)) {
     return;
   }
   while ((p = enet_rx_next()) != NULL) {
@@ -904,15 +904,15 @@ void enet_poll() {
 }
 
 int enet_link_speed() {
-  return linkSpeed10Not100 ? 10 : 100;
+  return s_linkSpeed10Not100 ? 10 : 100;
 }
 
 bool enet_link_is_full_duplex() {
-  return linkIsFullDuplex;
+  return s_linkIsFullDuplex;
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {
-  if (initState != kInitStateInitialized) {
+  if (s_initState != kInitStateInitialized) {
     return false;
   }
 
@@ -920,19 +920,19 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
     return false;
   }
 
-  volatile enetbufferdesc_t *bdPtr = get_bufdesc();
+  volatile enetbufferdesc_t *pBD = get_bufdesc();
 #if ETH_PAD_SIZE
-  memcpy((uint8_t *)bdPtr->buffer + ETH_PAD_SIZE, frame, len);
+  memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
+  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, len + ETH_PAD_SIZE);
+  update_bufdesc(pBD, len + ETH_PAD_SIZE);
 #else
-  memcpy(bdPtr->buffer, frame, len);
+  memcpy(pBD->buffer, frame, len);
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(bdPtr->buffer, MULTIPLE_OF_32(len));
+  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(bdPtr, len);
+  update_bufdesc(pBD, len);
 #endif  // ETH_PAD_SIZE
   return true;
 }
@@ -956,10 +956,10 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
 }
 
 // Don't release bits that have had a collision. Track these here.
-static uint32_t collisionGALR = 0;
-static uint32_t collisionGAUR = 0;
-static uint32_t collisionIALR = 0;
-static uint32_t collisionIAUR = 0;
+static uint32_t s_collisionGALR = 0;
+static uint32_t s_collisionGAUR = 0;
+static uint32_t s_collisionIALR = 0;
+static uint32_t s_collisionIAUR = 0;
 
 void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   volatile uint32_t *lower;
@@ -969,13 +969,13 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   if ((mac[0] & 0x01) != 0) {  // Group
     lower = &ENET_GALR;
     upper = &ENET_GAUR;
-    collisionLower = &collisionGALR;
-    collisionUpper = &collisionGAUR;
+    collisionLower = &s_collisionGALR;
+    collisionUpper = &s_collisionGAUR;
   } else {  // Individual
     lower = &ENET_IALR;
     upper = &ENET_IAUR;
-    collisionLower = &collisionIALR;
-    collisionUpper = &collisionIAUR;
+    collisionLower = &s_collisionIALR;
+    collisionUpper = &s_collisionIAUR;
   }
 
   uint32_t crc = (crc32(0, mac, 6) >> 26) & 0x3f;
@@ -1006,7 +1006,7 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
 }
 
 // Multicast MAC address.
-static uint8_t multicastMAC[6] = {
+static uint8_t s_multicastMAC[6] = {
     LL_IP4_MULTICAST_ADDR_0,
     LL_IP4_MULTICAST_ADDR_1,
     LL_IP4_MULTICAST_ADDR_2,
@@ -1018,11 +1018,11 @@ static uint8_t multicastMAC[6] = {
 // Join or leave a multicast group. The flag should be true to join and false
 // to leave.
 static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
-  multicastMAC[3] = ip4_addr2(group) & 0x7f;
-  multicastMAC[4] = ip4_addr3(group);
-  multicastMAC[5] = ip4_addr4(group);
+  s_multicastMAC[3] = ip4_addr2(group) & 0x7f;
+  s_multicastMAC[4] = ip4_addr3(group);
+  s_multicastMAC[5] = ip4_addr4(group);
 
-  enet_set_mac_address_allowed(multicastMAC, flag);
+  enet_set_mac_address_allowed(s_multicastMAC, flag);
 }
 
 void enet_join_group(const ip4_addr_t *group) {
