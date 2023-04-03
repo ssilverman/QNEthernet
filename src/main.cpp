@@ -73,11 +73,17 @@ void setup() {
   printf("[Main] Starting Ethernet (DHCP)...\r\n");
   if (!Ethernet.begin()) {
     printf("[Main] ERROR: Failed to start Ethernet\r\n");
+    return;
   }
 
 #if LWIP_MDNS_RESPONDER
-  MDNS.begin("qneth");
-  MDNS.addService("_http", "_tcp", 80);
+  if (!MDNS.begin("qneth")) {
+    printf("[Main] ERROR: Failed to start mDNS\r\n");
+  } else {
+    if (!MDNS.addService("_http", "_tcp", 80)) {
+      printf("[Main] ERROR: Failed to add mDNS service\r\n");
+    }
+  }
 #endif  // LWIP_MDNS_RESPONDER
 }
 
