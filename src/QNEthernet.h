@@ -37,7 +37,7 @@ namespace network {
 // never returned because, from the `EthernetLinkStatus` docs, it appears that
 // it's used when link detection is not available.
 //
-// See: https://www.arduino.cc/en/Reference/EthernetLinkStatus
+// See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.linkstatus/
 enum EthernetLinkStatus {
   LinkOFF,
   LinkON,
@@ -47,7 +47,7 @@ enum EthernetLinkStatus {
 // Define this enum because Arduino API. Use a new `EthernetOtherHardware` with
 // value -1 as the return value for anything not in the "official" Arduino list.
 //
-// See: https://www.arduino.cc/en/Reference/EthernetHardwareStatus
+// See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.hardwarestatus/
 enum EthernetHardwareStatus {
   EthernetNoHardware = 0,
   EthernetW5100,
