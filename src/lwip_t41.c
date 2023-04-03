@@ -31,6 +31,10 @@
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
 
+// --------------------------------------------------------------------------
+//  Defines
+// --------------------------------------------------------------------------
+
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 #define RMII_PAD_PULLDOWN (IOMUXC_PAD_PUS(0)   | \
@@ -101,6 +105,10 @@
 #else
 #define BUFFER_DMAMEM
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
+
+// --------------------------------------------------------------------------
+//  Types
+// --------------------------------------------------------------------------
 
 // Defines the control and status region of the receive buffer descriptor.
 typedef enum _enet_rx_bd_control_status {
@@ -184,24 +192,41 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-static uint8_t s_mac[ETH_HWADDR_LEN];
+typedef enum enet_init_states {
+  kInitStateStart,
+  kInitStateNoHardware,
+  kInitStatePHYInitialized,
+  kInitStateInitialized,
+} enet_init_states_t;
+
+// --------------------------------------------------------------------------
+//  Internal Variables
+// --------------------------------------------------------------------------
+
+// Ethernet buffers
 static enetbufferdesc_t s_rxRing[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t s_txRing[TX_SIZE] __attribute__((aligned(64)));
 static BUFFER_DMAMEM uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
 static BUFFER_DMAMEM uint8_t s_txBufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
 static volatile enetbufferdesc_t *s_pRxBD = &s_rxRing[0];
 static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
-static struct netif s_t41_netif = { .name = {'e', '0'} };
-static atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
+
+// Misc. internal state
+static uint8_t s_mac[ETH_HWADDR_LEN];
+static struct netif s_t41_netif       = { .name = {'e', '0'} };
+static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
+static enet_init_states_t s_initState = kInitStateStart;
+static bool s_isNetifAdded            = false;
 
 // PHY status, polled
 static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
 
+// Forward declarations
 static void enet_isr();
 
 // --------------------------------------------------------------------------
-//  PHY_MDIO
+//  PHY I/O
 // --------------------------------------------------------------------------
 
 // PHY register definitions
@@ -248,16 +273,6 @@ void mdio_write(uint16_t regaddr, uint16_t data) {
 // --------------------------------------------------------------------------
 //  Low-Level
 // --------------------------------------------------------------------------
-
-typedef enum enet_init_states {
-  kInitStateStart,
-  kInitStateNoHardware,
-  kInitStatePHYInitialized,
-  kInitStateInitialized,
-} enet_init_states_t;
-
-// Ethernet initialization state.
-static enet_init_states_t s_initState = kInitStateStart;
 
 // Initial check for hardware. This does nothing if the init state isn't at
 // START. After this function returns, the init state will either be NO_HARDWARE
@@ -763,9 +778,6 @@ void enet_getmac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-static bool s_isFirstInit = true;
-static bool s_isNetifAdded = false;
-
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
 bool enet_has_hardware() {
@@ -779,10 +791,11 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                const ip4_addr_t *gw,
                netif_ext_callback_fn callback) {
   // Only execute the following code once
-  if (s_isFirstInit) {
+  static bool isFirstInit = true;
+  if (isFirstInit) {
     lwip_init();
 
-    s_isFirstInit = false;
+    isFirstInit = false;
   }
 
   if (ipaddr == NULL)  ipaddr  = IP4_ADDR_ANY4;
@@ -955,13 +968,13 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   return crc;
 }
 
-// Don't release bits that have had a collision. Track these here.
-static uint32_t s_collisionGALR = 0;
-static uint32_t s_collisionGAUR = 0;
-static uint32_t s_collisionIALR = 0;
-static uint32_t s_collisionIAUR = 0;
-
 void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+  // Don't release bits that have had a collision. Track these here.
+  static uint32_t collisionGALR = 0;
+  static uint32_t collisionGAUR = 0;
+  static uint32_t collisionIALR = 0;
+  static uint32_t collisionIAUR = 0;
+
   volatile uint32_t *lower;
   volatile uint32_t *upper;
   uint32_t *collisionLower;
@@ -969,13 +982,13 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   if ((mac[0] & 0x01) != 0) {  // Group
     lower = &ENET_GALR;
     upper = &ENET_GAUR;
-    collisionLower = &s_collisionGALR;
-    collisionUpper = &s_collisionGAUR;
+    collisionLower = &collisionGALR;
+    collisionUpper = &collisionGAUR;
   } else {  // Individual
     lower = &ENET_IALR;
     upper = &ENET_IAUR;
-    collisionLower = &s_collisionIALR;
-    collisionUpper = &s_collisionIAUR;
+    collisionLower = &collisionIALR;
+    collisionUpper = &collisionIAUR;
   }
 
   uint32_t crc = (crc32(0, mac, 6) >> 26) & 0x3f;
@@ -1005,24 +1018,24 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   }
 }
 
-// Multicast MAC address.
-static uint8_t s_multicastMAC[6] = {
-    LL_IP4_MULTICAST_ADDR_0,
-    LL_IP4_MULTICAST_ADDR_1,
-    LL_IP4_MULTICAST_ADDR_2,
-    0,
-    0,
-    0,
-};
-
 // Join or leave a multicast group. The flag should be true to join and false
 // to leave.
 static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
-  s_multicastMAC[3] = ip4_addr2(group) & 0x7f;
-  s_multicastMAC[4] = ip4_addr3(group);
-  s_multicastMAC[5] = ip4_addr4(group);
+  // Multicast MAC address.
+  static uint8_t multicastMAC[6] = {
+      LL_IP4_MULTICAST_ADDR_0,
+      LL_IP4_MULTICAST_ADDR_1,
+      LL_IP4_MULTICAST_ADDR_2,
+      0,
+      0,
+      0,
+  };
 
-  enet_set_mac_address_allowed(s_multicastMAC, flag);
+  multicastMAC[3] = ip4_addr2(group) & 0x7f;
+  multicastMAC[4] = ip4_addr3(group);
+  multicastMAC[5] = ip4_addr4(group);
+
+  enet_set_mac_address_allowed(multicastMAC, flag);
 }
 
 void enet_join_group(const ip4_addr_t *group) {
