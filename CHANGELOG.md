@@ -20,6 +20,9 @@ and this project adheres to
   the functions detect that "write error" is back to zero.
 * Changed default `stdio` output behaviour to use the new system default. (This
   exists as of Teensyduino 1.58-beta4.)
+* Added a timeout parameter to the callback version of
+  `DNSClient::getHostByName()`. This helps prevent any references from going out
+  of scope before the callback is called.
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's

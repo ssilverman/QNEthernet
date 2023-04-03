@@ -45,8 +45,12 @@ class DNSClient final {
   //
   // The callback will be passed a NULL IP address if the lookup failed or if
   // there was any other error.
+  //
+  // If the timeout has been reached then the callback will no longer be called.
+  // The timeout is ignored if it is zero.
   static bool getHostByName(const char *hostname,
-                            std::function<void(const ip_addr_t *)> callback);
+                            std::function<void(const ip_addr_t *)> callback,
+                            uint32_t timeout);
 
   // Looks up a host by name and wait for the given timeout, in milliseconds.
   // This returns whether the given IP address object was filled in and there
@@ -62,6 +66,8 @@ class DNSClient final {
     bool found = false;
     IPAddress ip;
     std::function<void(const ip_addr_t *)> callback;
+    uint32_t startTime;
+    uint32_t timeout;
   };
 
   DNSClient() = default;

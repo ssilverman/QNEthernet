@@ -22,7 +22,9 @@ void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
   }
 
   Request *req = reinterpret_cast<Request *>(callback_arg);
-  req->callback(ipaddr);
+  if (req->timeout == 0 || millis() - req->startTime < req->timeout) {
+    req->callback(ipaddr);
+  }
   delete req;
 }
 
@@ -43,13 +45,16 @@ IPAddress DNSClient::getServer(int index) {
 }
 
 bool DNSClient::getHostByName(const char *hostname,
-                              std::function<void(const ip_addr_t *)> callback) {
+                              std::function<void(const ip_addr_t *)> callback,
+                              uint32_t timeout) {
   if (callback == nullptr || hostname == nullptr) {
     return false;
   }
 
   Request *req = new Request{};
   req->callback = callback;
+  req->startTime = millis();
+  req->timeout = timeout;
 
   ip_addr_t addr;
   switch (dns_gethostbyname(hostname, &addr, &dnsFoundFunc, req)) {
@@ -80,7 +85,8 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
               ip = ip_addr_get_ip4_uint32(foundIP);
             }
             lookupDone = true;
-          })) {
+          },
+          timeout)) {
     return false;
   }
 

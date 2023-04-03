@@ -391,8 +391,9 @@ The `DNSClient` class provides an interface to the DNS client.
 
 * `setServer(index, ip)`: Sets a DNS server address.
 * `getServer(index)`: Gets a DNS server address.
-* `getHostByName(hostname, callback)`: Looks up a host by name and calls the
-  callback when there's a result.
+* `getHostByName(hostname, callback, timeout)`: Looks up a host by name and
+  calls the callback when there's a result. The callback is not called once the
+  timeout has been reached. The timeout is ignored if it's set to zero.
 * `getHostByName(hostname, ip, timeout)`: Looks up a host by name.
 * `static constexpr int maxServers()`: Returns the maximum number of
   DNS servers.
