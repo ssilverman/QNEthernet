@@ -29,6 +29,8 @@ and this project adheres to
 * Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the
   event responder.
 * Fixed DNS client to be aware of lookup failures.
+* Added set-no-address and link-down calls to `EthernetClass::end()` before
+  bringing the interface down. This ensures all the callbacks are called.
 
 ## [0.19.0]
 
