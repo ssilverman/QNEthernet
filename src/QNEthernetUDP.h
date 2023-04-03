@@ -72,17 +72,14 @@ class EthernetUDP : public UDP {
   int beginPacket(const char *host, uint16_t port) final;
   int endPacket() final;
 
-  // Sends a UDP packet and returns an lwIP error code indicating success. This
+  // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
   // causes less overhead.
-  //
-  // Note that, unlike endPacket(), this returns zero (ERR_OK) on success.
-  int send(const IPAddress &ip, uint16_t port, const uint8_t *data, size_t len);
+  bool send(const IPAddress &ip, uint16_t port,
+            const uint8_t *data, size_t len);
 
   // Calls the other send() function after performing a DNS lookup.
-  //
-  // If the address lookup fails then this will return ERR_VAL.
-  int send(const char *host, uint16_t port, const uint8_t *data, size_t len);
+  bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
 
   // Bring Print::write functions into scope
   using Print::write;
@@ -141,8 +138,8 @@ class EthernetUDP : public UDP {
 
   // ip_addr_t versions of transmission functions
   bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
-  int send(const ip_addr_t *ipaddr, uint16_t port,
-           const uint8_t *data, size_t len);
+  bool send(const ip_addr_t *ipaddr, uint16_t port,
+            const uint8_t *data, size_t len);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;

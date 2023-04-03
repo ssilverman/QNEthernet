@@ -12,7 +12,6 @@
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
 #include "lwip/dns.h"
-#include "lwip/err.h"
 #include "lwip/ip.h"
 #include "util/ip_tools.h"
 
@@ -321,40 +320,40 @@ int EthernetUDP::endPacket() {
   return retval;
 }
 
-int EthernetUDP::send(const IPAddress &ip, uint16_t port,
-                      const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
+                       const uint8_t *data, size_t len) {
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return send(&ipaddr, port, data, len);
 }
 
-int EthernetUDP::send(const char *host, uint16_t port,
-                      const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const char *host, uint16_t port,
+                       const uint8_t *data, size_t len) {
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
-    return ERR_VAL;
+    return false;
   }
   return send(ip, port, data, len);
 }
 
-int EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
-                      const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
+                       const uint8_t *data, size_t len) {
   if (len > UINT16_MAX) {
-    return ERR_ARG;
+    return false;
   }
   if (pcb_ == nullptr) {
     pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
-    return ERR_MEM;
+    return false;
   }
 
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
   if (p == nullptr) {
-    return ERR_MEM;
+    return false;
   }
   pbuf_take(p, data, len);
-  int retval = udp_sendto(pcb_, p, ipaddr, port);
+  bool retval = (udp_sendto(pcb_, p, ipaddr, port) == ERR_OK);
   pbuf_free(p);
   return retval;
 }

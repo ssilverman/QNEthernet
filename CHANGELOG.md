@@ -23,6 +23,7 @@ and this project adheres to
 * Added a timeout parameter to the callback version of
   `DNSClient::getHostByName()`. This helps prevent any references from going out
   of scope before the callback is called.
+* Changed `EthernetUDP::send()` functions back to returning a Boolean value.
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's
