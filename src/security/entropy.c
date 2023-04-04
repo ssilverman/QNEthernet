@@ -319,6 +319,20 @@ TRNG_ENT: 0
 TRNG_SEC_CFG: 0
 TRNG_SEC_CFG_NO_PRGM[1](0) [sdk_2.13.0: 0]
 
+-----
+TRNG_MCTL values only writable when PRGM is set:
+FOR_SCLK[7] (RW)
+RST_DEF[6] (WO)
+OSC_DIV[3:2] (RW)
+SAMP_MODE[1:0] (RW)
+
+Other MCTL bits:
+PRGM[16] (RW)
+TSTOP_OK[13] (RO)
+ERR[12] (W1C)
+ENT_VAL[10] (RO)
+TRNG_ACC[5] (RW) <-- Doesn't exist on this chip
+
 */
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
