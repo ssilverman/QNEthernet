@@ -31,6 +31,9 @@
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
 
+// [PHY Datasheet](https://www.pjrc.com/teensy/dp83825i.pdf)
+// [i.MX RT1062 Manual](https://www.pjrc.com/teensy/IMXRT1060RM_rev3.pdf)
+
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
@@ -371,10 +374,19 @@ static void t41_init_phy() {
       // DAISY:1
       // GPIO_B1_10_ALT6
 
-  delayMicroseconds(2);
-  GPIO7_DR_SET = (1 << 14);  // Start PHY chip
+  // PHY timing: pg 9, Section 6.6 "Timing Requirements"
+  // Reset Timing:
+  // T1: Minimum RESET_PULSE width (w/o debouncing caps): 25us
+  // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble
+  //     for register access: 2ms
+  // Power-Up Timing:
+  // T4: Powerup to SMI ready: Post power-up stabilization time prior to MDC
+  //     preamble for register access: 50ms
+  delayMicroseconds(25);  // T1, minimum RESET_PULSE width
+  GPIO7_DR_SET = (1 << 14);  // Start PHY chip: take out of reset
+  delay(2);  // T2, reset to SMI ready
+
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);
-  delayMicroseconds(5);
 
   // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
   mdio_write(PHY_LEDCR, 0x0280);  // LED shows link status, active high

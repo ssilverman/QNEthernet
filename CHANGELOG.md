@@ -37,6 +37,8 @@ and this project adheres to
   bringing the interface down. This ensures all the callbacks are called.
 * Fixed `EthernetUDP::parsePacket()` to also call `Ethernet.loop()` when there's
   no packet available.
+* Increased PHY reset pulse and reset-to-MDIO times. Hopefully this fixes slow
+  traffic after restarting the system via `Ethernet.end()`.
 
 ## [0.19.0]
 
