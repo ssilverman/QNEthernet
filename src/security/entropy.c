@@ -151,16 +151,9 @@ FLASHMEM void trng_deinit() {
   CCM_CCGR6 &= ~CCM_CCGR6_TRNG(CCM_CCGR_ON);  // Disable the clock
 }
 
-// Fills the entropy pool if empty.
-static bool fillEntropy() {
-  if (s_entropySizeBytes > 0) {
-    return true;
-  }
-
-  // Wait for either Valid or Error flag
-  while ((TRNG_MCTL & (TRNG_MCTL_ENT_VAL | TRNG_MCTL_ERR)) == 0) {
-  }
-
+// Copies entropy into the local entropy buffer. It is assumed there's entropy
+// available. This checks for an error, and if there is one, returns false.
+static bool fillEntropyBuf() {
   // Check for an error
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
     TRNG_MCTL = TRNG_MCTL_ERR;  // Clear error
@@ -178,6 +171,20 @@ static bool fillEntropy() {
   return true;
 }
 
+// Fills the entropy pool if empty. This waits for entropy to be available or
+// an error.
+static bool fillEntropy() {
+  if (s_entropySizeBytes > 0) {
+    return true;
+  }
+
+  // Wait for either Valid or Error flag
+  while ((TRNG_MCTL & (TRNG_MCTL_ENT_VAL | TRNG_MCTL_ERR)) == 0) {
+  }
+
+  return fillEntropyBuf();
+}
+
 // // Reads a single entropy byte.
 // static bool readEntropy(uint8_t *b) {
 //   if (!fillEntropy()) {
@@ -188,6 +195,16 @@ static bool fillEntropy() {
 // }
 
 size_t trng_available() {
+  if (s_entropySizeBytes == 0) {
+    // Check for Valid
+    if ((TRNG_MCTL & TRNG_MCTL_ENT_VAL) == 0) {
+      return 0;
+    }
+    if (!fillEntropyBuf()) {
+      return 0;
+    }
+  }
+
   return s_entropySizeBytes;
 }
 
