@@ -13,6 +13,8 @@ and this project adheres to
 * Added internal entropy functions to remove the _Entropy_ library dependency.
 * New `QNETHERNET_ENABLE_CUSTOM_WRITE` macro for enabling the inclusion of the
   expanded `stdio` output behaviour.
+* Added a bunch of unit tests. These use the Unity test framework from
+  within PlatformIO.
 
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the

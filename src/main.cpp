@@ -5,7 +5,7 @@
 // This file is part of the QNEthernet library.
 
 // Define MAIN_TEST_PROGRAM to use this test program.
-#ifdef MAIN_TEST_PROGRAM
+#if defined(MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
 
 #include <Arduino.h>
 

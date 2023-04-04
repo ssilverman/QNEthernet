@@ -1257,7 +1257,7 @@ Input is welcome.
 * Tune lwIP.
 * A better API design than the Arduino-defined API.
 * Perhaps zero-copy is an option.
-* Make a test suite.
+* More unit tests.
 * I have seen
   `Assertion "tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT" failed at line 1442 in src/lwip/tcp.c`
   when sending a large amount of data. Either it's an lwIP bug or I'm doing
