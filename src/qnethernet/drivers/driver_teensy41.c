@@ -1406,27 +1406,12 @@ bool enet_ieee1588_adjust_freq(int nsps) {
 
 // Channels
 
-static volatile uint32_t *tcsrReg(int channel) {
-  switch (channel) {
-    case 0: return &ENET_TCSR0;
-    case 1: return &ENET_TCSR1;
-    case 2: return &ENET_TCSR2;
-    case 3: return &ENET_TCSR3;
-    default:
-      return NULL;
-  }
+static inline volatile uint32_t *tcsrReg(int channel) {
+  return &ENET_TCSR0 + 2*channel;
 }
 
-static volatile uint32_t *tccrReg(int channel) {
-  switch (channel) {
-    case 0: return &ENET_TCCR0;
-    case 1: return &ENET_TCCR1;
-    case 2: return &ENET_TCCR2;
-    case 3: return &ENET_TCCR3;
-    default:
-      return NULL;
-  }
-
+static inline volatile uint32_t *tccrReg(int channel) {
+  return &ENET_TCCR0 + 2*channel;
 }
 
 bool enet_ieee1588_set_channel_mode(int channel, int mode) {
