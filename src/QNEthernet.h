@@ -198,28 +198,35 @@ class EthernetClass final {
   void setDNSServerIP(const IPAddress &dnsServerIP) const;
 
   // The MAC addresses are used in the following begin() functions
-  [[deprecated]] int begin(const uint8_t mac[6]);
-  [[deprecated]] void begin(const uint8_t mac[6], const IPAddress &ip);
-  [[deprecated]] void begin(const uint8_t mac[6], const IPAddress &ip,
-                            const IPAddress &dns);
-  [[deprecated]] void begin(const uint8_t mac[6], const IPAddress &ip,
-                            const IPAddress &dns, const IPAddress &gateway);
-  [[deprecated]] void begin(const uint8_t mac[6], const IPAddress &ip,
-                            const IPAddress &dns, const IPAddress &gateway,
-                            const IPAddress &subnet);
+  [[deprecated("See begin()")]] int begin(const uint8_t mac[6]);
+  [[deprecated("See begin(ip, subnet, gateway)")]]
+  void begin(const uint8_t mac[6], const IPAddress &ip);
+  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
+  void begin(const uint8_t mac[6], const IPAddress &ip, const IPAddress &dns);
+  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
+  void begin(const uint8_t mac[6], const IPAddress &ip,
+             const IPAddress &dns, const IPAddress &gateway);
+  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
+  void begin(const uint8_t mac[6], const IPAddress &ip,
+             const IPAddress &dns, const IPAddress &gateway,
+             const IPAddress &subnet);
 
   EthernetHardwareStatus hardwareStatus() const;
 
   // Deprecated and unused functions
-  [[deprecated]] void init([[maybe_unused]] uint8_t sspin) const {}
-  [[deprecated]] void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
-  [[deprecated]] uint8_t maintain() const { return 0; }
-  [[deprecated]] void setDnsServerIP(const IPAddress &dnsServerIP) const {
+  [[deprecated("No chip select pin")]]
+  void init([[maybe_unused]] uint8_t sspin) const {}
+  [[deprecated("See macAddress(mac)")]]
+  void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
+  [[deprecated("DHCP maintained internally")]]
+  uint8_t maintain() const { return 0; }
+  [[deprecated("See setDNSServerIP(ip)")]]
+  void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
-  [[deprecated]]
+  [[deprecated("See TCP_MAXRTX")]]
   void setRetransmissionCount([[maybe_unused]] uint8_t number) const {}
-  [[deprecated]]
+  [[deprecated("Handled internally")]]
   void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
 
   // Joins a multicast group. This returns whether the call was successful.
