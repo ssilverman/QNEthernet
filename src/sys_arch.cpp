@@ -12,7 +12,9 @@
 #undef errno
 extern int errno;
 #include <cstdint>
+#ifdef LWIP_DEBUG
 #include <cstdio>
+#endif  // LWIP_DEBUG
 
 #include <Print.h>
 #include <pgmspace.h>
