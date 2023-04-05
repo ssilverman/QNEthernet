@@ -14,7 +14,7 @@ EthernetServer	KEYWORD1	EthernetServer
 EthernetUDP	KEYWORD1	EthernetUDP
 MDNS	KEYWORD1
 DNSClient	KEYWORD1
-stdPrint	KEYWORD1
+stdoutPrint	KEYWORD1
 stderrPrint	KEYWORD1
 EthernetFrame	KEYWORD1
 StdioPrint	KEYWORD1

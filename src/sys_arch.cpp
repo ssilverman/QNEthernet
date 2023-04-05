@@ -83,12 +83,12 @@ const char *lwip_strerr(err_t err) {
 // --------------------------------------------------------------------------
 
 #ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
-// The user program can set this to something initialized. For example,
-// `Serial`, after `Serial.begin(speed)`.
+// The user program can set these to something initialized. For example,
+// `&Serial`, after `Serial.begin(speed)`.
 namespace qindesign {
 namespace network {
 
-Print *volatile stdPrint = nullptr;
+Print *volatile stdoutPrint = nullptr;
 Print *volatile stderrPrint = nullptr;
 
 }  // namespace network
@@ -110,20 +110,22 @@ int _write(int file, const void *buf, size_t len) {
 
   Print *out;
 
-  // Send both stdout and stderr to stdPrint
-  if (file == STDOUT_FILENO) {
-    out = ::qindesign::network::stdPrint;
-  } else if (file == STDERR_FILENO) {
-    if (::qindesign::network::stderrPrint == nullptr) {
-      out = ::qindesign::network::stdPrint;
-    } else {
+  switch (file) {
+    case STDOUT_FILENO:
+      out = ::qindesign::network::stdoutPrint;
+      break;
+
+    case STDERR_FILENO:
       out = ::qindesign::network::stderrPrint;
-    }
-  } else if (file == STDIN_FILENO) {
-    errno = EBADF;
-    return -1;
-  } else {
-    out = (Print *)file;
+      break;
+
+    case STDIN_FILENO:
+      errno = EBADF;
+      return -1;
+
+    default:
+      out = (Print *)file;
+      break;
   }
 
   if (out == nullptr) {
