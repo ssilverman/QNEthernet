@@ -26,6 +26,8 @@ and this project adheres to
   `DNSClient::getHostByName()`. This helps prevent any references from going out
   of scope before the callback is called.
 * Changed `EthernetUDP::send()` functions back to returning a Boolean value.
+* There's now `Print` objects for each of `stdout` and `stderr`: `stdoutPrint`
+  and `stderrPrint`.
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's

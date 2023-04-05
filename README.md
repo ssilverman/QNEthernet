@@ -47,7 +47,7 @@ files provided with the lwIP release.
 11. [mDNS services](#mdns-services)
 12. [DNS](#dns)
 13. [stdio](#stdio)
-    1. [stdout and stderr](#stdout-and-stderr)
+    1. [Adapt stdio files to the Print interface](#adapt-stdio-files-to-the-print-interface)
 14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
@@ -493,15 +493,13 @@ here are a few steps to follow:
    header for `EthernetUDP`. Some external examples also include `SPI.h`. This
    is not needed unless you're actually using SPI in your program.
 2. Below that, add: `using namespace qindesign::network;`
-3. In `setup()`, just after initializing `Serial`, set `stdPrint = &Serial`.
-   This enables some lwIP output and also `printf` for your own code.
-4. You likely don't want or need to set/choose your own MAC address, so just
+3. You likely don't want or need to set/choose your own MAC address, so just
    call `Ethernet.begin()` with no arguments to use DHCP, and the three- or
    four-argument version (IP, subnet mask, gateway[, DNS]) to set your own
    address. If you really want to set your own MAC address, see
    `setMACAddress(mac)` or one of the deprecated `begin(...)` functions that
    takes a MAC address parameter.
-5. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
+4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
    doesn't wait. Try 10 seconds (10000 ms) and see if that works for you.
 
@@ -509,9 +507,9 @@ here are a few steps to follow:
    address, link, and network interface activity changes. This obviates the need
    for waiting and is the preferred approach.
 
-6. `Ethernet.hardwareStatus()` always returns `EthernetOtherHardware`. This
-   means that there is no reason to call this function.
-7. Most other things should be the same.
+5. `Ethernet.hardwareStatus()` can detect both the Ethernet and no-Ethernet
+   versions of the hardware.
+6. Most other things should be the same.
 
 Please see the examples for more things you can do with the API, including but
 not limited to:
@@ -945,19 +943,16 @@ partially obviating the need for _QNEthernet_ to define its own. However, it
 always maps all of `stdin`, `stdout`, and `stderr` specifically to `Serial`.
 
 Compared to the internal `printf` support, the _QNEthernet_ version:
-1. Can map output to any `Print` interface, not just `Serial`.
-2. Can separate `stdout` and `stderr`, if needed.
+1. Can map output to any `Print` interface, not just `Serial`,
+2. Can separate `stdout` and `stderr` outputs, and
 3. Disallows `stdin` as a valid output.
 
 To enable the _QNEthernet_ version, define the `QNETHERNET_ENABLE_CUSTOM_WRITE`
-macro and set the `stdPrint` variable. It's not included by default. Note that
-if the feature is disabled, then neither `stdPrint` nor `stderrPrint` will
-be defined.
+macro and set the `stdoutPrint` or `stderrPrint` variables to point to a valid
+`Print` implementation. Note that if the feature is disabled, then neither
+`stdoutPrint` nor `stderrPrint` will be defined.
 
-There, the output is sent to a custom variable, `Print *stdPrint`, that defaults
-to NULL. To enable any lwIP output, including assertion failure output, that
-variable must be set to something conforming to the `Print` interface. If it is
-not set, `printf` will still work, but there will be no output.
+Both variables default to NULL.
 
 For example:
 ```c++
@@ -966,9 +961,9 @@ For example:
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial initialization
+    // Wait for Serial
   }
-  qindesign::network::stdPrint = &Serial;
+  qindesign::network::stdoutPrint = &Serial;
 }
 ```
 
@@ -976,45 +971,17 @@ If your application wants to define its own `_write()` implementation or to use
 the system default, then leave the `QNETHERNET_ENABLE_CUSTOM_WRITE`
 macro undefined.
 
-### stdout and stderr
+### Adapt stdio files to the Print interface
 
-If `QNETHERNET_ENABLE_CUSTOM_WRITE` is defined then, by default, all `stdout`
-and `stderr` output will be sent to `stdPrint`. The `stderr` output can be made
-separate by defining `stderrPrint` to something non-NULL.
+There is a utility class for decorating stdio `FILE*` objects with the `Print`
+interface. See the `StdioPrint` class in _src/util/PrintUtils.h_.
 
-Cases:
-
-| `stdPrint` | `stderrPrint`                   | `stdout` output | `stderr` output |
-| ---------- | --------------------------------| --------------- | --------------- |
-| Non-NULL   | NULL                            | `stdPrint`      | `stdPrint`      |
-| Non-NULL   | Non-NULL                        | `stdPrint`      | `stderrPrint`   |
-| NULL       | Non-NULL                        | Nowhere         | `stderrPrint`   |
-| NULL       | NULL                            | Nowhere         | Nowhere         |
-| Non-NULL   | Custom "nowhere" `Print` object | `stdPrint`      | Nowhere         |
-
-The only way, currently, to have data go nowhere with `stderr` but somewhere
-with `stdout` is to create a custom `Print` derived class that sends data
-nowhere and assign it to `stderrPrint`. The reason for this is that the default
-behaviour was chosen to be to send both outputs to `stdPrint`.
-
-For example:
-```c++
-class NullPrint : public Print {
- public:
-  size_t write(uint8_t b) override { return 1; }
-  size_t write(const uint8_t *buffer, size_t size) override { return size; }
-  int availableForWrite() override { return INT16_MAX; }
-} nullPrint;
-
-void setup() {
-  Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
-    // Wait for Serial initialization
-  }
-  qindesign::network::stdPrint = &Serial;
-  qindesign::network::stderrPrint = &nullPrint;
-}
-```
+This is useful when:
+1. A `FILE*` object does its own buffering and you also need to write to the
+   underlying `Print` object directly, `Serial` for example. It avoids having to
+   remember to call `fflush()` on the `FILE*` before writing to the underlying
+   `Print` object.
+2. There's a need to easily print `Printable` objects to the `FILE*`.
 
 ## Raw Ethernet frames
 
