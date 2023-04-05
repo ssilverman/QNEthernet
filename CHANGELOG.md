@@ -21,7 +21,7 @@ and this project adheres to
   "write error" value and the stdio error state is cleared appropriately when
   the functions detect that "write error" is back to zero.
 * Changed default `stdio` output behaviour to use the new system default. (This
-  exists as of Teensyduino 1.58-beta4.)
+  exists as of Teensyduino 1.58-beta4.) See: `QNETHERNET_ENABLE_CUSTOM_WRITE`.
 * Added a timeout parameter to the callback version of
   `DNSClient::getHostByName()`. This helps prevent any references from going out
   of scope before the callback is called.
@@ -31,7 +31,7 @@ and this project adheres to
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's
-  internal `_write()` definition.
+  internal `_write()` definition. See: `QNETHERNET_ENABLE_CUSTOM_WRITE`.
 
 ### Fixed
 * Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the
