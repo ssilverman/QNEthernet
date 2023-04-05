@@ -6,8 +6,8 @@
 
 #ifndef QNETHERNET_USE_ENTROPY_LIB
 
-#ifndef QNETHERNET_UTIL_ENTROPY_H_
-#define QNETHERNET_UTIL_ENTROPY_H_
+#ifndef QNETHERNET_SECURITY_ENTROPY_H_
+#define QNETHERNET_SECURITY_ENTROPY_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,6 +41,6 @@ size_t trng_data(uint8_t *data, size_t size);
 }  // extern "C"
 #endif  // __cplusplus
 
-#endif  // QNETHERNET_UTIL_ENTROPY_H_
+#endif  // QNETHERNET_SECURITY_ENTROPY_H_
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
