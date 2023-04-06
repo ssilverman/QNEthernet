@@ -179,7 +179,7 @@ void processConnection(ConnectionState &state,
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial to initialize
+    // Wait for Serial to
   }
   printf("Starting IPerfServer...\r\n");
 

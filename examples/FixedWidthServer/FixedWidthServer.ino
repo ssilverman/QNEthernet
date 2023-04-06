@@ -57,7 +57,7 @@ EthernetServer server{kServerPort};
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial to initialize
+    // Wait for Serial
   }
   printf("Starting...\r\n");
 

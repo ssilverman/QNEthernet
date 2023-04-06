@@ -49,7 +49,7 @@ void networkChanged(bool hasIP, bool linkState);
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial to initialize
+    // Wait for Serial
   }
 
   printf("Starting PixelPusherServer...\r\n");

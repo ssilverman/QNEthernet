@@ -42,7 +42,7 @@ uint8_t buf[48];
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial to initialize
+    // Wait for Serial
   }
   printf("Starting...\r\n");
 

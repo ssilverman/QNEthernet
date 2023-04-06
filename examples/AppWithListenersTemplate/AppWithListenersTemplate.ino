@@ -83,7 +83,7 @@ void setup() {
   // Initialize Serial output
   Serial.begin(115200);
   while (!Serial && millis() < 4000) {
-    // Wait for Serial to initialize
+    // Wait for Serial
   }
   delay(1500);  // Give external monitors a chance to start
   if (CrashReport) {  // Print any crash report
