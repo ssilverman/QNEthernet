@@ -35,6 +35,9 @@
 // 2. If ipaddr is not NULL then the application is trying to connect.
 //
 // The function isn't required to use the arguments.
+//
+// If the socket could not be created, then the returned argument, if not NULL,
+// is freed with a call to altcp_tls_free_config().
 extern std::function<void *(const ip_addr_t *ipaddr, uint16_t port)>
     qnethernet_allocator_arg;
 #endif  // LWIP_ALTCP && LWIP_ALTCP_TLS

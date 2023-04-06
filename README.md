@@ -1072,6 +1072,11 @@ trying to do:
 
 It must return a pointer of type `struct altcp_tls_config *`.
 
+On managing the returned argument memory: If a socket could not be created then
+the following call is made after determining that the socket is NULL and the
+argument is not NULL:
+`altcp_tls_free_config(static_cast<altcp_tls_config *>(arg))`
+
 ## On connections that hang around after cable disconnect
 
 Ref: [EthernetServer accept no longer connects clients after unplugging/plugging ethernet cable ~7 times](https://github.com/ssilverman/QNEthernet/issues/15)
