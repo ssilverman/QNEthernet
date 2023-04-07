@@ -24,10 +24,11 @@ using namespace qindesign::network;
 constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // Connection information
-constexpr char kHost[]{"www.google.com"};
+#define HOST "www.example.com"
+constexpr char kHost[]{HOST};
 constexpr char kRequest[]{
     "HEAD / HTTP/1.1\r\n"
-    "Host: www.google.com\r\n"
+    "Host: " HOST "\r\n"
     "Connection: close\r\n"
     "\r\n"
 };
