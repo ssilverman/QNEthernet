@@ -17,6 +17,7 @@ and this project adheres to
   within PlatformIO.
 * Added sections to the README that describe how to configure compiler options
   for both the Arduino IDE and PlatformIO.
+* Added an `AltcpTemplate` example.
 
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the
