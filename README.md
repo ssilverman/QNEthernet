@@ -52,8 +52,8 @@ files provided with the lwIP release.
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
-16. [Application layered TCP: TLS, etc.](#application-layered-tcp-tls-etc)
-    1. [About the allocator arg function](#about-the-allocator-arg-function)
+16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
+    1. [About the allocator functions](#about-the-allocator-functions)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
@@ -1044,38 +1044,45 @@ defines can be found in _src/lwip/opt.h_.
    2. `ETHARP_VLAN_CHECK_FN`, (see `ETHARP_SUPPORT_VLAN`)
    3. `ETHARP_VLAN_CHECK`. (see `ETHARP_SUPPORT_VLAN`)
 
-## Application layered TCP: TLS, etc.
+## Application layered TCP: TLS, proxies, etc.
 
 lwIP provides a way to decorate the TCP layer. It's called "Application Layered
-TCP." It enables an application to add things like TLS without changing the
-source code.
+TCP." It enables an application to add things like TLS and proxies without
+changing the source code.
 
-Here are the steps to add TLS:
-1. Set `LWIP_ALTCP` and `LWIP_ALTCP_TLS` to `1` in `lwipopts.h`,
-2. Implement a function somewhere in your code having this name and signature:
-   `std::function<void *(const ip_addr_t *ipaddr, uint16_t port)> qnethernet_allocator_arg`,
-   and that returns a pointer of type `struct altcp_tls_config *`,
-   and
-3. Implement all the functions declared in _src/lwip/altcp_tls.h_.
+Here are the steps to add decorated TCP:
+1. Set `LWIP_ALTCP` and optionally `LWIP_ALTCP_TLS` to `1` in `lwipopts.h`.
+2. Implement two functions somewhere in your code, having these names and
+   signatures:
+   ```c++
+   std::function<void(const ip_addr_t *ipaddr, uint16_t port,
+                      altcp_allocator_t *allocator)> qnethernet_get_allocator;
+   std::function<void(altcp_allocator_t *allocator)> qnethernet_free_allocator;
+   ```
+3. Implement all the functions necessary for the wrapping implementation. For
+   example, for TLS, this means all the functions declared in
+   _src/lwip/altcp_tls.h_.
 
 See _src/lwip/altcp.c_ for more information.
 
-### About the allocator arg function
+### About the allocator functions
 
-The function from step 2 returns the argument given to the allocator function by
-altcp. It is not required to use the `ipaddr` and `port` parameters; they are
-there in case the information is needed. They indicate what the calling code is
-trying to do:
+The functions from step 2 create and destroy any resources used by the altcp
+wrapper. The first function fills in the allocator function and an argument
+appropriate to that allocator function. For example, `altcp_tcp_alloc()` doesn't
+need an argument, but `altcp_tls_alloc()` needs a pointer to a
+`struct altcp_tls_config`.
+
+The second function frees any resources that haven't already been freed. It's up
+to the application and TCP wrapper implementation to properly manage resources
+and to provide a way to determine whether a resource needs to be freed. It is
+only called if a socket could not be created.
+
+The `ipaddr` and `port` parameters indicate what the calling code is trying
+to do:
 
 1. If `ipaddr` is NULL then the application is trying to listen.
 2. If `ipaddr` is not NULL then the application is trying to connect.
-
-It must return a pointer of type `struct altcp_tls_config *`.
-
-On managing the returned argument memory: If a socket could not be created then
-the following call is made after determining that the socket is NULL and the
-argument is not NULL:
-`altcp_tls_free_config(static_cast<altcp_tls_config *>(arg))`
 
 ## On connections that hang around after cable disconnect
 

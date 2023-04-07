@@ -13,6 +13,10 @@
 // This file is part of the QNEthernet library.
 
 #include <QNEthernet.h>
+#include <lwip/altcp_tcp.h>
+#if LWIP_ALTCP_TLS
+#include <lwip/altcp_tls.h>
+#endif  // LWIP_ALTCP_TLS
 
 using namespace qindesign::network;
 
@@ -28,18 +32,51 @@ constexpr char kRequest[]{
 };
 constexpr uint16_t kPort = 80;   // TLS generally uses port 443
 
-// The qnethernet_allocator_arg() function returns a pointer to
-// a 'struct altcp_tls_config'. On failure, altcp_tls_free_config()
-// will be called on the returned value.
-#if LWIP_ALTCP && LWIP_ALTCP_TLS
-std::function<void *(const ip_addr_t *, uint16_t)> qnethernet_allocator_arg =
-    [](const ip_addr_t *ipaddr, uint16_t port) {
+#if LWIP_ALTCP
+// The qnethernet_get_allocator() function fills in the given
+// allocator with an appropriate allocator function and argument,
+// using the IP address and port to choose one. If creating the socket
+// failed then qnethernet_free_allocator() is called to free any
+// resources that haven't already been freed.
+std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
+    qnethernet_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
+                                  altcp_allocator_t *allocator) {
       printf("[[qnethernet_allocator_arg(%s, %u): %s]]\r\n",
              ipaddr_ntoa(ipaddr), port,
-             ipaddr == NULL ? "Listen" : "Connect");
-      return nullptr;
+             (ipaddr == NULL) ? "Listen" : "Connect");
+      switch (port) {
+        case 80:
+          allocator->alloc = &altcp_tcp_alloc;
+          allocator->arg = nullptr;
+          break;
+#if LWIP_ALTCP_TLS
+        case 443:
+          allocator->alloc = &altcp_tls_alloc;
+          allocator->arg = get_altcp_tls_config();  // TBD by you, the user
+          break;
+#endif  // LWIP_ALTCP_TLS
+        default:
+          break;
+      }
     };
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
+
+// The qnethernet_free_allocator() function frees any resources
+// allocated with qnethernet_get_allocator() if they haven't already
+// been freed. It is up to the implementation to decide if a resource
+// has already been freed or not.
+std::function<void(const altcp_allocator_t *)> qnethernet_free_allocator =
+    [](const altcp_allocator_t *allocator) {
+      printf("[[qnethernet_free_allocator()]]\r\n");
+#if LWIP_ALTCP_TLS
+      if (allocator->alloc == &altcp_tls_alloc) {
+        struct altcp_tls_config *config =
+            (struct altcp_tls_config *)allocator->arg;
+        altcp_tls_free_config(config);
+            // Implementation MUST NOT free if already freed
+      }
+#endif  // LWIP_ALTCP_TLS
+    };
+#endif  // LWIP_ALTCP
 
 EthernetClient client;
 

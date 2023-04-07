@@ -18,29 +18,30 @@
 #include "QNEthernet.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
-#include "lwip/altcp_tcp.h"
-#if LWIP_ALTCP_TLS
-#include "lwip/altcp_tls.h"
-#endif  // LWIP_ALTCP_TLS
 #include "lwip/tcp.h"
 #endif  // LWIP_ALTCP
 
-#if LWIP_ALTCP && LWIP_ALTCP_TLS
-// This is a function that returns the argument to the allocator function used
-// by altcp. If this returns nullptr then a TCP connection will be used.
-// Otherwise, a TLS connection will be used.
+#if LWIP_ALTCP
+// This is a function that fills in the given 'altcp_allocator_t' with an
+// allocator function and an argument. The values are used by 'altcp_new()' to
+// create the appropriate socket type.
 //
 // The arguments indicate what the calling code is trying to do:
 // 1. If ipaddr is NULL then the application is trying to listen.
 // 2. If ipaddr is not NULL then the application is trying to connect.
 //
-// The function isn't required to use the arguments.
-//
-// If the socket could not be created, then the returned argument, if not NULL,
-// is freed with a call to altcp_tls_free_config().
-extern std::function<void *(const ip_addr_t *ipaddr, uint16_t port)>
-    qnethernet_allocator_arg;
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
+// If the socket could not be created, then qnethernet_free_allocator() is
+// called with the same allocator.
+extern std::function<void(const ip_addr_t *ipaddr, uint16_t port,
+                          altcp_allocator_t *allocator)>
+    qnethernet_get_allocator;
+
+// This function is called if the socket could not be created. It is called with
+// the same allocator as qnethernet_get_allocator(). This is an opportunity to
+// free the argument if it has not already been freed.
+extern std::function<void(const altcp_allocator_t *allocator)>
+    qnethernet_free_allocator;
+#endif  // LWIP_ALTCP
 
 namespace qindesign {
 namespace network {
@@ -260,22 +261,12 @@ void ConnectionManager::addConnection(
 static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
                                    u8_t ip_type) {
 #if LWIP_ALTCP
-  altcp_new_fn newf;
-  void *arg;
-#if LWIP_ALTCP_TLS
-  arg = qnethernet_allocator_arg(ipaddr, port);
-  newf = (arg == nullptr) ? &altcp_tcp_alloc : &altcp_tls_alloc;
-#else
-  newf = &altcp_tcp_alloc;
-  arg = nullptr;
-#endif  // LWIP_ALTCP_TLS
-  altcp_allocator_t allocator{ newf, arg };
+  altcp_allocator_t allocator{nullptr, nullptr};
+  qnethernet_get_allocator(ipaddr, port, &allocator);
   altcp_pcb *pcb = altcp_new_ip_type(&allocator, ip_type);
-#if LWIP_ALTCP_TLS
-  if (pcb == nullptr && arg != nullptr) {
-    altcp_tls_free_config(static_cast<altcp_tls_config *>(arg));
+  if (pcb == nullptr) {
+    qnethernet_free_allocator(&allocator);
   }
-#endif  // LWIP_ALTCP_TLS
   return pcb;
 #else
   return altcp_new_ip_type(nullptr, ip_type);
