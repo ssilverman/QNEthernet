@@ -83,6 +83,15 @@ class EthernetClass final {
     return MTU;
   }
 
+  // Returns whether promiscuous mode is enabled.
+  static constexpr bool isPromiscuousMode() {
+#ifdef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+    return true;
+#else
+    return false;
+#endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
+  }
+
   // Retrieves the MAC address.
   void macAddress(uint8_t mac[6]) const;
 

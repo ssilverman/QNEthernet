@@ -25,6 +25,7 @@ StdioPrint	KEYWORD1
 
 maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
+isPromiscuousMode	KEYWORD2
 macAddress	KEYWORD2	Ethernet.MACAddress
 setMACAddress	KEYWORD2	Ethernet.setMACAddress
 loop	KEYWORD2

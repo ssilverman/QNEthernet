@@ -373,6 +373,7 @@ and this project adheres to
 * New `EthernetUDP::send(data, len)` function for sending a packet without
   having to use `beginPacket()`/`write()`/`endPacket()`. It causes
   less overhead.
+* Added `EthernetClass::isPromiscuousMode()`.
 
 ### Changed
 * Changed `EthernetUDP::flush()` to be a no-op.
