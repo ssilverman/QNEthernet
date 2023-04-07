@@ -105,7 +105,7 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
   lastUpdateTimes_ = std::make_unique<CircularBuffer<uint32_t>>(
       (numStrips + ppData1_.maxStripsPerPacket - 1)/
       ppData1_.maxStripsPerPacket);
-  printf("k=%u\r\n", lastUpdateTimes_->capacity());
+  printf("k=%zu\r\n", lastUpdateTimes_->capacity());
 
   if (started_) {
     end();

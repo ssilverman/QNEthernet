@@ -10,6 +10,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cinttypes>
 
 #include <LiteOSCParser.h>
 
@@ -130,7 +131,7 @@ void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index) {
       break;
     }
     case 't':
-      out.printf("%u.%u",
+      out.printf("%" PRIu32 ".%" PRIu32,
                  static_cast<uint32_t>(osc.getTime(index) >> 32),
                  static_cast<uint32_t>(osc.getTime(index)));
       break;

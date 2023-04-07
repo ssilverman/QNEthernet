@@ -109,7 +109,7 @@ void loop() {
     IPAddress ip = client.remoteIP();
     printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     clients.emplace_back(std::move(client));
-    printf("Client count: %u\r\n", clients.size());
+    printf("Client count: %zu\r\n", clients.size());
   }
 
   // Process data from each client
@@ -136,6 +136,6 @@ void loop() {
                                [](const auto &state) { return state.closed; }),
                 clients.end());
   if (clients.size() != size) {
-    printf("Client count: %u\r\n", clients.size());
+    printf("Client count: %zu\r\n", clients.size());
   }
 }

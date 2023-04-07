@@ -334,7 +334,7 @@ void loop() {
                              [](const auto &state) { return state.closed; }),
               conns.end());
   if (conns.size() != size) {
-    printf("Connection count: %u\r\n", conns.size());
+    printf("Connection count: %zu\r\n", conns.size());
   }
 }
 
@@ -546,7 +546,7 @@ void processConnection(ConnectionState &state,
 
         // Compare with the existing settings
         if (std::memcmp(buf, state.settingsRaw, size) != 0) {
-          printf("%u.%u.%u.%u:%u: Settings error: bytes=%u\r\n",
+          printf("%u.%u.%u.%u:%u: Settings error: bytes=%zu\r\n",
                  state.remoteIP[0],
                  state.remoteIP[1],
                  state.remoteIP[2],
