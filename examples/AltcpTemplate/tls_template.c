@@ -7,6 +7,9 @@
 // This file is part of the QNEthernet library.
 
 #include <lwip/altcp.h>
+#include <lwip/opt.h>
+
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
 
 struct altcp_tls_config {
 };
@@ -18,3 +21,5 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
   return NULL;
 }
+
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS

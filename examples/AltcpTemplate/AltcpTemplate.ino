@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 // AltcpTemplate shows how to use the altcp framework for creating
-// custom connections. It defines a function that returns a TLS
-// configuration.
+// custom connections. It defines a function that returns a TLS or
+// proxy configuration.
 //
 // Prerequisites: Enable the LWIP_ALTCP and optionally the
 //                LWIP_ALTCP_TLS lwIP options.
@@ -17,6 +17,7 @@
 #if LWIP_ALTCP_TLS
 #include <lwip/altcp_tls.h>
 #endif  // LWIP_ALTCP_TLS
+#include <lwip/apps/altcp_proxyconnect.h>
 
 using namespace qindesign::network;
 
@@ -32,7 +33,16 @@ constexpr char kRequest[]{
 };
 constexpr uint16_t kPort = 80;   // TLS generally uses port 443
 
+// For proxy connections
+constexpr bool kUseProxy = false;  // Whether to use altcp_proxyconnect
+struct altcp_proxyconnect_config proxyConfig {
+  IPADDR4_INIT_BYTES(0, 0, 0, 0),  // Change this
+  8080,                            // TLS can be on 3128
+};
+// Note: There's also a TLS proxyconnect; this can be an exercise for the reader
+
 #if LWIP_ALTCP
+
 // The qnethernet_get_allocator() function fills in the given
 // allocator with an appropriate allocator function and argument,
 // using the IP address and port to choose one. If creating the socket
@@ -44,19 +54,30 @@ std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
       printf("[[qnethernet_allocator_arg(%s, %u): %s]]\r\n",
              ipaddr_ntoa(ipaddr), port,
              (ipaddr == NULL) ? "Listen" : "Connect");
-      switch (port) {
-        case 80:
+
+      if (kUseProxy) {
+        if (ipaddr != nullptr) {
+          allocator->alloc = &altcp_proxyconnect_alloc;
+          allocator->arg   = &proxyConfig;
+        } else {
           allocator->alloc = &altcp_tcp_alloc;
           allocator->arg = nullptr;
-          break;
-#if LWIP_ALTCP_TLS
-        case 443:
-          allocator->alloc = &altcp_tls_alloc;
-          allocator->arg = get_altcp_tls_config();  // TBD by you, the user
-          break;
-#endif  // LWIP_ALTCP_TLS
-        default:
-          break;
+        }
+      } else {
+        switch (port) {
+          case 80:
+            allocator->alloc = &altcp_tcp_alloc;
+            allocator->arg   = nullptr;
+            break;
+  #if LWIP_ALTCP_TLS
+          case 443:
+            allocator->alloc = &altcp_tls_alloc;
+            allocator->arg   = get_altcp_tls_config();  // TBD by you, the user
+            break;
+  #endif  // LWIP_ALTCP_TLS
+          default:
+            break;
+        }
       }
     };
 
@@ -67,15 +88,18 @@ std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
 std::function<void(const altcp_allocator_t *)> qnethernet_free_allocator =
     [](const altcp_allocator_t *allocator) {
       printf("[[qnethernet_free_allocator()]]\r\n");
+      // For the proxyConfig and for altcp_tcp_alloc,
+      // there's nothing to free
 #if LWIP_ALTCP_TLS
       if (allocator->alloc == &altcp_tls_alloc) {
         struct altcp_tls_config *config =
             (struct altcp_tls_config *)allocator->arg;
-        altcp_tls_free_config(config);
+        altcp_tls_free_config(config);  // <-- Example without can-free check
             // Implementation MUST NOT free if already freed
       }
 #endif  // LWIP_ALTCP_TLS
     };
+
 #endif  // LWIP_ALTCP
 
 EthernetClient client;
@@ -118,6 +142,9 @@ void setup() {
 
   // Connect and send the request
   printf("Connecting and sending request...\r\n");
+  if (kUseProxy) {
+    client.setConnectionTimeout(30000);  // Proxies can take longer, maybe
+  }
   if (client.connect(kHost, kPort) != 1) {
     printf("Failed to connect\r\n");
     disconnectedPrintLatch = true;
