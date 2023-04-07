@@ -28,6 +28,7 @@ and this project adheres to
 * Changed `EthernetUDP::send()` functions back to returning a Boolean value.
 * There's now `Print` objects for each of `stdout` and `stderr`: `stdoutPrint`
   and `stderrPrint`.
+* Improved `RawFrameMonitor` example.
 
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's

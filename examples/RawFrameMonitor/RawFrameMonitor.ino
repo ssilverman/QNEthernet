@@ -31,8 +31,10 @@ using namespace qindesign::network;
 constexpr uint16_t kEtherTypeVLAN = 0x8100u;
 constexpr uint16_t kEtherTypeQinQ = 0x88A8u;
 
-// Buffer for reading frames.
-uint8_t buf[EthernetFrame.maxFrameLen()];
+// We can access the frame's internal data buffer directly,
+// so we don't need the following:
+// // Buffer for reading frames.
+// uint8_t buf[EthernetFrame.maxFrameLen()];
 
 // Tracks the received frame count.
 int frameCount = 0;
@@ -51,6 +53,37 @@ void setup() {
   printf("MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
+  // Add listeners before starting Ethernet
+
+  Ethernet.onLinkState([](bool state) {
+    printf("[Ethernet] Link %s\r\n", state ? "ON" : "OFF");
+  });
+
+  Ethernet.onAddressChanged([]() {
+    IPAddress ip = Ethernet.localIP();
+    bool hasIP = (ip != INADDR_NONE);
+    if (hasIP) {
+      IPAddress subnet = Ethernet.subnetMask();
+      IPAddress broadcast = Ethernet.broadcastIP();
+      IPAddress gw = Ethernet.gatewayIP();
+      IPAddress dns = Ethernet.dnsServerIP();
+
+      printf("[Ethernet] Address changed:\r\n"
+             "    Local IP     = %u.%u.%u.%u\r\n"
+             "    Subnet       = %u.%u.%u.%u\r\n"
+             "    Broadcast IP = %u.%u.%u.%u\r\n"
+             "    Gateway      = %u.%u.%u.%u\r\n"
+             "    DNS          = %u.%u.%u.%u\r\n",
+             ip[0], ip[1], ip[2], ip[3],
+             subnet[0], subnet[1], subnet[2], subnet[3],
+             broadcast[0], broadcast[1], broadcast[2], broadcast[3],
+             gw[0], gw[1], gw[2], gw[3],
+             dns[0], dns[1], dns[2], dns[3]);
+    } else {
+      printf("[Ethernet] Address changed: No IP address\r\n");
+    }
+  });
+
   // Initialize Ethernet, in this case with DHCP
   printf("Starting Ethernet with DHCP...\r\n");
   if (!Ethernet.begin()) {
@@ -68,7 +101,9 @@ void loop() {
 
   frameCount++;
 
-  size = EthernetFrame.read(buf, size);
+  // Access the frame's data directly instead of using read()
+  // size = EthernetFrame.read(buf, size);
+  const uint8_t *buf = EthernetFrame.data();
   if (size < EthernetFrame.minFrameLen() - 4) {
     printf("%d: SHORT Frame[%d]: ", frameCount, size);
     for (int i = 0; i < size; i++) {
