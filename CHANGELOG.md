@@ -15,6 +15,8 @@ and this project adheres to
   expanded `stdio` output behaviour.
 * Added a bunch of unit tests. These use the Unity test framework from
   within PlatformIO.
+* Added sections to the README that describe how to configure compiler options
+  for both the Arduino IDE and PlatformIO.
 
 ### Changed
 * Updated `StdioPrint` adapter to use errors better. `errno` is set for the

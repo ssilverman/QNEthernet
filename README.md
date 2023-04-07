@@ -57,7 +57,9 @@ files provided with the lwIP release.
 18. [Notes on RAM1 usage](#notes-on-ram1-usage)
 19. [Entropy collection](#entropy-collection)
 20. [Configuration macros](#configuration-macros)
-    1. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
+    1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
+    2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
+    3. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
 21. [Complete list of features](#complete-list-of-features)
 22. [Other notes](#other-notes)
 23. [To do](#to-do)
@@ -1142,6 +1144,74 @@ There are several macros that can be used to configure the system:
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
 | `QNETHERNET_ENABLE_CUSTOM_WRITE`      | Use expanded `stdio` output behaviour               | [stdio](#stdio)                             |
 | `QNETHERNET_USE_ENTROPY_LIB`          | Use _Entropy_ library instead of internal functions | [Entropy collection](#entropy-collection)   |
+
+### Configuring macros using the Arduino IDE
+
+_[Current as of this writing: Arduino IDE 2.0.4, Teensyduino 1.58]_
+
+The Arduino IDE provides a facility to override the build options specified in a
+platform's build configuration file, _platform.txt_. It does this by looking for
+a file named _platform.local.txt_ in the same place. Any options in that "local"
+file override equivalent options in the main file.
+
+The suggested way to override compiler options is with the
+`compiler.cpp.extra_flags` and `compiler.c.extra_flags` properties. However,
+this only works if _platform.txt_ uses those options. If it does not then
+there's nothing to override. The current Teensyduino installation's
+_platform.txt_ file does not use these options.
+
+Here's how to implement the behaviour:
+1. Insert this section somewhere in _platform.txt_:
+   ```
+   # These can be overridden in platform.local.txt
+   compiler.c.extra_flags=
+   compiler.cpp.extra_flags=
+   ```
+2. Insert `{compiler.cpp.extra_flags}` before `{includes}` in:
+   1. `recipe.preproc.includes`
+   2. `recipe.preproc.macros`
+   3. `recipe.cpp.o.pattern`
+3. Insert `{compiler.c.extra_flags}` before `{includes}` in:
+   4. `recipe.c.o.pattern`
+
+Next, create a _platform.local.txt_ file in the same directory as the
+_platform.txt_ file and add the options you need. For example, to enable raw
+frame support:
+
+```
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+```
+
+Note that both properties are needed because _QNEthernet_ contains a mixture of
+C and C++ sources.
+
+The properties of most interest are probably the ones in this example. There are
+other ones defined in the Arduino AVR version, but aren't really needed here.
+
+Lest you think I've forgotten to add it, here're the locations of the files for
+the current latest version of the IDE:
+* Mac: _~/Library/Arduino15/packages/teensy/hardware/avr_
+* Linux: _~/.arduino15/packages/teensy/hardware/avr_
+* Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr_
+
+References:
+1. [Additional compiler options - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
+2. [Arduino IDE: Where can I pass defines to the compiler? - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
+3. [Request for Arduino IDE "extra_flags" support - Teensy Forum](https://forum.pjrc.com/threads/72556-Request-for-Arduino-IDE-quot-extra_flags-quot-support)
+4. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
+5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
+6. [Open the Arduino15 folder - Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
+
+### Configuring macros using PlatformIO
+
+Simply add compiler flags to the `build_flags` build option in _platformio.ini_.
+
+For example:
+
+```
+build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+```
 
 ### Redefining macros in `lwipopts.h`
 
