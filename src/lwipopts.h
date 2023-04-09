@@ -125,7 +125,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #ifndef LWIP_DHCP
 #define LWIP_DHCP                 LWIP_UDP  /* 0 */
 #endif  // !LWIP_DHCP
-// #define LWIP_DHCP_DOES_ACD_CHECK        LWIP_DHCP
+#define LWIP_DHCP_DOES_ACD_CHECK        0  /* LWIP_DHCP */
 // #define LWIP_DHCP_BOOTP_FILE            0
 // #define LWIP_DHCP_GET_NTP_SRV           0
 // #define LWIP_DHCP_MAX_NTP_SERVERS       1
