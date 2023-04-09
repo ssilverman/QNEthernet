@@ -211,8 +211,8 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
       !ip4_addr_isany(netmask) ||
       !ip4_addr_isany(gw)) {
     // Don't send a DHCP INFORM message because we don't want the other
-    // parameters potentially sent by the server; it also interferes with any
-    // first subsequent DHCP requests
+    // parameters potentially sent by the server; it also seems to interfere
+    // with any first subsequent DHCP requests
     // dhcp_inform(netif_);
     dhcpActive_ = false;
   } else {
