@@ -130,7 +130,6 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
 
   dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
   dhcpActive_ = false;
-  netif_set_down(netif_);
 
   begin(netif_ip4_addr(netif_),
         netif_ip4_netmask(netif_),
@@ -173,7 +172,6 @@ bool EthernetClass::begin(const IPAddress &ip,
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
     }
-    netif_set_down(netif_);
   }
 
   if (dns != INADDR_NONE) {
@@ -187,6 +185,10 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
                           const ip4_addr_t *gw) {
   if (!enet_has_hardware()) {
     return false;
+  }
+
+  if (netif_ != nullptr) {
+    netif_set_down(netif_);
   }
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
