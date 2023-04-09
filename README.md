@@ -171,7 +171,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `begin(ipaddr, netmask, gw, dns)`: Initializes the library, uses the Teensy's
   internal MAC address, and uses the given parameters for the network
   configuration. This returns whether startup was successful. The DNS server is
-  only set if `dns` is `INADDR_NONE`.
+  only set if `dns` is not `INADDR_NONE`; it remains the same if `dns`
+  is `INADDR_NONE`.
 
   Passing `dns`, if not `INADDR_NONE`, ensures that the DNS server IP is set
   before the _address-changed_ callback is called. The alternative approach to
