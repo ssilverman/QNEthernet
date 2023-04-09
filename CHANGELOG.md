@@ -40,6 +40,8 @@ and this project adheres to
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's
   internal `_write()` definition. See: `QNETHERNET_ENABLE_CUSTOM_WRITE`.
+* Removed sending a DHCP INFORM message when setting a static IP. It was
+  interfering with any first subsequent DHCP requests.
 
 ### Fixed
 * Fixed `EthernetClass::end()` to call `clearEvent()` before detaching the

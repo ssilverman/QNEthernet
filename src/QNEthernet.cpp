@@ -210,7 +210,10 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   if (!ip4_addr_isany(ipaddr) ||
       !ip4_addr_isany(netmask) ||
       !ip4_addr_isany(gw)) {
-    dhcp_inform(netif_);
+    // Don't send a DHCP INFORM message because we don't want the other
+    // parameters potentially sent by the server; it also interferes with any
+    // first subsequent DHCP requests
+    // dhcp_inform(netif_);
     dhcpActive_ = false;
   } else {
     retval = (dhcp_start(netif_) == ERR_OK);
