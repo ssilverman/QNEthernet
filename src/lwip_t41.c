@@ -853,7 +853,12 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 extern void unused_interrupt_vector(void);  // startup.c
 
 void enet_deinit() {
+  netif_set_addr(&s_t41_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  netif_set_link_down(&s_t41_netif);
+  netif_set_down(&s_t41_netif);
+
   if (s_isNetifAdded) {
+    netif_set_default(NULL);
     netif_remove(&s_t41_netif);
     netif_remove_ext_callback(&netif_callback);
     s_isNetifAdded = false;

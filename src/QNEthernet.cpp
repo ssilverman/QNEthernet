@@ -292,9 +292,6 @@ void EthernetClass::end() {
   DNSClient::setServer(0, INADDR_NONE);
   dhcp_release_and_stop(netif_);
   dhcpActive_ = false;
-  netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-  netif_set_link_down(netif_);
-  netif_set_down(netif_);
 
   enet_deinit();
   netif_ = nullptr;
