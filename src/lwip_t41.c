@@ -19,6 +19,7 @@
 #include <pgmspace.h>
 
 #include "lwip/arch.h"
+#include "lwip/dhcp.h"
 #include "lwip/err.h"
 #include "lwip/etharp.h"
 #include "lwip/init.h"
@@ -220,6 +221,7 @@ static struct netif s_t41_netif       = { .name = {'e', '0'} };
 static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
 static enet_init_states_t s_initState = kInitStateStart;
 static bool s_isNetifAdded            = false;
+static struct dhcp s_dhcp;
 
 // PHY status, polled
 static bool s_linkSpeed10Not100 = false;
@@ -806,6 +808,7 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   static bool isFirstInit = true;
   if (isFirstInit) {
     lwip_init();
+    dhcp_set_struct(&s_t41_netif, &s_dhcp);
 
     isFirstInit = false;
   }
