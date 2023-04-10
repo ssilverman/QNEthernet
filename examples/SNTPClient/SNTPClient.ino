@@ -110,10 +110,12 @@ void loop() {
     return;
   }
 
-  if (udp.read(buf, 48) != 48) {
-    printf("Not enough bytes\r\n");
-    return;
-  }
+  const uint8_t *buf = udp.data();
+  // Alternative:
+  // if (udp.read(buf, 48) != 48) {
+  //   printf("Not enough bytes\r\n");
+  //   return;
+  // }
 
   // See: Section 5, "SNTP Client Operations"
   int mode = buf[0] & 0x07;
