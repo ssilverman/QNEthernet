@@ -44,7 +44,7 @@ std::vector<char> format(const char *format, Args... args) {
 // --------------------------------------------------------------------------
 
 // Timeouts
-static constexpr uint32_t kDHCPTimeout = 20000;
+static constexpr uint32_t kDHCPTimeout = 30000;
 static constexpr uint32_t kLinkTimeout = 5000;
 static constexpr uint32_t kSNTPTimeout = 20000;
 static constexpr uint32_t kConnectTimeout = 5000;
