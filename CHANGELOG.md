@@ -34,7 +34,7 @@ and this project adheres to
 * Changed `EthernetUDP::send()` functions back to returning a Boolean value.
 * There's now `Print` objects for each of `stdout` and `stderr`: `stdoutPrint`
   and `stderrPrint`.
-* Improved `RawFrameMonitor` example.
+* Improved `RawFrameMonitor` and `SNTPClient` examples.
 * Changed "tcp" calls to "altcp" calls so that it's easier to add things like
   TLS and proxy support. There's accompanying `qnethernet_get_allocator(...)`
   and `qnethernet_free_allocator(...)` functions that need to be defined by the
