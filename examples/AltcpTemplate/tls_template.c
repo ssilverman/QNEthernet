@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// tls_template.c implements the minimum possible in order to get the project
-// to compile with the LWIP_ALTCP and LWIP_ALTCP_TLS options set.
+// tls_template.c implements the minimum possible in order to get the
+// project to compile with the LWIP_ALTCP and LWIP_ALTCP_TLS
+// options set.
 //
 // This file is part of the QNEthernet library.
 

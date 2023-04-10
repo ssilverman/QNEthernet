@@ -8,6 +8,7 @@
 #ifndef CIRCULARBUFFER_H_
 #define CIRCULARBUFFER_H_
 
+// C++ includes
 #include <cstddef>
 #include <memory>
 

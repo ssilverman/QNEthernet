@@ -17,9 +17,6 @@
 //
 // This file is part of the QNEthernet library.
 
-// C++ includes
-#include <cstdio>
-
 #include <QNEthernet.h>
 
 // *** Your own includes go here

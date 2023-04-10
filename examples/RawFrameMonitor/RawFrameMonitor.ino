@@ -1,22 +1,24 @@
 // SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// RawFrameMonitor prints all unknown raw Ethernet frames. Known frame types
-// won't be printed and include:
+// RawFrameMonitor prints all unknown raw Ethernet frames. Known frame
+// types won't be printed and include:
 // 1. IPv4 (0x0800)
 // 2. ARP  (0x0806)
 // 3. IPv6 (0x86DD) (if enabled)
 //
-// Currently, in order to receive frames not addressed to the device's MAC
-// address or to a subscribed multicast address, the destination address must be
-// tagged as "allowed" by calling `Ethernet.setMACAddressAllowed(mac, flag)`.
-// Alternatively, enable promiscuous mode by defining the
-// QNETHERNET_ENABLE_PROMISCUOUS_MODE macro.
-//
-// In order to use this example, define the QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+// Currently, in order to receive frames not addressed to the device's
+// MAC address or to a subscribed multicast address, the destination
+// address must be tagged as "allowed" by calling
+// `Ethernet.setMACAddressAllowed(mac, flag)`. Alternatively, enable
+// promiscuous mode by defining the QNETHERNET_ENABLE_PROMISCUOUS_MODE
 // macro.
 //
-// Note: the configuration macros must be defined in the project build options.
+// In order to use this example, define the
+// QNETHERNET_ENABLE_RAW_FRAME_SUPPORT macro.
+//
+// Note: the configuration macros must be defined in the project
+//       build options.
 //
 // This file is part of the QNEthernet library.
 
