@@ -94,7 +94,8 @@ static void test_builtin_mac() {
   // Get the built-in MAC address
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
   enet_getmac(mac);
-  TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], zeros), "Expected an internal MAC");
+  TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], zeros),
+                            "Expected an internal MAC");
 
   uint8_t mac2[6]{1};
   Ethernet.macAddress(mac2);
@@ -103,7 +104,8 @@ static void test_builtin_mac() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   Ethernet.MACAddress(mac2);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC (deprecated API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
+                                        "Expected matching MAC (deprecated API)");
 #pragma GCC diagnostic pop
 }
 
@@ -113,14 +115,16 @@ static void test_set_mac() {
   Ethernet.macAddress(mac);
 
   uint8_t mac2[6]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-  TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], mac2), "Expected internal MAC");
+  TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], mac2),
+                            "Expected internal MAC");
   Ethernet.setMACAddress(mac2);
   Ethernet.macAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC");
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   Ethernet.MACAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC (deprecated API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
+                                        "Expected matching MAC (deprecated API)");
 #pragma GCC diagnostic pop
 }
 
@@ -148,11 +152,14 @@ static void test_dhcp() {
 
 // Tests using a static IP.
 void test_static_ip() {
-  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP before start");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(),
+                            "Expected inactive DHCP before start");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE,
+                      "Expected no local IP before start");
 
   // Without a DNS server
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway), "Expected start success (1)");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success (1)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (1)");
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (1)");
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (1)");
@@ -162,7 +169,8 @@ void test_static_ip() {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   Ethernet.setDnsServerIP(kGateway);
 #pragma GCC diagnostic pop
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected gateway as DNS after set (deprecated API)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway,
+                      "Expected gateway as DNS after set (deprecated API)");
   Ethernet.setDNSServerIP(INADDR_NONE);
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS after set");
 
@@ -170,10 +178,12 @@ void test_static_ip() {
   Ethernet.setLocalIP(ip);
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == ip, "Expected matching local IP after set new");
   Ethernet.setLocalIP(kStaticIP);
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP after set static");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP,
+                      "Expected matching local IP after set static");
 
   // With a DNS server
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway), "Expected start success (2)");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway),
+                           "Expected start success (2)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (2)");
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (2)");
@@ -202,7 +212,8 @@ static void test_dns_lookup() {
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName).data());
   IPAddress ip;
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(DNSClient::getHostByName(kName, ip, kDNSLookupTimeout), "Expected lookup success");
+  TEST_ASSERT_TRUE_MESSAGE(DNSClient::getHostByName(kName, ip, kDNSLookupTimeout),
+                           "Expected lookup success");
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
   TEST_ASSERT_MESSAGE((ip == ip1) || (ip == ip2), "Expected different IP address");
@@ -226,9 +237,11 @@ static void test_hostname() {
 // Tests hardware type.
 static void test_hardware() {
   if (!Ethernet.begin(kStaticIP, kSubnetMask, kGateway)) {
-    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetNoHardware, "Expected no hardware");
+    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetNoHardware,
+                        "Expected no hardware");
   } else {
-    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetOtherHardware, "Expected other hardware");
+    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetOtherHardware,
+                        "Expected other hardware");
   }
 }
 
@@ -277,7 +290,8 @@ static void test_link_listener() {
   while (Ethernet.linkState() && timer < kLinkTimeout) {
     yield();
   }
-  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
+  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms",
+                      static_cast<uint32_t>(timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(linkState, "Expected link down in callback");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
@@ -307,7 +321,8 @@ static void test_address_listener() {
   // while ((Ethernet.localIP() != INADDR_NONE) && timer < kLinkTimeout) {
   //   yield();
   // }
-  // TEST_MESSAGE(format("No-address time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
+  // TEST_MESSAGE(format("No-address time: %" PRIu32 "ms",
+  //                     static_cast<uint32_t>(timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(hasIP, "Expected no IP in callback");
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
@@ -337,7 +352,8 @@ static void test_interface_listener() {
   // while (Ethernet.interfaceStatus() && timer < kLinkTimeout) {
   //   yield();
   // }
-  // TEST_MESSAGE(format("Interface-down time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
+  // TEST_MESSAGE(format("Interface-down time: %" PRIu32 "ms",
+  //                     static_cast<uint32_t>(timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down in callback");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.interfaceStatus(), "Expected interface down");
@@ -375,7 +391,8 @@ static void test_udp() {
   TEST_MESSAGE("Sending SNTP request...");
   EthernetUDP udp;
   udp.begin(kNTPPort);
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48), "Expected UDP send success");
+  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
+                           "Expected UDP send success");
 
   bool validReply = false;
   uint32_t sntpTime = 0;
@@ -414,7 +431,8 @@ static void test_udp() {
 
   TEST_ASSERT_TRUE_MESSAGE(validReply, "Expected valid reply");
 
-  TEST_MESSAGE(format("SNTP reply time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
+  TEST_MESSAGE(format("SNTP reply time: %" PRIu32 "ms",
+                      static_cast<uint32_t>(timer)).data());
 
   if ((sntpTime & 0x80000000U) == 0) {
     // See: Section 3, "NTP Timestamp Format"
