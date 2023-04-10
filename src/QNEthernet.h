@@ -25,6 +25,7 @@
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
+#include "lwip/prot/ethernet.h"
 #include "lwip_t41.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"
@@ -59,7 +60,7 @@ enum EthernetHardwareStatus {
 
 class EthernetClass final {
  public:
-  static constexpr int kMACAddrSize = 6;
+  static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
 
   // Accesses the singleton instance.
   static EthernetClass &instance();

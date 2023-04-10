@@ -25,6 +25,7 @@
 #include "lwip/init.h"
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
+#include "lwip/prot/ethernet.h"
 #include "lwip/stats.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
