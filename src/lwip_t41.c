@@ -331,10 +331,6 @@ static void t41_init_phy() {
       // DISABLED
       // ALT5 (GPIO2_IO15)
 
-  GPIO7_GDIR    |= (1 << 14) | (1 << 15);
-  GPIO7_DR_SET   = (1 << 15);  // Power on
-  GPIO7_DR_CLEAR = (1 << 14);  // Reset PHY chip
-
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
 
   // Configure the MDIO and MDC pins
@@ -377,6 +373,20 @@ static void t41_init_phy() {
       // DAISY:1
       // GPIO_B1_10_ALT6
 
+  ENET_MSCR = ENET_MSCR_MII_SPEED(9);
+
+  // Note: Ensure the clock is present at the PHY (XI) at power up
+
+  // Use delays to let things settle, just in case; there's been some
+  // restart issues when calling Ethernet.end() and then restarting:
+  // Not all packets seem to be received from the PHY; this attempts
+  // to help mitigate this problem.
+  GPIO7_GDIR    |= (1 << 14) | (1 << 15);
+  GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Ensure power off and reset
+  delay(50);  // Use T4, post power-up stabilization time for the off time
+  GPIO7_DR_SET   = (1 << 15);              // Power on
+  delay(50);  // Use T4, Post power-up stabilization time for the on time
+
   // PHY timing: pg 9, Section 6.6 "Timing Requirements"
   // Reset Timing:
   // T1: Minimum RESET_PULSE width (w/o debouncing caps): 25us
@@ -385,11 +395,9 @@ static void t41_init_phy() {
   // Power-Up Timing:
   // T4: Powerup to SMI ready: Post power-up stabilization time prior to MDC
   //     preamble for register access: 50ms
-  delayMicroseconds(25);  // T1, minimum RESET_PULSE width
-  GPIO7_DR_SET = (1 << 14);  // Start PHY chip: take out of reset
-  delay(2);  // T2, reset to SMI ready
-
-  ENET_MSCR = ENET_MSCR_MII_SPEED(9);
+  // delayMicroseconds(25);  // T1, minimum RESET_PULSE width
+  GPIO7_DR_SET = (1 << 14);  // Take out of reset
+  delay(50);  // T4, power-up stabilization time
 
   // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
   mdio_write(PHY_LEDCR, 0x0280);  // LED shows link status, active high

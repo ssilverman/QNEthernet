@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Reset the PHY in a much more conservative way. Hopefully this helps with
+  restarting Ethernet causing packets to not be received.
+
 ## [0.20.0]
 
 ### Added
