@@ -1306,24 +1306,26 @@ _QNEthernet_ library.
     receive buffering
 11. [Listeners](#how-to-use-listeners) to watch link, network interface, and
     address state
-12. IPv6-capable with some additions
-13. IEEE1588-capable with some additions
-14. TLS- and TCP proxy-capable with some additions
-15. [Client shutdown options](#ethernetclient): _close_ (start close process
+12. With some additions:
+    1. IPv6
+    2. IEEE 1588, Precision Time Protocol (PTP)
+    3. TLS and TCP proxies
+    4. Energy-Efficient Ethernet (EEE)
+13. [Client shutdown options](#ethernetclient): _close_ (start close process
     without waiting), _closeOutput_ (close just the output side, also called a
     "half-close"), _abort_ (shuts down the connection without going through the
     TCP close process), _stop_ (close and wait)
-16. Ability to [fully write](#how-to-write-data-to-connections) data to a
+14. Ability to [fully write](#how-to-write-data-to-connections) data to a
     client connection
-17. [Multicast](#how-to-use-multicast) support
-18. [Promiscuous mode](#promiscuous-mode)
-19. `SO_REUSEADDR` support (see [`EthernetServer`](#ethernetserver)
+15. [Multicast](#how-to-use-multicast) support
+16. [Promiscuous mode](#promiscuous-mode)
+17. `SO_REUSEADDR` support (see [`EthernetServer`](#ethernetserver)
     and [`EthernetUDP`](#ethernetudp))
-20. [`TCP_NODELAY`](#tcp-socket-options) support
-21. Configuration via [Configuration macros](#configuration-macros)
-22. UDP and raw frame queueing for when data arrives in bursts that are faster
+18. [`TCP_NODELAY`](#tcp-socket-options) support
+19. Configuration via [Configuration macros](#configuration-macros)
+20. UDP and raw frame queueing for when data arrives in bursts that are faster
     than the ability of the program to process them
-23. Non-blocking TCP connections.
+21. Non-blocking TCP connections.
 
 ## Other notes
 
