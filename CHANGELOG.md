@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `EthernetClass::linkIsCrossover()` for checking if a crossover cable
+  is detected.
+
 ### Fixed
 * Reset the PHY in a much more conservative way. Hopefully this helps with
   restarting Ethernet causing packets to not be received.

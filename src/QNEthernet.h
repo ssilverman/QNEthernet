@@ -165,6 +165,10 @@ class EthernetClass final {
   // only valid if the link is up.
   bool linkIsFullDuplex() const;
 
+  // Returns whether a crossover cable is detected. This is only valid if the
+  // link is up.
+  bool linkIsCrossover() const;
+
   // Sets a link state callback.
   //
   // Note that no network tasks should be done from inside the listener.

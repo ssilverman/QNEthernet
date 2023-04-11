@@ -227,6 +227,7 @@ static struct dhcp s_dhcp;
 // PHY status, polled
 static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
+static bool s_linkIsCrossover   = false;
 
 // Forward declarations
 static void enet_isr();
@@ -758,8 +759,9 @@ static inline void check_link_status() {
 
       // TODO: Should we read the speed only at link UP or every time?
       status = mdio_read(PHY_PHYSTS);
-      s_linkSpeed10Not100 = ((status & (1 << 1)) != 0);
-      s_linkIsFullDuplex  = ((status & (1 << 2)) != 0);
+      s_linkSpeed10Not100 = ((status & (1 <<  1)) != 0);
+      s_linkIsFullDuplex  = ((status & (1 <<  2)) != 0);
+      s_linkIsCrossover   = ((status & (1 << 14)) != 0);
     } else {
       netif_set_link_down(&s_t41_netif);
     }
@@ -951,6 +953,10 @@ int enet_link_speed() {
 
 bool enet_link_is_full_duplex() {
   return s_linkIsFullDuplex;
+}
+
+bool enet_link_is_crossover() {
+  return s_linkIsCrossover;
 }
 
 bool enet_output_frame(const uint8_t *frame, size_t len) {

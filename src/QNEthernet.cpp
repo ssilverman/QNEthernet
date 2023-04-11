@@ -321,6 +321,10 @@ bool EthernetClass::linkIsFullDuplex() const {
   return enet_link_is_full_duplex();
 }
 
+bool EthernetClass::linkIsCrossover() const {
+  return enet_link_is_crossover();
+}
+
 bool EthernetClass::interfaceStatus() const {
   if (netif_ == nullptr) {
     return false;

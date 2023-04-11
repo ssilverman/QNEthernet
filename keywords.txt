@@ -38,6 +38,7 @@ linkStatus	KEYWORD2	Ethernet.linkStatus
 linkState	KEYWORD2
 linkSpeed	KEYWORD2
 linkIsFullDuplex	KEYWORD2
+linkIsCrossover	KEYWORD2
 onLinkState	KEYWORD2
 onAddressChanged	KEYWORD2
 onInterfaceStatus	KEYWORD2

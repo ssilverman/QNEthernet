@@ -189,6 +189,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
+* `linkIsCrossover()`: Returns whether a crossover cable is detected.
 * `linkIsFullDuplex()`: Returns whether the link is full duplex (`true`) or half
   duplex (`false`).
 * `joinGroup(ip)`: Joins a multicast group.
