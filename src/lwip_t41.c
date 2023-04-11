@@ -751,17 +751,19 @@ static inline void check_link_status() {
     return;
   }
 
-  uint16_t status = mdio_read(PHY_BMSR);
-  uint8_t is_link_up = !!(status & (1 << 2));
+  // Read all the states every time because the link might still be negotiating
+  // Note: PHY_PHYSTS doesn't seem to contain the live Link_Status unless BMSR
+  //       is read too
+  mdio_read(PHY_BMSR);
+  uint16_t status = mdio_read(PHY_PHYSTS);
+  uint8_t is_link_up  = ((status & (1 <<  0)) != 0);
+  s_linkSpeed10Not100 = ((status & (1 <<  1)) != 0);
+  s_linkIsFullDuplex  = ((status & (1 <<  2)) != 0);
+  s_linkIsCrossover   = ((status & (1 << 14)) != 0);
+
   if (netif_is_link_up(&s_t41_netif) != is_link_up) {
     if (is_link_up) {
       netif_set_link_up(&s_t41_netif);
-
-      // TODO: Should we read the speed only at link UP or every time?
-      status = mdio_read(PHY_PHYSTS);
-      s_linkSpeed10Not100 = ((status & (1 <<  1)) != 0);
-      s_linkIsFullDuplex  = ((status & (1 <<  2)) != 0);
-      s_linkIsCrossover   = ((status & (1 << 14)) != 0);
     } else {
       netif_set_link_down(&s_t41_netif);
     }
