@@ -52,7 +52,10 @@ void setup() {
 
   Ethernet.onLinkState([](bool state) {
     if (state) {
-      printf("[Ethernet] Link: ON, %d Mbps\r\n", Ethernet.linkSpeed());
+      printf("[Ethernet] Link: ON, %d Mbps, %s duplex, %s crossover\r\n",
+             Ethernet.linkSpeed(),
+             Ethernet.linkIsFullDuplex() ? "full" : "half",
+             Ethernet.linkIsCrossover() ? "is" : "not");
     } else {
       printf("[Ethernet] Link: OFF\r\n");
     }
