@@ -244,6 +244,23 @@ static void enet_isr();
 #define PHY_BMSR   0x01
 #define PHY_PHYSTS 0x10
 
+#define PHY_LEDCR_BLINK_RATE_20Hz (0 << 9)
+#define PHY_LEDCR_BLINK_RATE_10Hz (1 << 9)
+#define PHY_LEDCR_BLINK_RATE_5Hz  (2 << 9)
+#define PHY_LEDCR_BLINK_RATE_2Hz  (3 << 9)
+#define PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH (1 << 7)
+
+#define PHY_LEDCR_VALUE (PHY_LEDCR_BLINK_RATE_10Hz | \
+                         PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH)
+
+#define PHY_RCSR_RMII_CLOCK_SELECT_50MHz (1 << 7)
+#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT (0 << 0)
+#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  (1 << 0)
+#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  (2 << 0)
+#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT (3 << 0)
+#define PHY_RCSR_VALUE (PHY_RCSR_RMII_CLOCK_SELECT_50MHz | \
+                        PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT)
+
 // Reads a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(uint16_t regaddr) {
   ENET_EIR = ENET_EIR_MII;  // Clear status
@@ -317,11 +334,13 @@ static void t41_init_phy() {
   // Configure pins
 
   // PHY strap configuration (before power up or reset)
-  // Note: The datasheet suggests 2.49kOhms, but we can only do 100kOhm pull-down
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;    // Master/Slave = RMII Slave Mode
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable
+  // Note: The datasheet suggests 2.49kohm, but we can only do 100kohm pull-down
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 17)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;    // Master/Slave = RMII Slave Mode (RX_D1, pin 20)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22)
+  // 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
+  // LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.14
       // SION:0 MUX_MODE:0101
@@ -400,11 +419,12 @@ static void t41_init_phy() {
   GPIO7_DR_SET = (1 << 14);  // Take out of reset
   delay(50);  // T4, power-up stabilization time
 
-  // LEDCR offset 0x18, set LED_Link_Polarity, pg 62
-  mdio_write(PHY_LEDCR, 0x0280);  // LED shows link status, active high
+  // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
+  // LED shows link status, active high, 10Hz
+  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
   // Check for PHY presence
-  if (mdio_read(PHY_LEDCR) != 0x0280) {
+  if (mdio_read(PHY_LEDCR) != PHY_LEDCR_VALUE) {
     // Power down the PHY
     GPIO7_DR_CLEAR = (1 << 15);
 
@@ -482,7 +502,7 @@ static void t41_low_level_init() {
       // GPIO_B1_11_ALT3
 
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
-  mdio_write(PHY_RCSR, 0x0081);  // Config for 50 MHz clock input
+  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);  // Config for 50 MHz clock input
 
   memset(s_rxRing, 0, sizeof(s_rxRing));
   memset(s_txRing, 0, sizeof(s_txRing));
