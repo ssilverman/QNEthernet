@@ -4,6 +4,8 @@
 // test_main.cpp tests the entropy functions.
 // This file is part of the QNEthernet library.
 
+#include <cerrno>
+
 #include <Arduino.h>
 #include <security/entropy.h>
 #include <unity.h>
@@ -46,6 +48,30 @@ static void test_data() {
   TEST_ASSERT_EQUAL_MESSAGE(0, trng_available(), "Expected empty entropy");
 }
 
+// Tests entropy_random().
+static void test_random() {
+  errno = 0;
+  entropy_random();
+  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+}
+
+// Tests entropy_random_range(range).
+static void test_random_range() {
+  errno = 0;
+  entropy_random_range(0);
+  TEST_ASSERT_EQUAL_MESSAGE(EDOM, errno, "Expected EDOM");
+  errno = 0;
+  TEST_ASSERT_EQUAL_MESSAGE(0, entropy_random_range(1), "Expected zero");
+  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+  for (int i = 0; i < (1 << 10); i++) {
+    uint32_t r = entropy_random_range(10);
+    TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+    String msg{"Expected value < 10: iteration "};
+    msg += i;
+    TEST_ASSERT_LESS_THAN_UINT32_MESSAGE(10, r, msg.c_str());
+  }
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -67,6 +93,8 @@ void setup() {
   RUN_TEST(test_active);
   RUN_TEST(test_available);
   RUN_TEST(test_data);
+  RUN_TEST(test_random);
+  RUN_TEST(test_random_range);
   trng_deinit();
   RUN_TEST(test_inactive);
   UNITY_END();
