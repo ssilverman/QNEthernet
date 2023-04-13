@@ -90,10 +90,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   if (!trng_is_started()) {
     trng_init();
   }
-  unsigned int seed;
-  if (trng_data((uint8_t *)&seed, sizeof(seed))) {
-    srand(seed);
-  }
+  srand(entropy_random());
 #else
   bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
                         CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY));
