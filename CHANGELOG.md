@@ -17,6 +17,7 @@ and this project adheres to
 ### Changed
 * Read PHY link status at every link check, not just at link change, because the
   state may still be changing.
+* Renamed TRNG tests to test_entropy.
 
 ### Fixed
 * Reset the PHY in a much more conservative way. Hopefully this helps with
