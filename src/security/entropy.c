@@ -8,6 +8,7 @@
 
 #include "entropy.h"
 
+#include <errno.h>
 #include <string.h>
 
 #include <imxrt.h>
@@ -245,6 +246,42 @@ size_t trng_data(uint8_t *data, size_t size) {
 }
 
 #undef min
+
+uint32_t entropy_random() {
+  uint32_t r;
+  if (trng_data((uint8_t *)&r, sizeof(r)) < sizeof(r)) {
+    errno = EAGAIN;
+  }
+  return r;
+}
+
+uint32_t entropy_random_range(uint32_t range) {
+  if (range == 0) {
+    errno = EDOM;
+    return 0;
+  }
+
+  if ((range & (range - 1)) == 0) {  // Is power of 2?
+    uint32_t r;
+    if (trng_data((uint8_t *)&r, sizeof(r)) < sizeof(r)) {
+      errno = EAGAIN;
+    }
+    return r & (range - 1);
+  }
+
+  uint32_t r;
+  uint32_t v;
+  uint32_t limit = -range;  // limit = 2^32 - range
+  do {
+    size_t s = trng_data((uint8_t *)&r, sizeof(r));
+    v = r % range;
+    if (s < sizeof(r)) {
+      errno = EAGAIN;
+      break;
+    }
+  } while (r - v > limit);
+  return v;
+}
 
 /*
 

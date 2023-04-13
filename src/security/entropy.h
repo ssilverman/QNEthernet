@@ -33,9 +33,20 @@ size_t trng_available();
 
 // Fills data from the entropy pool and keeps refreshing the pool until the
 // requested size has been reached or a failure was encountered. This returns
-// the number of bytes filled. If the value is less than 'size' then there was
-// an entropy generation error.
+// the number of bytes filled. If there was an entropy generation error then
+// this will return a value less than 'size'.
 size_t trng_data(uint8_t *data, size_t size);
+
+// Returns a random 4-byte number from the entropy generator. If there was any
+// entropy generation error then errno will be set to EAGAIN.
+uint32_t entropy_random();
+
+// Returns a random number in the range [0, range). This uses an unbiased
+// algorithm. If there was any entropy generation error then errno will be set
+// to EAGAIN. If 'range' is zero then errno will be set to EDOM.
+//
+// See: http://www.adammil.net/blog/v134_Efficiently_generating_random_numbers_without_bias.html
+uint32_t entropy_random_range(uint32_t range);
 
 #ifdef __cplusplus
 }  // extern "C"

@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added `EthernetClass::linkIsCrossover()` for checking if a crossover cable
   is detected.
+* Added entropy-based random number functions, `entropy_random()` and
+  `entropy_random_range(range)`. The second uses an unbiased algorithm.
 
 ### Changed
 * Read PHY link status at every link check, not just at link change, because the
