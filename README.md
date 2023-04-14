@@ -1216,7 +1216,7 @@ Here's how to implement the behaviour:
    2. `recipe.preproc.macros`
    3. `recipe.cpp.o.pattern`
 3. Insert `{compiler.c.extra_flags}` before `{includes}` in:
-   4. `recipe.c.o.pattern`
+   1. `recipe.c.o.pattern`
 
 Next, create a _platform.local.txt_ file in the same directory as the
 _platform.txt_ file and add the options you need. For example, to enable raw
