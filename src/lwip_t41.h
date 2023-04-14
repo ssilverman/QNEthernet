@@ -61,13 +61,13 @@ void enet_proc_input(void);
 void enet_poll();
 
 // Returns the link speed in Mbps.
-int enet_link_speed();
+int phy_link_speed();
 
 // Returns the link duplex mode, true for full and false for half.
-bool enet_link_is_full_duplex();
+bool phy_link_is_full_duplex();
 
 // Returns whether a crossover cable is detected.
-bool enet_link_is_crossover();
+bool phy_link_is_crossover();
 
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the range 60-(MAX_FRAME_LEN-4) (excludes the FCS (frame

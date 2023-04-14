@@ -311,15 +311,15 @@ bool EthernetClass::linkState() const {
 }
 
 int EthernetClass::linkSpeed() const {
-  return enet_link_speed();
+  return phy_link_speed();
 }
 
 bool EthernetClass::linkIsFullDuplex() const {
-  return enet_link_is_full_duplex();
+  return phy_link_is_full_duplex();
 }
 
 bool EthernetClass::linkIsCrossover() const {
-  return enet_link_is_crossover();
+  return phy_link_is_crossover();
 }
 
 bool EthernetClass::interfaceStatus() const {

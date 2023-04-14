@@ -969,15 +969,15 @@ void enet_poll() {
   check_link_status();
 }
 
-int enet_link_speed() {
+int phy_link_speed() {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool enet_link_is_full_duplex() {
+bool phy_link_is_full_duplex() {
   return s_linkIsFullDuplex;
 }
 
-bool enet_link_is_crossover() {
+bool phy_link_is_crossover() {
   return s_linkIsCrossover;
 }
 
