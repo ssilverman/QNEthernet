@@ -253,13 +253,19 @@ static void enet_isr();
 #define PHY_LEDCR_VALUE (PHY_LEDCR_BLINK_RATE_10Hz | \
                          PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH)
 
-#define PHY_RCSR_RMII_CLOCK_SELECT_50MHz (1 << 7)
+#define PHY_RCSR_RMII_CLOCK_SELECT_50MHz               (1 << 7)
 #define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT (0 << 0)
 #define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  (1 << 0)
 #define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  (2 << 0)
 #define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT (3 << 0)
+
 #define PHY_RCSR_VALUE (PHY_RCSR_RMII_CLOCK_SELECT_50MHz | \
                         PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT)
+
+#define PHY_PHYSTS_LINK_STATUS   (1 <<  0)  // 0: No link, 1: Valid link
+#define PHY_PHYSTS_SPEED_STATUS  (1 <<  1)  // 0: 100Mbps, 1: 10Mbps
+#define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  // 0: Half-Duplex, 1: Full-Duplex
+#define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  // 0: Normal, 1: Swapped
 
 // Reads a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(uint16_t regaddr) {
@@ -776,10 +782,10 @@ static inline void check_link_status() {
   //       is read too
   mdio_read(PHY_BMSR);
   uint16_t status = mdio_read(PHY_PHYSTS);
-  uint8_t is_link_up  = ((status & (1 <<  0)) != 0);
-  s_linkSpeed10Not100 = ((status & (1 <<  1)) != 0);
-  s_linkIsFullDuplex  = ((status & (1 <<  2)) != 0);
-  s_linkIsCrossover   = ((status & (1 << 14)) != 0);
+  uint8_t is_link_up  = ((status & PHY_PHYSTS_LINK_STATUS) != 0);
+  s_linkSpeed10Not100 = ((status & PHY_PHYSTS_SPEED_STATUS) != 0);
+  s_linkIsFullDuplex  = ((status & PHY_PHYSTS_DUPLEX_STATUS) != 0);
+  s_linkIsCrossover   = ((status & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
 
   if (netif_is_link_up(&s_t41_netif) != is_link_up) {
     if (is_link_up) {
