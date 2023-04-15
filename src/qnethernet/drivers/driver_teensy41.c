@@ -388,7 +388,7 @@ static bool mdio_read_nonblocking(const uint16_t regaddr,
 }
 
 // Blocking MDIO read.
-uint16_t mdio_read(const uint16_t regaddr) {
+uint16_t mdio_read_raw(const uint16_t regaddr) {
   uint16_t data;
   bool doCont = false;
   do {
@@ -422,11 +422,56 @@ static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
 }
 
 // Blocking MDIO write.
-void mdio_write(const uint16_t regaddr, const uint16_t data) {
+void mdio_write_raw(const uint16_t regaddr, const uint16_t data) {
   bool doCont = false;
   do {
     doCont = mdio_write_nonblocking(regaddr, data, doCont);
   } while (doCont);
+}
+
+// Gets the DEVAD bits for the given regaddr.
+// This is specific to the DP83825I chip.
+//
+// Return table:
+// 0x0000-0x0FFF: 11111
+// 0x1000-0x1FFF: 00011
+// 0x2000-0x2FFF: 00111
+// 0x3000-0xFFFF: 11111
+static inline uint16_t devadFor(const uint16_t regaddr) {
+  switch (regaddr & 0xf000) {
+    case 0x0000: return 0b11111;
+    case 0x1000: return 0b00011;  // MMD3
+    case 0x2000: return 0b00111;  // MMD7
+    default:
+      return 0b11111;
+  }
+}
+
+// Reads a PHY register, taking into account extended addresses.
+uint16_t mdio_read(const uint16_t regaddr) {
+  if (regaddr < 0x20) {
+    return mdio_read_raw(regaddr);
+  }
+
+  const uint16_t devad = devadFor(regaddr);
+  mdio_write_raw(PHY_REGCR, devad);
+  mdio_write_raw(PHY_ADDAR, regaddr & 0x0fff);
+  mdio_write_raw(PHY_REGCR, 0x4000 | devad);
+  return mdio_read_raw(PHY_ADDAR);
+}
+
+// Writes a PHY register, taking into account extended addresses.
+void mdio_write(const uint16_t regaddr, const uint16_t data) {
+  if (regaddr < 0x20) {
+    mdio_write_raw(regaddr, data);
+    return;
+  }
+
+  const uint16_t devad = devadFor(regaddr);
+  mdio_write_raw(PHY_REGCR, devad);
+  mdio_write_raw(PHY_ADDAR, regaddr & 0x0fff);
+  mdio_write_raw(PHY_REGCR, 0x4000 | devad);
+  mdio_write_raw(PHY_ADDAR, data);
 }
 
 // --------------------------------------------------------------------------
