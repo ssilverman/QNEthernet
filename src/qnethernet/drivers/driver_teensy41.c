@@ -601,7 +601,7 @@ FLASHMEM static void configure_rmii_pins(void) {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-FLASHMEM static void init_phy(void) {
+FLASHMEM void init_phy(void) {
   if ((s_initState != kInitStateStart) &&
       (s_initState != kInitStateHasHardware)) {
     return;
