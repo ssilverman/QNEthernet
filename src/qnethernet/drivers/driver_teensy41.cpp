@@ -499,10 +499,10 @@ uint16_t mdio_read(const uint16_t regaddr) {
   }
 
   const uint16_t devad = devadFor(regaddr);
-  mdio_write_raw(PHY_REGCR, devad);
-  mdio_write_raw(PHY_ADDAR, regaddr & 0x0fff);
-  mdio_write_raw(PHY_REGCR, 0x4000 | devad);
-  return mdio_read_raw(PHY_ADDAR);
+  mdio_write_raw(phy_regs::kREGCR, devad);
+  mdio_write_raw(phy_regs::kADDAR, regaddr & 0x0fff);
+  mdio_write_raw(phy_regs::kREGCR, 0x4000 | devad);
+  return mdio_read_raw(phy_regs::kADDAR);
 }
 
 // Writes a PHY register, taking into account extended addresses.
@@ -513,10 +513,10 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
   }
 
   const uint16_t devad = devadFor(regaddr);
-  mdio_write_raw(PHY_REGCR, devad);
-  mdio_write_raw(PHY_ADDAR, regaddr & 0x0fff);
-  mdio_write_raw(PHY_REGCR, 0x4000 | devad);
-  mdio_write_raw(PHY_ADDAR, data);
+  mdio_write_raw(phy_regs::kREGCR, devad);
+  mdio_write_raw(phy_regs::kADDAR, regaddr & 0x0fff);
+  mdio_write_raw(phy_regs::kREGCR, 0x4000 | devad);
+  mdio_write_raw(phy_regs::kADDAR, data);
 }
 
 // --------------------------------------------------------------------------
@@ -645,7 +645,7 @@ FLASHMEM static void configure_rmii_pins() {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-FLASHMEM static void init_phy() {
+FLASHMEM void init_phy() {
   if ((s_initState != InitStates::kStart) &&
       (s_initState != InitStates::kHasHardware)) {
     return;
