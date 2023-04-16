@@ -211,47 +211,7 @@ void loop() {
 
 /*
 
-https://e2e.ti.com/support/interface-group/interface/f/interface-forum/988906/dp83825i-tdr-test-issue-and-conflict-between-the-datasheet-register-map-and-the-application-note-issue
-
-
-ReSgeisgtmerent 4 Segment 5
- 0x3
-0x13
-0xA
-0x1C22
-0x3 0x15 0xA 0x1E32
-Solving Cable Faults Challenges with TI Ethernet PHYs
-Table 1.
-0x456[10x:39] 0x411[04x:106] 0x416[07x:4A]
-0x170[x112E:04]2
-0x3 0x16 0x9 0x1E52
-
-
-
-Segment 2 Segment 3 ReSgeisgtmerent 4 Segment 5
- 0x3
-0x13
-0xA
-0x1C22
-0x3 0x15 0xA 0x1E32
-Solving Cable Faults Challenges with TI Ethernet PHYs
-Table 1.
-0x456[10x:39] 0x411[04x:106] 0x416[07x:4A]
-0x170[x112E:04]2
-0x3 0x16 0x9 0x1E52
-SNLA330–November 2019
-
-ReSgeisgtmerent 4 Segment 5
- 0x3
-0x13
-0xA
-0x1C22
-0x3 0x15 0xA 0x1E32
-Solving Cable Faults Challenges with TI Ethernet PHYs
-Table 1.
-0x456[10x:39] 0x411[04x:106] 0x416[07x:4A]
-0x170[x112E:04]2
-
+PDF Table 1 printing errors:
 0x456[100x:39]    - 0x456[10:9] 0x3
 0x411[04x:106]    - 0x411[4:0]  0x16
 0x416[07x:4A]     - 0x416[7:4]  0xA
@@ -260,7 +220,11 @@ Table 1.
 0x107x51008       - 0x175       0x1008
 0x178[20:x02]     - 0x178[2:0]  0x2
 
-Segment 1: (From here: https://e2e.ti.com/support/interface-group/interface/f/interface-forum/988906/dp83825i-tdr-test-issue-and-conflict-between-the-datasheet-register-map-and-the-application-note-issue)
+See also:
+https://e2e.ti.com/support/interface-group/interface/f/interface-forum/988906/dp83825i-tdr-test-issue-and-conflict-between-the-datasheet-register-map-and-the-application-note-issue
+
+
+Segment 1 (From the link):
 0x456: 0x0608 [10:9]=0x3
 0x411: 0x0813 [ 4:0]=0x13
 0x416: 0x08A0 [ 7:4]=0xA
