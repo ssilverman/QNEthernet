@@ -220,11 +220,11 @@ PDF Table 1 printing errors:
 0x107x51008       - 0x175       0x1008
 0x178[20:x02]     - 0x178[2:0]  0x2
 
-See also:
-https://e2e.ti.com/support/interface-group/interface/f/interface-forum/988906/dp83825i-tdr-test-issue-and-conflict-between-the-datasheet-register-map-and-the-application-note-issue
+See:
+* https://www.ti.com/lit/an/snla330/snla330.pdf
+* https://e2e.ti.com/support/interface-group/interface/f/interface-forum/988906/dp83825i-tdr-test-issue-and-conflict-between-the-datasheet-register-map-and-the-application-note-issue
 
-
-Segment 1 (From the link):
+Segment 1 (from the forum link):
 0x456: 0x0608 [10:9]=0x3
 0x411: 0x0813 [ 4:0]=0x13
 0x416: 0x08A0 [ 7:4]=0xA
