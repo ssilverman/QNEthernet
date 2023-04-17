@@ -211,7 +211,7 @@ void loop() {
 
 /*
 
-PDF Table 1 printing errors:
+PDF Table 1 printing errors (Segment 4 combined with the registers):
 0x456[100x:39]    - 0x456[10:9] 0x3
 0x411[04x:106]    - 0x411[4:0]  0x16
 0x416[07x:4A]     - 0x416[7:4]  0xA
