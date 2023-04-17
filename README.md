@@ -4,9 +4,8 @@
 
 _Version: 0.21.0-snapshot_
 
-The _QNEthernet_ library provides Arduino-like `Ethernet` functionality for the
-Teensy 4.1. While it is mostly the same, there are a few key differences that
-don't quite make it a drop-in replacement.
+The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1.
+It's compatible with the Arduino-style API.
 
 The low-level code is based on code by Paul Stoffregen, here:\
 https://github.com/PaulStoffregen/teensy41_ethernet
@@ -18,6 +17,8 @@ files provided with the lwIP release.
 ## Table of contents
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
+   1. [Two core differences](#two-core-differences)
+   2. [Other differences and notes](#other-differences-and-notes)
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
@@ -70,11 +71,32 @@ files provided with the lwIP release.
 
 ## Differences, assumptions, and notes
 
+This section describes differences from the Arduino Ethernet API.
+
 **Note: Please read the function docs in the relevant header files for
 more information.**
 
-This library mostly follows the Arduino Ethernet API, with these differences
-and notes:
+### Two core differences
+
+There are two core differences that make _QNEthernet_ not a 100% drop-in
+replacement for code using the Arduino Ethernet API. These are as follows:
+
+* The DHCP versions of `Ethernet.begin(...)` don't block. The blocking behaviour
+  can be emulated by following a call to `begin()` with a loop that checks
+  `Ethernet.localIP()` for a valid IP. See also the new
+  `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
+* Everything is inside the `qindesign::network` namespace. In many cases, adding
+  the following at the top of your program will obviate the need to qualify any
+  object uses or make any other changes:
+  ```c++
+  using qindesign::network;
+  ```
+
+For API additions beyond what the Arduino-style API provides, see:\
+[Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
+
+### Other differences and notes
+
 * Include the `QNEthernet.h` header instead of `Ethernet.h`.
 * Ethernet `loop()` is called from `yield()`. The functions that wait for
   timeouts rely on this. This also means that you must use `delay(ms)`,
