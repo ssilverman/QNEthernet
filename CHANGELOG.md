@@ -22,6 +22,8 @@ and this project adheres to
 ### Fixed
 * Reset the PHY in a much more conservative way. Hopefully this helps with
   restarting Ethernet causing packets to not be received.
+* Fixed dhcp struct assignment to be done each time the netif is added. This
+  addresses `netif_add()` clearing all the client data.
 
 ## [0.20.0]
 

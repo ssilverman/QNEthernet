@@ -847,8 +847,6 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   static bool isFirstInit = true;
   if (isFirstInit) {
     lwip_init();
-    dhcp_set_struct(&s_t41_netif, &s_dhcp);
-
     isFirstInit = false;
   }
 
@@ -884,6 +882,8 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
               NULL, t41_netif_init, ethernet_input);
     netif_set_default(&s_t41_netif);
     s_isNetifAdded = true;
+
+    dhcp_set_struct(&s_t41_netif, &s_dhcp);  // netif_add clears it
   }
 
 #ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
