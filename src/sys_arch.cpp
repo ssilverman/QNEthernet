@@ -30,13 +30,6 @@ extern "C" {
 
 extern volatile uint32_t systick_millis_count;
 
-// Define the heap in RAM2
-// See: lwip/mem.c
-static DMAMEM LWIP_DECLARE_MEMORY_ALIGNED(the_heap,
-                                          LWIP_MEM_ALIGN_SIZE(MEM_SIZE) +
-                                              2U*LWIP_MEM_ALIGN_SIZE(8U));
-void *ram_heap = the_heap;
-
 u32_t sys_now(void) {
   return systick_millis_count;
 }

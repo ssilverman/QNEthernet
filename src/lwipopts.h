@@ -42,10 +42,6 @@ void sys_check_core_locking(void);
 // #define MEMP_USE_CUSTOM_POOLS                  0
 // #define LWIP_ALLOW_MEM_FREE_FROM_OTHER_CONTEXT 0
 
-// Per lwip/mem.c for redefining the heap
-#define LWIP_RAM_HEAP_POINTER ram_heap
-extern void *ram_heap;
-
 // Internal Memory Pool Sizes
 // #define MEMP_NUM_PBUF                      16
 // #define MEMP_NUM_RAW_PCB                   4
