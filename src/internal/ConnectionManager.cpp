@@ -258,7 +258,8 @@ void ConnectionManager::addConnection(
   };
 }
 
-static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
+static altcp_pcb *create_altcp_pcb([[maybe_unused]] const ip_addr_t *ipaddr,
+                                   [[maybe_unused]] uint16_t port,
                                    u8_t ip_type) {
 #if LWIP_ALTCP
   altcp_allocator_t allocator{nullptr, nullptr};
