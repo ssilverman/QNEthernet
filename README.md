@@ -89,7 +89,7 @@ replacement for code using the Arduino Ethernet API. These are as follows:
   the following at the top of your program will obviate the need to qualify any
   object uses or make any other changes:
   ```c++
-  using qindesign::network;
+  using namespace qindesign::network;
   ```
 
 For API additions beyond what the Arduino-style API provides, see:\
