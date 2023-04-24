@@ -76,6 +76,7 @@ const char *lwip_strerr(err_t err) {
 // --------------------------------------------------------------------------
 
 #ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+
 // The user program can set these to something initialized. For example,
 // `&Serial`, after `Serial.begin(speed)`.
 namespace qindesign {
@@ -86,11 +87,37 @@ Print *volatile stderrPrint = nullptr;
 
 }  // namespace network
 }  // namespace qindesign
+
+#else
+
+#include <Arduino.h>  // For Serial
+
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
 extern "C" {
 
+// Gets the Print* for the given file descriptor.
+static inline Print *getPrint(int file) {
+  switch (file) {
 #ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+    case STDOUT_FILENO:
+      return ::qindesign::network::stdoutPrint;
+    case STDERR_FILENO:
+      return ::qindesign::network::stderrPrint;
+#else
+    case STDOUT_FILENO:
+    case STDERR_FILENO:
+      return &Serial;
+#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+    case STDIN_FILENO:
+      return nullptr;
+    default:
+      return (Print *)file;
+  }
+}
+
+#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+
 // Define this function to provide expanded stdio output behaviour.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
 // Note: Can't define as weak by default because we don't know which `_write`
@@ -101,32 +128,29 @@ int _write(int file, const void *buf, size_t len) {
     return 0;
   }
 
-  Print *out;
-
-  switch (file) {
-    case STDOUT_FILENO:
-      out = ::qindesign::network::stdoutPrint;
-      break;
-
-    case STDERR_FILENO:
-      out = ::qindesign::network::stderrPrint;
-      break;
-
-    case STDIN_FILENO:
-      errno = EBADF;
-      return -1;
-
-    default:
-      out = (Print *)file;
-      break;
+  if (file == STDIN_FILENO) {
+    errno = EBADF;
+    return -1;
   }
 
+  Print *out = getPrint(file);
   if (out == nullptr) {
     return len;
   }
   return out->write((const uint8_t *)buf, len);
 }
+
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+
+// Ensures the Print object is flushed because fflush() just flushes by writing
+// to the FILE*. This doesn't necessarily send all the bytes right away. For
+// example, Serial/USB output behaves this way.
+void qnethernet_stdio_flush(int file) {
+  Print *p = getPrint(file);
+  if (p != nullptr) {
+    p->flush();
+  }
+}
 
 // --------------------------------------------------------------------------
 //  Core Locking
