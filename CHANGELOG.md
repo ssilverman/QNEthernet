@@ -18,6 +18,8 @@ and this project adheres to
 * Read PHY link status at every link check, not just at link change, because the
   state may still be changing.
 * Renamed TRNG tests to test_entropy.
+* Added calling file, line, and function information to
+  `LWIP_ASSERT_CORE_LOCKED()`.
 
 ### Fixed
 * Reset the PHY in a much more conservative way. Hopefully this helps with

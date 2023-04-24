@@ -12,9 +12,7 @@
 #undef errno
 extern int errno;
 #include <cstdint>
-#ifdef LWIP_DEBUG
 #include <cstdio>
-#endif  // LWIP_DEBUG
 
 #include <Print.h>
 #include <pgmspace.h>
@@ -167,10 +165,13 @@ void sys_arch_unprotect(sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
 
-void sys_check_core_locking(void) {
+void sys_check_core_locking(const char *file, int line, const char *func) {
   uint32_t ipsr;
   __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
-  LWIP_ASSERT("Function called from interrupt context", (ipsr == 0));
+  if (ipsr != 0) {
+    printf("%s:%d:%s()\r\n", file, line, func);
+    LWIP_PLATFORM_ASSERT("Function called from interrupt context");
+  }
 }
 
 }  // extern "C"
