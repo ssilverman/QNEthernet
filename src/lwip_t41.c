@@ -262,10 +262,10 @@ static void enet_isr();
 #define PHY_RCSR_VALUE (PHY_RCSR_RMII_CLOCK_SELECT_50MHz | \
                         PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT)
 
-#define PHY_PHYSTS_LINK_STATUS   (1 <<  0)  // 0: No link, 1: Valid link
-#define PHY_PHYSTS_SPEED_STATUS  (1 <<  1)  // 0: 100Mbps, 1: 10Mbps
-#define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  // 0: Half-Duplex, 1: Full-Duplex
-#define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  // 0: Normal, 1: Swapped
+#define PHY_PHYSTS_LINK_STATUS   (1 <<  0)  /* 0: No link, 1: Valid link */
+#define PHY_PHYSTS_SPEED_STATUS  (1 <<  1)  /* 0: 100Mbps, 1: 10Mbps */
+#define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
+#define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  /* 0: Normal, 1: Swapped */
 
 // Reads a PHY register (using MDIO & MDC signals).
 uint16_t mdio_read(uint16_t regaddr) {
