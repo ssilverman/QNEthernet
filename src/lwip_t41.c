@@ -262,6 +262,8 @@ static void enet_isr();
 #define PHY_RCSR_VALUE (PHY_RCSR_RMII_CLOCK_SELECT_50MHz | \
                         PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT)
 
+#define PHY_BMSR_LINK_STATUS (1 << 2)  /* 0: No link, 1: Valid link */
+
 #define PHY_PHYSTS_LINK_STATUS   (1 <<  0)  /* 0: No link, 1: Valid link */
 #define PHY_PHYSTS_SPEED_STATUS  (1 <<  1)  /* 0: 100Mbps, 1: 10Mbps */
 #define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
@@ -777,18 +779,18 @@ static inline void check_link_status() {
     return;
   }
 
-  // Read all the states every time because the link might still be negotiating
-  // Note: PHY_PHYSTS doesn't seem to contain the live Link_Status unless BMSR
-  //       is read too
-  mdio_read(PHY_BMSR);
-  uint16_t status = mdio_read(PHY_PHYSTS);
-  uint8_t is_link_up  = ((status & PHY_PHYSTS_LINK_STATUS) != 0);
-  s_linkSpeed10Not100 = ((status & PHY_PHYSTS_SPEED_STATUS) != 0);
-  s_linkIsFullDuplex  = ((status & PHY_PHYSTS_DUPLEX_STATUS) != 0);
-  s_linkIsCrossover   = ((status & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+  // Note: PHY_PHYSTS doesn't seem to contain the live link information unless
+  //       BMSR is read too
+  uint16_t status = mdio_read(PHY_BMSR);
+  uint8_t is_link_up = ((status & PHY_BMSR_LINK_STATUS) != 0);
 
   if (netif_is_link_up(&s_t41_netif) != is_link_up) {
     if (is_link_up) {
+      status = mdio_read(PHY_PHYSTS);
+      s_linkSpeed10Not100 = ((status & PHY_PHYSTS_SPEED_STATUS) != 0);
+      s_linkIsFullDuplex  = ((status & PHY_PHYSTS_DUPLEX_STATUS) != 0);
+      s_linkIsCrossover   = ((status & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+
       netif_set_link_up(&s_t41_netif);
     } else {
       netif_set_link_down(&s_t41_netif);

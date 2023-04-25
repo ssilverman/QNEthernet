@@ -15,8 +15,6 @@ and this project adheres to
   `entropy_random_range(range)`. The second uses an unbiased algorithm.
 
 ### Changed
-* Read PHY link status at every link check, not just at link change, because the
-  state may still be changing.
 * Renamed TRNG tests to test_entropy.
 * Added calling file, line, and function information to
   `LWIP_ASSERT_CORE_LOCKED()`.
@@ -29,6 +27,7 @@ and this project adheres to
 * Fixed LWIP_PLATFORM_ASSERT() to flush stdout's underlying Print object. This
   ensures all output for an assertion failure gets sent out before the call
   to `abort()`.
+* Fixed the link status values changing after setting the link up.
 
 ## [0.20.0]
 
