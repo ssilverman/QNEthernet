@@ -19,6 +19,7 @@
 #include <pgmspace.h>
 
 #include "lwip/arch.h"
+#include "lwip/autoip.h"
 #include "lwip/dhcp.h"
 #include "lwip/err.h"
 #include "lwip/etharp.h"
@@ -222,7 +223,12 @@ static struct netif s_t41_netif       = { .name = {'e', '0'} };
 static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
 static enet_init_states_t s_initState = kInitStateStart;
 static bool s_isNetifAdded            = false;
+
+// Structs for avoiding memory allocation
 static struct dhcp s_dhcp;
+#if LWIP_AUTOIP
+static struct autoip s_autoip;
+#endif  // LWIP_AUTOIP
 
 // PHY status, polled
 static bool s_linkSpeed10Not100 = false;
@@ -885,7 +891,11 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     netif_set_default(&s_t41_netif);
     s_isNetifAdded = true;
 
-    dhcp_set_struct(&s_t41_netif, &s_dhcp);  // netif_add clears it
+    // netif_add() clears these
+    dhcp_set_struct(&s_t41_netif, &s_dhcp);
+#if LWIP_AUTOIP
+    autoip_set_struct(&s_t41_netif, &s_autoip);
+#endif  // LWIP_AUTOIP
   }
 
 #ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
