@@ -125,10 +125,6 @@ For API additions beyond what the Arduino-style API provides, see:\
   * `maintain()`: Returns zero.
   * `setRetransmissionCount(uint8_t number)`: Does nothing.
   * `setRetransmissionTimeout(uint16_t milliseconds)`: Does nothing.
-* The following `Ethernet` functions are deprecated but call
-  something equivalent:
-  * `MACAddress(uint8_t mac[6])`
-  * `setDnsServerIP(const IPAddress &dnsServerIP)`
 * The following `EthernetUDP` functions do nothing:
   * `flush()` because it is ill-defined.
 * The system starts with the Teensy's actual MAC address. If you want to use

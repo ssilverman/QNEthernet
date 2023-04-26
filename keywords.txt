@@ -26,6 +26,7 @@ StdioPrint	KEYWORD1
 maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
 isPromiscuousMode	KEYWORD2
+MACAddress	KEYWORD2	Ethernet.MACAddress
 macAddress	KEYWORD2	Ethernet.MACAddress
 setMACAddress	KEYWORD2	Ethernet.setMACAddress
 loop	KEYWORD2
@@ -52,6 +53,7 @@ setLocalIP	KEYWORD2	Ethernet.setLocalIP
 setSubnetMask	KEYWORD2	Ethernet.setSubnetMask
 setGatewayIP	KEYWORD2	Ethernet.setGatewayIP
 setDNSServerIP	KEYWORD2	Ethernet.setDnsServerIP
+setDnsServerIP	KEYWORD2	Ethernet.setDnsServerIP
 hardwareStatus	KEYWORD2	Ethernet.hardwareStatus
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2

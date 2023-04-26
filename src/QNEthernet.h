@@ -230,18 +230,18 @@ class EthernetClass final {
   // Deprecated and unused functions
   [[deprecated("No chip select pin")]]
   void init([[maybe_unused]] uint8_t sspin) const {}
-  [[deprecated("See macAddress(mac)")]]
-  void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
   [[deprecated("DHCP maintained internally")]]
   uint8_t maintain() const { return 0; }
-  [[deprecated("See setDNSServerIP(ip)")]]
-  void setDnsServerIP(const IPAddress &dnsServerIP) const {
-    setDNSServerIP(dnsServerIP);
-  }
   [[deprecated("See TCP_MAXRTX")]]
   void setRetransmissionCount([[maybe_unused]] uint8_t number) const {}
   [[deprecated("Handled internally")]]
   void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
+
+  // These call something equivalent
+  void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
+  void setDnsServerIP(const IPAddress &dnsServerIP) const {
+    setDNSServerIP(dnsServerIP);
+  }
 
   // Joins a multicast group. This returns whether the call was successful.
   //

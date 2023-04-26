@@ -101,12 +101,10 @@ static void test_builtin_mac() {
   Ethernet.macAddress(mac2);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC");
   std::fill_n(mac2, 6, 0);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
   Ethernet.MACAddress(mac2);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
                                         "Expected matching MAC (deprecated API)");
-#pragma GCC diagnostic pop
 }
 
 // Tests setting the MAC address.
@@ -120,12 +118,10 @@ static void test_set_mac() {
   Ethernet.setMACAddress(mac2);
   Ethernet.macAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC");
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
   Ethernet.MACAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
                                         "Expected matching MAC (deprecated API)");
-#pragma GCC diagnostic pop
 }
 
 // Obtains an IP address via DHCP.
@@ -165,12 +161,10 @@ void test_static_ip() {
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (1)");
   TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (1)");
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS (1)");
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
   Ethernet.setDnsServerIP(kGateway);
-#pragma GCC diagnostic pop
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway,
-                      "Expected gateway as DNS after set (deprecated API)");
+                      "Expected gateway as DNS after set (old API)");
   Ethernet.setDNSServerIP(INADDR_NONE);
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS after set");
 
