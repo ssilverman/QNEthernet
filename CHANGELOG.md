@@ -19,6 +19,7 @@ and this project adheres to
 * Added calling file, line, and function information to
   `LWIP_ASSERT_CORE_LOCKED()`.
 * Un-deprecated `EthernetClass::MACAddress(mac)` and `setDnsServerIP(ip)`.
+* Optimized byte-swapping by using GCC built-ins.
 
 ### Fixed
 * Reset the PHY in a much more conservative way. Hopefully this helps with

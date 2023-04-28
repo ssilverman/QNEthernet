@@ -28,4 +28,9 @@ extern void qnethernet_stdio_flush(int file);
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
   u8_t variable_name[(size)] DMAMEM __attribute__((aligned(4)))
 
+#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#define lwip_htons(x) __builtin_bswap16(x)
+#define lwip_htonl(x) __builtin_bswap32(x)
+#endif  // __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
 #endif  // QNETHERNET_ARCH_CC_H_
