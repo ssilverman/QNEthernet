@@ -1369,6 +1369,9 @@ Input is welcome.
   something wrong.
   See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
 * More examples.
+* Fix reduced frame reception when Ethernet is restarted via
+  `end()`/`begin(...)`. This is a vexing one.
+  See also: https://github.com/ssilverman/QNEthernet/issues/31
 
 ## Code style
 
