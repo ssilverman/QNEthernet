@@ -198,11 +198,11 @@ typedef struct {
   uint16_t unused4;
 } enetbufferdesc_t;
 
-typedef enum enet_init_states {
-  kInitStateStart,
-  kInitStateNoHardware,
-  kInitStatePHYInitialized,
-  kInitStateInitialized,
+typedef enum _enet_init_states {
+  kInitStateStart,           // Unknown hardware
+  kInitStateNoHardware,      // No PHY
+  kInitStatePHYInitialized,  // PHY's been initialized
+  kInitStateInitialized,     // PHY and MAC have been initialized
 } enet_init_states_t;
 
 // --------------------------------------------------------------------------
