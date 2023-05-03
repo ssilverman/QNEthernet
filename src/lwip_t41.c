@@ -201,6 +201,7 @@ typedef struct {
 typedef enum _enet_init_states {
   kInitStateStart,           // Unknown hardware
   kInitStateNoHardware,      // No PHY
+  kInitStateHasHardware,     // Has PHY
   kInitStatePHYInitialized,  // PHY's been initialized
   kInitStateInitialized,     // PHY and MAC have been initialized
 } enet_init_states_t;
@@ -313,10 +314,11 @@ void mdio_write(uint16_t regaddr, uint16_t data) {
 // --------------------------------------------------------------------------
 
 // Initial check for hardware. This does nothing if the init state isn't at
-// START. After this function returns, the init state will either be NO_HARDWARE
-// or PHY_INITIALIZED, unless it wasn't START when called.
+// START or HAS_HARDWARE. After this function returns, the init state will
+// either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
+// HAS_HARDWARE when called.
 static void t41_init_phy() {
-  if (s_initState != kInitStateStart) {
+  if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
     return;
   }
 
@@ -842,6 +844,14 @@ void enet_getmac(uint8_t *mac) {
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
 bool enet_has_hardware() {
+  switch (s_initState) {
+    case kInitStateHasHardware:
+      return true;
+    case kInitStateNoHardware:
+      return false;
+    default:
+      break;
+  }
   t41_init_phy();
   return (s_initState != kInitStateNoHardware);
 }
@@ -950,7 +960,7 @@ void enet_deinit() {
     // Disable the clock for ENET
     CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
 
-    s_initState = kInitStateStart;
+    s_initState = kInitStateHasHardware;
   }
 }
 
