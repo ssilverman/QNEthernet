@@ -1202,9 +1202,9 @@ There are several macros that can be used to configure the system:
 | Macro                                 | Description                                         | Link                                        |
 | ------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `QNETHERNET_BUFFERS_IN_RAM1`          | Put the RX and TX buffers into RAM1                 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |
-| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
 | `QNETHERNET_ENABLE_CUSTOM_WRITE`      | Use expanded `stdio` output behaviour               | [stdio](#stdio)                             |
+| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |
 | `QNETHERNET_USE_ENTROPY_LIB`          | Use _Entropy_ library instead of internal functions | [Entropy collection](#entropy-collection)   |
 
 ### Configuring macros using the Arduino IDE
