@@ -26,8 +26,8 @@ and this project adheres to
   restarting Ethernet causing packets to not be received.
 * Fixed dhcp struct assignment to be done each time the netif is added. This
   addresses `netif_add()` clearing all the client data.
-* Fixed LWIP_PLATFORM_ASSERT() to flush stdout's underlying Print object. This
-  ensures all output for an assertion failure gets sent out before the call
+* Fixed `LWIP_PLATFORM_ASSERT()` to flush stdout's underlying `Print` object.
+  This ensures all output for an assertion failure gets sent out before the call
   to `abort()`.
 * Fixed the link status values changing after setting the link up.
 
