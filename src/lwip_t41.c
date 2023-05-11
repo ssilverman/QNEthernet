@@ -213,8 +213,8 @@ typedef enum _enet_init_states {
 // Ethernet buffers
 static enetbufferdesc_t s_rxRing[RX_SIZE] __attribute__((aligned(64)));
 static enetbufferdesc_t s_txRing[TX_SIZE] __attribute__((aligned(64)));
-static BUFFER_DMAMEM uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
-static BUFFER_DMAMEM uint8_t s_txBufs[TX_SIZE * BUF_SIZE] __attribute__((aligned(64)));
+static uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] BUFFER_DMAMEM __attribute__((aligned(64)));
+static uint8_t s_txBufs[TX_SIZE * BUF_SIZE] BUFFER_DMAMEM __attribute__((aligned(64)));
 static volatile enetbufferdesc_t *s_pRxBD = &s_rxRing[0];
 static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
 
