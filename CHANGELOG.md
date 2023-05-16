@@ -66,6 +66,7 @@ and this project adheres to
 ### Removed
 * `QNETHERNET_WEAK_WRITE` macro in favour of the new way to enable the library's
   internal `_write()` definition. See: `QNETHERNET_ENABLE_CUSTOM_WRITE`.
+* Removed `stdPrint` in favour of the new `stdoutPrint` and `stderrPrint`.
 * Removed sending a DHCP INFORM message when setting a static IP. It seemed to
   interfere with any first subsequent DHCP requests.
 
