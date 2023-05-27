@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* `EthernetClass::beginNoDHCP()` starts Ethernet but does not start a
+  DHCP client.
+
 ## [0.21.0]
 
 ### Added

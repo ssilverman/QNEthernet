@@ -125,6 +125,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
     return;
   }
 
+  bool dhcp = dhcpActive_;
   if (dhcpActive_) {
     dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
     dhcpActive_ = false;
@@ -132,7 +133,8 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
 
   begin(netif_ip4_addr(netif_),
         netif_ip4_netmask(netif_),
-        netif_ip4_gw(netif_));
+        netif_ip4_gw(netif_),
+        dhcp);
 }
 
 void EthernetClass::loop() {
@@ -146,6 +148,10 @@ void EthernetClass::loop() {
 
 bool EthernetClass::begin() {
   return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+}
+
+bool EthernetClass::beginNoDHCP() {
+  return begin(nullptr, nullptr, nullptr, false);
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
@@ -177,12 +183,13 @@ bool EthernetClass::begin(const IPAddress &ip,
   if (dns != INADDR_NONE) {
     setDNSServerIP(dns);
   }
-  return begin(&ipaddr, &netmask, &gw);
+  return begin(&ipaddr, &netmask, &gw, true);
 }
 
 bool EthernetClass::begin(const ip4_addr_t *ipaddr,
                           const ip4_addr_t *netmask,
-                          const ip4_addr_t *gw) {
+                          const ip4_addr_t *gw,
+                          bool canStartDHCP) {
   if (!enet_has_hardware()) {
     return false;
   }
@@ -215,7 +222,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
     // with any first subsequent DHCP requests
     // dhcp_inform(netif_);
     dhcpActive_ = false;
-  } else {
+  } else if (canStartDHCP) {
     retval = (dhcp_start(netif_) == ERR_OK);
     dhcpActive_ = retval;
   }

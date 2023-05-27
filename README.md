@@ -182,6 +182,9 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `begin()`: Initializes the library, uses the Teensy's internal MAC address,
   and starts the DHCP client. This returns whether startup was successful.
+* `beginNoDHCP()`: Initializes the library and uses the Teensy's internal MAC
+  address, but does not start a DHCP client. This returns whether startup
+  was successful.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
   internal MAC address, and uses the given parameters for the network
   configuration. This returns whether startup was successful. The DNS server is
