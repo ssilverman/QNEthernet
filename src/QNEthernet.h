@@ -105,9 +105,12 @@ class EthernetClass final {
   // Call often.
   void loop();
 
-  // Starts Ethernet and a DHCP client. This returns whether starting the DHCP
-  // client was successful. Note that when this returns, an IP address may not
-  // yet have been acquired.
+  // Starts Ethernet. The DHCP client will be started depending on whether it's
+  // enabled. If enabled, this returns whether starting the DHCP client was
+  // successful. This will always return false if no hardware is detected.
+  //
+  // Note that when this returns, an IP address may not yet have been acquired,
+  // if DHCP is enabled.
   //
   // See: waitForLocalIP(timeout)
   bool begin();
@@ -135,8 +138,9 @@ class EthernetClass final {
   bool waitForLocalIP(uint32_t timeout) const;
 
   // Starts Ethernet with the given address configuration. If all of the
-  // addresses are INADDR_NONE then this will start a DHCP client and attempt
-  // to assign an address that way. Otherwise, no DHCP client will be started.
+  // addresses are INADDR_NONE then this will start a DHCP client, if enabled,
+  // and attempt to assign an address that way. Otherwise, no DHCP client will
+  // be started.
   //
   // This returns whether bringing up the interface, and possibly the DHCP
   // client, was successful.
@@ -147,9 +151,9 @@ class EthernetClass final {
              const IPAddress &gateway);
 
   // Starts Ethernet with the given address configuration. If ipaddr, netmask,
-  // and gateway are all INADDR_NONE then this will start a DHCP client. This
-  // only sets the DNS server if `dns` is not INADDR_NONE; there is no change
-  // if `dns` is INADDR_NONE.
+  // and gateway are all INADDR_NONE then this will start a DHCP client, if
+  // enabled. This only sets the DNS server if `dns` is not INADDR_NONE; there
+  // is no change if `dns` is INADDR_NONE.
   //
   // This returns whether starting Ethernet was successful.
   bool begin(const IPAddress &ipaddr,
