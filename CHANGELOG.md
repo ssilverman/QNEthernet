@@ -9,8 +9,10 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-* `EthernetClass::beginNoDHCP()` starts Ethernet but does not start a
-  DHCP client.
+* `EthernetClass::setDHCPEnabled(flag)` enables or disables the DHCP client. May
+  be called either before or after Ethernet has started.
+* `EthernetClass::isDHCPEnabled()` returns whether the DHCP client is enabled.
+  Valid whether Ethernet has been started or not.
 
 ## [0.21.0]
 

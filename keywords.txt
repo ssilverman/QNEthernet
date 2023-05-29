@@ -31,7 +31,8 @@ macAddress	KEYWORD2	Ethernet.MACAddress
 setMACAddress	KEYWORD2	Ethernet.setMACAddress
 loop	KEYWORD2
 begin	KEYWORD2
-beginNoDHCP	KEYWORD2
+setDHCPEnabled	KEYWORD2
+isDHCPEnabled	KEYWORD2
 isDHCPActive	KEYWORD2
 waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2

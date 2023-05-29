@@ -182,9 +182,6 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `begin()`: Initializes the library, uses the Teensy's internal MAC address,
   and starts the DHCP client. This returns whether startup was successful.
-* `beginNoDHCP()`: Initializes the library and uses the Teensy's internal MAC
-  address, but does not start a DHCP client. This returns whether startup
-  was successful.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
   internal MAC address, and uses the given parameters for the network
   configuration. This returns whether startup was successful. The DNS server is
@@ -208,6 +205,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `interfaceStatus()`: Returns the network interface status, `true` for UP and
   `false` for DOWN.
 * `isDHCPActive()`: Returns whether DHCP is active.
+* `isDHCPEnabled()`: Returns whether the DHCP client is enabled. This is valid
+  whether Ethernet has been started or not.
 * `linkState()`: Returns a `bool` indicating the link state.
 * `linkSpeed()`: Returns the link speed in Mbps.
 * `linkIsCrossover()`: Returns whether a crossover cable is detected.
@@ -217,6 +216,10 @@ The `Ethernet` object is the main Ethernet interface.
 * `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
+* `setDHCPEnabled(flag)`: Enables or disables the DHCP client. This may be
+  called either before or after Ethernet has started. If DHCP is desired and
+  Ethernet is up, but DHCP is not active, an attempt will be made to start the
+  DHCP client if the flag is true.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will

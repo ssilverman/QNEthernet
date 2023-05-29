@@ -112,8 +112,18 @@ class EthernetClass final {
   // See: waitForLocalIP(timeout)
   bool begin();
 
-  // Starts Ethernet but does not start a DHCP client.
-  bool beginNoDHCP();
+  // Enables or disables the DHCP client. This may be called either before or
+  // after Ethernet has started. The default is true.
+  //
+  // If DHCP is desired and Ethernet is up, but DHCP is not active, an attempt
+  // will be made to start the DHCP client if the flag is true.
+  bool setDHCPEnabled(bool flag);
+
+  // Returns whether the DHCP client is enabled. This is valid whether Ethernet
+  // has been started or not. The default is true.
+  bool isDHCPEnabled() const {
+    return dhcpEnabled_;
+  }
 
   // Returns whether DHCP is active.
   bool isDHCPActive() const {
@@ -303,13 +313,9 @@ class EthernetClass final {
 
   // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does.
-  //
-  // The 'canStartDHCP' parameter indicates whether to start a DHCP client if
-  // all the IP addresses are none/any.
   bool begin(const ip4_addr_t *ipaddr,
              const ip4_addr_t *netmask,
-             const ip4_addr_t *gw,
-             bool canStartDHCP);
+             const ip4_addr_t *gw);
 
   elapsedMillis pollTimer_;
 
@@ -319,6 +325,8 @@ class EthernetClass final {
 #endif
   struct netif *netif_ = nullptr;
 
+  bool dhcpEnabled_ = true;
+  bool dhcpDesired_ = false;  // Whether the user wants static or dynamic IP
   bool dhcpActive_ = false;
 
   // Callbacks
