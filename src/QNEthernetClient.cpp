@@ -46,6 +46,7 @@ EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
 EthernetClient::EthernetClient(std::shared_ptr<internal::ConnectionHolder> conn)
     : connTimeout_(1000),
+      pendingConnect_(false),
       conn_(conn) {}
 
 EthernetClient::~EthernetClient() {
@@ -91,6 +92,8 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
     return 0;
   }
 
+  pendingConnect_ = !wait;
+
   // Wait for a connection
   if (wait) {
     elapsedMillis timer;
@@ -108,10 +111,26 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
   return static_cast<int>(ConnectReturns::SUCCESS);
 }
 
+bool EthernetClient::watchPendingConnect() {
+  if (conn_->state == nullptr) {
+    conn_ = nullptr;
+    return false;
+  }
+  pendingConnect_ = !conn_->connected;
+  Ethernet.loop();  // Move the state along
+  return true;
+}
+
 uint8_t EthernetClient::connected() {
   if (conn_ == nullptr) {
     return false;
   }
+
+  // For non-blocking connect
+  if (pendingConnect_) {
+    return watchPendingConnect() && conn_->connected;
+  }
+
   if (!conn_->connected && conn_->remaining.empty()) {
     conn_ = nullptr;
     return false;
@@ -124,6 +143,12 @@ EthernetClient::operator bool() {
   if (conn_ == nullptr) {
     return false;
   }
+
+  // For non-blocking connect
+  if (pendingConnect_) {
+    return watchPendingConnect() && conn_->connected;
+  }
+
   if (!conn_->connected) {
     if (conn_->remaining.empty()) {
       conn_ = nullptr;
@@ -185,11 +210,13 @@ void EthernetClient::close(bool wait) {
     return;
   }
 
-  if (conn_->connected) {
-    // First try to flush any data
-    altcp_output(state->pcb);
-    Ethernet.loop();  // Maybe some TCP data gets in
-    // NOTE: loop() requires a re-check of the state
+  if (pendingConnect_ || conn_->connected) {
+    if (!pendingConnect_) {
+      // First try to flush any data
+      altcp_output(state->pcb);
+      Ethernet.loop();  // Maybe some TCP data gets in
+      // NOTE: loop() requires a re-check of the state
+    }
 
     if (state != nullptr) {
       if (altcp_close(state->pcb) != ERR_OK) {
@@ -440,6 +467,12 @@ int EthernetClient::available() {
     return 0;
   }
 
+  // For non-blocking connect
+  if (pendingConnect_) {
+    watchPendingConnect();
+    return 0;
+  }
+
   if (!conn_->remaining.empty()) {
     return conn_->remaining.size() - conn_->remainingPos;
   }
@@ -464,6 +497,12 @@ int EthernetClient::available() {
 
 int EthernetClient::read() {
   if (conn_ == nullptr) {
+    return -1;
+  }
+
+  // For non-blocking connect
+  if (pendingConnect_) {
+    watchPendingConnect();
     return -1;
   }
 
@@ -495,6 +534,12 @@ int EthernetClient::read() {
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
   if (conn_ == nullptr) {
+    return 0;
+  }
+
+  // For non-blocking connect
+  if (pendingConnect_) {
+    watchPendingConnect();
     return 0;
   }
 
@@ -544,6 +589,12 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
 
 int EthernetClient::peek() {
   if (conn_ == nullptr) {
+    return -1;
+  }
+
+  // For non-blocking connect
+  if (pendingConnect_) {
+    watchPendingConnect();
     return -1;
   }
 

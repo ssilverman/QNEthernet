@@ -14,6 +14,10 @@ and this project adheres to
 * `EthernetClass::isDHCPEnabled()` returns whether the DHCP client is enabled.
   Valid whether Ethernet has been started or not.
 
+### Fixed
+* Fixed how `EthernetClient` functions work when there's a pending connect
+  triggered by `connectNoWait()`.
+
 ## [0.21.0]
 
 ### Added

@@ -134,6 +134,15 @@ class EthernetClient : public Client {
   // ip_addr_t version of connect() function.
   int connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);
 
+  // Checks if there's a pending connection. If there is, the state is modified
+  // appropriately. This returns false if the connection is inactive; 'conn_' is
+  // set to NULL. This returns true otherwise; 'pendingConnection_' is set to
+  // '!conn_->connection' and 'Ethernet.loop()' is called.
+  //
+  // This should only be called if 'pendingConnect_' is true and 'conn_' is
+  // not NULL.
+  bool watchPendingConnect();
+
   // Closes the connection. The `wait` parameter indicates whether to wait for
   // close or timeout. Set to true to wait and false to not wait. stop() calls
   // this with true and close() calls this with false.
@@ -141,6 +150,7 @@ class EthernetClient : public Client {
 
   // Connection state
   uint16_t connTimeout_;
+  bool pendingConnect_;
 
   std::shared_ptr<internal::ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we
