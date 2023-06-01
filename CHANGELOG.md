@@ -14,6 +14,9 @@ and this project adheres to
 * `EthernetClass::isDHCPEnabled()` returns whether the DHCP client is enabled.
   Valid whether Ethernet has been started or not.
 
+### Changed
+* Limit UDP output size to the maximum possible (65535 - 28(total header)).
+
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect
   triggered by `connectNoWait()`.

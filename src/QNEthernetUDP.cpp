@@ -24,6 +24,9 @@ constexpr size_t kHeaderSize = 20 + 8;
 // Maximum UDP payload size without fragmentation.
 constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
 
+// Maximum possible payload size.
+constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
+
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
@@ -305,11 +308,6 @@ int EthernetUDP::endPacket() {
   }
   hasOutPacket_ = false;
 
-  if (out_.data.size() > UINT16_MAX) {
-    out_.data.clear();
-    return false;
-  }
-
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, out_.data.size(), PBUF_RAM);
   if (p == nullptr) {
@@ -340,7 +338,7 @@ bool EthernetUDP::send(const char *host, uint16_t port,
 
 bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
                        const uint8_t *data, size_t len) {
-  if (len > UINT16_MAX) {
+  if (len > kMaxPossiblePayloadSize) {
     return false;
   }
   if (pcb_ == nullptr) {
@@ -365,7 +363,9 @@ size_t EthernetUDP::write(uint8_t b) {
   if (!hasOutPacket_) {
     return 0;
   }
-  // TODO: Limit vector size
+  if (out_.data.size() >= kMaxPossiblePayloadSize) {
+    return 0;
+  }
   out_.data.push_back(b);
   return 1;
 }
@@ -374,10 +374,7 @@ size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
   if (!hasOutPacket_ || size == 0) {
     return 0;
   }
-  if (size > UINT16_MAX) {
-    size = UINT16_MAX;
-  }
-  // TODO: Limit vector size
+  size = std::min(kMaxPossiblePayloadSize - out_.data.size(), size);
   out_.data.insert(out_.data.end(), &buffer[0], &buffer[size]);
   return size;
 }
