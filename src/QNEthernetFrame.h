@@ -68,7 +68,8 @@ class EthernetFrameClass final : public Stream {
   void beginVLANFrame(const uint8_t dstAddr[6], const uint8_t srcAddr[6],
                       uint16_t vlanInfo, uint16_t typeOrLen);
 
-  // Sends the frame. This is similar to EthernetUDP::endPacket().
+  // Sends the frame. This is similar to EthernetUDP::endPacket(). This clears
+  // the accumulated data regardless of what is returned.
   //
   // The FCS (Frame Check Sequence, the CRC value) should not be included in the
   // frame data.
