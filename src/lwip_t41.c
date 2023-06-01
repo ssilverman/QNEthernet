@@ -968,27 +968,25 @@ struct netif *enet_netif() {
   return &s_t41_netif;
 }
 
-// Get the next chunk of input data.
-static struct pbuf *enet_rx_next() {
-  volatile enetbufferdesc_t *p_bd = rxbd_next();
-  return (p_bd ? t41_low_level_input(p_bd) : NULL);
-}
-
-// Process one chunk of input data.
-static void enet_input(struct pbuf *pFrame) {
-  if (s_t41_netif.input(pFrame, &s_t41_netif) != ERR_OK) {
-    pbuf_free(pFrame);
-  }
-}
-
 void enet_proc_input(void) {
-  struct pbuf *p;
-
   if (atomic_flag_test_and_set(&s_rxNotAvail)) {
     return;
   }
-  while ((p = enet_rx_next()) != NULL) {
-    enet_input(p);
+
+  while (true) {
+    // Get the next chunk of input data
+    volatile enetbufferdesc_t *p_bd = rxbd_next();
+    if (p_bd == NULL) {
+      break;
+    }
+    struct pbuf *p = t41_low_level_input(p_bd);
+    if (p == NULL) {
+      break;
+    }
+    // Process one chunk of input data
+    if (s_t41_netif.input(p, &s_t41_netif) != ERR_OK) {
+      pbuf_free(p);
+    }
   }
 }
 
