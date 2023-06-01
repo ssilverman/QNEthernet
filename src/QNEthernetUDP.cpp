@@ -311,6 +311,7 @@ int EthernetUDP::endPacket() {
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, out_.data.size(), PBUF_RAM);
   if (p == nullptr) {
+    out_.data.clear();
     return false;
   }
   pbuf_take(p, out_.data.data(), out_.data.size());
