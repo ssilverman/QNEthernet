@@ -631,6 +631,9 @@ static void t41_low_level_init() {
   s_initState = kInitStateInitialized;
 }
 
+// Low-level input function that transforms a received frame into an lwIP pbuf.
+// This returns a newly-allocated pbuf, or NULL if there was a frame error or
+// allocation error.
 static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *pBD) {
   const u16_t err_mask = kEnetRxBdTrunc |
                          kEnetRxBdOverrun |
@@ -980,12 +983,11 @@ void enet_proc_input(void) {
       break;
     }
     struct pbuf *p = t41_low_level_input(p_bd);
-    if (p == NULL) {
-      break;
-    }
-    // Process one chunk of input data
-    if (s_t41_netif.input(p, &s_t41_netif) != ERR_OK) {
-      pbuf_free(p);
+    if (p != NULL) {  // Happens on frame error or pbuf allocation error
+      // Process one chunk of input data
+      if (s_t41_netif.input(p, &s_t41_netif) != ERR_OK) {
+        pbuf_free(p);
+      }
     }
   }
 }
