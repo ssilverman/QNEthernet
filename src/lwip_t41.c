@@ -102,8 +102,11 @@
 //
 // [1518 or 1522 made into a multiple of 32 for ARM cache flush sizing and a
 // multiple of 64 for ENETx_MRBR.]
-// NOTE: BUF_SIZE will be 1536 whether we use 1518 or 1522
-#define BUF_SIZE ((1522 + 63) & ~63)
+// NOTE: BUF_SIZE will be 1536 whether we use 1518 or 1522 (plus ETH_PAD_SIZE)
+// * Padding(2)
+// * Destination(6) + Source(6) + VLAN tag(2) + VLAN info(2) + Length/Type(2) +
+//   Payload(1500) + FCS(4)
+#define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
 #define MULTIPLE_OF_32(x) (((x) + 31) & ~31)
@@ -722,6 +725,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
 
+  // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *pBD = get_bufdesc();
   uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
