@@ -976,7 +976,7 @@ void enet_proc_input(void) {
     return;
   }
 
-  while (true) {
+  for (int i = RX_SIZE*2; --i >= 0; ) {
     // Get the next chunk of input data
     volatile enetbufferdesc_t *p_bd = rxbd_next();
     if (p_bd == NULL) {
