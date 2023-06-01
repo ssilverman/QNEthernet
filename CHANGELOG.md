@@ -17,6 +17,8 @@ and this project adheres to
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect
   triggered by `connectNoWait()`.
+* Fixed how raw frame size limits are checked. Padding is already handled by
+  the MAC.
 
 ## [0.21.0]
 

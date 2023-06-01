@@ -72,8 +72,11 @@ bool phy_link_is_full_duplex();
 bool phy_link_is_crossover();
 
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
-// length is not in the range 60-(MAX_FRAME_LEN-4) (excludes the FCS (frame
-// check sequence)). This also returns false if Ethernet is not initialized.
+// length is not in the correct range. The proper range is 14-(MAX_FRAME_LEN-8)
+// for non-VLAN frames and 18-(MAX_FRAME_LEN-4) for VLAN frames. Note that these
+// ranges exclude the FCS (frame check sequence).
+//
+// This also returns false if Ethernet is not initialized.
 //
 // This adds any extra padding bytes given by ETH_PAD_SIZE.
 bool enet_output_frame(const uint8_t *frame, size_t len);

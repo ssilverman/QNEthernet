@@ -371,14 +371,14 @@ read from a frame and the `Print` API can be used to write to the frame.
   EtherType/length.
 * `data()`: Returns a pointer to the received frame data.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
-  frame must have been started, its data length must be in the range 60-1518,
-  and Ethernet must have been initialized. This is similar
-  to `EthernetUDP::endPacket()`.
+  frame must have been started, its data length must be in the range 14-1514 for
+  non-VLAN frames or 18-1518 for VLAN frames, and Ethernet must have been
+  initialized. This is similar to `EthernetUDP::endPacket()`.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
 * `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
-  `beginFrame()`/`write()`/`endFrame()`. This is similar
-  to `EthernetUDP::send(data, len)`.
+  `beginFrame()`/`write()`/`endFrame()`. See the description of `endFrame()` for
+  size limits. This is similar to `EthernetUDP::send(data, len)`.
 * `setReceiveQueueSize(size)`: Sets the receive queue size. The minimum possible
   value is 1 and the default is 1. If a value of zero is used, it will default
   to 1. If the new size is smaller than the number of items in the queue then

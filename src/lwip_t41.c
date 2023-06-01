@@ -27,6 +27,7 @@
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
+#include "lwip/prot/ieee.h"
 #include "lwip/stats.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
@@ -1017,9 +1018,23 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
-
-  if (frame == NULL || len < 60 || MAX_FRAME_LEN - 4 < len) {
+  if (frame == NULL || len < (6 + 6 + 2)) {  // dst + src + len/type
     return false;
+  }
+
+  // Check length depending on VLAN
+  if (frame[12] == (uint8_t)(ETHTYPE_VLAN >> 8) &&
+      frame[13] == (uint8_t)(ETHTYPE_VLAN)) {
+    if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
+      return false;
+    }
+    if (len > MAX_FRAME_LEN - 4) {  // Don't include FCS
+      return false;
+    }
+  } else {
+    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include FCS and VLAN
+      return false;
+    }
   }
 
   volatile enetbufferdesc_t *pBD = get_bufdesc();
