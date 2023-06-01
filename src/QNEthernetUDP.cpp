@@ -18,9 +18,11 @@
 namespace qindesign {
 namespace network {
 
-// Maximum UDP packet size.
-// Subtract UDP header size and minimum IPv4 header size.
-constexpr size_t kMaxUDPSize = EthernetClass::mtu() - 8 - 20;
+// Total header size: Minimum IPv4 header size + UDP header size.
+constexpr size_t kHeaderSize = 20 + 8;
+
+// Maximum UDP payload size without fragmentation.
+constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
 
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
@@ -116,10 +118,10 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   listenReuse_ = reuse;
 
   for (Packet &p : inBuf_) {
-    p.data.reserve(kMaxUDPSize);
+    p.data.reserve(kMaxPayloadSize);
   }
-  if (packet_.data.capacity() < kMaxUDPSize) {
-    packet_.data.reserve(kMaxUDPSize);
+  if (packet_.data.capacity() < kMaxPayloadSize) {
+    packet_.data.reserve(kMaxPayloadSize);
   }
 
   udp_recv(pcb_, &recvFunc, this);
@@ -286,8 +288,8 @@ bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   if (pcb_ == nullptr) {
     return false;
   }
-  if (out_.data.capacity() < kMaxUDPSize) {
-    out_.data.reserve(kMaxUDPSize);
+  if (out_.data.capacity() < kMaxPayloadSize) {
+    out_.data.reserve(kMaxPayloadSize);
   }
 
   out_.addr = *ipaddr;
