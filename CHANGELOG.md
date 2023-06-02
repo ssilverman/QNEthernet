@@ -15,6 +15,7 @@ and this project adheres to
   Valid whether Ethernet has been started or not.
 
 ### Changed
+* Limit the number of times `enet_proc_input()` can loop to twice the ring size.
 * Limit UDP output size to the maximum possible (65535 - 28(total header)).
 
 ### Fixed
