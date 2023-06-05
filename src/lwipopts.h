@@ -151,7 +151,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // IGMP options
 #ifndef LWIP_IGMP
-#define LWIP_IGMP 1
+#define LWIP_IGMP 1  /* 0 */
 #endif  // !LWIP_IGMP
 
 // DNS options
