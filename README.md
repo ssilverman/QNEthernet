@@ -1304,6 +1304,7 @@ in `mdns_opts.h`:
 | `LWIP_IGMP`               | Zero to disable; also disables `LWIP_MDNS_RESPONDER` |
 | `LWIP_MDNS_RESPONDER`     | Zero to disable                                      |
 | `LWIP_STATS`              | `1` to enable                                        |
+| `LWIP_TCP`                | Zero to disable                                      |
 | `MEM_SIZE`                | Heap memory size                                     |
 | `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                           |
 | `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                      |
@@ -1315,6 +1316,9 @@ Some extra conditions to keep in mind:
 * `MEMP_NUM_IGMP_GROUP`: Count must include 1 for the "all systems" group and 1
   if mDNS is enabled.
 * `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
+
+Disabling features means that the build will not include those features, thus
+saving space.
 
 ## Complete list of features
 

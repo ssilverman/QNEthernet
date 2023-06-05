@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_
 #define QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_TCP
+
 // C++ includes
 #include <memory>
 #include <vector>
@@ -76,5 +80,7 @@ class ConnectionManager final {
 }  // namespace internal
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP
 
 #endif  // QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_

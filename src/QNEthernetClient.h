@@ -41,7 +41,11 @@ class EthernetClient : public Client {
 
   // Returns the maximum number of TCP connections.
   static constexpr int maxSockets() {
+#if LWIP_TCP
     return MEMP_NUM_TCP_PCB;
+#else
+    return 0;
+#endif  // LWIP_TCP
   }
 
   int connect(IPAddress ip, uint16_t port) final;
@@ -127,6 +131,7 @@ class EthernetClient : public Client {
   bool isNoDelay();
 
  private:
+#if LWIP_TCP
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
@@ -158,6 +163,7 @@ class EthernetClient : public Client {
       // conn_->connected.
 
   friend class EthernetServer;
+#endif  // LWIP_TCP
 };
 
 }  // namespace network

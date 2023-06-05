@@ -42,12 +42,16 @@ enum class ConnectReturns {
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
 
+#if LWIP_TCP
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
 EthernetClient::EthernetClient(std::shared_ptr<internal::ConnectionHolder> conn)
     : connTimeout_(1000),
       pendingConnect_(false),
       conn_(conn) {}
+#else
+EthernetClient::EthernetClient() {}
+#endif  // LWIP_TCP
 
 EthernetClient::~EthernetClient() {
   // Questionable not to call close(), but copy semantics demand that we don't
@@ -58,31 +62,48 @@ EthernetClient::~EthernetClient() {
 // --------------------------------------------------------------------------
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
+#if LWIP_TCP
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, true);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::connect(const char *host, uint16_t port) {
+#if LWIP_TCP
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connect(ip, port);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
+#if LWIP_TCP
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, false);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::connectNoWait(const char *host, uint16_t port) {
+#if LWIP_TCP
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connectNoWait(ip, port);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
+#if LWIP_TCP
 int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
   // First close any existing connection (without waiting)
   close();
@@ -120,8 +141,10 @@ bool EthernetClient::watchPendingConnect() {
   Ethernet.loop();  // Move the state along
   return true;
 }
+#endif  // LWIP_TCP
 
 uint8_t EthernetClient::connected() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return false;
   }
@@ -137,9 +160,13 @@ uint8_t EthernetClient::connected() {
   }
   Ethernet.loop();  // Allow information to come in
   return true;
+#else
+  return false;
+#endif  // LWIP_TCP
 }
 
 EthernetClient::operator bool() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return false;
   }
@@ -157,13 +184,19 @@ EthernetClient::operator bool() {
   }
   Ethernet.loop();  // Allow information to come in
   return true;
+#else
+  return false;
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
+#if LWIP_TCP
   connTimeout_ = timeout;
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::setNoDelay(bool flag) {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return;
   }
@@ -176,9 +209,11 @@ void EthernetClient::setNoDelay(bool flag) {
   } else {
     altcp_nagle_enable(state->pcb);
   }
+#endif  // LWIP_TCP
 }
 
 bool EthernetClient::isNoDelay() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return false;
   }
@@ -187,16 +222,24 @@ bool EthernetClient::isNoDelay() {
     return false;
   }
   return altcp_nagle_disabled(state->pcb);
+#else
+  return false;
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::stop() {
+#if LWIP_TCP
   close(true);
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::close() {
+#if LWIP_TCP
   close(false);
+#endif  // LWIP_TCP
 }
 
+#if LWIP_TCP
 void EthernetClient::close(bool wait) {
   if (conn_ == nullptr) {
     return;
@@ -234,8 +277,10 @@ void EthernetClient::close(bool wait) {
 
   conn_ = nullptr;
 }
+#endif  // LWIP_TCP
 
 void EthernetClient::closeOutput() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return;
   }
@@ -252,9 +297,11 @@ void EthernetClient::closeOutput() {
   if (state != nullptr) {
     altcp_shutdown(state->pcb, 0, 1);
   }
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::abort() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return;
   }
@@ -264,9 +311,11 @@ void EthernetClient::abort() {
     altcp_abort(state->pcb);
   }
   conn_ = nullptr;
+#endif  // LWIP_TCP
 }
 
 uint16_t EthernetClient::localPort() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return 0;
   }
@@ -283,9 +332,14 @@ uint16_t EthernetClient::localPort() {
   altcp_get_tcp_addrinfo(state->pcb, 1, nullptr, &port);
   return port;
 #endif  // LWIP_ALTCP
+
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 IPAddress EthernetClient::remoteIP() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return INADDR_NONE;
   }
@@ -302,9 +356,14 @@ IPAddress EthernetClient::remoteIP() {
   altcp_get_tcp_addrinfo(state->pcb, 0, &ip, nullptr);
   return ip_addr_get_ip4_uint32(&ip);
 #endif  // LWIP_ALTCP
+
+#else
+  return INADDR_NONE;
+#endif  // LWIP_TCP
 }
 
 uint16_t EthernetClient::remotePort() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return 0;
   }
@@ -321,15 +380,21 @@ uint16_t EthernetClient::remotePort() {
   altcp_get_tcp_addrinfo(state->pcb, 0, nullptr, &port);
   return port;
 #endif  // LWIP_ALTCP
+
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 uintptr_t EthernetClient::connectionId() {
+#if LWIP_TCP
   if (conn_ != nullptr && conn_->connected) {
     const auto &state = conn_->state;
     if (state != nullptr) {
       return reinterpret_cast<uintptr_t>(state->pcb);
     }
   }
+#endif  // LWIP_TCP
   return 0;
 }
 
@@ -338,27 +403,44 @@ uintptr_t EthernetClient::connectionId() {
 // --------------------------------------------------------------------------
 
 size_t EthernetClient::writeFully(uint8_t b) {
+#if LWIP_TCP
   return writeFully(&b, 1);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 size_t EthernetClient::writeFully(const char *buf) {
+#if LWIP_TCP
   return writeFully(reinterpret_cast<const uint8_t *>(buf), strlen(buf));
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 size_t EthernetClient::writeFully(const char *buf, size_t size) {
+#if LWIP_TCP
   return writeFully(reinterpret_cast<const uint8_t *>(buf), size);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 size_t EthernetClient::writeFully(const uint8_t *buf, size_t size) {
+#if LWIP_TCP
   // Don't use connected() as the "connected" check because that will
   // return true if there's data available, and the loop doesn't check
   // for data available. Instead, use operator bool().
 
   return util::writeFully(*this, buf, size,
                           [&]() { return !static_cast<bool>(*this); });
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 size_t EthernetClient::write(uint8_t b) {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return 0;
   }
@@ -382,9 +464,13 @@ size_t EthernetClient::write(uint8_t b) {
   }
   Ethernet.loop();  // Loop to allow incoming TCP data
   return written;
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return 0;
   }
@@ -414,9 +500,13 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
   Ethernet.loop();  // Loop to allow incoming TCP data
   return size;
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::availableForWrite() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return 0;
   }
@@ -436,9 +526,13 @@ int EthernetClient::availableForWrite() {
     return 0;
   }
   return altcp_sndbuf(state->pcb);
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 void EthernetClient::flush() {
+#if LWIP_TCP
   if (!static_cast<bool>(*this)) {
     return;
   }
@@ -449,20 +543,24 @@ void EthernetClient::flush() {
 
   altcp_output(state->pcb);
   Ethernet.loop();  // Loop to allow incoming TCP data
+#endif  // LWIP_TCP
 }
 
 // --------------------------------------------------------------------------
 //  Reception
 // --------------------------------------------------------------------------
 
+#if LWIP_TCP
 // Check if there's data available in the buffer.
 static inline bool isAvailable(
     const std::unique_ptr<internal::ConnectionState> &state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
          (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
 }
+#endif  // LWIP_TCP
 
 int EthernetClient::available() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return 0;
   }
@@ -493,9 +591,13 @@ int EthernetClient::available() {
   }
   size_t retval = state->buf.size() - state->bufPos;
   return retval;
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::read() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return -1;
   }
@@ -530,9 +632,13 @@ int EthernetClient::read() {
     return -1;
   }
   return state->buf[state->bufPos++];
+#else
+  return -1;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return 0;
   }
@@ -585,9 +691,13 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
   }
   state->bufPos += size;
   return size;
+#else
+  return 0;
+#endif  // LWIP_TCP
 }
 
 int EthernetClient::peek() {
+#if LWIP_TCP
   if (conn_ == nullptr) {
     return -1;
   }
@@ -617,6 +727,9 @@ int EthernetClient::peek() {
     return -1;
   }
   return state->buf[state->bufPos];
+#else
+  return -1;
+#endif  // LWIP_TCP
 }
 
 }  // namespace network

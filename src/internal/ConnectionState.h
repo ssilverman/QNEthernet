@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_INTERNAL_CONNECTIONSTATE_H_
 #define QNETHERNET_INTERNAL_CONNECTIONSTATE_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_TCP
+
 // C++ includes
 #include <functional>
 #include <vector>
@@ -50,5 +54,7 @@ struct ConnectionState final {
 }  // namespace internal
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP
 
 #endif  // QNETHERNET_INTERNAL_CONNECTIONSTATE_H_

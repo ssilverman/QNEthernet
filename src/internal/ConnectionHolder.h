@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_
 #define QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_TCP
+
 // C++ includes
 #include <memory>
 
@@ -35,5 +39,7 @@ struct ConnectionHolder final {
 }  // namespace internal
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP
 
 #endif  // QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_

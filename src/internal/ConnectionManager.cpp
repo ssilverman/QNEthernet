@@ -6,6 +6,8 @@
 
 #include "ConnectionManager.h"
 
+#if LWIP_TCP
+
 // C++ includes
 #include <algorithm>
 #if LWIP_ALTCP
@@ -503,3 +505,5 @@ int ConnectionManager::availableForWrite(uint16_t port) {
 }  // namespace internal
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP

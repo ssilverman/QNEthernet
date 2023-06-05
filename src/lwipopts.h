@@ -178,7 +178,10 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define LWIP_NETBUF_RECVINFO 0
 
 // TCP options
+
+#ifndef LWIP_TCP
 // #define LWIP_TCP                   1
+#endif  // !LWIP_TCP
 // #define TCP_TTL                    IP_DEFAULT_TTL
 // #define TCP_WND                    (4 * TCP_MSS)
 // #define TCP_MAXRTX                 12
