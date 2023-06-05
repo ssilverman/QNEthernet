@@ -120,6 +120,9 @@ class EthernetClass final {
   //
   // If DHCP is desired and Ethernet is up, but DHCP is not active, an attempt
   // will be made to start the DHCP client if the flag is true.
+  //
+  // This returns whether DHCP doesn't require a restart or it does and whether
+  // the restart attempt was successful.
   bool setDHCPEnabled(bool flag);
 
   // Returns whether the DHCP client is enabled. This is valid whether Ethernet

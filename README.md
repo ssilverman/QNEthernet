@@ -219,7 +219,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `setDHCPEnabled(flag)`: Enables or disables the DHCP client. This may be
   called either before or after Ethernet has started. If DHCP is desired and
   Ethernet is up, but DHCP is not active, an attempt will be made to start the
-  DHCP client if the flag is true.
+  DHCP client if the flag is true. This returns whether that attempt was
+  successful or if no restart attempt is required.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
