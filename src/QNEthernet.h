@@ -264,12 +264,16 @@ class EthernetClass final {
   //
   // The lwIP stack keeps track of a group "use count", so this function can be
   // called multiple times, paired with a matching number of leaveGroup() calls.
+  //
+  // This always returns false if `LWIP_IGMP` is disabled.
   bool joinGroup(const IPAddress &ip) const;
 
   // Leaves a multicast group. This returns whether the call was successful.
   //
   // The lwIP stack keeps track of a group "use count", so calling this function
   // should match the number of joinGroup() calls.
+  //
+  // This always returns false if `LWIP_IGMP` is disabled.
   bool leaveGroup(const IPAddress &ip) const;
 
   // Sets whether Ethernet frames addressed to the given MAC address are allowed
@@ -289,10 +293,14 @@ class EthernetClass final {
   // negotiated with the DHCP server. This could be at system start or when a
   // renewal happens. Ideally, it should be called before 'begin()' if you'd
   // like the hostname to be set at system start.
+  //
+  // This does nothing if 'LWIP_NETIF_HOSTNAME' is not enabled.
   void setHostname(const char *hostname);
 
   // Gets the DHCP client option 12 hostname. An empty string means that no
   // hostname is set. The default is "teensy-lwip".
+  //
+  // This returns the empty string if 'LWIP_NETIF_HOSTNAME' is not enabled.
   String hostname() const;
 
   // Tests if Ethernet is initialized.
