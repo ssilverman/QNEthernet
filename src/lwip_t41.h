@@ -22,7 +22,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif  // __cplusplus
 
 #define MTU 1500
 #define MAX_FRAME_LEN 1522
@@ -101,7 +101,7 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #ifdef __cplusplus
 }  // extern "C"
-#endif
+#endif  // __cplusplus
 
 #endif  // ARDUINO_TEENSY41
 

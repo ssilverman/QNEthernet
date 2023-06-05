@@ -326,7 +326,7 @@ class EthernetClass final {
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME
   String hostname_{"teensy-lwip"};  // Empty means no hostname
-#endif
+#endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_ = nullptr;
 
   bool dhcpEnabled_ = true;

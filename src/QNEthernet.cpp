@@ -200,7 +200,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   } else {
     netif_set_hostname(netif_, hostname_.c_str());
   }
-#endif
+#endif  // LWIP_NETIF_HOSTNAME
 
   netif_set_up(netif_);
 
@@ -468,7 +468,7 @@ void EthernetClass::setHostname(const char *hostname) {
       netif_set_hostname(netif_, hostname);
     }
   }
-#endif
+#endif  // LWIP_NETIF_HOSTNAME
 }
 
 String EthernetClass::hostname() const {
@@ -476,7 +476,7 @@ String EthernetClass::hostname() const {
   return hostname_;
 #else
   return "";
-#endif
+#endif  // LWIP_NETIF_HOSTNAME
 }
 
 EthernetClass::operator bool() const {
