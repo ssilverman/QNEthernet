@@ -1059,6 +1059,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 // --------------------------------------------------------------------------
 
 #ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
 // CRC-32 routine for computing the FCS for multicast lookup.
 static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
@@ -1149,6 +1150,7 @@ void enet_join_group(const ip4_addr_t *group) {
 void enet_leave_group(const ip4_addr_t *group) {
   enet_join_notleave_group(group, false);
 }
+
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 #endif  // ARDUINO_TEENSY41
