@@ -62,7 +62,7 @@ files provided with the lwIP release.
 21. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
-    3. [Redefining macros in `lwipopts.h`](#redefining-macros-in-lwipoptsh)
+    3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
 22. [Complete list of features](#complete-list-of-features)
 23. [Other notes](#other-notes)
 24. [To do](#to-do)
@@ -1213,6 +1213,10 @@ There are several macros that can be used to configure the system:
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |
 | `QNETHERNET_USE_ENTROPY_LIB`          | Use _Entropy_ library instead of internal functions | [Entropy collection](#entropy-collection)   |
 
+See
+[Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
+for changing the IP stack configuration.
+
 ### Configuring macros using the Arduino IDE
 
 _[Current as of this writing: Arduino IDE 2.0.4, Teensyduino 1.58]_
@@ -1281,7 +1285,7 @@ For example:
 build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 ```
 
-### Redefining macros in `lwipopts.h`
+### Changing lwIP configuration macros in `lwipopts.h`
 
 The `lwipopts.h` file defines certain macros needed by the system. It is
 appropriate for the user to alter some of those macros if needed, for example,
@@ -1308,7 +1312,8 @@ in `mdns_opts.h`:
 | `MDNS_MAX_SERVICES`       | Maximum number of mDNS services                      |
 
 Some extra conditions to keep in mind:
-* `MEMP_NUM_IGMP_GROUP`: Count must include one for the "all systems" group.
+* `MEMP_NUM_IGMP_GROUP`: Count must include 1 for the "all systems" group and 1
+  if mDNS is enabled.
 * `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
 
 ## Complete list of features
