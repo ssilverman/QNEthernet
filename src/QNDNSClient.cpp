@@ -6,6 +6,8 @@
 
 #include "QNDNSClient.h"
 
+#if LWIP_DNS
+
 #include <elapsedMillis.h>
 
 #include "lwip/dns.h"
@@ -100,3 +102,5 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_DNS

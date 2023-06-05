@@ -40,9 +40,11 @@ enum class ConnectReturns {
   INVALID_RESPONSE = -4,
 };
 
+#if LWIP_DNS
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+#endif  // LWIP_DNS
 
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
@@ -65,11 +67,15 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 }
 
 int EthernetClient::connect(const char *host, uint16_t port) {
+#if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connect(ip, port);
+#else
+  return static_cast<int>(ConnectReturns::INVALID_SERVER);
+#endif  // LWIP_DNS
 }
 
 int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
@@ -78,11 +84,15 @@ int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 }
 
 int EthernetClient::connectNoWait(const char *host, uint16_t port) {
+#if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connectNoWait(ip, port);
+#else
+  return static_cast<int>(ConnectReturns::INVALID_SERVER);
+#endif  // LWIP_DNS
 }
 
 int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {

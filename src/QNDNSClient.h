@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_DNSCLIENT_H_
 #define QNETHERNET_DNSCLIENT_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_DNS
+
 // C++ includes
 #include <cstdint>
 #include <functional>
@@ -14,7 +18,6 @@
 #include <IPAddress.h>
 
 #include "lwip/ip_addr.h"
-#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {
@@ -79,5 +82,7 @@ class DNSClient final {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_DNS
 
 #endif  // QNETHERNET_DNSCLIENT_H_

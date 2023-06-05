@@ -125,12 +125,20 @@ class EthernetClass final {
   // Returns whether the DHCP client is enabled. This is valid whether Ethernet
   // has been started or not. The default is true.
   bool isDHCPEnabled() const {
+#if LWIP_DHCP
     return dhcpEnabled_;
+#else
+    return false;
+#endif  // LWIP_DHCP
   }
 
   // Returns whether DHCP is active.
   bool isDHCPActive() const {
+#if LWIP_DHCP
     return dhcpActive_;
+#else
+    return false;
+#endif  // LWIP_DHCP
   }
 
   // Waits, up to the specified timeout, for an IP address and returns whether
@@ -215,6 +223,8 @@ class EthernetClass final {
   IPAddress localIP() const;
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
+
+  // Returns INADDR_NONE if DNS is disabled.
   IPAddress dnsServerIP() const;
 
   // Returns the broadcast IP address. This is equal to:
@@ -226,6 +236,8 @@ class EthernetClass final {
   void setLocalIP(const IPAddress &localIP) const;
   void setSubnetMask(const IPAddress &subnetMask) const;
   void setGatewayIP(const IPAddress &gatewayIP) const;
+
+  // Does nothing if DNS is disabled.
   void setDNSServerIP(const IPAddress &dnsServerIP) const;
 
   // The MAC addresses are used in the following begin() functions
@@ -338,9 +350,11 @@ class EthernetClass final {
 #endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_ = nullptr;
 
+#if LWIP_DHCP
   bool dhcpEnabled_ = true;
   bool dhcpDesired_ = false;  // Whether the user wants static or dynamic IP
   bool dhcpActive_ = false;
+#endif  // LWIP_DHCP
 
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;

@@ -122,7 +122,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define RAW_TTL  IP_DEFAULT_TTL
 
 // DHCP options
-#define LWIP_DHCP                 1  /* 0 */
+#ifndef LWIP_DHCP
+#define LWIP_DHCP                 LWIP_UDP  /* 0 */
+#endif  // !LWIP_DHCP
 // #define DHCP_DOES_ARP_CHECK       (LWIP_DHCP && LWIP_ARP)
 // #define LWIP_DHCP_BOOTP_FILE      0
 // #define LWIP_DHCP_GET_NTP_SRV     0
@@ -133,7 +135,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Add both for mDNS:
 #define LWIP_AUTOIP                 1  /* 0 */
-#define LWIP_DHCP_AUTOIP_COOP       1  /* 0 */
+#define LWIP_DHCP_AUTOIP_COOP       (LWIP_DHCP && LWIP_AUTOIP)  /* 0 */
 #else
 // #define LWIP_AUTOIP                 0
 // #define LWIP_DHCP_AUTOIP_COOP       0
@@ -153,7 +155,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #endif  // !LWIP_IGMP
 
 // DNS options
-#define LWIP_DNS                                1  /* 0 */
+#ifndef LWIP_DNS
+#define LWIP_DNS                                LWIP_UDP  /* 0 */
+#endif  // !LWIP_DNS
 // #define DNS_TABLE_SIZE                          4
 // #define DNS_MAX_NAME_LENGTH                     256
 // #define DNS_MAX_SERVERS                         2
@@ -172,7 +176,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define LWIP_DNS_SUPPORT_MDNS_QUERIES           1  /* 0 */
 
 // UDP options
+#ifndef LWIP_UDP
 // #define LWIP_UDP             1
+#endif  // !LWIP_UDP
 // #define LWIP_UDPLITE         0
 // #define UDP_TTL              IP_DEFAULT_TTL
 // #define LWIP_NETBUF_RECVINFO 0

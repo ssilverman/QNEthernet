@@ -6,6 +6,8 @@
 
 #include "QNEthernetUDP.h"
 
+#if LWIP_UDP
+
 // C++ includes
 #include <algorithm>
 
@@ -385,3 +387,5 @@ int EthernetUDP::availableForWrite() {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_UDP

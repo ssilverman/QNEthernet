@@ -48,12 +48,16 @@ class EthernetClient : public Client {
   }
 
   int connect(IPAddress ip, uint16_t port) final;
+
+  // Returns INVALID_SERVER (-2) if DNS is disabled.
   int connect(const char *host, uint16_t port) final;
 
   // These functions start the connection process but don't wait for the
   // connection to be complete. Note that DNS lookup might still take some time.
   // Neither of these will return TIMED_OUT (-1).
   int connectNoWait(const IPAddress &ip, uint16_t port);
+
+  // Returns INVALID_SERVER (-2) if DNS is disabled.
   int connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;

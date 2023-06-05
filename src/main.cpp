@@ -20,8 +20,10 @@ static constexpr uint32_t kStartupDelay = 2000;
 
 // Timeouts
 static constexpr uint32_t kDHCPTimeout = 15000;
+#if LWIP_DNS
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+#endif  // LWIP_DNS
 
 // Flag that indicates something about the network changed.
 static volatile bool networkChanged = false;
@@ -116,12 +118,14 @@ void loop() {
     if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
       // Do network things here, but only if there's an address and a link
 
+#if LWIP_DNS
       IPAddress ip;
       if (!DNSClient::getHostByName("dns.google", ip, kDNSLookupTimeout)) {
         printf("[Main] Lookup failed\r\n");
       } else {
         printf("[Main] Lookup: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
       }
+#endif  // LWIP_DNS
     }
   }
 }

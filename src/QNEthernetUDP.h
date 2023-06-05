@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_ETHERNETUDP_H_
 #define QNETHERNET_ETHERNETUDP_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_UDP
+
 // C++ includes
 #include <cstddef>
 #include <cstdint>
@@ -16,7 +20,6 @@
 #include <Udp.h>
 
 #include "lwip/ip_addr.h"
-#include "lwip/opt.h"
 #include "lwip/udp.h"
 
 namespace qindesign {
@@ -167,5 +170,7 @@ class EthernetUDP : public UDP {
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_UDP
 
 #endif  // QNETHERNET_ETHERNETUDP_H_

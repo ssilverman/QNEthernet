@@ -1304,10 +1304,13 @@ in `mdns_opts.h`:
 | Macro                     | Description                                          |
 | ------------------------- | ---------------------------------------------------- |
 | `DNS_MAX_RETRIES`         | Maximum number of DNS retries                        |
+| `LWIP_DHCP`               | Zero to disable                                      |
+| `LWIP_DNS`                | Zero to disable                                      |
 | `LWIP_IGMP`               | Zero to disable; also disables `LWIP_MDNS_RESPONDER` |
 | `LWIP_MDNS_RESPONDER`     | Zero to disable                                      |
 | `LWIP_STATS`              | `1` to enable                                        |
 | `LWIP_TCP`                | Zero to disable                                      |
+| `LWIP_UDP`                | Zero to disable; also disables DHCP and DNS          |
 | `MEM_SIZE`                | Heap memory size                                     |
 | `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                           |
 | `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                      |

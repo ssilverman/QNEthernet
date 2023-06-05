@@ -230,7 +230,9 @@ static enet_init_states_t s_initState = kInitStateStart;
 static bool s_isNetifAdded            = false;
 
 // Structs for avoiding memory allocation
+#if LWIP_DHCP
 static struct dhcp s_dhcp;
+#endif  // LWIP_DHCP
 #if LWIP_AUTOIP
 static struct autoip s_autoip;
 #endif  // LWIP_AUTOIP
@@ -912,8 +914,10 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     netif_set_default(&s_t41_netif);
     s_isNetifAdded = true;
 
+#if LWIP_DHCP
     // netif_add() clears these
     dhcp_set_struct(&s_t41_netif, &s_dhcp);
+#endif  // LWIP_DHCP
 #if LWIP_AUTOIP
     autoip_set_struct(&s_t41_netif, &s_autoip);
 #endif  // LWIP_AUTOIP

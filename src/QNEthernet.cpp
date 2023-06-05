@@ -125,10 +125,12 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
     return;
   }
 
+#if LWIP_DHCP
   if (dhcpActive_) {
     dhcp_release_and_stop(netif_);  // Stop DHCP in all cases
     dhcpActive_ = false;
   }
+#endif  // LWIP_DHCP
 
   begin(netif_ip4_addr(netif_),
         netif_ip4_netmask(netif_),
@@ -164,6 +166,7 @@ bool EthernetClass::begin(const IPAddress &ip,
   ip4_addr_t gw{get_uint32(gateway)};
 
   if (netif_ != nullptr) {
+#if LWIP_DHCP
     // Stop any running DHCP client if we don't need one
     if (dhcpActive_ &&
         (!ip4_addr_isany_val(ipaddr) ||
@@ -172,6 +175,7 @@ bool EthernetClass::begin(const IPAddress &ip,
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
     }
+#endif  // LWIP_DHCP
   }
 
   if (dns != INADDR_NONE) {
@@ -207,6 +211,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   // If this is using a manual configuration then inform the network,
   // otherwise start DHCP
   bool retval = true;
+#if LWIP_DHCP
   if (!ip4_addr_isany(ipaddr) ||
       !ip4_addr_isany(netmask) ||
       !ip4_addr_isany(gw)) {
@@ -221,12 +226,14 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
     dhcpActive_ = retval;
     dhcpDesired_ = true;
   }
+#endif  // LWIP_DHCP
 
   attachLoopToYield();
   return retval;
 }
 
 bool EthernetClass::setDHCPEnabled(bool flag) {
+#if LWIP_DHCP
   dhcpEnabled_ = flag;
   if (netif_ == nullptr) {
     return true;
@@ -245,6 +252,9 @@ bool EthernetClass::setDHCPEnabled(bool flag) {
     }
   }
   return retval;
+#else
+  return false;
+#endif  // LWIP_DHCP
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
@@ -317,12 +327,16 @@ void EthernetClass::end() {
   MDNS.end();
 #endif  // LWIP_MDNS_RESPONDER
 
+#if LWIP_DNS
   DNSClient::setServer(0, INADDR_NONE);
+#endif  // LWIP_DNS
+#if LWIP_DHCP
   if (dhcpActive_) {
     dhcp_release_and_stop(netif_);
     dhcpActive_ = false;
   }
   dhcpDesired_ = false;
+#endif  // LWIP_DHCP
 
   enet_deinit();
   netif_ = nullptr;
@@ -380,10 +394,14 @@ IPAddress EthernetClass::gatewayIP() const {
 }
 
 IPAddress EthernetClass::dnsServerIP() const {
+#if LWIP_DNS
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return DNSClient::getServer(0);
+#else
+  return INADDR_NONE;
+#endif  // LWIP_DNS
 }
 
 IPAddress EthernetClass::broadcastIP() const {
@@ -419,7 +437,9 @@ void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) const {
 }
 
 void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
+#if LWIP_DNS
   DNSClient::setServer(0, dnsServerIP);
+#endif  // LWIP_DNS
 }
 
 EthernetHardwareStatus EthernetClass::hardwareStatus() const {
