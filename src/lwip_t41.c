@@ -820,17 +820,20 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
                               enum netif_mac_filter_action action) {
   LWIP_UNUSED_ARG(netif);
 
+  bool retval = true;
   switch (action) {
     case NETIF_ADD_MAC_FILTER:
-      enet_join_group(group);
+      retval = enet_join_group(group);
       break;
     case NETIF_DEL_MAC_FILTER:
-      enet_leave_group(group);
+      retval = enet_leave_group(group);
       break;
     default:
       break;
   }
-  return ERR_OK;
+  return retval ? ERR_OK : ERR_USE;
+      // ERR_USE seems like the best fit of the choices
+      // Next best seems to be ERR_IF
 }
 #endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
 
@@ -1073,7 +1076,7 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   return crc;
 }
 
-void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   // Don't release bits that have had a collision. Track these here.
   static uint32_t collisionGALR = 0;
   static uint32_t collisionGAUR = 0;
@@ -1108,6 +1111,7 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
     } else {
       // Keep collided bits set
       *lower &= ~value | *collisionLower;
+      return ((*collisionLower & value) == 0);  // False if can't remove
     }
   } else {
     if (allow) {
@@ -1119,13 +1123,16 @@ void enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
     } else {
       // Keep collided bits set
       *upper &= ~value | *collisionUpper;
+      return ((*collisionUpper & value) == 0);  // False if can't remove
     }
   }
+
+  return true;
 }
 
 // Join or leave a multicast group. The flag should be true to join and false
-// to leave.
-static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
+// to leave. This returns whether successful.
+static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   // Multicast MAC address.
   static uint8_t multicastMAC[6] = {
       LL_IP4_MULTICAST_ADDR_0,
@@ -1140,15 +1147,15 @@ static void enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   multicastMAC[4] = ip4_addr3(group);
   multicastMAC[5] = ip4_addr4(group);
 
-  enet_set_mac_address_allowed(multicastMAC, flag);
+  return enet_set_mac_address_allowed(multicastMAC, flag);
 }
 
-void enet_join_group(const ip4_addr_t *group) {
-  enet_join_notleave_group(group, true);
+bool enet_join_group(const ip4_addr_t *group) {
+  return enet_join_notleave_group(group, true);
 }
 
-void enet_leave_group(const ip4_addr_t *group) {
-  enet_join_notleave_group(group, false);
+bool enet_leave_group(const ip4_addr_t *group) {
+  return enet_join_notleave_group(group, false);
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE

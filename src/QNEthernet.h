@@ -283,7 +283,8 @@ class EthernetClass final {
   //
   // Because the underlying system uses a hash of the MAC address, it's possible
   // for there to be collisions. This means that it's not always possible to
-  // disallow an address once it's been allowed.
+  // disallow an address once it's been allowed. This will return false in that
+  // case and true otherwise.
   bool setMACAddressAllowed(const uint8_t mac[6], bool flag) const;
 
   // Sets the DHCP client option 12 hostname. The empty string will set the

@@ -17,6 +17,7 @@ and this project adheres to
 ### Changed
 * Limit the number of times `enet_proc_input()` can loop to twice the ring size.
 * Limit UDP output size to the maximum possible (65535 - 28(total header)).
+* It's now possible to know when adding or removing a MAC address filter failed.
 
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect

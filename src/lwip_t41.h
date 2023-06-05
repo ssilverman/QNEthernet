@@ -87,8 +87,10 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 // enet_set_mac_address_allowed() with the MAC addresses related to the given
 // multicast group. Note that this affects low-level MAC filtering and not the
 // IP stack's use of multicast groups.
-void enet_join_group(const ip4_addr_t *group);
-void enet_leave_group(const ip4_addr_t *group);
+//
+// These return the result of 'enet_set_mac_address_allowed()'.
+bool enet_join_group(const ip4_addr_t *group);
+bool enet_leave_group(const ip4_addr_t *group);
 
 // Allows or disallows frames addressed to the specified MAC address. This is
 // not meant to be used for joining or leaving a multicast group at the IP
@@ -97,7 +99,11 @@ void enet_leave_group(const ip4_addr_t *group);
 // Because the underlying system uses a hash of the MAC address, it's possible
 // for there to be collisions. This means that it's not always possible to
 // disallow an address once it's been allowed.
-void enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
+//
+// This returns true if adding or removing the MAC was successful. If an address
+// has a collision, then it can't be removed and this will return false.
+// Otherwise, this will return true.
+bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
