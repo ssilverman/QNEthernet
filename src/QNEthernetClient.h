@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_ETHERNETCLIENT_H_
 #define QNETHERNET_ETHERNETCLIENT_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_TCP
+
 // C++ includes
 #include <cstddef>
 #include <cstdint>
@@ -18,7 +22,6 @@
 
 #include "internal/ConnectionHolder.h"
 #include "lwip/ip_addr.h"
-#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {
@@ -41,11 +44,7 @@ class EthernetClient : public Client {
 
   // Returns the maximum number of TCP connections.
   static constexpr int maxSockets() {
-#if LWIP_TCP
     return MEMP_NUM_TCP_PCB;
-#else
-    return 0;
-#endif  // LWIP_TCP
   }
 
   int connect(IPAddress ip, uint16_t port) final;
@@ -131,7 +130,6 @@ class EthernetClient : public Client {
   bool isNoDelay();
 
  private:
-#if LWIP_TCP
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
   EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
@@ -163,10 +161,11 @@ class EthernetClient : public Client {
       // conn_->connected.
 
   friend class EthernetServer;
-#endif  // LWIP_TCP
 };
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP
 
 #endif  // QNETHERNET_ETHERNETCLIENT_H_

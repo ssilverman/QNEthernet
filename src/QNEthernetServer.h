@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_ETHERNETSERVER_H_
 #define QNETHERNET_ETHERNETSERVER_H_
 
+#include "lwip/opt.h"
+
+#if LWIP_TCP
+
 // C++ includes
 #include <cstddef>
 #include <cstdint>
@@ -15,7 +19,6 @@
 #include <Server.h>
 
 #include "QNEthernetClient.h"
-#include "lwip/opt.h"
 
 namespace qindesign {
 namespace network {
@@ -35,22 +38,14 @@ class EthernetServer : public Server {
 
   // Returns the maximum number of TCP listeners.
   static constexpr int maxListeners() {
-#if LWIP_TCP
     return MEMP_NUM_TCP_PCB_LISTEN;
-#else
-    return 0;
-#endif  // LWIP_TCP
   }
 
   // Returns the server port. This will return -1 if it has not been set.
   //
   // Note that the value is still a 16-bit quantity if it is non-negative.
   int32_t port() const {
-#if LWIP_TCP
     return port_;
-#else
-    return -1;
-#endif  // LWIP_TCP
   }
 
   // Starts listening on the server port, if set. This does not set the
@@ -113,17 +108,17 @@ class EthernetServer : public Server {
   explicit operator bool() const;
 
  private:
-#if LWIP_TCP
   bool begin(uint16_t port, bool reuse);
 
   int32_t port_;  // We also want to be able to represent a signed value
                   // Non-negative is 16 bits
   bool reuse_;    // Whether the SO_REUSEADDR socket option is set
   bool listening_;
-#endif  // LWIP_TCP
 };
 
 }  // namespace network
 }  // namespace qindesign
+
+#endif  // LWIP_TCP
 
 #endif  // QNETHERNET_ETHERNETSERVER_H_
