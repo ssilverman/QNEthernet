@@ -814,7 +814,7 @@ static inline void check_link_status() {
   }
 }
 
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
 // Multicast filter for letting the hardware know which packets to let in.
 static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
                               enum netif_mac_filter_action action) {
@@ -832,7 +832,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
   }
   return ERR_OK;
 }
-#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
 
 // --------------------------------------------------------------------------
 //  Public Interface
@@ -916,10 +916,10 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 #endif  // LWIP_AUTOIP
   }
 
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
   // Multicast filtering, to allow desired multicast packets in
   netif_set_igmp_mac_filter(&s_t41_netif, &multicast_filter);
-#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
 }
 
 extern void unused_interrupt_vector(void);  // startup.c

@@ -1294,17 +1294,18 @@ command line are either wrapped in an `#ifndef` block or not defined at all.
 Useful macro list; please see further descriptions in `opt.h` and
 in `mdns_opts.h`:
 
-| Macro                     | Description                     |
-| ------------------------- | ------------------------------- |
-| `DNS_MAX_RETRIES`         | Maximum number of DNS retries   |
-| `LWIP_MDNS_RESPONDER`     | Zero to disable                 |
-| `LWIP_STATS`              | `1` to enable                   |
-| `MEM_SIZE`                | Heap memory size                |
-| `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups      |
-| `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets |
-| `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets           |
-| `MEMP_NUM_UDP_PCB`        | Number of UDP sockets           |
-| `MDNS_MAX_SERVICES`       | Maximum number of mDNS services |
+| Macro                     | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `DNS_MAX_RETRIES`         | Maximum number of DNS retries                        |
+| `LWIP_IGMP`               | Zero to disable; also disables `LWIP_MDNS_RESPONDER` |
+| `LWIP_MDNS_RESPONDER`     | Zero to disable                                      |
+| `LWIP_STATS`              | `1` to enable                                        |
+| `MEM_SIZE`                | Heap memory size                                     |
+| `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                           |
+| `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                      |
+| `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets                                |
+| `MEMP_NUM_UDP_PCB`        | Number of UDP sockets                                |
+| `MDNS_MAX_SERVICES`       | Maximum number of mDNS services                      |
 
 Some extra conditions to keep in mind:
 * `MEMP_NUM_IGMP_GROUP`: Count must include one for the "all systems" group.

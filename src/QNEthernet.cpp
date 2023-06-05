@@ -430,19 +430,27 @@ EthernetHardwareStatus EthernetClass::hardwareStatus() const {
 }
 
 bool EthernetClass::joinGroup(const IPAddress &ip) const {
+#if LWIP_IGMP
   if (netif_ == nullptr) {
     return false;
   }
   ip4_addr_t groupaddr{get_uint32(ip)};
   return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
+#else
+  return false;
+#endif  // LWIP_IGMP
 }
 
 bool EthernetClass::leaveGroup(const IPAddress &ip) const {
+#if LWIP_IGMP
   if (netif_ == nullptr) {
     return false;
   }
   ip4_addr_t groupaddr{get_uint32(ip)};
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+#else
+  return false;
+#endif  // LWIP_IGMP
 }
 
 bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
