@@ -1217,6 +1217,9 @@ See
 [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
 for changing the IP stack configuration.
 
+Note that disabling features means that the build will not include those
+features, thus saving space.
+
 ### Configuring macros using the Arduino IDE
 
 _[Current as of this writing: Arduino IDE 2.0.4, Teensyduino 1.58]_
@@ -1316,9 +1319,6 @@ Some extra conditions to keep in mind:
 * `MEMP_NUM_IGMP_GROUP`: Count must include 1 for the "all systems" group and 1
   if mDNS is enabled.
 * `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
-
-Disabling features means that the build will not include those features, thus
-saving space.
 
 ## Complete list of features
 
