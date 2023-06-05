@@ -23,6 +23,8 @@ and this project adheres to
   triggered by `connectNoWait()`.
 * Fixed how raw frame size limits are checked. Padding is already handled by
   the MAC.
+* Fix compilation if `LWIP_IGMP` is disabled, including making
+  `LWIP_MDNS_RESPONDER` dependent on `LWIP_IGMP` (in addition to `LWIP_UDP`).
 
 ## [0.21.0]
 
