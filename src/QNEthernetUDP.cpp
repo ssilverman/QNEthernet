@@ -29,9 +29,11 @@ constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
 // Maximum possible payload size.
 constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
 
+#if LWIP_DNS
 // DNS lookup timeout.
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
+#endif  // LWIP_DNS
 
 void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                            const ip_addr_t *addr, u16_t port) {
@@ -279,11 +281,15 @@ int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
 }
 
 int EthernetUDP::beginPacket(const char *host, uint16_t port) {
+#if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return false;
   }
   return beginPacket(ip, port);
+#else
+  return false;
+#endif  // LWIP_DNS
 }
 
 bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
@@ -331,11 +337,15 @@ bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
 
 bool EthernetUDP::send(const char *host, uint16_t port,
                        const uint8_t *data, size_t len) {
+#if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
     return false;
   }
   return send(ip, port, data, len);
+#else
+  return false;
+#endif  // LWIP_DNS
 }
 
 bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
