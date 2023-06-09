@@ -112,7 +112,7 @@ class EthernetClass final {
   // successful. This will always return false if no hardware is detected.
   //
   // Note that when this returns, an IP address may not yet have been acquired,
-  // if DHCP is enabled.
+  // if DHCP is enabled. In other words, it does not block.
   //
   // See: waitForLocalIP(timeout)
   bool begin();
