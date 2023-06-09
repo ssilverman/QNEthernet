@@ -27,7 +27,7 @@ namespace network {
 
 // DHCP client timeout, in milliseconds; default is 30 seconds
 #ifndef QNETHERNET_DHCP_CLIENT_TIMEOUT
-#define QNETHERNET_DHCP_CLIENT_TIMEOUT 30000
+#define QNETHERNET_DHCP_CLIENT_TIMEOUT 30'000
 #endif  // !QNETHERNET_DHCP_CLIENT_TIMEOUT
 
 EthernetClass &EthernetClass::instance() {

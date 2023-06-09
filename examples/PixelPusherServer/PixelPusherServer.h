@@ -169,8 +169,10 @@ class PixelPusherServer final {
     void loop() override {}
   };
 
-  static constexpr uint32_t kDiscoveryPeriod = 1000;
+  static constexpr uint32_t kDiscoveryPeriod = 1'000;
+
   static constexpr uint16_t kSoftwareRevision = 142;
+
   static constexpr uint16_t kDiscoveryPort = 7331;
 
   void sendDiscovery();

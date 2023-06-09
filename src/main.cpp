@@ -16,10 +16,10 @@
 using namespace qindesign::network;
 
 // Startup delay, in milliseconds.
-static constexpr uint32_t kStartupDelay = 2000;
+static constexpr uint32_t kStartupDelay = 2'000;
 
 // Timeouts
-static constexpr uint32_t kDHCPTimeout = 15000;
+static constexpr uint32_t kDHCPTimeout = 15'000;
 #if LWIP_DNS
 static constexpr uint32_t kDNSLookupTimeout =
     DNS_MAX_RETRIES * DNS_TMR_INTERVAL;

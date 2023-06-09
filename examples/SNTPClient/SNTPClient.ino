@@ -15,7 +15,8 @@ using namespace qindesign::network;
 //  Configuration
 // --------------------------------------------------------------------------
 
-constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+
 constexpr uint16_t kNTPPort = 123;
 
 // 01-Jan-1900 00:00:00 -> 01-Jan-1970 00:00:00

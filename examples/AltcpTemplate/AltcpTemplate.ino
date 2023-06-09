@@ -21,7 +21,7 @@
 
 using namespace qindesign::network;
 
-constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
 
 // Connection information
 #define HOST "www.example.com"
@@ -144,7 +144,7 @@ void setup() {
   // Connect and send the request
   printf("Connecting and sending request...\r\n");
   if (kUseProxy) {
-    client.setConnectionTimeout(30000);  // Proxies can take longer, maybe
+    client.setConnectionTimeout(30'000);  // Proxies can take longer, maybe
   }
   if (client.connect(kHost, kPort) != 1) {
     printf("Failed to connect\r\n");
