@@ -391,7 +391,9 @@ read from a frame and the `Print` API can be used to write to the frame.
   which are 4 bytes larger.
 * `static constexpr int minFrameLen()`: Returns the minimum frame length
   including the 4-byte FCS. Subtract 4 to get the minimum length that can be
-  sent or received using this API.
+  sent or received using this API. Note that padding does not need to be managed
+  by the caller, meaning frames smaller than this size are allowed; the system
+  will insert padding as needed.
 
 ### `MDNS`
 

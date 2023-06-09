@@ -47,12 +47,17 @@ class EthernetFrameClass final : public Stream {
   // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
   //
   // Note that this size includes VLAN frames, which are 4 bytes larger.
+  // Also note that the padding does not need to be managed by the caller.
   static constexpr int maxFrameLen() {
     return MAX_FRAME_LEN;
   }
 
   // Returns the minimum frame length. This includes any padding and the 4-byte
   // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  //
+  // Note that the padding does not need to be managed by the caller, meaning
+  // frames smaller than this size are allowed; the system will insert padding
+  // as needed.
   static constexpr int minFrameLen() {
     return 64;
   }
