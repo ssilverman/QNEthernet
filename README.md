@@ -17,7 +17,7 @@ files provided with the lwIP release.
 ## Table of contents
 
 1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
-   1. [Two core differences](#two-core-differences)
+   1. [Two main differences](#two-main-differences)
    2. [Other differences and notes](#other-differences-and-notes)
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
    1. [`Ethernet`](#ethernet)
@@ -76,15 +76,12 @@ This section describes differences from the Arduino Ethernet API.
 **Note: Please read the function docs in the relevant header files for
 more information.**
 
-### Two core differences
+### Two main differences
 
-There are two core differences that make _QNEthernet_ not a 100% drop-in
+There are two main differences that make _QNEthernet_ not a 100% drop-in
 replacement for code using the Arduino Ethernet API. These are as follows:
 
-* The DHCP versions of `Ethernet.begin(...)` don't block. The blocking behaviour
-  can be emulated by following a call to `begin()` with a loop that checks
-  `Ethernet.localIP()` for a valid IP. See also the new
-  `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
+* The `QNEthernet.h` header must be included instead of `Ethernet.h`.
 * Everything is inside the `qindesign::network` namespace. In many cases, adding
   the following at the top of your program will obviate the need to qualify any
   object uses or make any other changes:
@@ -97,14 +94,20 @@ For API additions beyond what the Arduino-style API provides, see:\
 
 ### Other differences and notes
 
-* Include the `QNEthernet.h` header instead of `Ethernet.h`.
+* UDP support is already included in _QNEthernet.h_. There's no need to also
+  include _QNEthernetUDP.h_.
 * Ethernet `loop()` is called from `yield()`. The functions that wait for
   timeouts rely on this. This also means that you must use `delay(ms)`,
   `yield()`, or `Ethernet.loop()` when waiting on conditions; waiting without
   calling these functions will cause the TCP/IP stack to never refresh. Note
   that many of the I/O functions call `loop()` so that there's less burden on
   the calling code.
-* The `Ethernet.begin(...)` functions don't block.
+* All but one of the `Ethernet.begin(...)` functions don't block.
+  `Ethernet.begin(mac)` blocks while waiting for an IP address to match the
+  Arduino-style API. It uses a default timeout of 30 seconds. This behaviour can
+  be emulated by following a call to `begin()` with a loop that checks
+  `Ethernet.localIP()` for a valid IP. See also the new
+  `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples at
