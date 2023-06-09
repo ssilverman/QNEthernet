@@ -98,8 +98,10 @@ class EthernetClass final {
 
   // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
-  // be reset and any DHCP client will be restarted. This does nothing if the
-  // given array is NULL.
+  // be reset and any DHCP client will be restarted.
+  //
+  // If the given array is NULL, then the MAC address will be set to the
+  // built-in one.
   void setMACAddress(const uint8_t mac[6]);
 
   // Call often.

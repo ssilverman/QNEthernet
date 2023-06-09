@@ -110,9 +110,11 @@ void EthernetClass::macAddress(uint8_t mac[6]) const {
 }
 
 void EthernetClass::setMACAddress(const uint8_t mac[6]) {
+  uint8_t m[6];
   if (mac == nullptr) {
-    // Don't do anything
-    return;
+    // Use the system MAC address
+    enet_getmac(m);
+    mac = m;
   }
 
   if (std::equal(&mac_[0], &mac_[6], &mac[0])) {
