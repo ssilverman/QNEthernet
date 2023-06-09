@@ -28,7 +28,7 @@ extern "C" {
 #define MAX_FRAME_LEN 1522
 
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
-void enet_getmac(uint8_t *mac);
+void enet_get_mac(uint8_t *mac);
 
 // Determines if there's Ethernet hardware.
 bool enet_has_hardware();

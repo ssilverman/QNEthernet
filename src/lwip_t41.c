@@ -850,7 +850,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 //  Public Interface
 // --------------------------------------------------------------------------
 
-void enet_getmac(uint8_t *mac) {
+void enet_get_mac(uint8_t *mac) {
   if (mac == NULL) {
     return;
   }
@@ -900,7 +900,7 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   // If it's changed then remove the interface and start again
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
-    enet_getmac(m);
+    enet_get_mac(m);
     mac = m;
   }
   if (memcmp(s_mac, mac, ETH_HWADDR_LEN)) {

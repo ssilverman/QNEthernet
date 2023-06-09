@@ -72,7 +72,7 @@ void tearDown() {
   // Restore the MAC address
   uint8_t mac[6];
   uint8_t mac2[6];
-  enet_getmac(mac);
+  enet_get_mac(mac);
   Ethernet.macAddress(mac2);
   if (!std::equal(&mac[0], &mac[6], mac2)) {
     Ethernet.setMACAddress(mac);
@@ -93,7 +93,7 @@ static void test_builtin_mac() {
 
   // Get the built-in MAC address
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
-  enet_getmac(mac);
+  enet_get_mac(mac);
   TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], zeros),
                             "Expected an internal MAC");
 

@@ -87,7 +87,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   if (mac != nullptr) {
     std::copy_n(mac, 6, mac_);
   } else {
-    enet_getmac(mac_);
+    enet_get_mac(mac_);
   }
 
   // Initialize randomness
@@ -120,7 +120,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   uint8_t m[6];
   if (mac == nullptr) {
     // Use the system MAC address
-    enet_getmac(m);
+    enet_get_mac(m);
     mac = m;
   }
 
@@ -329,7 +329,7 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
   // This doesn't return any error, so if the MAC is NULL then use the built-in
   uint8_t m[6];
   if (mac == nullptr) {
-    enet_getmac(m);
+    enet_get_mac(m);
     mac = m;
   }
   std::copy_n(mac, 6, mac_);
