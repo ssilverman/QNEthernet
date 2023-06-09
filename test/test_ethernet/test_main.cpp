@@ -85,17 +85,26 @@ void tearDown() {
   Ethernet.onLinkState(nullptr);
   Ethernet.onAddressChanged(nullptr);
   Ethernet.onInterfaceStatus(nullptr);
+
+  // Restore DHCP
+  Ethernet.setDHCPEnabled(true);
 }
 
 // Tests using the built-in MAC address.
 static void test_builtin_mac() {
   static constexpr uint8_t zeros[6]{0, 0, 0, 0, 0, 0};
 
+  enet_get_mac(nullptr);  // Test NULL input
+
   // Get the built-in MAC address
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
   enet_get_mac(mac);
   TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], zeros),
                             "Expected an internal MAC");
+
+  // Test NULL inputs
+  Ethernet.macAddress(nullptr);
+  Ethernet.MACAddress(nullptr);
 
   uint8_t mac2[6]{1};
   Ethernet.macAddress(mac2);
@@ -104,24 +113,34 @@ static void test_builtin_mac() {
 
   Ethernet.MACAddress(mac2);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
-                                        "Expected matching MAC (deprecated API)");
+                                        "Expected matching MAC (old API)");
 }
 
 // Tests setting the MAC address.
 static void test_set_mac() {
-  uint8_t mac[6];
-  Ethernet.macAddress(mac);
+  uint8_t builtInMAC[6];
+  Ethernet.macAddress(builtInMAC);
 
-  uint8_t mac2[6]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-  TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], mac2),
+  const uint8_t testMAC[6]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+  TEST_ASSERT_FALSE_MESSAGE(std::equal(&builtInMAC[0], &builtInMAC[6], testMAC),
                             "Expected internal MAC");
-  Ethernet.setMACAddress(mac2);
-  Ethernet.macAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC");
+  Ethernet.setMACAddress(testMAC);
 
+  uint8_t mac[6]{0, 0, 0, 0, 0, 0};
+  Ethernet.macAddress(mac);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6,
+                                        "Expected matching MAC");
+
+  std::fill_n(mac, 6, 0);
   Ethernet.MACAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
-                                        "Expected matching MAC (deprecated API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6,
+                                        "Expected matching MAC (old API)");
+
+  // NULL uses the built-in
+  Ethernet.setMACAddress(nullptr);
+  Ethernet.macAddress(mac);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(builtInMAC, mac, 6,
+                                        "Expected matching MAC (old API)");
 }
 
 // Obtains an IP address via DHCP.
@@ -140,8 +159,46 @@ static void waitForLocalIP() {
   TEST_MESSAGE(format("DHCP IP: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
 }
 
+// Tests NULL MAC address passed to the begin(...) functions.
+static void test_other_null_mac() {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  TEST_ASSERT_FALSE(Ethernet.begin(nullptr));
+
+  Ethernet.begin(nullptr, INADDR_NONE);
+  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE);
+  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+#pragma GCC diagnostic pop
+
+  TEST_ASSERT_FALSE(enet_set_mac_address_allowed(nullptr, true));
+  TEST_ASSERT_FALSE(enet_set_mac_address_allowed(nullptr, false));
+}
+
+// Tests NULL join/leave groups.
+static void test_null_group() {
+  TEST_ASSERT_FALSE_MESSAGE(enet_join_group(nullptr), "Expected join failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet_leave_group(nullptr), "Expected leave failed");
+}
+
+// Tests NULL output frames.
+static void test_null_frame() {
+  // Initialize Ethernet so these functions don't exit for the wrong reason
+  Ethernet.setDHCPEnabled(false);
+  Ethernet.begin();
+
+  TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 0), "Expected output failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 10), "Expected output failed");
+}
+
 // Tests DHCP.
 static void test_dhcp() {
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
+  Ethernet.setDHCPEnabled(false);
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
+  Ethernet.setDHCPEnabled(true);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
+
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
   waitForLocalIP();
 }
@@ -395,7 +452,11 @@ static void test_udp() {
     yield();
 
     int size = udp.parsePacket();
+    if (size < 0) {
+      continue;
+    }
     if (size != 48 && size != 68) {
+      TEST_MESSAGE("Discarding incorrect-sized reply");
       continue;
     }
 
@@ -502,6 +563,9 @@ void setup() {
   UNITY_BEGIN();
   RUN_TEST(test_builtin_mac);
   RUN_TEST(test_set_mac);
+  RUN_TEST(test_other_null_mac);
+  RUN_TEST(test_null_group);
+  RUN_TEST(test_null_frame);
   RUN_TEST(test_dhcp);
   RUN_TEST(test_static_ip);
   RUN_TEST(test_mdns);
