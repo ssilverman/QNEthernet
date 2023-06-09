@@ -27,7 +27,7 @@ extern "C" {
 #define MTU 1500
 #define MAX_FRAME_LEN 1522
 
-// Gets the built-in Ethernet MAC address.
+// Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 void enet_getmac(uint8_t *mac);
 
 // Determines if there's Ethernet hardware.
@@ -88,7 +88,8 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 // multicast group. Note that this affects low-level MAC filtering and not the
 // IP stack's use of multicast groups.
 //
-// These return the result of 'enet_set_mac_address_allowed()'.
+// If 'group' is NULL then these return false. Otherwise, these return the
+// result of 'enet_set_mac_address_allowed()'.
 bool enet_join_group(const ip4_addr_t *group);
 bool enet_leave_group(const ip4_addr_t *group);
 
@@ -101,8 +102,8 @@ bool enet_leave_group(const ip4_addr_t *group);
 // disallow an address once it's been allowed.
 //
 // This returns true if adding or removing the MAC was successful. If an address
-// has a collision, then it can't be removed and this will return false.
-// Otherwise, this will return true.
+// has a collision, then it can't be removed and this will return false. This
+// will also return false if 'mac' is NULL. Otherwise, this will return true.
 bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE

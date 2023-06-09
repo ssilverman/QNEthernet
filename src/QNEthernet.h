@@ -93,7 +93,7 @@ class EthernetClass final {
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
   }
 
-  // Retrieves the MAC address.
+  // Retrieves the MAC address. This does nothing if 'mac' is NULL.
   void macAddress(uint8_t mac[6]) const;
 
   // Sets the MAC address. If the address is different than the current address,

@@ -111,7 +111,9 @@ FLASHMEM EthernetClass::~EthernetClass() {
 }
 
 void EthernetClass::macAddress(uint8_t mac[6]) const {
-  std::copy_n(mac_, 6, mac);
+  if (mac != nullptr) {
+    std::copy_n(mac_, 6, mac);
+  }
 }
 
 void EthernetClass::setMACAddress(const uint8_t mac[6]) {
@@ -289,6 +291,10 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 }
 
 int EthernetClass::begin(const uint8_t mac[6]) {
+  // This can return an error, so if the MAC is NULL then fail
+  if (mac == nullptr) {
+    return false;
+  }
   std::copy_n(mac, 6, mac_);
 
   if (!begin()) {
@@ -320,7 +326,14 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
 void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
+  // This doesn't return any error, so if the MAC is NULL then use the built-in
+  uint8_t m[6];
+  if (mac == nullptr) {
+    enet_getmac(m);
+    mac = m;
+  }
   std::copy_n(mac, 6, mac_);
+
   begin(ip, subnet, gateway, dns);
 }
 #pragma GCC diagnostic pop

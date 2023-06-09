@@ -727,6 +727,9 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
 
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
+  if (p == NULL) {
+    return ERR_ARG;
+  }
 
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *pBD = get_bufdesc();
@@ -743,6 +746,10 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 }
 
 static err_t t41_netif_init(struct netif *netif) {
+  if (netif == NULL) {
+    return ERR_ARG;
+  }
+
   netif->linkoutput = t41_low_level_output;
   netif->output = etharp_output;
   netif->mtu = MTU;
@@ -844,6 +851,10 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 // --------------------------------------------------------------------------
 
 void enet_getmac(uint8_t *mac) {
+  if (mac == NULL) {
+    return;
+  }
+
   uint32_t m1 = HW_OCOTP_MAC1;
   uint32_t m2 = HW_OCOTP_MAC0;
   mac[0] = m1 >> 8;
@@ -890,10 +901,9 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
     enet_getmac(m);
-  } else {
-    SMEMCPY(m, mac, ETH_HWADDR_LEN);
+    mac = m;
   }
-  if (memcmp(s_mac, m, ETH_HWADDR_LEN)) {
+  if (memcmp(s_mac, mac, ETH_HWADDR_LEN)) {
     // MAC address has changed
 
     if (s_isNetifAdded) {
@@ -902,7 +912,7 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
       netif_remove_ext_callback(&netif_callback);
       s_isNetifAdded = false;
     }
-    SMEMCPY(s_mac, m, ETH_HWADDR_LEN);
+    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
   }
 
   if (s_isNetifAdded) {
@@ -1081,6 +1091,10 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
 }
 
 bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+  if (mac == NULL) {
+    return false;
+  }
+
   // Don't release bits that have had a collision. Track these here.
   static uint32_t collisionGALR = 0;
   static uint32_t collisionGAUR = 0;
@@ -1137,6 +1151,10 @@ bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
 // Join or leave a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
 static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
+  if (group == NULL) {
+    return false;
+  }
+
   // Multicast MAC address.
   static uint8_t multicastMAC[6] = {
       LL_IP4_MULTICAST_ADDR_0,
