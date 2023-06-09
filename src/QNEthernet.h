@@ -246,7 +246,8 @@ class EthernetClass final {
   void setDNSServerIP(const IPAddress &dnsServerIP) const;
 
   // The MAC addresses are used in the following begin() functions
-  [[deprecated("See begin()")]] int begin(const uint8_t mac[6]);
+  [[deprecated("See begin() and waitForLocalIP(timeout)")]]
+  int begin(const uint8_t mac[6]);
   [[deprecated("See begin(ip, subnet, gateway)")]]
   void begin(const uint8_t mac[6], const IPAddress &ip);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]

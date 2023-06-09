@@ -25,6 +25,11 @@
 namespace qindesign {
 namespace network {
 
+// DHCP client timeout, in milliseconds; default is 30 seconds
+#ifndef QNETHERNET_DHCP_CLIENT_TIMEOUT
+#define QNETHERNET_DHCP_CLIENT_TIMEOUT 30000
+#endif  // !QNETHERNET_DHCP_CLIENT_TIMEOUT
+
 EthernetClass &EthernetClass::instance() {
   static EthernetClass instance;
   return instance;
@@ -285,7 +290,13 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 
 int EthernetClass::begin(const uint8_t mac[6]) {
   std::copy_n(mac, 6, mac_);
-  return begin();
+
+  if (!begin()) {
+    return false;
+  }
+
+  // Wait for an IP address, for Arduino API compatibility
+  return waitForLocalIP(QNETHERNET_DHCP_CLIENT_TIMEOUT);
 }
 
 #pragma GCC diagnostic push

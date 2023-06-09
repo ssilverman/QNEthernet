@@ -21,6 +21,8 @@ and this project adheres to
 * Make it possible to disable and exclude DHCP, DNS, IGMP, TCP, and UDP.
 * Changed `EthernetClass::setMACAddress(mac)` to use the built-in MAC address if
   the given array is NULL.
+* Changed `EthernetClass::begin(mac)` to wait for an IP address. The default is
+  a 30-second timeout.
 
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect
