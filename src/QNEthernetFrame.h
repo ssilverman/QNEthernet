@@ -43,14 +43,16 @@ class EthernetFrameClass final : public Stream {
   EthernetFrameClass(const EthernetFrameClass &) = delete;
   EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
 
-  // Returns the maximum frame length. This includes any padding and the FCS
-  // (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  // Returns the maximum frame length. This includes any padding and the 4-byte
+  // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  //
+  // Note that this size includes VLAN frames, which are 4 bytes larger.
   static constexpr int maxFrameLen() {
     return MAX_FRAME_LEN;
   }
 
-  // Returns the minimum frame length. This includes any padding and the FCS
-  // (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  // Returns the minimum frame length. This includes any padding and the 4-byte
+  // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
   static constexpr int minFrameLen() {
     return 64;
   }
@@ -71,8 +73,8 @@ class EthernetFrameClass final : public Stream {
   // Sends the frame. This is similar to EthernetUDP::endPacket(). This clears
   // the accumulated data regardless of what is returned.
   //
-  // The FCS (Frame Check Sequence, the CRC value) should not be included in the
-  // frame data.
+  // The 4-byte FCS (Frame Check Sequence, the CRC value) should not be included
+  // in the user-provided frame data.
   //
   // This will return false if:
   // 1. The frame was not started,
@@ -84,8 +86,8 @@ class EthernetFrameClass final : public Stream {
   // Sends a frame and returns whether the send was successful. This causes less
   // overhead than beginFrame()/write()/endFrame().
   //
-  // The FCS (Frame Check Sequence, the CRC value) should not be included in the
-  // frame data.
+  // The 4-byte FCS (Frame Check Sequence, the CRC value) should not be included
+  // in the user-provided frame data.
   //
   // This will return false if:
   // 1. Ethernet was not started,

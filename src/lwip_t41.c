@@ -1035,11 +1035,11 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
-    if (len > MAX_FRAME_LEN - 4) {  // Don't include FCS
+    if (len > MAX_FRAME_LEN - 4) {  // Don't include 4-byte FCS
       return false;
     }
   } else {
-    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include FCS and VLAN
+    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include 4-byte FCS and VLAN
       return false;
     }
   }
@@ -1067,7 +1067,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 
 #ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-// CRC-32 routine for computing the FCS for multicast lookup.
+// CRC-32 routine for computing the 4-byte FCS for multicast lookup.
 static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
   crc = ~crc;

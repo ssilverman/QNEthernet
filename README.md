@@ -386,11 +386,12 @@ read from a frame and the `Print` API can be used to write to the frame.
   all the oldest frames will get dropped.
 * `size()`: Returns the total size of the received frame data.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
-  including the FCS. Subtract 4 to get the maximum length that can be sent or
-  received using this API.
+  including the 4-byte FCS. Subtract 4 to get the maximum length that can be
+  sent or received using this API. Note that this size includes VLAN frames,
+  which are 4 bytes larger.
 * `static constexpr int minFrameLen()`: Returns the minimum frame length
-  including the FCS. Subtract 4 to get the minimum length that can be sent or
-  received using this API.
+  including the 4-byte FCS. Subtract 4 to get the minimum length that can be
+  sent or received using this API.
 
 ### `MDNS`
 

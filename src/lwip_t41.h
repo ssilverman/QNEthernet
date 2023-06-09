@@ -74,7 +74,7 @@ bool phy_link_is_crossover();
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the correct range. The proper range is 14-(MAX_FRAME_LEN-8)
 // for non-VLAN frames and 18-(MAX_FRAME_LEN-4) for VLAN frames. Note that these
-// ranges exclude the FCS (frame check sequence).
+// ranges exclude the 4-byte FCS (frame check sequence).
 //
 // This also returns false if Ethernet is not initialized.
 //
