@@ -22,7 +22,8 @@ and this project adheres to
 * Changed `EthernetClass::setMACAddress(mac)` to use the built-in MAC address if
   the given array is NULL.
 * Changed `EthernetClass::begin(mac)` to wait for an IP address. The default is
-  a 30-second timeout.
+  a 60-second timeout. There's also a new, optional, `timeout` parameter for
+  specifying that timeout.
 
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect

@@ -33,6 +33,11 @@
 namespace qindesign {
 namespace network {
 
+// Default DHCP client timeout, in milliseconds; default is 60 seconds
+#ifndef QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
+#define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60'000
+#endif  // !QNETHERNET_DHCP_CLIENT_TIMEOUT
+
 // Define this enum because Arduino API. Use zero for `LinkOFF` so
 // `Ethernet.linkStatus()` can be used in Boolean expressions. `Unknown` is
 // never returned because, from the `EthernetLinkStatus` docs, it appears that
@@ -247,7 +252,8 @@ class EthernetClass final {
 
   // The MAC addresses are used in the following begin() functions
   [[deprecated("See begin() and waitForLocalIP(timeout)")]]
-  int begin(const uint8_t mac[6]);
+  int begin(const uint8_t mac[6],
+            uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
   void begin(const uint8_t mac[6], const IPAddress &ip);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
