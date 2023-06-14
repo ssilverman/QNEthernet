@@ -55,7 +55,7 @@ constexpr uint32_t kClientTimeout = 5'000;  // 5 seconds
 // half close.
 constexpr uint32_t kShutdownTimeout = 30'000;  // 30 seconds
 
-// Set the static IP to something other than INADDR_NONE (zero)
+// Set the static IP to something other than INADDR_NONE (all zeros)
 // to not use DHCP. The values here are just examples.
 IPAddress staticIP{0, 0, 0, 0};//{192, 168, 1, 101};
 IPAddress subnetMask{255, 255, 255, 0};
@@ -98,9 +98,6 @@ EthernetServer server{kServerPort};
 // --------------------------------------------------------------------------
 //  Main Program
 // --------------------------------------------------------------------------
-
-// Forward declarations
-void tellServer(bool hasIP, bool linkState);
 
 // Program setup.
 void setup() {
@@ -146,73 +143,56 @@ void setup() {
     } else {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
-
-    // Tell interested parties the state of the IP address and link,
-    // for example, servers, SNTP clients, and other sub-programs that
-    // need to know whether to stop/start/restart/etc
-    // Note: When setting a static IP, the address will be set but a
-    //       link or active network interface might not yet exist
-    tellServer(hasIP, Ethernet.linkState());
   });
 
+  if (initEthernet()) {
+    // Start the server
+    printf("Starting server on port %u...", kServerPort);
+    server.begin();
+    printf("%s\r\n", (server) ? "Done." : "FAILED!");
+  }
+}
+
+bool initEthernet() {
+  // DHCP
   if (staticIP == INADDR_NONE) {
     printf("Starting Ethernet with DHCP...\r\n");
     if (!Ethernet.begin()) {
       printf("Failed to start Ethernet\r\n");
-      return;
+      return false;
     }
 
     // We can choose not to wait and rely on the listener to tell us
     // when an address has been assigned
     if (kDHCPTimeout > 0) {
+      printf("Waiting for IP address...\r\n");
       if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
-        printf("Failed to get IP address from DHCP\r\n");
+        printf("No IP address yet\r\n");
         // We may still get an address later, after the timeout,
         // so continue instead of returning
       }
     }
   } else {
+    // Static IP
     printf("Starting Ethernet with static IP...\r\n");
-    Ethernet.begin(staticIP, subnetMask, gateway);
+    if (!Ethernet.begin(staticIP, subnetMask, gateway)) {
+      printf("Failed to start Ethernet\r\n");
+      return false;
+    }
 
     // When setting a static IP, the address is changed immediately,
     // but the link may not be up; optionally wait for the link here
     if (kLinkTimeout > 0) {
+      printf("Waiting for link...\r\n");
       if (!Ethernet.waitForLink(kLinkTimeout)) {
-        printf("Failed to get link\r\n");
+        printf("No link yet\r\n");
         // We may still see a link later, after the timeout, so
         // continue instead of returning
       }
     }
   }
-}
 
-// Tell the server there's been an IP address or link state change.
-void tellServer(bool hasIP, bool linkState) {
-  // If there's no IP address or link, could optionally stop the
-  // server, depending on your needs
-  if (hasIP && linkState) {
-    if (server) {
-      // Optional
-      printf("Address changed: Server already started\r\n");
-    } else {
-      printf("Starting server on port %u...", kServerPort);
-      fflush(stdout);  // Print what we have so far if line buffered
-      server.begin();
-      printf("%s\r\n", server ? "done." : "FAILED!");
-    }
-  } else {
-    // Stop the server if there's no IP address
-    if (!server) {
-      // Optional
-      printf("Address changed: Server already stopped\r\n");
-    } else {
-      printf("Stopping server...");
-      fflush(stdout);  // Print what we have so far if line buffered
-      server.end();
-      printf("done.\r\n");
-    }
-  }
+  return true;
 }
 
 // The simplest possible (very non-compliant) HTTP server. Respond to
