@@ -13,6 +13,7 @@ and this project adheres to
   be called either before or after Ethernet has started.
 * `EthernetClass::isDHCPEnabled()` returns whether the DHCP client is enabled.
   Valid whether Ethernet has been started or not.
+* New `LinkWatcher` example.
 
 ### Changed
 * Limit the number of times `enet_proc_input()` can loop to twice the ring size.
