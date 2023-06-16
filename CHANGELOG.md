@@ -25,6 +25,7 @@ and this project adheres to
 * Changed `EthernetClass::begin(mac)` to wait for an IP address. The default is
   a 60-second timeout. There's also a new, optional, `timeout` parameter for
   specifying that timeout.
+* Renamed `enet_getmac(mac)` to `enet_get_mac(mac)`.
 * Simplified `ServerWithListeners` example.
 
 ### Fixed
