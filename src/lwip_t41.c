@@ -880,7 +880,7 @@ bool enet_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
-void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
+bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                const ip4_addr_t *ipaddr,
                const ip4_addr_t *netmask,
                const ip4_addr_t *gw,
@@ -919,8 +919,11 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     netif_set_addr(&s_t41_netif, ipaddr, netmask, gw);
   } else {
     netif_add_ext_callback(&netif_callback, callback);
-    netif_add(&s_t41_netif, ipaddr, netmask, gw,
-              NULL, t41_netif_init, ethernet_input);
+    if (netif_add(&s_t41_netif, ipaddr, netmask, gw,
+                  NULL, t41_netif_init, ethernet_input) == NULL) {
+      netif_remove_ext_callback(&netif_callback);
+      return false;
+    }
     netif_set_default(&s_t41_netif);
     s_isNetifAdded = true;
 
@@ -937,6 +940,8 @@ void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   // Multicast filtering, to allow desired multicast packets in
   netif_set_igmp_mac_filter(&s_t41_netif, &multicast_filter);
 #endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+
+  return true;
 }
 
 extern void unused_interrupt_vector(void);  // startup.c

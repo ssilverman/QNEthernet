@@ -27,6 +27,7 @@ and this project adheres to
   specifying that timeout.
 * Renamed `enet_getmac(mac)` to `enet_get_mac(mac)`.
 * Simplified `ServerWithListeners` example.
+* Changed `enet_init(...)` to return a `bool` for detecting init. failure.
 
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect

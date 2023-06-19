@@ -33,14 +33,15 @@ void enet_get_mac(uint8_t *mac);
 // Determines if there's Ethernet hardware.
 bool enet_has_hardware();
 
-// Initializes Ethernet. This does not set the interface to "up".
+// Initializes Ethernet and returns whether successful. This does not set the
+// interface to "up".
 //
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
 // It is suggested to initialize the random number generator with srand() before
 // calling this.
-void enet_init(const uint8_t mac[ETH_HWADDR_LEN],
+bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                const ip4_addr_t *ipaddr,
                const ip4_addr_t *netmask,
                const ip4_addr_t *gw,

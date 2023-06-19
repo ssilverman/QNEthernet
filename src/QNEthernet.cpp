@@ -204,7 +204,10 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc);
+  if (!enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc)) {
+    return false;
+  }
+
 #if LWIP_NETIF_HOSTNAME
   if (hostname_.length() == 0) {
     netif_set_hostname(netif_, nullptr);
