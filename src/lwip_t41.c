@@ -1148,7 +1148,7 @@ bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   return true;
 }
 
-// Join or leave a multicast group. The flag should be true to join and false
+// Joins or leaves a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
 static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   if (group == NULL) {
