@@ -9,7 +9,7 @@
 #ifndef QNETHERNET_LWIP_T41_H_
 #define QNETHERNET_LWIP_T41_H_
 
-#ifdef ARDUINO_TEENSY41
+#if defined(ARDUINO_TEENSY41)
 
 // C includes
 #include <stdbool.h>
