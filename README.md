@@ -25,7 +25,7 @@ files provided with the lwIP release.
       1. [TCP socket options](#tcp-socket-options)
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
-      1. [`parsePacket() return values`](#parsepacket-return-values)
+      1. [`parsePacket()` return values](#parsepacket-return-values)
    5. [`EthernetFrame`](#ethernetframe)
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
@@ -104,7 +104,7 @@ For API additions beyond what the Arduino-style API provides, see:\
   the calling code.
 * All but one of the `Ethernet.begin(...)` functions don't block.
   `Ethernet.begin(mac)` blocks while waiting for an IP address to match the
-  Arduino-style API. It uses a default timeout of 30 seconds. This behaviour can
+  Arduino-style API. It uses a default timeout of 60 seconds. This behaviour can
   be emulated by following a call to `begin()` with a loop that checks
   `Ethernet.localIP()` for a valid IP. See also the new
   `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
@@ -121,7 +121,8 @@ For API additions beyond what the Arduino-style API provides, see:\
   address are deprecated.
 * `Ethernet.hardwareStatus()`: Returns either
   `EthernetHardwareStatus::EthernetOtherHardware` or
-  `EthernetHardwareStatus::EthernetNoHardware`.
+  `EthernetHardwareStatus::EthernetNoHardware`. Note that
+  `EthernetOtherHardware` is not defined in the Arduino-style API.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
   * `init(uint8_t sspin)`: Does nothing.
