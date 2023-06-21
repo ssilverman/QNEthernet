@@ -73,9 +73,12 @@ static uint32_t s_entropy[ENTROPY_COUNT] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
 bool trng_is_started() {
-  // Check only the run-only bit because that's always set when running
-  return (CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ==
-         CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY);
+  // Two checks:
+  // 1. Clock: check only the run-only bit because that's always set when running
+  // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
+  return ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ==
+          CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) &&
+         ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) == 0);
 }
 
 // Restarts entropy generation.

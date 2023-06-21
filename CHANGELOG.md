@@ -39,6 +39,8 @@ and this project adheres to
   the MAC.
 * Fix compilation if `LWIP_IGMP` is disabled, including making
   `LWIP_MDNS_RESPONDER` dependent on `LWIP_IGMP` (in addition to `LWIP_UDP`).
+* Improved `trng_is_started()` by adding an additional check for the "OK to
+  stop" bit. It now works at system startup if the clock is running.
 
 ## [0.21.0]
 
