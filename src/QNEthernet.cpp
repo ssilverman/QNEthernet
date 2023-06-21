@@ -89,16 +89,17 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   // Initialize randomness
   unsigned int seed;
 #ifndef QNETHERNET_USE_ENTROPY_LIB
-  if (!trng_is_started()) {
+  // The clock appears to be on at startup, so don't check; always initialize
+  // if (!trng_is_started()) {
     trng_init();
-  }
+  // }
   seed = entropy_random();
 #else
-  bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
-                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY));
-  if (doEntropyInit) {
+  // bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
+  //                       CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY));
+  // if (doEntropyInit) {
     Entropy.Initialize();
-  }
+  // }
   seed = Entropy.random();
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
   std::srand(seed);

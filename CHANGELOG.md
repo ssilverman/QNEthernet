@@ -29,6 +29,8 @@ and this project adheres to
 * Renamed `enet_getmac(mac)` to `enet_get_mac(mac)`.
 * Simplified `ServerWithListeners` example.
 * Changed `enet_init(...)` to return a `bool` for detecting init. failure.
+* Always initialize randomness instead of first checking if the clock is on
+  because it appears to already be running at system start.
 
 ### Fixed
 * Fixed how `EthernetClient` functions work when there's a pending connect
