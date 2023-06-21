@@ -95,7 +95,8 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   seed = entropy_random();
 #else
   bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
-                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY));
+                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
+                       ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
   if (doEntropyInit) {
     Entropy.Initialize();
   }
