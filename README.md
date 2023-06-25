@@ -542,7 +542,7 @@ here are a few steps to follow:
    takes a MAC address parameter.
 4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
-   doesn't wait. Try 10 seconds (10,000 ms) and see if that works for you.
+   doesn't wait. Try 15 seconds (15,000 ms) and see if that works for you.
 
    Alternatively, you can use [listeners](#how-to-use-listeners) to watch for
    address, link, and network interface activity changes. This obviates the need
