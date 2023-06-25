@@ -25,8 +25,10 @@ and this project adheres to
   the given array is NULL.
 * Changed `EthernetClass::begin(mac)` to wait for an IP address. The default is
   a 60-second timeout. There's also a new, optional, `timeout` parameter for
-  specifying that timeout.
+  specifying that timeout. This change makes the API match the Arduino
+  Ethernet API.
 * Renamed `enet_getmac(mac)` to `enet_get_mac(mac)`.
+* Better NULL argument checking.
 * Simplified `ServerWithListeners` example.
 * Changed `enet_init(...)` to return a `bool` for detecting init. failure.
 
@@ -35,10 +37,10 @@ and this project adheres to
   triggered by `connectNoWait()`.
 * Fixed how raw frame size limits are checked. Padding is already handled by
   the MAC.
-* Fix compilation if `LWIP_IGMP` is disabled, including making
+* Fixed compilation if `LWIP_IGMP` is disabled, including making
   `LWIP_MDNS_RESPONDER` dependent on `LWIP_IGMP` (in addition to `LWIP_UDP`).
 * Improved `trng_is_started()` by adding an additional check for the "OK to
-  stop" bit. It now works at system startup if the clock is running.
+  stop" bit. It now works at system startup if the clock is already running.
 
 ## [0.21.0]
 
