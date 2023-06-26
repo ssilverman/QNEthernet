@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `qindesign::security::RandomDevice`, a class that conforms to the
+  _UniformRandomBitGenerator_ C++ named requirement. This makes it a little
+  easier to generate platform-independent entropy.
+
 ## [0.22.0]
 
 ### Added
