@@ -10,21 +10,17 @@
 #include <algorithm>
 #include <cstdlib>
 
-#if !defined(__IMXRT1062__) || defined(QNETHERNET_USE_ENTROPY_LIB)
-#include <Entropy.h>
-#endif  // !__IMXRT1062__ || QNETHERNET_USE_ENTROPY_LIB
 #include <EventResponder.h>
 #include <pgmspace.h>
 
 #include "QNDNSClient.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
-#if defined(__IMXRT1062__) && !defined(QNETHERNET_USE_ENTROPY_LIB)
-#include "security/entropy.h"
-#endif  // __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
 
 namespace qindesign {
 namespace network {
+
+security::RandomDevice randomDevice;
 
 EthernetClass &EthernetClass::instance() {
   static EthernetClass instance;
@@ -87,27 +83,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   }
 
   // Initialize randomness
-  unsigned int seed;
-#if defined(__IMXRT1062__) && !defined(QNETHERNET_USE_ENTROPY_LIB)
-  if (!trng_is_started()) {
-    trng_init();
-  }
-  seed = entropy_random();
-#else
-  bool doEntropyInit;
-#if defined(__IMXRT1062__)
-  doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
-                   CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
-                  ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
-#else
-  doEntropyInit = true;
-#endif  // __IMXRT1062__
-  if (doEntropyInit) {
-    Entropy.Initialize();
-  }
-  seed = Entropy.random();
-#endif  // __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
-  std::srand(seed);
+  std::srand(randomDevice());
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {

@@ -31,6 +31,7 @@
 #else
 #include "lwip_unsupported.h"
 #endif  // ARDUINO_TEENSY41
+#include "security/RandomDevice.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"
 
@@ -377,6 +378,9 @@ class EthernetClass final {
   std::function<void()> addressChangedCB_ = nullptr;
   std::function<void(bool status)> interfaceStatusCB_ = nullptr;
 };
+
+// A UniformRandomBitGenerator instance.
+extern security::RandomDevice randomDevice;
 
 // Instance for interacting with the library.
 extern EthernetClass &Ethernet;
