@@ -665,7 +665,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
       pbuf_take(p, pBD->buffer, p->tot_len);
       p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
       if (p->timestampValid) {
-        enet_ieee1588_read_timer(&p->timestamp);
+        ieee1588_read_timer(&p->timestamp);
         if ((unsigned long)p->timestamp.tv_nsec < pBD->timestamp) {
           // The timer has wrapped around
           p->timestamp.tv_sec--;
@@ -1046,7 +1046,7 @@ FLASHMEM bool driver_init(void) {
 void unused_interrupt_vector(void);  // startup.c
 
 FLASHMEM void driver_deinit(void) {
-  enet_ieee1588_deinit();
+  ieee1588_deinit();
 
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
@@ -1293,7 +1293,7 @@ void driver_notify_manual_link_state(const bool flag) {
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
-void enet_ieee1588_init(void) {
+void ieee1588_init(void) {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
   ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
   ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
@@ -1312,16 +1312,16 @@ void enet_ieee1588_init(void) {
   ENET_EIMR |= ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER;
 }
 
-void enet_ieee1588_deinit(void) {
+void ieee1588_deinit(void) {
   ENET_EIMR &= ~(ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER);
   ENET_ATCR = ENET_ATCR_Reserved;
 }
 
-bool enet_ieee1588_is_enabled(void) {
+bool ieee1588_is_enabled(void) {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool enet_ieee1588_read_timer(struct timespec *t) {
+bool ieee1588_read_timer(struct timespec *t) {
   if (t == NULL) {
     return false;
   }
@@ -1345,7 +1345,7 @@ bool enet_ieee1588_read_timer(struct timespec *t) {
   return true;
 }
 
-bool enet_ieee1588_write_timer(const struct timespec *t) {
+bool ieee1588_write_timer(const struct timespec *t) {
   if (t == NULL) {
     return false;
   }
@@ -1358,11 +1358,11 @@ bool enet_ieee1588_write_timer(const struct timespec *t) {
   return true;
 }
 
-void enet_ieee1588_timestamp_next_frame() {
+void ieee1588_timestamp_next_frame() {
   doTimestampNext = true;
 }
 
-bool enet_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (hasTxTimestamp) {
       hasTxTimestamp = false;
@@ -1376,7 +1376,7 @@ bool enet_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   return false;
 }
 
-bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
     return false;
   }
@@ -1385,7 +1385,7 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   return true;
 }
 
-bool enet_ieee1588_adjust_freq(int nsps) {
+bool ieee1588_adjust_freq(int nsps) {
   if (nsps == 0) {
     ENET_ATCOR = 0;
     return true;
@@ -1401,7 +1401,7 @@ bool enet_ieee1588_adjust_freq(int nsps) {
     // Speed up
     inc++;
   }
-  return enet_ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+  return ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
 }
 
 // Channels
@@ -1414,7 +1414,7 @@ static inline volatile uint32_t *tccrReg(int channel) {
   return &ENET_TCCR0 + 2*channel;
 }
 
-bool enet_ieee1588_set_channel_mode(int channel, int mode) {
+bool ieee1588_set_channel_mode(int channel, int mode) {
   switch (mode) {
     case 14:  // kTimerChannelPulseLowOnCompare
     case 15:  // kTimerChannelPulseHighOnCompare
@@ -1442,9 +1442,9 @@ bool enet_ieee1588_set_channel_mode(int channel, int mode) {
   return true;
 }
 
-bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  int mode,
-                                                  int pulseWidth) {
+bool ieee1588_set_channel_output_pulse_width(int channel,
+                                             int mode,
+                                             int pulseWidth) {
   switch (mode) {
     case 14:  // kTimerChannelPulseLowOnCompare
     case 15:  // kTimerChannelPulseHighOnCompare
@@ -1471,7 +1471,7 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   return true;
 }
 
-bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+bool ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   volatile uint32_t *tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
@@ -1480,7 +1480,7 @@ bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   return true;
 }
 
-bool enet_ieee1588_get_and_clear_channel_status(int channel) {
+bool ieee1588_get_and_clear_channel_status(int channel) {
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
