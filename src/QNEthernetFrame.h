@@ -136,6 +136,14 @@ class EthernetFrameClass final : public Stream {
   // has been received with parseFrame().
   const uint8_t *data() const;
 
+  // Returns the approximate frame arrival time, measured with millis(). This
+  // is only valid if a frame has been received with parseFrame().
+  //
+  // This is useful in the case where frames have been queued and the caller
+  // needs the approximate arrival time. Frames are timestamped when the unknown
+  // ethernet protocol receive callback is called.
+  uint32_t receivedTimestamp() const;
+
   // Sets the receive queue size. This will use a minimum of 1.
   //
   // If the new size is smaller than the number of elements in the queue then
@@ -148,6 +156,7 @@ class EthernetFrameClass final : public Stream {
  private:
   struct Frame final {
     std::vector<uint8_t> data;
+    volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
   };
 
   EthernetFrameClass();

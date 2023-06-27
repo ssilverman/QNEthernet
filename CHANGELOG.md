@@ -15,6 +15,8 @@ and this project adheres to
 * `EthernetUDP::receivedTimestamp()` for retrieving a packet's approximate
   arrival time.
 * Added a "`writeFully()` with more break conditions" subsection to the README.
+* `EthernetFrame::receivedTimestamp()` for retrieving a frame's approximate
+  arrival time.
 
 ### Changed
 * Changed `EthernetUDP::localPort()` to be `const`.

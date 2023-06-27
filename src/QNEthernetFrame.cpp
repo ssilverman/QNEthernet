@@ -43,6 +43,8 @@ EthernetFrameClass &EthernetFrame = EthernetFrameClass::instance();
 
 err_t EthernetFrameClass::recvFunc(struct pbuf *p,
                                    [[maybe_unused]] struct netif *netif) {
+  uint32_t timestamp = millis();
+
   struct pbuf *pHead = p;
 
   // Push (replace the head)
@@ -55,6 +57,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p,
     frame.data.insert(frame.data.end(), &data[0], &data[p->len]);
     p = p->next;
   }
+  frame.receivedTimestamp = timestamp;
 
   // Increment the size
   if (EthernetFrame.inBufSize_ != 0 &&
@@ -153,6 +156,10 @@ size_t EthernetFrameClass::size() const {
 
 const uint8_t *EthernetFrameClass::data() const {
   return frame_.data.data();
+}
+
+uint32_t EthernetFrameClass::receivedTimestamp() const {
+  return frame_.receivedTimestamp;
 }
 
 void EthernetFrameClass::setReceiveQueueSize(size_t size) {
