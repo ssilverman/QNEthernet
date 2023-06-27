@@ -336,26 +336,26 @@ bool enet_leave_group(const ip4_addr_t *group);
 
 // Initializes and enables the IEEE 1588 timer and functionality. The internal
 // time is reset to zero.
-void enet_ieee1588_init(void);
+void ieee1588_init(void);
 
 // Deinitializes and stops the IEEE 1588 timer.
-void enet_ieee1588_deinit(void);
+void ieee1588_deinit(void);
 
 // Tests if the IEEE 1588 timer is enabled.
-bool enet_ieee1588_is_enabled(void);
+bool ieee1588_is_enabled(void);
 
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_read_timer(struct timespec *t);
+bool ieee1588_read_timer(struct timespec *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool enet_ieee1588_write_timer(const struct timespec *t);
+bool ieee1588_write_timer(const struct timespec *t);
 
 // Tells the driver to timestamp the next transmitted frame.
-void enet_ieee1588_timestamp_next_frame();
+void ieee1588_timestamp_next_frame();
 
 // Returns whether an IEEE 1588 transmit timestamp is available. If available
 // and the parameter is not NULL then it is assigned to `*timestamp`. This
@@ -365,20 +365,20 @@ void enet_ieee1588_timestamp_next_frame();
 // sent. Note that this only returns the latest value, so if a second
 // timestamped packet is sent before retrieving the timestamp for the first
 // then this will return the second timestamp (if already available).
-bool enet_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
+bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
-// timer in "nanoseconds per second", see `enet_ieee1588_adjust_freq`. This
-// returns whether successful.
+// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This returns
+// whether successful.
 //
 // This will return false if:
 // 1. The correction increment is not in the range 0-127, or
 // 2. The correction period is not in the range 0-(2^31-1).
-bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
+bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
-// `enet_ieee1588_adjust_timer()` under the hood.
-bool enet_ieee1588_adjust_freq(int nsps);
+// `ieee1588_adjust_timer()` under the hood.
+bool ieee1588_adjust_freq(int nsps);
 
 // Sets the channel mode for the given channel. This does not set the output
 // compare pulse modes. This returns whether successful.
@@ -387,7 +387,7 @@ bool enet_ieee1588_adjust_freq(int nsps);
 // 1. The channel is unknown,
 // 2. The mode is one of the output compare pulse modes, or
 // 3. The mode is a reserved value or unknown.
-bool enet_ieee1588_set_channel_mode(int channel, int mode);
+bool ieee1588_set_channel_mode(int channel, int mode);
 
 // Sets the output compare pulse mode and pulse width for the given channel.
 // This returns whether successful.
@@ -396,18 +396,18 @@ bool enet_ieee1588_set_channel_mode(int channel, int mode);
 // 1. The channel is unknown,
 // 2. The mode is not one of the output compare pulse modes, or
 // 3. The pulse width is not in the range 1-32.
-bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  int mode,
-                                                  int pulseWidth);
+bool ieee1588_set_channel_output_pulse_width(int channel,
+                                             int mode,
+                                             int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
 //
 // This will return false for an unknown channel.
-bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value);
+bool ieee1588_set_channel_compare_value(int channel, uint32_t value);
 
 // Retrieves and then clears the status for the given channel. This will return
 // false for an unknown channel.
-bool enet_ieee1588_get_and_clear_channel_status(int channel);
+bool ieee1588_get_and_clear_channel_status(int channel);
 
 #ifdef __cplusplus
 }  // extern "C"
