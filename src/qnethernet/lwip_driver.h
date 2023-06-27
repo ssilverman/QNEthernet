@@ -297,8 +297,8 @@ void ieee1588_timestamp_next_frame();
 bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
-// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This
-// returns whether successful.
+// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This returns
+// whether successful.
 //
 // This will return false if:
 // 1. The correction increment is not in the range 0-127, or
