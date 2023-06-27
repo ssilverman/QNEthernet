@@ -324,11 +324,11 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
-* `size()`: Returns the total size of the received packet data.
 * `receivedTimestamp():` Returns the approximate packet arrival time, measured
   with `millis()`. This is useful in the case where packets have been queued and
   the caller needs the approximate arrival time. Packets are timestamped when
   the UDP receive callback is called.
+* `size()`: Returns the total size of the received packet data.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
