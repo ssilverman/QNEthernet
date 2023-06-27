@@ -176,9 +176,7 @@ void EthernetUDP::stop() {
   listening_ = false;
   listenReuse_ = false;
 
-  packet_.addr = *IP_ANY_TYPE;
-  packet_.port = 0;
-  packet_.receivedTimestamp = 0;
+  packet_.clear();
 }
 
 EthernetUDP::operator bool() const {
