@@ -1,4 +1,4 @@
-<a href="https://github.com/sponsors/ssilverman" title="Sponsor @ssilverman on GitHub"><img src="https://img.shields.io/badge/Sponsor-fafbfc.svg?logo=githubsponsors&logoColor=EA4AAA" alt="Sponsor @ssilverman button"></a>
+<a href="https://github.com/sponsors/ssilverman" title="Sponsor @ssilverman on GitHub"><img src="https://img.shields.io/badge/Sponsor-30363d.svg?logo=githubsponsors&logoColor=EA4AAA" alt="Sponsor @ssilverman button"></a>
 
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
