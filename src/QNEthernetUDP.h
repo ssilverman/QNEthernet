@@ -122,7 +122,8 @@ class EthernetUDP : public UDP {
   // is only valid if a packet has been received with parsePacket().
   //
   // This is useful in the case where packets have been queued and the caller
-  // needs the approximate arrival time.
+  // needs the approximate arrival time. Packets are timestamped when the UDP
+  // receive callback is called.
   uint32_t timestamp() const;
 
   // Returns whether the socket is listening.

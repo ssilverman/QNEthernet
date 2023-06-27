@@ -327,7 +327,8 @@ listening and the port or _reuse_ options have changed.
 * `size()`: Returns the total size of the received packet data.
 * `timestamp():` Returns the approximate packet arrival time, measured with
   `millis()`. This is useful in the case where packets have been queued and the
-  caller needs the approximate arrival time.
+  caller needs the approximate arrival time. Packets are timestamped when the
+  UDP receive callback is called.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
