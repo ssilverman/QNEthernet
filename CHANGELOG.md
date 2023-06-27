@@ -13,6 +13,7 @@ and this project adheres to
   _UniformRandomBitGenerator_ C++ named requirement. This makes it a little
   easier to generate platform-independent entropy.
 * `EthernetUDP::timestamp()` for retrieving a packet's approximate arrival time.
+* Added a "`writeFully()` with more break conditions" subsection to the README.
 
 ### Changed
 * Changed `EthernetUDP::localPort()` to be `const`.

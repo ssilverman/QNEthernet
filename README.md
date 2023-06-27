@@ -35,7 +35,8 @@ files provided with the lwIP release.
 3. [How to run](#how-to-run)
    1. [Asynchronous use is not supported](#asynchronous-use-is-not-supported)
 4. [How to write data to connections](#how-to-write-data-to-connections)
-   1. [Write immediacy](#write-immediacy)
+   1. [`writeFully()` with more break conditions](#writefully-with-more-break-conditions)
+   2. [Write immediacy](#write-immediacy)
 5. [A note on the examples](#a-note-on-the-examples)
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link/interface detection](#connections-and-linkinterface-detection)
@@ -723,6 +724,42 @@ use the library's `writeFully(...)` functions.
 
 See the discussion at:
 https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
+
+### `writeFully()` with more break conditions
+
+By default, the `EthernetClient` versions of `writeFully()` wait until the
+connection is closed. However, TCP connections can sometimes persist for a long
+time after a cable/link disconnect, and a user might wish to only wait so long
+for a connection to return. This can be solved by adding additional checks to
+the stopping condition function (the `breakf` parameter).
+
+For example, to break on connection close or link down:
+
+```c++
+size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size) {
+  return qindesign::network::util::writeFully(c, buf, size, [&c]() {
+    return !static_cast<bool>(c) || !Ethernet.linkState();
+  });
+}
+```
+
+To break on connection close or timeout:
+
+```c++
+size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size,
+                  uint32_t timeout) {
+  uint32_t startT = millis();
+  return qindesign::network::util::writeFully(
+      c, buf, size, [&c, startT, timeout]() {
+        return !static_cast<bool>(c) || (millis() - startT) >= timeout;
+      });
+}
+```
+
+See also:
+* [writeFully causes program to freeze #46](https://github.com/ssilverman/QNEthernet/issues/46)
+* [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+* [Print utilities](#print-utilities)
 
 ### Write immediacy
 
