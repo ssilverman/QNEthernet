@@ -135,6 +135,9 @@ class EthernetUDP : public UDP {
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
+
+    // Clears all the data.
+    void clear();
   };
 
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,

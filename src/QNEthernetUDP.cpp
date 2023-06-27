@@ -185,6 +185,13 @@ EthernetUDP::operator bool() const {
   return listening_;
 }
 
+void EthernetUDP::Packet::clear() {
+  data.clear();
+  addr = *IP_ANY_TYPE;
+  port = 0;
+  receivedTimestamp = 0;
+}
+
 // --------------------------------------------------------------------------
 //  Reception
 // --------------------------------------------------------------------------
@@ -203,7 +210,7 @@ int EthernetUDP::parsePacket() {
 
   // Pop (from the tail)
   packet_ = inBuf_[inBufTail_];
-  inBuf_[inBufTail_].data.clear();
+  inBuf_[inBufTail_].clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
@@ -327,12 +334,12 @@ int EthernetUDP::endPacket() {
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, out_.data.size(), PBUF_RAM);
   if (p == nullptr) {
-    out_.data.clear();
+    out_.clear();
     return false;
   }
   pbuf_take(p, out_.data.data(), out_.data.size());
-  out_.data.clear();
   bool retval = (udp_sendto(pcb_, p, &out_.addr, out_.port) == ERR_OK);
+  out_.clear();
   pbuf_free(p);
   return retval;
 }

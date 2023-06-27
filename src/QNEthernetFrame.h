@@ -157,6 +157,9 @@ class EthernetFrameClass final : public Stream {
   struct Frame final {
     std::vector<uint8_t> data;
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
+
+    // Clears all the data.
+    void clear();
   };
 
   EthernetFrameClass();

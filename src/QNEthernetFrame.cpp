@@ -81,6 +81,11 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
   setReceiveQueueSize(1);
 }
 
+void EthernetFrameClass::Frame::clear() {
+  data.clear();
+  receivedTimestamp = 0;
+}
+
 // --------------------------------------------------------------------------
 //  Reception
 // --------------------------------------------------------------------------
@@ -93,7 +98,7 @@ int EthernetFrameClass::parseFrame() {
 
   // Pop (from the tail)
   frame_ = inBuf_[inBufTail_];
-  inBuf_[inBufTail_].data.clear();
+  inBuf_[inBufTail_].clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
   inBufSize_--;
 
@@ -235,7 +240,7 @@ bool EthernetFrameClass::endFrame() {
   hasOutFrame_ = false;
 
   bool retval = enet_output_frame(outFrame_.data.data(), outFrame_.data.size());
-  outFrame_.data.clear();
+  outFrame_.clear();
   return retval;
 }
 
