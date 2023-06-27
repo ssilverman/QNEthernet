@@ -176,7 +176,7 @@ class EthernetUDP : public UDP {
   int packetPos_;  // -1 if not currently reading a packet
 
   // Outgoing packets
-  Packet out_;
+  Packet outPacket_;
   bool hasOutPacket_;
 };
 

@@ -312,14 +312,14 @@ bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   if (pcb_ == nullptr) {
     return false;
   }
-  if (out_.data.capacity() < kMaxPayloadSize) {
-    out_.data.reserve(kMaxPayloadSize);
+  if (outPacket_.data.capacity() < kMaxPayloadSize) {
+    outPacket_.data.reserve(kMaxPayloadSize);
   }
 
-  out_.addr = *ipaddr;
-  out_.port = port;
+  outPacket_.addr = *ipaddr;
+  outPacket_.port = port;
   hasOutPacket_ = true;
-  out_.data.clear();
+  outPacket_.data.clear();
   return true;
 }
 
@@ -330,14 +330,15 @@ int EthernetUDP::endPacket() {
   hasOutPacket_ = false;
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, out_.data.size(), PBUF_RAM);
+  struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, outPacket_.data.size(), PBUF_RAM);
   if (p == nullptr) {
-    out_.clear();
+    outPacket_.clear();
     return false;
   }
-  pbuf_take(p, out_.data.data(), out_.data.size());
-  bool retval = (udp_sendto(pcb_, p, &out_.addr, out_.port) == ERR_OK);
-  out_.clear();
+  pbuf_take(p, outPacket_.data.data(), outPacket_.data.size());
+  bool retval =
+      (udp_sendto(pcb_, p, &outPacket_.addr, outPacket_.port) == ERR_OK);
+  outPacket_.clear();
   pbuf_free(p);
   return retval;
 }
@@ -388,10 +389,10 @@ size_t EthernetUDP::write(uint8_t b) {
   if (!hasOutPacket_) {
     return 0;
   }
-  if (out_.data.size() >= kMaxPossiblePayloadSize) {
+  if (outPacket_.data.size() >= kMaxPossiblePayloadSize) {
     return 0;
   }
-  out_.data.push_back(b);
+  outPacket_.data.push_back(b);
   return 1;
 }
 
@@ -399,8 +400,8 @@ size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
   if (!hasOutPacket_ || size == 0) {
     return 0;
   }
-  size = std::min(kMaxPossiblePayloadSize - out_.data.size(), size);
-  out_.data.insert(out_.data.end(), &buffer[0], &buffer[size]);
+  size = std::min(kMaxPossiblePayloadSize - outPacket_.data.size(), size);
+  outPacket_.data.insert(outPacket_.data.end(), &buffer[0], &buffer[size]);
   return size;
 }
 
