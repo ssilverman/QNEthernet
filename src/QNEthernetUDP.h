@@ -66,7 +66,7 @@ class EthernetUDP : public UDP {
   uint8_t beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
-  uint16_t localPort();
+  uint16_t localPort() const;
 
   void stop() final;
 

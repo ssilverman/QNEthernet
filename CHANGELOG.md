@@ -14,6 +14,9 @@ and this project adheres to
   easier to generate platform-independent entropy.
 * `EthernetUDP::timestamp()` for retrieving a packet's approximate arrival time.
 
+### Changed
+* Changed `EthernetUDP::localPort()` to be `const`.
+
 ## [0.22.0]
 
 ### Added

@@ -160,7 +160,7 @@ bool EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
   return true;
 }
 
-uint16_t EthernetUDP::localPort() {
+uint16_t EthernetUDP::localPort() const {
   if (pcb_ == nullptr) {
     return 0;
   }
