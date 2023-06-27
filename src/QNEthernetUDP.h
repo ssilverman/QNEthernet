@@ -124,7 +124,7 @@ class EthernetUDP : public UDP {
   // This is useful in the case where packets have been queued and the caller
   // needs the approximate arrival time. Packets are timestamped when the UDP
   // receive callback is called.
-  uint32_t timestamp() const;
+  uint32_t receivedTimestamp() const;
 
   // Returns whether the socket is listening.
   explicit operator bool() const;
@@ -134,7 +134,7 @@ class EthernetUDP : public UDP {
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
-    volatile uint32_t timestamp = 0;  // Approximate arrival time
+    volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
   };
 
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,

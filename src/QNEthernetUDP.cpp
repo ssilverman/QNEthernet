@@ -66,7 +66,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   }
   packet.addr = *addr;
   packet.port = port;
-  packet.timestamp = timestamp;
+  packet.receivedTimestamp = timestamp;
 
   // Increment the size
   if (udp->inBufSize_ != 0 && udp->inBufTail_ == udp->inBufHead_) {
@@ -178,7 +178,7 @@ void EthernetUDP::stop() {
 
   packet_.addr = *IP_ANY_TYPE;
   packet_.port = 0;
-  packet_.timestamp = 0;
+  packet_.receivedTimestamp = 0;
 }
 
 EthernetUDP::operator bool() const {
@@ -275,8 +275,8 @@ uint16_t EthernetUDP::remotePort() {
   return packet_.port;
 }
 
-uint32_t EthernetUDP::timestamp() const {
-  return packet_.timestamp;
+uint32_t EthernetUDP::receivedTimestamp() const {
+  return packet_.receivedTimestamp;
 }
 
 // --------------------------------------------------------------------------

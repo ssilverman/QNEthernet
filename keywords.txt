@@ -75,7 +75,7 @@ localPort	KEYWORD2	client.localPort
 data	KEYWORD2
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
-timestamp	KEYWORD2
+receivedTimestamp	KEYWORD2
 connectionId	KEYWORD2
 writeFully	KEYWORD2
 write	KEYWORD2

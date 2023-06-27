@@ -12,7 +12,8 @@ and this project adheres to
 * Added `qindesign::security::RandomDevice`, a class that conforms to the
   _UniformRandomBitGenerator_ C++ named requirement. This makes it a little
   easier to generate platform-independent entropy.
-* `EthernetUDP::timestamp()` for retrieving a packet's approximate arrival time.
+* `EthernetUDP::receivedTimestamp()` for retrieving a packet's approximate
+  arrival time.
 * Added a "`writeFully()` with more break conditions" subsection to the README.
 
 ### Changed
