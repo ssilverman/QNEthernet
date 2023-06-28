@@ -379,9 +379,6 @@ class EthernetClass final {
   std::function<void(bool status)> interfaceStatusCB_ = nullptr;
 };
 
-// A UniformRandomBitGenerator instance.
-extern security::RandomDevice randomDevice;
-
 // Instance for interacting with the library.
 extern EthernetClass &Ethernet;
 
@@ -404,6 +401,14 @@ extern Print *stderrPrint;
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
 }  // namespace network
+
+namespace security {
+
+// A UniformRandomBitGenerator instance.
+extern RandomDevice randomDevice;
+
+}  // namespace security
+
 }  // namespace qindesign
 
 #endif  // QNETHERNET_ETHERNET_H_

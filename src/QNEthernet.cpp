@@ -18,9 +18,15 @@
 #include "lwip/igmp.h"
 
 namespace qindesign {
-namespace network {
 
-security::RandomDevice randomDevice;
+namespace security {
+
+// The UniformRandomBitGenerator instance.
+RandomDevice randomDevice;
+
+}  // namespace security
+
+namespace network {
 
 EthernetClass &EthernetClass::instance() {
   static EthernetClass instance;
@@ -83,7 +89,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
   }
 
   // Initialize randomness
-  std::srand(randomDevice());
+  std::srand(security::randomDevice());
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {
