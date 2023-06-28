@@ -498,7 +498,7 @@ static void test_udp() {
 
   // Print the time
   tmElements_t tm;
-  breakTime(t, tm);
+  breakTime(sntpTime, tm);
   TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u",
                       tm.Year + 1970, tm.Month, tm.Day,
                       tm.Hour, tm.Minute, tm.Second).data());
