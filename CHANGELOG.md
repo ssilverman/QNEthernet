@@ -21,6 +21,10 @@ and this project adheres to
 ### Changed
 * Changed `EthernetUDP::localPort()` to be `const`.
 
+### Fixed
+* Fixed `SNTP_SET_SYSTEM_TIME_US(sec, us)` definition to set the RTC directly
+  because `settimeofday()` doesn't exist here.
+
 ## [0.22.0]
 
 ### Added

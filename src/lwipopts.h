@@ -456,12 +456,31 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define SNTP_CHECK_RESPONSE 3  /* 0 */
 #define SNTP_UPDATE_DELAY   600000  /* 3600000 */
 
+#include <imxrt.h>
 #include <sys/time.h>
-#include <time.h>
-#define SNTP_SET_SYSTEM_TIME_US(sec, us)                          \
-  do {                                                            \
-    const struct timeval tv = {(time_t)(sec), (suseconds_t)(us)}; \
-    settimeofday(&tv, NULL);                                      \
+#define SNTP_SET_SYSTEM_TIME_US(sec, us)                    \
+  do {                                                      \
+    /* Assume 'sec' and 'us' have the proper range */       \
+    u32_t hi = (sec) >> 17;                                 \
+    u32_t lo = ((sec) << 15) | ((us) << 9)/15625;           \
+                                                            \
+    /* Code similar to teensy4 core's rtc_set(t) */         \
+    /* This version sets the microseconds too    */         \
+                                                            \
+    /* Stop the RTC */                                      \
+    SNVS_HPCR &= ~(SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);     \
+    while (SNVS_HPCR & SNVS_HPCR_RTC_EN) ;  /* Wait */      \
+    /* Stop the SRTC */                                     \
+    SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;                       \
+    while (SNVS_LPCR & SNVS_LPCR_SRTC_ENV) ;  /* Wait */    \
+    /* Set the SRTC */                                      \
+    SNVS_LPSRTCLR = lo;                                     \
+    SNVS_LPSRTCMR = hi;                                     \
+    /* Start the SRTC */                                    \
+    SNVS_LPCR |= SNVS_LPCR_SRTC_ENV;                        \
+    while (!(SNVS_LPCR & SNVS_LPCR_SRTC_ENV)) ;  /* Wait */ \
+    /* Start the RTC and sync it to the SRTC */             \
+    SNVS_HPCR |= SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS;        \
   } while (0)
 #define SNTP_GET_SYSTEM_TIME(sec, us) \
   do {                                \
