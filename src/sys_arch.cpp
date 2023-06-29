@@ -10,8 +10,6 @@
 // C++ includes
 #ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cerrno>
-#undef errno
-extern int errno;
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdio>
