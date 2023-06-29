@@ -265,25 +265,34 @@ uint32_t entropy_random_range(uint32_t range) {
     return 0;
   }
 
-  if ((range & (range - 1)) == 0) {  // Is power of 2?
-    uint32_t r = entropy_random();
-    if (errno == EAGAIN) {
-      return 0;
-    }
+  uint32_t r = entropy_random();
+  if (errno == EAGAIN) {
+    return 0;
+  }
+
+  // Is power of 2?
+  if ((range & (range - 1)) == 0) {
     return r & (range - 1);
   }
 
-  uint32_t r;
-  uint32_t v;
-  uint32_t limit = -range;  // limit = 2^32 - range
-  do {
-    r = entropy_random();
-    if (errno == EAGAIN) {
-      return 0;
+  // Daniel Lemire's nearly-divisionless algorithm
+  // https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
+  // Note: There's not much impact if entropy generation takes much longer
+  //       than division.
+  uint64_t product = (uint64_t)r * (uint64_t)range;
+  uint32_t low = (uint32_t)product;
+  if (low < range) {  // Application of the rejection method
+    uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
+    while (low < threshold) {
+      r = entropy_random();
+      if (errno == EAGAIN) {
+        return 0;
+      }
+      product = (uint64_t)r * (uint64_t)range;
+      low = (uint32_t)product;
     }
-    v = r % range;
-  } while (r - v > limit);
-  return v;
+  }
+  return product >> 32;
 }
 
 /*

@@ -21,6 +21,8 @@ and this project adheres to
 ### Changed
 * Changed `EthernetUDP::localPort()` to be `const`.
 * Changed `entropy_random_range()` to return zero if `EAGAIN`.
+* Changed `entropy_random_range()` to use Daniel Lemire's nearly-
+  divisionless algorithm.
 
 ### Fixed
 * Fixed `SNTP_SET_SYSTEM_TIME_US(sec, us)` definition to set the RTC directly

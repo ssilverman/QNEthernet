@@ -48,6 +48,7 @@ uint32_t entropy_random();
 // set to EDOM.
 //
 // See: http://www.adammil.net/blog/v134_Efficiently_generating_random_numbers_without_bias.html
+// See: https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
 uint32_t entropy_random_range(uint32_t range);
 
 #ifdef __cplusplus
