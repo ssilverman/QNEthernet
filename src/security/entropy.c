@@ -266,9 +266,9 @@ uint32_t entropy_random_range(uint32_t range) {
   }
 
   if ((range & (range - 1)) == 0) {  // Is power of 2?
-    uint32_t r;
-    if (trng_data((uint8_t *)&r, sizeof(r)) < sizeof(r)) {
-      errno = EAGAIN;
+    uint32_t r = entropy_random();
+    if (errno == EAGAIN) {
+      return 0;
     }
     return r & (range - 1);
   }
@@ -277,12 +277,11 @@ uint32_t entropy_random_range(uint32_t range) {
   uint32_t v;
   uint32_t limit = -range;  // limit = 2^32 - range
   do {
-    size_t s = trng_data((uint8_t *)&r, sizeof(r));
-    v = r % range;
-    if (s < sizeof(r)) {
-      errno = EAGAIN;
-      break;
+    r = entropy_random();
+    if (errno == EAGAIN) {
+      return 0;
     }
+    v = r % range;
   } while (r - v > limit);
   return v;
 }

@@ -44,7 +44,8 @@ uint32_t entropy_random();
 
 // Returns a random number in the range [0, range). This uses an unbiased
 // algorithm. If there was any entropy generation error then errno will be set
-// to EAGAIN. If 'range' is zero then errno will be set to EDOM.
+// to EAGAIN and this will return zero. If 'range' is zero then errno will be
+// set to EDOM.
 //
 // See: http://www.adammil.net/blog/v134_Efficiently_generating_random_numbers_without_bias.html
 uint32_t entropy_random_range(uint32_t range);
