@@ -23,6 +23,7 @@ and this project adheres to
 * Changed `entropy_random_range()` to return zero if `EAGAIN`.
 * Changed `entropy_random_range()` to use Daniel Lemire's nearly-
   divisionless algorithm.
+* Updated lwIP to v2.2.0-rc1.
 
 ### Fixed
 * Fixed `SNTP_SET_SYSTEM_TIME_US(sec, us)` definition to set the RTC directly
