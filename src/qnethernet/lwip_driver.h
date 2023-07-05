@@ -310,7 +310,7 @@ void enet_poll(void);
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
 //
-// The frame is timestamped if `enet_timestamp_next_frame()` was called first.
+// The frame is timestamped if `ieee1588_timestamp_next_frame()` was called first.
 bool enet_output_frame(const void *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
