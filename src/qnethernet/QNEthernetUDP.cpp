@@ -70,15 +70,16 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
       pNext = pNext->next;
     }
   }
-  packet.hasTimestamp = p->timestampValid;
-  if (packet.hasTimestamp) {
-    packet.timestamp = p->timestamp;
-  }
   packet.addr = *addr;
   packet.port = port;
   packet.receivedTimestamp = timestamp;
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
+
+  packet.hasTimestamp = p->timestampValid;
+  if (packet.hasTimestamp) {
+    packet.timestamp = p->timestamp;
+  }
 
   // Increment the size
   if ((udp->inBufSize_ != 0) && (udp->inBufTail_ == udp->inBufHead_)) {
