@@ -77,16 +77,17 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
       pNext = pNext->next;
     }
   }
-  packet.hasTimestamp = p->timestampValid;
-  if (packet.hasTimestamp) {
-    packet.timestamp = p->timestamp;
-  }
   packet.addr = *addr;
   packet.port = port;
   packet.destAddr = *ip4_current_dest_addr();
   packet.receivedTimestamp = timestamp;
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
+
+  packet.hasTimestamp = p->timestampValid;
+  if (packet.hasTimestamp) {
+    packet.timestamp = p->timestamp;
+  }
 
   (void)pbuf_free(p);
 
