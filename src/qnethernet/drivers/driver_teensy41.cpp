@@ -1438,6 +1438,8 @@ void reset_phy() {
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
+#define TIMER_CHANNEL_COUNT 4
+
 void ieee1588_init(void) {
   ENET::ATCR::RESTART = 1;                       // Reset timer
   ENET::ATPER::PERIOD = NANOSECONDS_PER_SECOND;  // Wrap at 10^9
