@@ -41,7 +41,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
     return;
   }
 
-  EthernetUDP *udp = reinterpret_cast<EthernetUDP *>(arg);
+  EthernetUDP *udp = static_cast<EthernetUDP *>(arg);
 
   if (p == nullptr) {
     udp->stop();
@@ -59,7 +59,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
     packet.data.reserve(p->tot_len);
     // TODO: Limit vector size
     while (p != nullptr) {
-      uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
+      uint8_t *data = static_cast<uint8_t *>(p->payload);
       packet.data.insert(packet.data.end(), &data[0], &data[p->len]);
       p = p->next;
     }

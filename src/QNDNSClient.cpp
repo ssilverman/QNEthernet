@@ -23,7 +23,7 @@ void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
     return;
   }
 
-  Request *req = reinterpret_cast<Request *>(callback_arg);
+  Request *req = static_cast<Request *>(callback_arg);
   if (req->timeout == 0 || millis() - req->startTime < req->timeout) {
     req->callback(ipaddr);
   }

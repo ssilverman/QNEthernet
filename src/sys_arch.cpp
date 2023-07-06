@@ -109,7 +109,7 @@ static inline Print *getPrint(int file) {
     case STDIN_FILENO:
       return nullptr;
     default:
-      return (Print *)file;
+      return reinterpret_cast<Print *>(file);
   }
 }
 
@@ -134,7 +134,7 @@ int _write(int file, const void *buf, size_t len) {
   if (out == nullptr) {
     return len;
   }
-  return out->write((const uint8_t *)buf, len);
+  return out->write(static_cast<const uint8_t *>(buf), len);
 }
 
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE

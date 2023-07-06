@@ -61,7 +61,7 @@ err_t ConnectionManager::connectedFunc(void *arg, struct altcp_pcb *tpcb,
     return ERR_ARG;
   }
 
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -107,7 +107,7 @@ void ConnectionManager::errFunc(void *arg, err_t err) {
     return;
   }
 
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -127,7 +127,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
     return ERR_ARG;
   }
 
-  ConnectionHolder *holder = reinterpret_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
 
@@ -146,7 +146,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
       if (p != nullptr) {
         // Copy pbuf contents
         while (p != nullptr) {
-          uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
+          uint8_t *data = static_cast<uint8_t *>(p->payload);
           holder->remaining.insert(holder->remaining.end(),
                                    &data[0], &data[p->len]);
           p = p->next;
@@ -201,7 +201,7 @@ err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
 
     // Copy all the data from the pbuf
     while (p != nullptr) {
-      uint8_t *data = reinterpret_cast<uint8_t *>(p->payload);
+      uint8_t *data = static_cast<uint8_t *>(p->payload);
       v.insert(v.end(), &data[0], &data[p->len]);
       p = p->next;
     }
@@ -220,7 +220,7 @@ err_t ConnectionManager::acceptFunc(void *arg, struct altcp_pcb *newpcb,
     return ERR_ARG;
   }
 
-  ConnectionManager *m = reinterpret_cast<ConnectionManager *>(arg);
+  ConnectionManager *m = static_cast<ConnectionManager *>(arg);
 
   if (err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {
@@ -319,7 +319,7 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   // Try to bind
   if (reuse) {
 #if LWIP_ALTCP
-    ip_set_option(reinterpret_cast<tcp_pcb *>(pcb->state), SOF_REUSEADDR);
+    ip_set_option(static_cast<tcp_pcb *>(pcb->state), SOF_REUSEADDR);
 #else
     ip_set_option(pcb, SOF_REUSEADDR);
 #endif  // LWIP_ALTCP
