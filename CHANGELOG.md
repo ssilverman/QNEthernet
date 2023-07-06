@@ -24,6 +24,7 @@ and this project adheres to
 * Changed `entropy_random_range()` to use Daniel Lemire's nearly-
   divisionless algorithm.
 * Updated lwIP to v2.2.0-rc1.
+* Make `StdioPrint` single-argument constructor `explicit`.
 
 ### Removed
 * Removed TTL concept from `MDNSClass`. This enables it to compile with the

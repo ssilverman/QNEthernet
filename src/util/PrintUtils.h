@@ -50,7 +50,7 @@ size_t writeMagic(Print &p, uint8_t mac[6],
 // See: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html
 class StdioPrint : public Print {
  public:
-  StdioPrint(std::FILE *stream) : stream_(stream) {}
+  explicit StdioPrint(std::FILE *stream) : stream_(stream) {}
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
