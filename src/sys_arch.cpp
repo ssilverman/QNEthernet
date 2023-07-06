@@ -13,6 +13,7 @@
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdio>
+#include <limits>
 
 #include <Print.h>
 #include <pgmspace.h>
@@ -57,9 +58,7 @@ const char *lwip_strerr(err_t err) {
       break;
   }
 
-  constexpr double kLog2 = 0.301029995663981;
-  // # digits = log_10(2^bits) = bits * log_10(2)
-  constexpr size_t kDigits = sizeof(err_t)*8*kLog2 + 1;  // Add 1 for ceiling
+  constexpr size_t kDigits = std::numeric_limits<err_t>::digits10 + 1;  // Add 1 for ceiling
   constexpr char kPrefix[]{"err "};
   static char buf[sizeof(kPrefix) + kDigits + 1];  // Includes the NUL and sign
   snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
