@@ -1293,6 +1293,8 @@ void driver_notify_manual_link_state(const bool flag) {
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
+#define TIMER_CHANNEL_COUNT 4
+
 void ieee1588_init(void) {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
   ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
@@ -1407,10 +1409,16 @@ bool ieee1588_adjust_freq(int nsps) {
 // Channels
 
 static inline volatile uint32_t *tcsrReg(int channel) {
+  if (channel < 0 || TIMER_CHANNEL_COUNT <= channel) {
+    return NULL;
+  }
   return &ENET_TCSR0 + 2*channel;
 }
 
 static inline volatile uint32_t *tccrReg(int channel) {
+  if (channel < 0 || TIMER_CHANNEL_COUNT <= channel) {
+    return NULL;
+  }
   return &ENET_TCCR0 + 2*channel;
 }
 
