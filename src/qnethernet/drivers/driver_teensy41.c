@@ -1458,7 +1458,7 @@ bool ieee1588_set_channel_output_pulse_width(int channel,
     case 15:  // kTimerChannelPulseHighOnCompare
       break;
     default:
-      return true;
+      return false;
   }
 
   if (pulseWidth < 1 || 32 < pulseWidth) {
