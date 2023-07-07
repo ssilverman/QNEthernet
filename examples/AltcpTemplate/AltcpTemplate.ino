@@ -60,6 +60,8 @@ std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
 
       if (kUseProxy) {
         if (ipaddr != nullptr) {
+          printf("[[Using proxy: %s:%u]]\r\n",
+                 ipaddr_ntoa(&proxyConfig.proxy_addr), proxyConfig.proxy_port);
           allocator->alloc = &altcp_proxyconnect_alloc;
           allocator->arg   = &proxyConfig;
         } else {

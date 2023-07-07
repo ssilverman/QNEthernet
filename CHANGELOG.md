@@ -28,6 +28,7 @@ and this project adheres to
 * Made `StdioPrint` single-argument constructor `explicit`.
 * Updated `EthernetClass::linkStatus()` to return `EthernetLinkStatus::Unknown`
   if the hardware hasn't yet been probed.
+* Updated `AltcpTemplate` example to print proxy information.
 
 ### Removed
 * Removed TTL concept from `MDNSClass`. This enables it to compile with the
