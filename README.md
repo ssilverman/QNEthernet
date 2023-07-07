@@ -270,13 +270,13 @@ The `Ethernet` object is the main Ethernet interface.
 * `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
   half-close operation.
-* `connectionId()`: Returns an ID for the connection to which the client refers.
-  It will return non-zero if connected and zero if not connected. Note that it's
-  possible for new connections to reuse previously-used IDs.
 * `connectNoWait(ip, port)`: Similar to `connect(ip, port)`, but it doesn't
   wait for a connection.
 * `connectNoWait(host, port)`: Similar to `connect(host, port)`, but it doesn't
   wait for a connection. Note that the DNS lookup will still wait.
+* `connectionId()`: Returns an ID for the connection to which the client refers.
+  It will return non-zero if connected and zero if not connected. Note that it's
+  possible for new connections to reuse previously-used IDs.
 * `connectionTimeout()`: Returns the current timeout value.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
