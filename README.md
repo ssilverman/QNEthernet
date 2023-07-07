@@ -1276,12 +1276,14 @@ features, thus saving space.
 
 ### Configuring macros using the Arduino IDE
 
-_[Current as of this writing: Arduino IDE 2.1.0, Teensyduino 1.58]_
+_[Current as of this writing: Arduino IDE 2.1.1, Teensyduino 1.58]_
 
 The Arduino IDE provides a facility to override the build options specified in a
 platform's build configuration file, _platform.txt_. It does this by looking for
 a file named _platform.local.txt_ in the same place. Any options in that "local"
 file override equivalent options in the main file.
+
+Note that the IDE might need to be restarted when the file changes.
 
 The suggested way to override compiler options is with the
 `compiler.cpp.extra_flags` and `compiler.c.extra_flags` properties. However,
