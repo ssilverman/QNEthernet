@@ -25,6 +25,8 @@ and this project adheres to
   divisionless algorithm.
 * Updated lwIP to v2.2.0-rc1.
 * Make `StdioPrint` single-argument constructor `explicit`.
+* Updated `EthernetClass::linkStatus()` to return `EthernetLinkStatus::Unknown`
+  if the hardware hasn't yet been probed.
 
 ### Removed
 * Removed TTL concept from `MDNSClass`. This enables it to compile with the

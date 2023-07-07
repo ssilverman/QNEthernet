@@ -43,16 +43,11 @@ namespace network {
 #define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60'000
 #endif  // !QNETHERNET_DHCP_CLIENT_TIMEOUT
 
-// Define this enum because Arduino API. Use zero for `LinkOFF` so
-// `Ethernet.linkStatus()` can be used in Boolean expressions. `Unknown` is
-// never returned because, from the `EthernetLinkStatus` docs, it appears that
-// it's used when link detection is not available.
-//
 // See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.linkstatus/
 enum EthernetLinkStatus {
-  LinkOFF,
-  LinkON,
   Unknown,
+  LinkON,
+  LinkOFF,
 };
 
 // Define this enum because Arduino API. Use a new `EthernetOtherHardware` with
@@ -192,10 +187,10 @@ class EthernetClass final {
   void end();
 
   // Returns the link status, one of the EthernetLinkStatus enumerators. This
-  // will never return Unknown because link detection is not unavailable.
+  // will return Unknown if the hardware hasn't yet been probed.
   EthernetLinkStatus linkStatus() const;
 
-  // Returns the link state, true for link and false for no link.
+  // Returns the link state, true for link and false for no or unknown link.
   bool linkState() const;
 
   // Returns the link speed in Mbps. This is only valid if the link is up.

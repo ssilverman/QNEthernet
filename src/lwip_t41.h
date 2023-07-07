@@ -27,6 +27,9 @@ extern "C" {
 #define MTU 1500
 #define MAX_FRAME_LEN 1522
 
+// Returns if the hardware hasn't yet been probed.
+bool enet_is_unknown();
+
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 void enet_get_mac(uint8_t *mac);
 

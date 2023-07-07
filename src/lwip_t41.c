@@ -850,6 +850,10 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 //  Public Interface
 // --------------------------------------------------------------------------
 
+bool enet_is_unknown() {
+  return s_initState == kInitStateStart;
+}
+
 void enet_get_mac(uint8_t *mac) {
   if (mac == NULL) {
     return;

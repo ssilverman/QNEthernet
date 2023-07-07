@@ -358,6 +358,9 @@ void EthernetClass::end() {
 }
 
 EthernetLinkStatus EthernetClass::linkStatus() const {
+  if (enet_is_unknown()) {
+    return EthernetLinkStatus::Unknown;
+  }
   return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
 }
 
