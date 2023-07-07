@@ -35,7 +35,7 @@ files provided with the lwIP release.
    9. [`IPAddress` operators](#ipaddress-operators)
    10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
 3. [How to run](#how-to-run)
-   1. [Asynchronous use is not supported](#asynchronous-use-is-not-supported)
+   1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [`writeFully()` with more break conditions](#writefully-with-more-break-conditions)
    2. [Write immediacy](#write-immediacy)
@@ -290,7 +290,7 @@ The `Ethernet` object is the main Ethernet interface.
    or enable Nagle's algorithm, respectively. This must be changed for each
    new connection.
  * `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
-   connection. Returns false if not connected.
+   connection. Returns `false` if not connected.
 
 ### `EthernetServer`
 
@@ -570,18 +570,15 @@ not limited to:
 * Monitoring and sending raw Ethernet frames, and
 * Setting up an mDNS service.
 
-### Asynchronous use is not supported
+### Concurrent use is not supported
 
-Asynchronous use of _QNEthernet_ is not currently supported. This includes ISR
+Concurrent use of _QNEthernet_ is not currently supported. This includes ISR
 approaches and multi-threading approaches.
 
 First, the underlying lwIP stack must be configured and used a certain way in
-order to provide asynchronous support. _QNEthernet_ does not configure lwIP for
+order to provide concurrent support. _QNEthernet_ does not configure lwIP for
 this. Second, the _QNEthernet_ API, the layer on top of lwIP, isn't designed for
-asynchronous use.
-
-Note that there is a group of libraries that claims to use _QNEthernet_ and that
-claims to provide asynchronous support. Neither of these claims is true.
+concurrent use.
 
 ## How to write data to connections
 

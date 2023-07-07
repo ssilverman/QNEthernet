@@ -24,7 +24,7 @@ and this project adheres to
 * Changed `entropy_random_range()` to use Daniel Lemire's nearly-
   divisionless algorithm.
 * Updated lwIP to v2.2.0-rc1.
-* Make `StdioPrint` single-argument constructor `explicit`.
+* Made `StdioPrint` single-argument constructor `explicit`.
 * Updated `EthernetClass::linkStatus()` to return `EthernetLinkStatus::Unknown`
   if the hardware hasn't yet been probed.
 
