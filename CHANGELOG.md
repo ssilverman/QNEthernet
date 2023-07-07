@@ -35,6 +35,7 @@ and this project adheres to
 ### Fixed
 * Fixed `SNTP_SET_SYSTEM_TIME_US(sec, us)` definition to set the RTC directly
   because `settimeofday()` doesn't exist here.
+* Fixed `AltcpTemplate` example so that it compiles when `LWIP_ALTCP` isn't set.
 
 ## [0.22.0]
 

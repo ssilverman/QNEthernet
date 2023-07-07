@@ -13,11 +13,13 @@
 // This file is part of the QNEthernet library.
 
 #include <QNEthernet.h>
+#if LWIP_ALTCP
 #include <lwip/altcp_tcp.h>
 #if LWIP_ALTCP_TLS
 #include <lwip/altcp_tls.h>
 #endif  // LWIP_ALTCP_TLS
 #include <lwip/apps/altcp_proxyconnect.h>
+#endif  // LWIP_ALTCP
 
 using namespace qindesign::network;
 
@@ -34,6 +36,8 @@ constexpr char kRequest[]{
 };
 constexpr uint16_t kPort = 80;   // TLS generally uses port 443
 
+#if LWIP_ALTCP
+
 // For proxy connections
 constexpr bool kUseProxy = false;  // Whether to use altcp_proxyconnect
 struct altcp_proxyconnect_config proxyConfig {
@@ -41,8 +45,6 @@ struct altcp_proxyconnect_config proxyConfig {
   8080,                            // TLS can be on 3128
 };
 // Note: There's also a TLS proxyconnect; this can be an exercise for the reader
-
-#if LWIP_ALTCP
 
 // The qnethernet_get_allocator() function fills in the given
 // allocator with an appropriate allocator function and argument,
@@ -143,9 +145,11 @@ void setup() {
 
   // Connect and send the request
   printf("Connecting and sending request...\r\n");
+#if LWIP_ALTCP
   if (kUseProxy) {
     client.setConnectionTimeout(30'000);  // Proxies can take longer, maybe
   }
+#endif  // LWIP_ALTCP
   if (client.connect(kHost, kPort) != 1) {
     printf("Failed to connect\r\n");
     disconnectedPrintLatch = true;
