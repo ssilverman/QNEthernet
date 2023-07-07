@@ -1459,16 +1459,12 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 ## References
 
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
-* lwIP testing by manitou:
-  https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
-* Dan Drown's NTP server and 1588 timestamps:
-  https://forum.pjrc.com/threads/61581-Teensy-4-1-NTP-server
-* Paul Stoffregen's original Teensy 4.1 Ethernet code:
-  https://github.com/PaulStoffregen/teensy41_ethernet
-* Dan Drown's modifications to Paul's code:
-  https://github.com/ddrown/teensy41_ethernet
-* Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library:
-  https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library
+* [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
+* [lwIP testing by manitou](https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096)
+* [Dan Drown's NTP server and 1588 timestamps](https://forum.pjrc.com/threads/61581-Teensy-4-1-NTP-server)
+* [Paul Stoffregen's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
+* [Dan Drown's modifications to Paul's code](https://github.com/ddrown/teensy41_ethernet)
+* [Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library](https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library)
 * [Arduino Ethernet library](https://www.arduino.cc/reference/en/libraries/ethernet/)
 
 ---
