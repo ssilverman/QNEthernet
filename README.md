@@ -277,6 +277,7 @@ The `Ethernet` object is the main Ethernet interface.
   wait for a connection.
 * `connectNoWait(host, port)`: Similar to `connect(host, port)`, but it doesn't
   wait for a connection. Note that the DNS lookup will still wait.
+* `connectionTimeout()`: Returns the current timeout value.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).

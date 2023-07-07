@@ -17,6 +17,7 @@ and this project adheres to
 * Added a "`writeFully()` with more break conditions" subsection to the README.
 * `EthernetFrame::receivedTimestamp()` for retrieving a frame's approximate
   arrival time.
+* `EthernetClient::connectionTimeout()` for getting the current timeout value.
 
 ### Changed
 * Changed `EthernetUDP::localPort()` to be `const`.

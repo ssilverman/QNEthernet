@@ -65,6 +65,11 @@ class EthernetClient : public Client {
 
   void setConnectionTimeout(uint16_t timeout);
 
+  // Returns the current timeout value.
+  uint16_t connectionTimeout() const {
+    return connTimeout_;
+  }
+
   void stop() final;
 
   // Closes the connection. This works the same as stop(), but without waiting
