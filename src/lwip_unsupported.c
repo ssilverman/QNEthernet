@@ -8,6 +8,10 @@
 
 #include "lwip_unsupported.h"
 
+bool enet_is_unknown() {
+  return false;
+}
+
 void enet_get_mac(uint8_t *mac) {
 }
 

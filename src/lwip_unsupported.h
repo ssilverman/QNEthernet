@@ -25,6 +25,7 @@ extern "C" {
 #define MTU 0
 #define MAX_FRAME_LEN 0
 
+bool enet_is_unknown();
 void enet_get_mac(uint8_t *mac);
 bool enet_has_hardware();
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
