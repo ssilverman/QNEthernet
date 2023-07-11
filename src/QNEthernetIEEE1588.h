@@ -78,7 +78,7 @@ class EthernetIEEE1588Class final {
   // Adjusts the correction frequency in nanoseconds per second. To slow down
   // the timer, specify a negative value. To speed it up, specify a positive
   // value. This returns whether successful.
-  bool adjustFreq(int nsps) const;
+  bool adjustFreq(double nsps) const;
 
   // Sets the channel mode for the given channel. This does not set the output
   // compare pulse modes. This returns whether successful.

@@ -51,7 +51,7 @@ bool EthernetIEEE1588Class::adjustTimer(uint32_t corrInc,
   return enet_ieee1588_adjust_timer(corrInc, corrPeriod);
 }
 
-bool EthernetIEEE1588Class::adjustFreq(int nsps) const {
+bool EthernetIEEE1588Class::adjustFreq(double nsps) const {
   return enet_ieee1588_adjust_freq(nsps);
 }
 

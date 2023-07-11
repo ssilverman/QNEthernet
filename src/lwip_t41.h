@@ -142,7 +142,7 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
 // `enet_ieee1588_adjust_timer()` under the hood.
-bool enet_ieee1588_adjust_freq(int nsps);
+bool enet_ieee1588_adjust_freq(double nsps);
 
 // Sets the channel mode for the given channel. This does not set the output
 // compare pulse modes. This returns whether successful.
