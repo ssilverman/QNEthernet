@@ -409,6 +409,9 @@ int EthernetUDP::availableForWrite() {
   if (!hasOutPacket_) {
     return 0;
   }
+  if (outPacket_.data.size() > kMaxPossiblePayloadSize) {
+    return 0;
+  }
   return kMaxPossiblePayloadSize - outPacket_.data.size();
 }
 

@@ -8,9 +8,6 @@
 
 #include "QNEthernetFrame.h"
 
-// C includes
-#include <sys/types.h>
-
 // C++ includes
 #include <algorithm>
 
@@ -271,9 +268,10 @@ int EthernetFrameClass::availableForWrite() {
   if (!hasOutFrame_) {
     return 0;
   }
-  // First cast to something we know is the same size as size_t
-  return std::max(
-      static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.data.size()), 0);
+  if (outFrame_.data.size() > (maxFrameLen() - 4)) {
+    return 0;
+  }
+  return (maxFrameLen() - 4) - outFrame_.data.size();
 }
 
 }  // namespace network
