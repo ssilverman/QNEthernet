@@ -53,6 +53,9 @@ class EthernetIEEE1588Class final {
   // Writes the current IEEE 1588 timer value. This returns whether successful.
   bool writeTimer(const timespec &t) const;
 
+  // Adds an offset to the current IEEE 1588 timer value. This returns whether successful.
+  bool offsetTimer(int64_t ns) const;
+
   // Tells the driver to timestamp the next transmitted frame. This should be
   // called before functions like `EthernetUDP::endPacket()`,
   // `EthernetUDP::send()`, and any of the `EthernetFrame` send functions.

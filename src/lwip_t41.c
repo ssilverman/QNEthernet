@@ -1010,6 +1010,18 @@ bool enet_ieee1588_write_timer(const struct timespec *t) {
   return true;
 }
 
+bool enet_ieee1588_offset_timer(int64_t ns){
+  struct timespec tm;
+  if(!enet_ieee1588_read_timer(&tm)){
+    return false;
+  }
+  int64_t t = (((int64_t)tm.tv_sec) * NANOSECONDS_PER_SECOND) + ((int64_t)tm.tv_nsec);
+  t += ns;
+  tm.tv_nsec = t % NANOSECONDS_PER_SECOND;
+  tm.tv_sec = t / NANOSECONDS_PER_SECOND;
+  return enet_ieee1588_write_timer(&tm);
+}
+
 void enet_ieee1588_timestamp_next_frame() {
   doTimestampNext = true;
 }
