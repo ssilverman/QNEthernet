@@ -480,6 +480,7 @@ void ConnectionManager::flush(uint16_t port) {
                     return;
                   }
                   altcp_output(state->pcb);
+                  Ethernet.loop();
                 });
   Ethernet.loop();
 }
