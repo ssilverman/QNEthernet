@@ -406,7 +406,10 @@ size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
 }
 
 int EthernetUDP::availableForWrite() {
-  return 0;
+  if (!hasOutPacket_) {
+    return 0;
+  }
+  return kMaxPossiblePayloadSize - outPacket_.data.size();
 }
 
 }  // namespace network

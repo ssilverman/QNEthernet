@@ -29,6 +29,8 @@ and this project adheres to
 * Updated `EthernetClass::linkStatus()` to return `EthernetLinkStatus::Unknown`
   if the hardware hasn't yet been probed.
 * Updated `AltcpTemplate` example to print proxy information.
+* Updated `EthernetUDP::availableForWrite()` to return the amount remaining
+  before hitting the maximum possible payload size.
 
 ### Removed
 * Removed TTL concept from `MDNSClass`. This enables it to compile with the
