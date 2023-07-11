@@ -268,6 +268,9 @@ size_t EthernetFrameClass::write(const uint8_t *buffer, size_t size) {
 }
 
 int EthernetFrameClass::availableForWrite() {
+  if (!hasOutFrame_) {
+    return 0;
+  }
   // First cast to something we know is the same size as size_t
   return std::max(
       static_cast<ssize_t>((maxFrameLen() - 4) - outFrame_.data.size()), 0);
