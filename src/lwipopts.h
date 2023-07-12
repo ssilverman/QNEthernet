@@ -123,7 +123,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // DHCP options
 #ifndef LWIP_DHCP
-#define LWIP_DHCP                 LWIP_UDP  /* 0 */
+#define LWIP_DHCP                       LWIP_UDP  /* 0 */
 #endif  // !LWIP_DHCP
 #define LWIP_DHCP_DOES_ACD_CHECK        0  /* LWIP_DHCP */
 // #define LWIP_DHCP_BOOTP_FILE            0
