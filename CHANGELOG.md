@@ -31,6 +31,7 @@ and this project adheres to
 * Updated `AltcpTemplate` example to print proxy information.
 * Updated `EthernetUDP::availableForWrite()` to return the amount remaining
   before hitting the maximum possible payload size.
+* Add 5 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 1.
 
 ### Removed
 * Removed TTL concept from `MDNSClass`. This enables it to compile with the
