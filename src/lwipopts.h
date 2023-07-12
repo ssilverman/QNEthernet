@@ -500,7 +500,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // MDNS options (mdns_opts.h)
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP && LWIP_IGMP  /* 0 */
-// If you change this to zero here then:
+// If you change LWIP_MDNS_RESPONDER to zero here then:
 // 1. Reduce MEMP_NUM_SYS_TIMEOUT by 5
 // 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
 // 3. Reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
