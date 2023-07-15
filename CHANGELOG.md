@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* The new `QNETHERNET_MEMORY_IN_RAM1` configuration macro indicates that
+  lwIP-declared memory should go into RAM1.
+
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
   `MEM_ALIGNMENT` value.
