@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
+  `MEM_ALIGNMENT` value.
+
 ## [0.23.0]
 
 ### Added
