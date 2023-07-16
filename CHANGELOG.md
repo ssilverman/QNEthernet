@@ -20,6 +20,9 @@ and this project adheres to
 * Add 6 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 5. Timeout
   exhaustion was still observed with 5.
 
+### Fixed
+* Now using the correct name when adding an mDNS service.
+
 ## [0.23.0]
 
 ### Added
