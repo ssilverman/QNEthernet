@@ -17,6 +17,8 @@ and this project adheres to
   `MEM_ALIGNMENT` value.
 * Now calling `shrink_to_fit()` on the UDP and Ethernet frame queues when
   setting their size.
+* Add 6 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 5. Timeout
+  exhaustion was still observed with 5.
 
 ## [0.23.0]
 
