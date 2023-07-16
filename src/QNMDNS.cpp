@@ -133,7 +133,7 @@ bool MDNSClass::addService(const char *name, const char *type,
     return false;
   }
 
-  int8_t slot = mdns_resp_add_service(netif_, hostname_.c_str(), type,
+  int8_t slot = mdns_resp_add_service(netif_, name, type,
                                       toProto(protocol), port, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {
