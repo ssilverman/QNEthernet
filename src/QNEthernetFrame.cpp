@@ -188,9 +188,11 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
       }
       inBuf_.resize(size);
       inBufHead_ = inBufSize_;
-      for (size_t i = oldSize; i < size; i++) {
-        inBuf_[i].data.reserve(maxFrameLen());
-      }
+
+      // Don't reserve memory because that might exhaust the heap
+      // for (size_t i = oldSize; i < size; i++) {
+      //   inBuf_[i].data.reserve(maxFrameLen());
+      // }
     }
     inBufTail_ = 0;
   }
@@ -203,9 +205,10 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
 // --------------------------------------------------------------------------
 
 void EthernetFrameClass::beginFrame() {
-  if (outFrame_.data.capacity() < maxFrameLen()) {
-    outFrame_.data.reserve(maxFrameLen());
-  }
+  // Don't reserve memory because that might exhaust the heap
+  // if (outFrame_.data.capacity() < maxFrameLen()) {
+  //   outFrame_.data.reserve(maxFrameLen());
+  // }
 
   hasOutFrame_ = true;
   outFrame_.data.clear();

@@ -129,12 +129,13 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   listening_ = true;
   listenReuse_ = reuse;
 
-  for (Packet &p : inBuf_) {
-    p.data.reserve(kMaxPayloadSize);
-  }
-  if (packet_.data.capacity() < kMaxPayloadSize) {
-    packet_.data.reserve(kMaxPayloadSize);
-  }
+  // Don't reserve memory because that might exhaust the heap
+  // for (Packet &p : inBuf_) {
+  //   p.data.reserve(kMaxPayloadSize);
+  // }
+  // if (packet_.data.capacity() < kMaxPayloadSize) {
+  //   packet_.data.reserve(kMaxPayloadSize);
+  // }
 
   udp_recv(pcb_, &recvFunc, this);
 
@@ -314,9 +315,11 @@ bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   if (pcb_ == nullptr) {
     return false;
   }
-  if (outPacket_.data.capacity() < kMaxPayloadSize) {
-    outPacket_.data.reserve(kMaxPayloadSize);
-  }
+
+  // Don't reserve memory because that might exhaust the heap
+  // if (outPacket_.data.capacity() < kMaxPayloadSize) {
+  //   outPacket_.data.reserve(kMaxPayloadSize);
+  // }
 
   outPacket_.addr = *ipaddr;
   outPacket_.port = port;

@@ -22,6 +22,9 @@ and this project adheres to
 
 ### Fixed
 * Now using the correct name when adding an mDNS service.
+* Pre-reserving memory for raw frames and UDP packets prematurely exhaust the
+  heap when a larger number of them are reserved in the queue. These buffers are
+  no longer reserved; they only grow appropriately when data comes in.
 
 ## [0.23.0]
 
