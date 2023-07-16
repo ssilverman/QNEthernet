@@ -88,7 +88,9 @@ EthernetUDP::EthernetUDP(size_t queueSize)
       listenReuse_(false),
       inBuf_(queueSize < 1 ? 1 : queueSize),
       packetPos_(-1),
-      hasOutPacket_(false) {}
+      hasOutPacket_(false) {
+  inBuf_.shrink_to_fit();
+}
 
 EthernetUDP::~EthernetUDP() {
   stop();

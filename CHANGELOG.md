@@ -15,6 +15,8 @@ and this project adheres to
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
   `MEM_ALIGNMENT` value.
+* Now calling `shrink_to_fit()` on the UDP and Ethernet frame queues when
+  setting their size.
 
 ## [0.23.0]
 

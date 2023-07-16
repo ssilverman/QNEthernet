@@ -194,6 +194,8 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
     }
     inBufTail_ = 0;
   }
+
+  inBuf_.shrink_to_fit();
 }
 
 // --------------------------------------------------------------------------
