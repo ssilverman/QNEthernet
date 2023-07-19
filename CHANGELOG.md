@@ -12,12 +12,14 @@ and this project adheres to
 * The new `QNETHERNET_MEMORY_IN_RAM1` configuration macro indicates that
   lwIP-declared memory should go into RAM1.
 * New `EthernetFrameClass::receiveQueueSize()` function.
+* New `EthernetUDP::receiveQueueSize()` and `setReceiveQueueSize(size)`
+  functions.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
   `MEM_ALIGNMENT` value.
 * Now calling `shrink_to_fit()` on the UDP and Ethernet frame queues when
-  setting their size.
+  changing their size.
 * Add 6 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 5. Timeout
   exhaustion was still observed with 5.
 

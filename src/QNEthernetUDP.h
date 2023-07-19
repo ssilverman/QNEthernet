@@ -46,6 +46,17 @@ class EthernetUDP : public UDP {
     return MEMP_NUM_UDP_PCB;
   }
 
+  // Returns the current queue size.
+  size_t receiveQueueSize() const {
+    return inBuf_.size();
+  }
+
+  // Changes the receive queue size. This will use a minimum of 1.
+  //
+  // If the new size is smaller than the number of elements in the queue then
+  // all the oldest packets that don't fit are dropped.
+  void setReceiveQueueSize(size_t size);
+
   // Starts listening on a port. This returns true if successful and false if
   // the port is in use. This calls begin(localPort, false).
   //

@@ -323,6 +323,7 @@ listening and the port or _reuse_ options have changed.
 * `data()`: Returns a pointer to the received packet data.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
+* `receiveQueueSize()`: Returns the current receive queue size.
 * `receivedTimestamp()`: Returns the approximate packet arrival time, measured
   with `millis()`. This is useful in the case where packets have been queued and
   the caller needs the approximate arrival time. Packets are timestamped when
@@ -330,6 +331,10 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
+* `setReceiveQueueSize(size)`: Changes the receive queue size. The minimum
+  possible value is 1 and the default is 1. If a value of zero is used, it will
+  default to 1. If the new size is smaller than the number of items in the queue
+  then all the oldest packets will get dropped.
 * `size()`: Returns the total size of the received packet data.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of

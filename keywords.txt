@@ -91,6 +91,8 @@ maxListeners	KEYWORD2
 port	KEYWORD2
 beginWithReuse	KEYWORD2
 accept	KEYWORD2	server.accept
+receiveQueueSize	KEYWORD2
+setReceiveQueueSize	KEYWORD2
 beginMulticast	KEYWORD2	WiFiUDP.beginMulticast
 beginMulticastWithReuse	KEYWORD2
 beginPacket	KEYWORD2	EthernetUDP.beginPacket
@@ -112,8 +114,6 @@ beginFrame	KEYWORD2
 beginVLANFrame	KEYWORD2
 endFrame	KEYWORD2
 parseFrame	KEYWORD2
-receiveQueueSize	KEYWORD2
-setReceiveQueueSize	KEYWORD2
 writeMagic	KEYWORD2
 
 #######################################

@@ -86,14 +86,48 @@ EthernetUDP::EthernetUDP(size_t queueSize)
     : pcb_(nullptr),
       listening_(false),
       listenReuse_(false),
-      inBuf_(queueSize < 1 ? 1 : queueSize),
+      inBuf_(std::max(queueSize, size_t{1})),
       packetPos_(-1),
-      hasOutPacket_(false) {
-  inBuf_.shrink_to_fit();
-}
+      hasOutPacket_(false) {}
 
 EthernetUDP::~EthernetUDP() {
   stop();
+}
+
+void EthernetUDP::setReceiveQueueSize(size_t size) {
+  if (size == inBuf_.size()) {
+    return;
+  }
+
+  size = std::max(size, size_t{1});
+
+  // Keep all the newest elements
+  // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    if (size <= inBufSize_) {
+      // Keep all the newest packets
+      if (inBufTail_ != 0) {
+        size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
+        std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
+      }
+      inBuf_.resize(size);
+      inBufHead_ = 0;
+      inBufSize_ = size;
+    } else {
+      if (inBufTail_ != 0) {
+        std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
+      }
+      inBuf_.resize(size);
+      inBufHead_ = inBufSize_;
+
+      // Don't reserve memory because that might exhaust the heap
+      // for (size_t i = oldSize; i < size; i++) {
+      //   inBuf_[i].data.reserve(kMaxPayloadSize);
+      // }
+    }
+    inBufTail_ = 0;
+  // }
+
+  inBuf_.shrink_to_fit();
 }
 
 uint8_t EthernetUDP::begin(uint16_t localPort) {
