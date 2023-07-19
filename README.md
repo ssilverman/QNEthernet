@@ -391,6 +391,7 @@ read from a frame and the `Print` API can be used to write to the frame.
   initialized. This is similar to `EthernetUDP::endPacket()`.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
+* `receiveQueueSize()`: Returns the current receive queue size.
 * `receivedTimestamp()`: Returns the approximate frame arrival time, measured
   with `millis()`. This is useful in the case where frames have been queued and
   the caller needs the approximate arrival time. Frames are timestamped when

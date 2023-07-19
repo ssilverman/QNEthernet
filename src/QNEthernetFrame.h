@@ -153,6 +153,11 @@ class EthernetFrameClass final : public Stream {
   // with the receive function if called from an ISR.
   void setReceiveQueueSize(size_t size);
 
+  // Returns the current receive queue size.
+  size_t receiveQueueSize() const {
+    return inBuf_.size();
+  }
+
  private:
   struct Frame final {
     std::vector<uint8_t> data;

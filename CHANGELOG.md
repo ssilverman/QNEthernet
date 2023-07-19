@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 * The new `QNETHERNET_MEMORY_IN_RAM1` configuration macro indicates that
   lwIP-declared memory should go into RAM1.
+* New `EthernetFrameClass::receiveQueueSize()` function.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
