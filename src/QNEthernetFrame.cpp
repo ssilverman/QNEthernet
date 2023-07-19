@@ -173,8 +173,6 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
     size = 1;
   }
 
-  size_t oldSize = inBuf_.size();
-
   // Keep all the newest elements
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (size <= inBufSize_) {
