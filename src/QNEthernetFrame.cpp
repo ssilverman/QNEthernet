@@ -169,9 +169,7 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
     return;
   }
 
-  if (size < 1) {
-    size = 1;
-  }
+  size = std::max(size, size_t{1});
 
   // Keep all the newest elements
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
