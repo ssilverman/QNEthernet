@@ -323,7 +323,7 @@ listening and the port or _reuse_ options have changed.
 * `data()`: Returns a pointer to the received packet data.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
-* `receivedTimestamp():` Returns the approximate packet arrival time, measured
+* `receivedTimestamp()`: Returns the approximate packet arrival time, measured
   with `millis()`. This is useful in the case where packets have been queued and
   the caller needs the approximate arrival time. Packets are timestamped when
   the UDP receive callback is called.
@@ -391,7 +391,7 @@ read from a frame and the `Print` API can be used to write to the frame.
   initialized. This is similar to `EthernetUDP::endPacket()`.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
-* `receivedTimestamp():` Returns the approximate frame arrival time, measured
+* `receivedTimestamp()`: Returns the approximate frame arrival time, measured
   with `millis()`. This is useful in the case where frames have been queued and
   the caller needs the approximate arrival time. Frames are timestamped when
   the unknown ethernet protocol receive callback is called.
