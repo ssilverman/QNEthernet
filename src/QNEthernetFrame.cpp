@@ -165,6 +165,10 @@ uint32_t EthernetFrameClass::receivedTimestamp() const {
 }
 
 void EthernetFrameClass::setReceiveQueueSize(size_t size) {
+  if (size == inBuf_.size()) {
+    return;
+  }
+
   if (size < 1) {
     size = 1;
   }
