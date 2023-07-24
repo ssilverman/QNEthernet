@@ -11,7 +11,7 @@
 #include <QNEthernet.h>
 #include <QNDNSClient.h>
 #include <TimeLib.h>
-#include <lwip_t41.h>
+#include <lwip_driver.h>
 #include <lwip/dns.h>
 #include <lwip/opt.h>
 #include <unity.h>

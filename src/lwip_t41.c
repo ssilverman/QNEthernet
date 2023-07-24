@@ -8,7 +8,7 @@
 
 #if defined(ARDUINO_TEENSY41)
 
-#include "lwip_t41.h"
+#include "lwip_driver.h"
 
 // C includes
 #include <stdatomic.h>

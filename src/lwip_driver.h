@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
-// lwip_t41.h defines Teensy 4.1 Ethernet functions.
+// lwip_driver.h defines Teensy 4.1 Ethernet functions.
 // Based on code from Paul Stoffregen and others:
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_LWIP_T41_H_
-#define QNETHERNET_LWIP_T41_H_
+#ifndef QNETHERNET_LWIP_DRIVER_H_
+#define QNETHERNET_LWIP_DRIVER_H_
 
 #if defined(ARDUINO_TEENSY41)
 
@@ -118,4 +118,4 @@ bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // ARDUINO_TEENSY41
 
-#endif  // QNETHERNET_LWIP_T41_H_
+#endif  // QNETHERNET_LWIP_DRIVER_H_

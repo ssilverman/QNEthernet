@@ -27,7 +27,7 @@
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
 #if defined(ARDUINO_TEENSY41)
-#include "lwip_t41.h"
+#include "lwip_driver.h"
 #else
 #include "lwip_unsupported.h"
 #endif  // ARDUINO_TEENSY41
