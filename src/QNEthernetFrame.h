@@ -19,11 +19,7 @@
 #include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
-#if defined(ARDUINO_TEENSY41)
 #include "lwip_driver.h"
-#else
-#include "lwip_unsupported.h"
-#endif  // ARDUINO_TEENSY41
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);

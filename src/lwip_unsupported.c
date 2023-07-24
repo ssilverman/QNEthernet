@@ -6,7 +6,7 @@
 
 #if !defined(ARDUINO_TEENSY41)
 
-#include "lwip_unsupported.h"
+#include "lwip_driver.h"
 
 bool enet_is_unknown() {
   return false;
