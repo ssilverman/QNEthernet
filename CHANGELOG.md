@@ -29,6 +29,10 @@ and this project adheres to
 * Pre-reserving memory for raw frames and UDP packets prematurely exhaust the
   heap when a larger number of them are reserved in the queue. These buffers are
   no longer reserved; they only grow appropriately when data comes in.
+* Fixed closing `EthernetClient`s to remove the connection state if not already
+  connected. Restarting an `EthernetClient` via one of the `connectXXX()`
+  functions calls `close()` first, and if there was no connection, then closing
+  never removed the internal connection object, causing a leak.
 
 ## [0.23.0]
 

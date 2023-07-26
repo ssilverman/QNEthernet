@@ -214,7 +214,7 @@ void EthernetClient::close(bool wait) {
     return;
   }
 
-  const auto &state = conn_->state;
+  auto &state = conn_->state;
   if (state == nullptr) {
     // This can happen if this object was moved to another
     // or if the connection was disconnected
@@ -228,6 +228,11 @@ void EthernetClient::close(bool wait) {
       altcp_output(state->pcb);
       Ethernet.loop();  // Maybe some TCP data gets in
       // NOTE: loop() requires a re-check of the state
+    } else if (!conn_->connected) {
+      if (altcp_close(state->pcb) != ERR_OK) {
+        altcp_abort(state->pcb);
+      }
+      state = nullptr;
     }
 
     if (state != nullptr) {
