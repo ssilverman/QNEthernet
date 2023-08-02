@@ -441,7 +441,7 @@ static void test_udp() {
   // Send the packet
   TEST_MESSAGE("Sending SNTP request...");
   EthernetUDP udp;
-  udp.begin(kNTPPort);
+  TEST_ASSERT_TRUE_MESSAGE(udp.begin(kNTPPort), "Expected UDP listen success");
   TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
                            "Expected UDP send success");
 
