@@ -16,6 +16,8 @@ and this project adheres to
   functions.
 * Enabled external definition of macros `LWIP_NETIF_LOOPBACK` and
   `LWIP_LOOPBACK_MAX_PBUFS`.
+* Sprinkled some more `Ethernet.loop()` calls where pcb and pbuf
+  allocations fail.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the

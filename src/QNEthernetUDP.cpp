@@ -149,6 +149,7 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
+    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 
@@ -347,6 +348,7 @@ bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
     pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
+    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 
@@ -372,13 +374,16 @@ int EthernetUDP::endPacket() {
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, outPacket_.data.size(), PBUF_RAM);
   if (p == nullptr) {
     outPacket_.clear();
+    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
+
   pbuf_take(p, outPacket_.data.data(), outPacket_.data.size());
   bool retval =
       (udp_sendto(pcb_, p, &outPacket_.addr, outPacket_.port) == ERR_OK);
   outPacket_.clear();
   pbuf_free(p);
+
   return retval;
 }
 
@@ -410,17 +415,21 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
     pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
   }
   if (pcb_ == nullptr) {
+    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 
   // Note: Use PBUF_RAM for TX
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
   if (p == nullptr) {
+    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
+
   pbuf_take(p, data, len);
   bool retval = (udp_sendto(pcb_, p, ipaddr, port) == ERR_OK);
   pbuf_free(p);
+
   return retval;
 }
 
