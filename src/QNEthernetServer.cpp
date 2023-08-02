@@ -76,6 +76,7 @@ void EthernetServer::end() {
     listening_ = false;
     internal::ConnectionManager::instance().stopListening(port_);
   }
+  port_ = -1;
 }
 
 EthernetClient EthernetServer::accept() const {

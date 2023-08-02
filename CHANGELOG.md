@@ -39,6 +39,7 @@ and this project adheres to
   never removed the internal connection object, causing a leak.
 * Fixed `Ethernet.loop()` to also poll the netif if loopback is enabled. This
   allows loopback to work.
+* `EthernetServer::end()` now sets the port to -1.
 
 ## [0.23.0]
 
