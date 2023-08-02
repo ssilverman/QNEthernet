@@ -189,6 +189,10 @@ class EthernetClass final {
   // Returns the link state, true for link and false for no or unknown link.
   bool linkState() const;
 
+  // Manually sets the link state. This is useful when using the loopback
+  // feature. Network operations will usually fail unless there's a link.
+  void setLinkState(bool flag) const;
+
   // Returns the link speed in Mbps. This is only valid if the link is up.
   int linkSpeed() const;
 

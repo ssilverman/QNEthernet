@@ -235,6 +235,9 @@ The `Ethernet` object is the main Ethernet interface.
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
   set the hostname to nothing. To use something other than the default at system
   start, call this before calling `begin()`.
+* `setLinkState(flag)`: Manually sets the link state. This is useful when using
+  the loopback feature. Network operations will usually fail unless there's
+  a link.
 * `setMACAddressAllowed(mac, flag)`: Allows or disallows Ethernet frames
   addressed to the specified MAC address. This is useful when processing raw
   Ethernet frames.

@@ -378,6 +378,17 @@ bool EthernetClass::linkState() const {
   return netif_is_link_up(netif_);
 }
 
+void EthernetClass::setLinkState(bool flag) const {
+  if (netif_ == nullptr) {
+    return;
+  }
+  if (flag) {
+    netif_set_link_up(netif_);
+  } else {
+    netif_set_link_down(netif_);
+  }
+}
+
 int EthernetClass::linkSpeed() const {
   return phy_link_speed();
 }

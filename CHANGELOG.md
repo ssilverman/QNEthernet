@@ -18,6 +18,9 @@ and this project adheres to
   `LWIP_LOOPBACK_MAX_PBUFS`.
 * Sprinkled some more `Ethernet.loop()` calls where pcb and pbuf
   allocations fail.
+* Added `EthernetClass::setLinkState(flag)` for manually setting the link state
+  when a link is needed, such as when using the loopback feature. Network
+  operations will usually fail unless there's a link.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
