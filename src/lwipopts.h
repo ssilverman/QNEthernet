@@ -255,8 +255,12 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // LOOPIF options
 // #define LWIP_HAVE_LOOPIF (LWIP_NETIF_LOOPBACK && !LWIP_SINGLE_NETIF)
 // #define LWIP_LOOPIF_MULTICAST              0
+#ifndef LWIP_NETIF_LOOPBACK
 // #define LWIP_NETIF_LOOPBACK                0
+#endif  // !LWIP_NETIF_LOOPBACK
+#ifndef LWIP_LOOPBACK_MAX_PBUFS
 // #define LWIP_LOOPBACK_MAX_PBUFS            0
+#endif  // !LWIP_LOOPBACK_MAX_PBUFS
 // #define LWIP_NETIF_LOOPBACK_MULTITHREADING (!NO_SYS)
 
 // Thread options

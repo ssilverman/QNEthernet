@@ -14,6 +14,8 @@ and this project adheres to
 * New `EthernetFrameClass::receiveQueueSize()` function.
 * New `EthernetUDP::receiveQueueSize()` and `setReceiveQueueSize(size)`
   functions.
+* Enabled external definition of macros `LWIP_NETIF_LOOPBACK` and
+  `LWIP_LOOPBACK_MAX_PBUFS`.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the

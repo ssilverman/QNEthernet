@@ -1378,7 +1378,9 @@ in `mdns_opts.h`:
 | `LWIP_DHCP`               | Zero to disable                                        |
 | `LWIP_DNS`                | Zero to disable                                        |
 | `LWIP_IGMP`               | Zero to disable; also disables mDNS by default         |
+| `LWIP_LOOPBACK_MAX_PBUFS` | Non-zero to specify loopback queue size                |
 | `LWIP_MDNS_RESPONDER`     | Zero to disable                                        |
+| `LWIP_NETIF_LOOPBACK`     | `1` to enable loopback capabilities                    |
 | `LWIP_STATS`              | `1` to enable                                          |
 | `LWIP_TCP`                | Zero to disable                                        |
 | `LWIP_UDP`                | Zero to disable; also disables DHCP and DNS by default |
