@@ -521,7 +521,7 @@ static void test_client() {
   client.setConnectionTimeout(kConnectTimeout);
 
   // Connect and send the request
-  TEST_MESSAGE("Connecting and sending request...");
+  TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(1, client.connect(kHost, kPort), "Expected connect success");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
