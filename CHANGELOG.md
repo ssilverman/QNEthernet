@@ -33,6 +33,8 @@ and this project adheres to
   connected. Restarting an `EthernetClient` via one of the `connectXXX()`
   functions calls `close()` first. If there was no connection, then closing
   never removed the internal connection object, causing a leak.
+* Fixed `Ethernet.loop()` to also poll the netif if loopback is enabled. This
+  allows loopback to work.
 
 ## [0.23.0]
 

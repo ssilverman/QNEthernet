@@ -135,6 +135,13 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
 void EthernetClass::loop() {
   enet_proc_input();
 
+#if LWIP_NETIF_LOOPBACK || LWIP_HAVE_LOOPIF
+  // Poll the netif to allow for loopback
+  if (netif_ != nullptr) {
+    netif_poll(netif_);
+  }
+#endif  // LWIP_NETIF_LOOPBACK || LWIP_HAVE_LOOPIF
+
   if (pollTimer_ >= kPollInterval) {
     enet_poll();
     pollTimer_ = 0;
