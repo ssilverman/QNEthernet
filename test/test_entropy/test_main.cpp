@@ -7,8 +7,17 @@
 #include <cerrno>
 
 #include <Arduino.h>
+#include <security/RandomDevice.h>
 #include <security/entropy.h>
 #include <unity.h>
+
+namespace qindesign {
+namespace security {
+
+extern RandomDevice randomDevice;
+
+}  // namespace security
+}  // namespace qindesign
 
 // --------------------------------------------------------------------------
 //  Main Program
@@ -72,6 +81,11 @@ static void test_random_range() {
   }
 }
 
+// Tests entropy_random().
+static void test_randomDevice() {
+  qindesign::security::randomDevice();
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -95,6 +109,7 @@ void setup() {
   RUN_TEST(test_data);
   RUN_TEST(test_random);
   RUN_TEST(test_random_range);
+  RUN_TEST(test_randomDevice);
   trng_deinit();
   RUN_TEST(test_inactive);
   UNITY_END();

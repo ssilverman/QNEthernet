@@ -21,6 +21,15 @@ and this project adheres to
 * Added `EthernetClass::setLinkState(flag)` for manually setting the link state
   when a link is needed, such as when using the loopback feature. Network
   operations will usually fail unless there's a link.
+* Added more unit tests:
+  * test_ethernet:
+    * test_udp_receive_queueing
+    * test_udp_receive_timestamp
+    * test_udp_state
+    * test_client_state
+    * test_server_state
+  * test_entropy:
+    * test_randomDevice
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the
