@@ -163,8 +163,7 @@ static void waitForLocalIP() {
 static void test_other_null_mac() {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  TEST_ASSERT_FALSE(Ethernet.begin(nullptr));
-
+  TEST_ASSERT_EQUAL_MESSAGE(1, Ethernet.begin(nullptr), "Expected start success (1)");
   Ethernet.begin(nullptr, INADDR_NONE);
   Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE);
   Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE);
@@ -184,8 +183,10 @@ static void test_null_group() {
 // Tests NULL output frames.
 static void test_null_frame() {
   // Initialize Ethernet so these functions don't exit for the wrong reason
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
   Ethernet.setDHCPEnabled(false);
-  Ethernet.begin();
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start success");
 
   TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 0), "Expected output failed");
   TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 10), "Expected output failed");
@@ -518,12 +519,17 @@ static void test_client() {
   waitForLocalIP();
 
   EthernetClient client;
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client.connectionTimeout(),
+                            "Expected default timeout");
   client.setConnectionTimeout(kConnectTimeout);
+  TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client.connectionTimeout(),
+                            "Expected set timeout");
 
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(1, client.connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(client), "Expected connected");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
   client.writeFully(kRequest);
   client.flush();
@@ -542,7 +548,8 @@ static void test_client() {
   }
   UNITY_PRINT_EOL();
 
-  TEST_ASSERT_FALSE_MESSAGE(client.connected(), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client.connected(), "Expected not connected (no more data)");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(client), "Expected not connected");
 }
 
 // Main program setup.
