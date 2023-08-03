@@ -287,11 +287,9 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 }
 
 int EthernetClass::begin(const uint8_t mac[6], uint32_t timeout) {
-  // This can return an error, so if the MAC is NULL then fail
-  if (mac == nullptr) {
-    return false;
+  if (mac != nullptr) {
+    std::copy_n(mac, 6, mac_);
   }
-  std::copy_n(mac, 6, mac_);
 
   if (!begin()) {
     return false;
