@@ -5,6 +5,7 @@
 // This file is part of the QNEthernet library.
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include <Arduino.h>
@@ -60,12 +61,22 @@ static const IPAddress kGateway   {192, 168, 0, 1};
 // Test hostname for mDNS and DHCP option 12.
 static constexpr char kTestHostname[]{"test-hostname"};
 
+// Registry of objects that need destruction, per test.
+std::unique_ptr<EthernetUDP> udp;
+std::unique_ptr<EthernetClient> client;
+std::unique_ptr<EthernetServer> server;
+
 // Pre-test setup. This is run before every test.
 void setUp() {
 }
 
 // Post-test teardown. This is run after every test.
 void tearDown() {
+  // Clean up any stray objects because of the longjmp
+  udp = nullptr;
+  client = nullptr;
+  server = nullptr;
+
   // Stop Ethernet and other services
   Ethernet.end();
 
@@ -441,9 +452,9 @@ static void test_udp() {
 
   // Send the packet
   TEST_MESSAGE("Sending SNTP request...");
-  EthernetUDP udp;
-  TEST_ASSERT_TRUE_MESSAGE(udp.begin(kNTPPort), "Expected UDP listen success");
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
+  udp = std::make_unique<EthernetUDP>();
+  TEST_ASSERT_TRUE_MESSAGE(udp->begin(kNTPPort), "Expected UDP listen success");
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
                            "Expected UDP send success");
 
   bool validReply = false;
@@ -452,7 +463,7 @@ static void test_udp() {
   while (timer < kSNTPTimeout) {
     yield();
 
-    int size = udp.parsePacket();
+    int size = udp->parsePacket();
     if (size < 0) {
       continue;
     }
@@ -461,7 +472,7 @@ static void test_udp() {
       continue;
     }
 
-    const uint8_t *data = udp.data();
+    const uint8_t *data = udp->data();
 
     // See: Section 5, "SNTP Client Operations"
     int mode = data[0] & 0x07;
@@ -513,42 +524,42 @@ static void test_udp_receive_queueing() {
   waitForLink();  // send() won't work unless there's a link
 
   // Create and listen
-  EthernetUDP udp;  // Receive queue of 1
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.receiveQueueSize(), "Expected default queue size");
-  TEST_ASSERT_TRUE_MESSAGE(udp.begin(kPort), "Expected UDP listen success");
+  udp = std::make_unique<EthernetUDP>();  // Receive queue of 1
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected default queue size");
+  TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
 
   uint8_t b = 0;  // The buffer
 
   // Send two packets
   b = 1;
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.localIP(), kPort, &b, 1),
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 1 send success");
   b = 2;
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.localIP(), kPort, &b, 1),
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 2 send success");
 
   // Expect to receive only the last packet
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(2, udp.data()[0], "Expected packet 2 data");
-  TEST_ASSERT_LESS_THAN_MESSAGE(0, udp.parsePacket(), "Expected no second packet");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->data()[0], "Expected packet 2 data");
+  TEST_ASSERT_LESS_THAN_MESSAGE(0, udp->parsePacket(), "Expected no second packet");
 
   // Increase the buffer to two
-  udp.setReceiveQueueSize(2);
-  TEST_ASSERT_EQUAL_MESSAGE(2, udp.receiveQueueSize(), "Expected updated queue size");
+  udp->setReceiveQueueSize(2);
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueSize(), "Expected updated queue size");
 
   // Send the two packets again
   b = 3;
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.localIP(), kPort, &b, 1),
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 3 send success");
   b = 4;
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.localIP(), kPort, &b, 1),
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 4 send success");
 
   // Expect to receive both packets
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.parsePacket(), "Expected packet 3 with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(3, udp.data()[0], "Expected packet 3 data");
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.parsePacket(), "Expected packet 4 with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(4, udp.data()[0], "Expected packet 4 data");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 3 with size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(3, udp->data()[0], "Expected packet 3 data");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 4 with size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(4, udp->data()[0], "Expected packet 4 data");
 }
 
 static void test_udp_receive_timestamp() {
@@ -559,22 +570,22 @@ static void test_udp_receive_timestamp() {
   waitForLink();  // send() won't work unless there's a link
 
   // Create and listen
-  EthernetUDP udp;
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.beginWithReuse(kPort), "Expected UDP listen success");
+  udp = std::make_unique<EthernetUDP>();
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->beginWithReuse(kPort), "Expected UDP listen success");
 
   uint8_t b = 13;  // The buffer
 
   uint32_t t = millis();  // Current timestamp
 
   // Send a packet
-  TEST_ASSERT_TRUE_MESSAGE(udp.send(Ethernet.localIP(), kPort, &b, 1),
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet send success");
 
   // Test that we actually received the packet
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(b, udp.data()[0], "Expected packet data");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(b, udp->data()[0], "Expected packet data");
 
-  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp.receivedTimestamp(),
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(),
                                        "Expected valid timestamp");
 }
 
@@ -585,18 +596,18 @@ static void test_udp_state() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  EthernetUDP udp;
+  udp = std::make_unique<EthernetUDP>();
 
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(udp), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(0, udp.localPort(), "Expected invalid local port");
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp.begin(kPort), "Expected UDP listen success");
-  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(udp), "Expected listening");
-  TEST_ASSERT_EQUAL_MESSAGE(kPort, udp.localPort(), "Expected valid local port");
-  udp.stop();
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(udp), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(0, udp.localPort(), "Expected invalid local port");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*udp), "Expected not listening");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->localPort(), "Expected invalid local port");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*udp), "Expected listening");
+  TEST_ASSERT_EQUAL_MESSAGE(kPort, udp->localPort(), "Expected valid local port");
+  udp->stop();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*udp), "Expected not listening");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->localPort(), "Expected invalid local port");
 
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, udp.maxSockets(),
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, udp->maxSockets(),
                             "Expected valid max. sockets");
 }
 
@@ -613,51 +624,51 @@ static void test_client() {
 
   waitForLocalIP();
 
-  EthernetClient client;
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client.connectionTimeout(),
+  client = std::make_unique<EthernetClient>();
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(),
                             "Expected default timeout");
-  client.setConnectionTimeout(kConnectTimeout);
-  TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client.connectionTimeout(),
+  client->setConnectionTimeout(kConnectTimeout);
+  TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(),
                             "Expected set timeout");
 
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
-  TEST_ASSERT_EQUAL_MESSAGE(1, client.connect(kHost, kPort), "Expected connect success");
-  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(client), "Expected connected");
+  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
-  client.writeFully(kRequest);
-  client.flush();
+  client->writeFully(kRequest);
+  client->flush();
 
   // Read the response
   TEST_MESSAGE("The response:");
-  while (client.connected()) {
-    int avail = client.available();
+  while (client->connected()) {
+    int avail = client->available();
     if (avail <= 0) {
       continue;
     }
     for (int i = 0; i < avail; i++) {
-      UNITY_OUTPUT_CHAR(client.read());
+      UNITY_OUTPUT_CHAR(client->read());
     }
     UNITY_OUTPUT_FLUSH();
   }
   UNITY_PRINT_EOL();
 
-  TEST_ASSERT_EQUAL_MESSAGE(0, client.connected(), "Expected not connected (no more data)");
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no more data)");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
 }
 
 // Tests a variety of client object states.
 static void test_client_state() {
-  EthernetClient client;
+  client = std::make_unique<EthernetClient>();
 
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client.localPort(), "Expected invalid local port");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client.remotePort(), "Expected invalid remote port");
-  TEST_ASSERT_MESSAGE(INADDR_NONE == client.remoteIP(), "Expected no remote IP");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->localPort(), "Expected invalid local port");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->remotePort(), "Expected invalid remote port");
+  TEST_ASSERT_MESSAGE(INADDR_NONE == client->remoteIP(), "Expected no remote IP");
 
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client.connectionTimeout(), "Expected default");
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, client.maxSockets(),
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, client->maxSockets(),
                             "Expected valid max. sockets");
 }
 
@@ -668,18 +679,18 @@ static void test_server_state() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  EthernetServer server;
+  server = std::make_unique<EthernetServer>();
 
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(server), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(-1, server.port(), "Expected invalid port");
-  TEST_ASSERT_TRUE_MESSAGE(server.begin(kPort), "Expected TCP listen success");
-  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(server), "Expected listening");
-  TEST_ASSERT_EQUAL_MESSAGE(kPort, server.port(), "Expected valid port");
-  server.end();
-  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(server), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(-1, server.port(), "Expected invalid port");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
+  TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
+  TEST_ASSERT_TRUE_MESSAGE(server->begin(kPort), "Expected TCP listen success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*server), "Expected listening");
+  TEST_ASSERT_EQUAL_MESSAGE(kPort, server->port(), "Expected valid port");
+  server->end();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
+  TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB_LISTEN, server.maxListeners(),
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB_LISTEN, server->maxListeners(),
                             "Expected valid max. listeners");
 }
 

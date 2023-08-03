@@ -42,6 +42,9 @@ and this project adheres to
 * Changed all `EthernetClass::begin(mac, ...)` functions to be consistent. If
   the MAC address is NULL then the MAC will be set to the internal one. Also,
   if starting Ethernet fails, the MAC address will not be changed.
+* Improved Ethernet tests to do proper object destruction when tests fail. The
+  The Unity test framework makes use of longjmp for failing tests, and that
+  doesn't work well with object destructors.
 
 ### Fixed
 * Now using the correct name when adding an mDNS service.
