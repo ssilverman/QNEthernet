@@ -106,11 +106,14 @@ For API additions beyond what the Arduino-style API provides, see:\
   that many of the I/O functions call `loop()` so that there's less burden on
   the calling code.
 * All but one of the `Ethernet.begin(...)` functions don't block.
-  `Ethernet.begin(mac)` blocks while waiting for an IP address to match the
-  Arduino-style API. It uses a default timeout of 60 seconds. This behaviour can
-  be emulated by following a call to `begin()` with a loop that checks
-  `Ethernet.localIP()` for a valid IP. See also the new
+  `Ethernet.begin(mac[, timeout])` blocks while waiting for an IP address to
+  match the Arduino-style API. It uses a default timeout of 60 seconds. This
+  behaviour can be emulated by following a call to `begin()` with a loop that
+  checks `Ethernet.localIP()` for a valid IP. See also the new
   `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
+* The Arduino-style `Ethernet.begin(mac, ...)` functions all accept a NULL MAC
+  address. If the address is NULL then the internal MAC address will be used.
+  As well, if Ethernet fails to start then the MAC address will not be changed.
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples at
