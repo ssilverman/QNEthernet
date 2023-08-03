@@ -287,11 +287,16 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 }
 
 int EthernetClass::begin(const uint8_t mac[6], uint32_t timeout) {
-  if (mac != nullptr) {
-    std::copy_n(mac, 6, mac_);
+  uint8_t m[6];
+  if (mac == nullptr) {
+    enet_get_mac(m);
+    mac = m;
   }
+  std::copy_n(mac_, 6, m);  // Cache the current MAC address
+  std::copy_n(mac, 6, mac_);
 
   if (!begin()) {
+    std::copy_n(m, 6, mac_);  // Restore what was there before
     return false;
   }
 
@@ -326,9 +331,12 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
     enet_get_mac(m);
     mac = m;
   }
+  std::copy_n(mac_, 6, m);  // Cache the current MAC address
   std::copy_n(mac, 6, mac_);
 
-  begin(ip, subnet, gateway, dns);
+  if (!begin(ip, subnet, gateway, dns)) {
+    std::copy_n(m, 6, mac_);  // Restore the previous
+  }
 }
 #pragma GCC diagnostic pop
 

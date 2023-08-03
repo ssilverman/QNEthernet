@@ -30,8 +30,9 @@ and this project adheres to
 * Add 6 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 5. Timeout
   exhaustion was still observed with 5.
 * Removed _lwip_unsupported.h_ in favour of a single _lwip_driver.h_.
-* Changed `EthernetClass::begin(mac, timeout)` to allow a NULL MAC address. If
-  NULL, the MAC will be set to the internal or previously-set one.
+* Changed all `EthernetClass::begin(mac, ...)` functions to be consistent. If
+  the MAC address is NULL then the MAC will be set to the internal one. Also,
+  if starting Ethernet fails, the MAC address will not be changed.
 
 ### Fixed
 * Now using the correct name when adding an mDNS service.
