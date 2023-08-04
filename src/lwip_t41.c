@@ -755,8 +755,10 @@ static err_t t41_netif_init(struct netif *netif) {
   netif->mtu = MTU;
   netif->flags = NETIF_FLAG_BROADCAST |
                  NETIF_FLAG_ETHARP |
-                 NETIF_FLAG_ETHERNET |
-                 NETIF_FLAG_IGMP;
+#if LWIP_IGMP
+                 NETIF_FLAG_IGMP |
+#endif  // LWIP_IGMP
+                 NETIF_FLAG_ETHERNET;
 
   SMEMCPY(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
