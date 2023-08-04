@@ -688,6 +688,7 @@ static void test_client() {
   client->flush();
 
   // Read the response
+  t = millis();
   TEST_MESSAGE("The response:");
   while (client->connected()) {
     int avail = client->available();
@@ -700,6 +701,7 @@ static void test_client() {
     UNITY_OUTPUT_FLUSH();
   }
   UNITY_PRINT_EOL();
+  TEST_MESSAGE(format("Read and print response time: %" PRIu32 "ms", millis() - t).data());
 
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no more data)");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
