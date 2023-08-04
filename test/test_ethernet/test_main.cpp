@@ -282,7 +282,7 @@ static void test_dns_lookup() {
   TEST_ASSERT_FALSE(DNSClient::getHostByName(kName2, ip, kDNSLookupTimeout));
   t = millis() - t;
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", t).data());
-  TEST_ASSERT_MESSAGE(t < kDNSLookupTimeout, "Expected no timeout");
+  TEST_ASSERT_LESS_THAN_MESSAGE(kDNSLookupTimeout, t, "Expected no timeout");
 }
 
 // Tests setting and getting the option 12 hostname.
@@ -295,11 +295,11 @@ static void test_hostname() {
 // Tests hardware type.
 static void test_hardware() {
   if (!Ethernet.begin(kStaticIP, kSubnetMask, kGateway)) {
-    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetNoHardware,
-                        "Expected no hardware");
+    TEST_ASSERT_EQUAL_MESSAGE(EthernetNoHardware, Ethernet.hardwareStatus(),
+                              "Expected no hardware");
   } else {
-    TEST_ASSERT_MESSAGE(Ethernet.hardwareStatus() == EthernetOtherHardware,
-                        "Expected other hardware");
+    TEST_ASSERT_EQUAL_MESSAGE(EthernetOtherHardware, Ethernet.hardwareStatus(),
+                              "Expected other hardware");
   }
 }
 
@@ -323,9 +323,16 @@ static void test_link() {
                            "Expected start success");
   TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
+
   waitForLink();
+
   TEST_ASSERT_EQUAL_MESSAGE(LinkON, Ethernet.linkStatus(), "Expected link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link");
+
+  Ethernet.end();
+
+  TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 }
 
 // Tests the link listener.
@@ -734,7 +741,7 @@ static void test_client_state() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->localPort(), "Expected invalid local port");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->remotePort(), "Expected invalid remote port");
-  TEST_ASSERT_MESSAGE(INADDR_NONE == client->remoteIP(), "Expected no remote IP");
+  TEST_ASSERT_MESSAGE(client->remoteIP() == INADDR_NONE, "Expected no remote IP");
 
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default");
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, client->maxSockets(),
