@@ -18,12 +18,25 @@
 #include "lwip/netif.h"
 #include "lwip/prot/ethernet.h"
 
+#if defined(ARDUINO_TEENSY41)
+#include "lwip_t41.h"
+#else
+#include "lwip_unsupported.h"
+#endif  // ARDUINO_TEENSY41
+
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
 
-#define MTU 1500
-#define MAX_FRAME_LEN 1522
+// Returns the MTU.
+inline int enet_get_mtu() {
+  return MTU;
+}
+
+// Returns. the max. frame length.
+inline int enet_get_max_frame_len() {
+  return MAX_FRAME_LEN;
+}
 
 // Returns if the hardware hasn't yet been probed.
 bool enet_is_unknown();
