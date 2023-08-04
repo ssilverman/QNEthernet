@@ -498,9 +498,10 @@ static void test_udp() {
   buf[43] = t;
 
   // Send the packet
-  TEST_MESSAGE("Sending SNTP request...");
+  TEST_MESSAGE("Sending SNTP request (after delay)...");
   udp = std::make_unique<EthernetUDP>();
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kNTPPort), "Expected UDP listen success");
+  delay(3000);  // Waiting a few seconds seems to be necessary
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
                            "Expected UDP send success");
 
