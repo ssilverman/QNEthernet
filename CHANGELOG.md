@@ -23,9 +23,11 @@ and this project adheres to
   operations will usually fail unless there's a link.
 * Added more unit tests:
   * test_ethernet:
+    * test_setLinkState
     * test_udp_receive_queueing
     * test_udp_receive_timestamp
     * test_udp_state
+    * test_client_connectNoWait
     * test_client_timeout
     * test_client_state
     * test_server_state

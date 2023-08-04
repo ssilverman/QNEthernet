@@ -325,16 +325,20 @@ static void waitForLink() {
 
 // Tests seeing a link.
 static void test_link() {
-  TEST_ASSERT(Ethernet.linkStatus() == LinkOFF);
+  TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
+  TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
   waitForLink();
-  TEST_ASSERT(Ethernet.linkStatus() == LinkON);
+  TEST_ASSERT_EQUAL_MESSAGE(LinkON, Ethernet.linkStatus(), "Expected link");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link");
 }
 
 // Tests the link listener.
 static void test_link_listener() {
-  TEST_ASSERT_FALSE(Ethernet.linkState());
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 
   volatile bool latch = false;
   volatile bool linkState = false;
@@ -366,6 +370,25 @@ static void test_link_listener() {
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(linkState, "Expected link down in callback");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
+}
+
+static void test_setLinkState() {
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
+
+  volatile bool linkState = false;
+  volatile int count = 0;
+  Ethernet.onLinkState([&linkState, &count](bool state) {
+    linkState = state;
+    count++;
+  });
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
+  Ethernet.setLinkState(true);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link");
+  TEST_ASSERT_TRUE_MESSAGE(linkState, "Expected link up in callback");
+  TEST_ASSERT_EQUAL_MESSAGE(1, count, "Expected callback called once");
 }
 
 // Tests the address-changed listener.
@@ -677,6 +700,26 @@ static void test_client() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
 }
 
+static void test_client_connectNoWait() {
+  constexpr uint16_t kPort = 80;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  waitForLink();
+
+  client = std::make_unique<EthernetClient>();
+
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+
+  // Connect
+  TEST_MESSAGE("Connecting ...");
+  TEST_ASSERT_EQUAL_MESSAGE(1, client->connectNoWait(Ethernet.localIP(), kPort),
+                            "Expected connect success");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+}
+
 static void test_client_timeout() {
   constexpr uint16_t kPort = 1025;
 
@@ -762,6 +805,7 @@ void setup() {
   RUN_TEST(test_hardware);
   RUN_TEST(test_link);
   RUN_TEST(test_link_listener);
+  RUN_TEST(test_setLinkState);
   RUN_TEST(test_address_listener);
   RUN_TEST(test_interface_listener);
   RUN_TEST(test_udp);
@@ -769,6 +813,7 @@ void setup() {
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
   RUN_TEST(test_client);
+  RUN_TEST(test_client_connectNoWait);
   RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_server_state);
