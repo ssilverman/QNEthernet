@@ -79,6 +79,7 @@ void tearDown() {
 
   // Stop Ethernet and other services
   Ethernet.end();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
 
   // Restore the MAC address
   uint8_t mac[6];
@@ -156,8 +157,10 @@ static void test_set_mac() {
 
 // Obtains an IP address via DHCP.
 static void waitForLocalIP() {
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected DHCP inactive");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start with DHCP okay");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPActive(), "Expected DHCP active");
 
   TEST_MESSAGE("Waiting for DHCP...");
@@ -323,7 +326,8 @@ static void waitForLink() {
 // Tests seeing a link.
 static void test_link() {
   TEST_ASSERT(Ethernet.linkStatus() == LinkOFF);
-  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
   waitForLink();
   TEST_ASSERT(Ethernet.linkStatus() == LinkON);
 }
@@ -339,7 +343,10 @@ static void test_link_listener() {
     linkState = state;
   });
 
-  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
   waitForLink();
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on up");
   TEST_ASSERT_TRUE_MESSAGE(linkState, "Expected link up in callback");
@@ -348,6 +355,7 @@ static void test_link_listener() {
   latch = false;
   linkState = true;
   Ethernet.end();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   TEST_MESSAGE("Waiting for link down...");
   elapsedMillis timer;
   while (Ethernet.linkState() && timer < kLinkTimeout) {
@@ -371,7 +379,10 @@ static void test_address_listener() {
     hasIP = (Ethernet.localIP() != INADDR_NONE);
   });
 
-  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on up");
   TEST_ASSERT_TRUE_MESSAGE(hasIP, "Expected valid IP in callback");
   TEST_ASSERT_MESSAGE(Ethernet.localIP() != INADDR_NONE, "Expected valid IP");
@@ -379,6 +390,7 @@ static void test_address_listener() {
   latch = false;
   hasIP = true;
   Ethernet.end();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   // TEST_MESSAGE("Waiting for no-address...");
   // elapsedMillis timer;
   // while ((Ethernet.localIP() != INADDR_NONE) && timer < kLinkTimeout) {
@@ -402,7 +414,10 @@ static void test_interface_listener() {
     interfaceState = state;
   });
 
-  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on up");
   TEST_ASSERT_TRUE_MESSAGE(interfaceState, "Expected interface up in callback");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.interfaceStatus(), "Expected interface up");
@@ -410,6 +425,7 @@ static void test_interface_listener() {
   latch = false;
   interfaceState = true;
   Ethernet.end();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   // TEST_MESSAGE("Waiting for interface-down...");
   // elapsedMillis timer;
   // while (Ethernet.interfaceStatus() && timer < kLinkTimeout) {
@@ -631,6 +647,9 @@ static void test_client() {
   TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(),
                             "Expected set timeout");
 
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
@@ -656,6 +675,26 @@ static void test_client() {
 
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no more data)");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+}
+
+static void test_client_timeout() {
+  constexpr uint16_t kPort = 1025;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  waitForLink();
+
+  client = std::make_unique<EthernetClient>();
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default timeout");
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+
+  uint32_t t = millis();
+  TEST_ASSERT_EQUAL_MESSAGE(-1, client->connect(Ethernet.localIP(), kPort), "Expected timeout");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1000, millis() - t, "Expected timeout duration");
+
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
 }
 
 // Tests a variety of client object states.
@@ -730,6 +769,7 @@ void setup() {
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
   RUN_TEST(test_client);
+  RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_server_state);
   UNITY_END();

@@ -26,6 +26,7 @@ and this project adheres to
     * test_udp_receive_queueing
     * test_udp_receive_timestamp
     * test_udp_state
+    * test_client_timeout
     * test_client_state
     * test_server_state
   * test_entropy:
