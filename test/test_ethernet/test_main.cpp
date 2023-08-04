@@ -165,8 +165,18 @@ static void waitForLocalIP() {
   TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
 
   IPAddress ip = Ethernet.localIP();
+  IPAddress netmask = Ethernet.subnetMask();
+  IPAddress gateway = Ethernet.gatewayIP();
+  IPAddress dns = Ethernet.dnsServerIP();
   TEST_ASSERT_MESSAGE(ip != INADDR_NONE, "Expected valid IP");
-  TEST_MESSAGE(format("DHCP IP: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
+  TEST_MESSAGE(format("DHCP IP:      %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
+  TEST_MESSAGE(format("     Netmask: %u.%u.%u.%u", netmask[0], netmask[1], netmask[2], netmask[3]).data());
+  TEST_MESSAGE(format("     Gateway: %u.%u.%u.%u", gateway[0], gateway[1], gateway[2], gateway[3]).data());
+  TEST_MESSAGE(format("     DNS:     %u.%u.%u.%u", dns[0], dns[1], dns[2], dns[3]).data());
+  for (int i = 0; i < DNSClient::maxServers(); i++) {
+    dns = DNSClient::getServer(i);
+    TEST_MESSAGE(format("DNS Server %d: %u.%u.%u.%u", i, dns[0], dns[1], dns[2], dns[3]).data());
+  }
 }
 
 // Tests NULL MAC address passed to the begin(...) functions.
