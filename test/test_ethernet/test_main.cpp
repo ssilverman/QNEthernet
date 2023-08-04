@@ -654,7 +654,8 @@ static void test_udp_state() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*udp), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->localPort(), "Expected invalid local port");
 
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, udp->maxSockets(), "Expected valid max. sockets");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, EthernetUDP::maxSockets(),
+                            "Expected default UDP max. sockets");
 }
 
 static void test_client() {
@@ -671,7 +672,7 @@ static void test_client() {
   waitForLocalIP();
 
   client = std::make_unique<EthernetClient>();
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   client->setConnectionTimeout(kConnectTimeout);
   TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(), "Expected set timeout");
 
@@ -735,7 +736,7 @@ static void test_client_timeout() {
   waitForLink();
 
   client = std::make_unique<EthernetClient>();
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
 
@@ -756,9 +757,9 @@ static void test_client_state() {
   TEST_ASSERT_EQUAL_MESSAGE(0, client->remotePort(), "Expected invalid remote port");
   TEST_ASSERT_MESSAGE(client->remoteIP() == INADDR_NONE, "Expected no remote IP");
 
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default");
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, client->maxSockets(),
-                            "Expected valid max. sockets");
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, EthernetClient::maxSockets(),
+                            "Expected default TCP max. sockets");
 }
 
 // Tests a variety of server object states.
@@ -779,8 +780,21 @@ static void test_server_state() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB_LISTEN, server->maxListeners(),
-                            "Expected valid max. listeners");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB_LISTEN, EthernetServer::maxListeners(),
+                            "Expected default TCP max. listeners");
+}
+
+// Tests state from some of the other classes.
+static void test_other_state() {
+  TEST_ASSERT_EQUAL_MESSAGE(DNS_MAX_SERVERS, DNSClient::maxServers(), "Expected default DNS max. servers");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_IGMP_GROUP > 0 ? MEMP_NUM_IGMP_GROUP - 1 : 0,
+                            Ethernet.maxMulticastGroups(),
+                            "Expected default max. multicast groups");
+  TEST_ASSERT_EQUAL_MESSAGE(enet_get_mtu(), Ethernet.mtu(), "Expected default MTU");
+  TEST_ASSERT_EQUAL_MESSAGE(enet_get_max_frame_len(), EthernetFrame.maxFrameLen(),
+                            "Expected default max. frame len");
+  TEST_ASSERT_EQUAL_MESSAGE(64, EthernetFrame.minFrameLen(), "Expected default min. frame len");
+  TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");
 }
 
 // Main program setup.
@@ -824,6 +838,7 @@ void setup() {
   RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_server_state);
+  RUN_TEST(test_other_state);
   UNITY_END();
 }
 

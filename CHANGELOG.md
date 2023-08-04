@@ -31,6 +31,7 @@ and this project adheres to
     * test_client_timeout
     * test_client_state
     * test_server_state
+    * test_other_state
   * test_entropy:
     * test_randomDevice
 
