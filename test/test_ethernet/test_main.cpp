@@ -124,8 +124,7 @@ static void test_builtin_mac() {
   std::fill_n(mac2, 6, 0);
 
   Ethernet.MACAddress(mac2);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6,
-                                        "Expected matching MAC (old API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC (old API)");
 }
 
 // Tests setting the MAC address.
@@ -140,19 +139,16 @@ static void test_set_mac() {
 
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
   Ethernet.macAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6,
-                                        "Expected matching MAC");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC");
 
   std::fill_n(mac, 6, 0);
   Ethernet.MACAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6,
-                                        "Expected matching MAC (old API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC (old API)");
 
   // NULL uses the built-in
   Ethernet.setMACAddress(nullptr);
   Ethernet.macAddress(mac);
-  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(builtInMAC, mac, 6,
-                                        "Expected matching MAC (old API)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(builtInMAC, mac, 6, "Expected matching MAC (old API)");
 }
 
 // Obtains an IP address via DHCP.
@@ -220,10 +216,8 @@ static void test_dhcp() {
 
 // Tests using a static IP.
 void test_static_ip() {
-  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(),
-                            "Expected inactive DHCP before start");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE,
-                      "Expected no local IP before start");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP before start");
 
   // Without a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
@@ -235,8 +229,7 @@ void test_static_ip() {
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS (1)");
 
   Ethernet.setDnsServerIP(kGateway);
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway,
-                      "Expected gateway as DNS after set (old API)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected gateway as DNS after set (old API)");
   Ethernet.setDNSServerIP(INADDR_NONE);
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS after set");
 
@@ -244,8 +237,7 @@ void test_static_ip() {
   Ethernet.setLocalIP(ip);
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == ip, "Expected matching local IP after set new");
   Ethernet.setLocalIP(kStaticIP);
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP,
-                      "Expected matching local IP after set static");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP after set static");
 
   // With a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway),
@@ -365,8 +357,7 @@ static void test_link_listener() {
   while (Ethernet.linkState() && timer < kLinkTimeout) {
     yield();
   }
-  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms",
-                      static_cast<uint32_t>(timer)).data());
+  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(linkState, "Expected link down in callback");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
@@ -624,8 +615,7 @@ static void test_udp_receive_timestamp() {
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
   TEST_ASSERT_EQUAL_MESSAGE(b, udp->data()[0], "Expected packet data");
 
-  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(),
-                                       "Expected valid timestamp");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(), "Expected valid timestamp");
 }
 
 // Tests a variety of UDP object states.
@@ -646,8 +636,7 @@ static void test_udp_state() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*udp), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->localPort(), "Expected invalid local port");
 
-  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, udp->maxSockets(),
-                            "Expected valid max. sockets");
+  TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, udp->maxSockets(), "Expected valid max. sockets");
 }
 
 static void test_client() {
@@ -664,11 +653,9 @@ static void test_client() {
   waitForLocalIP();
 
   client = std::make_unique<EthernetClient>();
-  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(),
-                            "Expected default timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default timeout");
   client->setConnectionTimeout(kConnectTimeout);
-  TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(),
-                            "Expected set timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(), "Expected set timeout");
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
