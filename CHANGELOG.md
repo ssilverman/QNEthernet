@@ -49,6 +49,7 @@ and this project adheres to
 * Improved Ethernet tests to do proper object destruction when tests fail. The
   The Unity test framework makes use of longjmp for failing tests, and that
   doesn't work well with object destructors.
+* Unit test updates.
 
 ### Fixed
 * Now using the correct name when adding an mDNS service.
