@@ -50,6 +50,8 @@ and this project adheres to
   Unity test framework makes use of _longjmp_ for failing tests, and that
   doesn't work well with object destructors.
 * Unit test updates.
+* Made single-argument `EthernetClass` and `EthernetClient` constructors
+  explicit.
 
 ### Fixed
 * Now using the correct name when adding an mDNS service.

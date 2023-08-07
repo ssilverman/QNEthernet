@@ -141,7 +141,7 @@ class EthernetClient : public Client {
  private:
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.
-  EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
+  explicit EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
   int connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);

@@ -341,7 +341,7 @@ class EthernetClass final {
   // Creates a new network interface. This sets the MAC address to the given MAC
   // address. If the given address is NULL then this uses the built-in
   // MAC address.
-  EthernetClass(const uint8_t mac[6]);
+  explicit EthernetClass(const uint8_t mac[6]);
 
   ~EthernetClass();
 
