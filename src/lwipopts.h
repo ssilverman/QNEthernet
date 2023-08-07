@@ -312,6 +312,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #ifndef LWIP_STATS
 #define LWIP_STATS         0  /* 1 */
 #endif  // !LWIP_STATS
+#ifndef LWIP_STATS_LARGE
+// #define LWIP_STATS_LARGE   0
+#endif  // !LWIP_STATS_LARGE
 // #define LWIP_STATS_DISPLAY 0
 // #define LINK_STATS         1
 // #define ETHARP_STATS       (LWIP_ARP)

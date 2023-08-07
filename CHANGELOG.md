@@ -34,6 +34,7 @@ and this project adheres to
     * test_other_state
   * test_entropy:
     * test_randomDevice
+* Added commented-out `LWIP_STATS_LARGE` option to _lwipopts.h_.
 
 ### Changed
 * Changed memory declaration macro, `LWIP_DECLARE_MEMORY_ALIGNED()`, to use the

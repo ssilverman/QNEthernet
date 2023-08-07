@@ -1388,6 +1388,7 @@ in `mdns_opts.h`:
 | `LWIP_MDNS_RESPONDER`     | Zero to disable mDNS capabilities                          |
 | `LWIP_NETIF_LOOPBACK`     | `1` to enable loopback capabilities                        |
 | `LWIP_STATS`              | `1` to enable lwIP stats collection                        |
+| `LWIP_STATS_LARGE`        | `1` to use 32-bit stats counters instead of 16-bit         |
 | `LWIP_TCP`                | Zero to disable TCP                                        |
 | `LWIP_UDP`                | Zero to disable UDP; also disables DHCP and DNS by default |
 | `MEM_SIZE`                | Heap memory size                                           |
