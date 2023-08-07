@@ -1267,7 +1267,7 @@ and STL allocation.
 The library is configured, by default, to use the system-defined malloc
 functions. These include _malloc_, _free_, and _calloc_. The `MEM_LIBC_MALLOC`
 option controls this. Setting `MEM_LIBC_MALLOC` to zero will change any internal
-malloc calls to use the lwIP-supplied malloc functions.
+malloc calls to use the lwIP-supplied malloc functions with a preallocated heap.
 
 When `MEM_LIBC_MALLOC` is enabled, the `MEM_SIZE` option is not used, and when
 disabled, `MEM_SIZE` _is_ used and the heap is preallocated. One of the reasons
