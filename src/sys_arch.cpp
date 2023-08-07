@@ -58,8 +58,8 @@ const char *lwip_strerr(err_t err) {
       break;
   }
 
-  constexpr size_t kDigits = std::numeric_limits<err_t>::digits10 + 1;  // Add 1 for ceiling
-  constexpr char kPrefix[]{"err "};
+  static constexpr size_t kDigits = std::numeric_limits<err_t>::digits10 + 1;  // Add 1 for ceiling
+  static constexpr char kPrefix[]{"err "};
   static char buf[sizeof(kPrefix) + kDigits + 1];  // Includes the NUL and sign
   snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
   return buf;

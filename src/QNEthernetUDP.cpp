@@ -21,13 +21,13 @@ namespace qindesign {
 namespace network {
 
 // Total header size: Minimum IPv4 header size + UDP header size.
-constexpr size_t kHeaderSize = 20 + 8;
+static constexpr size_t kHeaderSize = 20 + 8;
 
 // Maximum UDP payload size without fragmentation.
-constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
+static constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
 
 // Maximum possible payload size.
-constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
+static constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
 
 #if LWIP_DNS
 // DNS lookup timeout.
