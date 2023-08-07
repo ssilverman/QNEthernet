@@ -1258,7 +1258,7 @@ There's a second configuration macro, `QNETHERNET_MEMORY_IN_RAM1`, for
 indicating that lwIP-declared memory should go into RAM1 instead of RAM2.
 
 These options are useful in the case where a program needs more dynamic memory,
-say. Putting more things in RAM2 will free up more space for things like `new`
+say. Putting more things in RAM1 will free up more space for things like `new`
 and STL allocation.
 
 ## Entropy collection
