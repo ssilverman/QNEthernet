@@ -1276,6 +1276,9 @@ isn't used. Plus, it saves some program memory because it doesn't need to
 include the code for the lwIP-defined functions. However, there's no cap on the
 amount of memory a program can use which may be a concern for some software.
 
+A second reason this option was enabled is that the current system-supplied
+functions are likely optimized for the current platform.
+
 There's a few macros that can be used if you want to use your own malloc
 functions and override the defaults. These are: `mem_clib_free`,
 `mem_clib_malloc`, and `mem_clib_calloc`. By default, if not set, these point to
