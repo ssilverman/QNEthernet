@@ -1277,7 +1277,9 @@ include the code for the lwIP-defined functions. However, there's no cap on the
 amount of memory a program can use which may be a concern for some software.
 
 A second reason this option was enabled is that the current system-supplied
-functions are likely optimized for the current platform.
+functions are likely optimized for the current platform. Yet a third reason is
+it's hard to anticipate what programs will actually need; this way obviates the
+need to assume what a good heap size is.
 
 There's a few macros that can be used if you want to use your own malloc
 functions and override the defaults. These are: `mem_clib_free`,
