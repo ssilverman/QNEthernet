@@ -42,12 +42,12 @@ and this project adheres to
   changing their size.
 * Add 6 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS instead of 5. Timeout
   exhaustion was still observed with 5.
-* Removed _lwip_unsupported.h_ in favour of a single _lwip_driver.h_.
+* There's now a single _lwip_driver.h_ header for interfacing with the stack.
 * Changed all `EthernetClass::begin(mac, ...)` functions to be consistent. If
   the MAC address is NULL then the MAC will be set to the internal one. Also,
   if starting Ethernet fails, the MAC address will not be changed.
 * Improved Ethernet tests to do proper object destruction when tests fail. The
-  The Unity test framework makes use of longjmp for failing tests, and that
+  Unity test framework makes use of _longjmp_ for failing tests, and that
   doesn't work well with object destructors.
 * Unit test updates.
 
