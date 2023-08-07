@@ -61,16 +61,17 @@ files provided with the lwIP release.
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
-20. [Entropy collection](#entropy-collection)
-21. [Configuration macros](#configuration-macros)
+20. [Heap memory use](#heap-memory-use)
+21. [Entropy collection](#entropy-collection)
+22. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
-22. [Complete list of features](#complete-list-of-features)
-23. [Other notes](#other-notes)
-24. [To do](#to-do)
-25. [Code style](#code-style)
-26. [References](#references)
+23. [Complete list of features](#complete-list-of-features)
+24. [Other notes](#other-notes)
+25. [To do](#to-do)
+26. [Code style](#code-style)
+27. [References](#references)
 
 ## Differences, assumptions, and notes
 
@@ -1260,6 +1261,38 @@ indicating that lwIP-declared memory should go into RAM1 instead of RAM2.
 These options are useful in the case where a program needs more dynamic memory,
 say. Putting more things in RAM1 will free up more space for things like `new`
 and STL allocation.
+
+## Heap memory use
+
+The library is configured, by default, to use the system-defined malloc
+functions. These include _malloc_, _free_, and _calloc_. The `MEM_LIBC_MALLOC`
+option controls this. Setting `MEM_LIBC_MALLOC` to zero will change any internal
+malloc calls to use the lwIP-supplied malloc functions.
+
+When `MEM_LIBC_MALLOC` is enabled, the `MEM_SIZE` option is not used, and when
+disabled, `MEM_SIZE` _is_ used and the heap is preallocated. One of the reasons
+this option was enabled by default is that it saves memory if the whole heap
+isn't used. Plus, it saves some program memory because it doesn't need to
+include the code for the lwIP-defined functions. However, there's no cap on the
+amount of memory a program can use which may be a concern for some software.
+
+There's a few macros that can be used if you want to use your own malloc
+functions and override the defaults. These are: `mem_clib_free`,
+`mem_clib_malloc`, and `mem_clib_calloc`. By default, if not set, these point to
+the system-provided functions.
+
+For example, if you want to use EXTMEM for the heap, then you can define these
+as `extmem_free`, `extmem_malloc`, and `extmem_calloc`, respectively. This could
+either be done in _lwipopts.h_ or wherever your build system provides
+build flags.
+
+Example that defines these in _lwipopts.h_:
+
+```c++
+#define mem_clib_free extmem_free
+#define mem_clib_malloc extmem_malloc
+#define mem_clib_calloc extmem_calloc
+```
 
 ## Entropy collection
 

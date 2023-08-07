@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* New "Heap memory use" section in the README that discusses memory
+  allocation functions.
+
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
   defined malloc functions.
