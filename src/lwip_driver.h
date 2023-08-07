@@ -18,6 +18,10 @@
 #include "lwip/netif.h"
 #include "lwip/prot/ethernet.h"
 
+// Requirements for platform-specific headers:
+// 1. Define MTU
+// 2. Define MAX_FRAME_LEN
+
 #if defined(ARDUINO_TEENSY41)
 #include "lwip_t41.h"
 #else
