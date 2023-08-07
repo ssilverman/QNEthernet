@@ -9,6 +9,7 @@
 
 #include "entropy.h"
 
+// C includes
 #include <errno.h>
 #include <string.h>
 

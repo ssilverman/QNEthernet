@@ -7,6 +7,7 @@
 #ifndef QNETHERNET_ARCH_CC_H_
 #define QNETHERNET_ARCH_CC_H_
 
+// C includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
