@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
-  defined malloc functions.
+  defined malloc functions instead of the lwIP-defined ones.
 
 ## [0.24.0]
 
