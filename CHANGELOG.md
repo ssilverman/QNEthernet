@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
+  defined malloc functions.
+
 ## [0.24.0]
 
 ### Added

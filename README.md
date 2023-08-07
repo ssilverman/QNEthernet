@@ -1391,7 +1391,8 @@ in `mdns_opts.h`:
 | `LWIP_STATS_LARGE`        | `1` to use 32-bit stats counters instead of 16-bit         |
 | `LWIP_TCP`                | Zero to disable TCP                                        |
 | `LWIP_UDP`                | Zero to disable UDP; also disables DHCP and DNS by default |
-| `MEM_SIZE`                | Heap memory size                                           |
+| `MEM_LIBC_MALLOC`         | Zero to enable use of lwIP-defined malloc functions        |
+| `MEM_SIZE`                | Heap memory size; unused if `MEM_LIBC_MALLOC` is enabled   |
 | `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                                 |
 | `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                            |
 | `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets                                      |

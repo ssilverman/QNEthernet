@@ -25,11 +25,14 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define LWIP_ASSERT_CORE_LOCKED() sys_check_core_locking(__FILE__, __LINE__, __FUNCTION__)
 
 // Memory options
-// #define MEM_LIBC_MALLOC                        0
+#ifndef MEM_LIBC_MALLOC
+#define MEM_LIBC_MALLOC                        1
+#endif  // !MEM_LIBC_MALLOC
 // #define MEMP_MEM_MALLOC                        0
 // #define MEMP_MEM_INIT                          0
 #define MEM_ALIGNMENT                          4  /* 1 */
 #ifndef MEM_SIZE
+// Note: MEM_SIZE is not used if MEM_LIBC_MALLOC is enabled
 #define MEM_SIZE                               24000  /* 1600 */
 #endif  // !MEM_SIZE
 // #define MEMP_OVERFLOW_CHECK                    0
