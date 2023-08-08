@@ -138,6 +138,9 @@ For API additions beyond what the Arduino-style API provides, see:\
   * `setRetransmissionTimeout(uint16_t milliseconds)`: Does nothing.
 * The following `EthernetUDP` functions do nothing:
   * `flush()` because it is ill-defined.
+    * Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP"
+      APIs and not in the main "Arduino Ethernet" API.\
+      See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
 * The system starts with the Teensy's actual MAC address. If you want to use
   that address with the deprecated API, you can collect it with
   `Ethernet.macAddress(mac)` and then pass it to one of the deprecated
