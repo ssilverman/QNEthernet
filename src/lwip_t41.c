@@ -1183,9 +1183,8 @@ bool enet_ieee1588_get_and_clear_channel_status(int channel) {
     *tcsr |= ENET_TCSR_TF;
     ENET_TGSR = (1 << channel);
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable){
@@ -1198,6 +1197,7 @@ bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable){
     return false;
   }
   CLRSET(*tcsr,ENET_TCSR_TIE_MASK,ENET_TCSR_TIE(enable));
+  return true;
 }
 
 #endif  // ARDUINO_TEENSY41
