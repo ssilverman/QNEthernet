@@ -1433,6 +1433,7 @@ void reset_phy() {
 
 #define ENET_TCSR_TMODE_MASK (0x0000003cU)
 #define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+#define ENET_TCSR_TPWC_MASK  (0x0000f800U)
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
@@ -1557,8 +1558,6 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
   }
 
   switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
     case 12:  // Reserved
     case 13:  // Reserved
       return false;
@@ -1571,29 +1570,23 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
 
   volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
-  *tcsr &= ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
-             ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
+  uint32_t r = *tcsr;
+  *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
+                ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
   while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr |= ENET::CHANNEL::TCSR::vals::TMODE(mode);
+  r = (r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
+             ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
+      ENET::CHANNEL::TCSR::vals::TMODE(mode);
+  *tcsr = r;
 
   return true;
 }
 
-bool ieee1588_set_channel_output_pulse_width(size_t channel,
-                                             int mode,
-                                             int pulseWidth) {
+bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
-  }
-
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-      break;
-    default:
-      return false;
   }
 
   if (pulseWidth < 1 || 32 < pulseWidth) {
@@ -1602,15 +1595,16 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel,
 
   volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
-  *tcsr &= ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
-             ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
+  uint32_t r = *tcsr;
+  *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
+                ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
   while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = (*tcsr & ~(ENET::CHANNEL::TCSR::vals::TPWC(31) |
-                     ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
-          ENET::CHANNEL::TCSR::vals::TMODE(mode) |
-          ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth - 1);
+  r = (r & ~(ENET::CHANNEL::TCSR::vals::TPWC.kMask |
+             ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
+      ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth - 1);
+  *tcsr = r;
 
   return true;
 }
