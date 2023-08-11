@@ -1382,7 +1382,7 @@ bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
     return false;
   }
-  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC(corrInc));
+  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
   ENET_ATCOR = corrPeriod | ENET_ATCOR_COR_MASK;
   return true;
 }
