@@ -1290,6 +1290,7 @@ void driver_notify_manual_link_state(const bool flag) {
 
 #define ENET_TCSR_TMODE_MASK (0x0000003cU)
 #define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+#define ENET_TCSR_TPWC_MASK  (0x0000f800U)
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
 
@@ -1424,8 +1425,6 @@ static inline volatile uint32_t *tccrReg(int channel) {
 
 bool ieee1588_set_channel_mode(int channel, int mode) {
   switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
     case 12:  // Reserved
     case 13:  // Reserved
       return false;
@@ -1441,26 +1440,19 @@ bool ieee1588_set_channel_mode(int channel, int mode) {
     return false;
   }
 
-  *tcsr &= ~(ENET_TCSR_TMODE_MASK | ENET_TCSR_TF);  // Don't clear TF (w1c)
+  uint32_t r = *tcsr;
+  *tcsr = r & ~(ENET_TCSR_TMODE_MASK | ENET_TCSR_TF);  // Don't clear TF (w1c)
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr |= ENET_TCSR_TMODE(mode);
+  CLRSET(r, ENET_TCSR_TMODE_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
+         ENET_TCSR_TMODE(mode));
+  *tcsr = r;
 
   return true;
 }
 
-bool ieee1588_set_channel_output_pulse_width(int channel,
-                                             int mode,
-                                             int pulseWidth) {
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-      break;
-    default:
-      return false;
-  }
-
+bool ieee1588_set_channel_output_pulse_width(int channel, int pulseWidth) {
   if (pulseWidth < 1 || 32 < pulseWidth) {
     return false;
   }
@@ -1470,12 +1462,14 @@ bool ieee1588_set_channel_output_pulse_width(int channel,
     return false;
   }
 
-  *tcsr &= ~(ENET_TCSR_TMODE_MASK | ENET_TCSR_TF);  // Don't clear TF (w1c)
+  uint32_t r = *tcsr;
+  *tcsr = r & ~(ENET_TCSR_TMODE_MASK | ENET_TCSR_TF);  // Don't clear TF (w1c)
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  CLRSET(*tcsr, ENET_TCSR_TPWC(31) | ENET_TCSR_TF,  // Don't clear TF (w1c)
-         ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1));
+  CLRSET(r, ENET_TCSR_TPWC_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
+         ENET_TCSR_TPWC(pulseWidth - 1));
+  *tcsr = r;
 
   return true;
 }

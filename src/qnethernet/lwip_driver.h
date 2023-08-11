@@ -389,16 +389,14 @@ bool ieee1588_adjust_freq(int nsps);
 // 3. The mode is a reserved value or unknown.
 bool ieee1588_set_channel_mode(int channel, int mode);
 
-// Sets the output compare pulse mode and pulse width for the given channel.
-// This returns whether successful.
+// Sets the pulse width for the given channel and returns whether successful.
+// Note that the pulse width only has an effect when the mode is one of the
+// output compare pulse modes.
 //
 // This will return false if:
-// 1. The channel is unknown,
-// 2. The mode is not one of the output compare pulse modes, or
+// 1. The channel is unknown, or
 // 3. The pulse width is not in the range 1-32.
-bool ieee1588_set_channel_output_pulse_width(int channel,
-                                             int mode,
-                                             int pulseWidth);
+bool ieee1588_set_channel_output_pulse_width(int channel, int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
 //

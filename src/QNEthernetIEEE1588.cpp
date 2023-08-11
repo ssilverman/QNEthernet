@@ -57,11 +57,8 @@ bool EthernetIEEE1588Class::setChannelMode(int channel,
 }
 
 bool EthernetIEEE1588Class::setChannelOutputPulseWidth(int channel,
-                                                       TimerChannelModes mode,
                                                        int pulseWidth) const {
-  return ieee1588_set_channel_output_pulse_width(channel,
-                                                 static_cast<int>(mode),
-                                                 pulseWidth);
+  return ieee1588_set_channel_output_pulse_width(channel, pulseWidth);
 }
 
 bool EthernetIEEE1588Class::setChannelCompareValue(int channel,
