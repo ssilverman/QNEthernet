@@ -233,7 +233,7 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
     // dhcp_inform(netif_);
     dhcpActive_ = false;
     dhcpDesired_ = false;
-  } else if (dhcpEnabled_) {
+  } else if (dhcpEnabled_ && !dhcpActive_) {
     retval = (dhcp_start(netif_) == ERR_OK);
     dhcpActive_ = retval;
     dhcpDesired_ = true;
