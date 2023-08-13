@@ -130,12 +130,28 @@ static void test_builtin_mac() {
 // Tests setting the MAC address.
 static void test_set_mac() {
   uint8_t builtInMAC[6];
-  Ethernet.macAddress(builtInMAC);
+  enet_get_mac(builtInMAC);
+
+  volatile bool interfaceState = false;
+  volatile int downCount = 0;
+  volatile int upCount = 0;
+  Ethernet.onInterfaceStatus(
+      [&interfaceState, &downCount, &upCount](bool state) {
+        interfaceState = state;
+        if (state) {
+          upCount++;
+        } else {
+          downCount++;
+        }
+      });
+
+  TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
 
   const uint8_t testMAC[6]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
   TEST_ASSERT_FALSE_MESSAGE(std::equal(&builtInMAC[0], &builtInMAC[6], testMAC),
                             "Expected internal MAC");
   Ethernet.setMACAddress(testMAC);
+  TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
 
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
   Ethernet.macAddress(mac);
@@ -144,11 +160,31 @@ static void test_set_mac() {
   std::fill_n(mac, 6, 0);
   Ethernet.MACAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC (old API)");
+  TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
 
   // NULL uses the built-in
   Ethernet.setMACAddress(nullptr);
   Ethernet.macAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(builtInMAC, mac, 6, "Expected matching MAC (old API)");
+  TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
+
+  // Test changing the MAC address while Ethernet is up
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no IP");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == INADDR_NONE, "Expected no netmask");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == INADDR_NONE, "Expected no gateway");
+  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_TRUE_MESSAGE(interfaceState, "Expected interface up");
+  TEST_ASSERT_EQUAL_MESSAGE(1, upCount, "Expected matching up count");
+  TEST_ASSERT_EQUAL_MESSAGE(0, downCount, "Expected matching down count");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching IP");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching netmask");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway");
+  Ethernet.setMACAddress(testMAC);
+  Ethernet.macAddress(mac);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC");
+  TEST_ASSERT_TRUE_MESSAGE(interfaceState, "Expected interface up");
+  TEST_ASSERT_EQUAL_MESSAGE(2, upCount, "Expected matching up count");
+  TEST_ASSERT_EQUAL_MESSAGE(1, downCount, "Expected matching down count");
 }
 
 // Obtains an IP address via DHCP.
