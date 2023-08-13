@@ -149,7 +149,7 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  return begin(IP4_ADDR_ANY4, IP4_ADDR_ANY, IP4_ADDR_ANY);
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
@@ -183,6 +183,7 @@ bool EthernetClass::begin(const IPAddress &ip,
   if (dns != INADDR_NONE) {
     setDNSServerIP(dns);
   }
+
   return begin(&ipaddr, &netmask, &gw);
 }
 
