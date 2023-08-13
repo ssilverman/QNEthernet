@@ -15,6 +15,7 @@ and this project adheres to
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
   defined malloc functions instead of the lwIP-defined ones.
+* Moved around where the netif gets its address set.
 
 ## [0.24.0]
 

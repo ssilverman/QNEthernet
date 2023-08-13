@@ -20,9 +20,6 @@ bool enet_has_hardware() {
 }
 
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               const ip4_addr_t *ipaddr,
-               const ip4_addr_t *netmask,
-               const ip4_addr_t *gw,
                netif_ext_callback_fn callback) {
   return false;
 }

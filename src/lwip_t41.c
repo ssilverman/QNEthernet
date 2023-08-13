@@ -887,9 +887,6 @@ bool enet_has_hardware() {
 }
 
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               const ip4_addr_t *ipaddr,
-               const ip4_addr_t *netmask,
-               const ip4_addr_t *gw,
                netif_ext_callback_fn callback) {
   // Only execute the following code once
   static bool isFirstInit = true;
@@ -898,10 +895,6 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     isFirstInit = false;
   }
 
-  if (ipaddr == NULL)  ipaddr  = IP4_ADDR_ANY4;
-  if (netmask == NULL) netmask = IP4_ADDR_ANY4;
-  if (gw == NULL)      gw      = IP4_ADDR_ANY4;
-
   // First test if the MAC address has changed
   // If it's changed then remove the interface and start again
   uint8_t m[ETH_HWADDR_LEN];
@@ -909,7 +902,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     enet_get_mac(m);
     mac = m;
   }
-  if (memcmp(s_mac, mac, ETH_HWADDR_LEN)) {
+  if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
     // MAC address has changed
 
     if (s_isNetifAdded) {
@@ -921,12 +914,10 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
   }
 
-  if (s_isNetifAdded) {
-    netif_set_addr(&s_t41_netif, ipaddr, netmask, gw);
-  } else {
+  if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
-    if (netif_add(&s_t41_netif, ipaddr, netmask, gw,
-                  NULL, t41_netif_init, ethernet_input) == NULL) {
+    if (netif_add_noaddr(&s_t41_netif,
+                         NULL, t41_netif_init, ethernet_input) == NULL) {
       netif_remove_ext_callback(&netif_callback);
       return false;
     }

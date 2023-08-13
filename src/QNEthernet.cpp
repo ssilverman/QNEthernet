@@ -199,9 +199,15 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  if (!enet_init(mac_, ipaddr, netmask, gw, &netifEventFunc)) {
+  if (!enet_init(mac_, &netifEventFunc)) {
     return false;
   }
+
+  // Set the address
+  if (ipaddr == nullptr)  ipaddr  = IP4_ADDR_ANY4;
+  if (netmask == nullptr) netmask = IP4_ADDR_ANY4;
+  if (gw == nullptr)      gw      = IP4_ADDR_ANY4;
+  netif_set_addr(netif_, ipaddr, netmask, gw);
 
 #if LWIP_NETIF_HOSTNAME
   if (hostname_.length() == 0) {
