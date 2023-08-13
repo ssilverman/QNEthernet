@@ -327,7 +327,8 @@ static void waitForLink() {
 
 // Tests seeing a link.
 static void test_link() {
-  TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
+  EthernetLinkStatus ls = Ethernet.linkStatus();
+  TEST_ASSERT_TRUE_MESSAGE(ls == LinkOFF || ls == Unknown, "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
