@@ -127,9 +127,14 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   }
 #endif  // LWIP_DHCP
 
-  begin(netif_ip4_addr(netif_),
-        netif_ip4_netmask(netif_),
-        netif_ip4_gw(netif_));
+  const ip4_addr_t *addr    = netif_ip4_addr(netif_);
+  const ip4_addr_t *netmask = netif_ip4_netmask(netif_);
+  const ip4_addr_t *gw      = netif_ip4_gw(netif_);
+  if (start()) {
+    netif_set_addr(netif_, addr, netmask, gw);
+    (void)maybeStartDHCP(addr, netmask, gw);
+  }
+  // TODO: Return value?
 }
 
 void EthernetClass::loop() {
@@ -149,7 +154,12 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  return begin(IP4_ADDR_ANY4, IP4_ADDR_ANY, IP4_ADDR_ANY);
+  if (!start()) {
+    return false;
+  }
+
+  netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  return maybeStartDHCP(IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
@@ -180,46 +190,23 @@ bool EthernetClass::begin(const IPAddress &ip,
 #endif  // LWIP_DHCP
   }
 
+  if (!start()) {
+    return false;
+  }
+
+  // Set this before setting the address so any address listeners will see
+  // a valid DNS server
   if (dns != INADDR_NONE) {
     setDNSServerIP(dns);
   }
 
-  return begin(&ipaddr, &netmask, &gw);
+  netif_set_addr(netif_, &ipaddr, &netmask, &gw);
+  return maybeStartDHCP(&ipaddr, &netmask, &gw);
 }
 
-bool EthernetClass::begin(const ip4_addr_t *ipaddr,
-                          const ip4_addr_t *netmask,
-                          const ip4_addr_t *gw) {
-  if (!enet_has_hardware()) {
-    return false;
-  }
-
-  if (netif_ != nullptr) {
-    netif_set_down(netif_);
-  }
-
-  // Initialize Ethernet, set up the callback, and set the netif to UP
-  netif_ = enet_netif();
-  if (!enet_init(mac_, &netifEventFunc)) {
-    return false;
-  }
-
-  // Set the address
-  if (ipaddr == nullptr)  ipaddr  = IP4_ADDR_ANY4;
-  if (netmask == nullptr) netmask = IP4_ADDR_ANY4;
-  if (gw == nullptr)      gw      = IP4_ADDR_ANY4;
-  netif_set_addr(netif_, ipaddr, netmask, gw);
-
-#if LWIP_NETIF_HOSTNAME
-  if (hostname_.length() == 0) {
-    netif_set_hostname(netif_, nullptr);
-  } else {
-    netif_set_hostname(netif_, hostname_.c_str());
-  }
-#endif  // LWIP_NETIF_HOSTNAME
-
-  netif_set_up(netif_);
-
+bool EthernetClass::maybeStartDHCP(const ip4_addr_t *ipaddr,
+                                   const ip4_addr_t *netmask,
+                                   const ip4_addr_t *gw) {
   // If this is using a manual configuration then inform the network,
   // otherwise start DHCP
   bool retval = true;
@@ -240,8 +227,36 @@ bool EthernetClass::begin(const ip4_addr_t *ipaddr,
   }
 #endif  // LWIP_DHCP
 
-  attachLoopToYield();
   return retval;
+}
+
+bool EthernetClass::start() {
+  if (!enet_has_hardware()) {
+    return false;
+  }
+
+  if (netif_ != nullptr) {
+    netif_set_down(netif_);
+  }
+
+  // Initialize Ethernet, set up the callback, and set the netif to UP
+  netif_ = enet_netif();
+  if (!enet_init(mac_, &netifEventFunc)) {
+    return false;
+  }
+
+#if LWIP_NETIF_HOSTNAME
+  if (hostname_.length() == 0) {
+    netif_set_hostname(netif_, nullptr);
+  } else {
+    netif_set_hostname(netif_, hostname_.c_str());
+  }
+#endif  // LWIP_NETIF_HOSTNAME
+
+  netif_set_up(netif_);
+
+  attachLoopToYield();
+  return true;
 }
 
 bool EthernetClass::setDHCPEnabled(bool flag) {

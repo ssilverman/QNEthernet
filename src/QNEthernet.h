@@ -348,11 +348,17 @@ class EthernetClass final {
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);
 
+  // Possibly start the DHCP client, given the current address settings. This
+  // returns whether successful.
+  [[nodiscard]]
+  bool maybeStartDHCP(const ip4_addr_t *ipaddr,
+                      const ip4_addr_t *netmask,
+                      const ip4_addr_t *gw);
+
   // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does.
-  bool begin(const ip4_addr_t *ipaddr,
-             const ip4_addr_t *netmask,
-             const ip4_addr_t *gw);
+  [[nodiscard]]
+  bool start();
 
   elapsedMillis pollTimer_;
 
