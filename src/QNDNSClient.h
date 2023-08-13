@@ -67,7 +67,6 @@ class DNSClient final {
   // DNS request state.
   struct Request final {
     bool found = false;
-    IPAddress ip;
     std::function<void(const ip_addr_t *)> callback;
     uint32_t startTime;
     uint32_t timeout;
