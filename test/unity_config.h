@@ -10,3 +10,4 @@
 // Not including UNITY_INCLUDE_PRINT_FORMATTED because it doesn't support all
 // the printf options
 // #define UNITY_INCLUDE_PRINT_FORMATTED
+#define UNITY_EXCLUDE_SETJMP_H
