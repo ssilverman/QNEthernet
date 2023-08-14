@@ -625,7 +625,7 @@ static void test_udp_receive_queueing() {
 
   // Expect to receive only the last packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(2, udp->data()[0], "Expected packet 2 data");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 2, "Expected packet 2 data");
   TEST_ASSERT_LESS_THAN_MESSAGE(0, udp->parsePacket(), "Expected no second packet");
 
   // Increase the buffer to two
@@ -642,9 +642,9 @@ static void test_udp_receive_queueing() {
 
   // Expect to receive both packets
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 3 with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(3, udp->data()[0], "Expected packet 3 data");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 3, "Expected packet 3 data");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 4 with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(4, udp->data()[0], "Expected packet 4 data");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 4, "Expected packet 4 data");
 }
 
 static void test_udp_receive_timestamp() {
@@ -668,7 +668,7 @@ static void test_udp_receive_timestamp() {
 
   // Test that we actually received the packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_EQUAL_MESSAGE(b, udp->data()[0], "Expected packet data");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
 
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(), "Expected valid timestamp");
 }
