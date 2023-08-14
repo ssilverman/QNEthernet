@@ -300,44 +300,44 @@ uint32_t entropy_random_range(uint32_t range) {
 
 Reset values:
 TRNG_SCML: 010C0568h
-TRNG_SCML_MONO_RNG[31:16](268) | [sdk_2.13.0: 122] [lib:  268]
-TRNG_SCML_MONO_MAX[15:0](1384)   [sdk_2.13.0: 317] [lib: 1384]
+TRNG_SCML_MONO_RNG[31:16](268) | [sdk_2.14.0: 122] [lib:  268]
+TRNG_SCML_MONO_MAX[15:0](1384)   [sdk_2.14.0: 317] [lib: 1384]
 
 TRNG_SCR1L: 00B20195h
-TRNG_SCR1L_RUN1_RNG[30:16](178) | [sdk_2.13.0:  80] [lib: 178]
-TRNG_SCR1L_RUN1_MAX[14:0](405)    [sdk_2.13.0: 107] [lib: 405]
+TRNG_SCR1L_RUN1_RNG[30:16](178) | [sdk_2.14.0:  80] [lib: 178]
+TRNG_SCR1L_RUN1_MAX[14:0](405)    [sdk_2.14.0: 107] [lib: 405]
 
 TRNG_SCR2L: 007A00DCh
-TRNG_SCR2L_RUN2_RNG[29:16](122) | [sdk_2.13.0: 55] [lib: 122]
-TRNG_SCR2L_RUN2_MAX[13:0](220)    [sdk_2.13.0: 62] [lib: 220]
+TRNG_SCR2L_RUN2_RNG[29:16](122) | [sdk_2.14.0: 55] [lib: 122]
+TRNG_SCR2L_RUN2_MAX[13:0](220)    [sdk_2.14.0: 62] [lib: 220]
 
 TRNG_SCR3L: 0058007Dh
-TRNG_SCR3L_RUN3_RNG[28:16](88) | [sdk_2.13.0: 39] [lib:  88]
-TRNG_SCR3L_RUN3_MAX[12:0](125)   [sdk_2.13.0: 39] [lib: 125]
+TRNG_SCR3L_RUN3_RNG[28:16](88) | [sdk_2.14.0: 39] [lib:  88]
+TRNG_SCR3L_RUN3_MAX[12:0](125)   [sdk_2.14.0: 39] [lib: 125]
 
 TRNG_SCR4L: 0040004Bh
-TRNG_SCR4L_RUN4_RNG[27:16](64) | [sdk_2.13.0: 26] [lib: 64]
-TRNG_SCR4L_RUN4_MAX[11:0](75)    [sdk_2.13.0: 26] [lib: 75]
+TRNG_SCR4L_RUN4_RNG[27:16](64) | [sdk_2.14.0: 26] [lib: 64]
+TRNG_SCR4L_RUN4_MAX[11:0](75)    [sdk_2.14.0: 26] [lib: 75]
 
 TRNG_SCR5L: 002E002Fh
-TRNG_SCR5L_RUN5_RNG[26:16](46) | [sdk_2.13.0: 18] [lib: 46]
-TRNG_SCR5L_RUN5_MAX[10:0](47)    [sdk_2.13.0: 18] [lib: 47]
+TRNG_SCR5L_RUN5_RNG[26:16](46) | [sdk_2.14.0: 18] [lib: 46]
+TRNG_SCR5L_RUN5_MAX[10:0](47)    [sdk_2.14.0: 18] [lib: 47]
 
 TRNG_SCR6PL: 002E002Fh
-TRNG_SCR6PL_RUN6P_RNG[26:16](46) | [sdk_2.13.0: 17] [lib: 46]
-TRNG_SCR6PL_RUN6P_MAX[10:0](47)    [sdk_2.13.0: 17] [lib: 47]
+TRNG_SCR6PL_RUN6P_RNG[26:16](46) | [sdk_2.14.0: 17] [lib: 46]
+TRNG_SCR6PL_RUN6P_MAX[10:0](47)    [sdk_2.14.0: 17] [lib: 47]
 
 TRNG_PKRMAX[23:0]: 00006920h
-26912 [sdk_2.13.0: 1600] [lib: 26912]
+26912 [sdk_2.14.0: 1600] [lib: 26912]
 
 TRNG_PKRRNG[15:0]: 000009A3h
-2467 [sdk_2.13.0: 570] [lib: 2467]
+2467 [sdk_2.14.0: 570] [lib: 2467]
 
 TRNG_FRQMAX[21:0]: 00006400h
-25600 [sdk_2.13.0: 30000] [lib: 25600]
+25600 [sdk_2.14.0: 30000] [lib: 25600]
 
 TRNG_FRQMIN[21:0]: 00000640h [? 00000000h in test]
-1600 [0] [sdk_2.13.0: 1600] [lib: 1600]
+1600 [0] [sdk_2.14.0: 1600] [lib: 1600]
 bits
 
 TRNG_MCTL: 00012001h [? 00012601h in test]
@@ -349,25 +349,25 @@ TRNG_MCTL_TST_OUT[11](0) |
 TRNG_MCTL_FCT_FAIL[8](0) |
 TRNG_MCTL_FOR_SCLK[7](0) |
 TRNG_MCTL_RST_DEF[6](0) |
-TRNG_MCTL_SAMP_MODE[1:0](1) | [sdk_2.13.0: raw(1) in examples, 0 in HAL] [lib: 2]
+TRNG_MCTL_SAMP_MODE[1:0](1) | [sdk_2.14.0: raw(1) in examples, 0 in HAL] [lib: 2]
 TRNG_MCTL_OSC_DIV[3:2](0) |
 [TRNG_MCTL_ENT_VAL | TRNG_MCTL_FCT_VAL]
 
 TRNG_SDCTL: 0C8009C4h [? 032009c4h in test]
-TRNG_SDCTL_ENT_DLY[31:16](3200) | [800] [sdk_2.13.0: 3200] [lib: 3200]
-TRNG_SDCTL_SAMP_SIZE[15:0](2500)        [sdk_2.13.0:  512] [lib: 2500]
+TRNG_SDCTL_ENT_DLY[31:16](3200) | [800] [sdk_2.14.0: 3200] [lib: 3200]
+TRNG_SDCTL_SAMP_SIZE[15:0](2500)        [sdk_2.14.0:  512] [lib: 2500]
 
 TRNG_SBLIM[9:0]: 0000003F
-63 [sdk_2.13.0: 63] [lib: 63]
+63 [sdk_2.14.0: 63] [lib: 63]
 
 TRNG_SCMISC: 0001001Fh [? 00010022h in test]
-TRNG_SCMISC_RTY_CT[19:16](1) |     [sdk_2.13.0:  1] [lib:  1]
-TRNG_SCMISC_LRUN_MAX[7:0](31) [34] [sdk_2.13.0: 32] [lib: 34]
+TRNG_SCMISC_RTY_CT[19:16](1) |     [sdk_2.14.0:  1] [lib:  1]
+TRNG_SCMISC_LRUN_MAX[7:0](31) [34] [sdk_2.14.0: 32] [lib: 34]
 
 TRNG_ENT: 0
 
 TRNG_SEC_CFG: 0
-TRNG_SEC_CFG_NO_PRGM[1](0) [sdk_2.13.0: 0]
+TRNG_SEC_CFG_NO_PRGM[1](0) [sdk_2.14.0: 0]
 
 -----
 TRNG_MCTL values only writable when PRGM is set:
