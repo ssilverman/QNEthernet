@@ -357,15 +357,18 @@ static void test_hardware() {
 }
 
 // Waits for a link.
-static void waitForLink() {
+static bool waitForLink() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
 
   TEST_MESSAGE("Waiting for link...");
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.waitForLink(kLinkTimeout), "Wait for link failed");
+  bool result = Ethernet.waitForLink(kLinkTimeout);
+  TEST_ASSERT_TRUE_MESSAGE(result, "Wait for link failed");
   TEST_MESSAGE(format("Link time: %" PRIu32 "ms", millis() - t).data());
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link up");
+
+  return result;
 }
 
 // Tests seeing a link.
