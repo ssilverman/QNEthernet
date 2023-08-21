@@ -598,6 +598,9 @@ static void test_udp() {
   }
 
   TEST_ASSERT_TRUE_MESSAGE(validReply, "Expected valid reply");
+  if (!validReply) {
+    return;
+  }
 
   TEST_MESSAGE(format("SNTP reply time: %" PRIu32 "ms",
                       static_cast<uint32_t>(timer)).data());
