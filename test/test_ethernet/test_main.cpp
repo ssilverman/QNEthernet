@@ -187,8 +187,8 @@ static void test_set_mac() {
   TEST_ASSERT_EQUAL_MESSAGE(1, downCount, "Expected matching down count");
 }
 
-// Obtains an IP address via DHCP.
-static void waitForLocalIP() {
+// Obtains an IP address via DHCP and returns whether successful.
+static bool waitForLocalIP() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected DHCP inactive");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start with DHCP okay");
@@ -197,7 +197,8 @@ static void waitForLocalIP() {
 
   TEST_MESSAGE("Waiting for DHCP...");
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.waitForLocalIP(kDHCPTimeout), "Wait for IP failed");
+  bool result = Ethernet.waitForLocalIP(kDHCPTimeout);
+  TEST_ASSERT_TRUE_MESSAGE(result, "Wait for IP failed");
   TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
 
   IPAddress ip = Ethernet.localIP();
@@ -213,6 +214,8 @@ static void waitForLocalIP() {
     dns = DNSClient::getServer(i);
     TEST_MESSAGE(format("DNS Server %d: %u.%u.%u.%u", i, dns[0], dns[1], dns[2], dns[3]).data());
   }
+
+  return result;
 }
 
 // Tests NULL MAC address passed to the begin(...) functions.
