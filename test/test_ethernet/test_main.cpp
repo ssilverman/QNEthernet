@@ -300,7 +300,9 @@ void test_static_ip() {
 
 // Tests mDNS.
 static void test_mdns() {
-  waitForLocalIP();
+  if (!waitForLocalIP()) {
+    return;
+  }
   TEST_MESSAGE(format("Starting mDNS: %s", kTestHostname).data());
   TEST_ASSERT_TRUE_MESSAGE(MDNS.begin(kTestHostname), "Expected start success");
 
@@ -309,7 +311,9 @@ static void test_mdns() {
 
 // Tests DNS lookup.
 static void test_dns_lookup() {
-  waitForLocalIP();
+  if (!waitForLocalIP()) {
+    return;
+  }
 
   constexpr char kName[]{"dns.google"};
   const IPAddress ip1{8, 8, 8, 8};
@@ -519,7 +523,9 @@ static void test_udp() {
 
   constexpr uint16_t kNTPPort = 123;
 
-  waitForLocalIP();
+  if (!waitForLocalIP()) {
+    return;
+  }
 
   uint8_t buf[48];
   std::fill_n(buf, 48, 0);
@@ -709,7 +715,9 @@ static void test_client() {
   };
   constexpr uint16_t kPort = 80;
 
-  waitForLocalIP();
+  if (!waitForLocalIP()) {
+    return;
+  }
 
   client = std::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
