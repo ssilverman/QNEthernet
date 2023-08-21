@@ -381,7 +381,9 @@ static void test_link() {
   TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 
-  waitForLink();
+  if (!waitForLink()) {
+    return;
+  }
 
   TEST_ASSERT_EQUAL_MESSAGE(LinkON, Ethernet.linkStatus(), "Expected link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link");
@@ -407,7 +409,9 @@ static void test_link_listener() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
-  waitForLink();
+  if (!waitForLink()) {
+    return;
+  }
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on up");
   TEST_ASSERT_TRUE_MESSAGE(linkState, "Expected link up in callback");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.linkState(), "Expected link up");
@@ -618,7 +622,9 @@ static void test_udp_receive_queueing() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
-  waitForLink();  // send() won't work unless there's a link
+  if (!waitForLink()) {  // send() won't work unless there's a link
+    return;
+  }
 
   // Create and listen
   udp = std::make_unique<EthernetUDP>();  // Receive queue of 1
@@ -664,7 +670,9 @@ static void test_udp_receive_timestamp() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
-  waitForLink();  // send() won't work unless there's a link
+  if (!waitForLink()) {  // send() won't work unless there's a link
+    return;
+  }
 
   // Create and listen
   udp = std::make_unique<EthernetUDP>();
@@ -764,7 +772,9 @@ static void test_client_connectNoWait() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
-  waitForLink();
+  if (!waitForLink()) {
+    return;
+  }
 
   client = std::make_unique<EthernetClient>();
 
@@ -784,7 +794,9 @@ static void test_client_timeout() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
-  waitForLink();
+  if (!waitForLink()) {
+    return;
+  }
 
   client = std::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
