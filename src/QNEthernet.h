@@ -349,11 +349,9 @@ class EthernetClass final {
                              const netif_ext_callback_args_t *args);
 
   // Possibly start the DHCP client, given the current address settings. This
-  // returns whether successful.
+  // returns whether successful. This reads the netif's current ip4 settings.
   [[nodiscard]]
-  bool maybeStartDHCP(const ip4_addr_t *ipaddr,
-                      const ip4_addr_t *netmask,
-                      const ip4_addr_t *gw);
+  bool maybeStartDHCP();
 
   // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does.

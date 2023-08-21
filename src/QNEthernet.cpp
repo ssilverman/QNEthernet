@@ -132,7 +132,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   const ip4_addr_t *gw      = netif_ip4_gw(netif_);
   if (start()) {
     netif_set_addr(netif_, addr, netmask, gw);
-    (void)maybeStartDHCP(addr, netmask, gw);
+    (void)maybeStartDHCP();
   }
   // TODO: Return value?
 }
@@ -159,7 +159,7 @@ bool EthernetClass::begin() {
   }
 
   netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-  return maybeStartDHCP(IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  return maybeStartDHCP();
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
@@ -201,16 +201,18 @@ bool EthernetClass::begin(const IPAddress &ip,
   }
 
   netif_set_addr(netif_, &ipaddr, &netmask, &gw);
-  return maybeStartDHCP(&ipaddr, &netmask, &gw);
+  return maybeStartDHCP();
 }
 
-bool EthernetClass::maybeStartDHCP(const ip4_addr_t *ipaddr,
-                                   const ip4_addr_t *netmask,
-                                   const ip4_addr_t *gw) {
+bool EthernetClass::maybeStartDHCP() {
   // If this is using a manual configuration then inform the network,
   // otherwise start DHCP
-  bool retval = true;
 #if LWIP_DHCP
+  bool retval = true;
+  const ip4_addr_t *ipaddr  = netif_ip4_addr(netif_);
+  const ip4_addr_t *netmask = netif_ip4_netmask(netif_);
+  const ip4_addr_t *gw      = netif_ip4_gw(netif_);
+
   if (!ip4_addr_isany(ipaddr) ||
       !ip4_addr_isany(netmask) ||
       !ip4_addr_isany(gw)) {
@@ -225,9 +227,10 @@ bool EthernetClass::maybeStartDHCP(const ip4_addr_t *ipaddr,
     dhcpActive_ = retval;
     dhcpDesired_ = true;
   }
-#endif  // LWIP_DHCP
-
   return retval;
+#else
+  return true;
+#endif  // LWIP_DHCP
 }
 
 bool EthernetClass::start() {
