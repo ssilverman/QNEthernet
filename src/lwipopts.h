@@ -26,7 +26,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // Memory options
 #ifndef MEM_LIBC_MALLOC
-#define MEM_LIBC_MALLOC                        1
+#define MEM_LIBC_MALLOC                        1  /* 0 */
 #endif  // !MEM_LIBC_MALLOC
 // #define MEMP_MEM_MALLOC                        0
 // #define MEMP_MEM_INIT                          0
@@ -97,7 +97,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define ETHARP_SUPPORT_VLAN           0
 // #define LWIP_VLAN_PCP                 0
 // #define LWIP_ETHERNET                 LWIP_ARP
-#define ETH_PAD_SIZE                  2
+#define ETH_PAD_SIZE                  2  /* 0 */
 // #define ETHARP_SUPPORT_STATIC_ENTRIES 0
 // #define ETHARP_TABLE_MATCH_NETIF      !LWIP_SINGLE_NETIF
 
