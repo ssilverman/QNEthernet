@@ -17,6 +17,10 @@ and this project adheres to
   defined malloc functions instead of the lwIP-defined ones.
 * Moved around where the netif gets its address set.
 
+### Fixed
+* Fixed `enet_init()` to always initialize the internal MAC address on
+  first init.
+
 ## [0.24.0]
 
 ### Added

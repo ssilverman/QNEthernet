@@ -888,21 +888,23 @@ bool enet_has_hardware() {
 
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
-  // Only execute the following code once
-  static bool isFirstInit = true;
-  if (isFirstInit) {
-    lwip_init();
-    isFirstInit = false;
-  }
-
-  // First test if the MAC address has changed
-  // If it's changed then remove the interface and start again
+  // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
     enet_get_mac(m);
     mac = m;
   }
-  if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
+
+  // Only execute the following code once
+  static bool isFirstInit = true;
+  if (isFirstInit) {
+    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
+    lwip_init();
+    isFirstInit = false;
+  } else if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
+    // First test if the MAC address has changed
+    // If it's changed then remove the interface and start again
+
     // MAC address has changed
 
     if (s_isNetifAdded) {
