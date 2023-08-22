@@ -200,6 +200,9 @@ static bool waitForLocalIP() {
   bool result = Ethernet.waitForLocalIP(kDHCPTimeout);
   TEST_ASSERT_TRUE_MESSAGE(result, "Wait for IP failed");
   TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
+  if (!result) {
+    return false;
+  }
 
   IPAddress ip = Ethernet.localIP();
   IPAddress netmask = Ethernet.subnetMask();
@@ -215,7 +218,7 @@ static bool waitForLocalIP() {
     TEST_MESSAGE(format("DNS Server %d: %u.%u.%u.%u", i, dns[0], dns[1], dns[2], dns[3]).data());
   }
 
-  return result;
+  return true;
 }
 
 // Tests NULL MAC address passed to the begin(...) functions.
