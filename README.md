@@ -1347,25 +1347,35 @@ file override equivalent options in the main file.
 
 Note that the IDE might need to be restarted when the file changes.
 
-The suggested way to override compiler options is with the
-`compiler.cpp.extra_flags` and `compiler.c.extra_flags` properties. However,
-this only works if _platform.txt_ uses those options. If it does not then
-there's nothing to override. The current Teensyduino installation's
-_platform.txt_ file does not use these options.
+The suggested way to override compiler options is with the `*.extra_flags`
+properties, for example, `compiler.cpp.extra_flags`, `compiler.c.extra_flags`,
+and `build.extra_flags`. However, this only works if _platform.txt_ uses those
+options. If it does not then there's nothing to override. The current
+Teensyduino installation's _platform.txt_ file does not use these options.
 
 Here's how to implement the behaviour:
-1. Insert this section somewhere in _platform.txt_:
+1. Insert these sections somewhere in _platform.txt_, before the first location
+   where these properties will be used:
    ```
+   # This can be overridden in boards.txt
+   build.extra_flags=
+
    # These can be overridden in platform.local.txt
    compiler.c.extra_flags=
    compiler.cpp.extra_flags=
+   compiler.S.extra_flags=
    ```
-2. Insert `{compiler.cpp.extra_flags}` before `{includes}` in:
+2. Insert `{compiler.cpp.extra_flags}` and `{build.extra_flags}` before
+   `{includes}` in:
    1. `recipe.preproc.includes`
    2. `recipe.preproc.macros`
    3. `recipe.cpp.o.pattern`
-3. Insert `{compiler.c.extra_flags}` before `{includes}` in:
+3. Insert `{compiler.c.extra_flags}` and `{build.extra_flags}` before
+   `{includes}` in:
    1. `recipe.c.o.pattern`
+4. Insert `{compiler.S.extra_flags}` and `{build.extra_flags}` before
+   `{includes}` in:
+   1. `recipe.S.o.pattern`
 
 Next, create a _platform.local.txt_ file in the same directory as the
 _platform.txt_ file and add the options you need. For example, to enable raw
