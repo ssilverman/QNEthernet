@@ -12,9 +12,11 @@ It's compatible with the Arduino-style API.
 The low-level code is based on code by Paul Stoffregen, here:\
 https://github.com/PaulStoffregen/teensy41_ethernet
 
-All the Teensy stuff is under the MIT license, so I'm making this library under
-the MIT license as well. Please see the _lwip-info/_ directory for the info
-files provided with the lwIP release.
+This library is distributed under the "AGPL-3.0-or-later" license. Please
+contact the author if you wish to inquire about other license options.
+
+Please see the _lwip-info/_ directory for the info files provided with the
+lwIP release.
 
 ## Table of contents
 

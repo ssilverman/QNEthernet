@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2021-2022 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // ConnectionHolder.h holds everything needed to define a connection.
 // This file is part of the QNEthernet library.

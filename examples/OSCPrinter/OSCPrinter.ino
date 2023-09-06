@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // OSCPrinter prints received OSC messages. It uses the well-known
 // OSC port 8000 and advertises an OSC mDNS service on that port.

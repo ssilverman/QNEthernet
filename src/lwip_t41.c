@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // lwip_t41.c contains the Teensy 4.1 Ethernet interface implementation.
 // Based on code from Paul Stoffregen and others:

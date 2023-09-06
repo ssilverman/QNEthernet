@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // PixelPusherServer implements a simple PixelPusher receiver. The
 // output is sent to an OctoWS2811. The parameters are configurable

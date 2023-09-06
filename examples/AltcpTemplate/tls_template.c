@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // tls_template.c implements the minimum possible in order to get the
 // project to compile with the LWIP_ALTCP and LWIP_ALTCP_TLS

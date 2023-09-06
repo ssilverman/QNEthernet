@@ -14,7 +14,7 @@
     "url": "https://github.com/ssilverman/QNEthernet"
   },
   "version": "0.25.0-snapshot",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/ssilverman/QNEthernet",
   "frameworks": "arduino",
   "platforms": "teensy"

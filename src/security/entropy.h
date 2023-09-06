@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // entropy.h defines functions for the TRNG (True Random Number Generator).
 // This file is part of the QNEthernet library.

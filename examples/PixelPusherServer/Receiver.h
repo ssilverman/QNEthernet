@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // Receiver.h defines an interface for handling PixelPusher commands
 // and pixel data.

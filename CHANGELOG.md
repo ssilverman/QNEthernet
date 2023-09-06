@@ -16,6 +16,7 @@ and this project adheres to
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
   defined malloc functions instead of the lwIP-defined ones.
 * Moved around where the netif gets its address set.
+* Changed the license to "AGPL-3.0-or-later".
 
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on

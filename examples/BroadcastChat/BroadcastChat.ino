@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // BroadcastChat is a simple chat application that broadcasts and
 // receives text messages over UDP.

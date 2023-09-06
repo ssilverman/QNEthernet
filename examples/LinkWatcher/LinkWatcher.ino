@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // LinkWatcher is a simple application that watches the link state
 // using a listener. It doesn't try to set an address.

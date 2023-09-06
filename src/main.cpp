@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 // main.cpp is a testing playground for this library.
 // This file is part of the QNEthernet library.
