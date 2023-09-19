@@ -14,7 +14,7 @@
 namespace qindesign {
 namespace security {
 
-extern RandomDevice randomDevice;
+extern RandomDevice &randomDevice;
 
 }  // namespace security
 }  // namespace qindesign

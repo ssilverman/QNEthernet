@@ -404,7 +404,7 @@ extern Print *stderrPrint;
 namespace security {
 
 // A UniformRandomBitGenerator instance.
-extern RandomDevice randomDevice;
+extern RandomDevice &randomDevice;
 
 }  // namespace security
 

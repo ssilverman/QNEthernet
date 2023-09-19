@@ -21,8 +21,13 @@ namespace qindesign {
 
 namespace security {
 
-// The UniformRandomBitGenerator instance.
-RandomDevice randomDevice;
+// Returns a UniformRandomBitGenerator instance.
+RandomDevice &randomDeviceInstance() {
+  static RandomDevice instance;
+  return instance;
+}
+
+RandomDevice &randomDevice = randomDeviceInstance();
 
 }  // namespace security
 
