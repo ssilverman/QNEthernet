@@ -19,6 +19,9 @@ class RandomDevice {
  public:
   typedef uint32_t result_type;
 
+  // Accesses the singleton instance.
+  static RandomDevice &instance();
+
   RandomDevice();
   ~RandomDevice() = default;
 

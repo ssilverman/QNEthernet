@@ -15,6 +15,11 @@
 namespace qindesign {
 namespace security {
 
+RandomDevice &RandomDevice::instance() {
+  static RandomDevice instance;
+  return instance;
+}
+
 FLASHMEM RandomDevice::RandomDevice() {
   if (!trng_is_started()) {
     trng_init();
