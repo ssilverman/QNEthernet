@@ -105,9 +105,9 @@ void setup() {
     Serial.println(CrashReport);
   }
 
-  trng_init();
-
   UNITY_BEGIN();
+  RUN_TEST(test_inactive);
+  trng_init();
   RUN_TEST(test_active);
   RUN_TEST(test_available);
   RUN_TEST(test_data);
