@@ -43,6 +43,11 @@ RandomDevice::result_type RandomDevice::operator()() {
 namespace qindesign {
 namespace security {
 
+RandomDevice &RandomDevice::instance() {
+  static RandomDevice instance;
+  return instance;
+}
+
 FLASHMEM RandomDevice::RandomDevice() {
 #if defined(__IMXRT1062__)
   bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
