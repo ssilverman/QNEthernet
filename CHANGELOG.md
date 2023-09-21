@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 * New "Heap memory use" section in the README that discusses memory
   allocation functions.
+* New _RandomNumbers_ example.
 
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
