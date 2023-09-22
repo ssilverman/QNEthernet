@@ -11,13 +11,17 @@ and this project adheres to
 ### Added
 * New "Heap memory use" section in the README that discusses memory
   allocation functions.
+* Added `RandomDevice::instance()`.
 * New _RandomNumbers_ example.
+* Added a README subsection that talks about the `RandomDevice` class and
+  `randomDevice` instance.
 
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
   defined malloc functions instead of the lwIP-defined ones.
 * Moved around where the netif gets its address set.
 * Changed the license to "AGPL-3.0-or-later".
+* Made `RandomDevice` constructor and destructor private.
 
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on
