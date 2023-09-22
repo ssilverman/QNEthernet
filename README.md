@@ -9,9 +9,6 @@ _Version: 0.25.0-snapshot_
 The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1.
 It's compatible with the Arduino-style API.
 
-The low-level code is based on code by Paul Stoffregen, here:\
-https://github.com/PaulStoffregen/teensy41_ethernet
-
 This library is distributed under the "AGPL-3.0-or-later" license. Please
 contact the author if you wish to inquire about other license options.
 
@@ -64,7 +61,8 @@ lwIP release.
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
 20. [Heap memory use](#heap-memory-use)
-21. [Entropy collection](#entropy-collection)
+21. [Entropy generation](#entropy-generation)
+    1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
 22. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
@@ -1304,19 +1302,29 @@ Example that defines these in _lwipopts.h_:
 #define mem_clib_calloc extmem_calloc
 ```
 
-## Entropy collection
+## Entropy generation
 
 This library defines functions for accessing the processor's internal "true
 random number generator" (TRNG) for entropy. If your project needs to use the
-_Entropy_ library instead, define the `QNETHERNET_USE_ENTROPY_LIB` so that any
-internal entropy collection doesn't interfere with your project's
+_Entropy_ library instead, define the `QNETHERNET_USE_ENTROPY_LIB` macro so that
+any internal entropy collection doesn't interfere with your project's
 entropy collection.
 
 The _Entropy_ library does the essentially same things as the internal TRNG
-functions, it just requires an additional dependency.
+functions, it just requires an additional dependency. This is the reason these
+functions are provided: to remove that dependency.
 
 See the function declarations in _src/security/entropy.h_ if you want to use
 them yourself.
+
+### The `RandomDevice` _UniformRandomBitGenerator_
+
+Also provided is a class called `RandomDevice` that implements the
+[_UniformRandomBitGenerator_](https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator)
+C++ named requirement. It's in the `qindesign::security` namespace.
+
+This object works with both the internal entropy functions and with the
+_Entropy_ library.
 
 ## Configuration macros
 
@@ -1498,7 +1506,12 @@ _QNEthernet_ library.
 19. Configuration via [Configuration macros](#configuration-macros)
 20. UDP and raw frame queueing for when data arrives in bursts that are faster
     than the ability of the program to process them
-21. Non-blocking TCP connections.
+21. Non-blocking TCP connections
+22. Internal [Entropy generation](#entropy-generation) functions to avoid the
+    _Entropy_ lib dependency; this can be disabled with a configuration macro
+23. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
+    requirement that provides access to hardware-generated entropy (see
+    [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator))
 
 ## Other notes
 
@@ -1536,14 +1549,14 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 
 ## References
 
+* [Paul Stoffregen's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
+* [Arduino Ethernet library documentation](https://www.arduino.cc/reference/en/libraries/ethernet/)
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
 * [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
 * [lwIP testing by manitou](https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096)
 * [Dan Drown's NTP server and 1588 timestamps](https://forum.pjrc.com/threads/61581-Teensy-4-1-NTP-server)
-* [Paul Stoffregen's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
 * [Dan Drown's modifications to Paul's code](https://github.com/ddrown/teensy41_ethernet)
 * [Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library](https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library)
-* [Arduino Ethernet library](https://www.arduino.cc/reference/en/libraries/ethernet/)
 
 ---
 
