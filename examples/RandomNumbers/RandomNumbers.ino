@@ -36,17 +36,11 @@ std::normal_distribution<float> normalDist(0.0f, 1.0f);  // mean=0 stddev=1
 
 // Returns a RandomNumberEngine, one of the built-in pseudo-random
 // defaults. This returns a singleton.
-//
-// While not strictly necessary in a single file, when referencing the
-// static object from other translation units, it is necessary to
-// account for initialization order.
-//
-// See also:
-// * [Static Initialization Order Fiasco](https://en.cppreference.com/w/cpp/language/siof)
 std::minstd_rand &randomEngine() {
   // Initialize the engine with a random seed. Do this inside the
   // function instead of at file scope because the entropy generator,
   // 'randomDevice', may not be initialized yet.
+  // See: [Static Initialization Order Fiasco](https://en.cppreference.com/w/cpp/language/siof)
   static std::minstd_rand engine{randomDevice()};
   return engine;
 }
