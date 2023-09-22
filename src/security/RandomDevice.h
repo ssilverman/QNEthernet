@@ -22,9 +22,6 @@ class RandomDevice {
   // Accesses the singleton instance.
   static RandomDevice &instance();
 
-  RandomDevice();
-  ~RandomDevice() = default;
-
   // Disallow copying and moving
   RandomDevice(const RandomDevice &) = delete;
   RandomDevice &operator=(const RandomDevice &) = delete;
@@ -38,6 +35,10 @@ class RandomDevice {
   }
 
   result_type operator()();
+
+ private:
+  RandomDevice();
+  ~RandomDevice() = default;
 };
 
 }  // namespace security
