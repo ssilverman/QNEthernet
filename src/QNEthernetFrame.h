@@ -16,6 +16,7 @@
 
 #include <Stream.h>
 
+#include "StaticInit.h"
 #include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
@@ -36,9 +37,6 @@ namespace network {
 // 3. IPv6 (0x86DD) (if enabled)
 class EthernetFrameClass final : public Stream {
  public:
-  // Accesses the singleton instance.
-  static EthernetFrameClass &instance();
-
   // EthernetFrameClass is neither copyable nor movable
   EthernetFrameClass(const EthernetFrameClass &) = delete;
   EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
@@ -185,8 +183,12 @@ class EthernetFrameClass final : public Stream {
   bool hasOutFrame_ = false;
   Frame outFrame_;
 
+  friend class StaticInit<EthernetFrameClass>;
   friend err_t ::unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 };
+
+// Instance for using raw Ethernet frames.
+STATIC_INIT_DECL(EthernetFrameClass, EthernetFrame);
 
 }  // namespace network
 }  // namespace qindesign

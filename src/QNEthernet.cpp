@@ -18,23 +18,10 @@
 #include "lwip/igmp.h"
 
 namespace qindesign {
-
-namespace security {
-
-// The UniformRandomBitGenerator instance.
-RandomDevice &randomDevice = RandomDevice::instance();
-
-}  // namespace security
-
 namespace network {
 
-EthernetClass &EthernetClass::instance() {
-  static EthernetClass instance;
-  return instance;
-}
-
 // A reference to the singleton.
-EthernetClass &Ethernet = EthernetClass::instance();
+STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
 // Global definitions for Arduino
 static EventResponder ethLoop;

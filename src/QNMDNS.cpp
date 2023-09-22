@@ -18,13 +18,8 @@
 namespace qindesign {
 namespace network {
 
-MDNSClass &MDNSClass::instance() {
-  static MDNSClass instance;
-  return instance;
-}
-
 // A reference to the singleton.
-MDNSClass &MDNS = MDNSClass::instance();
+STATIC_INIT_DEFN(MDNSClass, MDNS);
 
 static void srv_txt(struct mdns_service *service, void *txt_userdata) {
   if (txt_userdata == nullptr) {

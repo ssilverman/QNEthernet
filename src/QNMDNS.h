@@ -13,6 +13,7 @@
 
 #include <WString.h>
 
+#include "StaticInit.h"
 #include "lwip/apps/mdns_opts.h"
 #include "lwip/netif.h"
 
@@ -24,9 +25,6 @@ namespace network {
 // MDNS provides mDNS responder functionality.
 class MDNSClass final {
  public:
-  // Accesses the singleton instance.
-  static MDNSClass &instance();
-
   // MDNSClass is neither copyable nor movable
   MDNSClass(const MDNSClass &) = delete;
   MDNSClass &operator=(const MDNSClass &) = delete;
@@ -165,7 +163,12 @@ class MDNSClass final {
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
+
+  friend class StaticInit<MDNSClass>;
 };
+
+// Instance for interacting with mDNS.
+STATIC_INIT_DECL(MDNSClass, MDNS);
 
 }  // namespace network
 }  // namespace qindesign

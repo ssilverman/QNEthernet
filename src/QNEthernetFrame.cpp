@@ -30,13 +30,8 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {
 namespace qindesign {
 namespace network {
 
-EthernetFrameClass &EthernetFrameClass::instance() {
-  static EthernetFrameClass instance;
-  return instance;
-}
-
 // A reference to the singleton.
-EthernetFrameClass &EthernetFrame = EthernetFrameClass::instance();
+STATIC_INIT_DEFN(EthernetFrameClass, EthernetFrame);
 
 err_t EthernetFrameClass::recvFunc(struct pbuf *p,
                                    [[maybe_unused]] struct netif *netif) {

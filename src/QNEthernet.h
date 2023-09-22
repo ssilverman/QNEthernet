@@ -21,6 +21,7 @@
 #include "QNEthernetServer.h"
 #include "QNEthernetUDP.h"
 #include "QNMDNS.h"
+#include "StaticInit.h"
 #include "lwip/apps/mdns_opts.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
@@ -62,9 +63,6 @@ enum EthernetHardwareStatus {
 class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
-
-  // Accesses the singleton instance.
-  static EthernetClass &instance();
 
   // EthernetClass is neither copyable nor movable
   EthernetClass(const EthernetClass &) = delete;
@@ -376,20 +374,12 @@ class EthernetClass final {
   std::function<void(bool state)> linkStateCB_ = nullptr;
   std::function<void()> addressChangedCB_ = nullptr;
   std::function<void(bool status)> interfaceStatusCB_ = nullptr;
+
+  friend class StaticInit<EthernetClass>;
 };
 
 // Instance for interacting with the library.
-extern EthernetClass &Ethernet;
-
-#if LWIP_MDNS_RESPONDER
-// Instance for interacting with mDNS.
-extern MDNSClass &MDNS;
-#endif  // LWIP_MDNS_RESPONDER
-
-#ifdef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-// Instance for using raw Ethernet frames.
-extern EthernetFrameClass &EthernetFrame;
-#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+STATIC_INIT_DECL(EthernetClass, Ethernet);
 
 #ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
 // stdout output.
@@ -400,14 +390,6 @@ extern Print *stderrPrint;
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
 }  // namespace network
-
-namespace security {
-
-// A UniformRandomBitGenerator instance.
-extern RandomDevice &randomDevice;
-
-}  // namespace security
-
 }  // namespace qindesign
 
 #endif  // QNETHERNET_ETHERNET_H_

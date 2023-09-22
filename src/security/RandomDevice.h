@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <limits>
 
+#include "StaticInit.h"
+
 namespace qindesign {
 namespace security {
 
@@ -18,9 +20,6 @@ namespace security {
 class RandomDevice {
  public:
   typedef uint32_t result_type;
-
-  // Accesses the singleton instance.
-  static RandomDevice &instance();
 
   // Disallow copying and moving
   RandomDevice(const RandomDevice &) = delete;
@@ -39,7 +38,12 @@ class RandomDevice {
  private:
   RandomDevice();
   ~RandomDevice() = default;
+
+  friend class StaticInit<RandomDevice>;
 };
+
+// The UniformRandomBitGenerator instance.
+STATIC_INIT_DECL(RandomDevice, randomDevice);
 
 }  // namespace security
 }  // namespace qindesign
