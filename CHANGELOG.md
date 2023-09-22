@@ -26,6 +26,8 @@ and this project adheres to
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on
   first init.
+* Fixed execution error when running _main.cpp_ (`MAIN_TEST_PROGRAM` macro
+  defined) by removing `build_type = debug` from _platformio.ini_.
 
 ## [0.24.0]
 
