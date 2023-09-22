@@ -22,6 +22,7 @@ and this project adheres to
 * Moved around where the netif gets its address set.
 * Changed the license to "AGPL-3.0-or-later".
 * Made `RandomDevice` constructor and destructor private.
+* Improved unit tests.
 
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on
