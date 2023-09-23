@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // StaticInit.h helps avoid the Static Order Initialization Fiasco by using the
-// Nifty Counter idiom.
+// Nifty Counter idiom. Briefly, it addresses using potentially uninitialized
+// statically-initialized objects from other translation units.
 //
 // See:
 // * https://en.cppreference.com/w/cpp/language/siof
@@ -10,12 +11,12 @@
 // * https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Nifty_Counter
 // This file is part of the QNEthernet library.
 
-// To use:
+// To use for type `SomeType`:
 //
 // Header:
 // 1. Include "StaticInit.h"
 // 2. Inside the class declaration, add `friend class StaticInit<SomeTime>;`
-// 3. Add this after: `STATIC_INIT_DECL(SomeType, name);`
+// 3. Add this after the class declaration: `STATIC_INIT_DECL(SomeType, name);`
 //
 // Source:
 // 1. Add this: `STATIC_INIT_DEFN(SomeType, name);`
