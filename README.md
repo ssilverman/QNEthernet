@@ -1321,9 +1321,8 @@ them yourself.
 
 Also provided is a class called `RandomDevice` that implements the
 [_UniformRandomBitGenerator_](https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator)
-C++ named requirement. It's in the `qindesign::security` namespace. There exists
-an instance of this class, included with the _QNEthernet.h_ header, called
-`randomDevice`. It's in the same namespace.
+C++ named requirement. It's in the `qindesign::security` namespace. An instance
+can be accessed by calling its `instance()` static function.
 
 This object works with both the internal entropy functions and with the
 _Entropy_ library.

@@ -15,8 +15,10 @@
 namespace qindesign {
 namespace security {
 
-// The UniformRandomBitGenerator instance.
-STATIC_INIT_DEFN(RandomDevice, randomDevice);
+RandomDevice &RandomDevice::instance() {
+  static RandomDevice instance;
+  return instance;
+}
 
 FLASHMEM RandomDevice::RandomDevice() {
   if (!trng_is_started()) {
@@ -40,6 +42,11 @@ RandomDevice::result_type RandomDevice::operator()() {
 
 namespace qindesign {
 namespace security {
+
+RandomDevice &RandomDevice::instance() {
+  static RandomDevice instance;
+  return instance;
+}
 
 FLASHMEM RandomDevice::RandomDevice() {
 #if defined(__IMXRT1062__)

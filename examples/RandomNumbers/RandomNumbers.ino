@@ -21,11 +21,11 @@
 
 #include <QNEthernet.h>
 
-// The 'randomDevice' object is in this namespace. Note that you could
-// also directly qualify the object and not use this directive.
+// The 'RandomDevice' class is in this namespace. Note that you could
+// also directly qualify the class and not use this directive.
 //
-// The 'randomDevice' object included with the library satisfies the
-// UniformRandomBitGenerator C++ named requirement.
+// The object satisfies the UniformRandomBitGenerator C++
+// named requirement.
 using namespace qindesign::security;
 
 // Some distributions included with the standard library;
@@ -34,16 +34,7 @@ std::uniform_int_distribution<int> diceDist(1, 6);  // Inclusive
 std::uniform_real_distribution<float> realDist(0.0f, 1.0f);  // [0, 1)
 std::normal_distribution<float> normalDist(0.0f, 1.0f);  // mean=0 stddev=1
 
-// Returns a RandomNumberEngine, one of the built-in pseudo-random
-// defaults. This returns a singleton.
-std::minstd_rand &randomEngine() {
-  // Initialize the engine with a random seed. Do this inside the
-  // function instead of at file scope because the entropy generator,
-  // 'randomDevice', may not be initialized yet.
-  // See: [Static Initialization Order Fiasco](https://en.cppreference.com/w/cpp/language/siof)
-  static std::minstd_rand engine{randomDevice()};
-  return engine;
-}
+std::minstd_rand randomEngine{RandomDevice::instance()()};
 
 // Program setup.
 void setup() {
@@ -53,12 +44,12 @@ void setup() {
   }
 
   printf("[Hardware Entropy]\r\n");
-  demo(randomDevice);
+  demo(RandomDevice::instance());
 
   printf("\r\n");
 
   printf("[Pseudo-Random]\r\n");
-  demo(randomEngine());
+  demo(randomEngine);
 }
 
 // Generates numbers from a variety of distributions using the given
