@@ -12,8 +12,8 @@ and this project adheres to
 * New "Heap memory use" section in the README that discusses memory
   allocation functions.
 * New _RandomNumbers_ example.
-* Added a README subsection that talks about the `RandomDevice` class and
-  `randomDevice` instance.
+* Added a README subsection that talks about the `RandomDevice` class.
+* Added `RandomDevice::instance()`.
 
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-
@@ -28,8 +28,8 @@ and this project adheres to
   first init.
 * Fixed execution error when running _main.cpp_ (`MAIN_TEST_PROGRAM` macro
   defined) by removing `build_type = debug` from _platformio.ini_.
-* Fixed static initialization order for `Ethernet`, `EthernetFrame`, `MDNS`, and
-  `randomDevice` singletons by using the Nifty Counter idiom.
+* Fixed static initialization order for `Ethernet`, `EthernetFrame`, and `MDNS`
+  singletons by using the Nifty Counter idiom.
 
 ## [0.24.0]
 
