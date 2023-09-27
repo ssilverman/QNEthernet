@@ -22,6 +22,7 @@ and this project adheres to
 * Changed the license to "AGPL-3.0-or-later".
 * Made `RandomDevice` constructor and destructor private.
 * Improved unit tests.
+* Updated lwIP to v2.2.0.
 
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on
