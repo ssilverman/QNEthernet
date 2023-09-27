@@ -184,7 +184,7 @@ For API additions beyond what the Arduino-style API provides, see:\
 
 _QNEthernet_ defines functions that don't exist in the Arduino API as it's
 currently defined. (See:
-[Arduino Ethernet library](https://www.arduino.cc/reference/en/libraries/ethernet/))
+[Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/))
 This section documents those functions.
 
 Features:
@@ -783,7 +783,7 @@ size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size,
 ```
 
 See also:
-* [writeFully causes program to freeze #46](https://github.com/ssilverman/QNEthernet/issues/46)
+* [writeFully causes program to freeze · Issue #46 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/46)
 * [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 * [Print utilities](#print-utilities)
 
@@ -1221,7 +1221,7 @@ to do:
 
 ## On connections that hang around after cable disconnect
 
-Ref: [EthernetServer accept no longer connects clients after unplugging/plugging ethernet cable ~7 times](https://github.com/ssilverman/QNEthernet/issues/15)
+Ref: [EthernetServer accept no longer connects clients after unplugging/plugging ethernet cable ~7 times · Issue #15 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/15)
 
 TCP tries its best to maintain reliable communication between two endpoints,
 even when the physical link is unreliable. It uses techniques such as timeouts,
@@ -1276,7 +1276,7 @@ could be called on connections when the link has been disconnected. (See also
 `Ethernet.onLinkState(cb)` or `Ethernet.linkState()`.)
 
 Fun links:
-* [Removing Exponential Backoff from TCP - acm sigcomm](http://www.sigcomm.org/node/2736)
+* [Removing Exponential Backoff from TCP | acm sigcomm](http://www.sigcomm.org/node/2736)
 * [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
 ## Notes on ordering and timing
@@ -1448,11 +1448,11 @@ the current latest version of the IDE:
 * Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr_
 
 References:
-1. [Additional compiler options - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
-2. [Arduino IDE: Where can I pass defines to the compiler? - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
+1. [Additional compiler options - Programming Questions - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
+2. [Arduino IDE: Where can I pass defines to the compiler? - IDE 1.x - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
 3. [Request for Arduino IDE "extra_flags" support - Teensy Forum](https://forum.pjrc.com/threads/72556-Request-for-Arduino-IDE-quot-extra_flags-quot-support)
 4. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
-5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
+5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
 6. [Open the Arduino15 folder - Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
 
 ### Configuring macros using PlatformIO
@@ -1589,7 +1589,7 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 ## References
 
 * [Paul Stoffregen's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
-* [Arduino Ethernet library documentation](https://www.arduino.cc/reference/en/libraries/ethernet/)
+* [Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/)
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
 * [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
 * [lwIP testing by manitou](https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096)
