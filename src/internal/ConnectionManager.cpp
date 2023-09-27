@@ -321,7 +321,11 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   // Try to bind
   if (reuse) {
 #if LWIP_ALTCP
-    ip_set_option(static_cast<tcp_pcb *>(pcb->state), SOF_REUSEADDR);
+    altcp_pcb *innermost = pcb;
+    while (innermost->inner_conn != nullptr) {
+      innermost = innermost->inner_conn;
+    }
+    ip_set_option(static_cast<tcp_pcb *>(innermost->state), SOF_REUSEADDR);
 #else
     ip_set_option(pcb, SOF_REUSEADDR);
 #endif  // LWIP_ALTCP
