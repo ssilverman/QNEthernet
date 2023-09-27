@@ -43,6 +43,7 @@ lwIP release.
    1. [Connections and link/interface detection](#connections-and-linkinterface-detection)
    2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
    3. [Non-blocking connection functions, `connectNoWait()`](#non-blocking-connection-functions-connectnowait)
+   4. [Getting the TCP state](#getting-the-tcp-state)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)
@@ -288,6 +289,9 @@ The `Ethernet` object is the main Ethernet interface.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
 * `connectionTimeout()`: Returns the current timeout value.
+* `status()`: Returns the current TCP connection state. This returns one of
+  lwIP's `tcp_state` enum values. To use with _altcp_, define the
+  `LWIP_DEBUG` macro.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(s, size)`: Writes characters (`const char *`).
@@ -906,6 +910,40 @@ Boolean operator. If a connection can't be established then `close()` must be
 called on the object.
 
 Note that DNS lookups for hostnames will still wait.
+
+### Getting the TCP state
+
+TCP connections can be in one of
+[several states](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview).
+Knowing a connection's underlying TCP state can be useful, for example, to avoid
+waiting for a timeout via reading data.
+
+This state can be retrieved using an `EthernetClient`'s `status()` function.
+Note that, to avoid modiyfing the lwIP code too much, the `LWIP_DEBUG` macro
+must be defined when using this function with _altcp_. If not using it with
+_altcp_, there's no such concern.
+
+The states, as defined by lwIP's `tcp_state` enum:
+1. CLOSED
+2. LISTEN
+3. SYN_SENT
+4. SYN_RCVD
+5. ESTABLISHED
+6. FIN_WAIT_1
+7. FIN_WAIT_2
+8. CLOSE_WAIT
+9. CLOSING
+10. LAST_ACK
+11. TIME_WAIT
+
+This enum isn't a C++ "enum class", so its values can be used directly. The
+definition is already included by _QNEthernetClient.h_, which is, in turn,
+included by _QNEthernet.h_.
+
+References:
+1. [TCP states](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview)
+2. [consider adding `status()` in EthernetClient · Issue #52 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/52#issuecomment-1737950354)
+3. [WiFiNINA - client.status() - Arduino Reference](https://www.arduino.cc/reference/en/libraries/wifinina/client.status/)
 
 ## How to use multicast
 

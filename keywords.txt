@@ -86,6 +86,7 @@ flush	KEYWORD2
 available	KEYWORD2
 read	KEYWORD2
 peek	KEYWORD2
+status	KEYWORD2
 setNoDelay	KEYWORD2
 isNoDelay	KEYWORD2
 maxListeners	KEYWORD2

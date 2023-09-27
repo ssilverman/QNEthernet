@@ -18,6 +18,7 @@
 #include "QNEthernet.h"
 #include "internal/ConnectionManager.h"
 #include "lwip/altcp.h"
+#include "lwip/priv/altcp_priv.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
 #include "util/PrintUtils.h"
@@ -635,6 +636,27 @@ int EthernetClient::peek() {
   }
   return state->buf[state->bufPos];
 }
+
+#if !LWIP_ALTCP || defined(LWIP_DEBUG)
+// LWIP_DEBUG is required for altcp_dbg_get_tcp_state(), but not for
+// tcp_dbg_get_tcp_state(), for some reason
+tcp_state EthernetClient::status() const {
+  if (conn_ == nullptr) {
+    return tcp_state::CLOSED;
+  }
+
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return tcp_state::CLOSED;
+  }
+
+#if !LWIP_ALTCP
+  return tcp_dbg_get_tcp_state(state->pcb);
+#else
+  return altcp_dbg_get_tcp_state(state->pcb);
+#endif  // !LWIP_ALTCP
+}
+#endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
 
 }  // namespace network
 }  // namespace qindesign

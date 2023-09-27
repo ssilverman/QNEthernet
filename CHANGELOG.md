@@ -14,6 +14,7 @@ and this project adheres to
 * New _RandomNumbers_ example.
 * Added a README subsection that talks about the `RandomDevice` class.
 * Added `RandomDevice::instance()`.
+* Added `EthernetClient::status()` for getting the TCP connection state.
 
 ### Changed
 * Enabled the `MEM_LIBC_MALLOC` option by default to make use of the system-

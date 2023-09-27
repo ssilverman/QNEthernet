@@ -22,6 +22,7 @@
 
 #include "internal/ConnectionHolder.h"
 #include "lwip/ip_addr.h"
+#include "lwip/tcpbase.h"
 
 namespace qindesign {
 namespace network {
@@ -124,6 +125,12 @@ class EthernetClient : public Client {
   int read(uint8_t *buf, size_t size) final;
 
   int peek() final;
+
+#if !LWIP_ALTCP || defined(LWIP_DEBUG)
+  // Returns one of the TCP states from:
+  // [RFC 9293, Section 3.3.2](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview)
+  tcp_state status() const;
+#endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
 
   // ----------------
   //  Socket Options
