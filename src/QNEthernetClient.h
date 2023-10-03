@@ -130,6 +130,8 @@ class EthernetClient : public Client {
   // Returns one of the TCP states from:
   // [RFC 9293, Section 3.3.2](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview)
   tcp_state status() const;
+  // Note: This isn't implemented for altcp without LWIP_DEBUG defined to avoid
+  //       having to modify the lwIP code for this feature
 #endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
 
   // ----------------
