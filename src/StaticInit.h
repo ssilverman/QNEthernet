@@ -15,7 +15,7 @@
 //
 // Header:
 // 1. Include "StaticInit.h"
-// 2. Inside the class declaration, add `friend class StaticInit<SomeTime>;`
+// 2. Inside the class declaration, add `friend class StaticInit<SomeType>;`
 // 3. Add this after the class declaration: `STATIC_INIT_DECL(SomeType, name);`
 //
 // Source:
