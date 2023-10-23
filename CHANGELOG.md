@@ -25,6 +25,12 @@ and this project adheres to
 * Improved unit tests.
 * Updated lwIP to v2.2.0.
 
+### Removed
+* Removed the `extern qindesign::security::RandomDevice randomDevice` instance
+  from _QNEthernet.h_ because the way to access the device now is via its
+  `instance()` function (the constructor is also private now). (It had been
+  added in v0.23.0.)
+
 ### Fixed
 * Fixed `enet_init()` to always initialize the internal MAC address on
   first init.
