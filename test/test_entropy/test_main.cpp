@@ -11,14 +11,6 @@
 #include <security/entropy.h>
 #include <unity.h>
 
-namespace qindesign {
-namespace security {
-
-extern RandomDevice &randomDevice;
-
-}  // namespace security
-}  // namespace qindesign
-
 // --------------------------------------------------------------------------
 //  Main Program
 // --------------------------------------------------------------------------
@@ -83,7 +75,7 @@ static void test_random_range() {
 
 // Tests entropy_random().
 static void test_randomDevice() {
-  qindesign::security::randomDevice();
+  qindesign::security::RandomDevice::instance()();
   TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::RandomDevice::min(),
                             "Expected full-range minimum");
   TEST_ASSERT_EQUAL_MESSAGE(UINT32_MAX, qindesign::security::RandomDevice::max(),
