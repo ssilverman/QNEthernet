@@ -173,6 +173,10 @@ class EthernetClient : public Client {
   // this with true and close() calls this with false.
   void close(bool wait);
 
+  // Gets address info for this connection. This returns whether the client is
+  // connected and there was information to get.
+  bool getAddrInfo(bool local, ip_addr_t *addr, u16_t *port);
+
   // Connection state
   uint16_t connTimeout_;
   bool pendingConnect_;

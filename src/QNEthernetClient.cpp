@@ -285,79 +285,49 @@ void EthernetClient::abort() {
 }
 
 uint16_t EthernetClient::localPort() {
-  if (!static_cast<bool>(*this)) {
-    return 0;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
-
-#if LWIP_ALTCP
-  return altcp_get_port(state->pcb, 1);
-#else
   uint16_t port;
-  altcp_get_tcp_addrinfo(state->pcb, 1, nullptr, &port);
+  if (!getAddrInfo(true, nullptr, &port)) {
+    return 0;
+  }
   return port;
-#endif  // LWIP_ALTCP
 }
 
 IPAddress EthernetClient::remoteIP() {
-  if (!static_cast<bool>(*this)) {
-    return INADDR_NONE;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return INADDR_NONE;
-  }
-
-#if LWIP_ALTCP
-  return ip_addr_get_ip4_uint32(altcp_get_ip(state->pcb, 0));
-#else
   ip_addr_t ip;
-  altcp_get_tcp_addrinfo(state->pcb, 0, &ip, nullptr);
+  if (!getAddrInfo(false, &ip, nullptr)) {
+    return INADDR_NONE;
+  }
   return ip_addr_get_ip4_uint32(&ip);
-#endif  // LWIP_ALTCP
 }
 
 uint16_t EthernetClient::remotePort() {
-  if (!static_cast<bool>(*this)) {
-    return 0;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
-
-#if LWIP_ALTCP
-  return altcp_get_port(state->pcb, 0);
-#else
   uint16_t port;
-  altcp_get_tcp_addrinfo(state->pcb, 0, nullptr, &port);
+  if (!getAddrInfo(false, nullptr, &port)) {
+    return 0;
+  }
   return port;
-#endif  // LWIP_ALTCP
 }
 
 IPAddress EthernetClient::localIP() {
-  if (!static_cast<bool>(*this)) {
+  ip_addr_t ip;
+  if (!getAddrInfo(true, &ip, nullptr)) {
     return INADDR_NONE;
+  }
+  return ip_addr_get_ip4_uint32(&ip);
+}
+
+bool EthernetClient::getAddrInfo(bool local, ip_addr_t *addr, u16_t *port) {
+  if (!static_cast<bool>(*this)) {
+    return false;
   }
 
   const auto &state = conn_->state;
   if (state == nullptr) {
-    return INADDR_NONE;
+    return false;
   }
 
-#if LWIP_ALTCP
-  return ip_addr_get_ip4_uint32(altcp_get_ip(state->pcb, 1));
-#else
-  ip_addr_t ip;
-  altcp_get_tcp_addrinfo(state->pcb, 1, &ip, nullptr);
-  return ip_addr_get_ip4_uint32(&ip);
-#endif  // LWIP_ALTCP
+  altcp_get_tcp_addrinfo(state->pcb, local, addr, port);
+  return true;
 }
 
 uintptr_t EthernetClient::connectionId() {
