@@ -831,6 +831,41 @@ static void test_client_state() {
                             "Expected default TCP max. sockets");
 }
 
+static void test_client_addr_info() {
+  constexpr char kHost[]{"www.example.com"};
+  constexpr uint16_t kPort = 80;
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kHost).data());
+  IPAddress hostIP;
+  uint32_t t = millis();
+  TEST_ASSERT_TRUE_MESSAGE(
+      DNSClient::getHostByName(kHost, hostIP, kDNSLookupTimeout),
+      "Expected lookup success");
+  TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
+  TEST_MESSAGE(format("IP: %u.%u.%u.%u", hostIP[0], hostIP[1], hostIP[2], hostIP[3]).data());
+
+  client = std::make_unique<EthernetClient>();
+
+  // Connect and check address info
+  TEST_MESSAGE("Connecting...");
+  t = millis();
+  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(hostIP, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", millis() - t).data());
+
+  TEST_ASSERT_EQUAL_MESSAGE(kPort, client->remotePort(), "Expected correct remote port");
+  TEST_ASSERT_TRUE_MESSAGE(hostIP == client->remoteIP(), "Expected correct remote IP");
+  TEST_ASSERT_TRUE_MESSAGE(client->localPort() >= 49152, "Expected correct local port");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == client->localIP(), "Expected correct local IP");
+
+  client->stop();
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected disconnected");
+}
+
 // Tests a variety of server object states.
 static void test_server_state() {
   constexpr uint16_t kPort = 1025;
@@ -906,6 +941,7 @@ void setup() {
   RUN_TEST(test_client_connectNoWait);
   RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
+  RUN_TEST(test_client_addr_info);
   RUN_TEST(test_server_state);
   RUN_TEST(test_other_state);
   UNITY_END();
