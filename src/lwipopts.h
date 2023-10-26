@@ -28,6 +28,10 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #ifndef MEM_LIBC_MALLOC
 #define MEM_LIBC_MALLOC                        1  /* 0 */
 #endif  // !MEM_LIBC_MALLOC
+// #define MEM_CUSTOM_ALLOCATOR                   0  /* opt.h sets to 1 if MEM_LIBC_MALLOC */
+// #define MEM_CUSTOM_FREE                        free
+// #define MEM_CUSTOM_MALLOC                      malloc
+// #define MEM_CUSTOM_CALLOC                      calloc
 // #define MEMP_MEM_MALLOC                        0
 // #define MEMP_MEM_INIT                          0
 #define MEM_ALIGNMENT                          4  /* 1 */
@@ -133,7 +137,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define LWIP_DHCP_GET_NTP_SRV           0
 // #define LWIP_DHCP_MAX_NTP_SERVERS       1
 // #define LWIP_DHCP_MAX_DNS_SERVERS       DNS_MAX_SERVERS
-// #define LWIP_DHCP_DISCOVER_ADD_HOSTNAME 0
+// #define LWIP_DHCP_DISCOVER_ADD_HOSTNAME 1
 
 // AUTOIP options
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
@@ -232,11 +236,12 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define LWIP_ALTCP_TLS             0
 
 // Pbuf options
-// #define PBUF_LINK_HLEN               (14 + ETH_PAD_SIZE) or (18 + ETH_PAD_SIZE)
-// #define PBUF_LINK_ENCAPSULATION_HLEN 0
-// #define PBUF_POOL_BUFSIZE            LWIP_MEM_ALIGN_SIZE(TCP_MSS+PBUF_IP_HLEN+PBUF_TRANSPORT_HLEN+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
-// #define LWIP_PBUF_REF_T              u8_t
+// #define PBUF_LINK_HLEN                (14 + ETH_PAD_SIZE) or (18 + ETH_PAD_SIZE)
+// #define PBUF_LINK_ENCAPSULATION_HLEN  0
+// #define PBUF_POOL_BUFSIZE             LWIP_MEM_ALIGN_SIZE(TCP_MSS+PBUF_IP_HLEN+PBUF_TRANSPORT_HLEN+PBUF_LINK_ENCAPSULATION_HLEN+PBUF_LINK_HLEN)
+// #define LWIP_PBUF_REF_T               u8_t
 // #define LWIP_PBUF_CUSTOM_DATA
+// #define LWIP_PBUF_CUSTOM_DATA_INIT(p)
 
 // Network Interfaces options
 #define LWIP_SINGLE_NETIF              1  /* 0 */
@@ -327,7 +332,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define IGMP_STATS         (LWIP_IGMP)
 // #define UDP_STATS          (LWIP_UDP)
 // #define TCP_STATS          (LWIP_TCP)
-// #define MEM_STATS          ((MEM_LIBC_MALLOC == 0) && (MEM_USE_POOLS == 0))
+// #define MEM_STATS          ((MEM_CUSTOM_ALLOCATOR == 0) && (MEM_USE_POOLS == 0))
 // #define MEMP_STATS         (MEMP_MEM_MALLOC == 0)
 // #define SYS_STATS          (NO_SYS == 0)
 // #define IP6_STATS          (LWIP_IPV6)
