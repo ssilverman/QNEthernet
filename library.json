@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/ssilverman/QNEthernet"
   },
-  "version": "0.25.0",
+  "version": "0.26.0-snapshot",
   "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/ssilverman/QNEthernet",
   "frameworks": "arduino",
