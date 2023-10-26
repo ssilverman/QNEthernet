@@ -87,6 +87,10 @@ class EthernetClient : public Client {
   IPAddress remoteIP();
   uint16_t remotePort();
 
+  // Returns the local IP address for this connection, or INADDR_NONE if this
+  // client is not connected.
+  IPAddress localIP();
+
   // Returns an ID for the connection to which this client refers. It will
   // return non-zero if connected and zero if not connected.
   //

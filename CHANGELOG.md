@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `EthernetClient::localIP()`.
+
 ## [0.25.0]
 
 ### Added

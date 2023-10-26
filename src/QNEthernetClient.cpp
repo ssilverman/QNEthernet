@@ -341,6 +341,25 @@ uint16_t EthernetClient::remotePort() {
 #endif  // LWIP_ALTCP
 }
 
+IPAddress EthernetClient::localIP() {
+  if (!static_cast<bool>(*this)) {
+    return INADDR_NONE;
+  }
+
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return INADDR_NONE;
+  }
+
+#if LWIP_ALTCP
+  return ip_addr_get_ip4_uint32(altcp_get_ip(state->pcb, 1));
+#else
+  ip_addr_t ip;
+  altcp_get_tcp_addrinfo(state->pcb, 1, &ip, nullptr);
+  return ip_addr_get_ip4_uint32(&ip);
+#endif  // LWIP_ALTCP
+}
+
 uintptr_t EthernetClient::connectionId() {
   if (conn_ != nullptr && conn_->connected) {
     const auto &state = conn_->state;
