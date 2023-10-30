@@ -11,6 +11,9 @@ and this project adheres to
 ### Added
 * Added `EthernetClient::localIP()`.
 
+### Changed
+* Updated lwIP to the latest master (5e3268cf).
+
 ## [0.25.0]
 
 ### Added
