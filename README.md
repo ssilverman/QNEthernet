@@ -1369,7 +1369,7 @@ _Entropy_ library.
 
 ## Configuration macros
 
-There are several macros that can be used to configure the system:
+There are several macros that can be defined to configure the system:
 
 | Macro                                 | Description                                         | Link                                        |
 | ------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
@@ -1429,13 +1429,21 @@ Here's how to implement the behaviour:
    1. `recipe.S.o.pattern`
 
 Next, create a _platform.local.txt_ file in the same directory as the
-_platform.txt_ file and add the options you need. For example, to enable raw
-frame support:
+_platform.txt_ file and add the options you need. The contents of the properties
+are exactly the same as if adding them to the command line. For example, to
+enable raw frame support and disable DNS using the macros (the '-D' option
+defines a macro):
 
 ```
-compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
+compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
 ```
+
+Each additional option is simply appended. No commas or quotes are required
+unless they would be used for those same options on the command line.
+See
+[this issue comment](https://github.com/ssilverman/QNEthernet/issues/54#issuecomment-1788100978)
+for some incorrect variants.
 
 Note that both properties are needed because _QNEthernet_ contains a mixture of
 C and C++ sources.
@@ -1456,6 +1464,7 @@ References:
 4. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
 5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
 6. [Open the Arduino15 folder - Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
+7. [Enabling Raw Frame Support and Promiscuous · Issue #54 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/54)
 
 ### Configuring macros using PlatformIO
 
@@ -1578,7 +1587,8 @@ Input is welcome.
 * More examples.
 * Fix reduced frame reception when Ethernet is restarted via
   `end()`/`begin(...)`. This is a vexing one.
-  See also: https://github.com/ssilverman/QNEthernet/issues/31
+  See also:
+  [Restarting  · Issue #31 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/31)
 
 ## Code style
 
