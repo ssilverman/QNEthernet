@@ -39,7 +39,7 @@ namespace network {
 // Default DHCP client timeout, in milliseconds; default is 60 seconds
 #ifndef QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
 #define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60'000
-#endif  // !QNETHERNET_DHCP_CLIENT_TIMEOUT
+#endif  // !QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
 
 // Default DNS lookup timeout, in milliseconds
 #if LWIP_DNS
