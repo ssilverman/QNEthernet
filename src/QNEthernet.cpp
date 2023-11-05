@@ -564,5 +564,17 @@ EthernetClass::operator bool() const {
   return (netif_ != nullptr);
 }
 
+bool EthernetClass::hostByName(const char *hostname, IPAddress &ip) {
+#if LWIP_DNS
+  if (netif_ != nullptr) {
+    return false;
+  }
+  return DNSClient::getHostByName(hostname, ip,
+                                  QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
+#else
+  return false;
+#endif  // LWIP_DNS
+}
+
 }  // namespace network
 }  // namespace qindesign

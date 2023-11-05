@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 * Added `EthernetClient::localIP()`.
+* Added `EthernetClass::hostByName(hostname, ip)` convenience function.
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).

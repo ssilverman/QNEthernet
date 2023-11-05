@@ -338,6 +338,10 @@ class EthernetClass final {
   // Tests if Ethernet is initialized.
   explicit operator bool() const;
 
+  // Convenience function that tries to resolve the given hostname into an IP
+  // address. This returns whether successful.
+  bool hostByName(const char *hostname, IPAddress &ip);
+
  private:
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
 

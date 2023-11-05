@@ -216,6 +216,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `broadcastIP()`: Returns the broadcast IP address associated with the current
   local IP and subnet mask.
 * `end()`: Shuts down the library, including the Ethernet clocks.
+* `hostByName()`: Convenience function that tries to resolve a hostname into an
+  IP address. This returns whether successful.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "teensy-lwip".
 * `interfaceStatus()`: Returns the network interface status, `true` for UP and
