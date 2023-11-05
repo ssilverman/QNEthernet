@@ -20,10 +20,6 @@ static constexpr uint32_t kStartupDelay = 2'000;
 
 // Timeouts
 static constexpr uint32_t kDHCPTimeout = 15'000;
-#if LWIP_DNS
-static constexpr uint32_t kDNSLookupTimeout =
-    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-#endif  // LWIP_DNS
 
 // Flag that indicates something about the network changed.
 static volatile bool networkChanged = false;
@@ -120,7 +116,8 @@ void loop() {
 
 #if LWIP_DNS
       IPAddress ip;
-      if (!DNSClient::getHostByName("dns.google", ip, kDNSLookupTimeout)) {
+      if (!DNSClient::getHostByName("dns.google", ip,
+                                    QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
         printf("[Main] Lookup failed\r\n");
       } else {
         printf("[Main] Lookup: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);

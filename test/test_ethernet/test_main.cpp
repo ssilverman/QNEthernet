@@ -50,9 +50,6 @@ static constexpr uint32_t kLinkTimeout = 5000;
 static constexpr uint32_t kSNTPTimeout = 10000;
 static constexpr uint32_t kConnectTimeout = 10000;
 
-static constexpr uint32_t kDNSLookupTimeout =
-    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-
 // Default static IP configuration
 static const IPAddress kStaticIP  {192, 168, 0, 2};
 static const IPAddress kSubnetMask{255, 255, 255, 0};
@@ -326,8 +323,10 @@ static void test_dns_lookup() {
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName).data());
   IPAddress ip;
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(DNSClient::getHostByName(kName, ip, kDNSLookupTimeout),
-                           "Expected lookup success");
+  TEST_ASSERT_TRUE_MESSAGE(
+      DNSClient::getHostByName(kName, ip,
+                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
+      "Expected lookup success");
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
   TEST_ASSERT_MESSAGE((ip == ip1) || (ip == ip2), "Expected different IP address");
@@ -335,10 +334,12 @@ static void test_dns_lookup() {
   constexpr char kName2[]{"dms.goomgle"};
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName2).data());
   t = millis();
-  TEST_ASSERT_FALSE(DNSClient::getHostByName(kName2, ip, kDNSLookupTimeout));
+  TEST_ASSERT_FALSE(DNSClient::getHostByName(
+      kName2, ip, QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT));
   t = millis() - t;
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", t).data());
-  TEST_ASSERT_LESS_THAN_MESSAGE(kDNSLookupTimeout, t, "Expected no timeout");
+  TEST_ASSERT_LESS_THAN_MESSAGE(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT, t,
+                                "Expected no timeout");
 }
 
 // Tests setting and getting the option 12 hostname.
@@ -843,7 +844,8 @@ static void test_client_addr_info() {
   IPAddress hostIP;
   uint32_t t = millis();
   TEST_ASSERT_TRUE_MESSAGE(
-      DNSClient::getHostByName(kHost, hostIP, kDNSLookupTimeout),
+      DNSClient::getHostByName(kHost, hostIP,
+                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
       "Expected lookup success");
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", hostIP[0], hostIP[1], hostIP[2], hostIP[3]).data());

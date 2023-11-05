@@ -41,12 +41,6 @@ enum class ConnectReturns {
   INVALID_RESPONSE = -4,
 };
 
-#if LWIP_DNS
-// DNS lookup timeout.
-static constexpr uint32_t kDNSLookupTimeout =
-    DNS_MAX_RETRIES * DNS_TMR_INTERVAL;
-#endif  // LWIP_DNS
-
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
 EthernetClient::EthernetClient(std::shared_ptr<internal::ConnectionHolder> conn)
@@ -70,7 +64,8 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 int EthernetClient::connect(const char *host, uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+  if (!DNSClient::getHostByName(host, ip,
+                                QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connect(ip, port);
@@ -87,7 +82,8 @@ int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 int EthernetClient::connectNoWait(const char *host, uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(host, ip, kDNSLookupTimeout)) {
+  if (!DNSClient::getHostByName(host, ip,
+                                QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
     return static_cast<int>(ConnectReturns::INVALID_SERVER);
   }
   return connectNoWait(ip, port);
