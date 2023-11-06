@@ -453,9 +453,6 @@ IPAddress EthernetClass::dnsServerIP() const {
 
 IPAddress EthernetClass::dnsServerIP(int index) const {
 #if LWIP_DNS
-  if (netif_ == nullptr) {
-    return INADDR_NONE;
-  }
   return DNSClient::getServer(0);
 #else
   return INADDR_NONE;
