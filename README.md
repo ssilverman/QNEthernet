@@ -215,6 +215,9 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `broadcastIP()`: Returns the broadcast IP address associated with the current
   local IP and subnet mask.
+* `dnsServerIP(index)`: Gets a specific DNS server IP address. This returns
+  `INADDR_NONE` if the index not in the exclusive range,
+  [0, `DNSClient::maxServers()`).
 * `end()`: Shuts down the library, including the Ethernet clocks.
 * `hostByName()`: Convenience function that tries to resolve a hostname into an
   IP address. This returns whether successful.
@@ -242,6 +245,9 @@ The `Ethernet` object is the main Ethernet interface.
   successful or if no restart attempt is required.
 * `setDNSServerIP(dnsServerIP)`: Sets the DNS server IP address. Note that the
   equivalent Arduino function is `setDnsServerIP(dnsServerIP)`.
+* `setDNSServerIP(index, ip)`: Sets a specific DNS server IP address. This does
+  nothing if the index is not in the exclusive range,
+  [0, `DNSClient::maxServers()`).
 * `setHostname(hostname)`: Sets the DHCP client hostname. The empty string will
   set the hostname to nothing. To use something other than the default at system
   start, call this before calling `begin()`.

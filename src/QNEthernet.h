@@ -244,6 +244,10 @@ class EthernetClass final {
   // Returns INADDR_NONE if DNS is disabled.
   IPAddress dnsServerIP() const;
 
+  // Returns the DNS server IP at the specified index. This returns INADDR_NONE
+  // if there is no configured server at that index or if DNS is disabled.
+  IPAddress dnsServerIP(int index) const;
+
   // Returns the broadcast IP address. This is equal to:
   // localIP | ~subnetMask
   IPAddress broadcastIP() const;
@@ -256,6 +260,10 @@ class EthernetClass final {
 
   // Does nothing if DNS is disabled.
   void setDNSServerIP(const IPAddress &dnsServerIP) const;
+
+  // Sets a specific DNS server IP. This does nothing if the index is not in the
+  // range [0, DNSClient::maxServers()).
+  void setDNSServerIP(int index, const IPAddress &ip) const;
 
   // The MAC addresses are used in the following begin() functions
   [[deprecated("See begin() and waitForLocalIP(timeout)")]]

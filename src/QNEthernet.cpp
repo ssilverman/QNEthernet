@@ -448,6 +448,10 @@ IPAddress EthernetClass::gatewayIP() const {
 }
 
 IPAddress EthernetClass::dnsServerIP() const {
+  return dnsServerIP(0);
+}
+
+IPAddress EthernetClass::dnsServerIP(int index) const {
 #if LWIP_DNS
   if (netif_ == nullptr) {
     return INADDR_NONE;
@@ -491,8 +495,12 @@ void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) const {
 }
 
 void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
+  setDNSServerIP(0, dnsServerIP);
+}
+
+void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
 #if LWIP_DNS
-  DNSClient::setServer(0, dnsServerIP);
+  DNSClient::setServer(index, ip);
 #endif  // LWIP_DNS
 }
 
