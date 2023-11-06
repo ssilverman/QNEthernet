@@ -60,6 +60,7 @@ class DNSClient final {
   // was no error. Possible errors include:
   // * Invalid hostname
   // * The DNS client is not initialized
+  // * No DNS server is set
   static bool getHostByName(const char *hostname, IPAddress &ip,
                             uint32_t timeout);
 
