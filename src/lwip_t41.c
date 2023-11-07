@@ -695,11 +695,12 @@ static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *pBD) {
 }
 
 // Acquire a buffer descriptor. Meant to be used with update_bufdesc().
+// This returns NULL if there is no TX buffer available.
 static inline volatile enetbufferdesc_t *get_bufdesc() {
   volatile enetbufferdesc_t *pBD = s_pTxBD;
 
-  while (pBD->status & kEnetTxBdReady) {
-    // Wait until BD is free
+  if ((pBD->status & kEnetTxBdReady) != 0) {
+    return NULL;
   }
 
   return pBD;
@@ -733,6 +734,11 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *pBD = get_bufdesc();
+  if (pBD == NULL) {
+    LINK_STATS_INC(link.memerr);
+    LINK_STATS_INC(link.drop);
+    return ERR_MEM;  // Would ERR_WOULDBLOCK be more appropriate?
+  }
   uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
     LINK_STATS_INC(link.drop);
