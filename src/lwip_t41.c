@@ -282,37 +282,67 @@ static void enet_isr();
 #define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
 #define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  /* 0: Normal, 1: Swapped */
 
-// Reads a PHY register (using MDIO & MDC signals).
-uint16_t mdio_read(uint16_t regaddr) {
-  ENET_EIR = ENET_EIR_MII;  // Clear status
+// Reads a PHY register (using MDIO & MDC signals) and returns whether
+// continuation is needed (not complete). If continuation is needed, then this
+// should be called again with 'cont' set to true. If this is the first call,
+// then 'cont' should be set to false.
+static bool mdio_read_nonblocking(uint16_t regaddr, uint16_t data[static 1],
+                                  bool cont) {
+  if (!cont) {
+    ENET_EIR = ENET_EIR_MII;  // Clear status
 
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
-              ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
-  // int count = 0;
-  while ((ENET_EIR & ENET_EIR_MII) == 0) {
-    // count++;  // Wait
+    ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
+                ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
   }
-  // printf("mdio read waited %d\r\n", count);
-  uint16_t data = ENET_MMFR_DATA(ENET_MMFR);
+
+  if ((ENET_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
+    return true;
+  }
+
+  *data = ENET_MMFR_DATA(ENET_MMFR);
   ENET_EIR = ENET_EIR_MII;
   // printf("mdio read (%04xh): %04xh\r\n", regaddr, data);
+  return false;
+}
+
+// Blocking MDIO read.
+uint16_t mdio_read(uint16_t regaddr) {
+  uint16_t data;
+  bool doCont = false;
+  do {
+    doCont = mdio_read_nonblocking(regaddr, &data, doCont);
+  } while (doCont);
   return data;
 }
 
-// Writes a PHY register (using MDIO & MDC signals).
-void mdio_write(uint16_t regaddr, uint16_t data) {
-  ENET_EIR = ENET_EIR_MII;  // Clear status
+// Writes a PHY register (using MDIO & MDC signals) and returns whether
+// continuation is needed (not complete). If continuation is needed, then this
+// should be called again with 'cont' set to true. If this is the first call,
+// then 'cont' should be set to false.
+static bool mdio_write_nonblocking(uint16_t regaddr, uint16_t data, bool cont) {
+  if (!cont) {
+    ENET_EIR = ENET_EIR_MII;  // Clear status
 
-  ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
-              ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2) |
-              ENET_MMFR_DATA(data);
-  // int count = 0;
-  while ((ENET_EIR & ENET_EIR_MII) == 0) {
-    // count++;  // wait
+    ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
+                ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2) |
+                ENET_MMFR_DATA(data);
   }
+
+  if ((ENET_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
+    return true;
+  }
+
   ENET_EIR = ENET_EIR_MII;
-  // print("mdio write waited ", count);
-  // printhex("mdio write :", data);
+  // printhex("mdio write (%04xh): %04xh\r\n", regaddr, data);
+  return false;
+}
+
+// Blocking MDIO write.
+void mdio_write(uint16_t regaddr, uint16_t data) {
+  bool doCont = false;
+  do {
+    doCont = mdio_write_nonblocking(regaddr, data, doCont);
+  } while (doCont);
 }
 
 // --------------------------------------------------------------------------
