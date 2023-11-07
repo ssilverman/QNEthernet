@@ -1004,11 +1004,11 @@ void enet_proc_input(void) {
 
   for (int i = RX_SIZE*2; --i >= 0; ) {
     // Get the next chunk of input data
-    volatile enetbufferdesc_t *p_bd = rxbd_next();
-    if (p_bd == NULL) {
+    volatile enetbufferdesc_t *pBD = rxbd_next();
+    if (pBD == NULL) {
       break;
     }
-    struct pbuf *p = t41_low_level_input(p_bd);
+    struct pbuf *p = t41_low_level_input(pBD);
     if (p != NULL) {  // Happens on frame error or pbuf allocation error
       // Process one chunk of input data
       if (s_t41_netif.input(p, &s_t41_netif) != ERR_OK) {
