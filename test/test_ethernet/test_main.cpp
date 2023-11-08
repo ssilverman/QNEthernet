@@ -854,6 +854,7 @@ static void test_client_addr_info() {
 
   // Connect and check address info
   TEST_MESSAGE("Connecting...");
+  client->setConnectionTimeout(kConnectTimeout);
   t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(hostIP, kPort), "Expected connect success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
