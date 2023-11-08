@@ -48,6 +48,7 @@ std::vector<char> format(const char *format, Args... args) {
 static constexpr uint32_t kDHCPTimeout = 30000;
 static constexpr uint32_t kLinkTimeout = 5000;
 static constexpr uint32_t kSNTPTimeout = 10000;
+static constexpr uint32_t kSNTPResendTimeout = 2500;
 static constexpr uint32_t kConnectTimeout = 10000;
 
 // Default static IP configuration
@@ -555,17 +556,31 @@ static void test_udp() {
   buf[43] = t;
 
   // Send the packet
-  TEST_MESSAGE("Sending SNTP request (after delay)...");
   udp = std::make_unique<EthernetUDP>();
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kNTPPort), "Expected UDP listen success");
-  delay(3000);  // Waiting a few seconds seems to be necessary
-  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
-                           "Expected UDP send success");
+  TEST_MESSAGE("Listening on SNTP port");
 
   bool validReply = false;
   uint32_t sntpTime = 0;
   elapsedMillis timer;
+  elapsedMillis resendTimer = kSNTPResendTimeout;
+  bool first = true;
+
   while (timer < kSNTPTimeout) {
+    // Do SNTP resends
+    if (resendTimer >= kSNTPResendTimeout) {
+      if (first) {
+        TEST_MESSAGE("Sending SNTP request");
+        first = false;
+      } else {
+        TEST_MESSAGE("Resending SNTP request");
+      }
+      TEST_ASSERT_TRUE_MESSAGE(
+          udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
+          "Expected UDP send success");
+      resendTimer = 0;
+    }
+
     yield();
 
     int size = udp->parsePacket();
