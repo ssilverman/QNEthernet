@@ -651,7 +651,7 @@ static void t41_low_level_init() {
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
   // Last few things to do
-  ENET_EIR = 0;  // Clear any pending interrupts before setting ETHEREN
+  ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
   atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
