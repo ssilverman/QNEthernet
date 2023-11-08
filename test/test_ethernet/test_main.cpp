@@ -557,8 +557,8 @@ static void test_udp() {
 
   // Send the packet
   udp = std::make_unique<EthernetUDP>();
+  TEST_MESSAGE("Listening on SNTP port...");
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kNTPPort), "Expected UDP listen success");
-  TEST_MESSAGE("Listening on SNTP port");
 
   bool validReply = false;
   uint32_t sntpTime = 0;
@@ -570,10 +570,10 @@ static void test_udp() {
     // Do SNTP resends
     if (resendTimer >= kSNTPResendTimeout) {
       if (first) {
-        TEST_MESSAGE("Sending SNTP request");
+        TEST_MESSAGE("Sending SNTP request...");
         first = false;
       } else {
-        TEST_MESSAGE("Resending SNTP request");
+        TEST_MESSAGE("Resending SNTP request...");
       }
       TEST_ASSERT_TRUE_MESSAGE(
           udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
@@ -880,6 +880,7 @@ static void test_client_addr_info() {
   TEST_ASSERT_TRUE_MESSAGE(client->localPort() >= 49152, "Expected correct local port");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == client->localIP(), "Expected correct local IP");
 
+  TEST_MESSAGE("Stopping client...");
   client->stop();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected disconnected");
 }
