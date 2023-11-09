@@ -124,10 +124,10 @@
 typedef enum _enet_rx_bd_control_status {
   kEnetRxBdEmpty           = 0x8000U,  // Empty bit
   kEnetRxBdRxSoftOwner1    = 0x4000U,  // Receive software ownership
-  kEnetRxBdWrap            = 0x2000U,  // Update buffer descriptor
+  kEnetRxBdWrap            = 0x2000U,  // Wrap buffer descriptor
   kEnetRxBdRxSoftOwner2    = 0x1000U,  // Receive software ownership
   kEnetRxBdLast            = 0x0800U,  // Last BD in the frame (L bit)
-  kEnetRxBdMiss            = 0x0100U,  // In promiscuous mode; needs L
+  kEnetRxBdMiss            = 0x0100U,  // Miss; in promiscuous mode; needs L
   kEnetRxBdBroadcast       = 0x0080U,  // Broadcast
   kEnetRxBdMulticast       = 0x0040U,  // Multicast
   kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation; needs L
