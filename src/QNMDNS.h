@@ -117,7 +117,7 @@ class MDNSClass final {
 
  private:
   struct Service final {
-    bool operator==(const Service &other) {
+    bool operator==(const Service &other) const {
       if (!valid || !other.valid) {
         // Invalid services compare unequal
         return false;
