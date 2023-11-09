@@ -1018,8 +1018,8 @@ void enet_deinit() {
   }
 
   if (s_initState == kInitStatePHYInitialized) {
-    // Power down the PHY
-    GPIO7_DR_CLEAR = (1 << 15);
+    // Power down the PHY and enable reset
+    GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);
 
     // Stop the PLL (first bypassing)
     CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
