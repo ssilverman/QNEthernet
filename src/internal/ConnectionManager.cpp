@@ -88,7 +88,7 @@ static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
 // clears the 'remaining' buffer.
 //
 // This assumes holder->state != NULL.
-void maybeCopyRemaining(ConnectionHolder *holder) {
+static void maybeCopyRemaining(ConnectionHolder *holder) {
   auto &v = holder->remaining;
   const auto &state = holder->state;
 
