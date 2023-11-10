@@ -41,11 +41,11 @@ struct ConnectionState final {
     }
   }
 
-  altcp_pcb *volatile pcb = nullptr;
+  altcp_pcb * /*volatile*/ pcb = nullptr;
 
   // Incoming data buffer
   std::vector<uint8_t> buf;
-  volatile size_t bufPos = 0;
+  /*volatile*/ size_t bufPos = 0;
 
   // Called from the destructor after the callback arg is deleted.
   std::function<void(ConnectionState *)> removeFunc = nullptr;
