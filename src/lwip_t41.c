@@ -471,9 +471,6 @@ static void t41_init_phy() {
   GPIO7_DR_SET = (1 << 14);  // Take out of reset
   delay(50);  // T4, power-up stabilization time
 
-  ENET_EIMR = 0;  // Ensure interrupts are disabled
-  ENET_RCR |= ENET_RCR_RMII_MODE | ENET_RCR_MII_MODE;  // Ensure correct MII mode
-
   // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
   // LED shows link status, active high, 10Hz
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
@@ -556,8 +553,6 @@ static void t41_low_level_init() {
       // DAISY:1
       // GPIO_B1_11_ALT3
 
-  ENET_EIMR = 0;  // This also deasserts all interrupts
-
   // RCSR offset 0x17, set RMII_Clock_Select, pg 61
   mdio_write(PHY_RCSR, PHY_RCSR_VALUE);  // Config for 50 MHz clock input
 
@@ -580,6 +575,8 @@ static void t41_low_level_init() {
                           kEnetTxBdIpHdrChecksum;
   }
   s_txRing[TX_SIZE - 1].status |= kEnetTxBdWrap;
+
+  ENET_EIMR = 0;  // This also deasserts all interrupts
 
   ENET_RCR = ENET_RCR_NLC |     // Payload length is checked
              ENET_RCR_MAX_FL(MAX_FRAME_LEN) |
