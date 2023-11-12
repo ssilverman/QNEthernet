@@ -15,6 +15,19 @@ and this project adheres to
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).
+* Made the driver non-blocking:
+  1. TX if there's no available buffer descriptors
+  2. Link checks via MDIO
+* Updated the tests:
+  * Added a 10s connection timeout to `test_client_addr_info()`
+  * Added SNTP retries to `test_udp()`
+  * Added a few more messages
+* Made `MDNSClass::Service::operator==()` `const`.
+* Completely revamped PHY and pin initialization.
+* Gated PHY and Ethernet shutdown in `EthernetClass::end()` a macro; the default
+  behaviour is to not execute these blocks. This and the previous are part of
+  the quest to figure out why performance drops off a cliff when Ethernet is
+  restarted via first calling `end()`.
 
 ## [0.25.0]
 
