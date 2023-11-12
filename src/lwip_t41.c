@@ -476,8 +476,8 @@ static void configure_phy_pins() {
   GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Start with both low
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD;        // MDIO
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_CLOCK;  // MDC
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD;         // MDIO
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;  // MDC
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = MDIO_MUX;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = MDIO_MUX;  // MDC pin 16 (ENET_MDC of enet, page 534)
@@ -489,13 +489,13 @@ static void configure_phy_pins() {
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
 static void configure_rmii_pins() {
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // Reset this (RXD0)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLDOWN;  // Reset this (RXD1)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // Reset this (RXEN)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_SIGNAL;    // TXD0 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_SIGNAL;    // TXD1 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_SIGNAL;    // TXEN (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLUP;  // Reset this (RXEN)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLUP;  // Reset this (RXER)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_PULLUP;  // TXD0 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_PULLUP;  // TXD1 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_PULLUP;  // TXEN (PHY has internal pull-down)
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = RMII_MUX;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = RMII_MUX;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
