@@ -73,7 +73,7 @@
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-#define MDIO_PAD (                                       \
+#define MDIO_PAD_PULLUP (                                \
     /* HYS_0_Hysteresis_Disabled */                      \
     IOMUXC_PAD_PUS(3) |  /* PUS_3_22K_Ohm_Pull_Up */     \
     IOMUXC_PAD_PUE    |  /* PUE_1_Pull */                \
@@ -482,7 +482,7 @@ static void configure_phy_pins() {
   GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Start with both low
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD;         // MDIO
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD_PULLUP;  // MDIO
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;  // MDC
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = MDIO_MUX;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
