@@ -759,6 +759,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
   LINK_STATS_INC(link.xmit);
 }
 
+// Outputs data from the MAC.
 static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
   if (p == NULL) {
@@ -784,6 +785,7 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
   return ERR_OK;
 }
 
+// Initializes the netif.
 static err_t t41_netif_init(struct netif *netif) {
   if (netif == NULL) {
     return ERR_ARG;
@@ -833,6 +835,7 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
   return pBD;
 }
 
+// The Ethernet ISR.
 static void enet_isr() {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
@@ -840,6 +843,7 @@ static void enet_isr() {
   }
 }
 
+// Checks the link status.
 static inline void check_link_status() {
   if (s_initState != kInitStateInitialized) {
     return;
