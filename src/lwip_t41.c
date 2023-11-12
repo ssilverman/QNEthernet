@@ -242,7 +242,7 @@ static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
 static uint8_t s_mac[ETH_HWADDR_LEN];
-static struct netif s_t41_netif       = { .name = {'e', '0'} };
+static struct netif s_netif           = { .name = {'e', '0'} };
 static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
 static enet_init_states_t s_initState = kInitStateStart;
 static bool s_isNetifAdded            = false;
@@ -490,7 +490,7 @@ static void configure_rmii_pins() {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-static void t41_init_phy() {
+static void init_phy() {
   if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
     return;
   }
@@ -548,8 +548,8 @@ static void t41_init_phy() {
 }
 
 // Initializes the PHY and Ethernet interface.
-static void t41_low_level_init() {
-  t41_init_phy();
+static void low_level_init() {
+  init_phy();
   if (s_initState != kInitStatePHYInitialized) {
     return;
   }
@@ -673,7 +673,7 @@ static void t41_low_level_init() {
 // Low-level input function that transforms a received frame into an lwIP pbuf.
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
-static struct pbuf *t41_low_level_input(volatile enetbufferdesc_t *pBD) {
+static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
   const u16_t err_mask = kEnetRxBdTrunc |
                          kEnetRxBdOverrun |
                          kEnetRxBdCrc |
@@ -760,7 +760,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
 }
 
 // Outputs data from the MAC.
-static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
+static err_t low_level_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
   if (p == NULL) {
     return ERR_ARG;
@@ -786,12 +786,12 @@ static err_t t41_low_level_output(struct netif *netif, struct pbuf *p) {
 }
 
 // Initializes the netif.
-static err_t t41_netif_init(struct netif *netif) {
+static err_t init_netif(struct netif *netif) {
   if (netif == NULL) {
     return ERR_ARG;
   }
 
-  netif->linkoutput = t41_low_level_output;
+  netif->linkoutput = low_level_output;
   netif->output = etharp_output;
   netif->mtu = MTU;
   netif->flags = NETIF_FLAG_BROADCAST |
@@ -807,7 +807,7 @@ static err_t t41_netif_init(struct netif *netif) {
   netif_set_hostname(netif, NULL);
 #endif  // LWIP_NETIF_HOSTNAME
 
-  t41_low_level_init();
+  low_level_init();
 
   return ERR_OK;
 }
@@ -854,16 +854,16 @@ static inline void check_link_status() {
   uint16_t status = mdio_read(PHY_BMSR);
   uint8_t is_link_up = ((status & PHY_BMSR_LINK_STATUS) != 0);
 
-  if (netif_is_link_up(&s_t41_netif) != is_link_up) {
+  if (netif_is_link_up(&s_netif) != is_link_up) {
     if (is_link_up) {
       status = mdio_read(PHY_PHYSTS);
       s_linkSpeed10Not100 = ((status & PHY_PHYSTS_SPEED_STATUS) != 0);
       s_linkIsFullDuplex  = ((status & PHY_PHYSTS_DUPLEX_STATUS) != 0);
       s_linkIsCrossover   = ((status & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
 
-      netif_set_link_up(&s_t41_netif);
+      netif_set_link_up(&s_netif);
     } else {
-      netif_set_link_down(&s_t41_netif);
+      netif_set_link_down(&s_netif);
     }
   }
 }
@@ -925,7 +925,7 @@ bool enet_has_hardware() {
     default:
       break;
   }
-  t41_init_phy();
+  init_phy();
   return (s_initState != kInitStateNoHardware);
 }
 
@@ -952,7 +952,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
     if (s_isNetifAdded) {
       // Remove any previous configuration
-      netif_remove(&s_t41_netif);
+      netif_remove(&s_netif);
       netif_remove_ext_callback(&netif_callback);
       s_isNetifAdded = false;
     }
@@ -961,26 +961,25 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
   if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
-    if (netif_add_noaddr(&s_t41_netif,
-                         NULL, t41_netif_init, ethernet_input) == NULL) {
+    if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
       netif_remove_ext_callback(&netif_callback);
       return false;
     }
-    netif_set_default(&s_t41_netif);
+    netif_set_default(&s_netif);
     s_isNetifAdded = true;
 
 #if LWIP_DHCP
     // netif_add() clears these
-    dhcp_set_struct(&s_t41_netif, &s_dhcp);
+    dhcp_set_struct(&s_netif, &s_dhcp);
 #endif  // LWIP_DHCP
 #if LWIP_AUTOIP
-    autoip_set_struct(&s_t41_netif, &s_autoip);
+    autoip_set_struct(&s_netif, &s_autoip);
 #endif  // LWIP_AUTOIP
   }
 
 #if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
   // Multicast filtering, to allow desired multicast packets in
-  netif_set_igmp_mac_filter(&s_t41_netif, &multicast_filter);
+  netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
 #endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
 
   return true;
@@ -989,13 +988,13 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 extern void unused_interrupt_vector(void);  // startup.c
 
 void enet_deinit() {
-  netif_set_addr(&s_t41_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-  netif_set_link_down(&s_t41_netif);
-  netif_set_down(&s_t41_netif);
+  netif_set_addr(&s_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  netif_set_link_down(&s_netif);
+  netif_set_down(&s_netif);
 
   if (s_isNetifAdded) {
     netif_set_default(NULL);
-    netif_remove(&s_t41_netif);
+    netif_remove(&s_netif);
     netif_remove_ext_callback(&netif_callback);
     s_isNetifAdded = false;
   }
@@ -1032,7 +1031,7 @@ void enet_deinit() {
 }
 
 struct netif *enet_netif() {
-  return &s_t41_netif;
+  return &s_netif;
 }
 
 void enet_proc_input(void) {
@@ -1046,10 +1045,10 @@ void enet_proc_input(void) {
     if (pBD == NULL) {
       break;
     }
-    struct pbuf *p = t41_low_level_input(pBD);
+    struct pbuf *p = low_level_input(pBD);
     if (p != NULL) {  // Happens on frame error or pbuf allocation error
       // Process one chunk of input data
-      if (s_t41_netif.input(p, &s_t41_netif) != ERR_OK) {
+      if (s_netif.input(p, &s_netif) != ERR_OK) {
         pbuf_free(p);
       }
     }
