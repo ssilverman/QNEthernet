@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // lwip_t41.c contains the Teensy 4.1 Ethernet interface implementation.
-// Based on code from Paul Stoffregen and others:
+// Based on code from manitou48 and others:
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 

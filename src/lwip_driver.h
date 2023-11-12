@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // lwip_driver.h defines Ethernet interface functions.
-// Based on code from Paul Stoffregen and others:
+// Based on code from manitou48 and others:
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 

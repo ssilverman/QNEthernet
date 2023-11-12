@@ -1608,7 +1608,7 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 
 ## References
 
-* [Paul Stoffregen's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
+* [manitou48's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
 * [Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/)
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
 * [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
