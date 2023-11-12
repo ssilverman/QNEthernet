@@ -544,10 +544,12 @@ static void init_phy() {
 
   // Undo some pin configuration, for posterity
   GPIO7_GDIR &= ~((1 << 4) | (1 << 6) | (1 << 5) | (1 << 11));
-  GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
 
   // Check for PHY presence
   if (mdio_read(PHY_LEDCR) != PHY_LEDCR_VALUE) {
+    // Undo some pin configuration, for posterity
+    GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
+
     disable_enet_clocks();
 
     s_initState = kInitStateNoHardware;
