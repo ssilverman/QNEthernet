@@ -60,6 +60,19 @@
     // SION:0 MUX_MODE:0101
     // ALT5 (GPIO)
 
+// Stronger pull-up for the straps, but even this might not be strong enough.
+#define STRAP_PAD_PULLUP (                                 \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    IOMUXC_PAD_PUS(3)   |  /* PUS_3_22K_Ohm_Pull_Up */     \
+    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
+    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    IOMUXC_PAD_SPEED(0) |  /* SPEED_0_low_50MHz */         \
+    IOMUXC_PAD_DSE(5)      /* DSE_5_R0_5 */                \
+    /* SRE_0_Slow_Slew_Rate */)
+    // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
+    // 0xF028
+
 #define MDIO_PAD (                                       \
     /* HYS_0_Hysteresis_Disabled */                      \
     IOMUXC_PAD_PUS(3) |  /* PUS_3_22K_Ohm_Pull_Up */     \
@@ -444,24 +457,17 @@ static void disable_enet_clocks() {
 // Configures all the pins necessary for communicating with the PHY.
 static void configure_phy_pins() {
   // Configure strap pins
+  // Note: The pull-up may not be strong enough
+  // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
   // Table 8. PHY Address Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = GPIO_PAD_OUTPUT;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = GPIO_PAD_OUTPUT;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
   // Table 9. RMII MAC Mode Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = GPIO_PAD_OUTPUT;  // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
-  // 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = STRAP_PAD_PULLUP;   // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
+  // Not connected: 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
   // Table 10. Auto_Neg Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = GPIO_PAD_OUTPUT;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
-  // LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
-
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = GPIO_MUX;  // RXD0 pin 18 (GPIO2_IO20 of gpio2, page 524)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = GPIO_MUX;  // RXEN pin 20 (GPIO2_IO22 of gpio2, page 526)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = GPIO_MUX;  // RXD1 pin 17 (GPIO2_IO21 of gpio2, page 525)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = GPIO_MUX;  // RXER pin 22 (GPIO2_IO27 of gpio2, page 531)
-
-  GPIO7_GDIR |= (1 << 4) | (1 << 6) | (1 << 5) | (1 << 11);
-  GPIO7_DR_CLEAR = (1 << 4) | (1 << 6) | (1 << 11);
-  GPIO7_DR_SET   = (1 << 5);  // RMII Slave Mode
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
+  // Not connected to a processor pin: LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
   // Configure PHY-connected Reset and Power pins as outputs
   // PHY spec. page 3
@@ -542,9 +548,6 @@ static void init_phy() {
   // LED shows link status, active high, 10Hz
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
-  // Undo some pin configuration, for posterity
-  GPIO7_GDIR &= ~((1 << 4) | (1 << 6) | (1 << 5) | (1 << 11));
-
   // Check for PHY presence
   if (mdio_read(PHY_LEDCR) != PHY_LEDCR_VALUE) {
     // Undo some pin configuration, for posterity
@@ -559,20 +562,21 @@ static void init_phy() {
   // Configure the PHY registers
   // The strap pull-ups may not have been strong enough, so ensure those values
   // are set properly too
-  // Also, LED0 on pin 4 (ANeg_Dis config) might be floating because it's
-  // connected to an LED
+  // Right now, it's just the 50MHz clock select for RMII slave mode
 
-  mdio_write(PHY_BMCR, 0x3100);  // 13: Speed_Selection: 1=100Mbps
-                                 // 12: Negotiation_Enable: 1=enabled
-                                 //  8: Duplex_Mode: 1=Full-Duplex
-  mdio_write(PHY_ANAR, 0x01E1);  // 8: 100Base-TX_Full-Duplex: 1=advertise
-                                 // 7: 100Base-TX_Half-Duplex: 1=advertise
-                                 // 6: 10Base-T_Full-Duplex: 1=advertise
-                                 // 5: 10Base-T_Half-Duplex: 1=advertise
-                                 // 4-0: Selector_Field: IEEE802.3u
+  // mdio_write(PHY_BMCR, 0x3100);  // 13: Speed_Selection: 1=100Mbps
+  //                                // 12: Negotiation_Enable: 1=enabled
+  //                                //  8: Duplex_Mode: 1=Full-Duplex
+  // mdio_write(PHY_ANAR, 0x01E1);  // 8: 100Base-TX_Full-Duplex: 1=advertise
+  //                                // 7: 100Base-TX_Half-Duplex: 1=advertise
+  //                                // 6: 10Base-T_Full-Duplex: 1=advertise
+  //                                // 5: 10Base-T_Half-Duplex: 1=advertise
+  //                                // 4-0: Selector_Field: IEEE802.3u
+  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
   mdio_write(PHY_RCSR, 0x0081);  // 7: RMII_Clock_Select: 1=50MHz (non-default)
                                  // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
-  mdio_write(PHY_PHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
+  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
+  // mdio_write(PHY_PHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
 
   s_initState = kInitStatePHYInitialized;
 }
