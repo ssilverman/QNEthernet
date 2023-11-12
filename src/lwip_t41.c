@@ -60,6 +60,21 @@
     // SION:0 MUX_MODE:0101
     // ALT5 (GPIO)
 
+#define MDIO_PAD (                                       \
+    /* HYS_0_Hysteresis_Disabled */                      \
+    IOMUXC_PAD_PUS(3) |  /* PUS_3_22K_Ohm_Pull_Up */     \
+    IOMUXC_PAD_PUE    |  /* PUE_1_Pull */                \
+    IOMUXC_PAD_PKE    |  /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                      \
+    /* SPEED_0_low_50MHz */                              \
+    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                \
+    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:1
+    // 0xF029
+    // PHY docs suggest up to 2.2kohms, but this is what we got. It has an
+    // internal 10k. It should cover what we need, including 20% error.
+    // MDIO requires a 1.5k to 10k pull-up.
+
 #define MDIO_MUX 0
     // SION:0 MUX_MODE:0000
     // ALT0
@@ -87,6 +102,18 @@
     IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
+
+#define RMII_PAD_SIGNAL (                           \
+    /* HYS_0_Hysteresis_Disabled */                 \
+    /* PUS_0_100K_Ohm_Pull_Down */                  \
+    /* PUE_0_Keeper */                              \
+    /* PKE_0_Pull_Keeper_Disabled */                \
+    /* ODE_0_Open_Drain_Disabled */                 \
+    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */ \
+    IOMUXC_PAD_DSE(6) |  /* DSE_6_R0_6 */           \
+    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+    // 0x00E9
 
 #define RMII_PAD_CLOCK (                  \
     /* HYS_0_Hysteresis_Disabled */       \
@@ -449,7 +476,7 @@ static void configure_phy_pins() {
   GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Start with both low
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = RMII_PAD_CLOCK;  // MDIO
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD;        // MDIO
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_CLOCK;  // MDC
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = MDIO_MUX;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
@@ -466,9 +493,9 @@ static void configure_rmii_pins() {
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLDOWN;  // Reset this (RXD1)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // Reset this (RXEN)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_CLOCK;     // TXD0 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_CLOCK;     // TXD1 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_CLOCK;     // TXEN (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_SIGNAL;    // TXD0 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_SIGNAL;    // TXD1 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_SIGNAL;    // TXEN (PHY has internal pull-down)
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = RMII_MUX;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = RMII_MUX;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
@@ -516,7 +543,7 @@ static void init_phy() {
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
   // Undo some pin configuration, for posterity
-  GPIO7_GDIR &= ~((1 << 4) | (1 << 5) | (1 << 6) | (1 << 11));
+  GPIO7_GDIR &= ~((1 << 4) | (1 << 6) | (1 << 5) | (1 << 11));
   GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
 
   // Check for PHY presence
