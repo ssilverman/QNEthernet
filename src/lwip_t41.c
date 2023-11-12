@@ -999,6 +999,11 @@ void enet_deinit() {
     s_isNetifAdded = false;
   }
 
+  // Something about stopping Ethernet and the PHY kills performance if Ethernet
+  // is restarted after calling end(), so gate the following two blocks with a
+  // macro for now
+
+#ifdef QNETHERNET_INTERNAL_END_STOPS_ALL
   if (s_initState == kInitStateInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
     attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
@@ -1028,6 +1033,7 @@ void enet_deinit() {
 
     s_initState = kInitStateHasHardware;
   }
+#endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
 struct netif *enet_netif() {
