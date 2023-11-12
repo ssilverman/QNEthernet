@@ -44,51 +44,69 @@
 
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
-#define RMII_PAD_PULLDOWN (IOMUXC_PAD_PUS(0)   | \
-                           IOMUXC_PAD_PUE      | \
-                           IOMUXC_PAD_PKE      | \
-                           IOMUXC_PAD_SPEED(3) | \
-                           IOMUXC_PAD_DSE(5)   | \
-                           IOMUXC_PAD_SRE)
-    // 0x30E9
+#define GPIO_PAD_OUTPUT (               \
+    /* HYS_0_Hysteresis_Disabled */     \
+    /* PUS_0_100K_Ohm_Pull_Down */      \
+    /* PUE_0_Keeper */                  \
+    /* PKE_0_Pull_Keeper_Disabled */    \
+    /* ODE_0_Open_Drain_Disabled */     \
+    /* SPEED_0_low_50MHz */             \
+    IOMUXC_PAD_DSE(7)  /* DSE_7_R0_7 */ \
+    /* SRE_0_Slow_Slew_Rate */)
+    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
+    // 0x0038
+
+#define GPIO_MUX 5
+    // SION:0 MUX_MODE:0101
+    // ALT5 (GPIO)
+
+#define MDIO_MUX 0
+    // SION:0 MUX_MODE:0000
+    // ALT0
+
+#define RMII_PAD_PULLDOWN (                                \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    IOMUXC_PAD_PUS(0)   |  /* PUS_0_100K_Ohm_Pull_Down */  \
+    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
+    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */        \
+    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                  \
+    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
-    // HYS_0_Hysteresis_Disabled
-    // PUS_0_100K_Ohm_Pull_Down
-    // PUE_1_Pull
-    // PKE_1_Pull_Keeper_Enabled
-    // ODE_0_Open_Drain_Disabled
-    // SPEED_3_max_200MHz
-    // DSE_5_R0_5
-    // SRE_1_Fast_Slew_Rate
+    // 0x30E9
 
-#define RMII_PAD_PULLUP (IOMUXC_PAD_PUS(2)   | \
-                         IOMUXC_PAD_PUE      | \
-                         IOMUXC_PAD_PKE      | \
-                         IOMUXC_PAD_SPEED(3) | \
-                         IOMUXC_PAD_DSE(5)   | \
-                         IOMUXC_PAD_SRE)
-    // 0xB0E9
+#define RMII_PAD_PULLUP (                                  \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    IOMUXC_PAD_PUS(2)   |  /* PUS_2_100K_Ohm_Pull_Up */    \
+    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
+    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */        \
+    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                  \
+    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
-    // HYS_0_Hysteresis_Disabled
-    // PUS_2_100K_Ohm_Pull_Up
-    // PUE_1_Pull
-    // PKE_1_Pull_Keeper_Enabled
-    // ODE_0_Open_Drain_Disabled
-    // SPEED_3_max_200MHz
-    // DSE_5_R0_5
-    // SRE_1_Fast_Slew_Rate
+    // 0xB0E9
 
-#define RMII_PAD_CLOCK (IOMUXC_PAD_DSE(6) | IOMUXC_PAD_SRE)
-    // 0x0031
+#define RMII_PAD_CLOCK (                  \
+    /* HYS_0_Hysteresis_Disabled */       \
+    /* PUS_0_100K_Ohm_Pull_Down */        \
+    /* PUE_0_Keeper */                    \
+    /* PKE_0_Pull_Keeper_Disabled */      \
+    /* ODE_0_Open_Drain_Disabled */       \
+    /* SPEED_0_low_50MHz */               \
+    IOMUXC_PAD_DSE(6) |  /* DSE_6_R0_6 */ \
+    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
-    // HYS_0_Hysteresis_Disabled
-    // PUS_0_100K_Ohm_Pull_Down
-    // PUE_0_Keeper
-    // PKE_0_Pull_Keeper_Disabled
-    // ODE_0_Open_Drain_Disabled
-    // SPEED_0_low_50MHz
-    // DSE_6_R0_6
-    // SRE_1_Fast_Slew_Rate
+    // 0x0031
+
+#define RMII_MUX_CLOCK (6 | 0x10)
+      // SION:1 MUX_MODE:0110
+      // ALT6
+
+#define RMII_MUX 3
+    // SION:0 MUX_MODE:0011
+    // ALT3
 
 #define RX_SIZE 5
 #define TX_SIZE 5
@@ -256,6 +274,9 @@ static void enet_isr();
 #define PHY_RCSR   0x17
 #define PHY_BMSR   0x01
 #define PHY_PHYSTS 0x10
+#define PHY_BMCR   0x00
+#define PHY_ANAR   0x04
+#define PHY_PHYCR  0x19
 
 #define PHY_LEDCR_BLINK_RATE_20Hz (0 << 9)
 #define PHY_LEDCR_BLINK_RATE_10Hz (1 << 9)
@@ -349,19 +370,12 @@ void mdio_write(uint16_t regaddr, uint16_t data) {
 //  Low-Level
 // --------------------------------------------------------------------------
 
-// Initial check for hardware. This does nothing if the init state isn't at
-// START or HAS_HARDWARE. After this function returns, the init state will
-// either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
-// HAS_HARDWARE when called.
-static void t41_init_phy() {
-  if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
-    return;
-  }
-
+// Enables the Ethernet-related clocks. See also disable_enet_clocks().
+static void enable_enet_clocks() {
   // Enable the Ethernet clock
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
 
-  // Configure PLL6 for 50 MHz, pg 1112 (Rev. 3, 1118 Rev. 2, 1173 Rev. 1)
+  // Configure PLL6 for 50 MHz (page 1112)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
   CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3) |
                             CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(3) |
@@ -378,122 +392,162 @@ static void t41_init_phy() {
   CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS;
   // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG_PLL_ENET);
 
-  // Configure REFCLK to be driven as output by PLL6, pg 325 (Rev. 3, 328 Rev. 2, 326 Rev. 1)
+  // Configure REFCLK to be driven as output by PLL6 (page 325)
   CLRSET(IOMUXC_GPR_GPR1,
          IOMUXC_GPR_GPR1_ENET1_CLK_SEL | IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN,
          IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
+}
 
-  // Configure pins
+// Disables everything enabled with enable_enet_clocks().
+static void disable_enet_clocks() {
+  // Configure REFCLK
+  CLRSET(IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
 
-  // PHY strap configuration (before power up or reset)
-  // Note: The datasheet suggests 2.49kohm, but we can only do 100kohm pull-down
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 17)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;    // Master/Slave = RMII Slave Mode (RX_D1, pin 20)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22)
+  // Stop the PLL (first bypassing)
+  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
+  CCM_ANALOG_PLL_ENET = CCM_ANALOG_PLL_ENET_BYPASS |  // Reset to default
+                        CCM_ANALOG_PLL_ENET_POWERDOWN |
+                        CCM_ANALOG_PLL_ENET_DIV_SELECT(1);
+
+  // Disable the clock for ENET
+  CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+}
+
+// Configures all the pins necessary for communicating with the PHY.
+static void configure_phy_pins() {
+  // Configure strap pins
+  // Table 8. PHY Address Strap Table (page 39)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = GPIO_PAD_OUTPUT;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = GPIO_PAD_OUTPUT;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
+  // Table 9. RMII MAC Mode Strap Table (page 39)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = GPIO_PAD_OUTPUT;  // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
   // 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
+  // Table 10. Auto_Neg Strap Table (page 39)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = GPIO_PAD_OUTPUT;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
   // LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = 5;  // Reset    B0_14 Alt5 GPIO7.14
-      // SION:0 MUX_MODE:0101
-      // DISABLED
-      // ALT5 (GPIO2_IO14)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = 5;  // Power    B0_15 Alt5 GPIO7.15
-      // SION:0 MUX_MODE:0101
-      // DISABLED
-      // ALT5 (GPIO2_IO15)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = GPIO_MUX;  // RXD0 pin 18 (GPIO2_IO20 of gpio2, page 524)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = GPIO_MUX;  // RXEN pin 20 (GPIO2_IO22 of gpio2, page 526)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = GPIO_MUX;  // RXD1 pin 17 (GPIO2_IO21 of gpio2, page 525)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = GPIO_MUX;  // RXER pin 22 (GPIO2_IO27 of gpio2, page 531)
 
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
+  GPIO7_GDIR |= (1 << 4) | (1 << 6) | (1 << 5) | (1 << 11);
+  GPIO7_DR_CLEAR = (1 << 4) | (1 << 6) | (1 << 11);
+  GPIO7_DR_SET   = (1 << 5);  // RMII Slave Mode
+
+  // Configure PHY-connected Reset and Power pins as outputs
+  // PHY spec. page 3
+  // Note: Teensyduino already configures GPIO2 as its fast counterpart, GPIO7
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_15 = GPIO_PAD_OUTPUT;  // INTR/PWRDN, pin 3 (page 714)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_14 = GPIO_PAD_OUTPUT;  // RST_N, pin 5 (page 713)
+
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = GPIO_MUX;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = GPIO_MUX;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
+
+  GPIO7_GDIR |= (1 << 15) | (1 << 14);
+  GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Start with both low
 
   // Configure the MDIO and MDC pins
-  // Note: The original code didn't have these
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = IOMUXC_PAD_PUS(2) |
-                                     IOMUXC_PAD_PUE    |
-                                     IOMUXC_PAD_PKE    |
-                                     IOMUXC_PAD_DSE(5) |
-                                     IOMUXC_PAD_SRE;
-      // 0xB029 (RMII_PAD_PULLUP, but with low speed)
-      // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:1
-      // HYS_0_Hysteresis_Disabled
-      // PUS_2_100K_Ohm_Pull_Up
-      // PUE_1_Pull
-      // PKE_1_Pull_Keeper_Enabled
-      // ODE_1_Open_Drain_Disabled (because only one PHY)
-      // SPEED_0_low_50MHz
-      // DSE_5_R0_5
-      // SRE_1_Fast_Slew_Rate
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = RMII_PAD_CLOCK;  // MDIO
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_CLOCK;  // MDC
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = 6 | 0x10;  // REFCLK, pg 530 (Rev. 3, 534 Rev. 2, 530 Rev. 1)
-      // SION:1 MUX_MODE:0110
-      // ENABLED
-      // ALT6 (ENET_REF_CLK)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = 0;  // MDIO, pg 535 (Rev. 3, 539 Rev. 2, 535 Rev. 1)
-      // SION:0 MUX_MODE:0000
-      // DISABLED
-      // ALT0 (ENET_MDIO)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = 0;  // MDC, pg 534 (Rev. 3, 538 Rev. 2, 534 Rev. 1)
-      // SION:0 MUX_MODE:0000
-      // DISABLED
-      // ALT0 (ENET_MDC)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = MDIO_MUX;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = MDIO_MUX;  // MDC pin 16 (ENET_MDC of enet, page 534)
 
-  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // pg 791 (Rev. 3, 795 Rev. 2, 792 Rev. 1)
+  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0 (page 791)
       // DAISY:10
-      // GPIO_B1_15_ALT0
+}
 
-  IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // pg 791 (Rev. 3, 795 Rev. 2, 791 Rev. 1)
+// Configures all the RMII pins. This should be called after initializing
+// the PHY.
+static void configure_rmii_pins() {
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // Reset this (RXD0)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLDOWN;  // Reset this (RXD1)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // Reset this (RXEN)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Reset this (RXER)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_CLOCK;     // TXD0 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_CLOCK;     // TXD1 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_CLOCK;     // TXEN (PHY has internal pull-down)
+
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = RMII_MUX;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = RMII_MUX;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = RMII_MUX;  // RXER pin 22 (ENET_RX_ER of enet, page 531)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = RMII_MUX;  // RXEN pin 20 (ENET_RX_EN of enet, page 526)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = RMII_MUX;  // TXEN pin  1 (ENET_TX_EN of enet, page 529)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = RMII_MUX;  // TXD0 pin 23 (ENET_TX_DATA00 of enet, page 527)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = RMII_MUX;  // TXD1 pin 24 (ENET_TX_DATA01 of enet, page 528)
+
+  IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6 (page 791)
       // DAISY:1
-      // GPIO_B1_10_ALT6
 
-  ENET_MSCR = ENET_MSCR_MII_SPEED(9);
+  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_04_ALT3 (page 792)
+  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_05_ALT3 (page 793)
+  IOMUXC_ENET_RXEN_SELECT_INPUT    = 1;  // GPIO_B1_06_ALT3 (page 794)
+  IOMUXC_ENET_RXERR_SELECT_INPUT   = 1;  // GPIO_B1_11_ALT3 (page 795)
+}
+
+// Initialization and check for hardware. This does nothing if the init state
+// isn't at START or HAS_HARDWARE. After this function returns, the init state
+// will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
+// HAS_HARDWARE when called.
+static void t41_init_phy() {
+  if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
+    return;
+  }
+
+  enable_enet_clocks();
+
+  configure_phy_pins();
 
   // Note: Ensure the clock is present at the PHY (XI) at power up
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = RMII_MUX_CLOCK;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
+  ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
-  // Use delays to let things settle, just in case; there's been some
-  // restart issues when calling Ethernet.end() and then restarting:
-  // Not all packets seem to be received from the PHY; this attempts
-  // to help mitigate this problem.
-  GPIO7_GDIR    |= (1 << 14) | (1 << 15);
-  GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Ensure power off and reset
-  delay(50);  // Use T4, post power-up stabilization time for the off time
-  GPIO7_DR_SET   = (1 << 15);              // Power on
-  delay(50);  // Use T4, Post power-up stabilization time for the on time
-
-  // PHY timing: pg 9, Section 6.6 "Timing Requirements"
-  // Reset Timing:
-  // T1: Minimum RESET_PULSE width (w/o debouncing caps): 25us
-  // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble
-  //     for register access: 2ms
-  // Power-Up Timing:
-  // T4: Powerup to SMI ready: Post power-up stabilization time prior to MDC
-  //     preamble for register access: 50ms
-  // delayMicroseconds(25);  // T1, minimum RESET_PULSE width
-  GPIO7_DR_SET = (1 << 14);  // Take out of reset
-  delay(50);  // T4, power-up stabilization time
+  GPIO7_DR_SET   = (1 << 15);  // Power on
+  GPIO7_DR_CLEAR = (1 << 14);  // Reset
+  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o 25 debouncing caps)
+  GPIO7_DR_SET   = (1 << 14);  // Take out of reset
+  delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
   // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
   // LED shows link status, active high, 10Hz
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
+  // Undo some pin configuration, for posterity
+  GPIO7_GDIR &= ~((1 << 4) | (1 << 5) | (1 << 6) | (1 << 11));
+  GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
+
   // Check for PHY presence
   if (mdio_read(PHY_LEDCR) != PHY_LEDCR_VALUE) {
-    // Power down the PHY
-    GPIO7_DR_CLEAR = (1 << 15);
-
-    // Stop the PLL (first bypassing)
-    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
-
-    // Disable the clock for ENET
-    CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+    disable_enet_clocks();
 
     s_initState = kInitStateNoHardware;
     return;
   }
 
+  // Configure the PHY registers
+  // The strap pull-ups may not have been strong enough, so ensure those values
+  // are set properly too
+  // Also, LED0 on pin 4 (ANeg_Dis config) might be floating because it's
+  // connected to an LED
+
+  mdio_write(PHY_BMCR, 0x3100);  // 13: Speed_Selection: 1=100Mbps
+                                 // 12: Negotiation_Enable: 1=enabled
+                                 //  8: Duplex_Mode: 1=Full-Duplex
+  mdio_write(PHY_ANAR, 0x01E1);  // 8: 100Base-TX_Full-Duplex: 1=advertise
+                                 // 7: 100Base-TX_Half-Duplex: 1=advertise
+                                 // 6: 10Base-T_Full-Duplex: 1=advertise
+                                 // 5: 10Base-T_Half-Duplex: 1=advertise
+                                 // 4-0: Selector_Field: IEEE802.3u
+  mdio_write(PHY_RCSR, 0x0081);  // 7: RMII_Clock_Select: 1=50MHz (non-default)
+                                 // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
+  mdio_write(PHY_PHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
+
   s_initState = kInitStatePHYInitialized;
 }
 
+// Initializes the PHY and Ethernet interface.
 static void t41_low_level_init() {
   t41_init_phy();
   if (s_initState != kInitStatePHYInitialized) {
@@ -503,58 +557,7 @@ static void t41_low_level_init() {
   // Configure pins
   // TODO: What should these actually be? Why pull-ups? Note that the reference code uses pull-ups.
   // Note: The original code left RXD0, RXEN, and RXER with PULLDOWN
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLUP;  // Reset this (RXEN)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLUP;  // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_PULLUP;  // TXD0
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_PULLUP;  // TXD1
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_PULLUP;  // TXEN
-
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = 3;  // RXD1, pg 525 (Rev. 3, 529 Rev. 2, 525 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_RX_DATA01)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = 3;  // RXD0, pg 524 (Rev. 3, 528 Rev. 2, 524 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_RX_DATA00)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = 3;  // RXER, pg 531 (Rev. 3, 535 Rev. 2, 531 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_RX_ER)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = 3;  // RXEN, pg 526 (Rev. 3, 530 Rev. 2, 526 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_RX_EN)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = 3;  // TXEN, pg 529 (Rev. 3, 533 Rev. 2, 529 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_TX_EN)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = 3;  // TXD0, pg 527 (Rev. 3, 531 Rev. 2, 527 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_TX_DATA00)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = 3;  // TXD1, pg 528 (Rev. 3, 532 Rev. 2, 528 Rev. 1)
-      // SION:0 MUX_MODE:0011
-      // DISABLED
-      // ALT3 (ENET_TX_DATA01)
-
-  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // pg 792 (Rev. 3, 796 Rev. 2, 792 Rev. 1)
-      // DAISY:1
-      // GPIO_B1_04_ALT3
-  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // pg 793 (Rev. 3, 797 Rev. 2, 793 Rev. 1)
-      // DAISY:1
-      // GPIO_B1_05_ALT3
-  IOMUXC_ENET_RXEN_SELECT_INPUT = 1;     // pg 794 (Rev. 3, 798 Rev. 2, 794 Rev. 1)
-      // DAISY:1
-      // GPIO_B1_06_ALT3
-  IOMUXC_ENET_RXERR_SELECT_INPUT = 1;    // pg 795 (Rev. 3, 799 Rev. 2, 795 Rev. 1)
-      // DAISY:1
-      // GPIO_B1_11_ALT3
-
-  // RCSR offset 0x17, set RMII_Clock_Select, pg 61
-  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);  // Config for 50 MHz clock input
+  configure_rmii_pins();
 
   memset(s_rxRing, 0, sizeof(s_rxRing));
   memset(s_txRing, 0, sizeof(s_txRing));
@@ -1009,7 +1012,7 @@ void enet_deinit() {
     // Disable the Ethernet MAC
     // Note: All interrupts are cleared when Ethernet is reinitialized,
     //       so nothing will be pending
-    ENET_ECR &= ~ENET_ECR_ETHEREN;
+    ENET_ECR = 0x70000000;
 
     s_initState = kInitStatePHYInitialized;
   }
@@ -1018,12 +1021,7 @@ void enet_deinit() {
     // Power down the PHY and enable reset
     GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);
 
-    // Stop the PLL (first bypassing)
-    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-    CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_POWERDOWN;
-
-    // Disable the clock for ENET
-    CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+    disable_enet_clocks();
 
     s_initState = kInitStateHasHardware;
   }
