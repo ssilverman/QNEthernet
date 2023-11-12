@@ -728,7 +728,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
   return p;
 }
 
-// Acquire a buffer descriptor. Meant to be used with update_bufdesc().
+// Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This returns NULL if there is no TX buffer available.
 static inline volatile enetbufferdesc_t *get_bufdesc() {
   volatile enetbufferdesc_t *pBD = s_pTxBD;
@@ -740,7 +740,7 @@ static inline volatile enetbufferdesc_t *get_bufdesc() {
   return pBD;
 }
 
-// Update a buffer descriptor. Meant to be used with get_bufdesc().
+// Updates a buffer descriptor. Meant to be used with get_bufdesc().
 static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
                                   uint16_t len) {
   pBD->length = len;
@@ -813,7 +813,7 @@ static err_t init_netif(struct netif *netif) {
   return ERR_OK;
 }
 
-// Find the next non-empty BD.
+// Finds the next non-empty BD.
 static inline volatile enetbufferdesc_t *rxbd_next() {
   volatile enetbufferdesc_t *pBD = s_pRxBD;
 
