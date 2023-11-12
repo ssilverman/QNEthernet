@@ -256,6 +256,7 @@ static struct autoip s_autoip;
 #endif  // LWIP_AUTOIP
 
 // PHY status, polled
+static int s_checkLinkStatusState = 0;
 static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
 static bool s_linkIsCrossover   = false;
@@ -843,29 +844,57 @@ static void enet_isr() {
   }
 }
 
-// Checks the link status.
-static inline void check_link_status() {
+// Checks the link status and returns zero if complete and a state value if
+// not complete. The return value should be used in the next call to
+// this function.
+static inline int check_link_status(int state) {
+  static uint16_t bmsr;
+  static uint16_t physts;
+  static uint8_t is_link_up;
+
   if (s_initState != kInitStateInitialized) {
-    return;
+    return 0;
   }
 
   // Note: PHY_PHYSTS doesn't seem to contain the live link information unless
   //       BMSR is read too
-  uint16_t status = mdio_read(PHY_BMSR);
-  uint8_t is_link_up = ((status & PHY_BMSR_LINK_STATUS) != 0);
+
+  switch (state) {
+    case 0:
+      [[fallthrough]];
+    case 1:
+      if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
+        return 1;
+      }
+      is_link_up = ((bmsr & PHY_BMSR_LINK_STATUS) != 0);
+      if (!is_link_up) {
+        break;
+      }
+      [[fallthrough]];
+
+    case 2:
+      if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
+        return 2;
+      }
+      break;
+
+    default:
+      break;
+  }
 
   if (netif_is_link_up(&s_netif) != is_link_up) {
     if (is_link_up) {
-      status = mdio_read(PHY_PHYSTS);
-      s_linkSpeed10Not100 = ((status & PHY_PHYSTS_SPEED_STATUS) != 0);
-      s_linkIsFullDuplex  = ((status & PHY_PHYSTS_DUPLEX_STATUS) != 0);
-      s_linkIsCrossover   = ((status & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+      s_linkSpeed10Not100 = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0);
+      s_linkIsFullDuplex  = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
+      s_linkIsCrossover   = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
 
       netif_set_link_up(&s_netif);
     } else {
       netif_set_link_down(&s_netif);
     }
   }
+
+  return 0;
 }
 
 #if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
@@ -1041,6 +1070,11 @@ struct netif *enet_netif() {
 }
 
 void enet_proc_input(void) {
+  // Finish any pending link status check
+  if (s_checkLinkStatusState != 0) {
+    s_checkLinkStatusState = check_link_status(s_checkLinkStatusState);
+  }
+
   if (atomic_flag_test_and_set(&s_rxNotAvail)) {
     return;
   }
@@ -1063,7 +1097,7 @@ void enet_proc_input(void) {
 
 void enet_poll() {
   sys_check_timeouts();
-  check_link_status();
+  s_checkLinkStatusState = check_link_status(s_checkLinkStatusState);
 }
 
 int phy_link_speed() {
