@@ -872,8 +872,9 @@ static void test_client_addr_info() {
   client->setConnectionTimeout(kConnectTimeout);
   t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(hostIP, kPort), "Expected connect success");
+  t = millis() - t;
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
-  TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", millis() - t).data());
+  TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", t).data());
 
   TEST_ASSERT_EQUAL_MESSAGE(kPort, client->remotePort(), "Expected correct remote port");
   TEST_ASSERT_TRUE_MESSAGE(hostIP == client->remoteIP(), "Expected correct remote IP");
@@ -881,8 +882,11 @@ static void test_client_addr_info() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == client->localIP(), "Expected correct local IP");
 
   TEST_MESSAGE("Stopping client...");
+  t = millis();
   client->stop();
+  t = millis() - t;
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected disconnected");
+  TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
 }
 
 // Tests a variety of server object states.
