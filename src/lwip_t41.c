@@ -495,6 +495,7 @@ static void configure_phy_pins() {
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
 static void configure_rmii_pins() {
+  // The NXP SDK and original Teensy 4.1 example code use pull-ups
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLUP;  // Reset this (RXEN)
