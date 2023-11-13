@@ -479,7 +479,9 @@ static void configure_phy_pins() {
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = GPIO_MUX;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
 
   GPIO7_GDIR |= (1 << 15) | (1 << 14);
-  GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);  // Start with both low
+  GPIO7_DR_CLEAR = (1 << 15);  // Power down
+  GPIO7_DR_SET   = (1 << 14);  // Start with reset de-asserted so that it can be
+                               // asserted for a specific duration
 
   // Configure the MDIO and MDC pins
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD_PULLUP;  // MDIO
@@ -540,6 +542,7 @@ static void init_phy() {
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
   GPIO7_DR_SET   = (1 << 15);  // Power on
+  delay(50);                   // Just in case; unsure if needed
   GPIO7_DR_CLEAR = (1 << 14);  // Reset
   delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o 25 debouncing caps)
   GPIO7_DR_SET   = (1 << 14);  // Take out of reset
