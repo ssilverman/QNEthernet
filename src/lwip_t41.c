@@ -44,14 +44,14 @@
 
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
-#define GPIO_PAD_OUTPUT (0                \
-    /* HYS_0_Hysteresis_Disabled */       \
-    /* PUS_0_100K_Ohm_Pull_Down */        \
-    /* PUE_0_Keeper */                    \
-    /* PKE_0_Pull_Keeper_Disabled */      \
-    /* ODE_0_Open_Drain_Disabled */       \
-    /* SPEED_0_low_50MHz */               \
-    | IOMUXC_PAD_DSE(7)  /* DSE_7_R0_7 */ \
+#define GPIO_PAD_OUTPUT (0                         \
+    /* HYS_0_Hysteresis_Disabled */                \
+    /* PUS_0_100K_Ohm_Pull_Down */                 \
+    /* PUE_0_Keeper */                             \
+    /* PKE_0_Pull_Keeper_Disabled */               \
+    /* ODE_0_Open_Drain_Disabled */                \
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */ \
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */        \
     /* SRE_0_Slow_Slew_Rate */)
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
@@ -74,15 +74,15 @@
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-#define MDIO_PAD_PULLUP (0                               \
-    /* HYS_0_Hysteresis_Disabled */                      \
-    | IOMUXC_PAD_PUS(3)  /* PUS_3_22K_Ohm_Pull_Up */     \
-    | IOMUXC_PAD_PUE     /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE     /* PKE_1_Pull_Keeper_Enabled */ \
-    | IOMUXC_PAD_ODE     /* ODE_1_Open_Drain_Enabled */  \
-    /* SPEED_0_low_50MHz */                              \
-    | IOMUXC_PAD_DSE(5)  /* DSE_5_R0_5 */                \
-    | IOMUXC_PAD_SRE     /* SRE_1_Fast_Slew_Rate */      \
+#define MDIO_PAD_PULLUP (0                                 \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */     \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
+    | IOMUXC_PAD_ODE       /* ODE_1_Open_Drain_Enabled */  \
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
     )
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
     // 0xF829
@@ -133,15 +133,15 @@
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0x00E9
 
-#define RMII_PAD_CLOCK (0                           \
-    /* HYS_0_Hysteresis_Disabled */                 \
-    /* PUS_0_100K_Ohm_Pull_Down */                  \
-    /* PUE_0_Keeper */                              \
-    /* PKE_0_Pull_Keeper_Disabled */                \
-    /* ODE_0_Open_Drain_Disabled */                 \
-    /* SPEED_0_low_50MHz */                         \
-    | IOMUXC_PAD_DSE(6)  /* DSE_6_R0_6 */           \
-    | IOMUXC_PAD_SRE     /* SRE_1_Fast_Slew_Rate */ \
+#define RMII_PAD_CLOCK (0                             \
+    /* HYS_0_Hysteresis_Disabled */                   \
+    /* PUS_0_100K_Ohm_Pull_Down */                    \
+    /* PUE_0_Keeper */                                \
+    /* PKE_0_Pull_Keeper_Disabled */                  \
+    /* ODE_0_Open_Drain_Disabled */                   \
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */    \
+    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */           \
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */ \
     )
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
