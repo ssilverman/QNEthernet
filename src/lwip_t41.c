@@ -44,14 +44,14 @@
 
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
-#define GPIO_PAD_OUTPUT (               \
-    /* HYS_0_Hysteresis_Disabled */     \
-    /* PUS_0_100K_Ohm_Pull_Down */      \
-    /* PUE_0_Keeper */                  \
-    /* PKE_0_Pull_Keeper_Disabled */    \
-    /* ODE_0_Open_Drain_Disabled */     \
-    /* SPEED_0_low_50MHz */             \
-    IOMUXC_PAD_DSE(7)  /* DSE_7_R0_7 */ \
+#define GPIO_PAD_OUTPUT (0                \
+    /* HYS_0_Hysteresis_Disabled */       \
+    /* PUS_0_100K_Ohm_Pull_Down */        \
+    /* PUE_0_Keeper */                    \
+    /* PKE_0_Pull_Keeper_Disabled */      \
+    /* ODE_0_Open_Drain_Disabled */       \
+    /* SPEED_0_low_50MHz */               \
+    | IOMUXC_PAD_DSE(7)  /* DSE_7_R0_7 */ \
     /* SRE_0_Slow_Slew_Rate */)
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
@@ -61,27 +61,29 @@
     // ALT5 (GPIO)
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
-#define STRAP_PAD_PULLUP (                                 \
+#define STRAP_PAD_PULLUP (0                                \
     /* HYS_0_Hysteresis_Disabled */                        \
-    IOMUXC_PAD_PUS(3)   |  /* PUS_3_22K_Ohm_Pull_Up */     \
-    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
-    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */     \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     /* ODE_0_Open_Drain_Disabled */                        \
-    IOMUXC_PAD_SPEED(0) |  /* SPEED_0_low_50MHz */         \
-    IOMUXC_PAD_DSE(5)      /* DSE_5_R0_5 */                \
-    /* SRE_0_Slow_Slew_Rate */)
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    /* SRE_0_Slow_Slew_Rate */                             \
+    )
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-#define MDIO_PAD_PULLUP (                                \
+#define MDIO_PAD_PULLUP (0                               \
     /* HYS_0_Hysteresis_Disabled */                      \
-    IOMUXC_PAD_PUS(3) |  /* PUS_3_22K_Ohm_Pull_Up */     \
-    IOMUXC_PAD_PUE    |  /* PUE_1_Pull */                \
-    IOMUXC_PAD_PKE    |  /* PKE_1_Pull_Keeper_Enabled */ \
-    IOMUXC_PAD_ODE    |  /* ODE_1_Open_Drain_Enabled */  \
+    | IOMUXC_PAD_PUS(3)  /* PUS_3_22K_Ohm_Pull_Up */     \
+    | IOMUXC_PAD_PUE     /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE     /* PKE_1_Pull_Keeper_Enabled */ \
+    | IOMUXC_PAD_ODE     /* ODE_1_Open_Drain_Enabled */  \
     /* SPEED_0_low_50MHz */                              \
-    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                \
-    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    | IOMUXC_PAD_DSE(5)  /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_SRE     /* SRE_1_Fast_Slew_Rate */      \
+    )
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
     // 0xF829
     // PHY docs suggest up to 2.2kohms, but this is what we got. It has an
@@ -92,51 +94,55 @@
     // SION:0 MUX_MODE:0000
     // ALT0
 
-#define RMII_PAD_PULLDOWN (                                \
+#define RMII_PAD_PULLDOWN (0                               \
     /* HYS_0_Hysteresis_Disabled */                        \
-    IOMUXC_PAD_PUS(0)   |  /* PUS_0_100K_Ohm_Pull_Down */  \
-    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
-    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */  \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     /* ODE_0_Open_Drain_Disabled */                        \
-    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */        \
-    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                  \
-    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */        \
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
+    )
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0x30E9
 
-#define RMII_PAD_PULLUP (                                  \
+#define RMII_PAD_PULLUP (0                                 \
     /* HYS_0_Hysteresis_Disabled */                        \
-    IOMUXC_PAD_PUS(2)   |  /* PUS_2_100K_Ohm_Pull_Up */    \
-    IOMUXC_PAD_PUE      |  /* PUE_1_Pull */                \
-    IOMUXC_PAD_PKE      |  /* PKE_1_Pull_Keeper_Enabled */ \
+    | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */    \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     /* ODE_0_Open_Drain_Disabled */                        \
-    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */        \
-    IOMUXC_PAD_DSE(5) |  /* DSE_5_R0_5 */                  \
-    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */        \
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
+    )
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
-#define RMII_PAD_SIGNAL (                           \
+#define RMII_PAD_SIGNAL (0                            \
+    /* HYS_0_Hysteresis_Disabled */                   \
+    /* PUS_0_100K_Ohm_Pull_Down */                    \
+    /* PUE_0_Keeper */                                \
+    /* PKE_0_Pull_Keeper_Disabled */                  \
+    /* ODE_0_Open_Drain_Disabled */                   \
+    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */   \
+    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */           \
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */ \
+    )
+    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+    // 0x00E9
+
+#define RMII_PAD_CLOCK (0                           \
     /* HYS_0_Hysteresis_Disabled */                 \
     /* PUS_0_100K_Ohm_Pull_Down */                  \
     /* PUE_0_Keeper */                              \
     /* PKE_0_Pull_Keeper_Disabled */                \
     /* ODE_0_Open_Drain_Disabled */                 \
-    IOMUXC_PAD_SPEED(3) |  /* SPEED_3_max_200MHz */ \
-    IOMUXC_PAD_DSE(6) |  /* DSE_6_R0_6 */           \
-    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
-    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
-    // 0x00E9
-
-#define RMII_PAD_CLOCK (                  \
-    /* HYS_0_Hysteresis_Disabled */       \
-    /* PUS_0_100K_Ohm_Pull_Down */        \
-    /* PUE_0_Keeper */                    \
-    /* PKE_0_Pull_Keeper_Disabled */      \
-    /* ODE_0_Open_Drain_Disabled */       \
-    /* SPEED_0_low_50MHz */               \
-    IOMUXC_PAD_DSE(6) |  /* DSE_6_R0_6 */ \
-    IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */)
+    /* SPEED_0_low_50MHz */                         \
+    | IOMUXC_PAD_DSE(6)  /* DSE_6_R0_6 */           \
+    | IOMUXC_PAD_SRE     /* SRE_1_Fast_Slew_Rate */ \
+    )
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
 
@@ -418,14 +424,18 @@ static void enable_enet_clocks() {
 
   // Configure PLL6 for 50 MHz (page 1112)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3) |
-                            CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(3) |
-                            CCM_ANALOG_PLL_ENET_DIV_SELECT(3);
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN |
-                            // CCM_ANALOG_PLL_ENET_ENET2_REF_EN |
-                            CCM_ANALOG_PLL_ENET_ENABLE |
-                            // CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(1) |
-                            CCM_ANALOG_PLL_ENET_DIV_SELECT(1);
+  CCM_ANALOG_PLL_ENET_CLR = 0
+                            | CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3)
+                            | CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(3)
+                            | CCM_ANALOG_PLL_ENET_DIV_SELECT(3)
+                            ;
+  CCM_ANALOG_PLL_ENET_SET = 0
+                            | CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN
+                            // | CCM_ANALOG_PLL_ENET_ENET2_REF_EN
+                            | CCM_ANALOG_PLL_ENET_ENABLE
+                            // | CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(1)
+                            | CCM_ANALOG_PLL_ENET_DIV_SELECT(1)
+                            ;
   CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_POWERDOWN;
   while ((CCM_ANALOG_PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK) == 0) {
     // Wait for PLL lock
@@ -446,9 +456,11 @@ static void disable_enet_clocks() {
 
   // Stop the PLL (first bypassing)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET = CCM_ANALOG_PLL_ENET_BYPASS |  // Reset to default
-                        CCM_ANALOG_PLL_ENET_POWERDOWN |
-                        CCM_ANALOG_PLL_ENET_DIV_SELECT(1);
+  CCM_ANALOG_PLL_ENET = 0
+                        | CCM_ANALOG_PLL_ENET_BYPASS         // Reset to default
+                        | CCM_ANALOG_PLL_ENET_POWERDOWN
+                        | CCM_ANALOG_PLL_ENET_DIV_SELECT(1)
+                        ;
 
   // Disable the clock for ENET
   CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
@@ -611,7 +623,7 @@ static void low_level_init() {
   for (int i = 0; i < TX_SIZE; i++) {
     s_txRing[i].buffer  = &s_txBufs[i * BUF_SIZE];
     s_txRing[i].status  = kEnetTxBdTransmitCrc;
-    s_txRing[i].extend1 = kEnetTxBdTxInterrupt |
+    s_txRing[i].extend1 = kEnetTxBdTxInterrupt  |
                           kEnetTxBdProtChecksum |
                           kEnetTxBdIpHdrChecksum;
   }
@@ -619,22 +631,25 @@ static void low_level_init() {
 
   ENET_EIMR = 0;  // This also deasserts all interrupts
 
-  ENET_RCR = ENET_RCR_NLC |     // Payload length is checked
-             ENET_RCR_MAX_FL(MAX_FRAME_LEN) |
-             ENET_RCR_CFEN |    // Discard non-pause MAC control frames
-             ENET_RCR_CRCFWD |  // CRC is stripped (ignored if PADEN)
-             ENET_RCR_PADEN |   // Padding is removed
-             ENET_RCR_RMII_MODE |
-             ENET_RCR_FCE |     // Flow control enable
+  ENET_RCR = 0
+             | ENET_RCR_NLC        // Payload length is checked
+             | ENET_RCR_MAX_FL(MAX_FRAME_LEN)
+             | ENET_RCR_CFEN       // Discard non-pause MAC control frames
+             | ENET_RCR_CRCFWD     // CRC is stripped (ignored if PADEN)
+             | ENET_RCR_PADEN      // Padding is removed
+             | ENET_RCR_RMII_MODE
+             | ENET_RCR_FCE        // Flow control enable
 #ifdef QNETHERNET_ENABLE_PROMISCUOUS_MODE
-             ENET_RCR_PROM |    // Promiscuous mode
+             | ENET_RCR_PROM       // Promiscuous mode
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
-             ENET_RCR_MII_MODE;
-  ENET_TCR = ENET_TCR_ADDINS |  // Overwrite with programmed MAC address
-             ENET_TCR_ADDSEL(0) |
-             // ENET_TCR_RFC_PAUSE |
-             // ENET_TCR_TFC_PAUSE |
-             ENET_TCR_FDEN;     // Enable full-duplex
+             | ENET_RCR_MII_MODE;
+  ENET_TCR = 0
+             | ENET_TCR_ADDINS     // Overwrite with programmed MAC address
+             | ENET_TCR_ADDSEL(0)
+             // | ENET_TCR_RFC_PAUSE
+             // | ENET_TCR_TFC_PAUSE
+             | ENET_TCR_FDEN         // Enable full-duplex
+             ;
 
   ENET_TACC = 0
 #if CHECKSUM_GEN_UDP == 0 || CHECKSUM_GEN_TCP == 0 || CHECKSUM_GEN_ICMP == 0
@@ -712,9 +727,9 @@ static void low_level_init() {
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
 static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
-  const u16_t err_mask = kEnetRxBdTrunc |
-                         kEnetRxBdOverrun |
-                         kEnetRxBdCrc |
+  const u16_t err_mask = kEnetRxBdTrunc    |
+                         kEnetRxBdOverrun  |
+                         kEnetRxBdCrc      |
                          kEnetRxBdNonOctet |
                          kEnetRxBdLengthViolation;
 
@@ -782,8 +797,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
                                   uint16_t len) {
   pBD->length = len;
   pBD->status = (pBD->status & kEnetTxBdWrap) |
-                kEnetTxBdTransmitCrc |
-                kEnetTxBdLast |
+                kEnetTxBdTransmitCrc          |
+                kEnetTxBdLast                 |
                 kEnetTxBdReady;
 
   ENET_TDAR = ENET_TDAR_TDAR;
@@ -832,12 +847,14 @@ static err_t init_netif(struct netif *netif) {
   netif->linkoutput = low_level_output;
   netif->output = etharp_output;
   netif->mtu = MTU;
-  netif->flags = NETIF_FLAG_BROADCAST |
-                 NETIF_FLAG_ETHARP |
+  netif->flags = 0
+                 | NETIF_FLAG_BROADCAST
+                 | NETIF_FLAG_ETHARP
+                 | NETIF_FLAG_ETHERNET
 #if LWIP_IGMP
-                 NETIF_FLAG_IGMP |
+                 | NETIF_FLAG_IGMP
 #endif  // LWIP_IGMP
-                 NETIF_FLAG_ETHERNET;
+                 ;
 
   SMEMCPY(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
