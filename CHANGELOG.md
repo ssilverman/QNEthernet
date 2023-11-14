@@ -21,7 +21,7 @@ and this project adheres to
 * Updated the tests:
   * Added a 10s connection timeout to `test_client_addr_info()`
   * Added SNTP retries to `test_udp()`
-  * Updated some messages
+  * Updated and added some messages
 * Made `MDNSClass::Service::operator==()` `const`.
 * Completely revamped PHY and pin initialization.
 * Gated PHY and Ethernet shutdown in `EthernetClass::end()` a macro; the default
