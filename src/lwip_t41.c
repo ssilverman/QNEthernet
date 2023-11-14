@@ -915,7 +915,7 @@ static inline int check_link_status(int state) {
 
   switch (state) {
     case 0:
-      [[fallthrough]];
+      // Fallthrough
     case 1:
       if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
         return 1;
@@ -924,7 +924,7 @@ static inline int check_link_status(int state) {
       if (!is_link_up) {
         break;
       }
-      [[fallthrough]];
+      // Fallthrough
 
     case 2:
       if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
