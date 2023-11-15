@@ -1200,7 +1200,7 @@ Here are the steps to add decorated TCP:
 2. Implement two functions somewhere in your code, having these names and
    signatures:
    ```c++
-   std::function<void(const ip_addr_t *ipaddr, uint16_t port,
+   std::function<bool(const ip_addr_t *ipaddr, uint16_t port,
                       altcp_allocator_t *allocator)> qnethernet_get_allocator;
    std::function<void(altcp_allocator_t *allocator)> qnethernet_free_allocator;
    ```
@@ -1221,7 +1221,8 @@ need an argument, but `altcp_tls_alloc()` needs a pointer to a
 The second function frees any resources that haven't already been freed. It's up
 to the application and TCP wrapper implementation to properly manage resources
 and to provide a way to determine whether a resource needs to be freed. It is
-only called if a socket could not be created.
+only called if `qnethernet_get_allocator` returns `true` and a socket could not
+be created.
 
 The `ipaddr` and `port` parameters indicate what the calling code is trying
 to do:

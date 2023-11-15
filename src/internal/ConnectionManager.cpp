@@ -34,13 +34,14 @@
 //
 // If the socket could not be created, then qnethernet_free_allocator() is
 // called with the same allocator.
-extern std::function<void(const ip_addr_t *ipaddr, uint16_t port,
+extern std::function<bool(const ip_addr_t *ipaddr, uint16_t port,
                           altcp_allocator_t *allocator)>
     qnethernet_get_allocator;
 
-// This function is called if the socket could not be created. It is called with
-// the same allocator as qnethernet_get_allocator(). This is an opportunity to
-// free the argument if it has not already been freed.
+// This function is called if qnethernet_get_allocator() returns true and the
+// socket could not be created. It is called with the same allocator as
+// qnethernet_get_allocator(). This is an opportunity to free the argument if it
+// has not already been freed.
 extern std::function<void(const altcp_allocator_t *allocator)>
     qnethernet_free_allocator;
 #endif  // LWIP_ALTCP
@@ -264,11 +265,13 @@ static altcp_pcb *create_altcp_pcb([[maybe_unused]] const ip_addr_t *ipaddr,
                                    [[maybe_unused]] uint16_t port,
                                    u8_t ip_type) {
 #if LWIP_ALTCP
+  altcp_pcb *pcb = nullptr;
   altcp_allocator_t allocator{nullptr, nullptr};
-  qnethernet_get_allocator(ipaddr, port, &allocator);
-  altcp_pcb *pcb = altcp_new_ip_type(&allocator, ip_type);
-  if (pcb == nullptr) {
-    qnethernet_free_allocator(&allocator);
+  if (qnethernet_get_allocator(ipaddr, port, &allocator)) {
+    pcb = altcp_new_ip_type(&allocator, ip_type);
+    if (pcb == nullptr) {
+      qnethernet_free_allocator(&allocator);
+    }
   }
   return pcb;
 #else

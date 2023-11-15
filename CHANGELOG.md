@@ -28,6 +28,7 @@ and this project adheres to
   behaviour is to not execute these blocks. This and the previous are part of
   the quest to figure out why performance drops off a cliff when Ethernet is
   restarted via first calling `end()`.
+* Changed return type of `qnethernet_get_allocator` to `bool`.
 
 ## [0.25.0]
 

@@ -51,7 +51,7 @@ struct altcp_proxyconnect_config proxyConfig {
 // using the IP address and port to choose one. If creating the socket
 // failed then qnethernet_free_allocator() is called to free any
 // resources that haven't already been freed.
-std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
+std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
     qnethernet_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                   altcp_allocator_t *allocator) {
       printf("[[qnethernet_allocator_arg(%s, %u): %s]]\r\n",
@@ -84,6 +84,7 @@ std::function<void(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
             break;
         }
       }
+      return true;
     };
 
 // The qnethernet_free_allocator() function frees any resources
