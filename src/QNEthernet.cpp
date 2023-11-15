@@ -571,7 +571,7 @@ EthernetClass::operator bool() const {
 
 bool EthernetClass::hostByName(const char *hostname, IPAddress &ip) {
 #if LWIP_DNS
-  if (netif_ != nullptr) {
+  if (netif_ == nullptr) {
     return false;
   }
   return DNSClient::getHostByName(hostname, ip,
