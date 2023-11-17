@@ -54,7 +54,7 @@ struct altcp_proxyconnect_config proxyConfig {
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
     qnethernet_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                   altcp_allocator_t *allocator) {
-      printf("[[qnethernet_allocator_arg(%s, %u): %s]]\r\n",
+      printf("[[qnethernet_get_allocator(%s, %u): %s]]\r\n",
              ipaddr_ntoa(ipaddr), port,
              (ipaddr == NULL) ? "Listen" : "Connect");
 
@@ -74,12 +74,12 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
             allocator->alloc = &altcp_tcp_alloc;
             allocator->arg   = nullptr;
             break;
-  #if LWIP_ALTCP_TLS
+#if LWIP_ALTCP_TLS
           case 443:
             allocator->alloc = &altcp_tls_alloc;
             allocator->arg   = get_altcp_tls_config();  // TBD by you, the user
             break;
-  #endif  // LWIP_ALTCP_TLS
+#endif  // LWIP_ALTCP_TLS
           default:
             break;
         }
