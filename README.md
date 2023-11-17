@@ -1617,6 +1617,7 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 * [Dan Drown's NTP server and 1588 timestamps](https://forum.pjrc.com/threads/61581-Teensy-4-1-NTP-server)
 * [Dan Drown's modifications to Paul's code](https://github.com/ddrown/teensy41_ethernet)
 * [Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library](https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library)
+* [Juraj Andrássy's Arduino Networking API documentation](https://github.com/JAndrassy/Arduino-Networking-API)
 
 ---
 
