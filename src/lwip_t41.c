@@ -1099,7 +1099,7 @@ bool enet_ieee1588_set_channel_mode(int channel, int mode) {
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode);
+  *tcsr = ENET_TCSR_TMODE(mode)| ENET_TCSR_TIE;
 
   return true;
 }
@@ -1128,7 +1128,7 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1);
+  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1)| ENET_TCSR_TIE;
 
   return true;
 }
