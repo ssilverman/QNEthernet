@@ -200,7 +200,6 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define LWIP_TCP                   1
 #endif  // !LWIP_TCP
 // #define TCP_TTL                    IP_DEFAULT_TTL
-// #define TCP_WND                    (4 * TCP_MSS)
 // #define TCP_MAXRTX                 12
 // #define TCP_SYNMAXRTX              6
 // #define TCP_QUEUE_OOSEQ            LWIP_TCP
@@ -232,8 +231,19 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define LWIP_WND_SCALE             0
 // #define TCP_RCV_SCALE              0
 // #define LWIP_TCP_PCB_NUM_EXT_ARGS  0
+#ifndef LWIP_ALTCP
 // #define LWIP_ALTCP                 0
+#endif  // !LWIP_ALTCP
+#ifndef LWIP_ALTCP_TLS
 // #define LWIP_ALTCP_TLS             0
+#endif  // !LWIP_ALTCP_TLS
+#ifndef TCP_WND
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+#define TCP_WND                    (16 * 1024)  /* 16KiB for TLS */
+#else
+// #define TCP_WND                    (4 * TCP_MSS)
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
+#endif  // !TCP_WND
 
 // Pbuf options
 // #define PBUF_LINK_HLEN                (14 + ETH_PAD_SIZE) or (18 + ETH_PAD_SIZE)
@@ -526,5 +536,21 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define MDNS_MAX_SERVICES   3  /* 1 */
 #endif  // !MDNS_MAX_SERVICES
 // #define MDNS_DEBUG          LWIP_DBG_OFF
+
+// Mbed TLS options
+// See lwip/apps/altcp_tls_mbedtls_opts.h for descriptions
+#ifndef LWIP_ALTCP_TLS_MBEDTLS
+// #define LWIP_ALTCP_TLS_MBEDTLS                       0
+#endif  // !LWIP_ALTCP_TLS_MBEDTLS
+// #define ALTCP_MBEDTLS_DEBUG                          LWIP_DBG_OFF
+// #define ALTCP_MBEDTLS_LIB_DEBUG                      LWIP_DBG_OFF
+// #define ALTCP_MBEDTLS_LIB_DEBUG_LEVEL_MIN            0
+// #define ALTCP_MBEDTLS_USE_SESSION_CACHE              0
+// #define ALTCP_MBEDTLS_SESSION_CACHE_SIZE             30
+// #define ALTCP_MBEDTLS_SESSION_CACHE_TIMEOUT_SECONDS  (60 * 60)
+// #define ALTCP_MBEDTLS_USE_SESSION_TICKETS            0
+// #define ALTCP_MBEDTLS_SESSION_TICKET_CIPHER          MBEDTLS_CIPHER_AES_256_GCM
+// #define ALTCP_MBEDTLS_SESSION_TICKET_TIMEOUT_SECONDS (60 * 60 * 24)
+// #define ALTCP_MBEDTLS_AUTHMODE                       MBEDTLS_SSL_VERIFY_OPTIONAL
 
 #endif  // QNETHERNET_LWIPOPTS_H_
