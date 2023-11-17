@@ -938,6 +938,7 @@ void enet_leave_group(const ip4_addr_t *group) {
 #define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
+#define ENET_TCSR_TIE        ((uint32_t)(1U << 6))
 
 void enet_ieee1588_init() {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
@@ -1026,7 +1027,7 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
     return false;
   }
-  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC(corrInc));
+  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
   ENET_ATCOR = corrPeriod | ENET_ATCOR_COR_MASK;
   return true;
 }
@@ -1098,7 +1099,7 @@ bool enet_ieee1588_set_channel_mode(int channel, int mode) {
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode);
+  *tcsr = ENET_TCSR_TMODE(mode)| ENET_TCSR_TIE;
 
   return true;
 }
@@ -1127,7 +1128,7 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1);
+  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1)| ENET_TCSR_TIE;
 
   return true;
 }
