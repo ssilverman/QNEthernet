@@ -29,8 +29,8 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                         altcp_allocator_t *allocator) {
       printf("[[qnethernet_altcp_get_allocator(%s, %u): %s]]\r\n",
-             ipaddr_ntoa(ipaddr), port,
-             (ipaddr == NULL) ? "Listen" : "Connect");
+             (ipaddr == nullptr) ? nullptr : ipaddr_ntoa(ipaddr), port,
+             (ipaddr == nullptr) ? "Listen" : "Connect");
 
       switch (port) {
         case 80:
