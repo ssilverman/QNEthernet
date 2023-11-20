@@ -46,15 +46,15 @@ struct altcp_proxyconnect_config proxyConfig {
 };
 // Note: There's also a TLS proxyconnect; this can be an exercise for the reader
 
-// The qnethernet_get_allocator() function fills in the given
+// The qnethernet_altcp_get_allocator() function fills in the given
 // allocator with an appropriate allocator function and argument,
 // using the IP address and port to choose one. If creating the socket
-// failed then qnethernet_free_allocator() is called to free any
+// failed then qnethernet_altcp_free_allocator() is called to free any
 // resources that haven't already been freed.
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
-    qnethernet_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
-                                  altcp_allocator_t *allocator) {
-      printf("[[qnethernet_get_allocator(%s, %u): %s]]\r\n",
+    qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
+                                        altcp_allocator_t *allocator) {
+      printf("[[qnethernet_altcp_get_allocator(%s, %u): %s]]\r\n",
              ipaddr_ntoa(ipaddr), port,
              (ipaddr == NULL) ? "Listen" : "Connect");
 
@@ -87,13 +87,13 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
       return true;
     };
 
-// The qnethernet_free_allocator() function frees any resources
-// allocated with qnethernet_get_allocator() if they haven't already
+// The qnethernet_altcp_free_allocator() function frees any resources
+// allocated with qnethernet_altcp_get_allocator() if they haven't already
 // been freed. It is up to the implementation to decide if a resource
 // has already been freed or not.
-std::function<void(const altcp_allocator_t *)> qnethernet_free_allocator =
+std::function<void(const altcp_allocator_t *)> qnethernet_altcp_free_allocator =
     [](const altcp_allocator_t *allocator) {
-      printf("[[qnethernet_free_allocator()]]\r\n");
+      printf("[[qnethernet_altcp_free_allocator()]]\r\n");
       // For the proxyConfig and for altcp_tcp_alloc,
       // there's nothing to free
 #if LWIP_ALTCP_TLS

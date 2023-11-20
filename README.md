@@ -1206,8 +1206,8 @@ Here are the steps to add decorated TCP:
    signatures:
    ```c++
    std::function<bool(const ip_addr_t *ipaddr, uint16_t port,
-                      altcp_allocator_t *allocator)> qnethernet_get_allocator;
-   std::function<void(altcp_allocator_t *allocator)> qnethernet_free_allocator;
+                      altcp_allocator_t *allocator)> qnethernet_altcp_get_allocator;
+   std::function<void(altcp_allocator_t *allocator)> qnethernet_altcp_free_allocator;
    ```
 3. Implement all the functions necessary for the wrapping implementation. For
    example, for TLS, this means all the functions declared in
@@ -1229,8 +1229,8 @@ The connection will fail if the allocator function is set to NULL.
 The second function frees any resources that haven't already been freed. It's up
 to the application and TCP wrapper implementation to properly manage resources
 and to provide a way to determine whether a resource needs to be freed. It is
-only called if `qnethernet_get_allocator` returns `true` and a socket could not
-be created.
+only called if `qnethernet_altcp_get_allocator` returns `true` and a socket
+could not be created.
 
 The `ipaddr` and `port` parameters indicate what the calling code is trying
 to do:
@@ -1251,7 +1251,8 @@ of how to use this feature:
    2. LWIP_ALTCP_TLS &mdash; Enables the TLS features of ALTCP
    3. LWIP_ALTCP_TLS_MBEDTLS &mdash; Enables the Mbed TLS code for ALTCP TLS
 2. Install the latest Mbed TLS v2.x.x.
-3. Implement `qnethernet_get_allocator` and `qnethernet_free_allocator`.
+3. Implement `qnethernet_altcp_get_allocator`
+   and `qnethernet_altcp_free_allocator`.
 4. Implement an entropy function for internal Mbed TLS use.
 
 #### Allocator functions for Mbed TLS
@@ -1259,7 +1260,7 @@ of how to use this feature:
 For both allocator functions, see the signatures above. Also check out example
 implementations in the _MbedTLSDemo_ example.
 
-The `qnethernet_get_allocator` function needs to set an allocator and its
+The `qnethernet_altcp_get_allocator` function needs to set an allocator and its
 arguments. For regular TCP, set them as follows:
 
 ```c++
@@ -1293,10 +1294,10 @@ possible in HTTP to upgrade a connection to HTTPS, so the application may wish
 to consider that too. That is, currently, beyond the scope of this
 document, however.
 
-The `qnethernet_free_allocator` function is only called if
-`qnethernet_get_allocator` returns false and a socket could not be created. The
-application should still only actually free the allocator contents if it is
-known that they can be freed. The application needs to manage this.
+The `qnethernet_altcp_free_allocator` function is only called if
+`qnethernet_altcp_get_allocator` returns false and a socket could not be
+created. The application should still only actually free the allocator contents
+if it is known that they can be freed. The application needs to manage this.
 
 An implementation might look something like this:
 
@@ -1413,8 +1414,8 @@ To create a client config with certificates:
 To create a client config with 2-way auth:
 `altcp_tls_create_config_client_2wayauth(...)`
 
-These functions would usually called in the `qnethernet_get_allocator(...)`
-function.
+These functions would usually called in the
+`qnethernet_altcp_get_allocator(...)` function.
 
 ## On connections that hang around after cable disconnect
 

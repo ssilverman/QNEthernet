@@ -29,6 +29,9 @@ and this project adheres to
   the quest to figure out why performance drops off a cliff when Ethernet is
   restarted via first calling `end()`.
 * Changed return type of `qnethernet_get_allocator` to `bool`.
+* Renamed `qnethernet_get_allocator` and `qnethernet_free_allocator` to
+  `qnetheret_altcp_get_allocator` and `qnethernet_altcp_free_allocator`,
+  respectively.
 
 ## [0.25.0]
 
