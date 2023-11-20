@@ -43,6 +43,43 @@ EthernetClient client;
 bool disconnectedPrintLatch = false;  // Print "disconnected" only once
 size_t dataCount = 0;
 
+// Mbed TLS adapter functions
+
+std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_mbedtls_is_tls =
+    [](const ip_addr_t *ipaddr, uint16_t port) {
+      printf("[[qnethernet_mbedtls_is_tls(%s, %u): %s]]\r\n",
+             (ipaddr == nullptr) ? nullptr : ipaddr_ntoa(ipaddr), port,
+             (ipaddr == nullptr) ? "Listen" : "Connect");
+
+      if (port == 443) {
+        if (ipaddr == nullptr) {
+          printf("qnethernet_mbedtls_is_tls: creating server config...\r\n");
+        } else {
+          printf("qnethernet_mbedtls_is_tls: creating client config...\r\n");
+        }
+        return true;
+      }
+      return false;
+    };
+
+std::function<void(const uint8_t *&, size_t &)>
+    qnethernet_altcp_tls_client_cert =
+        [](const uint8_t *&cert, size_t &cert_len) {
+          // All are initialized to NULL or zero
+          printf("[[qnethernet_altcp_tls_client_cert]] No certificate\r\n");
+        };
+
+std::function<void(const uint8_t *&, size_t &,
+                   const uint8_t *&, size_t &,
+                   const uint8_t *&, size_t &)>
+    qnethernet_altcp_tls_server_cert =
+        [](const uint8_t *&privkey,      size_t &privkey_len,
+           const uint8_t *&privkey_pass, size_t &privkey_pass_len,
+           const uint8_t *&cert,         size_t &cert_len) {
+          // All are initialized to NULL or zero
+          printf("[[qnethernet_altcp_tls_server_cert]] No certificate\r\n");
+        };
+
 // Program setup.
 void setup() {
   Serial.begin(115200);
