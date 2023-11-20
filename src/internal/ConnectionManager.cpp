@@ -26,7 +26,8 @@
 #if LWIP_ALTCP
 // This is a function that fills in the given 'altcp_allocator_t' with an
 // allocator function and an argument. The values are used by 'altcp_new()' to
-// create the appropriate socket type.
+// create the appropriate socket type. This returns whether the allocator and
+// argument were successfully created.
 //
 // The arguments indicate what the calling code is trying to do:
 // 1. If ipaddr is NULL then the application is trying to listen.

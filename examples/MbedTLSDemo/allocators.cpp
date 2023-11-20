@@ -23,6 +23,8 @@
 // using the IP address and port to choose one. If creating the socket
 // failed then qnethernet_altcp_free_allocator() is called to free any
 // resources that haven't already been freed.
+//
+// This returns false if the config could not be created and true otherwise.
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                         altcp_allocator_t *allocator) {
