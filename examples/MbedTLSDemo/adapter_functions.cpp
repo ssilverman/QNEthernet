@@ -16,6 +16,7 @@
 
 #if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
+// Determines if a connection should use TLS.
 std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_mbedtls_is_tls =
     [](const ip_addr_t *ipaddr, uint16_t port) {
       // Given the IP address and port, determine if the connection
@@ -35,6 +36,7 @@ std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_mbedtls_is_tls =
       return false;
     };
 
+// Gets the client certificate data.
 std::function<void(const ip_addr_t &, uint16_t, const uint8_t *&, size_t &)>
     qnethernet_altcp_tls_client_cert =
         [](const ip_addr_t &ipaddr, uint16_t port,
@@ -49,6 +51,7 @@ std::function<void(const ip_addr_t &, uint16_t, const uint8_t *&, size_t &)>
           // determine which data to use
         };
 
+// Gets the server certificate count.
 std::function<uint8_t(uint16_t)> qnethernet_altcp_tls_server_cert_count =
     [](uint16_t port) {
       // The number of times qnethernet_altcp_tls_server_cert will
@@ -56,6 +59,7 @@ std::function<uint8_t(uint16_t)> qnethernet_altcp_tls_server_cert_count =
       return 0;
     };
 
+// Gets the server certificate data.
 std::function<void(uint16_t, uint8_t,
                    const uint8_t *&, size_t &,
                    const uint8_t *&, size_t &,
