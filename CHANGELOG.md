@@ -12,6 +12,12 @@ and this project adheres to
 * Added `EthernetClient::localIP()`.
 * Added `EthernetClass::hostByName(hostname, ip)` convenience function.
 * Added `EthernetClass::setDNSServerIP(index, ip)` and `dnsServerIP(index)`.
+* Added some support for Mbed TLS v2.x.x. See the new
+  _src/mbedtls/mbedtls_adapter.cpp_ file for new adapter function definitions:
+  1. `qnethernet_mbedtls_is_tls`
+  2. `qnethernet_altcp_tls_client_cert`
+  3. `qnethernet_altcp_tls_server_cert_count`
+  4. `qnethernet_altcp_tls_server_cert`
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).
