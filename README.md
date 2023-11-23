@@ -1206,7 +1206,7 @@ Here are the steps to add decorated TCP:
    ```c++
    std::function<bool(const ip_addr_t *ipaddr, uint16_t port,
                       altcp_allocator_t *allocator)> qnethernet_altcp_get_allocator;
-   std::function<void(altcp_allocator_t *allocator)> qnethernet_altcp_free_allocator;
+   std::function<void(const altcp_allocator_t *allocator)> qnethernet_altcp_free_allocator;
    ```
 3. Implement all the functions necessary for the wrapping implementation. For
    example, for TLS, this means all the functions declared in
