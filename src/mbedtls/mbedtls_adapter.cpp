@@ -57,11 +57,11 @@ extern std::function<void(
 // resources that haven't already been freed.
 //
 // This returns false if the config could not be created and true otherwise.
-std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
+std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
-                                        altcp_allocator_t *allocator) {
+                                        altcp_allocator_t &allocator) {
       if (qnethernet_mbedtls_is_tls(ipaddr, port)) {  // TLS
-        allocator->alloc = &altcp_tls_alloc;
+        allocator.alloc = &altcp_tls_alloc;
         if (ipaddr == nullptr) {  // Server
           const uint8_t *privkey;
           size_t privkey_len;
@@ -76,7 +76,7 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
           if (config == nullptr) {
             return false;
           }
-          allocator->arg = config;
+          allocator.arg = config;
           for (uint8_t i = 0; i < cert_count; i++) {
             privkey = nullptr;
             privkey_len = 0;
@@ -96,25 +96,25 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
                 cert, cert_len);
           }
           if (cert != nullptr && cert_len > 0) {
-            allocator->arg = altcp_tls_create_config_server_privkey_cert(
+            allocator.arg = altcp_tls_create_config_server_privkey_cert(
                 privkey, privkey_len,
                 privkey_pass, privkey_pass_len,
                 cert, cert_len);
           } else {
-            allocator->arg = altcp_tls_create_config_server(0);
+            allocator.arg = altcp_tls_create_config_server(0);
           }
         } else {  // Client
           const uint8_t *cert = nullptr;
           size_t cert_len = 0;
           qnethernet_altcp_tls_client_cert(*ipaddr, port, cert, cert_len);
-          allocator->arg = altcp_tls_create_config_client(cert, cert_len);
+          allocator.arg = altcp_tls_create_config_client(cert, cert_len);
         }
-        if (allocator->arg == nullptr) {
+        if (allocator.arg == nullptr) {
           return false;
         }
       } else {  // Not TLS
-        allocator->alloc = &altcp_tcp_alloc;
-        allocator->arg = nullptr;
+        allocator.alloc = &altcp_tcp_alloc;
+        allocator.arg = nullptr;
       }
       return true;
     };
@@ -123,12 +123,12 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t *)>
 // allocated with qnethernet_altcp_get_allocator() if they haven't already
 // been freed. It is up to the implementation to decide if a resource
 // has already been freed or not.
-std::function<void(const altcp_allocator_t *)> qnethernet_altcp_free_allocator =
-    [](const altcp_allocator_t *allocator) {
+std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
+    [](const altcp_allocator_t &allocator) {
       // For altcp_tcp_alloc, there's nothing to free
-      if (allocator->alloc == &altcp_tls_alloc) {
+      if (allocator.alloc == &altcp_tls_alloc) {
         struct altcp_tls_config *config =
-            (struct altcp_tls_config *)allocator->arg;
+            (struct altcp_tls_config *)allocator.arg;
         if (config != nullptr) {
           altcp_tls_free_config(config);
         }

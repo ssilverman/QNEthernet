@@ -38,6 +38,8 @@ and this project adheres to
 * Renamed `qnethernet_get_allocator` and `qnethernet_free_allocator` to
   `qnetheret_altcp_get_allocator` and `qnethernet_altcp_free_allocator`,
   respectively.
+* Changed `qnethernet_get_allocator` and `qnethernet_free_allocator` `allocator`
+  parameter to be a reference.
 
 ## [0.25.0]
 
