@@ -17,19 +17,19 @@
 #if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
 // Determines if a connection should use TLS.
-std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_mbedtls_is_tls =
+std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
     [](const ip_addr_t *ipaddr, uint16_t port) {
       // Given the IP address and port, determine if the connection
       // needs to use TLS
-      printf("[[qnethernet_mbedtls_is_tls(%s, %" PRIu16 "): %s]]\r\n",
+      printf("[[qnethernet_altcp_is_tls(%s, %" PRIu16 "): %s]]\r\n",
              (ipaddr == nullptr) ? nullptr : ipaddr_ntoa(ipaddr), port,
              (ipaddr == nullptr) ? "Listen" : "Connect");
 
       if (port == 443) {
         if (ipaddr == nullptr) {
-          printf("qnethernet_mbedtls_is_tls: creating server config...\r\n");
+          printf("qnethernet_altcp_is_tls: creating server config...\r\n");
         } else {
-          printf("qnethernet_mbedtls_is_tls: creating client config...\r\n");
+          printf("qnethernet_altcp_is_tls: creating client config...\r\n");
         }
         return true;
       }

@@ -19,7 +19,7 @@
 // Determines if the connection should use TLS. The IP address will be NULL for
 // a server connection.
 extern std::function<bool(const ip_addr_t *ip, uint16_t port)>
-    qnethernet_mbedtls_is_tls;
+    qnethernet_altcp_is_tls;
 
 // Retrieves the certificate for a client connection. The values are initialized
 // to NULL and zero, respectively, before calling this function.
@@ -60,7 +60,7 @@ extern std::function<void(
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                         altcp_allocator_t &allocator) {
-      if (qnethernet_mbedtls_is_tls(ipaddr, port)) {  // TLS
+      if (qnethernet_altcp_is_tls(ipaddr, port)) {  // TLS
         allocator.alloc = &altcp_tls_alloc;
         if (ipaddr == nullptr) {  // Server
           const uint8_t *privkey;

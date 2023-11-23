@@ -1329,7 +1329,7 @@ Mbed TLS integration. It specifies new functions that make it a little easier
 to integrate the library. These are as follows:
 
 1. Type: `std::function<bool(const ip_addr_t *ip, uint16_t port)>`\
-   Name: `qnethernet_mbedtls_is_tls`\
+   Name: `qnethernet_altcp_is_tls`\
    Description: Determines if the connection should use TLS. The IP address will
                 be NULL for a server connection.
 2. Type: `std::function<void(const ip_addr_t &ipaddr, uint16_t port,
