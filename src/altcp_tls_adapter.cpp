@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// mbedtls_adapter.cpp simplifies Mbed TLS integration with QNEthernet's
+// altcp_tls_adapter.cpp simplifies altcp TLS integration with QNEthernet's
 // altcp approach.
 // This file is part of the QNEthernet library.
 
@@ -14,7 +14,7 @@
 #include "lwip/ip_addr.h"
 #include "lwip/opt.h"
 
-#if LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
 
 // Determines if the connection should use TLS. The IP address will be NULL for
 // a server connection.
@@ -135,4 +135,4 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
       }
     };
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
