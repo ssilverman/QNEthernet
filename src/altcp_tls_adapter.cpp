@@ -95,14 +95,6 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
                 privkey_pass, privkey_pass_len,
                 cert, cert_len);
           }
-          if (cert != nullptr && cert_len > 0) {
-            allocator.arg = altcp_tls_create_config_server_privkey_cert(
-                privkey, privkey_len,
-                privkey_pass, privkey_pass_len,
-                cert, cert_len);
-          } else {
-            allocator.arg = altcp_tls_create_config_server(0);
-          }
         } else {  // Client
           const uint8_t *cert = nullptr;
           size_t cert_len = 0;
