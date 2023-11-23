@@ -71,6 +71,9 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
       } else {
         switch (port) {
           case 80:
+            // We could also do this in the default case; assigning
+            // the regular TCP allocator for only port 80 is just
+            // for illustration
             allocator.alloc = &altcp_tcp_alloc;
             allocator.arg   = nullptr;
             break;
@@ -81,7 +84,10 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
             break;
 #endif  // LWIP_ALTCP_TLS
           default:
-            break;
+            // Returning false here is just to illustrate that
+            // nothing's been filled in; we could also just assign the
+            // regular TCP allocator
+            return false;
         }
       }
       return true;
