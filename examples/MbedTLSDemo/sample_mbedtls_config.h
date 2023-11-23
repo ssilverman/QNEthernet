@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// mbedtls_config.h defines the project's Mbed TLS configuration. It is an
-// example only and not used here.
+// sample_mbedtls_config.h is a sample Mbed TLS configuration. It is
+// an example only and not used here.
 //
 // This file is part of the QNEthernet library.
 
