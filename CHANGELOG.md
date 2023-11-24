@@ -12,9 +12,9 @@ and this project adheres to
 * Added `EthernetClient::localIP()`.
 * Added `EthernetClass::hostByName(hostname, ip)` convenience function.
 * Added `EthernetClass::setDNSServerIP(index, ip)` and `dnsServerIP(index)`.
-* Added some support for Mbed TLS v2.x.x. See the new
-  _src/mbedtls/mbedtls_adapter.cpp_ file for new adapter function definitions:
-  1. `qnethernet_mbedtls_is_tls`
+* Added some support for Mbed TLS v2.x.x. There's four new adapter functions
+  for assisting integration (see _src/altcp_tls_adapter.cpp_):
+  1. `qnethernet_altcp_is_tls`
   2. `qnethernet_altcp_tls_client_cert`
   3. `qnethernet_altcp_tls_server_cert_count`
   4. `qnethernet_altcp_tls_server_cert`
@@ -30,10 +30,10 @@ and this project adheres to
   * Updated and added some messages
 * Made `MDNSClass::Service::operator==()` `const`.
 * Completely revamped PHY and pin initialization.
-* Gated PHY and Ethernet shutdown in `EthernetClass::end()` a macro; the default
-  behaviour is to not execute these blocks. This and the previous are part of
-  the quest to figure out why performance drops off a cliff when Ethernet is
-  restarted via first calling `end()`.
+* Gated PHY and Ethernet shutdown in `EthernetClass::end()` with a macro; the
+  default behaviour is to not execute these blocks. This and the previous are
+  part of the quest to figure out why performance drops off a cliff when
+  Ethernet is restarted via first calling `end()`.
 * Changed return type of `qnethernet_get_allocator` to `bool`.
 * Renamed `qnethernet_get_allocator` and `qnethernet_free_allocator` to
   `qnetheret_altcp_get_allocator` and `qnethernet_altcp_free_allocator`,
