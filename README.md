@@ -1290,6 +1290,8 @@ of how to use this feature:
    1. LWIP_ALTCP &mdash; Enables the ALTCP layer
    2. LWIP_ALTCP_TLS &mdash; Enables the TLS features of ALTCP
    3. LWIP_ALTCP_TLS_MBEDTLS &mdash; Enables the Mbed TLS code for ALTCP TLS
+   4. QNETHERNET_ALTCP_TLS_ADAPTER &mdash; Enables the _altcp_tls_adapter_
+      functions that help ease integration
 2. Install the latest Mbed TLS v2.x.x.
 3. Implement the functions required by _src/altcp_tls_adapter.cpp_. This file
    implements the above allocator functions and simplifies the integration.
