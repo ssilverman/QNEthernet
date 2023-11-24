@@ -13,7 +13,8 @@ and this project adheres to
 * Added `EthernetClass::hostByName(hostname, ip)` convenience function.
 * Added `EthernetClass::setDNSServerIP(index, ip)` and `dnsServerIP(index)`.
 * Added some support for Mbed TLS v2.x.x. There's four new adapter functions
-  for assisting integration (see _src/altcp_tls_adapter.cpp_):
+  for assisting integration (see _src/altcp_tls_adapter.cpp_), included if the
+  `QNETHERNET_ALTCP_TLS_ADAPTER` option is set:
   1. `qnethernet_altcp_is_tls`
   2. `qnethernet_altcp_tls_client_cert`
   3. `qnethernet_altcp_tls_server_cert_count`
