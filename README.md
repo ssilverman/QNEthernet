@@ -58,9 +58,10 @@ lwIP release.
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
     1. [About the allocator functions](#about-the-allocator-functions)
-    2. [How to enable Mbed TLS](#how-to-enable-mbed-tls)
+    2. [About the TLS adapter functions](#about-the-tls-adapter-functions)
+    3. [How to enable Mbed TLS](#how-to-enable-mbed-tls)
        1. [Installing the Mbed TLS library](#installing-the-mbed-tls-library)
-       2. [Implementing the mbedtls_adapter functions](#implementing-the-mbedtls_adapter-functions)
+       2. [Implementing the altcp_tls_adapter functions](#implementing-the-altcp_tls_adapter-functions)
        3. [Implementing the entropy function](#implementing-the-entropy-function)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
@@ -1237,6 +1238,44 @@ to do:
 1. If `ipaddr` is NULL then the application is trying to listen.
 2. If `ipaddr` is not NULL then the application is trying to connect.
 
+### About the TLS adapter functions
+
+The _src/altcp_tls_adapter.cpp_ file implements the allocator functions for
+altcp TLS integration. It specifies new functions that make it a little easier
+to integrate a library. These are as follows:
+
+1. Type: `std::function<bool(const ip_addr_t *ip, uint16_t port)>`\
+   Name: `qnethernet_altcp_is_tls`\
+   Description: Determines if the connection should use TLS. The IP address will
+                be NULL for a server connection.
+2. Type: `std::function<void(const ip_addr_t &ipaddr, uint16_t port,
+                             const uint8_t *&cert, size_t &cert_len)>`\
+   Name: `qnethernet_altcp_tls_client_cert`\
+   Note: All the arguments are references.\
+   Description: Retrieves the certificate for a client connection. The values
+                are initialized to NULL and zero, respectively, before this
+                function is called. The IP address and port can be used to
+                determine the certificate data, if needed.
+3. Type: `std::function<uint8_t(uint16_t port)>`\
+   Name: `qnethernet_altcp_tls_server_cert_count`\
+   Description: Returns the certificate count for a server connection.
+4. Type: `std::function<void(uint16_t port, uint8_t index,
+                             const uint8_t *&privkey,      size_t &privkey_len,
+                             const uint8_t *&privkey_pass, size_t &privkey_pass_len,
+                             const uint8_t *&cert,         size_t &cert_len)>`\
+   Name: `qnethernet_altcp_tls_server_cert`\
+   Description: Retrieves the certificate and private key for a server
+                connection. The values are initialized to NULL and zero before
+                this function is called. It will be called for each server
+                certificate, a total of N times, where N is the value returned
+                by `qnethernet_altcp_tls_server_cert_count`. The `index`
+                argument will be in the range zero to N-1. The port and
+                certificate index can be used to determine the certificate data,
+                if needed.
+
+Currently, this file is only built if altcp, altcp TLS, and Mbed TLS
+are enabled.
+
 ### How to enable Mbed TLS
 
 The lwIP distribution comes with a way to use the Mbed TLS library as an ALTCP
@@ -1250,8 +1289,8 @@ of how to use this feature:
    2. LWIP_ALTCP_TLS &mdash; Enables the TLS features of ALTCP
    3. LWIP_ALTCP_TLS_MBEDTLS &mdash; Enables the Mbed TLS code for ALTCP TLS
 2. Install the latest Mbed TLS v2.x.x.
-3. Implement the functions required by _src/mbedtls/mbedtls_adapter.cpp_. This
-   file implements the above allocator functions and simplifies the integration.
+3. Implement the functions required by _src/altcp_tls_adapter.cpp_. This file
+   implements the above allocator functions and simplifies the integration.
 4. Implement an entropy function for internal Mbed TLS use.
 
 #### Installing the Mbed TLS library
@@ -1322,40 +1361,7 @@ There are example configuration headers in Mbed TLS under _configs/_.
 It's likely that, if you're using the Arduino IDE, you'll need to restart it
 after installing the library.
 
-#### Implementing the mbedtls_adapter functions
-
-The _src/mbedtls/mbed_adapter.cpp_ file implements the allocator functions for
-Mbed TLS integration. It specifies new functions that make it a little easier
-to integrate the library. These are as follows:
-
-1. Type: `std::function<bool(const ip_addr_t *ip, uint16_t port)>`\
-   Name: `qnethernet_altcp_is_tls`\
-   Description: Determines if the connection should use TLS. The IP address will
-                be NULL for a server connection.
-2. Type: `std::function<void(const ip_addr_t &ipaddr, uint16_t port,
-                             const uint8_t *&cert, size_t &cert_len)>`\
-   Name: `qnethernet_altcp_tls_client_cert`\
-   Note: All the arguments are references.\
-   Description: Retrieves the certificate for a client connection. The values
-                are initialized to NULL and zero, respectively, before this
-                function is called. The IP address and port can be used to
-                determine the certificate data, if needed.
-3. Type: `std::function<uint8_t(uint16_t port)>`\
-   Name: `qnethernet_altcp_tls_server_cert_count`\
-   Description: Returns the certificate count for a server connection.
-4. Type: `std::function<void(uint16_t port, uint8_t index,
-                             const uint8_t *&privkey,      size_t &privkey_len,
-                             const uint8_t *&privkey_pass, size_t &privkey_pass_len,
-                             const uint8_t *&cert,         size_t &cert_len)>`\
-   Name: `qnethernet_altcp_tls_server_cert`\
-   Description: Retrieves the certificate and private key for a server
-                connection. The values are initialized to NULL and zero before
-                this function is called. It will be called for each server
-                certificate, a total of N times, where N is the value returned
-                by `qnethernet_altcp_tls_server_cert_count`. The `index`
-                argument will be in the range zero to N-1. The port and
-                certificate index can be used to determine the certificate data,
-                if needed.
+#### Implementing the altcp_tls_adapter functions
 
 The _MbedTLSDemo_ example illustrates how to implement these.
 
