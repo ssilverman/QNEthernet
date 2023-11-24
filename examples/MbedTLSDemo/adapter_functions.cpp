@@ -1,9 +1,17 @@
 // SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// adapter_functions.cpp implements the Mbed TLS adapter functions.
+// adapter_functions.cpp implements the altcp_tls_adapter functions.
 //
 // This file is part of the QNEthernet library.
+
+#include <lwip/opt.h>
+
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+
+#include <lwip/apps/altcp_tls_mbedtls_opts.h>
+
+#if LWIP_ALTCP_TLS_MBEDTLS
 
 #include <cinttypes>
 #include <cstddef>
@@ -12,9 +20,6 @@
 #include <functional>
 
 #include <lwip/ip_addr.h>
-#include <lwip/opt.h>
-
-#if LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
 // Determines if a connection should use TLS.
 std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
@@ -78,4 +83,5 @@ std::function<void(uint16_t, uint8_t,
           // determine which data to use
         };
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#endif  // LWIP_ALTCP_TLS_MBEDTLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS

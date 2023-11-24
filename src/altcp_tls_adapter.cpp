@@ -5,6 +5,19 @@
 // altcp approach.
 // This file is part of the QNEthernet library.
 
+#include "lwip/opt.h"
+
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+
+#include "lwip/apps/altcp_tls_mbedtls_opts.h"
+
+#ifndef QNETHERNET_ALTCP_TLS_ADAPTER
+// TODO: Keep track of which implementations contain altcp_tls functions
+#define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
+#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
+
+#if QNETHERNET_ALTCP_TLS_ADAPTER
+
 #include <cstdint>
 #include <functional>
 
@@ -12,14 +25,6 @@
 #include "lwip/altcp_tcp.h"
 #include "lwip/altcp_tls.h"
 #include "lwip/ip_addr.h"
-#include "lwip/opt.h"
-
-#ifndef QNETHERNET_ALTCP_TLS_ADAPTER
-// TODO: Keep track of which implementations contain altcp_tls functions
-#define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
-#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
-
-#if LWIP_ALTCP && LWIP_ALTCP_TLS && QNETHERNET_ALTCP_TLS_ADAPTER
 
 // Determines if the connection should use TLS. The IP address will be NULL for
 // a server connection. If this is defined to be the empty function, then
@@ -144,4 +149,5 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
       }
     };
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && QNETHERNET_ALTCP_TLS_ADAPTER
+#endif  // QNETHERNET_ALTCP_TLS_ADAPTER
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
