@@ -9,12 +9,13 @@
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 
-#include "lwip/apps/altcp_tls_mbedtls_opts.h"
-
-#ifndef QNETHERNET_ALTCP_TLS_ADAPTER
-// TODO: Keep track of which implementations contain altcp_tls functions
-#define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
-#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
+// #include "lwip/apps/altcp_tls_mbedtls_opts.h"
+//
+// Have the user define this instead:
+// #ifndef QNETHERNET_ALTCP_TLS_ADAPTER
+// // TODO: Keep track of which implementations contain altcp_tls functions
+// #define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
+// #endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
 
 #if QNETHERNET_ALTCP_TLS_ADAPTER
 

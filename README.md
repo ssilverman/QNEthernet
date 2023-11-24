@@ -1275,8 +1275,8 @@ to integrate a library. These are as follows:
                 certificate index can be used to determine the certificate data,
                 if needed.
 
-Currently, this file is only built if altcp, altcp TLS, and Mbed TLS
-are enabled.
+Currently, this file is only built if the `LWIP_ALTCP`, `LWIP_ALTCP_TLS`, and
+`QNETHERNET_ALTCP_TLS_ADAPTER` macros are enabled by setting them to `1`.
 
 ### How to enable Mbed TLS
 
@@ -1707,6 +1707,12 @@ Some extra conditions to keep in mind:
 * `MEMP_NUM_IGMP_GROUP`: Count must include 1 for the "all systems" group and 1
   if mDNS is enabled.
 * `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
+
+Other configuration macros, also found in `lwipopts.h`:
+
+| Macro                          | Description                                                                        | Link                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `QNETHERNET_ALTCP_TLS_ADAPTER` | `1` to enable the _altcp_tls_adapter_ functions for easier TLS library integration | [About the TLS adapter functions](#about-the-tls-adapter-functions) |
 
 ## Complete list of features
 
