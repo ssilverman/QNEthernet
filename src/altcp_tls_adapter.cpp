@@ -14,7 +14,12 @@
 #include "lwip/ip_addr.h"
 #include "lwip/opt.h"
 
-#if LWIP_ALTCP && LWIP_ALTCP_TLS
+#ifndef QNETHERNET_ALTCP_TLS_ADAPTER
+// TODO: Keep track of which implementations contain altcp_tls functions
+#define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
+#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
+
+#if LWIP_ALTCP && LWIP_ALTCP_TLS && QNETHERNET_ALTCP_TLS_ADAPTER
 
 // Determines if the connection should use TLS. The IP address will be NULL for
 // a server connection. If this is defined to be the empty function, then
@@ -139,4 +144,4 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
       }
     };
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && QNETHERNET_ALTCP_TLS_ADAPTER
