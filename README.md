@@ -1488,7 +1488,7 @@ reason, you'd prefer to put them into RAM1, define the
 `QNETHERNET_BUFFERS_IN_RAM1` macro. _[As of this writing, no speed comparison
 tests have been done.]_
 
-There's a second configuration macro, `QNETHERNET_MEMORY_IN_RAM1`, for
+There's a second configuration macro, `QNETHERNET_LWIP_MEMORY_IN_RAM1`, for
 indicating that lwIP-declared memory should go into RAM1 instead of RAM2.
 
 These options are useful in the case where a program needs more dynamic memory,
@@ -1564,7 +1564,7 @@ There are several macros that can be defined to configure the system:
 | Macro                                 | Description                                         | Link                                        |
 | ------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
 | `QNETHERNET_BUFFERS_IN_RAM1`          | Put the RX and TX buffers into RAM1                 | [Notes on RAM1 usage](#notes-on-ram1-usage) |
-| `QNETHERNET_MEMORY_IN_RAM1`           | Put lwIP-declared memory into RAM1                  | [Notes on RAM1 usage](#notes-on-ram1-usage) |
+| `QNETHERNET_LWIP_MEMORY_IN_RAM1`      | Put lwIP-declared memory into RAM1                  | [Notes on RAM1 usage](#notes-on-ram1-usage) |
 | `QNETHERNET_ENABLE_CUSTOM_WRITE`      | Use expanded `stdio` output behaviour               | [stdio](#stdio)                             |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`  | Enable promiscuous mode                             | [Promiscuous mode](#promiscuous-mode)       |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` | Enable raw frame support                            | [Raw Ethernet Frames](#raw-ethernet-frames) |

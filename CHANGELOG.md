@@ -40,6 +40,7 @@ and this project adheres to
   respectively.
 * Changed `qnethernet_get_allocator` and `qnethernet_free_allocator` `allocator`
   parameter to be a reference.
+* Renamed `QNETHERNET_MEMORY_IN_RAM1` to `QNETHERNET_LWIP_MEMORY_IN_RAM1`.
 
 ## [0.25.0]
 
