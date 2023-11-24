@@ -3,7 +3,10 @@
 
 // tls_template.c implements the minimum possible in order to get the
 // project to compile with the LWIP_ALTCP and LWIP_ALTCP_TLS
-// options set.
+// options set. If these are defined somewhere else (such as in an
+// included library) then remove or comment these out. (They're
+// actually marked as "weak" to save you the trouble, but feel free to
+// remove them.)
 //
 // This file is part of the QNEthernet library.
 
@@ -15,9 +18,11 @@
 struct altcp_tls_config {
 };
 
+__attribute__((weak))
 void altcp_tls_free_config(struct altcp_tls_config *conf) {
 }
 
+__attribute__((weak))
 struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
   return NULL;

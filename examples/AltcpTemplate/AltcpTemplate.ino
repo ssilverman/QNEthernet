@@ -6,7 +6,9 @@
 // proxy configuration.
 //
 // Prerequisites: Enable the LWIP_ALTCP and optionally the
-//                LWIP_ALTCP_TLS lwIP options.
+//                LWIP_ALTCP_TLS lwIP options. The altcp_tls_adapter
+//                functions should also be disabled by disabling
+//                the QNETHERNET_ALTCP_TLS_ADAPTER option.
 // Big caveat: This example will only do TLS if there's an available
 //             TLS implementation.
 //
@@ -16,6 +18,7 @@
 #if LWIP_ALTCP
 #include <lwip/altcp_tcp.h>
 #if LWIP_ALTCP_TLS
+// #include <mbedtls.h>  // <-- Uncomment if building with LWIP_ALTCP_TLS_MBEDTLS=1
 #include <lwip/altcp_tls.h>
 #endif  // LWIP_ALTCP_TLS
 #include <lwip/apps/altcp_proxyconnect.h>
@@ -78,6 +81,8 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
             allocator.arg   = nullptr;
             break;
 #if LWIP_ALTCP_TLS
+          // Remove or comment out this case if there's no TLS implementation
+          // that can assign a config
           case 443:
             allocator.alloc = &altcp_tls_alloc;
             allocator.arg   = get_altcp_tls_config();  // TBD by you, the user
