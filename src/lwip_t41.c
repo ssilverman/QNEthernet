@@ -1190,19 +1190,13 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   }
 
   volatile enetbufferdesc_t *pBD = get_bufdesc();
-#if ETH_PAD_SIZE
+
   memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #ifndef QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, len + ETH_PAD_SIZE);
-#else
-  memcpy(pBD->buffer, frame, len);
-#ifndef QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len));
-#endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, len);
-#endif  // ETH_PAD_SIZE
+
   return true;
 }
 
