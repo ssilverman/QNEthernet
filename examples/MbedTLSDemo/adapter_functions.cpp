@@ -22,7 +22,7 @@ std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
       // Given the IP address and port, determine if the connection
       // needs to use TLS
       printf("[[qnethernet_altcp_is_tls(%s, %" PRIu16 "): %s]]\r\n",
-             (ipaddr == nullptr) ? nullptr : ipaddr_ntoa(ipaddr), port,
+             (ipaddr == nullptr) ? "(null)" : ipaddr_ntoa(ipaddr), port,
              (ipaddr == nullptr) ? "Listen" : "Connect");
 
       if (port == 443) {
