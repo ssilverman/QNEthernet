@@ -63,7 +63,7 @@ lwIP release.
        1. [Installing the Mbed TLS library](#installing-the-mbed-tls-library)
           1. [Mbed TLS library install for Arduino IDE](#mbed-tls-library-install-for-arduino-ide)
           2. [Mbed TLS library install for PlatformIO](#mbed-tls-library-install-for-platformio)
-       2. [Implementing the altcp_tls_adapter functions](#implementing-the-altcp_tls_adapter-functions)
+       2. [Implementing the _altcp_tls_adapter_ functions](#implementing-the-altcp_tls_adapter-functions)
        3. [Implementing the Mbed TLS entropy function](#implementing-the-mbed-tls-entropy-function)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
@@ -1398,7 +1398,7 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
 Last, modify the _mbedtls/include/mbedtls/config.h_ file per the instructions in
 the previous, Arduino IDE install, section.
 
-#### Implementing the altcp_tls_adapter functions
+#### Implementing the _altcp_tls_adapter_ functions
 
 The _MbedTLSDemo_ example illustrates how to implement these.
 
