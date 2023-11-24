@@ -17,7 +17,8 @@
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 
 // Determines if the connection should use TLS. The IP address will be NULL for
-// a server connection.
+// a server connection. If this is defined to be the empty function, then
+// regular TCP is assumed.
 extern std::function<bool(const ip_addr_t *ip, uint16_t port)>
     qnethernet_altcp_is_tls;
 
@@ -25,17 +26,20 @@ extern std::function<bool(const ip_addr_t *ip, uint16_t port)>
 // to NULL and zero, respectively, before calling this function.
 //
 // The IP address and port can be used to determine the certificate data,
-// if needed.
+// if needed. If this is defined to be the empty function, then no certificate
+// data is assumed.
 extern std::function<void(const ip_addr_t &ipaddr, uint16_t port,
                           const uint8_t *&cert, size_t &cert_len)>
     qnethernet_altcp_tls_client_cert;
 
-// Returns the certificate count for a server connection.
+// Returns the certificate count for a server connection. If this is defined to
+// be the empty function, then zero is assumed.
 extern std::function<uint8_t(uint16_t port)>
     qnethernet_altcp_tls_server_cert_count;
 
 // Retrieves the certificate and private key for a server connection. The values
-// are initialized to NULL and zero before calling this function.
+// are initialized to NULL and zero before calling this function. If this is
+// defined to be the empty function, then no server certificates will be added.
 //
 // This function will be called for each server certificate, a total of N times,
 // where N is the value returned by qnethernet_altcp_tls_server_cert_count. The
@@ -60,7 +64,8 @@ extern std::function<void(
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
                                         altcp_allocator_t &allocator) {
-      if (qnethernet_altcp_is_tls(ipaddr, port)) {  // TLS
+      if (qnethernet_altcp_is_tls && qnethernet_altcp_is_tls(ipaddr, port)) {
+        // TLS
         allocator.alloc = &altcp_tls_alloc;
         if (ipaddr == nullptr) {  // Server
           const uint8_t *privkey;
@@ -69,7 +74,10 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
           size_t privkey_pass_len;
           const uint8_t *cert;
           size_t cert_len;
-          uint8_t cert_count = qnethernet_altcp_tls_server_cert_count(port);
+          uint8_t cert_count = 0;
+          if (qnethernet_altcp_tls_server_cert_count) {
+            cert_count = qnethernet_altcp_tls_server_cert_count(port);
+          }
 
           struct altcp_tls_config *config =
               altcp_tls_create_config_server(cert_count);
@@ -77,28 +85,32 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
             return false;
           }
           allocator.arg = config;
-          for (uint8_t i = 0; i < cert_count; i++) {
-            privkey = nullptr;
-            privkey_len = 0;
-            privkey_pass = nullptr;
-            privkey_pass_len = 0;
-            cert = nullptr;
-            cert_len = 0;
+          if (qnethernet_altcp_tls_server_cert) {
+            for (uint8_t i = 0; i < cert_count; i++) {
+              privkey = nullptr;
+              privkey_len = 0;
+              privkey_pass = nullptr;
+              privkey_pass_len = 0;
+              cert = nullptr;
+              cert_len = 0;
 
-            qnethernet_altcp_tls_server_cert(port, i,
-                                             privkey, privkey_len,
-                                             privkey_pass, privkey_pass_len,
-                                             cert, cert_len);
-            altcp_tls_config_server_add_privkey_cert(
-                config,
-                privkey, privkey_len,
-                privkey_pass, privkey_pass_len,
-                cert, cert_len);
+              qnethernet_altcp_tls_server_cert(port, i,
+                                              privkey, privkey_len,
+                                              privkey_pass, privkey_pass_len,
+                                              cert, cert_len);
+              altcp_tls_config_server_add_privkey_cert(
+                  config,
+                  privkey, privkey_len,
+                  privkey_pass, privkey_pass_len,
+                  cert, cert_len);
+            }
           }
         } else {  // Client
           const uint8_t *cert = nullptr;
           size_t cert_len = 0;
-          qnethernet_altcp_tls_client_cert(*ipaddr, port, cert, cert_len);
+          if (qnethernet_altcp_tls_client_cert) {
+            qnethernet_altcp_tls_client_cert(*ipaddr, port, cert, cert_len);
+          }
           allocator.arg = altcp_tls_create_config_client(cert, cert_len);
         }
         if (allocator.arg == nullptr) {
