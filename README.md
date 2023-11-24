@@ -61,8 +61,10 @@ lwIP release.
     2. [About the TLS adapter functions](#about-the-tls-adapter-functions)
     3. [How to enable Mbed TLS](#how-to-enable-mbed-tls)
        1. [Installing the Mbed TLS library](#installing-the-mbed-tls-library)
+          1. [Mbed TLS library install for Arduino IDE](#mbed-tls-library-install-for-arduino-ide)
+          2. [Mbed TLS library install for PlatformIO](#mbed-tls-library-install-for-platformio)
        2. [Implementing the altcp_tls_adapter functions](#implementing-the-altcp_tls_adapter-functions)
-       3. [Implementing the entropy function](#implementing-the-entropy-function)
+       3. [Implementing the Mbed TLS entropy function](#implementing-the-mbed-tls-entropy-function)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
@@ -1299,21 +1301,21 @@ Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest v2.x.x (current as of this
 writing is 2.28.6): http://github.com/Mbed-TLS/mbedtls
 
-Next, in your preferred "Libraries" folder, create a folder named _mbedtls_.
+##### Mbed TLS library install for Arduino IDE
+
+In your preferred "Libraries" folder, create a folder named _mbedtls_.
 Underneath that, create a _src_ folder. Copy, recursively, all files from the
 distribution as follows:
 1. distro/library/* -> "Libraries"/mbedtls/src
 2. distro/include/* -> "Libraries"/mbedtls/src
 
-The "Libraries" folder can be found in one of the places here:
-1. Arduino IDE: Find the "Sketchbook location" in the Preferences. There should
-   should be a _libraries/_ folder inside that location.
-2. PlatformIO: You can either use the global location or the application's local
-   _lib/_ folder.
+The "Libraries" folder can is the same thing as "Sketchbook location" in the
+application's Preferences. There should be a _libraries/_ folder inside
+that location.
 
 Next, create an empty _mbedtls.h_ file inside _"Libraries"/mbedtls/src/_.
 
-Next, create a _libraries.properties_ file inside _"Libraries"/mbedtls/_:
+Next, create a _library.properties_ file inside _"Libraries"/mbedtls/_:
 ```properties
 name=Mbed TLS
 version=2.28.6
@@ -1323,6 +1325,7 @@ category=Communication
 url=https://github.com/Mbed-TLS/mbedtls
 includes=mbedtls.h
 ```
+(Ref: https://arduino.github.io/arduino-cli/latest/library-specification/)
 
 Last, modify the _mbedtls/src/mbedtls/config.h_ file and make the following
 changes to the defines so the library is able to be compiled:
@@ -1361,11 +1364,45 @@ There are example configuration headers in Mbed TLS under _configs/_.
 It's likely that, if you're using the Arduino IDE, you'll need to restart it
 after installing the library.
 
+##### Mbed TLS library install for PlatformIO
+
+In your preferred "Libraries" folder, create a folder named _mbedtls_. Copy all
+files, recursively, from the Mbed TLS distribution into that folder.
+
+The "Libraries" folder is either PlatformIO's global libraries location or the
+application's local _lib/_ folder.
+
+Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
+```json
+{
+  "name": "Mbed TLS",
+  "version": "2.28.6",
+  "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
+  "keywords": [
+    "tls", "networking"
+  ],
+  "homepage": "https://www.trustedfirmware.org/projects/mbed-tls",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mbed-TLS/mbedtls.git"
+  },
+  "license": "Apache-2.0 OR GPL-2.0-or-later",
+  "build": {
+    "srcDir": "library",
+    "includeDir": "include"
+  }
+}
+```
+(Ref: https://docs.platformio.org/en/latest/manifests/library-json/index.html)
+
+Last, modify the _mbedtls/include/mbedtls/config.h_ file per the instructions in
+the previous, Arduino IDE install, section.
+
 #### Implementing the altcp_tls_adapter functions
 
 The _MbedTLSDemo_ example illustrates how to implement these.
 
-#### Implementing the entropy function
+#### Implementing the Mbed TLS entropy function
 
 See how the _MbedTLSDemo_ example does it. Look for the
 `mbedtls_hardware_poll()` function. The example uses _QNEthernet_'s internal
