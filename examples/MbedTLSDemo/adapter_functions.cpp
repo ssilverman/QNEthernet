@@ -14,7 +14,7 @@
 #include <lwip/ip_addr.h>
 #include <lwip/opt.h>
 
-#if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#if LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
 // Determines if a connection should use TLS.
 std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
@@ -78,4 +78,4 @@ std::function<void(uint16_t, uint8_t,
           // determine which data to use
         };
 
-#endif  // LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS

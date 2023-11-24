@@ -10,7 +10,7 @@
 #include <lwip/opt.h>
 #include <security/entropy.h>
 
-#if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#if LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {
   size_t out = trng_data(output, len);
@@ -19,4 +19,4 @@ int mbedtls_hardware_poll(void *data,
   }
   return 0;
 }
-#endif  // LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
