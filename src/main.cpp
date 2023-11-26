@@ -116,11 +116,13 @@ void loop() {
 
 #if LWIP_DNS
       IPAddress ip;
-      if (!DNSClient::getHostByName("dns.google", ip,
+      constexpr char kHostname[]{"dns.google"};
+      if (!DNSClient::getHostByName(kHostname, ip,
                                     QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
-        printf("[Main] Lookup failed\r\n");
+        printf("[Main] Lookup for \"%s\" failed\r\n", kHostname);
       } else {
-        printf("[Main] Lookup: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+        printf("[Main] Lookup \"%s\": %u.%u.%u.%u\r\n",
+               kHostname, ip[0], ip[1], ip[2], ip[3]);
       }
 #endif  // LWIP_DNS
     }
