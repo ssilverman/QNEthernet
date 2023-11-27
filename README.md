@@ -1329,39 +1329,25 @@ includes=mbedtls.h
 ```
 (Ref: https://arduino.github.io/arduino-cli/latest/library-specification/)
 
-Last, modify the _mbedtls/src/mbedtls/config.h_ file and make the following
-changes to the defines so the library is able to be compiled:
-1. Uncomment:
+Last, modify the _mbedtls/src/mbedtls/config.h_ file by replacing it with the
+contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that Mbed TLS
+uses a slightly different configuration mechanism than lwIP; it uses macro
+presence rather than macro values.
+
+For posterity, the following changes are the minimum possible set just to be
+able to get the library to compile:
+1. Define:
    1. MBEDTLS_NO_PLATFORM_ENTROPY
-   2. MBEDTLS_ENTROPY_HARDWARE_ALT
-2. Comment out:
+   2. MBEDTLS_ENTROPY_HARDWARE_ALT &mdash; Requires `mbedtls_hardware_poll()`
+      function implementation
+2. Undefine:
    1. MBEDTLS_NET_C
    2. MBEDTLS_TIMING_C
    3. MBEDTLS_FS_IO
    4. MBEDTLS_PSA_ITS_FILE_C
    5. MBEDTLS_PSA_CRYPTO_STORAGE_C
 
-To save space, you might wish to remove some features:
-1. DTLS, comment these out:
-   1. MBEDTLS_SSL_PROTO_DTLS
-   2. MBEDTLS_SSL_DTLS_HELLO_VERIFY
-   3. MBEDTLS_SSL_DTLS_ANTI_REPLAY
-   4. MBEDTLS_SSL_DTLS_BADMAC_LIMIT
-   5. MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
-
-For security, it might be a good idea to remove these:
-1. TLS v1.0 and v1.1, comment these out:
-   1. MBEDTLS_SSL_PROTO_TLS1
-   2. MBEDTLS_SSL_PROTO_TLS1_1
-   3. MBEDTLS_SSL_CBC_RECORD_SPLITTING
-2. Weak ciphers and hashes, comment these out:
-   1. MBEDTLS_ARC4_C
-   2. MBEDTLS_DES_C
-3. Maybe remove these too, depending on your needs:
-   1. MBEDTLS_MD5_C
-   2. MBEDTLS_SHA1_C
-
-There are example configuration headers in Mbed TLS under _configs/_.
+There are also example configuration headers in Mbed TLS under _configs/_.
 
 It's likely that, if you're using the Arduino IDE, you'll need to restart it
 after installing the library.
@@ -1408,8 +1394,8 @@ The _MbedTLSDemo_ example illustrates how to implement these.
 
 See how the _MbedTLSDemo_ example does it. Look for the
 `mbedtls_hardware_poll()` function. The example uses _QNEthernet_'s internal
-entropy function, `trng_data()`. You can, of course, use your own random bytes
-source if you like.
+entropy function, `trng_data()`. You can, of course, use your own entropy source
+if you like.
 
 If you add the function to a C++ file, then it must be declared `extern "C"`.
 
