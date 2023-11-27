@@ -1198,7 +1198,7 @@ altcp_mbedtls_sndbuf(struct altcp_pcb *conn)
           size_t ret;
 #if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
           /* @todo: adjust ssl_added to real value related to negotiated cipher */
-          size_t max_frag_len = mbedtls_ssl_get_max_frag_len(&state->ssl_context);
+          size_t max_frag_len = mbedtls_ssl_get_output_max_frag_len(&state->ssl_context);
           max_len = LWIP_MIN(max_frag_len, max_len);
 #endif
           /* Adjust sndbuf of inner_conn with what added by SSL */
@@ -1317,7 +1317,7 @@ altcp_mbedtls_mss(struct altcp_pcb *conn)
   if (conn == NULL) {
     return 0;
   }
-  /* @todo: LWIP_MIN(mss, mbedtls_ssl_get_max_frag_len()) ? */
+  /* @todo: LWIP_MIN(mss, mbedtls_ssl_get_output_max_frag_len()) ? */
   return altcp_mss(conn->inner_conn);
 }
 
