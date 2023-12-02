@@ -1303,6 +1303,10 @@ Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest v2.x.x (current as of this
 writing is 2.28.6): http://github.com/Mbed-TLS/mbedtls
 
+See the `v2.28.6` or `mbedtls-2.28.6` tags for the 2.28.6 version, or the
+`mbedtls-2.28` branch for the latest 2.28.x version. The `development` and
+`master` branches currently point to version 3.5.x.
+
 ##### Mbed TLS library install for Arduino IDE
 
 In your preferred "Libraries" folder, create a folder named _mbedtls_.
