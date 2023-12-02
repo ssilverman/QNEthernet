@@ -824,7 +824,8 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
   if (pBD == NULL) {
     LINK_STATS_INC(link.memerr);
     LINK_STATS_INC(link.drop);
-    return ERR_MEM;  // Would ERR_WOULDBLOCK be more appropriate?
+    return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
+                            // UDP senders know to retry
   }
   uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {

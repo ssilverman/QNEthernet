@@ -374,12 +374,26 @@ int EthernetUDP::endPacket() {
   }
 
   pbuf_take(p, outPacket_.data.data(), outPacket_.data.size());
-  bool retval =
-      (udp_sendto(pcb_, p, &outPacket_.addr, outPacket_.port) == ERR_OK);
+  err_t err;
+
+  // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
+  // if there are no internal TX buffers available
+  do {
+    err = udp_sendto(pcb_, p, &outPacket_.addr, outPacket_.port);
+    if (err != ERR_WOULDBLOCK) {
+      break;
+    }
+
+    // udp_sendto() may have added a header
+    if (p->tot_len > outPacket_.data.size()) {
+      pbuf_remove_header(p, p->tot_len - outPacket_.data.size());
+    }
+  } while (true);
+
   outPacket_.clear();
   pbuf_free(p);
 
-  return retval;
+  return (err == ERR_OK);
 }
 
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
@@ -423,10 +437,25 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   }
 
   pbuf_take(p, data, len);
-  bool retval = (udp_sendto(pcb_, p, ipaddr, port) == ERR_OK);
+  err_t err;
+
+  // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
+  // if there are no internal TX buffers available
+  do {
+    err = udp_sendto(pcb_, p, ipaddr, port);
+    if (err != ERR_WOULDBLOCK) {
+      break;
+    }
+
+    // udp_sendto() may have added a header
+    if (p->tot_len > len) {
+      pbuf_remove_header(p, p->tot_len - len);
+    }
+  } while (true);
+
   pbuf_free(p);
 
-  return retval;
+  return (err == ERR_OK);
 }
 
 size_t EthernetUDP::write(uint8_t b) {
