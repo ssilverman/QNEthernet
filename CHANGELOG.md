@@ -19,6 +19,7 @@ and this project adheres to
   2. `qnethernet_altcp_tls_client_cert`
   3. `qnethernet_altcp_tls_server_cert_count`
   4. `qnethernet_altcp_tls_server_cert`
+* Added printing the message size in _LengthWidthServer_ example.
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).

@@ -166,6 +166,7 @@ void loop() {
       switch (state.parseState) {
         case MessageParseState::kStart:
           state.messageSize = state.client.read();
+          printf("Message size: %d\r\n", state.messageSize);
           avail--;
           state.parseState = MessageParseState::kValue;
           break;
