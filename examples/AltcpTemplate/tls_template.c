@@ -13,7 +13,7 @@
 #include <lwip/altcp.h>
 #include <lwip/opt.h>
 
-#if LWIP_ALTCP && LWIP_ALTCP_TLS
+#if LWIP_ALTCP && LWIP_ALTCP_TLS && !LWIP_ALTCP_TLS_MBEDTLS
 
 struct altcp_tls_config {
 };
@@ -28,4 +28,4 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
   return NULL;
 }
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && !LWIP_ALTCP_TLS_MBEDTLS
