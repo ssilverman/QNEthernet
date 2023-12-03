@@ -149,7 +149,7 @@ void loop() {
   EthernetClient client = server.accept();
   if (client) {
     IPAddress ip = client.remoteIP();
-    printf("Client connected: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+    printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
     clients.emplace_back(std::move(client));
     printf("Client count: %zu\r\n", clients.size());
   }
