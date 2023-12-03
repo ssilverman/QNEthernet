@@ -59,7 +59,7 @@ void printOSC(Print &out, const uint8_t *b, int len) {
   out.println();
 }
 
-void printMessage(Print &out, const osc::LiteOSCParser &osc) {
+static void printMessage(Print &out, const osc::LiteOSCParser &osc) {
   out.printf("%s", osc.getAddress());
 
   int size = osc.getArgCount();
@@ -73,7 +73,7 @@ void printMessage(Print &out, const osc::LiteOSCParser &osc) {
   }
 }
 
-void printBundle(Print &out, const uint8_t *b, int len) {
+static void printBundle(Print &out, const uint8_t *b, int len) {
   if (len < 16) {
     return;
   }
@@ -109,7 +109,7 @@ void printBundle(Print &out, const uint8_t *b, int len) {
   out.println("#endbundle");
 }
 
-void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index) {
+static void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index) {
   out.printf("%c(", osc.getTag(index));
   switch (osc.getTag(index)) {
     case 'i':
