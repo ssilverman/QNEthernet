@@ -7,8 +7,9 @@
 //
 // Prerequisites: Enable the LWIP_ALTCP and optionally the
 //                LWIP_ALTCP_TLS lwIP options. The altcp_tls_adapter
-//                functions should also be disabled by disabling
-//                the QNETHERNET_ALTCP_TLS_ADAPTER option.
+//                functions could also be disabled by disabling
+//                the QNETHERNET_ALTCP_TLS_ADAPTER option (it's off
+//                by default).
 // Big caveat: This example will only do TLS if there's an available
 //             TLS implementation.
 //
