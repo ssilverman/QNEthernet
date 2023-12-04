@@ -10,13 +10,16 @@
 //
 // This file is part of the QNEthernet library.
 
+#include <stddef.h>
+
 #include <lwip/altcp.h>
+#include <lwip/err.h>
 #include <lwip/opt.h>
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 
 #if !LWIP_ALTCP_TLS_MBEDTLS
-// mbedtls defines these
+// mbedtls would define these
 
 struct altcp_tls_config {
 };
@@ -30,6 +33,31 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
   return NULL;
 }
+
+#if QNETHERNET_ALTCP_TLS_ADAPTER
+// QNEthernet's altcp_tls_adapter needs these
+
+__attribute__((weak))
+struct altcp_tls_config *altcp_tls_create_config_server(u8_t cert_count) {
+  return NULL;
+}
+
+__attribute__((weak))
+err_t altcp_tls_config_server_add_privkey_cert(
+    struct altcp_tls_config *config,
+    const u8_t *privkey,      size_t privkey_len,
+    const u8_t *privkey_pass, size_t privkey_pass_len,
+    const u8_t *cert,         size_t cert_len) {
+  return ERR_OK;
+}
+
+__attribute__((weak))
+struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
+                                                        size_t cert_len) {
+  return NULL;
+}
+
+#endif  // QNETHERNET_ALTCP_TLS_ADAPTER
 
 #else
 // mbedtls needs these
