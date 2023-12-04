@@ -21,6 +21,8 @@ and this project adheres to
   4. `qnethernet_altcp_tls_server_cert`
 * Added _MbedTLSDemo_ example.
 * Added printing the message size in _LengthWidthServer_ example.
+* Added `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS`-gated default
+  implementations of the altcp interface functions.
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).
