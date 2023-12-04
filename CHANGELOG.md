@@ -19,6 +19,7 @@ and this project adheres to
   2. `qnethernet_altcp_tls_client_cert`
   3. `qnethernet_altcp_tls_server_cert_count`
   4. `qnethernet_altcp_tls_server_cert`
+* Added _MbedTLSDemo_ example.
 * Added printing the message size in _LengthWidthServer_ example.
 
 ### Changed
@@ -43,6 +44,7 @@ and this project adheres to
 * Changed `qnethernet_get_allocator` and `qnethernet_free_allocator` `allocator`
   parameter to be a reference.
 * Renamed `QNETHERNET_MEMORY_IN_RAM1` to `QNETHERNET_LWIP_MEMORY_IN_RAM1`.
+* Updated the _AltcpTemplate_ example.
 
 ## [0.25.0]
 
