@@ -51,6 +51,10 @@ and this project adheres to
 * Updated the _RawFrameMonitor_ example with information about how to
   disable DHCP.
 
+### Fixed
+* Fixed a `printf` conversion specifier n the _RandomNumbers_ example. This was
+  causing a compile warning.
+
 ## [0.25.0]
 
 ### Added

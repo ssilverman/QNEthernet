@@ -62,7 +62,7 @@ void demo(G &g) {
     if (i % 5 == 0) {
       printf("\r\n");
     }
-    printf(" %10" PRIu32, g());
+    printf(" %10lu", (unsigned long){g()});
   }
   printf("\r\n");
 
