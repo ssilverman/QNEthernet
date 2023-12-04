@@ -44,7 +44,7 @@ constexpr uint16_t kPort = 80;   // TLS generally uses port 443
 #if LWIP_ALTCP
 
 // For proxy connections
-constexpr bool kUseProxy = false;  // Whether to use altcp_proxyconnect
+const bool kUseProxy = false;  // Whether to use altcp_proxyconnect
 struct altcp_proxyconnect_config proxyConfig {
   IPADDR4_INIT_BYTES(0, 0, 0, 0),  // Change this
   8080,                            // TLS can be on 3128

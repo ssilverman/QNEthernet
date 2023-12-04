@@ -17,7 +17,7 @@
 #include <lwip/apps/altcp_proxyconnect.h>
 #include <lwip/ip_addr.h>
 
-extern bool kUseProxy;
+extern const bool kUseProxy;
 extern struct altcp_proxyconnect_config proxyConfig;
 
 #if !QNETHERNET_ALTCP_TLS_ADAPTER
