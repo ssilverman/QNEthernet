@@ -45,9 +45,9 @@ constexpr uint16_t kPort = 80;   // TLS generally uses port 443
 
 // For proxy connections
 extern const bool kUseProxy = false;  // Whether to use altcp_proxyconnect
-struct altcp_proxyconnect_config proxyConfig {
-  IPADDR4_INIT_BYTES(0, 0, 0, 0),  // Change this
-  8080,                            // TLS can be on 3128
+struct altcp_proxyconnect_config proxyConfig{
+    IPADDR4_INIT_BYTES(0, 0, 0, 0),  // Change this
+    8080,                            // TLS can be on 3128
 };
 // Note: There's also a TLS proxyconnect; this can be an exercise for the reader
 
