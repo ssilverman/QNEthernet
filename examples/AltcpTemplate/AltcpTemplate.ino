@@ -18,7 +18,9 @@
 #if LWIP_ALTCP
 #include <lwip/altcp_tcp.h>
 #if LWIP_ALTCP_TLS
-// #include <mbedtls.h>  // <-- Uncomment if building with LWIP_ALTCP_TLS_MBEDTLS=1
+#if LWIP_ALTCP_TLS_MBEDTLS
+#include <mbedtls.h>
+#endif  // LWIP_ALTCP_TLS_MBEDTLS
 #include <lwip/altcp_tls.h>
 #endif  // LWIP_ALTCP_TLS
 #include <lwip/apps/altcp_proxyconnect.h>

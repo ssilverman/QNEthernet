@@ -13,7 +13,10 @@
 #include <lwip/altcp.h>
 #include <lwip/opt.h>
 
-#if LWIP_ALTCP && LWIP_ALTCP_TLS && !LWIP_ALTCP_TLS_MBEDTLS
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+
+#if !LWIP_ALTCP_TLS_MBEDTLS
+// mbedtls defines these
 
 struct altcp_tls_config {
 };
@@ -28,4 +31,15 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
   return NULL;
 }
 
-#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS && !LWIP_ALTCP_TLS_MBEDTLS
+#else
+// mbedtls needs these
+
+int mbedtls_hardware_poll(void *data,
+                          unsigned char *output, size_t len, size_t *olen) {
+  // A real implementation would fill in random data
+  return 0;
+}
+
+#endif  // !LWIP_ALTCP_TLS_MBEDTLS
+
+#endif  // LWIP_ALTCP && LWIP_ALTCP_TLS

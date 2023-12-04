@@ -20,6 +20,8 @@
 extern bool kUseProxy;
 extern struct altcp_proxyconnect_config proxyConfig;
 
+#if !QNETHERNET_ALTCP_TLS_ADAPTER
+
 // The qnethernet_altcp_get_allocator() function fills in the given
 // allocator with an appropriate allocator function and argument,
 // using the IP address and port to choose one. If creating the socket
@@ -87,5 +89,49 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
       }
 #endif  // LWIP_ALTCP_TLS
     };
+
+#else
+
+// Determines if a connection should use TLS.
+std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
+    [](const ip_addr_t *ipaddr, uint16_t port) {
+      printf("[[qnethernet_altcp_is_tls(%s, %" PRIu16 "): %s]]\r\n",
+             (ipaddr == nullptr) ? "(null)" : ipaddr_ntoa(ipaddr), port,
+             (ipaddr == nullptr) ? "Listen" : "Connect");
+      return false;
+    };
+
+// Gets the client certificate data.
+std::function<void(const ip_addr_t &, uint16_t, const uint8_t *&, size_t &)>
+    qnethernet_altcp_tls_client_cert =
+        [](const ip_addr_t &ipaddr, uint16_t port,
+           const uint8_t *&cert, size_t &cert_len) {
+          printf("[[qnethernet_altcp_tls_client_cert(%s, %" PRIu16 ")]]"
+                 " No certificate\r\n",
+                 ipaddr_ntoa(&ipaddr), port);
+        };
+
+// Gets the server certificate count.
+std::function<uint8_t(uint16_t)> qnethernet_altcp_tls_server_cert_count =
+    [](uint16_t port) {
+      return 0;
+    };
+
+// Gets the server certificate data.
+std::function<void(uint16_t, uint8_t,
+                   const uint8_t *&, size_t &,
+                   const uint8_t *&, size_t &,
+                   const uint8_t *&, size_t &)>
+    qnethernet_altcp_tls_server_cert =
+        [](uint16_t port, uint8_t index,
+           const uint8_t *&privkey,      size_t &privkey_len,
+           const uint8_t *&privkey_pass, size_t &privkey_pass_len,
+           const uint8_t *&cert,         size_t &cert_len) {
+          printf("[[qnethernet_altcp_tls_server_cert(port %" PRIu16 ","
+                 " index %" PRIu8 ")]]\r\n",
+                 port, index);
+        };
+
+#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
 
 #endif  // LWIP_ALTCP
