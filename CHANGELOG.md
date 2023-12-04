@@ -46,6 +46,8 @@ and this project adheres to
 * Renamed `QNETHERNET_MEMORY_IN_RAM1` to `QNETHERNET_LWIP_MEMORY_IN_RAM1`.
 * Updated the _AltcpTemplate_ example.
 * Fixed `IPAddress`-related build problems with new Teensyduino 1.54-beta4.
+* Updated the _RawFrameMonitor_ example with information about how to
+  disable DHCP.
 
 ## [0.25.0]
 

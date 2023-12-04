@@ -86,8 +86,11 @@ void setup() {
     }
   });
 
-  // Initialize Ethernet, in this case with DHCP
-  printf("Starting Ethernet with DHCP...\r\n");
+  // Initialize Ethernet
+  // Optionally turn DHCP off by uncommenting the following line:
+  // Ethernet.setDHCPEnabled(false);
+  printf("Starting Ethernet%s...\r\n",
+         Ethernet.isDHCPEnabled() ? " with DHCP" : "");
   if (!Ethernet.begin()) {
     printf("Failed to start Ethernet\r\n");
     return;
