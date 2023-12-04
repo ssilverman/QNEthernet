@@ -22,9 +22,11 @@ namespace network {
 // non-IPv4-mapped addresses.
 uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *ip);
 
+#if TEENSYDUINO <= 158
 // Missing IPAddress operators
 bool operator==(const IPAddress &a, const IPAddress &b);
 bool operator!=(const IPAddress &a, const IPAddress &b);
+#endif  // TEENSYDUINO <= 158
 
 // Gets the 32-bit address from the given const IPAddress.
 uint32_t get_uint32(const IPAddress &ip);

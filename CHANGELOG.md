@@ -45,6 +45,7 @@ and this project adheres to
   parameter to be a reference.
 * Renamed `QNETHERNET_MEMORY_IN_RAM1` to `QNETHERNET_LWIP_MEMORY_IN_RAM1`.
 * Updated the _AltcpTemplate_ example.
+* Fixed `IPAddress`-related build problems with new Teensyduino 1.54-beta4.
 
 ## [0.25.0]
 
