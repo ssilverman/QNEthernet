@@ -15,8 +15,6 @@
 namespace qindesign {
 namespace security {
 
-STATIC_INIT_DECL(RandomDevice, randomDevice);
-
 STATIC_INIT_DEFN(RandomDevice, randomDevice);
 
 RandomDevice &RandomDevice::instance() {
@@ -45,8 +43,6 @@ RandomDevice::result_type RandomDevice::operator()() {
 
 namespace qindesign {
 namespace security {
-
-STATIC_INIT_DECL(RandomDevice, randomDevice);
 
 STATIC_INIT_DEFN(RandomDevice, randomDevice);
 
