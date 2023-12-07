@@ -7,6 +7,10 @@
 #ifndef QNETHERNET_MDNS_H_
 #define QNETHERNET_MDNS_H_
 
+#include "lwip/apps/mdns_opts.h"
+
+#if LWIP_MDNS_RESPONDER
+
 // C++ includes
 #include <cstdint>
 #include <vector>
@@ -14,10 +18,7 @@
 #include <WString.h>
 
 #include "StaticInit.h"
-#include "lwip/apps/mdns_opts.h"
 #include "lwip/netif.h"
-
-#if LWIP_MDNS_RESPONDER
 
 namespace qindesign {
 namespace network {

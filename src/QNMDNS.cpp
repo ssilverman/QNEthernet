@@ -6,14 +6,14 @@
 
 #include "QNMDNS.h"
 
+#if LWIP_MDNS_RESPONDER
+
 // C++ includes
 #include <algorithm>
 
 #include <pgmspace.h>
 
 #include "lwip/apps/mdns.h"
-
-#if LWIP_MDNS_RESPONDER
 
 namespace qindesign {
 namespace network {
