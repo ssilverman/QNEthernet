@@ -373,7 +373,8 @@ class EthernetClass final {
   bool maybeStartDHCP();
 
   // Starts Ethernet. See the public version of this function, with IPAddress
-  // parameters, for information about what this does.
+  // parameters, for information about what this does. This always attempts to
+  // restart the netif.
   [[nodiscard]]
   bool start();
 
