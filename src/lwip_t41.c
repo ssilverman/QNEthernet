@@ -1035,7 +1035,6 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   // Only execute the following code once
   static bool isFirstInit = true;
   if (isFirstInit) {
-    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
     lwip_init();
     isFirstInit = false;
   } else if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
@@ -1046,11 +1045,11 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
     // Remove any previous configuration
     remove_netif();
-
-    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
   }
 
   if (!s_isNetifAdded) {
+    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
+
     netif_add_ext_callback(&netif_callback, callback);
     if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
       netif_remove_ext_callback(&netif_callback);
