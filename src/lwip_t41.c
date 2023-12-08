@@ -1013,6 +1013,16 @@ bool enet_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
+// Removes the current netif, if any.
+static void remove_netif() {
+  if (s_isNetifAdded) {
+    netif_set_default(NULL);
+    netif_remove(&s_netif);
+    netif_remove_ext_callback(&netif_callback);
+    s_isNetifAdded = false;
+  }
+}
+
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
   // Sanitize the inputs
@@ -1034,12 +1044,9 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
     // MAC address has changed
 
-    if (s_isNetifAdded) {
-      // Remove any previous configuration
-      netif_remove(&s_netif);
-      netif_remove_ext_callback(&netif_callback);
-      s_isNetifAdded = false;
-    }
+    // Remove any previous configuration
+    remove_netif();
+
     SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
   }
 
@@ -1076,12 +1083,7 @@ void enet_deinit() {
   netif_set_link_down(&s_netif);
   netif_set_down(&s_netif);
 
-  if (s_isNetifAdded) {
-    netif_set_default(NULL);
-    netif_remove(&s_netif);
-    netif_remove_ext_callback(&netif_callback);
-    s_isNetifAdded = false;
-  }
+  remove_netif();
 
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
