@@ -1088,7 +1088,9 @@ Things you can do:
 1. Look up an IP address by name, and
 2. Set multiple DNS servers.
 
-The `Ethernet.setDNSServerIP(ip)` function sets the zeroth DNS server.
+The `Ethernet.setDNSServerIP(ip)` function sets the zeroth DNS server address
+and the `Ethernet.setDNSServerIP(index, ip)` function sets the nth DNS server
+address. Corresponding `dnsServerIP()` functions get the DNS server addresses.
 
 ## stdio
 
