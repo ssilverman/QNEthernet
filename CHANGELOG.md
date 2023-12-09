@@ -56,6 +56,7 @@ and this project adheres to
   causing a compile warning.
 * Fixed location of STATIC_INIT_DECL() for `RandomDevice` by putting it into
   the header. It needs to be in a place where users of the class see it.
+* Fixed `EthernetClass::setMACAddress()` for when the interface is up.
 
 ## [0.25.0]
 

@@ -114,11 +114,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[6]) {
   }
 #endif  // LWIP_DHCP
 
-  const ip4_addr_t *addr    = netif_ip4_addr(netif_);
-  const ip4_addr_t *netmask = netif_ip4_netmask(netif_);
-  const ip4_addr_t *gw      = netif_ip4_gw(netif_);
   if (start()) {
-    netif_set_addr(netif_, addr, netmask, gw);
     (void)maybeStartDHCP();
   }
   // TODO: Return value?

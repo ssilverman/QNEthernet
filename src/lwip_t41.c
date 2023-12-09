@@ -1023,6 +1023,7 @@ static void remove_netif() {
   }
 }
 
+// This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
   // Sanitize the inputs
@@ -1044,12 +1045,13 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     // MAC address has changed
 
     // Remove any previous configuration
-    remove_netif();
+    // remove_netif();
+    // TODO: For some reason, remove_netif() prevents further operation
   }
 
-  if (!s_isNetifAdded) {
-    SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
+  SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
 
+  if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
     if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
       netif_remove_ext_callback(&netif_callback);
@@ -1065,12 +1067,22 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 #if LWIP_AUTOIP
     autoip_set_struct(&s_netif, &s_autoip);
 #endif  // LWIP_AUTOIP
-  }
 
 #if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
-  // Multicast filtering, to allow desired multicast packets in
-  netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
+    // Multicast filtering, to allow desired multicast packets in
+    netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
 #endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+  } else {
+    // Just set the MAC address
+
+    SMEMCPY(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
+    s_netif.hwaddr_len = ETH_HWADDR_LEN;
+
+    __disable_irq();  // Not sure if disabling interrupts is really needed
+    ENET_PALR = (s_mac[0] << 24) | (s_mac[1] << 16) | (s_mac[2] << 8) | s_mac[3];
+    ENET_PAUR = (s_mac[4] << 24) | (s_mac[5] << 16) | 0x8808;
+    __enable_irq();
+  }
 
   return true;
 }
