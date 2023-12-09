@@ -235,13 +235,16 @@ void EthernetClient::close(bool wait) {
     if (state != nullptr) {
       if (altcp_close(state->pcb) != ERR_OK) {
         altcp_abort(state->pcb);
+#if !LWIP_ALTCP
       } else if (wait) {
         elapsedMillis timer;
+        // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
         while (conn_ != nullptr && conn_->connected && timer < connTimeout_) {
           // NOTE: Depends on Ethernet loop being called from yield()
           yield();
         }
+#endif  // !LWIP_ALTCP
       }
     }
   }

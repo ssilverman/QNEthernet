@@ -50,6 +50,8 @@ and this project adheres to
 * Fixed `IPAddress`-related build problems with new Teensyduino 1.54-beta4.
 * Updated the _RawFrameMonitor_ example with information about how to
   disable DHCP.
+* Disabled waiting in `EthernetClient::close()` for altcp clients because it's
+  not defined.
 
 ### Fixed
 * Fixed a `printf` conversion specifier n the _RandomNumbers_ example. This was
