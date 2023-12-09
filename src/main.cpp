@@ -48,6 +48,10 @@ void setup() {
   printf("[Main] MAC = %02x:%02x:%02x:%02x:%02x:%02x\r\n",
          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
+  Ethernet.onInterfaceStatus([](bool status) {
+    printf("[Ethernet] Interface %s\r\n", status ? "UP" : "DOWN");
+  });
+
   Ethernet.onLinkState([](bool state) {
     if (state) {
       printf("[Ethernet] Link: ON, %d Mbps, %s duplex, %s crossover\r\n",
