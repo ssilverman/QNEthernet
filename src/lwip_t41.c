@@ -1013,6 +1013,7 @@ bool enet_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
+#ifdef QNETHERNET_INTERNAL_END_STOPS_ALL
 // Removes the current netif, if any.
 static void remove_netif() {
   if (s_isNetifAdded) {
@@ -1022,6 +1023,7 @@ static void remove_netif() {
     s_isNetifAdded = false;
   }
 }
+#endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 
 // This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
@@ -1094,13 +1096,13 @@ void enet_deinit() {
   netif_set_link_down(&s_netif);
   netif_set_down(&s_netif);
 
-  remove_netif();
-
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
 
 #ifdef QNETHERNET_INTERNAL_END_STOPS_ALL
+  remove_netif();  // TODO: This also causes issues (see notes in enet_init())
+
   if (s_initState == kInitStateInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
     attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
