@@ -27,7 +27,7 @@ and this project adheres to
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).
 * Made the driver non-blocking:
-  1. TX if there's no available buffer descriptors (returns ERR_WOULDBLOCK)
+  1. TX: if there's no available buffer descriptors (returns ERR_WOULDBLOCK)
   2. Link checks via MDIO
 * Updated the tests:
   * Added a 10s connection timeout to `test_client_addr_info()`
