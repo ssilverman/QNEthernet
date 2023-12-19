@@ -101,6 +101,11 @@ class EthernetClass final {
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
   }
 
+  // Returns a pointer to the current MAC address.
+  const uint8_t *macAddress() const {
+    return mac_;
+  };
+
   // Retrieves the MAC address. This does nothing if 'mac' is NULL.
   void macAddress(uint8_t mac[6]) const;
 

@@ -185,6 +185,20 @@ static void test_set_mac() {
   TEST_ASSERT_EQUAL_MESSAGE(1, downCount, "Expected matching down count");
 }
 
+static void test_get_mac() {
+  TEST_ASSERT_NOT_NULL_MESSAGE(Ethernet.macAddress(), "Expected not NULL");
+
+  // Get the built-in MAC address
+  uint8_t mac[6];
+  enet_get_mac(mac);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), mac, 6, "Expected the internal MAC");
+
+  uint8_t mac2[6]{1, 2, 3, 4, 5, 6};
+  Ethernet.macAddress(mac2);
+  TEST_ASSERT_NOT_NULL_MESSAGE(Ethernet.macAddress(), "Expected not NULL");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), mac2, 6, "Expected new MAC");
+}
+
 // Obtains an IP address via DHCP and returns whether successful.
 static bool waitForLocalIP() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected not started");
@@ -942,6 +956,7 @@ void setup() {
   UNITY_BEGIN();
   RUN_TEST(test_builtin_mac);
   RUN_TEST(test_set_mac);
+  RUN_TEST(test_get_mac);
   RUN_TEST(test_other_null_mac);
   RUN_TEST(test_null_group);
   RUN_TEST(test_null_frame);

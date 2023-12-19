@@ -243,6 +243,8 @@ The `Ethernet` object is the main Ethernet interface.
   duplex (`false`).
 * `joinGroup(ip)`: Joins a multicast group.
 * `leaveGroup(ip)`: Leaves a multicast group.
+* `macAddress()`: Convenience function that returns a pointer to the current
+  MAC address.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
 * `setDHCPEnabled(flag)`: Enables or disables the DHCP client. This may be

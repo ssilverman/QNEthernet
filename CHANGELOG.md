@@ -23,6 +23,8 @@ and this project adheres to
 * Added printing the message size in _LengthWidthServer_ example.
 * Added `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS`-gated default
   implementations of the altcp interface functions.
+* Added `EthernetClass::macAddress()` for returning a pointer to the current
+  MAC address.
 
 ### Changed
 * Updated lwIP to the latest master (5e3268cf).
