@@ -56,7 +56,7 @@ and this project adheres to
   not defined.
 
 ### Fixed
-* Fixed a `printf` conversion specifier n the _RandomNumbers_ example. This was
+* Fixed a `printf` conversion specifier in the _RandomNumbers_ example. This was
   causing a compile warning.
 * Fixed location of STATIC_INIT_DECL() for `RandomDevice` by putting it into
   the header. It needs to be in a place where users of the class see it.
