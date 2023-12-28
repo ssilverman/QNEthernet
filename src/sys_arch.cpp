@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 // C++ includes
-#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cerrno>
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cstdint>
@@ -72,7 +72,7 @@ const char *lwip_strerr(err_t err) {
 //  stdio
 // --------------------------------------------------------------------------
 
-#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_ENABLE_CUSTOM_WRITE
 
 // The user program can set these to something initialized. For example,
 // `&Serial`, after `Serial.begin(speed)`.
@@ -96,7 +96,7 @@ extern "C" {
 // Gets the Print* for the given file descriptor.
 static inline Print *getPrint(int file) {
   switch (file) {
-#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_ENABLE_CUSTOM_WRITE
     case STDOUT_FILENO:
       return ::qindesign::network::stdoutPrint;
     case STDERR_FILENO:
@@ -113,7 +113,7 @@ static inline Print *getPrint(int file) {
   }
 }
 
-#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_ENABLE_CUSTOM_WRITE
 
 // Define this function to provide expanded stdio output behaviour.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM

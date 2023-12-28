@@ -54,6 +54,7 @@ and this project adheres to
   disable DHCP.
 * Disabled waiting in `EthernetClient::close()` for altcp clients because it's
   not defined.
+* Changed configuration macro checks to use value instead of definedness.
 
 ### Fixed
 * Fixed a `printf` conversion specifier in the _RandomNumbers_ example. This was

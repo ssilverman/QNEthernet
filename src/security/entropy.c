@@ -5,7 +5,7 @@
 // This file is part of the QNEthernet library.
 
 #if defined(__IMXRT1062__)
-#if !defined(QNETHERNET_USE_ENTROPY_LIB)
+#if !QNETHERNET_USE_ENTROPY_LIB
 
 #include "entropy.h"
 

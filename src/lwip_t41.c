@@ -173,7 +173,7 @@
 //   Payload(1500) + FCS(4)
 #define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
-#ifndef QNETHERNET_BUFFERS_IN_RAM1
+#if !QNETHERNET_BUFFERS_IN_RAM1
 #define MULTIPLE_OF_32(x) (((x) + 31) & ~31)
 #define BUFFER_DMAMEM DMAMEM
 #else
@@ -639,7 +639,7 @@ static void low_level_init() {
              | ENET_RCR_PADEN      // Padding is removed
              | ENET_RCR_RMII_MODE
              | ENET_RCR_FCE        // Flow control enable
-#ifdef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if QNETHERNET_ENABLE_PROMISCUOUS_MODE
              | ENET_RCR_PROM       // Promiscuous mode
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
              | ENET_RCR_MII_MODE;
@@ -761,7 +761,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
   } else {
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
     if (p) {
-#ifndef QNETHERNET_BUFFERS_IN_RAM1
+#if !QNETHERNET_BUFFERS_IN_RAM1
       arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       pbuf_take(p, pBD->buffer, p->tot_len);
@@ -832,7 +832,7 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
     LINK_STATS_INC(link.drop);
     return ERR_BUF;
   }
-#ifndef QNETHERNET_BUFFERS_IN_RAM1
+#if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, copied);
@@ -952,7 +952,7 @@ static inline int check_link_status(int state) {
   return 0;
 }
 
-#if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 // Multicast filter for letting the hardware know which packets to let in.
 static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
                               enum netif_mac_filter_action action) {
@@ -973,7 +973,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
       // ERR_USE seems like the best fit of the choices
       // Next best seems to be ERR_IF
 }
-#endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // --------------------------------------------------------------------------
 //  Public Interface
@@ -1013,7 +1013,7 @@ bool enet_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
-#ifdef QNETHERNET_INTERNAL_END_STOPS_ALL
+#if QNETHERNET_INTERNAL_END_STOPS_ALL
 // Removes the current netif, if any.
 static void remove_netif() {
   if (s_isNetifAdded) {
@@ -1070,10 +1070,10 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     autoip_set_struct(&s_netif, &s_autoip);
 #endif  // LWIP_AUTOIP
 
-#if LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
     // Multicast filtering, to allow desired multicast packets in
     netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
-#endif  // LWIP_IGMP && !defined(QNETHERNET_ENABLE_PROMISCUOUS_MODE)
+#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
   } else {
     // Just set the MAC address
 
@@ -1100,7 +1100,7 @@ void enet_deinit() {
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
 
-#ifdef QNETHERNET_INTERNAL_END_STOPS_ALL
+#if QNETHERNET_INTERNAL_END_STOPS_ALL
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
 
   if (s_initState == kInitStateInitialized) {
@@ -1208,7 +1208,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   volatile enetbufferdesc_t *pBD = get_bufdesc();
 
   memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
-#ifndef QNETHERNET_BUFFERS_IN_RAM1
+#if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, len + ETH_PAD_SIZE);
@@ -1220,7 +1220,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 //  MAC Address Filtering
 // --------------------------------------------------------------------------
 
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // CRC-32 routine for computing the 4-byte FCS for multicast lookup.
 static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {

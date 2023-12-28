@@ -57,7 +57,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 //  MAC Address Filtering
 // --------------------------------------------------------------------------
 
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   return false;

@@ -26,7 +26,7 @@
   } while (0)
 extern void qnethernet_stdio_flush(int file);
 
-#ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
+#if !QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
   u8_t variable_name[(size)] DMAMEM __attribute__((aligned(MEM_ALIGNMENT)))
 #else

@@ -11,7 +11,7 @@
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
 
-#ifdef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #define LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) \
   unknown_eth_protocol((p), (netif))

@@ -97,7 +97,7 @@ bool phy_link_is_crossover();
 // This adds any extra padding bytes given by ETH_PAD_SIZE.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // For joining and leaving multicast groups; these call
 // enet_set_mac_address_allowed() with the MAC addresses related to the given

@@ -8,7 +8,7 @@
 
 #include <pgmspace.h>
 
-#if defined(__IMXRT1062__) && !defined(QNETHERNET_USE_ENTROPY_LIB)
+#if defined(__IMXRT1062__) && !QNETHERNET_USE_ENTROPY_LIB
 
 #include "entropy.h"
 

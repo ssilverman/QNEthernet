@@ -533,7 +533,7 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
   if (netif_ == nullptr) {
     return false;
   }
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
   return enet_set_mac_address_allowed(mac, flag);
 #else
   return flag;  // Can't disallow MAC addresses

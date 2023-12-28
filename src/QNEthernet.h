@@ -94,7 +94,7 @@ class EthernetClass final {
 
   // Returns whether promiscuous mode is enabled.
   static constexpr bool isPromiscuousMode() {
-#ifdef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if QNETHERNET_ENABLE_PROMISCUOUS_MODE
     return true;
 #else
     return false;
@@ -408,7 +408,7 @@ class EthernetClass final {
 // Instance for interacting with the library.
 STATIC_INIT_DECL(EthernetClass, Ethernet);
 
-#ifdef QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_ENABLE_CUSTOM_WRITE
 // stdout output.
 extern Print *stdoutPrint;
 
