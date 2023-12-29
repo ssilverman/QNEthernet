@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <ctime>
 
+#include "StaticInit.h"
+
 namespace qindesign {
 namespace network {
 
@@ -31,11 +33,6 @@ class EthernetIEEE1588Class final {
     kPulseLowOnCompare = 14,
     kPulseHighOnCompare = 15,
   };
-
-  // Accesses the singleton instance.
-  static EthernetIEEE1588Class &instance() {
-    return instance_;
-  }
 
   // EthernetIEEE1588Class is neither copyable nor movable.
   EthernetIEEE1588Class(const EthernetIEEE1588Class &) = delete;
@@ -105,9 +102,11 @@ class EthernetIEEE1588Class final {
   EthernetIEEE1588Class() = default;
   ~EthernetIEEE1588Class() = default;
 
-  // The singleton instance.
-  static EthernetIEEE1588Class instance_;
+  friend class StaticInit<EthernetIEEE1588Class>;
 };
+
+// Instance for using IEEE 1588 functions.
+STATIC_INIT_DECL(EthernetIEEE1588Class, EthernetIEEE1588);
 
 }  // namespace network
 }  // namespace qindesign
