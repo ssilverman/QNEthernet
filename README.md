@@ -1633,16 +1633,22 @@ See
 for some incorrect variants.
 
 Note that both properties are needed because _QNEthernet_ contains a mixture of
-C and C++ sources.
+C and C++ sources. If the extra flags are exactly the same for both properties,
+and this is likely the case, one could refer to the other. For example:
+
+```
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
+compiler.c.extra_flags={compiler.cpp.extra_flags}
+```
 
 The properties of most interest are probably the ones in this example. There are
 other ones defined in the Arduino AVR version, but aren't really needed here.
 
 Lest you think I've forgotten to add it, here're the locations of the files for
 the current latest version of the IDE:
-* Mac: _~/Library/Arduino15/packages/teensy/hardware/avr_
-* Linux: _~/.arduino15/packages/teensy/hardware/avr_
-* Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr_
+* Mac: _~/Library/Arduino15/packages/teensy/hardware/avr/{version}_
+* Linux: _~/.arduino15/packages/teensy/hardware/avr/{version}_
+* Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr\{version}_
 
 References:
 1. [Additional compiler options - Programming Questions - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
