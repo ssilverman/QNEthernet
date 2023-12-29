@@ -1064,8 +1064,8 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     netif_set_default(&s_netif);
     s_isNetifAdded = true;
 
+    // netif_add() clears these, so re-set them
 #if LWIP_DHCP
-    // netif_add() clears these
     dhcp_set_struct(&s_netif, &s_dhcp);
 #endif  // LWIP_DHCP
 #if LWIP_AUTOIP
