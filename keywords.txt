@@ -63,6 +63,7 @@ leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
 setHostname	KEYWORD2
 hostname	KEYWORD2
+hostByName	KEYWORD2
 maxSockets	KEYWORD2
 connect	KEYWORD2	client.connect
 connectNoWait	KEYWORD2
