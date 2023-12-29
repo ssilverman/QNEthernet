@@ -23,9 +23,9 @@
 // 2. Define MAX_FRAME_LEN
 
 #if defined(ARDUINO_TEENSY41)
-#include "lwip_t41.h"
+#include "drivers/lwip_t41.h"
 #else
-#include "lwip_unsupported.h"
+#include "drivers/lwip_unsupported.h"
 #endif  // ARDUINO_TEENSY41
 
 #ifdef __cplusplus
