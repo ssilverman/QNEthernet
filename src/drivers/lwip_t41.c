@@ -1003,6 +1003,8 @@ NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 bool enet_has_hardware() {
   switch (s_initState) {
     case kInitStateHasHardware:
+    case kInitStatePHYInitialized:
+    case kInitStateInitialized:
       return true;
     case kInitStateNoHardware:
       return false;
