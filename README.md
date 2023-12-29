@@ -4,7 +4,7 @@ or
 
 # _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
 
-_Version: 0.26.0-snapshot_
+_Version: 0.26.0_
 
 The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1.
 It's compatible with the Arduino-style API.
