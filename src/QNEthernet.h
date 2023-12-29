@@ -559,9 +559,6 @@ class EthernetClass final {
 // Instance for interacting with the library.
 STATIC_INIT_DECL(EthernetClass, Ethernet);
 
-// Instance for using IEEE 1588 functions.
-extern EthernetIEEE1588Class &EthernetIEEE1588;
-
 #if QNETHERNET_CUSTOM_WRITE
 // stdout output.
 extern Print* stdoutPrint;

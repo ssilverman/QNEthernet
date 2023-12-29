@@ -11,11 +11,8 @@
 namespace qindesign {
 namespace network {
 
-// Define the singleton instance.
-EthernetIEEE1588Class EthernetIEEE1588Class::instance_;
-
 // A reference to the singleton.
-EthernetIEEE1588Class &EthernetIEEE1588 = EthernetIEEE1588Class::instance();
+STATIC_INIT_DEFN(EthernetIEEE1588Class, EthernetIEEE1588);
 
 void EthernetIEEE1588Class::begin() const {
   ieee1588_init();
