@@ -8,6 +8,7 @@
 #define QNETHERNET_ARCH_CC_H_
 
 // C includes
+#include <stdalign.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -28,10 +29,10 @@ extern void qnethernet_stdio_flush(int file);
 
 #if !QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
-  u8_t variable_name[(size)] DMAMEM __attribute__((aligned(MEM_ALIGNMENT)))
+  alignas(MEM_ALIGNMENT) u8_t variable_name[(size)] DMAMEM
 #else
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
-  u8_t variable_name[(size)] __attribute__((aligned(MEM_ALIGNMENT)))
+  alignas(MEM_ALIGNMENT) u8_t variable_name[(size)]
 #endif  // !QNETHERNET_LWIP_MEMORY_IN_RAM1
 
 #if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
