@@ -4,10 +4,10 @@
 // lwip_unsupported.h defines things for unsupported boards.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_LWIP_UNSUPPORTED_H_
-#define QNETHERNET_LWIP_UNSUPPORTED_H_
+#ifndef QNETHERNET_DRIVER_UNSUPPORTED_H_
+#define QNETHERNET_DRIVER_UNSUPPORTED_H_
 
 #define MTU           1500
 #define MAX_FRAME_LEN 1522
 
-#endif  // QNETHERNET_LWIP_UNSUPPORTED_H_
+#endif  // QNETHERNET_DRIVER_UNSUPPORTED_H_
