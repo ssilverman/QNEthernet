@@ -25,7 +25,6 @@
 #define QNETHERNET_STATICINIT_H_
 
 #include <new>  // For placement new
-#include <type_traits>
 
 template <typename T>
 struct StaticInit {
@@ -42,7 +41,7 @@ struct StaticInit {
   }
 
   static int nifty_counter;
-  static std::aligned_storage_t<sizeof(T), alignof(T)> buf;
+  alignas(T) static unsigned char buf[sizeof(T)];
 
   T &t_ = reinterpret_cast<T &>(buf);
 };
