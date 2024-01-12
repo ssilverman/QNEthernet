@@ -830,6 +830,7 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
   }
   uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
+    LINK_STATS_INC(link.err);
     LINK_STATS_INC(link.drop);
     return ERR_BUF;
   }
