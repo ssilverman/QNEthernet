@@ -598,7 +598,7 @@ static void init_phy() {
   s_initState = kInitStatePHYInitialized;
 }
 
-// Initializes the PHY and Ethernet interface.
+// Initializes the PHY and Ethernet interface. This sets the init state.
 static void low_level_init() {
   init_phy();
   if (s_initState != kInitStatePHYInitialized) {
@@ -847,6 +847,11 @@ static err_t init_netif(struct netif *netif) {
     return ERR_ARG;
   }
 
+  low_level_init();
+  if (s_initState != kInitStateInitialized) {
+    return ERR_IF;
+  }
+
   netif->linkoutput = low_level_output;
   netif->output = etharp_output;
   netif->mtu = MTU;
@@ -864,8 +869,6 @@ static err_t init_netif(struct netif *netif) {
 #if LWIP_NETIF_HOSTNAME
   netif_set_hostname(netif, NULL);
 #endif  // LWIP_NETIF_HOSTNAME
-
-  low_level_init();
 
   return ERR_OK;
 }
