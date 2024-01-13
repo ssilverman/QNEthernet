@@ -46,9 +46,13 @@ inline int enet_get_max_frame_len() {
 bool enet_is_unknown();
 
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
+//
+// For systems without a built-in address, this should retrieve some default.
 void enet_get_mac(uint8_t *mac);
 
-// Determines if there's Ethernet hardware.
+// Determines if there's Ethernet hardware. If the hardware hasn't yet been
+// probed (enet_is_unknown() would return 'true'), then this will check
+// the hardware.
 bool enet_has_hardware();
 
 // Initializes Ethernet and returns whether successful. This does not set the
@@ -73,7 +77,7 @@ struct netif *enet_netif();
 // main loop.
 void enet_proc_input(void);
 
-// Polls Ethernet link status.
+// Polls the stack (if needed) and Ethernet link status.
 void enet_poll();
 
 // Returns the link speed in Mbps. The value is only valid if the link is up.
