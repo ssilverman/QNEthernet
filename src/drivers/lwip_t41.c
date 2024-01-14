@@ -760,13 +760,13 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
     LINK_STATS_INC(link.drop);
 #endif  // LINK_STATS
   } else {
+    LINK_STATS_INC(link.recv);
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
     if (p) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
       arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       pbuf_take(p, pBD->buffer, p->tot_len);
-      LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
