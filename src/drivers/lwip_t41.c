@@ -847,11 +847,6 @@ static err_t init_netif(struct netif *netif) {
     return ERR_ARG;
   }
 
-  low_level_init();
-  if (s_initState != kInitStateInitialized) {
-    return ERR_IF;
-  }
-
   netif->linkoutput = low_level_output;
   netif->output = etharp_output;
   netif->mtu = MTU;
@@ -1035,6 +1030,11 @@ static void remove_netif() {
 // This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
+  low_level_init();
+  if (s_initState != kInitStateInitialized) {
+    return false;
+  }
+
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
