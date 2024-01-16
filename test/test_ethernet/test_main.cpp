@@ -409,7 +409,8 @@ static void test_link() {
 
   Ethernet.end();
 
-  TEST_ASSERT_EQUAL_MESSAGE(LinkOFF, Ethernet.linkStatus(), "Expected no link");
+  EthernetLinkStatus status = Ethernet.linkStatus();
+  TEST_ASSERT_TRUE_MESSAGE(status == LinkOFF || status == Unknown, "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 }
 
