@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetFrame.h defines the raw frame interface.
@@ -81,9 +81,10 @@ class EthernetFrameClass final : public Stream {
   //
   // This will return false if:
   // 1. The frame was not started,
-  // 2. Ethernet was not started, or
+  // 2. Ethernet was not started,
   // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
-  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS).
+  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
+  // 4. There's no room in the output buffers.
   bool endFrame();
 
   // Sends a frame and returns whether the send was successful. This causes less
@@ -94,9 +95,10 @@ class EthernetFrameClass final : public Stream {
   //
   // This will return false if:
   // 1. Ethernet was not started,
-  // 2. The frame is NULL, or
+  // 2. The frame is NULL,
   // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
-  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS).
+  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
+  // 4. There's no room in the output buffers.
   bool send(const uint8_t *frame, size_t len) const;
 
   // Bring Print::write functions into scope

@@ -1216,6 +1216,9 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   }
 
   volatile enetbufferdesc_t *pBD = get_bufdesc();
+  if (pBD == NULL) {
+    return false;
+  }
 
   memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
