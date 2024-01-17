@@ -271,7 +271,6 @@ class EthernetClass final {
   void setDNSServerIP(int index, const IPAddress &ip) const;
 
   // The MAC addresses are used in the following begin() functions
-  [[deprecated("See begin() and waitForLocalIP(timeout)")]]
   int begin(const uint8_t mac[6],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
@@ -281,7 +280,6 @@ class EthernetClass final {
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
   void begin(const uint8_t mac[6], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway);
-  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
   void begin(const uint8_t mac[6], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway,
              const IPAddress &subnet);

@@ -11,6 +11,8 @@ and this project adheres to
 ### Changed
 * Made it easier to add other low-level drivers.
 * Redesigned the driver interface.
+* Un-deprecated `EthernetClass::begin(mac, timeout)` and
+  `begin(mac, ip, dns, gateway, subnet)`.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

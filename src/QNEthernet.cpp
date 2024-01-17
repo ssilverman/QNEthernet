@@ -329,6 +329,7 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway) {
   begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
 }
+#pragma GCC diagnostic pop
 
 void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
@@ -346,7 +347,6 @@ void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
     std::copy_n(m, 6, mac_);  // Restore the previous
   }
 }
-#pragma GCC diagnostic pop
 
 void EthernetClass::end() {
   if (netif_ == nullptr) {

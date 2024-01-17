@@ -235,14 +235,14 @@ static bool waitForLocalIP() {
 
 // Tests NULL MAC address passed to the begin(...) functions.
 static void test_other_null_mac() {
+  TEST_ASSERT_EQUAL_MESSAGE(1, Ethernet.begin(nullptr), "Expected start success (1)");
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  TEST_ASSERT_EQUAL_MESSAGE(1, Ethernet.begin(nullptr), "Expected start success (1)");
   Ethernet.begin(nullptr, INADDR_NONE);
   Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE);
   Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE);
-  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
 #pragma GCC diagnostic pop
+  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
 
   TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, true));
   TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, false));
