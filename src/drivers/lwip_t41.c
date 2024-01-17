@@ -580,6 +580,10 @@ static void init_phy() {
   s_initState = kInitStatePHYInitialized;
 }
 
+void driver_set_chip_select_pin(int pin) {
+  LWIP_UNUSED_ARG(pin);
+}
+
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
 bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {

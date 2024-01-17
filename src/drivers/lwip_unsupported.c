@@ -22,6 +22,9 @@ bool driver_has_hardware() {
   return false;
 }
 
+void driver_set_chip_select_pin(int pin) {
+}
+
 bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   return false;
 }

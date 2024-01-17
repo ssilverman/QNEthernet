@@ -286,9 +286,11 @@ class EthernetClass final {
 
   EthernetHardwareStatus hardwareStatus() const;
 
+  void init(int sspin) {
+    chipSelectPin_ = sspin;
+  }
+
   // Deprecated and unused functions
-  [[deprecated("No chip select pin")]]
-  void init([[maybe_unused]] uint8_t sspin) const {}
   [[deprecated("DHCP maintained internally")]]
   uint8_t maintain() const { return 0; }
   [[deprecated("See TCP_MAXRTX")]]
@@ -380,6 +382,8 @@ class EthernetClass final {
   // restart the netif.
   [[nodiscard]]
   bool start();
+
+  int chipSelectPin_ = -1;
 
   elapsedMillis pollTimer_;
 

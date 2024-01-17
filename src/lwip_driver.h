@@ -55,6 +55,10 @@ void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]);
 // the hardware.
 bool driver_has_hardware();
 
+// Sets the SPI chip select pin given in Ethernet.init(). The pin will be -1 if
+// it has not been initialized.
+void driver_set_chip_select_pin(int pin);
+
 // Does low-level initialization. This returns whether the initialization
 // was successful.
 bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]);
