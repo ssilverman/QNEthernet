@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Made it easier to add other low-level drivers.
+
+### Fixed
+* Added missing `hostByName` to keywords.txt.
+* Fixed `enet_output_frame()` to return false if there's no output buffer.
+
 ## [0.26.0]
 
 ### Added
