@@ -1103,6 +1103,9 @@ void enet_deinit() {
   netif_set_link_down(&s_netif);
   netif_set_down(&s_netif);
 
+  // Restore state
+  memset(s_mac, 0, sizeof(s_mac));
+
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
