@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Changed
 * Made it easier to add other low-level drivers.
+* Redesigned the driver interface.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

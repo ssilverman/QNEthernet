@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernet.cpp contains the Teensy 4.1 Ethernet implementation.
@@ -217,7 +217,7 @@ bool EthernetClass::maybeStartDHCP() {
 }
 
 bool EthernetClass::start() {
-  if (!enet_has_hardware()) {
+  if (!driver_has_hardware()) {
     return false;
   }
 
@@ -379,7 +379,7 @@ void EthernetClass::end() {
 }
 
 EthernetLinkStatus EthernetClass::linkStatus() const {
-  if (enet_is_unknown()) {
+  if (driver_is_unknown()) {
     return EthernetLinkStatus::Unknown;
   }
   return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
@@ -404,15 +404,15 @@ void EthernetClass::setLinkState(bool flag) const {
 }
 
 int EthernetClass::linkSpeed() const {
-  return phy_link_speed();
+  return driver_link_speed();
 }
 
 bool EthernetClass::linkIsFullDuplex() const {
-  return phy_link_is_full_duplex();
+  return driver_link_is_full_duplex();
 }
 
 bool EthernetClass::linkIsCrossover() const {
-  return phy_link_is_crossover();
+  return driver_link_is_crossover();
 }
 
 bool EthernetClass::interfaceStatus() const {
@@ -498,7 +498,7 @@ void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
 }
 
 EthernetHardwareStatus EthernetClass::hardwareStatus() const {
-  if (enet_has_hardware()) {
+  if (driver_has_hardware()) {
     return EthernetOtherHardware;
   }
   return EthernetNoHardware;
@@ -534,7 +534,7 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
     return false;
   }
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-  return enet_set_mac_address_allowed(mac, flag);
+  return driver_set_mac_address_allowed(mac, flag);
 #else
   return flag;  // Can't disallow MAC addresses
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE

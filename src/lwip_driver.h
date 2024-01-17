@@ -16,6 +16,7 @@
 
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
+#include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
 
 // Requirements for platform-specific headers:
@@ -32,28 +33,97 @@
 extern "C" {
 #endif  // __cplusplus
 
+// --------------------------------------------------------------------------
+//  Driver Interface
+// --------------------------------------------------------------------------
+
+// It can be assumed that any parameters passed in will not be NULL.
+
+// Returns if the hardware hasn't yet been probed.
+bool driver_is_unknown();
+
+// Gets the built-in Ethernet MAC address.
+//
+// For systems without a built-in address, this should retrieve some default.
+void driver_get_system_mac(uint8_t *mac);
+
+// Sets the internal MAC address.
+void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]);
+
+// Determines if there's Ethernet hardware. If the hardware hasn't yet been
+// probed (driver_is_unknown() would return 'true'), then this will check
+// the hardware.
+bool driver_has_hardware();
+
+// Does low-level initialization. This returns whether the initialization
+// was successful.
+bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]);
+
+// Uninitializes the driver.
+void driver_deinit();
+
+// Processes any input and pass any received frames to the netif.
+void driver_proc_input(struct netif *netif);
+
+// Polls anything that needs to be polled, for example, the link status.
+void driver_poll(struct netif *netif);
+
+// Outputs the given pbuf data to the netif.
+//
+// Note that the data will already contain any extra ETH_PAD_SIZE bytes.
+err_t driver_output(struct netif *netif, struct pbuf *p);
+
+// Outputs a raw Ethernet frame and returns whether successful.
+//
+// This should add any extra padding bytes given by ETH_PAD_SIZE.
+bool driver_output_frame(const uint8_t *frame, size_t len);
+
+// Returns the link speed in Mbps. The value is only valid if the link is up.
+int driver_link_speed();
+
+// Returns the link duplex mode, true for full and false for half. The value is
+// only valid if the link is up.
+bool driver_link_is_full_duplex();
+
+// Returns whether a crossover cable is detected. The value is only valid if the
+// link is up.
+bool driver_link_is_crossover();
+
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
+// Allows or disallows frames addressed to the specified MAC address. This is
+// not meant to be used for joining or leaving a multicast group at the IP
+// layer; use the IP stack for that.
+//
+// Because the underlying system might use a hash of the MAC address, it's
+// possible for there to be collisions. This means that it's not always possible
+// to disallow an address once it's been allowed.
+//
+// This returns true if adding or removing the MAC was successful. If an address
+// has a collision, then it can't be removed and this will return false. This
+// will also return false if 'mac' is NULL. Otherwise, this will return true.
+bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow);
+
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
+// --------------------------------------------------------------------------
+//  Public Interface
+// --------------------------------------------------------------------------
+
 // Returns the MTU.
 inline int enet_get_mtu() {
   return MTU;
 }
 
-// Returns. the max. frame length.
+// Returns the maximum frame length.
 inline int enet_get_max_frame_len() {
   return MAX_FRAME_LEN;
 }
-
-// Returns if the hardware hasn't yet been probed.
-bool enet_is_unknown();
 
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 //
 // For systems without a built-in address, this should retrieve some default.
 void enet_get_mac(uint8_t *mac);
-
-// Determines if there's Ethernet hardware. If the hardware hasn't yet been
-// probed (enet_is_unknown() would return 'true'), then this will check
-// the hardware.
-bool enet_has_hardware();
 
 // Initializes Ethernet and returns whether successful. This does not set the
 // interface to "up".
@@ -66,7 +136,7 @@ bool enet_has_hardware();
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback);
 
-// Disables Ethernet.
+// Shuts down the Ethernet stack and driver.
 void enet_deinit();
 
 // Gets a pointer to the netif structure. This is useful for the netif callback
@@ -75,36 +145,23 @@ struct netif *enet_netif();
 
 // Processes any Ethernet input. This is meant to be called often by the
 // main loop.
-void enet_proc_input(void);
+void enet_proc_input();
 
 // Polls the stack (if needed) and Ethernet link status.
 void enet_poll();
-
-// Returns the link speed in Mbps. The value is only valid if the link is up.
-int phy_link_speed();
-
-// Returns the link duplex mode, true for full and false for half. The value is
-// only valid if the link is up.
-bool phy_link_is_full_duplex();
-
-// Returns whether a crossover cable is detected. The value is only valid if the
-// link is up.
-bool phy_link_is_crossover();
 
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the correct range. The proper range is 14-(MAX_FRAME_LEN-8)
 // for non-VLAN frames and 18-(MAX_FRAME_LEN-4) for VLAN frames. Note that these
 // ranges exclude the 4-byte FCS (frame check sequence).
 //
-// This also returns false if Ethernet is not initialized.
-//
-// This adds any extra padding bytes given by ETH_PAD_SIZE.
+// This returns the result of driver_output_frame(), if the frame checks pass.
 bool enet_output_frame(const uint8_t *frame, size_t len);
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // For joining and leaving multicast groups; these call
-// enet_set_mac_address_allowed() with the MAC addresses related to the given
+// driver_set_mac_address_allowed() with the MAC addresses related to the given
 // multicast group. Note that this affects low-level MAC filtering and not the
 // IP stack's use of multicast groups.
 //
@@ -112,19 +169,6 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 // result of 'enet_set_mac_address_allowed()'.
 bool enet_join_group(const ip4_addr_t *group);
 bool enet_leave_group(const ip4_addr_t *group);
-
-// Allows or disallows frames addressed to the specified MAC address. This is
-// not meant to be used for joining or leaving a multicast group at the IP
-// layer; use the IP stack for that.
-//
-// Because the underlying system uses a hash of the MAC address, it's possible
-// for there to be collisions. This means that it's not always possible to
-// disallow an address once it's been allowed.
-//
-// This returns true if adding or removing the MAC was successful. If an address
-// has a collision, then it can't be removed and this will return false. This
-// will also return false if 'mac' is NULL. Otherwise, this will return true.
-bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 

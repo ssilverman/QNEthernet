@@ -20,18 +20,11 @@
 #include <pgmspace.h>
 
 #include "lwip/arch.h"
-#include "lwip/autoip.h"
-#include "lwip/dhcp.h"
 #include "lwip/err.h"
-#include "lwip/etharp.h"
-#include "lwip/init.h"
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
-#include "lwip/prot/ieee.h"
 #include "lwip/stats.h"
-#include "lwip/timeouts.h"
-#include "netif/ethernet.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
@@ -288,19 +281,8 @@ static volatile enetbufferdesc_t *s_pRxBD = &s_rxRing[0];
 static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
-static uint8_t s_mac[ETH_HWADDR_LEN];
-static struct netif s_netif           = { .name = {'e', '0'} };
 static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
 static enet_init_states_t s_initState = kInitStateStart;
-static bool s_isNetifAdded            = false;
-
-// Structs for avoiding memory allocation
-#if LWIP_DHCP
-static struct dhcp s_dhcp;
-#endif  // LWIP_DHCP
-#if LWIP_AUTOIP
-static struct autoip s_autoip;
-#endif  // LWIP_AUTOIP
 
 // PHY status, polled
 static int s_checkLinkStatusState = 0;
@@ -598,11 +580,16 @@ static void init_phy() {
   s_initState = kInitStatePHYInitialized;
 }
 
-// Initializes the PHY and Ethernet interface. This sets the init state.
-static void low_level_init() {
+// Initializes the PHY and Ethernet interface. This sets the init state and
+// returns whether the initialization was successful.
+bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+  if (s_initState == kInitStateInitialized) {
+    return true;
+  }
+
   init_phy();
   if (s_initState != kInitStatePHYInitialized) {
-    return;
+    return false;
   }
 
   // Configure pins
@@ -691,8 +678,8 @@ static void low_level_init() {
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  ENET_PALR = (s_mac[0] << 24) | (s_mac[1] << 16) | (s_mac[2] << 8) | s_mac[3];
-  ENET_PAUR = (s_mac[4] << 24) | (s_mac[5] << 16) | 0x8808;
+  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
@@ -722,6 +709,8 @@ static void low_level_init() {
   // mdio_write(PHY_BMCR, 1 << 15);
 
   s_initState = kInitStateInitialized;
+
+  return true;
 }
 
 // Low-level input function that transforms a received frame into an lwIP pbuf.
@@ -814,7 +803,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
 }
 
 // Outputs data from the MAC.
-static err_t low_level_output(struct netif *netif, struct pbuf *p) {
+err_t driver_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
   if (p == NULL) {
     return ERR_ARG;
@@ -838,33 +827,6 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p) {
   arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, copied);
-  return ERR_OK;
-}
-
-// Initializes the netif.
-static err_t init_netif(struct netif *netif) {
-  if (netif == NULL) {
-    return ERR_ARG;
-  }
-
-  netif->linkoutput = low_level_output;
-  netif->output = etharp_output;
-  netif->mtu = MTU;
-  netif->flags = 0
-                 | NETIF_FLAG_BROADCAST
-                 | NETIF_FLAG_ETHARP
-                 | NETIF_FLAG_ETHERNET
-#if LWIP_IGMP
-                 | NETIF_FLAG_IGMP
-#endif  // LWIP_IGMP
-                 ;
-
-  SMEMCPY(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
-  netif->hwaddr_len = ETH_HWADDR_LEN;
-#if LWIP_NETIF_HOSTNAME
-  netif_set_hostname(netif, NULL);
-#endif  // LWIP_NETIF_HOSTNAME
-
   return ERR_OK;
 }
 
@@ -902,7 +864,7 @@ static void enet_isr() {
 // Checks the link status and returns zero if complete and a state value if
 // not complete. The return value should be used in the next call to
 // this function.
-static inline int check_link_status(int state) {
+static inline int check_link_status(struct netif *netif, int state) {
   static uint16_t bmsr;
   static uint16_t physts;
   static uint8_t is_link_up;
@@ -937,57 +899,30 @@ static inline int check_link_status(int state) {
       break;
   }
 
-  if (netif_is_link_up(&s_netif) != is_link_up) {
+  if (netif_is_link_up(netif) != is_link_up) {
     if (is_link_up) {
       s_linkSpeed10Not100 = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0);
       s_linkIsFullDuplex  = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
       s_linkIsCrossover   = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
 
-      netif_set_link_up(&s_netif);
+      netif_set_link_up(netif);
     } else {
-      netif_set_link_down(&s_netif);
+      netif_set_link_down(netif);
     }
   }
 
   return 0;
 }
 
-#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-// Multicast filter for letting the hardware know which packets to let in.
-static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
-                              enum netif_mac_filter_action action) {
-  LWIP_UNUSED_ARG(netif);
-
-  bool retval = true;
-  switch (action) {
-    case NETIF_ADD_MAC_FILTER:
-      retval = enet_join_group(group);
-      break;
-    case NETIF_DEL_MAC_FILTER:
-      retval = enet_leave_group(group);
-      break;
-    default:
-      break;
-  }
-  return retval ? ERR_OK : ERR_USE;
-      // ERR_USE seems like the best fit of the choices
-      // Next best seems to be ERR_IF
-}
-#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-
 // --------------------------------------------------------------------------
 //  Public Interface
 // --------------------------------------------------------------------------
 
-bool enet_is_unknown() {
+bool driver_is_unknown() {
   return s_initState == kInitStateStart;
 }
 
-void enet_get_mac(uint8_t *mac) {
-  if (mac == NULL) {
-    return;
-  }
-
+void driver_get_system_mac(uint8_t *mac) {
   uint32_t m1 = HW_OCOTP_MAC1;
   uint32_t m2 = HW_OCOTP_MAC0;
   mac[0] = m1 >> 8;
@@ -998,9 +933,14 @@ void enet_get_mac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
+void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  __disable_irq();  // Not sure if disabling interrupts is really needed
+  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  __enable_irq();
+}
 
-bool enet_has_hardware() {
+bool driver_has_hardware() {
   switch (s_initState) {
     case kInitStateHasHardware:
     case kInitStatePHYInitialized:
@@ -1015,104 +955,14 @@ bool enet_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
-#if QNETHERNET_INTERNAL_END_STOPS_ALL
-// Removes the current netif, if any.
-static void remove_netif() {
-  if (s_isNetifAdded) {
-    netif_set_default(NULL);
-    netif_remove(&s_netif);
-    netif_remove_ext_callback(&netif_callback);
-    s_isNetifAdded = false;
-  }
-}
-#endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
-
-// This only uses the callback if the interface has not been added.
-bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               netif_ext_callback_fn callback) {
-  // Sanitize the inputs
-  uint8_t m[ETH_HWADDR_LEN];
-  if (mac == NULL) {
-    enet_get_mac(m);
-    mac = m;
-  }
-
-  // Only execute the following code once
-  static bool isFirstInit = true;
-  if (isFirstInit) {
-    lwip_init();
-    isFirstInit = false;
-  } else if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
-    // First test if the MAC address has changed
-    // If it's changed then remove the interface and start again
-
-    // MAC address has changed
-
-    // Remove any previous configuration
-    // remove_netif();
-    // TODO: For some reason, remove_netif() prevents further operation
-  }
-
-  SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
-
-  low_level_init();
-  if (s_initState != kInitStateInitialized) {
-    return false;
-  }
-
-  if (!s_isNetifAdded) {
-    netif_add_ext_callback(&netif_callback, callback);
-    if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
-      netif_remove_ext_callback(&netif_callback);
-      return false;
-    }
-    netif_set_default(&s_netif);
-    s_isNetifAdded = true;
-
-    // netif_add() clears these, so re-set them
-#if LWIP_DHCP
-    dhcp_set_struct(&s_netif, &s_dhcp);
-#endif  // LWIP_DHCP
-#if LWIP_AUTOIP
-    autoip_set_struct(&s_netif, &s_autoip);
-#endif  // LWIP_AUTOIP
-
-#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-    // Multicast filtering, to allow desired multicast packets in
-    netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
-#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-  } else {
-    // Just set the MAC address
-
-    SMEMCPY(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
-    s_netif.hwaddr_len = ETH_HWADDR_LEN;
-
-    __disable_irq();  // Not sure if disabling interrupts is really needed
-    ENET_PALR = (s_mac[0] << 24) | (s_mac[1] << 16) | (s_mac[2] << 8) | s_mac[3];
-    ENET_PAUR = (s_mac[4] << 24) | (s_mac[5] << 16) | 0x8808;
-    __enable_irq();
-  }
-
-  return true;
-}
-
 extern void unused_interrupt_vector(void);  // startup.c
 
-void enet_deinit() {
-  netif_set_addr(&s_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-  netif_set_link_down(&s_netif);
-  netif_set_down(&s_netif);
-
-  // Restore state
-  memset(s_mac, 0, sizeof(s_mac));
-
+void driver_deinit() {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
 
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
-  remove_netif();  // TODO: This also causes issues (see notes in enet_init())
-
   if (s_initState == kInitStateInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
     attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
@@ -1145,14 +995,10 @@ void enet_deinit() {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-struct netif *enet_netif() {
-  return &s_netif;
-}
-
-void enet_proc_input(void) {
+void driver_proc_input(struct netif *netif) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
-    s_checkLinkStatusState = check_link_status(s_checkLinkStatusState);
+    s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
   }
 
   if (atomic_flag_test_and_set(&s_rxNotAvail)) {
@@ -1168,51 +1014,32 @@ void enet_proc_input(void) {
     struct pbuf *p = low_level_input(pBD);
     if (p != NULL) {  // Happens on frame error or pbuf allocation error
       // Process one chunk of input data
-      if (s_netif.input(p, &s_netif) != ERR_OK) {
+      if (netif->input(p, netif) != ERR_OK) {
         pbuf_free(p);
       }
     }
   }
 }
 
-void enet_poll() {
-  sys_check_timeouts();
-  s_checkLinkStatusState = check_link_status(s_checkLinkStatusState);
+void driver_poll(struct netif *netif) {
+  s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
-int phy_link_speed() {
+int driver_link_speed() {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool phy_link_is_full_duplex() {
+bool driver_link_is_full_duplex() {
   return s_linkIsFullDuplex;
 }
 
-bool phy_link_is_crossover() {
+bool driver_link_is_crossover() {
   return s_linkIsCrossover;
 }
 
-bool enet_output_frame(const uint8_t *frame, size_t len) {
+bool driver_output_frame(const uint8_t *frame, size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
-  }
-  if (frame == NULL || len < (6 + 6 + 2)) {  // dst + src + len/type
-    return false;
-  }
-
-  // Check length depending on VLAN
-  if (frame[12] == (uint8_t)(ETHTYPE_VLAN >> 8) &&
-      frame[13] == (uint8_t)(ETHTYPE_VLAN)) {
-    if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
-      return false;
-    }
-    if (len > MAX_FRAME_LEN - 4) {  // Don't include 4-byte FCS
-      return false;
-    }
-  } else {
-    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include 4-byte FCS and VLAN
-      return false;
-    }
   }
 
   volatile enetbufferdesc_t *pBD = get_bufdesc();
@@ -1248,7 +1075,7 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   return crc;
 }
 
-bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   if (mac == NULL) {
     return false;
   }
@@ -1304,38 +1131,6 @@ bool enet_set_mac_address_allowed(const uint8_t *mac, bool allow) {
   }
 
   return true;
-}
-
-// Joins or leaves a multicast group. The flag should be true to join and false
-// to leave. This returns whether successful.
-static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
-  if (group == NULL) {
-    return false;
-  }
-
-  // Multicast MAC address.
-  static uint8_t multicastMAC[6] = {
-      LL_IP4_MULTICAST_ADDR_0,
-      LL_IP4_MULTICAST_ADDR_1,
-      LL_IP4_MULTICAST_ADDR_2,
-      0,
-      0,
-      0,
-  };
-
-  multicastMAC[3] = ip4_addr2(group) & 0x7f;
-  multicastMAC[4] = ip4_addr3(group);
-  multicastMAC[5] = ip4_addr4(group);
-
-  return enet_set_mac_address_allowed(multicastMAC, flag);
-}
-
-bool enet_join_group(const ip4_addr_t *group) {
-  return enet_join_notleave_group(group, true);
-}
-
-bool enet_leave_group(const ip4_addr_t *group) {
-  return enet_join_notleave_group(group, false);
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
