@@ -1030,11 +1030,6 @@ static void remove_netif() {
 // This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
-  low_level_init();
-  if (s_initState != kInitStateInitialized) {
-    return false;
-  }
-
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
@@ -1059,6 +1054,11 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   }
 
   SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
+
+  low_level_init();
+  if (s_initState != kInitStateInitialized) {
+    return false;
+  }
 
   if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
