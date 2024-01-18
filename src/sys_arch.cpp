@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <limits>
 
+#include <Arduino.h>
 #include <Print.h>
 #include <pgmspace.h>
 
@@ -27,10 +28,8 @@ extern "C" {
 #include "lwip/err.h"
 #endif  // LWIP_DEBUG
 
-extern volatile uint32_t systick_millis_count;
-
 u32_t sys_now(void) {
-  return systick_millis_count;
+  return millis();
 }
 
 #ifdef LWIP_DEBUG
