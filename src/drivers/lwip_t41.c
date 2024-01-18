@@ -22,8 +22,6 @@
 #include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/opt.h"
-#include "lwip/pbuf.h"
-#include "lwip/prot/ethernet.h"
 #include "lwip/stats.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
