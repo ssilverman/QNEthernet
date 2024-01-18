@@ -15,8 +15,6 @@
 #endif  // LWIP_ALTCP
 #include <limits>
 
-#include <core_pins.h>
-
 #include "QNEthernet.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
