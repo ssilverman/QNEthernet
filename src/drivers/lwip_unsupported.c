@@ -15,7 +15,7 @@ bool driver_is_unknown() {
 void driver_get_system_mac(uint8_t *mac) {
 }
 
-void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 bool driver_has_hardware() {

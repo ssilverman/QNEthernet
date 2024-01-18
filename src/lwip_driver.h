@@ -48,7 +48,7 @@ bool driver_is_unknown();
 void driver_get_system_mac(uint8_t *mac);
 
 // Sets the internal MAC address.
-void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]);
+void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
 // probed (driver_is_unknown() would return 'true'), then this will check

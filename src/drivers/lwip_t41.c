@@ -770,7 +770,7 @@ void driver_get_system_mac(uint8_t *mac) {
   mac[5] = m2 >> 0;
 }
 
-void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   __disable_irq();  // Not sure if disabling interrupts is really needed
   ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
   ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
