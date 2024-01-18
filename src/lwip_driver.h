@@ -106,6 +106,8 @@ bool driver_output_frame(const uint8_t *frame, size_t len);
 // This returns true if adding or removing the MAC was successful. If an address
 // has a collision, then it can't be removed and this will return false. This
 // will also return false if 'mac' is NULL. Otherwise, this will return true.
+//
+// Note that this function may be passed a NULL MAC address.
 bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE

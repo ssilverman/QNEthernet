@@ -531,7 +531,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
 
 bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
                                          bool flag) const {
-  if (netif_ == nullptr) {
+  if (netif_ == nullptr || mac == nullptr) {
     return false;
   }
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
