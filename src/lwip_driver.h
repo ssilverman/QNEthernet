@@ -83,7 +83,7 @@ bool driver_link_is_full_duplex();
 // link is up.
 bool driver_link_is_crossover();
 
-// Outputs the given pbuf data to the netif.
+// Outputs the given pbuf data for the specified netif.
 //
 // Note that the data will already contain any extra ETH_PAD_SIZE bytes.
 err_t driver_output(struct netif *netif, struct pbuf *p);
