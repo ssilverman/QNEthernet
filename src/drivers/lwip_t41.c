@@ -1013,10 +1013,6 @@ bool driver_link_is_crossover() {
 
 // Outputs data from the MAC.
 err_t driver_output(struct pbuf *p) {
-  if (p == NULL) {
-    return ERR_ARG;
-  }
-
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *pBD = get_bufdesc();
   if (pBD == NULL) {

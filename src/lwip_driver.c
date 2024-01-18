@@ -45,6 +45,10 @@ static struct autoip s_autoip;
 // Outputs the given pbuf to the driver.
 static err_t link_output(struct netif *netif, struct pbuf *p) {
   LWIP_UNUSED_ARG(netif);
+  if (p == NULL) {
+    return ERR_ARG;
+  }
+
   return driver_output(p);
 }
 
