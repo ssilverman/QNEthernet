@@ -1012,8 +1012,7 @@ bool driver_link_is_crossover() {
 }
 
 // Outputs data from the MAC.
-err_t driver_output(struct netif *netif, struct pbuf *p) {
-  LWIP_UNUSED_ARG(netif);
+err_t driver_output(struct pbuf *p) {
   if (p == NULL) {
     return ERR_ARG;
   }

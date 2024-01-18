@@ -50,7 +50,7 @@ bool driver_link_is_crossover() {
   return false;
 }
 
-err_t driver_output(struct netif *netif, struct pbuf *p) {
+err_t driver_output(struct pbuf *p) {
   return ERR_IF;
 }
 
