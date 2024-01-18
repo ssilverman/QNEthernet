@@ -578,6 +578,220 @@ static void init_phy() {
   s_initState = kInitStatePHYInitialized;
 }
 
+// Low-level input function that transforms a received frame into an lwIP pbuf.
+// This returns a newly-allocated pbuf, or NULL if there was a frame error or
+// allocation error.
+static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
+  const u16_t err_mask = kEnetRxBdTrunc    |
+                         kEnetRxBdOverrun  |
+                         kEnetRxBdCrc      |
+                         kEnetRxBdNonOctet |
+                         kEnetRxBdLengthViolation;
+
+  struct pbuf *p = NULL;
+
+  // Determine if a frame has been received
+  if (pBD->status & err_mask) {
+#if LINK_STATS
+    // Either truncated or others
+    if (pBD->status & kEnetRxBdTrunc) {
+      LINK_STATS_INC(link.lenerr);
+    } else if (pBD->status & kEnetRxBdLast) {
+      // The others are only valid if the 'L' bit is set
+      if (pBD->status & kEnetRxBdOverrun) {
+        LINK_STATS_INC(link.err);
+      } else {  // Either overrun and others zero, or others
+        if (pBD->status & kEnetRxBdNonOctet) {
+          LINK_STATS_INC(link.err);
+        } else if (pBD->status & kEnetRxBdCrc) {  // Non-octet or CRC
+          LINK_STATS_INC(link.chkerr);
+        }
+        if (pBD->status & kEnetRxBdLengthViolation) {
+          LINK_STATS_INC(link.lenerr);
+        }
+      }
+    }
+    LINK_STATS_INC(link.drop);
+#endif  // LINK_STATS
+  } else {
+    LINK_STATS_INC(link.recv);
+    p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
+    if (p) {
+#if !QNETHERNET_BUFFERS_IN_RAM1
+      arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
+      pbuf_take(p, pBD->buffer, p->tot_len);
+    } else {
+      LINK_STATS_INC(link.drop);
+      LINK_STATS_INC(link.memerr);
+    }
+  }
+
+  // Set rx bd empty
+  pBD->status = (pBD->status & kEnetRxBdWrap) | kEnetRxBdEmpty;
+
+  ENET_RDAR = ENET_RDAR_RDAR;
+
+  return p;
+}
+
+// Acquires a buffer descriptor. Meant to be used with update_bufdesc().
+// This returns NULL if there is no TX buffer available.
+static inline volatile enetbufferdesc_t *get_bufdesc() {
+  volatile enetbufferdesc_t *pBD = s_pTxBD;
+
+  if ((pBD->status & kEnetTxBdReady) != 0) {
+    return NULL;
+  }
+
+  return pBD;
+}
+
+// Updates a buffer descriptor. Meant to be used with get_bufdesc().
+static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
+                                  uint16_t len) {
+  pBD->length = len;
+  pBD->status = (pBD->status & kEnetTxBdWrap) |
+                kEnetTxBdTransmitCrc          |
+                kEnetTxBdLast                 |
+                kEnetTxBdReady;
+
+  ENET_TDAR = ENET_TDAR_TDAR;
+
+  if (pBD->status & kEnetTxBdWrap) {
+    s_pTxBD = &s_txRing[0];
+  } else {
+    s_pTxBD++;
+  }
+
+  LINK_STATS_INC(link.xmit);
+}
+
+// Finds the next non-empty BD.
+static inline volatile enetbufferdesc_t *rxbd_next() {
+  volatile enetbufferdesc_t *pBD = s_pRxBD;
+
+  while (pBD->status & kEnetRxBdEmpty) {
+    if (pBD->status & kEnetRxBdWrap) {
+      pBD = &s_rxRing[0];
+    } else {
+      pBD++;
+    }
+    if (pBD == s_pRxBD) {
+      return NULL;
+    }
+  }
+
+  if (s_pRxBD->status & kEnetRxBdWrap) {
+    s_pRxBD = &s_rxRing[0];
+  } else {
+    s_pRxBD++;
+  }
+  return pBD;
+}
+
+// The Ethernet ISR.
+static void enet_isr() {
+  if ((ENET_EIR & ENET_EIR_RXF) != 0) {
+    ENET_EIR = ENET_EIR_RXF;
+    atomic_flag_clear(&s_rxNotAvail);
+  }
+}
+
+// Checks the link status and returns zero if complete and a state value if
+// not complete. The return value should be used in the next call to
+// this function.
+static inline int check_link_status(struct netif *netif, int state) {
+  static uint16_t bmsr;
+  static uint16_t physts;
+  static uint8_t is_link_up;
+
+  if (s_initState != kInitStateInitialized) {
+    return 0;
+  }
+
+  // Note: PHY_PHYSTS doesn't seem to contain the live link information unless
+  //       BMSR is read too
+
+  switch (state) {
+    case 0:
+      // Fallthrough
+    case 1:
+      if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
+        return 1;
+      }
+      is_link_up = ((bmsr & PHY_BMSR_LINK_STATUS) != 0);
+      if (!is_link_up) {
+        break;
+      }
+      // Fallthrough
+
+    case 2:
+      if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
+        return 2;
+      }
+      break;
+
+    default:
+      break;
+  }
+
+  if (netif_is_link_up(netif) != is_link_up) {
+    if (is_link_up) {
+      s_linkSpeed10Not100 = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0);
+      s_linkIsFullDuplex  = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
+      s_linkIsCrossover   = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+
+      netif_set_link_up(netif);
+    } else {
+      netif_set_link_down(netif);
+    }
+  }
+
+  return 0;
+}
+
+// --------------------------------------------------------------------------
+//  Driver Interface
+// --------------------------------------------------------------------------
+
+bool driver_is_unknown() {
+  return s_initState == kInitStateStart;
+}
+
+void driver_get_system_mac(uint8_t *mac) {
+  uint32_t m1 = HW_OCOTP_MAC1;
+  uint32_t m2 = HW_OCOTP_MAC0;
+  mac[0] = m1 >> 8;
+  mac[1] = m1 >> 0;
+  mac[2] = m2 >> 24;
+  mac[3] = m2 >> 16;
+  mac[4] = m2 >> 8;
+  mac[5] = m2 >> 0;
+}
+
+void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  __disable_irq();  // Not sure if disabling interrupts is really needed
+  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  __enable_irq();
+}
+
+bool driver_has_hardware() {
+  switch (s_initState) {
+    case kInitStateHasHardware:
+    case kInitStatePHYInitialized:
+    case kInitStateInitialized:
+      return true;
+    case kInitStateNoHardware:
+      return false;
+    default:
+      break;
+  }
+  init_phy();
+  return (s_initState != kInitStateNoHardware);
+}
+
 void driver_set_chip_select_pin(int pin) {
   LWIP_UNUSED_ARG(pin);
 }
@@ -715,248 +929,6 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-// Low-level input function that transforms a received frame into an lwIP pbuf.
-// This returns a newly-allocated pbuf, or NULL if there was a frame error or
-// allocation error.
-static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
-  const u16_t err_mask = kEnetRxBdTrunc    |
-                         kEnetRxBdOverrun  |
-                         kEnetRxBdCrc      |
-                         kEnetRxBdNonOctet |
-                         kEnetRxBdLengthViolation;
-
-  struct pbuf *p = NULL;
-
-  // Determine if a frame has been received
-  if (pBD->status & err_mask) {
-#if LINK_STATS
-    // Either truncated or others
-    if (pBD->status & kEnetRxBdTrunc) {
-      LINK_STATS_INC(link.lenerr);
-    } else if (pBD->status & kEnetRxBdLast) {
-      // The others are only valid if the 'L' bit is set
-      if (pBD->status & kEnetRxBdOverrun) {
-        LINK_STATS_INC(link.err);
-      } else {  // Either overrun and others zero, or others
-        if (pBD->status & kEnetRxBdNonOctet) {
-          LINK_STATS_INC(link.err);
-        } else if (pBD->status & kEnetRxBdCrc) {  // Non-octet or CRC
-          LINK_STATS_INC(link.chkerr);
-        }
-        if (pBD->status & kEnetRxBdLengthViolation) {
-          LINK_STATS_INC(link.lenerr);
-        }
-      }
-    }
-    LINK_STATS_INC(link.drop);
-#endif  // LINK_STATS
-  } else {
-    LINK_STATS_INC(link.recv);
-    p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
-    if (p) {
-#if !QNETHERNET_BUFFERS_IN_RAM1
-      arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
-#endif  // !QNETHERNET_BUFFERS_IN_RAM1
-      pbuf_take(p, pBD->buffer, p->tot_len);
-    } else {
-      LINK_STATS_INC(link.drop);
-      LINK_STATS_INC(link.memerr);
-    }
-  }
-
-  // Set rx bd empty
-  pBD->status = (pBD->status & kEnetRxBdWrap) | kEnetRxBdEmpty;
-
-  ENET_RDAR = ENET_RDAR_RDAR;
-
-  return p;
-}
-
-// Acquires a buffer descriptor. Meant to be used with update_bufdesc().
-// This returns NULL if there is no TX buffer available.
-static inline volatile enetbufferdesc_t *get_bufdesc() {
-  volatile enetbufferdesc_t *pBD = s_pTxBD;
-
-  if ((pBD->status & kEnetTxBdReady) != 0) {
-    return NULL;
-  }
-
-  return pBD;
-}
-
-// Updates a buffer descriptor. Meant to be used with get_bufdesc().
-static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
-                                  uint16_t len) {
-  pBD->length = len;
-  pBD->status = (pBD->status & kEnetTxBdWrap) |
-                kEnetTxBdTransmitCrc          |
-                kEnetTxBdLast                 |
-                kEnetTxBdReady;
-
-  ENET_TDAR = ENET_TDAR_TDAR;
-
-  if (pBD->status & kEnetTxBdWrap) {
-    s_pTxBD = &s_txRing[0];
-  } else {
-    s_pTxBD++;
-  }
-
-  LINK_STATS_INC(link.xmit);
-}
-
-// Outputs data from the MAC.
-err_t driver_output(struct netif *netif, struct pbuf *p) {
-  LWIP_UNUSED_ARG(netif);
-  if (p == NULL) {
-    return ERR_ARG;
-  }
-
-  // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
-  volatile enetbufferdesc_t *pBD = get_bufdesc();
-  if (pBD == NULL) {
-    LINK_STATS_INC(link.memerr);
-    LINK_STATS_INC(link.drop);
-    return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
-                            // UDP senders know to retry
-  }
-  uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
-  if (copied == 0) {
-    LINK_STATS_INC(link.err);
-    LINK_STATS_INC(link.drop);
-    return ERR_BUF;
-  }
-#if !QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
-#endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, copied);
-  return ERR_OK;
-}
-
-// Finds the next non-empty BD.
-static inline volatile enetbufferdesc_t *rxbd_next() {
-  volatile enetbufferdesc_t *pBD = s_pRxBD;
-
-  while (pBD->status & kEnetRxBdEmpty) {
-    if (pBD->status & kEnetRxBdWrap) {
-      pBD = &s_rxRing[0];
-    } else {
-      pBD++;
-    }
-    if (pBD == s_pRxBD) {
-      return NULL;
-    }
-  }
-
-  if (s_pRxBD->status & kEnetRxBdWrap) {
-    s_pRxBD = &s_rxRing[0];
-  } else {
-    s_pRxBD++;
-  }
-  return pBD;
-}
-
-// The Ethernet ISR.
-static void enet_isr() {
-  if ((ENET_EIR & ENET_EIR_RXF) != 0) {
-    ENET_EIR = ENET_EIR_RXF;
-    atomic_flag_clear(&s_rxNotAvail);
-  }
-}
-
-// Checks the link status and returns zero if complete and a state value if
-// not complete. The return value should be used in the next call to
-// this function.
-static inline int check_link_status(struct netif *netif, int state) {
-  static uint16_t bmsr;
-  static uint16_t physts;
-  static uint8_t is_link_up;
-
-  if (s_initState != kInitStateInitialized) {
-    return 0;
-  }
-
-  // Note: PHY_PHYSTS doesn't seem to contain the live link information unless
-  //       BMSR is read too
-
-  switch (state) {
-    case 0:
-      // Fallthrough
-    case 1:
-      if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
-        return 1;
-      }
-      is_link_up = ((bmsr & PHY_BMSR_LINK_STATUS) != 0);
-      if (!is_link_up) {
-        break;
-      }
-      // Fallthrough
-
-    case 2:
-      if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
-        return 2;
-      }
-      break;
-
-    default:
-      break;
-  }
-
-  if (netif_is_link_up(netif) != is_link_up) {
-    if (is_link_up) {
-      s_linkSpeed10Not100 = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0);
-      s_linkIsFullDuplex  = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
-      s_linkIsCrossover   = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
-
-      netif_set_link_up(netif);
-    } else {
-      netif_set_link_down(netif);
-    }
-  }
-
-  return 0;
-}
-
-// --------------------------------------------------------------------------
-//  Public Interface
-// --------------------------------------------------------------------------
-
-bool driver_is_unknown() {
-  return s_initState == kInitStateStart;
-}
-
-void driver_get_system_mac(uint8_t *mac) {
-  uint32_t m1 = HW_OCOTP_MAC1;
-  uint32_t m2 = HW_OCOTP_MAC0;
-  mac[0] = m1 >> 8;
-  mac[1] = m1 >> 0;
-  mac[2] = m2 >> 24;
-  mac[3] = m2 >> 16;
-  mac[4] = m2 >> 8;
-  mac[5] = m2 >> 0;
-}
-
-void driver_set_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  __disable_irq();  // Not sure if disabling interrupts is really needed
-  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
-  __enable_irq();
-}
-
-bool driver_has_hardware() {
-  switch (s_initState) {
-    case kInitStateHasHardware:
-    case kInitStatePHYInitialized:
-    case kInitStateInitialized:
-      return true;
-    case kInitStateNoHardware:
-      return false;
-    default:
-      break;
-  }
-  init_phy();
-  return (s_initState != kInitStateNoHardware);
-}
-
 extern void unused_interrupt_vector(void);  // startup.c
 
 void driver_deinit() {
@@ -1037,6 +1009,34 @@ bool driver_link_is_full_duplex() {
 
 bool driver_link_is_crossover() {
   return s_linkIsCrossover;
+}
+
+// Outputs data from the MAC.
+err_t driver_output(struct netif *netif, struct pbuf *p) {
+  LWIP_UNUSED_ARG(netif);
+  if (p == NULL) {
+    return ERR_ARG;
+  }
+
+  // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
+  volatile enetbufferdesc_t *pBD = get_bufdesc();
+  if (pBD == NULL) {
+    LINK_STATS_INC(link.memerr);
+    LINK_STATS_INC(link.drop);
+    return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
+                            // UDP senders know to retry
+  }
+  uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
+  if (copied == 0) {
+    LINK_STATS_INC(link.err);
+    LINK_STATS_INC(link.drop);
+    return ERR_BUF;
+  }
+#if !QNETHERNET_BUFFERS_IN_RAM1
+  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
+#endif  // !QNETHERNET_BUFFERS_IN_RAM1
+  update_bufdesc(pBD, copied);
+  return ERR_OK;
 }
 
 bool driver_output_frame(const uint8_t *frame, size_t len) {

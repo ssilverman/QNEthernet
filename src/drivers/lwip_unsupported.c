@@ -38,10 +38,6 @@ void driver_proc_input(struct netif *netif) {
 void driver_poll(struct netif *netif) {
 }
 
-err_t driver_output(struct netif *netif, struct pbuf *p) {
-  return ERR_IF;
-}
-
 int driver_link_speed() {
   return 0;
 }
@@ -52,6 +48,10 @@ bool driver_link_is_full_duplex() {
 
 bool driver_link_is_crossover() {
   return false;
+}
+
+err_t driver_output(struct netif *netif, struct pbuf *p) {
+  return ERR_IF;
 }
 
 bool driver_output_frame(const uint8_t *frame, size_t len) {

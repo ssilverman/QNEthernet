@@ -72,16 +72,6 @@ void driver_proc_input(struct netif *netif);
 // Polls anything that needs to be polled, for example, the link status.
 void driver_poll(struct netif *netif);
 
-// Outputs the given pbuf data to the netif.
-//
-// Note that the data will already contain any extra ETH_PAD_SIZE bytes.
-err_t driver_output(struct netif *netif, struct pbuf *p);
-
-// Outputs a raw Ethernet frame and returns whether successful.
-//
-// This should add any extra padding bytes given by ETH_PAD_SIZE.
-bool driver_output_frame(const uint8_t *frame, size_t len);
-
 // Returns the link speed in Mbps. The value is only valid if the link is up.
 int driver_link_speed();
 
@@ -92,6 +82,16 @@ bool driver_link_is_full_duplex();
 // Returns whether a crossover cable is detected. The value is only valid if the
 // link is up.
 bool driver_link_is_crossover();
+
+// Outputs the given pbuf data to the netif.
+//
+// Note that the data will already contain any extra ETH_PAD_SIZE bytes.
+err_t driver_output(struct netif *netif, struct pbuf *p);
+
+// Outputs a raw Ethernet frame and returns whether successful.
+//
+// This should add any extra padding bytes given by ETH_PAD_SIZE.
+bool driver_output_frame(const uint8_t *frame, size_t len);
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
