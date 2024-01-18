@@ -14,7 +14,6 @@
 
 #include <IPAddress.h>
 #include <WString.h>
-#include <elapsedMillis.h>
 
 #include "QNEthernetClient.h"
 #include "QNEthernetFrame.h"
@@ -385,7 +384,7 @@ class EthernetClass final {
 
   int chipSelectPin_ = -1;
 
-  elapsedMillis pollTimer_;
+  uint32_t lastPollTime_ = 0;
 
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME

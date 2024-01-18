@@ -15,6 +15,8 @@ and this project adheres to
   `begin(mac, ip, dns, gateway, subnet)`.
 * Un-deprecated `EthernetClass::init(sspin)` and added a driver function for
   setting the chip select pin. The type of `sspin` was also changed to `int`.
+* Remove dependency on `elapsedMillis`. This might help with compiling for
+  other platforms.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

@@ -8,7 +8,7 @@
 
 #if LWIP_DNS
 
-#include <elapsedMillis.h>
+#include <Arduino.h>
 
 #include "lwip/dns.h"
 #include "util/ip_tools.h"
@@ -92,8 +92,8 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
     return false;
   }
 
-  elapsedMillis timer;
-  while (!lookupDone && timer < timeout) {
+  uint32_t t = millis();
+  while (!lookupDone && (millis() - t) < timeout) {
     // NOTE: Depends on Ethernet loop being called from yield()
     yield();
   }

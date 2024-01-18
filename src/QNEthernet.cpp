@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include <Arduino.h>
 #include <EventResponder.h>
 #include <pgmspace.h>
 
@@ -130,9 +131,9 @@ void EthernetClass::loop() {
   }
 #endif  // LWIP_NETIF_LOOPBACK || LWIP_HAVE_LOOPIF
 
-  if (pollTimer_ >= kPollInterval) {
+  if ((millis() - lastPollTime_) >= kPollInterval) {
     enet_poll();
-    pollTimer_ = 0;
+    lastPollTime_ = millis();
   }
 }
 
@@ -276,8 +277,9 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
     return false;
   }
 
-  elapsedMillis timer;
-  while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) && timer < timeout) {
+  uint32_t t = millis();
+  while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
+         (millis() - t) < timeout) {
     yield();
   }
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
@@ -288,8 +290,8 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
     return false;
   }
 
-  elapsedMillis timer;
-  while (!netif_is_link_up(netif_) && timer < timeout) {
+  uint32_t t = millis();
+  while (!netif_is_link_up(netif_) && (millis() - t) < timeout) {
     yield();
   }
   return netif_is_link_up(netif_);

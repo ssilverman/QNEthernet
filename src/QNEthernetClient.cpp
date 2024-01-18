@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cstring>
 
-#include <elapsedMillis.h>
+#include <Arduino.h>
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
@@ -105,9 +105,10 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
 
   // Wait for a connection
   if (wait) {
-    elapsedMillis timer;
+    uint32_t t = millis();
     // NOTE: conn_ could be set to NULL somewhere during the yield
-    while (conn_ != nullptr && !conn_->connected && timer < connTimeout_) {
+    while (conn_ != nullptr && !conn_->connected &&
+           (millis() - t) < connTimeout_) {
       // NOTE: Depends on Ethernet loop being called from yield()
       yield();
     }
@@ -237,10 +238,11 @@ void EthernetClient::close(bool wait) {
         altcp_abort(state->pcb);
 #if !LWIP_ALTCP
       } else if (wait) {
-        elapsedMillis timer;
+        uint32_t t = millis();
         // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
-        while (conn_ != nullptr && conn_->connected && timer < connTimeout_) {
+        while (conn_ != nullptr && conn_->connected &&
+               (millis() - t) < connTimeout_) {
           // NOTE: Depends on Ethernet loop being called from yield()
           yield();
         }
