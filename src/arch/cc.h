@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <pgmspace.h>
+#include "adapters/pgmspace.h"
 
 #define LWIP_RAND() ((u32_t)rand())
 

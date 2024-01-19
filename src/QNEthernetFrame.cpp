@@ -11,11 +11,15 @@
 // C++ includes
 #include <algorithm>
 
-#include <pgmspace.h>
+#if __has_include(<util/atomic.h>)
 #include <util/atomic.h>
+#else
+#include <Arduino.h>
+#endif  // __has_include(<util/atomic.h>)
 
 #include "QNEthernet.h"
 #include "adapters/funcs.h"
+#include "adapters/pgmspace.h"
 #include "lwip/prot/ieee.h"
 
 extern "C" {
@@ -168,7 +172,11 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   size = std::max(size, size_t{1});
 
   // Keep all the newest elements
+#if __has_include(<util/atomic.h>)
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+#else
+  noInterrupts();
+#endif  // __has_include(<util/atomic.h>)
     if (size <= inBufSize_) {
       // Keep all the newest frames
       if (inBufTail_ != 0) {
@@ -191,7 +199,11 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
       // }
     }
     inBufTail_ = 0;
+#if __has_include(<util/atomic.h>)
   }
+#else
+  interrupts();
+#endif  // __has_include(<util/atomic.h>)
 
   inBuf_.shrink_to_fit();
 }

@@ -11,8 +11,7 @@
 // C++ includes
 #include <algorithm>
 
-#include <pgmspace.h>
-
+#include "adapters/pgmspace.h"
 #include "lwip/apps/mdns.h"
 
 namespace qindesign {

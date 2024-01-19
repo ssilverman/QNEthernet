@@ -7,7 +7,7 @@
 #ifndef QNETHERNET_SECURITY_ENTROPY_H_
 #define QNETHERNET_SECURITY_ENTROPY_H_
 
-#if defined(__IMXRT1062__)
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
 #ifdef __cplusplus
@@ -57,6 +57,6 @@ uint32_t entropy_random_range(uint32_t range);
 #endif  // __cplusplus
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
-#endif  // __IMXRT1062__
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 
 #endif  // QNETHERNET_SECURITY_ENTROPY_H_

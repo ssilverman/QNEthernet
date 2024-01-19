@@ -4,7 +4,7 @@
 // entropy.cpp implements the TRNG functions.
 // This file is part of the QNEthernet library.
 
-#if defined(__IMXRT1062__)
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
 #include "entropy.h"
@@ -386,4 +386,4 @@ TRNG_ACC[5] (RW) <-- Doesn't exist on this chip
 */
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
-#endif  // __IMXRT1062__
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)

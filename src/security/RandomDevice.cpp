@@ -6,9 +6,10 @@
 
 #include "RandomDevice.h"
 
-#include <pgmspace.h>
+#include "adapters/pgmspace.h"
 
-#if defined(__IMXRT1062__) && !QNETHERNET_USE_ENTROPY_LIB
+#if (defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)) && \
+    !QNETHERNET_USE_ENTROPY_LIB
 
 #include "entropy.h"
 
@@ -34,12 +35,12 @@ RandomDevice::result_type RandomDevice::operator()() {
 }  // namespace security
 }  // namespace qindesign
 
-#else
+#elif __has_include(<Entropy.h>)
 
 #include <Entropy.h>
-#if defined(__IMXRT1062__)
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #include <imxrt.h>
-#endif  // __IMXRT1062__
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 
 namespace qindesign {
 namespace security {
@@ -51,13 +52,13 @@ RandomDevice &RandomDevice::instance() {
 }
 
 FLASHMEM RandomDevice::RandomDevice() {
-#if defined(__IMXRT1062__)
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
   bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
                         CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
                        ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
 #else
   bool doEntropyInit = true;
-#endif  // __IMXRT1062__
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
   if (doEntropyInit) {
     Entropy.Initialize();
   }
@@ -70,4 +71,27 @@ RandomDevice::result_type RandomDevice::operator()() {
 }  // namespace security
 }  // namespace qindesign
 
-#endif  // __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
+#else
+
+#include <cstdlib>
+
+namespace qindesign {
+namespace security {
+
+STATIC_INIT_DEFN(RandomDevice, randomDevice);
+
+RandomDevice &RandomDevice::instance() {
+  return randomDevice;
+}
+
+FLASHMEM RandomDevice::RandomDevice() {
+}
+
+RandomDevice::result_type RandomDevice::operator()() {
+  return std::rand();
+}
+
+}  // namespace security
+}  // namespace qindesign
+
+#endif  // Which implementation

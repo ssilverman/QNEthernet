@@ -16,11 +16,11 @@
 #include <limits>
 
 #include <Print.h>
-#include <pgmspace.h>
 
 extern "C" {
 
 #include "adapters/funcs.h"
+#include "adapters/pgmspace.h"
 #include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/opt.h"

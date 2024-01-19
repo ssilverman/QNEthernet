@@ -488,6 +488,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define SNTP_CHECK_RESPONSE 3  /* 0 */
 #define SNTP_UPDATE_DELAY   600000  /* 3600000 */
 
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #include <imxrt.h>
 #include <sys/time.h>
 #define SNTP_SET_SYSTEM_TIME_US(sec, us)                    \
@@ -521,6 +522,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
     (sec) = tv.tv_sec;                \
     (us) = tv.tv_usec;                \
   } while (0)  /* do { (sec) = 0; (us) = 0; } while(0) */
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 
 // MDNS options (mdns_opts.h)
 #ifndef LWIP_MDNS_RESPONDER
