@@ -8,8 +8,7 @@
 
 #if LWIP_DNS
 
-#include <Arduino.h>
-
+#include "adapters/funcs.h"
 #include "lwip/dns.h"
 #include "util/ip_tools.h"
 

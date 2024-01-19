@@ -11,11 +11,11 @@
 // C++ includes
 #include <algorithm>
 
-#include <Arduino.h>
 #include <pgmspace.h>
 #include <util/atomic.h>
 
 #include "QNEthernet.h"
+#include "adapters/funcs.h"
 #include "lwip/prot/ieee.h"
 
 extern "C" {

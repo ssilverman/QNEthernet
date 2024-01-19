@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include <Arduino.h>
 #include <EventResponder.h>
 #include <pgmspace.h>
 
 #include "QNDNSClient.h"
+#include "adapters/funcs.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
 

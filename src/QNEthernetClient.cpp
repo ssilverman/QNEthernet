@@ -12,10 +12,9 @@
 #include <algorithm>
 #include <cstring>
 
-#include <Arduino.h>
-
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "adapters/funcs.h"
 #include "internal/ConnectionManager.h"
 #include "lwip/altcp.h"
 #include "lwip/priv/altcp_priv.h"

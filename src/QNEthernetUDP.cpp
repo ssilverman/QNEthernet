@@ -11,10 +11,9 @@
 // C++ includes
 #include <algorithm>
 
-#include <Arduino.h>
-
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "adapters/funcs.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
 #include "util/ip_tools.h"
