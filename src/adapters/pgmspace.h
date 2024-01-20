@@ -5,6 +5,9 @@
 // are defined.
 // This file is part of the QNEthernet library.
 
+#ifndef QNETHERNET_ADAPTERS_PGMSPACE_H_
+#define QNETHERNET_ADAPTERS_PGMSPACE_H_
+
 #include <pgmspace.h>
 
 #ifndef DMAMEM
@@ -14,3 +17,5 @@
 #ifndef FLASHMEM
 #define FLASHMEM
 #endif  // !defined(FLASHMEM)
+
+#endif  // QNETHERNET_ADAPTERS_PGMSPACE_H_
