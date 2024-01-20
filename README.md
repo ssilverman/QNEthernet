@@ -1762,6 +1762,7 @@ _QNEthernet_ library.
 23. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
     requirement that provides access to hardware-generated entropy (see
     [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator))
+24. Straightforward to add new Ethernet frame drivers
 
 ## Other notes
 
