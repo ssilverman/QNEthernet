@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // sample_mbedtls_config.h is a sample Mbed TLS configuration. It contains a
