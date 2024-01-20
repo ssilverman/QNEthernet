@@ -17,6 +17,7 @@ and this project adheres to
   setting the chip select pin. The type of `sspin` was also changed to `int`.
 * Remove dependency on `elapsedMillis`. This might help with compiling for
   other platforms.
+* Made the library easier to compile for other platforms.
 * Replaced all `#define` guards with `#pragma once`.
 
 ### Fixed
@@ -943,4 +944,4 @@ and this project adheres to
 
 ---
 
-Copyright (c) 2021-2023 Shawn Silverman
+Copyright (c) 2021-2024 Shawn Silverman
