@@ -5,6 +5,8 @@
 //
 // This file is part of the QNEthernet library.
 
+#include "lwip/opt.h"
+
 #if LWIP_ALTCP
 
 #include <cstdint>
