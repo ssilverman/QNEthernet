@@ -4,8 +4,7 @@
 // OSC.h contains OSC function declarations.
 // This file is part of the QNEthernet library.
 
-#ifndef OSC_H_
-#define OSC_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -14,5 +13,3 @@
 
 // Prints an OSC message, either a bundle or not.
 void printOSC(Print &out, const uint8_t *b, int len);
-
-#endif  // OSC_H_

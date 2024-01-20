@@ -4,8 +4,7 @@
 // QNEthernetUDP.h defines the UDP interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_ETHERNETUDP_H_
-#define QNETHERNET_ETHERNETUDP_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -195,5 +194,3 @@ class EthernetUDP : public UDP {
 }  // namespace qindesign
 
 #endif  // LWIP_UDP
-
-#endif  // QNETHERNET_ETHERNETUDP_H_

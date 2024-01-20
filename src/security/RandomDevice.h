@@ -5,8 +5,7 @@
 // UniformRandomBitGenerator C++ named requirement.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_SECURITY_RANDOMDEVICE_H_
-#define QNETHERNET_SECURITY_RANDOMDEVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <limits>
@@ -49,5 +48,3 @@ STATIC_INIT_DECL(RandomDevice, randomDevice);
 
 }  // namespace security
 }  // namespace qindesign
-
-#endif  // QNETHERNET_SECURITY_RANDOMDEVICE_H_

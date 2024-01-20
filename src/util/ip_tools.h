@@ -4,8 +4,7 @@
 // ip_tools.h defines some utilities for working with IP addresses.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_UTIL_IPTOOLS_H_
-#define QNETHERNET_UTIL_IPTOOLS_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -33,5 +32,3 @@ uint32_t get_uint32(const IPAddress &ip);
 
 }  // namespace network
 }  // namespace qindesign
-
-#endif  // QNETHERNET_UTIL_IPTOOLS_H_

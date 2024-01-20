@@ -6,8 +6,7 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_LWIP_DRIVER_H_
-#define QNETHERNET_LWIP_DRIVER_H_
+#pragma once
 
 // C includes
 #include <stdbool.h>
@@ -181,5 +180,3 @@ bool enet_leave_group(const ip4_addr_t *group);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-
-#endif  // QNETHERNET_LWIP_DRIVER_H_

@@ -5,8 +5,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#ifndef CIRCULARBUFFER_H_
-#define CIRCULARBUFFER_H_
+#pragma once
 
 // C++ includes
 #include <cstddef>
@@ -76,5 +75,3 @@ class CircularBuffer {
   size_t head_;
   size_t tail_;
 };
-
-#endif  // CIRCULARBUFFER_H_

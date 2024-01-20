@@ -4,8 +4,7 @@
 // ConnectionState.h defines all the data needed to host a connection.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_INTERNAL_CONNECTIONSTATE_H_
-#define QNETHERNET_INTERNAL_CONNECTIONSTATE_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -56,5 +55,3 @@ struct ConnectionState final {
 }  // namespace qindesign
 
 #endif  // LWIP_TCP
-
-#endif  // QNETHERNET_INTERNAL_CONNECTIONSTATE_H_

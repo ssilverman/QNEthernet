@@ -17,6 +17,7 @@ and this project adheres to
   setting the chip select pin. The type of `sspin` was also changed to `int`.
 * Remove dependency on `elapsedMillis`. This might help with compiling for
   other platforms.
+* Replaced all `#define` guards with `#pragma once`.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

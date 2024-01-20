@@ -4,8 +4,7 @@
 // QNEthernetClient.h defines the TCP client interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_ETHERNETCLIENT_H_
-#define QNETHERNET_ETHERNETCLIENT_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -193,5 +192,3 @@ class EthernetClient : public Client {
 }  // namespace qindesign
 
 #endif  // LWIP_TCP
-
-#endif  // QNETHERNET_ETHERNETCLIENT_H_

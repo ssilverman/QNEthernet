@@ -4,8 +4,7 @@
 // lwip_hooks.h contains lwIP hook declarations.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_LWIPHOOKS_H_
-#define QNETHERNET_LWIPHOOKS_H_
+#pragma once
 
 #include "lwip/err.h"
 #include "lwip/netif.h"
@@ -19,5 +18,3 @@
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-
-#endif  // QNETHERNET_LWIPHOOKS_H_

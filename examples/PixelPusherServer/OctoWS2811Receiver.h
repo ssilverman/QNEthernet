@@ -6,8 +6,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#ifndef OCTOWS2811RECEIVER_H_
-#define OCTOWS2811RECEIVER_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -61,5 +60,3 @@ class OctoWS2811Receiver : public Receiver {
 
   uint16_t globalBri_ = UINT16_MAX;
 };
-
-#endif  // OCTOWS2811RECEIVER_H_

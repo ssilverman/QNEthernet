@@ -4,8 +4,7 @@
 // QNMDNS.h defines an mDNS implementation.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_MDNS_H_
-#define QNETHERNET_MDNS_H_
+#pragma once
 
 #include "lwip/apps/mdns_opts.h"
 
@@ -175,5 +174,3 @@ STATIC_INIT_DECL(MDNSClass, MDNS);
 }  // namespace qindesign
 
 #endif  // LWIP_MDNS_RESPONDER
-
-#endif  // QNETHERNET_MDNS_H_

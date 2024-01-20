@@ -4,8 +4,7 @@
 // lwipopts.h is the lwIP configuration.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_LWIPOPTS_H_
-#define QNETHERNET_LWIPOPTS_H_
+#pragma once
 
 // NO SYS
 #define NO_SYS                 1  /* 0 */
@@ -559,5 +558,3 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #ifndef QNETHERNET_ALTCP_TLS_ADAPTER
 // #define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
 #endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
-
-#endif  // QNETHERNET_LWIPOPTS_H_

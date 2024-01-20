@@ -4,8 +4,7 @@
 // QNEthernetServer.h defines the TCP server interface.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_ETHERNETSERVER_H_
-#define QNETHERNET_ETHERNETSERVER_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -120,5 +119,3 @@ class EthernetServer : public Server {
 }  // namespace qindesign
 
 #endif  // LWIP_TCP
-
-#endif  // QNETHERNET_ETHERNETSERVER_H_

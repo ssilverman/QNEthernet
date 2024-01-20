@@ -4,8 +4,7 @@
 // ConnectionManager.h defines the connection manager for all connections.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_
-#define QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -82,5 +81,3 @@ class ConnectionManager final {
 }  // namespace qindesign
 
 #endif  // LWIP_TCP
-
-#endif  // QNETHERNET_INTERNAL_CONNECTIONMANAGER_H_

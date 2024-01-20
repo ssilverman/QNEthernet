@@ -6,8 +6,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#ifndef RECEIVER_H_
-#define RECEIVER_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -57,5 +56,3 @@ class Receiver {
   // is called.
   virtual void loop() = 0;
 };
-
-#endif  // RECEIVER_H_

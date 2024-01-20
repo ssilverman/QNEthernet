@@ -6,8 +6,7 @@
 // that this file might need to change, depending on what's being compiled.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_ADAPTERS_FUNCS_H_
-#define QNETHERNET_ADAPTERS_FUNCS_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,5 +28,3 @@ void yield();
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-
-#endif  // QNETHERNET_ADAPTERS_FUNCS_H_

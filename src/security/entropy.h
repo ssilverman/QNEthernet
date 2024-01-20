@@ -4,8 +4,7 @@
 // entropy.h defines functions for the TRNG (True Random Number Generator).
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_SECURITY_ENTROPY_H_
-#define QNETHERNET_SECURITY_ENTROPY_H_
+#pragma once
 
 #if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #if !QNETHERNET_USE_ENTROPY_LIB
@@ -58,5 +57,3 @@ uint32_t entropy_random_range(uint32_t range);
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
 #endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
-
-#endif  // QNETHERNET_SECURITY_ENTROPY_H_

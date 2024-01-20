@@ -21,8 +21,7 @@
 // Source:
 // 1. Add this: `STATIC_INIT_DEFN(SomeType, name);`
 
-#ifndef QNETHERNET_STATICINIT_H_
-#define QNETHERNET_STATICINIT_H_
+#pragma once
 
 #include <new>  // For placement new
 
@@ -59,5 +58,3 @@ struct StaticInit {
   template<> int StaticInit<Type>::nifty_counter = 0;                 \
   template<> decltype(StaticInit<Type>::buf) StaticInit<Type>::buf{}; \
   Type &name = name##Init.t_
-
-#endif  // QNETHERNET_STATICINIT_H_

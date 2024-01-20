@@ -4,8 +4,7 @@
 // cc.h is the lwIP architecture configuration.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_ARCH_CC_H_
-#define QNETHERNET_ARCH_CC_H_
+#pragma once
 
 // C includes
 #include <stdalign.h>
@@ -39,5 +38,3 @@ extern void qnethernet_stdio_flush(int file);
 #define lwip_htons(x) __builtin_bswap16(x)
 #define lwip_htonl(x) __builtin_bswap32(x)
 #endif  // __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-
-#endif  // QNETHERNET_ARCH_CC_H_

@@ -6,8 +6,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#ifndef PROJECT_MBEDTLS_CONFIG_H_
-#define PROJECT_MBEDTLS_CONFIG_H_
+#pragma once
 
 /**
  * System support
@@ -197,5 +196,3 @@
 #endif
 
 #include "mbedtls/check_config.h"
-
-#endif  // PROJECT_MBEDTLS_CONFIG_H_

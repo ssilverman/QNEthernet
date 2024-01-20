@@ -4,8 +4,7 @@
 // PrintUtils.h declares Print utility functions.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_UTIL_PRINTUTILS_H_
-#define QNETHERNET_UTIL_PRINTUTILS_H_
+#pragma once
 
 // C++ includes
 #include <cstddef>
@@ -67,5 +66,3 @@ class StdioPrint : public Print {
 }  // namespace util
 }  // namespace network
 }  // namespace qindesign
-
-#endif  // QNETHERNET_UTIL_PRINTUTILS_H_

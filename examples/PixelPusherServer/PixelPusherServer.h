@@ -9,8 +9,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#ifndef PIXELPUSHERSERVER_H_
-#define PIXELPUSHERSERVER_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -206,5 +205,3 @@ class PixelPusherServer final {
   PixelPusherData1 ppData1_;
   PixelPusherData2 ppData2_;
 };
-
-#endif  // PIXELPUSHERSERVER_H_

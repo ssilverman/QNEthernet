@@ -4,8 +4,7 @@
 // ConnectionHolder.h holds everything needed to define a connection.
 // This file is part of the QNEthernet library.
 
-#ifndef QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_
-#define QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_
+#pragma once
 
 #include "lwip/opt.h"
 
@@ -41,5 +40,3 @@ struct ConnectionHolder final {
 }  // namespace qindesign
 
 #endif  // LWIP_TCP
-
-#endif  // QNETHERNET_INTERNAL_CONNECTIONHOLDER_H_
