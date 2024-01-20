@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "qnethernet_opts.h"
+
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // C++ includes

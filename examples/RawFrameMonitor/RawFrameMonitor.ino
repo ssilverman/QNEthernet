@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // RawFrameMonitor prints all unknown raw Ethernet frames. Known frame
@@ -17,8 +17,8 @@
 // In order to use this example, define the
 // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT macro.
 //
-// Note: the configuration macros must be defined in the project
-//       build options.
+// Note: the configuration macros must either be defined in the project build
+//       options or in the qnethernet_opts.h library file.
 //
 // This file is part of the QNEthernet library.
 

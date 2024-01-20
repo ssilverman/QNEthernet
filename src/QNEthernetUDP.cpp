@@ -16,6 +16,7 @@
 #include "adapters/funcs.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
+#include "qnethernet_opts.h"
 #include "util/ip_tools.h"
 
 namespace qindesign {

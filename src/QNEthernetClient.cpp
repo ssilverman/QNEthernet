@@ -20,6 +20,7 @@
 #include "lwip/priv/altcp_priv.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
+#include "qnethernet_opts.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"
 

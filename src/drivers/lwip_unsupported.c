@@ -7,6 +7,7 @@
 #if !defined(ARDUINO_TEENSY41)
 
 #include "lwip_driver.h"
+#include "qnethernet_opts.h"
 
 bool driver_is_unknown() {
   return false;

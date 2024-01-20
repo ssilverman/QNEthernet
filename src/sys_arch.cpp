@@ -7,6 +7,8 @@
 // C includes
 #include <unistd.h>
 
+#include "qnethernet_opts.h"
+
 // C++ includes
 #if QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cerrno>

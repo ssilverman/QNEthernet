@@ -19,6 +19,8 @@ and this project adheres to
   other platforms.
 * Made the library easier to compile for other platforms.
 * Replaced all `#define` guards with `#pragma once`.
+* All `QNETHERNET_*` configuration macros can now be defined in a new
+  `qnethernet_opts.h` file in addition to the project build.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

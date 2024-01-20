@@ -9,6 +9,7 @@
 #if defined(ARDUINO_TEENSY41)
 
 #include "lwip_driver.h"
+#include "qnethernet_opts.h"
 
 // C includes
 #include <stdalign.h>

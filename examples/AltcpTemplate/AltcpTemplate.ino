@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // AltcpTemplate shows how to use the altcp framework for creating
@@ -9,7 +9,8 @@
 //                LWIP_ALTCP_TLS lwIP options. The altcp_tls_adapter
 //                functions could also be disabled by disabling
 //                the QNETHERNET_ALTCP_TLS_ADAPTER option (it's off
-//                by default).
+//                by default). (See the lwipopts.h and qnethernet_opts.h library
+//                files or the project build options.)
 // Big caveat: This example will only do TLS if there's an available
 //             TLS implementation.
 //

@@ -15,6 +15,7 @@
 #include <lwip_driver.h>
 #include <lwip/dns.h>
 #include <lwip/opt.h>
+#include <qnethernet_opts.h>
 #include <unity.h>
 
 using namespace ::qindesign::network;

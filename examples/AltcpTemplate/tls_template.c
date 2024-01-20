@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // tls_template.c implements the minimum possible in order to get the
@@ -15,6 +15,7 @@
 #include <lwip/altcp.h>
 #include <lwip/err.h>
 #include <lwip/opt.h>
+#include <qnethernet_opts.h>
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 

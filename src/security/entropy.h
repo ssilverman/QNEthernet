@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "qnethernet_opts.h"
+
 #if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 #if !QNETHERNET_USE_ENTROPY_LIB
 

@@ -553,8 +553,3 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define ALTCP_MBEDTLS_SESSION_TICKET_CIPHER          MBEDTLS_CIPHER_AES_256_GCM
 // #define ALTCP_MBEDTLS_SESSION_TICKET_TIMEOUT_SECONDS (60 * 60 * 24)
 // #define ALTCP_MBEDTLS_AUTHMODE                       MBEDTLS_SSL_VERIFY_OPTIONAL
-
-// QNEthernet TLS options
-#ifndef QNETHERNET_ALTCP_TLS_ADAPTER
-// #define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
-#endif  // !QNETHERNET_ALTCP_TLS_ADAPTER

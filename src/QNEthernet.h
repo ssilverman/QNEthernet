@@ -27,6 +27,7 @@
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
 #include "lwip_driver.h"
+#include "qnethernet_opts.h"
 #include "security/RandomDevice.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"

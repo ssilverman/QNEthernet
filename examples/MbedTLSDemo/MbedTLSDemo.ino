@@ -1,14 +1,16 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSDemo shows how to use Mbed TLS 2.x.x.
 //
 // Prerequisites:
-// 1. Enable the following lwIP options:
+// 1. Enable the following lwIP options (in lwipopts.h or the project
+//    build options):
 //    1. LWIP_ALTCP
 //    2. LWIP_ALTCP_TLS
 //    3. LWIP_ALTCP_TLS_MBEDTLS
 // 2. Enable the QNETHERNET_ALTCP_TLS_ADAPTER option.
+//    (In the qnethernet_opts.h library file or the project build options.)
 // 3. Install the latest 2.x.x version of Mbed TLS. As of this
 //    writing, the current version is 2.28.6. In order to use this
 //    example program in the Arduino IDE, Mbed TLS needs to be

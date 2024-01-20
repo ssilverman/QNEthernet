@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // altcp_tls_adapter.cpp simplifies altcp TLS integration with QNEthernet's
@@ -6,6 +6,7 @@
 // This file is part of the QNEthernet library.
 
 #include "lwip/opt.h"
+#include "qnethernet_opts.h"
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 

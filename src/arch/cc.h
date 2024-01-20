@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "adapters/pgmspace.h"
+#include "qnethernet_opts.h"
 
 #define LWIP_RAND() ((u32_t)rand())
 

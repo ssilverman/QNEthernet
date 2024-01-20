@@ -9,6 +9,7 @@
 #include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
+#include "qnethernet_opts.h"
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
