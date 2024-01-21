@@ -5,13 +5,13 @@
 // This file is part of the QNEthernet library.
 
 #include <algorithm>
+#include <ctime>
 #include <memory>
 #include <vector>
 
 #include <Arduino.h>
 #include <QNEthernet.h>
 #include <QNDNSClient.h>
-#include <TimeLib.h>
 #include <lwip_driver.h>
 #include <lwip/dns.h>
 #include <lwip/opt.h>
@@ -648,11 +648,11 @@ static void test_udp() {
   }
 
   // Print the time
-  tmElements_t tm;
-  breakTime(sntpTime, tm);
-  TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u",
-                      tm.Year + 1970, tm.Month, tm.Day,
-                      tm.Hour, tm.Minute, tm.Second).data());
+  std::time_t time = sntpTime;
+  std::tm *tm = gmtime(&time);
+  TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u (UTC)",
+                      tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
+                      tm->tm_hour, tm->tm_min, tm->tm_sec).data());
 }
 
 static void test_udp_receive_queueing() {
