@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// lwip_unsupported.c contains the unsupported Ethernet interface implementation.
+// driver_unsupported.c contains the unsupported Ethernet interface implementation.
 // This file is part of the QNEthernet library.
 
 #include "lwip_driver.h"
