@@ -442,11 +442,11 @@ static void test_link_listener() {
   Ethernet.end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   TEST_MESSAGE("Waiting for link down...");
-  elapsedMillis timer;
-  while (Ethernet.linkState() && timer < kLinkTimeout) {
+  uint32_t timer = millis();
+  while (Ethernet.linkState() && (millis() - timer) < kLinkTimeout) {
     yield();
   }
-  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms", static_cast<uint32_t>(timer)).data());
+  TEST_MESSAGE(format("Link down time: %" PRIu32 "ms", (millis() - timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(linkState, "Expected link down in callback");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
@@ -544,10 +544,10 @@ static void test_interface_listener() {
 // Tests UDP by using SNTP.
 static void test_udp() {
   // 01-Jan-1900 00:00:00 -> 01-Jan-1970 00:00:00
-  constexpr uint32_t kEpochDiff = 2'208'988'800;
+  constexpr std::time_t kEpochDiff = 2'208'988'800;
 
   // Epoch -> 07-Feb-2036 06:28:16
-  constexpr uint32_t kBreakTime = 2'085'978'496;
+  constexpr std::time_t kBreakTime = 2'085'978'496;
 
   constexpr uint16_t kNTPPort = 123;
 
@@ -560,7 +560,7 @@ static void test_udp() {
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
 
   // Set the Transmit Timestamp
-  uint32_t t = Teensy3Clock.get();
+  std::time_t t = std::time(nullptr);
   if (t >= kBreakTime) {
     t -= kBreakTime;
   } else {
@@ -578,13 +578,13 @@ static void test_udp() {
 
   bool validReply = false;
   uint32_t sntpTime = 0;
-  elapsedMillis timer;
-  elapsedMillis resendTimer = kSNTPResendTimeout;
+  uint32_t timer = millis();
+  uint32_t resendTimer = millis() + kSNTPResendTimeout;
   bool first = true;
 
-  while (timer < kSNTPTimeout) {
+  while ((millis() - timer) < kSNTPTimeout) {
     // Do SNTP resends
-    if (resendTimer >= kSNTPResendTimeout) {
+    if ((millis() - resendTimer) >= kSNTPResendTimeout) {
       if (first) {
         TEST_MESSAGE("Sending SNTP request...");
         first = false;
@@ -594,7 +594,7 @@ static void test_udp() {
       TEST_ASSERT_TRUE_MESSAGE(
           udp->send(Ethernet.gatewayIP(), kNTPPort, buf, 48),
           "Expected UDP send success");
-      resendTimer = 0;
+      resendTimer = millis();
     }
 
     yield();
@@ -638,7 +638,7 @@ static void test_udp() {
   }
 
   TEST_MESSAGE(format("SNTP reply time: %" PRIu32 "ms",
-                      static_cast<uint32_t>(timer)).data());
+                      (millis() - timer)).data());
 
   if ((sntpTime & 0x80000000U) == 0) {
     // See: Section 3, "NTP Timestamp Format"
@@ -951,9 +951,11 @@ void setup() {
   // if board doesn't support software reset via Serial.DTR/RTS
   delay(2000);
 
+#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
   if (CrashReport) {
     Serial.println(CrashReport);
   }
+#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
 
   UNITY_BEGIN();
   RUN_TEST(test_builtin_mac);
