@@ -6,10 +6,9 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
-#if defined(ARDUINO_TEENSY41)
-
 #include "lwip_driver.h"
-#include "qnethernet_opts.h"
+
+#if defined(ARDUINO_TEENSY41)
 
 // C includes
 #include <stdalign.h>
