@@ -29,11 +29,6 @@
 #define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT (((DNS_MAX_RETRIES) + 1)*(DNS_TMR_INTERVAL))
 #endif
 
-// Enables promiscuous mode.
-#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
-#define QNETHERNET_ENABLE_PROMISCUOUS_MODE 0
-#endif
-
 // Enables default implementations of the altcp interface functions.
 #ifndef QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
@@ -42,6 +37,11 @@
 // Enables use of expanded 'stdio' output behaviour.
 #ifndef QNETHERNET_ENABLE_CUSTOM_WRITE
 #define QNETHERNET_ENABLE_CUSTOM_WRITE 0
+#endif
+
+// Enables promiscuous mode.
+#ifndef QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#define QNETHERNET_ENABLE_PROMISCUOUS_MODE 0
 #endif
 
 // Enables raw frame support.
