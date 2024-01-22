@@ -665,7 +665,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
       pbuf_take(p, pBD->buffer, p->tot_len);
       p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
       if (p->timestampValid) {
-        ieee1588_read_timer(&p->timestamp);
+        driver_ieee1588_read_timer(&p->timestamp);
         if ((unsigned long)p->timestamp.tv_nsec < pBD->timestamp) {
           // The timer has wrapped around
           p->timestamp.tv_sec--;
@@ -1046,7 +1046,7 @@ FLASHMEM bool driver_init(void) {
 void unused_interrupt_vector(void);  // startup.c
 
 FLASHMEM void driver_deinit(void) {
-  ieee1588_deinit();
+  driver_ieee1588_deinit();
 
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
@@ -1315,16 +1315,16 @@ void ieee1588_init(void) {
   ENET_EIMR |= ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER;
 }
 
-void ieee1588_deinit(void) {
+void driver_ieee1588_deinit(void) {
   ENET_EIMR &= ~(ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER);
   ENET_ATCR = ENET_ATCR_Reserved;
 }
 
-bool ieee1588_is_enabled(void) {
+bool driver_ieee1588_is_enabled(void) {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool ieee1588_read_timer(struct timespec *t) {
+bool driver_ieee1588_read_timer(struct timespec *t) {
   if (t == NULL) {
     return false;
   }
@@ -1348,7 +1348,7 @@ bool ieee1588_read_timer(struct timespec *t) {
   return true;
 }
 
-bool ieee1588_write_timer(const struct timespec *t) {
+bool driver_ieee1588_write_timer(const struct timespec *t) {
   if (t == NULL) {
     return false;
   }
@@ -1361,11 +1361,11 @@ bool ieee1588_write_timer(const struct timespec *t) {
   return true;
 }
 
-void ieee1588_timestamp_next_frame() {
+void driver_ieee1588_timestamp_next_frame() {
   doTimestampNext = true;
 }
 
-bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     if (hasTxTimestamp) {
       hasTxTimestamp = false;
@@ -1379,7 +1379,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   return false;
 }
 
-bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
     return false;
   }
@@ -1388,7 +1388,7 @@ bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   return true;
 }
 
-bool ieee1588_adjust_freq(int nsps) {
+bool driver_ieee1588_adjust_freq(int nsps) {
   if (nsps == 0) {
     ENET_ATCOR = 0;
     return true;
@@ -1404,7 +1404,7 @@ bool ieee1588_adjust_freq(int nsps) {
     // Speed up
     inc++;
   }
-  return ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+  return driver_ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
 }
 
 // Channels
@@ -1423,7 +1423,7 @@ static inline volatile uint32_t *tccrReg(int channel) {
   return &ENET_TCCR0 + 2*channel;
 }
 
-bool ieee1588_set_channel_mode(int channel, int mode) {
+bool driver_ieee1588_set_channel_mode(int channel, int mode) {
   switch (mode) {
     case 12:  // Reserved
     case 13:  // Reserved
@@ -1452,7 +1452,8 @@ bool ieee1588_set_channel_mode(int channel, int mode) {
   return true;
 }
 
-bool ieee1588_set_channel_output_pulse_width(int channel, int pulseWidth) {
+bool driver_ieee1588_set_channel_output_pulse_width(int channel,
+                                                    int pulseWidth) {
   if (pulseWidth < 1 || 32 < pulseWidth) {
     return false;
   }
@@ -1474,7 +1475,7 @@ bool ieee1588_set_channel_output_pulse_width(int channel, int pulseWidth) {
   return true;
 }
 
-bool ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+bool driver_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   volatile uint32_t *tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
@@ -1483,7 +1484,7 @@ bool ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   return true;
 }
 
-bool ieee1588_get_and_clear_channel_status(int channel) {
+bool driver_ieee1588_get_and_clear_channel_status(int channel) {
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
