@@ -18,6 +18,8 @@
 // #define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
 // #endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
 
+#include "qnethernet_opts.h"
+
 #if QNETHERNET_ALTCP_TLS_ADAPTER
 
 #include <cstdint>
