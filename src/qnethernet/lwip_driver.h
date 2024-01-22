@@ -310,7 +310,8 @@ void enet_poll(void);
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
 //
-// The frame is timestamped if `ieee1588_timestamp_next_frame()` was called first.
+// The frame is timestamped if `driver_ieee1588_timestamp_next_frame()` was
+// called first.
 bool enet_output_frame(const void *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
@@ -336,26 +337,26 @@ bool enet_leave_group(const ip4_addr_t *group);
 
 // Initializes and enables the IEEE 1588 timer and functionality. The internal
 // time is reset to zero.
-void ieee1588_init(void);
+void driver_ieee1588_init(void);
 
 // Deinitializes and stops the IEEE 1588 timer.
-void ieee1588_deinit(void);
+void driver_ieee1588_deinit(void);
 
 // Tests if the IEEE 1588 timer is enabled.
-bool ieee1588_is_enabled(void);
+bool driver_ieee1588_is_enabled(void);
 
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool ieee1588_read_timer(struct timespec *t);
+bool driver_ieee1588_read_timer(struct timespec *t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool ieee1588_write_timer(const struct timespec *t);
+bool driver_ieee1588_write_timer(const struct timespec *t);
 
 // Tells the driver to timestamp the next transmitted frame.
-void ieee1588_timestamp_next_frame();
+void driver_ieee1588_timestamp_next_frame();
 
 // Returns whether an IEEE 1588 transmit timestamp is available. If available
 // and the parameter is not NULL then it is assigned to `*timestamp`. This
@@ -365,20 +366,20 @@ void ieee1588_timestamp_next_frame();
 // sent. Note that this only returns the latest value, so if a second
 // timestamped packet is sent before retrieving the timestamp for the first
 // then this will return the second timestamp (if already available).
-bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
+bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
-// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This returns
-// whether successful.
+// timer in "nanoseconds per second", see `driver_ieee1588_adjust_freq`. This
+// returns whether successful.
 //
 // This will return false if:
 // 1. The correction increment is not in the range 0-127, or
 // 2. The correction period is not in the range 0-(2^31-1).
-bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
+bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
-// `ieee1588_adjust_timer()` under the hood.
-bool ieee1588_adjust_freq(int nsps);
+// `driver_ieee1588_adjust_timer()` under the hood.
+bool driver_ieee1588_adjust_freq(int nsps);
 
 // Sets the channel mode for the given channel. This does not set the output
 // compare pulse modes. This returns whether successful.
@@ -387,7 +388,7 @@ bool ieee1588_adjust_freq(int nsps);
 // 1. The channel is unknown,
 // 2. The mode is one of the output compare pulse modes, or
 // 3. The mode is a reserved value or unknown.
-bool ieee1588_set_channel_mode(int channel, int mode);
+bool driver_ieee1588_set_channel_mode(int channel, int mode);
 
 // Sets the pulse width for the given channel and returns whether successful.
 // Note that the pulse width only has an effect when the mode is one of the
@@ -396,16 +397,17 @@ bool ieee1588_set_channel_mode(int channel, int mode);
 // This will return false if:
 // 1. The channel is unknown, or
 // 3. The pulse width is not in the range 1-32.
-bool ieee1588_set_channel_output_pulse_width(int channel, int pulseWidth);
+bool driver_ieee1588_set_channel_output_pulse_width(int channel,
+                                                    int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
 //
 // This will return false for an unknown channel.
-bool ieee1588_set_channel_compare_value(int channel, uint32_t value);
+bool driver_ieee1588_set_channel_compare_value(int channel, uint32_t value);
 
 // Retrieves and then clears the status for the given channel. This will return
 // false for an unknown channel.
-bool ieee1588_get_and_clear_channel_status(int channel);
+bool driver_ieee1588_get_and_clear_channel_status(int channel);
 
 #ifdef __cplusplus
 }  // extern "C"
