@@ -19,9 +19,23 @@
 #include "lwip/prot/ethernet.h"
 #include "qnethernet_opts.h"
 
-// Requirements for platform-specific headers:
+// Requirements for driver-specific headers:
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN
+
+// How to create a driver:
+// 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
+//    either `#pragma once` or a #define guard.
+// 2. Create driver source and include lwip_driver.h. Implement all the
+//    `driver_x()` functions. It can be written in either C or C++. If C++ then
+//    make sure to use `extern "C"` around those functions.
+// 3. Adjust the following driver selection logic to define an appropriate macro
+//    (such as INTERNAL_DRIVER_Y) when the desired driver condition
+//    is satisfied.
+// 4. Include your driver header in the correct place in the logic below.
+// 5. In your driver source, gate the whole file(s) on the macro you chose
+//    above. Of course, test the macro after the lwip_driver.h include.
+//    (Example: INTERNAL_DRIVER_Y)
 
 // Select a driver
 #if defined(ARDUINO_TEENSY41)
