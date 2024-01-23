@@ -24,7 +24,7 @@
 // 2. Define MAX_FRAME_LEN
 
 #if defined(ARDUINO_TEENSY41)
-#include "drivers/driver_t41.h"
+#include "drivers/driver_teensy41.h"
 #else
 #include "drivers/driver_unsupported.h"
 #endif  // ARDUINO_TEENSY41

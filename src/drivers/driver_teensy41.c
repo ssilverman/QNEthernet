@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// driver_t41.c contains the Teensy 4.1 Ethernet interface implementation.
+// driver_teensy41.c contains the Teensy 4.1 Ethernet interface implementation.
 // Based on code from manitou48 and others:
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
