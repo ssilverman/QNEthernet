@@ -15,13 +15,13 @@ and this project adheres to
   `begin(mac, ip, dns, gateway, subnet)`.
 * Un-deprecated `EthernetClass::init(sspin)` and added a driver function for
   setting the chip select pin. The type of `sspin` was also changed to `int`.
-* Remove dependency on `elapsedMillis`. This might help with compiling for
+* Removed dependency on `elapsedMillis`. This might help with compiling for
   other platforms.
 * Made the library easier to compile for other platforms.
 * Replaced all `#define` guards with `#pragma once`.
 * All `QNETHERNET_*` configuration macros can now be defined in a new
   `qnethernet_opts.h` file in addition to the project build.
-* Easier to add new Ethernet frame drivers.
+* Removed test dependencies on Teensy-specific things.
 * Renamed _t41_ driver source files to include _teensy41_ instead.
 
 ### Fixed
