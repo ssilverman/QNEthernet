@@ -8,7 +8,7 @@
 
 #include "lwip_driver.h"
 
-#if defined(ARDUINO_TEENSY41)
+#if defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
 
 // C includes
 #include <stdalign.h>
@@ -1132,4 +1132,4 @@ bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow) {
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-#endif  // ARDUINO_TEENSY41
+#endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41

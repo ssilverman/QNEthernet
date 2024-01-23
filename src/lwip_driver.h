@@ -23,11 +23,14 @@
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN
 
+// Select a driver
 #if defined(ARDUINO_TEENSY41)
 #include "drivers/driver_teensy41.h"
+#define QNETHERNET_INTERNAL_DRIVER_TEENSY41
 #else
 #include "drivers/driver_unsupported.h"
-#endif  // ARDUINO_TEENSY41
+#define QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
+#endif  // Driver selection
 
 #ifdef __cplusplus
 extern "C" {
