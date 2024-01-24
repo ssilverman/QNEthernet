@@ -771,6 +771,12 @@ void driver_get_system_mac(uint8_t *mac) {
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+  // Don't do anything if the Ethernet clock isn't running because register
+  // access will freeze the machine
+  if ((CCM_CCGR1 & CCM_CCGR1_ENET(CCM_CCGR_ON)) == 0) {
+    return;
+  }
+
   __disable_irq();  // Not sure if disabling interrupts is really needed
   ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
   ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
