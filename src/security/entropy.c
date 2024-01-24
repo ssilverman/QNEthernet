@@ -76,10 +76,9 @@ static size_t s_entropySizeBytes = 0;  // Size in bytes
 
 bool trng_is_started() {
   // Two checks:
-  // 1. Clock: check only the run-only bit because that's always set when running
+  // 1. Clock is running
   // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
-  return ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ==
-          CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) &&
+  return ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) != 0) &&
          ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) == 0);
 }
 
