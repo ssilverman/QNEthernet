@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "qnethernet_opts.h"
+
 // NO SYS
 #define NO_SYS                 1  /* 0 */
 // #define NO_SYS_NO_TIMERS       0
