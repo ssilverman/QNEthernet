@@ -22,7 +22,7 @@ and this project adheres to
 * All `QNETHERNET_*` configuration macros can now be defined in a new
   `qnethernet_opts.h` file in addition to the project build.
 * Removed test dependencies on Teensy-specific things.
-* Renamed _t41_ driver source files to include _teensy41_ instead.
+* Renamed _t41_ driver source files to use _teensy41_ in the name instead.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.
