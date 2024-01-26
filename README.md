@@ -1557,16 +1557,16 @@ _Entropy_ library.
 
 There are several macros that can be defined to configure the system:
 
-| Macro                                       | Description                                                                        | Link                                                                                    |
-| ------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `QNETHERNET_ALTCP_TLS_ADAPTER`              | `1` to enable the _altcp_tls_adapter_ functions for easier TLS library integration | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
-| `QNETHERNET_BUFFERS_IN_RAM1`                | Put the RX and TX buffers into RAM1                                                | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enable default implementations of the altcp interface functions                    | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
-| `QNETHERNET_ENABLE_CUSTOM_WRITE`            | Use expanded `stdio` output behaviour                                              | [stdio](#stdio)                                                                         |
-| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enable promiscuous mode                                                            | [Promiscuous mode](#promiscuous-mode)                                                   |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enable raw frame support                                                           | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
-| `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Put lwIP-declared memory into RAM1                                                 | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_USE_ENTROPY_LIB`                | Use _Entropy_ library instead of internal functions                                | [Entropy collection](#entropy-collection)                                               |
+| Macro                                       | Description                                                                  | Link                                                                                    |
+| ------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `QNETHERNET_ALTCP_TLS_ADAPTER`              | Enables the _altcp_tls_adapter_ functions for easier TLS library integration | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
+| `QNETHERNET_BUFFERS_IN_RAM1`                | Puts the RX and TX buffers into RAM1                                         | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
+| `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enables default implementations of the altcp interface functions             | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_ENABLE_CUSTOM_WRITE`            | Uses expanded `stdio` output behaviour                                       | [stdio](#stdio)                                                                         |
+| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                     | [Promiscuous mode](#promiscuous-mode)                                                   |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                    | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
+| `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                          | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
+| `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                         | [Entropy collection](#entropy-collection)                                               |
 
 These can either be configured as project build macros or by changing them in
 the _qnethernet_opts.h_ file.
