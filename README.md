@@ -1109,9 +1109,9 @@ Compared to the internal `printf` support, the _QNEthernet_ version:
 2. Can separate `stdout` and `stderr` outputs, and
 3. Disallows `stdin` as a valid output.
 
-To enable the _QNEthernet_ version, define the `QNETHERNET_ENABLE_CUSTOM_WRITE`
-macro and set the `stdoutPrint` or `stderrPrint` variables to point to a valid
-`Print` implementation. Note that if the feature is disabled, then neither
+To enable the _QNEthernet_ version, set the `QNETHERNET_ENABLE_CUSTOM_WRITE`
+macro to `1` and set the `stdoutPrint` or `stderrPrint` variables to point to a
+valid `Print` implementation. Note that if the feature is disabled, then neither
 `stdoutPrint` nor `stderrPrint` will be defined.
 
 Both variables default to NULL.
@@ -1164,15 +1164,15 @@ over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 01-80-C2-00-00-0E for non-forwardable frames. See
 [PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
 
-To enable raw frame support, define the `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`
-macro. This will use some space.
+To enable raw frame support, set the `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` macro
+to `1`. This will use some space.
 
 ### Promiscuous mode
 
 It's possible to enable promiscuous mode so that all frames are received, even
 ones whose destination MAC address would normally be filtered out by the
-Ethernet hardware. To do this, define the `QNETHERNET_ENABLE_PROMISCUOUS_MODE`
-macro.
+Ethernet hardware. To do this, set the `QNETHERNET_ENABLE_PROMISCUOUS_MODE`
+macro to `1`.
 
 ### Raw frame receive buffering
 
@@ -1220,6 +1220,10 @@ Here are the steps to add decorated TCP:
    _src/lwip/altcp_tls.h_.
 
 See _src/lwip/altcp.c_ and the _AltcpTemplate_ example for more information.
+
+Note that if the `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` macro is enabled,
+default, simple, implementations of these functions will be provided. Only the
+regular TCP allocator will be used.
 
 ### About the allocator functions
 
@@ -1480,9 +1484,9 @@ Fun links:
 ## Notes on RAM1 usage
 
 By default, the Ethernet RX and TX buffers will go into RAM2. If, for whatever
-reason, you'd prefer to put them into RAM1, define the
-`QNETHERNET_BUFFERS_IN_RAM1` macro. _[As of this writing, no speed comparison
-tests have been done.]_
+reason, you'd prefer to put them into RAM1, set the
+`QNETHERNET_BUFFERS_IN_RAM1` macro to `1`. _[As of this writing, no speed
+comparison tests have been done.]_
 
 There's a second configuration macro, `QNETHERNET_LWIP_MEMORY_IN_RAM1`, for
 indicating that lwIP-declared memory should go into RAM1 instead of RAM2.
@@ -1532,8 +1536,8 @@ Example that defines these in _lwipopts.h_:
 
 This library defines functions for accessing the processor's internal "true
 random number generator" (TRNG) for entropy. If your project needs to use the
-_Entropy_ library instead, define the `QNETHERNET_USE_ENTROPY_LIB` macro so that
-any internal entropy collection doesn't interfere with your project's
+_Entropy_ library instead, set the `QNETHERNET_USE_ENTROPY_LIB` macro to `1` so
+that any internal entropy collection doesn't interfere with your project's
 entropy collection.
 
 The _Entropy_ library does the essentially same things as the internal TRNG
@@ -1570,6 +1574,9 @@ There are several macros that can be defined to configure the system:
 
 These can either be configured as project build macros or by changing them in
 the _qnethernet_opts.h_ file.
+
+To enable a feature, set the associated macro to `1` or just define it. To
+disable a feature, either set the same macro to `0` or leave it undefined.
 
 See
 [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
@@ -1626,8 +1633,8 @@ enable raw frame support and disable DNS using the macros (the '-D' option
 defines a macro):
 
 ```
-compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
-compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
+compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 ```
 
 Each additional option is simply appended. No commas or quotes are required
@@ -1641,7 +1648,7 @@ C and C++ sources. If the extra flags are exactly the same for both properties,
 and this is likely the case, one could refer to the other. For example:
 
 ```
-compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT -DLWIP_DNS=0
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 compiler.c.extra_flags={compiler.cpp.extra_flags}
 ```
 
@@ -1670,7 +1677,7 @@ Simply add compiler flags to the `build_flags` build option in _platformio.ini_.
 For example:
 
 ```
-build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1
 ```
 
 ### Changing lwIP configuration macros in `lwipopts.h`
