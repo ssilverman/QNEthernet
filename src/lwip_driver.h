@@ -21,7 +21,7 @@
 
 // Requirements for driver-specific headers:
 // 1. Define MTU
-// 2. Define MAX_FRAME_LEN
+// 2. Define MAX_FRAME_LEN (including the 4-byte FCS (frame check sequence))
 
 // How to create a driver:
 // 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
@@ -138,7 +138,8 @@ inline int enet_get_mtu() {
   return MTU;
 }
 
-// Returns the maximum frame length.
+// Returns the maximum frame length. This includes the 4-byte FCS (frame
+// check sequence).
 inline int enet_get_max_frame_len() {
   return MAX_FRAME_LEN;
 }
