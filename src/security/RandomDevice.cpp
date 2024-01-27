@@ -35,7 +35,7 @@ RandomDevice::result_type RandomDevice::operator()() {
 }  // namespace security
 }  // namespace qindesign
 
-#elif __has_include(<Entropy.h>)
+#elif defined(__has_include) && __has_include(<Entropy.h>)
 
 #include <Entropy.h>
 #if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)

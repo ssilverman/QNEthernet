@@ -10,9 +10,9 @@
 #include <algorithm>
 #include <cstdlib>
 
-#if __has_include(<EventResponder.h>)
+#if defined(__has_include) && __has_include(<EventResponder.h>)
 #include <EventResponder.h>
-#endif  // __has_include(<EventResponder.h>)
+#endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
 #include "QNDNSClient.h"
 #include "adapters/funcs.h"
@@ -26,7 +26,7 @@ namespace network {
 // A reference to the singleton.
 STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
-#if __has_include(<EventResponder.h>)
+#if defined(__has_include) && __has_include(<EventResponder.h>)
 // Global definitions for Arduino
 static EventResponder ethLoop;
 static bool loopAttached = false;
@@ -54,7 +54,7 @@ static void attachLoopToYield() {
 //     busy = false;
 //   }
 // }
-#endif  // __has_include(<EventResponder.h>)
+#endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
 void EthernetClass::netifEventFunc(struct netif *netif,
                                    netif_nsc_reason_t reason,
@@ -258,9 +258,9 @@ bool EthernetClass::start() {
 
   netif_set_up(netif_);
 
-#if __has_include(<EventResponder.h>)
+#if defined(__has_include) && __has_include(<EventResponder.h>)
   attachLoopToYield();
-#endif  // __has_include(<EventResponder.h>)
+#endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
   return true;
 }
@@ -374,13 +374,13 @@ void EthernetClass::end() {
     return;
   }
 
-#if __has_include(<EventResponder.h>)
+#if defined(__has_include) && __has_include(<EventResponder.h>)
   if (loopAttached) {
     loopAttached = false;
     ethLoop.clearEvent();
     ethLoop.detach();
   }
-#endif  // __has_include(<EventResponder.h>)
+#endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
 #if LWIP_MDNS_RESPONDER
   MDNS.end();
