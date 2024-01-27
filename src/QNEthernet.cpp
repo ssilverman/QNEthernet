@@ -44,6 +44,7 @@ static void attachLoopToYield() {
   ethLoop.triggerEvent();
 }
 #else
+#error "Need to hook into or replace yield()"
 // Example yield() implementation:
 // void yield() {
 //   static bool busy = false;
