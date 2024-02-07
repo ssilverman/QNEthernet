@@ -17,7 +17,7 @@ lwIP release.
 
 ## Table of contents
 
-1. [Drop-in replacement for Arduino library](#drop-in-replacement-for-arduino-library)
+1. [Introduction](#introduction)
    1. [Two notes](#two-notes)
    2. [Other differences and notes](#other-differences-and-notes)
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
@@ -81,7 +81,7 @@ lwIP release.
 26. [Code style](#code-style)
 27. [References](#references)
 
-## Drop-in replacement for Arduino library
+## Introduction
 
 The _QNEthernet_ library is designed to be a drop-in replacement for code using
 the Arduino Ethernet API.
@@ -135,20 +135,18 @@ For API additions beyond what the Arduino-style API provides, see:\
 * The three Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address and that don't specify a subnet are deprecated because they make some
   incorrect assumptions about the subnet and gateway.
-* `Ethernet.hardwareStatus()`: Returns either
-  `EthernetHardwareStatus::EthernetOtherHardware` or
-  `EthernetHardwareStatus::EthernetNoHardware`. Note that
-  `EthernetOtherHardware` is not defined in the Arduino-style API.
+* `Ethernet.hardwareStatus()`: Adds `EthernetOtherHardware` to the list of
+  possible return values. Note that this value is not defined in the
+  Arduino-style API.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
   * `maintain()`: Returns zero.
   * `setRetransmissionCount(uint8_t number)`: Does nothing.
   * `setRetransmissionTimeout(uint16_t milliseconds)`: Does nothing.
-* The following `EthernetUDP` functions do nothing:
-  * `flush()` because it is ill-defined.
-    * Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP"
-      APIs and not in the main "Arduino Ethernet" API.\
-      See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
+* The `EthernetUDP::flush()` function does nothing because it is ill-defined.
+  Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP" APIs
+  and not in the main "Arduino Ethernet" API.\
+  See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
 * The system starts with the Teensy's actual MAC address. If you want to use
   that address with the deprecated API, you can collect it with
   `Ethernet.macAddress(mac)` and then pass it to one of the deprecated
