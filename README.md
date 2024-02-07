@@ -17,8 +17,8 @@ lwIP release.
 
 ## Table of contents
 
-1. [Differences, assumptions, and notes](#differences-assumptions-and-notes)
-   1. [Two main differences](#two-main-differences)
+1. [Drop-in replacement for Arduino library](#drop-in-replacement-for-arduino-library)
+   1. [Two notes](#two-notes)
    2. [Other differences and notes](#other-differences-and-notes)
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
    1. [`Ethernet`](#ethernet)
@@ -81,25 +81,25 @@ lwIP release.
 26. [Code style](#code-style)
 27. [References](#references)
 
-## Differences, assumptions, and notes
+## Drop-in replacement for Arduino library
 
-This section describes differences from the Arduino Ethernet API.
+The _QNEthernet_ library is designed to be a drop-in replacement for code using
+the Arduino Ethernet API.
 
 **Note: Please read the function docs in the relevant header files for
 more information.**
 
-### Two main differences
+### Two notes
 
-There are two main differences that make _QNEthernet_ not a 100% drop-in
-replacement for code using the Arduino Ethernet API. These are as follows:
+There are two notes, as follows:
 
-* The `QNEthernet.h` header must be included instead of `Ethernet.h`.
-* Everything is inside the `qindesign::network` namespace. In many cases, adding
-  the following at the top of your program will obviate the need to qualify any
-  object uses or make any other changes:
-  ```c++
-  using namespace qindesign::network;
-  ```
+1. The `QNEthernet.h` header must be included instead of `Ethernet.h`.
+2. Everything is inside the `qindesign::network` namespace. In many cases, adding
+   the following at the top of your program will obviate the need to qualify any
+   object uses or make any other changes:
+   ```c++
+   using namespace qindesign::network;
+   ```
 
 For API additions beyond what the Arduino-style API provides, see:\
 [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
@@ -132,15 +132,15 @@ For API additions beyond what the Arduino-style API provides, see:\
   `EthernetClient`. The first example uses it as "already connected", while the
   second uses it as "available to connect". "Connected" is the chosen concept,
   but different from `connected()` in that it doesn't check for unread data.
-* All the Arduino-defined `Ethernet.begin(...)` functions that use the MAC
-  address are deprecated.
+* The three Arduino-defined `Ethernet.begin(...)` functions that use the MAC
+  address and that don't specify a subnet are deprecated because they make some
+  incorrect assumptions about the subnet and gateway.
 * `Ethernet.hardwareStatus()`: Returns either
   `EthernetHardwareStatus::EthernetOtherHardware` or
   `EthernetHardwareStatus::EthernetNoHardware`. Note that
   `EthernetOtherHardware` is not defined in the Arduino-style API.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
-  * `init(uint8_t sspin)`: Does nothing.
   * `maintain()`: Returns zero.
   * `setRetransmissionCount(uint8_t number)`: Does nothing.
   * `setRetransmissionTimeout(uint16_t milliseconds)`: Does nothing.
@@ -177,10 +177,11 @@ For API additions beyond what the Arduino-style API provides, see:\
   }
   ```
 * Files that configure lwIP for our system:
-  * *src/sys_arch.cpp*
+  * _src/sys_arch.cpp_
   * _src/lwipopts.h_ &larr; use this one for tuning (see _src/lwip/opt.h_ for
     more details)
   * _src/arch/cc.h_
+* File that configures _QNEthernet_ options: _src/qnethernet_opts.h_
 * The main include file, `QNEthernet.h`, in addition to including the
   `Ethernet`, `EthernetFrame`, and `MDNS` instances, also includes the headers
   for `EthernetClient`, `EthernetServer`, and `EthernetUDP`.
