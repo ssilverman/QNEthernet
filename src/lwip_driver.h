@@ -36,9 +36,9 @@
 // 5. In your driver source, gate the whole file(s) on the macro you chose
 //    above. Of course, test the macro after the lwip_driver.h include.
 //    (Example: INTERNAL_DRIVER_Y)
-// 6. Update EthernetClass::hardwareStatus() to return an appropriate enum
-//    value. The default 'EthernetOtherHardware' may be used for all drivers
-//    that find hardware.
+// 6. Optionally update EthernetClass::hardwareStatus() to return an appropriate
+//    enum value. If no change is made, the default 'EthernetOtherHardware' will
+//    be returned if hardware is found (driver_has_hardware() returns true).
 
 // Select a driver
 #if defined(ARDUINO_TEENSY41)
