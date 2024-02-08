@@ -1558,7 +1558,16 @@ _Entropy_ library.
 
 ## Configuration macros
 
-There are several macros that can be defined to configure the system:
+There are two sets of configuration macros:
+1. _QNEthernet_-specific options, and
+2. lwIP stack options.
+
+Any of them can either be configured as project build macros or by changing them
+in the relevant configuration file:
+1. _qnethernet_opts.h_ for the _QNEthernet_-specific options, and
+2. _lwipopts.h_ for the lwIP options.
+
+The _QNEthernet_-specific macros are as follows:
 
 | Macro                                       | Description                                                                  | Link                                                                                    |
 | ------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -1570,9 +1579,6 @@ There are several macros that can be defined to configure the system:
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                    | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                          | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
 | `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                         | [Entropy collection](#entropy-collection)                                               |
-
-These can either be configured as project build macros or by changing them in
-the _qnethernet_opts.h_ file.
 
 To enable a feature, set the associated macro to `1` or just define it. To
 disable a feature, either set the same macro to `0` or leave it undefined.
@@ -1586,7 +1592,7 @@ features, thus saving space.
 
 ### Configuring macros using the Arduino IDE
 
-_[Current as of this writing: Arduino IDE 2.2.1, Teensyduino 1.58]_
+_[Current as of this writing: Arduino IDE 2.3.0, Teensyduino 1.59]_
 
 The Arduino IDE provides a facility to override the build options specified in a
 platform's build configuration file, _platform.txt_. It does this by looking for
