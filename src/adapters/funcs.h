@@ -12,7 +12,7 @@
 extern "C" {
 #endif  // __cplusplus
 
-#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 // Teensyduino (currently at v1.59) declares millis() as static, so we need to
 // include this header instead of declaring the function ourselves.
@@ -23,7 +23,7 @@ extern "C" {
 unsigned long millis();
 void yield();
 
-#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 #ifdef __cplusplus
 }  // extern "C"

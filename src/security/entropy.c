@@ -6,7 +6,7 @@
 
 #include "entropy.h"
 
-#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
 // C includes
@@ -385,4 +385,4 @@ TRNG_ACC[5] (RW) <-- Doesn't exist on this chip
 */
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
-#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)

@@ -166,14 +166,14 @@ void sys_arch_unprotect(sys_prot_t pval) {
 #endif  // SYS_LIGHTWEIGHT_PROT
 
 void sys_check_core_locking(const char *file, int line, const char *func) {
-#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   uint32_t ipsr;
   __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
   if (ipsr != 0) {
     printf("%s:%d:%s()\r\n", file, line, func);
     LWIP_PLATFORM_ASSERT("Function called from interrupt context");
   }
-#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 }
 
 }  // extern "C"

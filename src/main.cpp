@@ -33,7 +33,7 @@ void setup() {
   printf("Waiting for %" PRIu32 "ms...\r\n", kStartupDelay);
   delay(kStartupDelay);
 
-#if defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#if defined(TEENSYDUINO)
   if (CrashReport) {
     util::StdioPrint p{stdout};
     p.println();
@@ -41,7 +41,7 @@ void setup() {
     p.println();
     CrashReport.clear();
   }
-#endif  // defined(ARDUINO_TEENSY41) || defined(ARDUINO_TEENSY40)
+#endif  // defined(TEENSYDUINO)
 
   printf("Starting...\r\n");
 
