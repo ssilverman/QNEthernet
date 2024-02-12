@@ -367,29 +367,7 @@ size_t EthernetClient::writeFully(const uint8_t *buf, size_t size) {
 }
 
 size_t EthernetClient::write(uint8_t b) {
-  if (!static_cast<bool>(*this)) {
-    return 0;
-  }
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
-
-  size_t sndBufSize = altcp_sndbuf(state->pcb);
-  if (sndBufSize == 0) {  // Possibly flush if there's no space
-    altcp_output(state->pcb);
-    Ethernet.loop();  // Loop to allow incoming data
-    sndBufSize = altcp_sndbuf(state->pcb);
-  }
-
-  size_t written = 0;
-  if (sndBufSize >= 1) {
-    if (altcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY) == ERR_OK) {
-      written = 1;
-    }
-  }
-  Ethernet.loop();  // Loop to allow incoming TCP data
-  return written;
+  return write(&b, 1);
 }
 
 size_t EthernetClient::write(const uint8_t *buf, size_t size) {
