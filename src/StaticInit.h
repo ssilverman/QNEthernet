@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// StaticInit.h helps avoid the Static Order Initialization Fiasco by using the
+// StaticInit.h helps avoid the Static Initialization Order Fiasco by using the
 // Nifty Counter idiom. Briefly, it addresses using potentially uninitialized
 // statically-initialized objects from other translation units.
 //
