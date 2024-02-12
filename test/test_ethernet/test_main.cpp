@@ -5,6 +5,7 @@
 // This file is part of the QNEthernet library.
 
 #include <algorithm>
+#include <cstring>
 #include <ctime>
 #include <memory>
 #include <vector>
@@ -765,6 +766,7 @@ static void test_client() {
       "Connection: close\r\n"
       "\r\n"
   };
+#undef HOST
   constexpr uint16_t kPort = 80;
 
   if (!waitForLocalIP()) {
@@ -806,6 +808,57 @@ static void test_client() {
 
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no more data)");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+}
+
+static void test_client_write_single_bytes() {
+#define HOST "www.example.com"
+  constexpr char kHost[]{HOST};
+  constexpr char kRequest[]{
+      "HEAD / HTTP/1.1\r\n"
+      "Host: " HOST "\r\n"
+      "Connection: close\r\n"
+      "\r\n"
+  };
+#undef HOST
+  constexpr uint16_t kPort = 80;
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  client = std::make_unique<EthernetClient>();
+  client->setConnectionTimeout(kConnectTimeout);
+
+  // Connect and send the request
+  TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
+  uint32_t t = millis();
+  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
+
+  size_t len = std::strlen(kRequest);
+  for (size_t i = 0; i < len; i++) {
+    while (client->write(kRequest[i]) == 0) {
+      // Try until written
+    }
+  }
+  client->flush();
+
+  // Read the response
+  t = millis();
+  TEST_MESSAGE("The response:");
+  while (client->connected()) {
+    int avail = client->available();
+    if (avail <= 0) {
+      continue;
+    }
+    for (int i = 0; i < avail; i++) {
+      UNITY_OUTPUT_CHAR(client->read());
+    }
+    UNITY_OUTPUT_FLUSH();
+  }
+  UNITY_PRINT_EOL();
+  TEST_MESSAGE(format("Read and print response time: %" PRIu32 "ms", millis() - t).data());
 }
 
 static void test_client_connectNoWait() {
@@ -983,6 +1036,7 @@ void setup() {
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
   RUN_TEST(test_client);
+  RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
   RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
