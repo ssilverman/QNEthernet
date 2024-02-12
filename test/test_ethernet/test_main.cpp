@@ -5,6 +5,7 @@
 // This file is part of the QNEthernet library.
 
 #include <algorithm>
+#include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <memory>
