@@ -29,6 +29,8 @@ and this project adheres to
 ### Fixed
 * Added missing `hostByName` to keywords.txt.
 * Fixed `enet_output_frame()` to return false if there's no output buffer.
+* Fixed `EthernetClient::write(buf, size)` to re-check the state after a call
+  to `loop()`.
 
 ## [0.26.0]
 

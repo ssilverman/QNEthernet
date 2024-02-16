@@ -389,6 +389,9 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   if (sndBufSize == 0) {  // Possibly flush if there's no space
     altcp_output(state->pcb);
     Ethernet.loop();  // Loop to allow incoming data
+    if (state == nullptr) {  // Re-check the state
+      return 0;
+    }
     sndBufSize = altcp_sndbuf(state->pcb);
   }
   size = std::min(size, sndBufSize);
