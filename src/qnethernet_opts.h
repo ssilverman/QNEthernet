@@ -49,6 +49,12 @@
 #define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 0
 #endif
 
+// Follows every call to 'EthernetClient::write()` with a flush. This may reduce
+// TCP efficency.
+#ifndef QNETHERNET_FLUSH_AFTER_WRITE
+#define QNETHERNET_FLUSH_AFTER_WRITE 0
+#endif
+
 // Put lwIP-declared memory into RAM1. (Teensy 4)
 #ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0

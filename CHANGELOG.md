@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* New `QNETHERNET_FLUSH_AFTER_WRITE` configuration macro for flushing after
+  every call to `EthernetClient::write()`. This may reduce TCP efficiency.
+
 ### Changed
 * Made it easier to add other low-level drivers.
 * Redesigned the driver interface.

@@ -399,6 +399,9 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
     if (altcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
       size = 0;
     }
+#if QNETHERNET_FLUSH_AFTER_WRITE
+    altcp_output(state->pcb);
+#endif  // QNETHERNET_FLUSH_AFTER_WRITE
   }
 
   Ethernet.loop();  // Loop to allow incoming TCP data
