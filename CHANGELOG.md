@@ -23,6 +23,8 @@ and this project adheres to
   `qnethernet_opts.h` file in addition to the project build.
 * Removed test dependencies on Teensy-specific things.
 * Renamed _t41_ driver source files to use _teensy41_ in the name instead.
+* Changed return type of `EthernetUDP::beginWithReuse()` and
+  `beginMulticastWithReuse()` to `bool`.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

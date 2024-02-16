@@ -130,7 +130,7 @@ uint8_t EthernetUDP::begin(uint16_t localPort) {
   return begin(localPort, false);
 }
 
-uint8_t EthernetUDP::beginWithReuse(uint16_t localPort) {
+bool EthernetUDP::beginWithReuse(uint16_t localPort) {
   return begin(localPort, true);
 }
 
@@ -177,7 +177,7 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
   return beginMulticast(ip, localPort, false);
 }
 
-uint8_t EthernetUDP::beginMulticastWithReuse(IPAddress ip, uint16_t localPort) {
+bool EthernetUDP::beginMulticastWithReuse(IPAddress ip, uint16_t localPort) {
   return beginMulticast(ip, localPort, true);
 }
 

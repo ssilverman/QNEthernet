@@ -68,12 +68,12 @@ class EthernetUDP : public UDP {
   //
   // This first calls stop() if the socket is already listening and the port or
   // _reuse_ socket option differ.
-  uint8_t beginWithReuse(uint16_t localPort);
+  bool beginWithReuse(uint16_t localPort);
 
   // Multicast functions make use of Ethernet.joinGroup(). These first call the
   // appropriate `begin` functions.
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;
-  uint8_t beginMulticastWithReuse(IPAddress ip, uint16_t port);
+  bool beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort() const;
