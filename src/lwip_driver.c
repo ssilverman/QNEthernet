@@ -195,10 +195,6 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 }
 
 void enet_deinit() {
-  netif_set_addr(&s_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-  netif_set_link_down(&s_netif);
-  netif_set_down(&s_netif);
-
   // Restore state
   memset(s_mac, 0, sizeof(s_mac));
 

@@ -393,9 +393,16 @@ void EthernetClass::end() {
   if (dhcpActive_) {
     dhcp_release_and_stop(netif_);
     dhcpActive_ = false;
+  } else {
+    netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
   }
   dhcpDesired_ = false;
+#else
+  netif_set_addr(&netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
 #endif  // LWIP_DHCP
+
+  netif_set_link_down(netif_);
+  netif_set_down(netif_);
 
   enet_deinit();
   netif_ = nullptr;
