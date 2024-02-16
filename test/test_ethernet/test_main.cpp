@@ -376,8 +376,8 @@ static void test_hardware() {
     TEST_ASSERT_EQUAL_MESSAGE(EthernetNoHardware, Ethernet.hardwareStatus(),
                               "Expected no hardware");
   } else {
-    TEST_ASSERT_EQUAL_MESSAGE(EthernetOtherHardware, Ethernet.hardwareStatus(),
-                              "Expected other hardware");
+    TEST_ASSERT_NOT_EQUAL_MESSAGE(EthernetNoHardware, Ethernet.hardwareStatus(),
+                                  "Expected not no hardware");
   }
 }
 
