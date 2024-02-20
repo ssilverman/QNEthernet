@@ -36,7 +36,8 @@
 // 5. In your driver source, gate the whole file(s) on the macro you chose
 //    above. Of course, test the macro after the lwip_driver.h include.
 //    (Example: INTERNAL_DRIVER_Y)
-// 6. Optionally update EthernetClass::hardwareStatus() to return an appropriate
+// 6. Update lwipopts.h with appropriate values for your driver.
+// 7. Optionally update EthernetClass::hardwareStatus() to return an appropriate
 //    enum value. If no change is made, the default 'EthernetOtherHardware' will
 //    be returned if hardware is found (driver_has_hardware() returns true).
 
