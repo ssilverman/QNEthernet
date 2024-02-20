@@ -831,6 +831,12 @@ definition of "packet" specific to your application. For example, after sending
 a web page to a client or after a chunk of data is ready for the server
 to process.
 
+There is a configuration option, `QNETHERNET_FLUSH_AFTER_WRITE`, that causes an
+automatic flush after data is written. However, this may reduce TCP efficiency.
+This option is for use with hard-to-modify code or libraries that assume data
+will get sent immediately. The preferred approach is to call flush() in the code
+or library.
+
 ## A note on the examples
 
 The examples aren't meant to be simple. They're meant to be functional. There
@@ -1577,7 +1583,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_CUSTOM_WRITE`            | Uses expanded `stdio` output behaviour                                           | [stdio](#stdio)                                                                         |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                         | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                        | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
-| `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency | [How to write data to connections](#how-to-write-data-to-connections)                   |
+| `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency | [Write immediacy](#write-immediacy)                                                     |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                              | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
 | `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                             | [Entropy collection](#entropy-collection)                                               |
 

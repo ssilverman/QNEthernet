@@ -50,7 +50,9 @@
 #endif
 
 // Follows every call to 'EthernetClient::write()` with a flush. This may reduce
-// TCP efficency.
+// TCP efficency. This option is for use with hard-to-modify code or libraries
+// that assume data will get sent immediately. The preferred approach is to call
+// flush() in the code or library.
 #ifndef QNETHERNET_FLUSH_AFTER_WRITE
 #define QNETHERNET_FLUSH_AFTER_WRITE 0
 #endif
