@@ -529,7 +529,11 @@ void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
 
 EthernetHardwareStatus EthernetClass::hardwareStatus() const {
   if (driver_has_hardware()) {
+#if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
+    return EthernetW5500;
+#else
     return EthernetOtherHardware;
+#endif  // Which driver
   }
   return EthernetNoHardware;
 }

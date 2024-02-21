@@ -11,6 +11,7 @@ and this project adheres to
 ### Added
 * New `QNETHERNET_FLUSH_AFTER_WRITE` configuration macro for flushing after
   every call to `EthernetClient::write()`. This may reduce TCP efficiency.
+* Added a W5500 driver.
 
 ### Changed
 * Made it easier to add other low-level drivers.

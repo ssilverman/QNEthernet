@@ -102,7 +102,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define ETHARP_SUPPORT_VLAN           0
 // #define LWIP_VLAN_PCP                 0
 // #define LWIP_ETHERNET                 LWIP_ARP
+#if !defined(QNETHERNET_DRIVER_W5500)
 #define ETH_PAD_SIZE                  2  /* 0 */
+#endif  // !defined(QNETHERNET_DRIVER_W5500)
 // #define ETHARP_SUPPORT_STATIC_ENTRIES 0
 // #define ETHARP_TABLE_MATCH_NETIF      !LWIP_SINGLE_NETIF
 
@@ -355,6 +357,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // Checksum options
 // #define LWIP_CHECKSUM_CTRL_PER_NETIF 0
+#if !defined(QNETHERNET_DRIVER_W5500)
 #define CHECKSUM_GEN_IP              0  /* 1 */
 #define CHECKSUM_GEN_UDP             0  /* 1 */
 #define CHECKSUM_GEN_TCP             0  /* 1 */
@@ -365,6 +368,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 #define CHECKSUM_CHECK_TCP           0  /* 1 */
 #define CHECKSUM_CHECK_ICMP          0  /* 1 */
 // #define CHECKSUM_CHECK_ICMP6         1
+#endif  // !defined(QNETHERNET_DRIVER_W5500)
 // #define LWIP_CHECKSUM_ON_COPY        0
 
 // IPv6 options

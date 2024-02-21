@@ -29,6 +29,11 @@
 #define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT (((DNS_MAX_RETRIES) + 1)*(DNS_TMR_INTERVAL))
 #endif
 
+// Builds with the W5500 driver.
+#ifndef QNETHERNET_DRIVER_W5500
+// #define QNETHERNET_DRIVER_W5500
+#endif
+
 // Enables default implementations of the altcp interface functions.
 #ifndef QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0

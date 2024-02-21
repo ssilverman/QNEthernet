@@ -42,7 +42,10 @@
 //    be returned if hardware is found (driver_has_hardware() returns true).
 
 // Select a driver
-#if defined(ARDUINO_TEENSY41)
+#if defined(QNETHERNET_DRIVER_W5500)
+#include "drivers/driver_w5500.h"
+#define QNETHERNET_INTERNAL_DRIVER_W5500
+#elif defined(ARDUINO_TEENSY41)
 #include "drivers/driver_teensy41.h"
 #define QNETHERNET_INTERNAL_DRIVER_TEENSY41
 #else
