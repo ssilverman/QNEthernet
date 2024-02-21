@@ -531,6 +531,8 @@ EthernetHardwareStatus EthernetClass::hardwareStatus() const {
   if (driver_has_hardware()) {
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
     return EthernetW5500;
+#elif defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
+    return EthernetTeensy41;
 #else
     return EthernetOtherHardware;
 #endif  // Which driver

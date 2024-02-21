@@ -56,7 +56,7 @@ enum EthernetLinkStatus {
 };
 
 // Define this enum because Arduino API. Use a new `EthernetOtherHardware` with
-// value -1 as the return value for anything not in the "official" Arduino list.
+// value -1 as the return value for anything unknown.
 //
 // See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.hardwarestatus/
 enum EthernetHardwareStatus {
@@ -64,8 +64,8 @@ enum EthernetHardwareStatus {
   EthernetW5100,
   EthernetW5200,
   EthernetW5500,
+  EthernetTeensy41,
   EthernetOtherHardware = -1,
-      // TODO: Should we also have a Teensy 4.1-specific value?
 };
 
 class EthernetClass final {
