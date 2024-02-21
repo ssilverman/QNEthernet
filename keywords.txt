@@ -18,6 +18,8 @@ stdoutPrint	KEYWORD1
 stderrPrint	KEYWORD1
 EthernetFrame	KEYWORD1
 StdioPrint	KEYWORD1
+EthernetLinkStatus	KEYWORD1	EthernetLinkStatus
+EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -128,3 +130,12 @@ writeMagic	KEYWORD2
 #######################################
 
 kMACAddrSize	LITERAL1
+Unknown	LITERAL1
+LinkON	LITERAL1
+LinkOFF	LITERAL1
+EthernetNoHardware	LITERAL1
+EthernetW5100	LITERAL1
+EthernetW5200	LITERAL1
+EthernetW5500	LITERAL1
+EthernetTeensy41	LITERAL1
+EthernetOtherHardware	LITERAL1
