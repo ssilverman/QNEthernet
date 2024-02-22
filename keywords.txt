@@ -63,7 +63,7 @@ hardwareStatus	KEYWORD2	Ethernet.hardwareStatus
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
-setHostname	KEYWORD2
+setHostname	KEYWORD2	WiFi.setHostname
 hostname	KEYWORD2
 hostByName	KEYWORD2
 maxSockets	KEYWORD2
@@ -89,7 +89,7 @@ flush	KEYWORD2
 available	KEYWORD2
 read	KEYWORD2
 peek	KEYWORD2
-status	KEYWORD2
+status	KEYWORD2	client.status
 setNoDelay	KEYWORD2
 isNoDelay	KEYWORD2
 maxListeners	KEYWORD2
