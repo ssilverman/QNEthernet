@@ -22,8 +22,8 @@
 // #define LWIP_TCPIP_CORE_LOCKING       1
 // #define LWIP_TCPIP_CORE_LOCKING_INPUT 0
 #define SYS_LIGHTWEIGHT_PROT          0  /* 1 */
-void sys_check_core_locking(const char *file, int line, const char *func);
 #define LWIP_ASSERT_CORE_LOCKED() sys_check_core_locking(__FILE__, __LINE__, __FUNCTION__)
+void sys_check_core_locking(const char *file, int line, const char *func);
 
 // Memory options
 #ifndef MEM_LIBC_MALLOC
