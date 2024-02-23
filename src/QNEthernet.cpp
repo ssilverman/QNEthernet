@@ -91,7 +91,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
     enet_get_mac(mac_);
   }
 
-  // Initialize randomness
+  // Initialize randomness (useful if the program uses rand())
   std::srand(security::RandomDevice::instance()());
 }
 

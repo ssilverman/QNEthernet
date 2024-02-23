@@ -15,7 +15,8 @@
 #include "adapters/pgmspace.h"
 #include "qnethernet_opts.h"
 
-#define LWIP_RAND() ((u32_t)rand())
+#define LWIP_RAND() qnethernet_rand()
+extern uint32_t qnethernet_rand();
 
 #define LWIP_PLATFORM_ASSERT(x)                          \
   do {                                                   \

@@ -19,6 +19,8 @@
 
 #include <Print.h>
 
+#include "security/RandomDevice.h"
+
 extern "C" {
 
 #include "adapters/funcs.h"
@@ -174,6 +176,14 @@ void sys_check_core_locking(const char *file, int line, const char *func) {
     LWIP_PLATFORM_ASSERT("Function called from interrupt context");
   }
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
+}
+
+// --------------------------------------------------------------------------
+//  Randomness
+// --------------------------------------------------------------------------
+
+uint32_t qnethernet_rand() {
+  return qindesign::security::RandomDevice::instance()();
 }
 
 }  // extern "C"

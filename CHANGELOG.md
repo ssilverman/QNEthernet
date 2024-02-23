@@ -31,6 +31,7 @@ and this project adheres to
 * Renamed _t41_ driver source files to use _teensy41_ in the name instead.
 * Changed return type of `EthernetUDP::beginWithReuse()` and
   `beginMulticastWithReuse()` to `bool`.
+* Using better randomness for `LWIP_RAND()`.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.
