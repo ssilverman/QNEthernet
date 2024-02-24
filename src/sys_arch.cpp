@@ -134,8 +134,10 @@ int _write(int file, const void *buf, size_t len) {
 
   Print *out = getPrint(file);
   if (out == nullptr) {
-    return len;
+    errno = EBADF;
+    return -1;
   }
+
   return out->write(static_cast<const uint8_t *>(buf), len);
 }
 
