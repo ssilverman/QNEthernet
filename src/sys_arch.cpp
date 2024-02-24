@@ -129,7 +129,6 @@ int _write(int file, const void *buf, size_t len) {
   }
 
   if (file == STDIN_FILENO) {
-    errno = EBADF;
     return -1;
   }
 
