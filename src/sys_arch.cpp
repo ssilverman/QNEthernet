@@ -124,14 +124,6 @@ static inline Print *getPrint(int file) {
 //       would be chosen by the linker, this one or the one defined
 //       in Print.cpp.
 int _write(int file, const void *buf, size_t len) {
-  if (len == 0) {
-    return 0;
-  }
-
-  if (file == STDIN_FILENO) {
-    return -1;
-  }
-
   Print *out = getPrint(file);
   if (out == nullptr) {
     errno = EBADF;
