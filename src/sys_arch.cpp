@@ -175,6 +175,7 @@ void sys_check_core_locking(const char *file, int line, const char *func) {
 //  Randomness
 // --------------------------------------------------------------------------
 
+// Gets a 32-bit random number for LWIP_RAND().
 uint32_t qnethernet_rand() {
   return qindesign::security::RandomDevice::instance()();
 }
