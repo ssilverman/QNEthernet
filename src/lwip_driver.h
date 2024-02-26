@@ -162,7 +162,7 @@ void enet_get_mac(uint8_t *mac);
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
-// It is suggested to initialize the random number generator with srand() before
+// It is suggested to initialize the random number generator before
 // calling this.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback);
