@@ -47,7 +47,7 @@ static void attachLoopToYield() {
 #error "Need to hook into or replace yield()"
 // Example yield() implementation:
 // void yield() {
-//   static bool busy = false;
+//   static bool busy = false;  // Prevent reentrancy
 //   if (!busy && Ethernet) {
 //     busy = true;
 //     Ethernet.loop();
