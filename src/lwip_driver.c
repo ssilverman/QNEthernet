@@ -105,7 +105,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
 // Removes the current netif, if any.
-__attribute__((unused)) static void remove_netif() {
+[[gnu::unused]] static void remove_netif() {
   if (s_isNetifAdded) {
     netif_set_default(NULL);
     netif_remove(&s_netif);

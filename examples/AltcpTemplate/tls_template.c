@@ -25,11 +25,11 @@
 struct altcp_tls_config {
 };
 
-__attribute__((weak))
+[[gnu::weak]]
 void altcp_tls_free_config(struct altcp_tls_config *conf) {
 }
 
-__attribute__((weak))
+[[gnu::weak]]
 struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
   return NULL;
@@ -38,12 +38,12 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
 #if QNETHERNET_ALTCP_TLS_ADAPTER
 // QNEthernet's altcp_tls_adapter needs these
 
-__attribute__((weak))
+[[gnu::weak]]
 struct altcp_tls_config *altcp_tls_create_config_server(u8_t cert_count) {
   return NULL;
 }
 
-__attribute__((weak))
+[[gnu::weak]]
 err_t altcp_tls_config_server_add_privkey_cert(
     struct altcp_tls_config *config,
     const u8_t *privkey,      size_t privkey_len,
@@ -52,7 +52,7 @@ err_t altcp_tls_config_server_add_privkey_cert(
   return ERR_OK;
 }
 
-__attribute__((weak))
+[[gnu::weak]]
 struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
                                                         size_t cert_len) {
   return NULL;

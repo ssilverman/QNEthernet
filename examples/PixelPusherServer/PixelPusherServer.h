@@ -116,7 +116,7 @@ class PixelPusherServer final {
     PIXELPUSHER = 2,
   };
 
-  struct DeviceData {
+  struct [[gnu::packed]] DeviceData {
     uint8_t macAddr[6];
     uint8_t ipAddr[4];
     uint8_t deviceType;
@@ -126,9 +126,9 @@ class PixelPusherServer final {
     uint16_t hwRevision;
     uint16_t swRevision;
     uint32_t linkSpeed;  // In bits per second
-  } __attribute__((__packed__));
+  };
 
-  struct PixelPusherData1 {
+  struct [[gnu::packed]] PixelPusherData1 {
     uint8_t stripsAttached;
     uint8_t maxStripsPerPacket;
     uint16_t pixelsPerStrip;    // uint16_t used to make alignment work
@@ -144,15 +144,15 @@ class PixelPusherServer final {
     uint16_t myPort;  // Index 28
 
     // [strip flags, one per strip, at least 8], Index 32
-  } __attribute__((__packed__));
+  };
 
-  struct PixelPusherData2 {
+  struct [[gnu::packed]] PixelPusherData2 {
     uint32_t pusherFlags;  // Flags for the whole pusher
     uint32_t segments;     // Number of segments in each strip
     uint32_t powerDomain;  // Power domain of this pusher
     uint8_t lastDrivenIp[4];
     uint16_t lastDrivenPort;
-  } __attribute__((__packed__));
+  };
 
   class NullReceiver final : public Receiver {
     bool begin() override { return true; }

@@ -32,6 +32,7 @@ and this project adheres to
 * Changed return type of `EthernetUDP::beginWithReuse()` and
   `beginMulticastWithReuse()` to `bool`.
 * Using better randomness for `LWIP_RAND()`.
+* Changed attributes to use the C++ style.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.
