@@ -1786,8 +1786,8 @@ _QNEthernet_ library.
 ## Other notes
 
 I'm not 100% percent certain where this library will go, but I want it to be
-amazing. It's meant to be an alternative to the NativeEthernet/FNET library,
-using a different underlying TCP/IP stack.
+amazing. It's meant to be an alternative to the NativeEthernet/FNET library on
+the Teensy 4.1 and to other libraries on boards that use the W5500.
 
 I'm also not settled on the name.
 
