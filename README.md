@@ -1739,20 +1739,19 @@ Some extra conditions to keep in mind:
 This section is an attempt to provide a complete list of features in the
 _QNEthernet_ library.
 
-1. Mostly compatible with the Arduino Ethernet API
+1. Compatible with the Arduino-style Ethernet API
 2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
-3. Automatic MAC address detection; it's not necessary to initialize the library
-   with your own MAC address
+3. Automatic MAC address detection on Teensy 4; it's not necessary to initialize
+   the library with your own MAC address for that platform
 4. A [DNS client](#dnsclient)
 5. [mDNS](#mdns) support
 6. [Raw Ethernet frame](#raw-ethernet-frames) support
-7. [`stdio`](#stdio) output support for `stdout` and `stderr` &mdash;
-   implemented to support lwIP's `printf()` calls, but user code can use this
-   too
+7. [`stdio`](#stdio) output redirection support for `stdout` and `stderr`
 8. [VLAN tagging](#how-to-implement-vlan-tagging) support
 9. [Zero-length UDP packets](#parsepacket-return-values)
 10. [UDP](#udp-receive-buffering) and [raw frame](#raw-frame-receive-buffering)
-    receive buffering
+    receive buffering for when data arrives in bursts that are faster than the
+    ability of the program to process them
 11. [Listeners](#how-to-use-listeners) to watch link, network interface, and
     address state
 12. With some additions:
@@ -1773,14 +1772,15 @@ _QNEthernet_ library.
     and [`EthernetUDP`](#ethernetudp))
 18. [`TCP_NODELAY`](#tcp-socket-options) support
 19. Configuration via [Configuration macros](#configuration-macros)
-20. UDP and raw frame queueing for when data arrives in bursts that are faster
-    than the ability of the program to process them
-21. Non-blocking TCP connections
-22. Internal [Entropy generation](#entropy-generation) functions to avoid the
+20. Non-blocking TCP connections
+21. Internal [Entropy generation](#entropy-generation) functions to avoid the
     _Entropy_ lib dependency; this can be disabled with a configuration macro
-23. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
+22. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
     requirement that provides access to hardware-generated entropy (see
     [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator))
+23. Driver support for:
+    1. Teensy 4.1
+    2. W5500
 24. Straightforward to add new Ethernet frame drivers
 
 ## Other notes
