@@ -1665,7 +1665,8 @@ compiler.c.extra_flags={compiler.cpp.extra_flags}
 ```
 
 The properties of most interest are probably the ones in this example. There are
-other ones defined in the Arduino AVR version, but aren't really needed here.
+other ones defined in the Arduino AVR version, but those aren't really
+needed here.
 
 Lest you think I've forgotten to add it, here're the locations of the files for
 the current latest version of the IDE:
