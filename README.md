@@ -7,7 +7,7 @@ or
 _Version: 0.27.0-snapshot_
 
 The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1.
-It's compatible with the Arduino-style API.
+It's designed to be compatible with the Arduino-style Ethernet API.
 
 This library is distributed under the "AGPL-3.0-or-later" license. Please
 contact the author if you wish to inquire about other license options.
@@ -84,7 +84,7 @@ lwIP release.
 ## Introduction
 
 The _QNEthernet_ library is designed to be a drop-in replacement for code using
-the Arduino Ethernet API.
+the Arduino-style Ethernet API.
 
 **Note: Please read the function docs in the relevant header files for
 more information.**
@@ -94,9 +94,9 @@ more information.**
 There are two notes, as follows:
 
 1. The `QNEthernet.h` header must be included instead of `Ethernet.h`.
-2. Everything is inside the `qindesign::network` namespace. In many cases, adding
-   the following at the top of your program will obviate the need to qualify any
-   object uses or make any other changes:
+2. Everything is inside the `qindesign::network` namespace. In many cases,
+   adding the following at the top of your program will obviate the need to
+   qualify any object uses or make any other changes:
    ```c++
    using namespace qindesign::network;
    ```
