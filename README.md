@@ -20,7 +20,7 @@ lwIP release.
 1. [Introduction](#introduction)
    1. [Two notes](#two-notes)
    2. [Other differences and notes](#other-differences-and-notes)
-2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
+2. [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
       1. [TCP socket options](#tcp-socket-options)
@@ -102,7 +102,7 @@ There are two notes, as follows:
    ```
 
 For API additions beyond what the Arduino-style API provides, see:\
-[Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
+[Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
 
 ### Other differences and notes
 
@@ -186,9 +186,9 @@ For API additions beyond what the Arduino-style API provides, see:\
 * Most of the `Ethernet` functions do nothing or return some form of
   empty/nothing/false unless the system has been initialized.
 
-## Additional functions and features not in the Arduino API
+## Additional functions and features not in the Arduino-style API
 
-_QNEthernet_ defines functions that don't exist in the Arduino API as it's
+_QNEthernet_ defines functions that don't exist in the Arduino-style API as it's
 currently defined. (See:
 [Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/))
 This section documents those functions.
@@ -903,7 +903,7 @@ Note that this section also applies to the DNS client.
 Firstly, `connect()` blocks. See the [next section](#connectnowait-doesnt-wait)
 for a non-blocking way to connect.
 
-The Arduino API,
+The Arduino-style API,
 [here](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/),
 defines a set of possible return values for this function. Note that the example
 on that page is not correct (at the time of this writing) because it assumes
@@ -1740,7 +1740,7 @@ This section is an attempt to provide a complete list of features in the
 _QNEthernet_ library.
 
 1. Compatible with the Arduino-style Ethernet API
-2. [Additional functions and features not in the Arduino API](#additional-functions-and-features-not-in-the-arduino-api)
+2. [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
 3. Automatic MAC address detection on Teensy 4; it's not necessary to initialize
    the library with your own MAC address for that platform
 4. A [DNS client](#dnsclient)
