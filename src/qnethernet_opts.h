@@ -29,6 +29,13 @@
 #define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT (((DNS_MAX_RETRIES) + 1)*(DNS_TMR_INTERVAL))
 #endif
 
+// The default hostname, used if the LWIP_NETIF_HOSTNAME option is set. Note
+// that the hostname can also be set programmatically; this value is just the
+// initial default.
+#ifndef QNETHERNET_DEFAULT_HOSTNAME
+#define QNETHERNET_DEFAULT_HOSTNAME "qnethernet-lwip"
+#endif
+
 // Builds with the W5500 driver.
 #ifndef QNETHERNET_DRIVER_W5500
 // #define QNETHERNET_DRIVER_W5500

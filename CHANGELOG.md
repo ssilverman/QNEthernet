@@ -13,6 +13,7 @@ and this project adheres to
   every call to `EthernetClient::write()`. This may reduce TCP efficiency.
 * Added a W5500 driver.
 * Added a new `EthernetHardwareStatus::EthernetTeensy41` enum value.
+* New `QNETHERNET_DEFAULT_HOSTNAME` option.
 
 ### Changed
 * Made it easier to add other low-level drivers.

@@ -388,7 +388,7 @@ class EthernetClass final {
 
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME
-  String hostname_{"qnethernet-lwip"};  // Empty means no hostname
+  String hostname_{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_ = nullptr;
 
