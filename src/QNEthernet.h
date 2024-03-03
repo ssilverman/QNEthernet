@@ -331,7 +331,7 @@ class EthernetClass final {
   bool setMACAddressAllowed(const uint8_t mac[6], bool flag) const;
 
   // Sets the DHCP client option 12 hostname. The empty string will set the
-  // hostname to nothing. The default is "teensy-lwip".
+  // hostname to nothing. The default is "qnethernet-lwip".
   //
   // The new hostname will take effect the next time a new configuration is
   // negotiated with the DHCP server. This could be at system start or when a
@@ -342,7 +342,7 @@ class EthernetClass final {
   void setHostname(const char *hostname);
 
   // Gets the DHCP client option 12 hostname. An empty string means that no
-  // hostname is set. The default is "teensy-lwip".
+  // hostname is set. The default is "qnethernet-lwip".
   //
   // This returns the empty string if 'LWIP_NETIF_HOSTNAME' is not enabled.
   String hostname() const;
@@ -388,7 +388,7 @@ class EthernetClass final {
 
   uint8_t mac_[6];
 #if LWIP_NETIF_HOSTNAME
-  String hostname_{"teensy-lwip"};  // Empty means no hostname
+  String hostname_{"qnethernet-lwip"};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_ = nullptr;
 

@@ -228,7 +228,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `hostByName()`: Convenience function that tries to resolve a hostname into an
   IP address. This returns whether successful.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
-  hostname is set. The default is "teensy-lwip".
+  hostname is set. The default is "qnethernet-lwip".
 * `interfaceStatus()`: Returns the network interface status, `true` for UP and
   `false` for DOWN.
 * `isDHCPActive()`: Returns whether DHCP is active.

@@ -33,6 +33,7 @@ and this project adheres to
   `beginMulticastWithReuse()` to `bool`.
 * Using better randomness for `LWIP_RAND()`.
 * Changed attributes to use the C++ style.
+* Changed the default hostname to "qnethernet-lwip".
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.
