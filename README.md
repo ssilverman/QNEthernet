@@ -2,12 +2,12 @@
 or
 <a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me a Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" alt="Buy Me a Coffee donate button"></a>
 
-# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1 and other boards
+# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1 and other platforms
 
 _Version: 0.27.0-snapshot_
 
 The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1 and
-other boards. It's designed to be compatible with the Arduino-style
+other platforms. It's designed to be compatible with the Arduino-style
 Ethernet API.
 
 This library is distributed under the "AGPL-3.0-or-later" license. Please
@@ -150,9 +150,9 @@ For API additions beyond what the Arduino-style API provides, see:\
   and not in the main "Arduino Ethernet" API.\
   See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
 * The system starts with the Teensy's actual MAC address or some default MAC
-  address on other boards. If you want to use that address with the MAC-taking
-  API, you can collect it with `Ethernet.macAddress(mac)` and then pass it to
-  one of the MAC-taking `begin(...)` functions.
+  address on other platforms. If you want to use that address with the
+  MAC-taking API, you can collect it with `Ethernet.macAddress(mac)` and then
+  pass it to one of the MAC-taking `begin(...)` functions.
 * All classes and objects are in the `qindesign::network` namespace. This means
   you'll need to fully qualify any types. To avoid this, you could utilize a
   `using` directive:
@@ -1672,7 +1672,7 @@ needed here.
 
 Lest you think I've forgotten to add it, here're the locations of the files for
 the current latest version of the IDE (for Teensy, specifically; the locations
-will be different, but should be similar, for other boards):
+will be different, but should be similar, for other platforms):
 * Mac: _~/Library/Arduino15/packages/teensy/hardware/avr/{version}_
 * Linux: _~/.arduino15/packages/teensy/hardware/avr/{version}_
 * Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr\{version}_
@@ -1791,7 +1791,7 @@ _QNEthernet_ library.
 
 I'm not 100% percent certain where this library will go, but I want it to be
 amazing. It's meant to be an alternative to the NativeEthernet/FNET library on
-the Teensy 4.1 and to other libraries on boards that use the W5500.
+the Teensy 4.1 and to other libraries on platforms that use the W5500.
 
 I'm also not settled on the name.
 
