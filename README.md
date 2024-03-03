@@ -36,6 +36,7 @@ lwIP release.
    10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
 3. [How to run](#how-to-run)
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
+   2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [`writeFully()` with more break conditions](#writefully-with-more-break-conditions)
    2. [Write immediacy](#write-immediacy)
@@ -90,9 +91,9 @@ the Arduino-style Ethernet API.
 **Note: Please read the function docs in the relevant header files for
 more information.**
 
-### Two notes
+### Three notes
 
-There are two notes, as follows:
+There are three notes, as follows:
 
 1. The `QNEthernet.h` header must be included instead of `Ethernet.h`.
 2. Everything is inside the `qindesign::network` namespace. In many cases,
@@ -101,6 +102,11 @@ There are two notes, as follows:
    ```c++
    using namespace qindesign::network;
    ```
+3. On non-Teensy platforms: `Ethernet.loop()` must be called regularly, either
+   at the end of the main `loop()` function, or by hooking into `yield()`.
+   (This is already done for you on the Teensy platform by hooking into
+   `yield()` via `EventResponder`.)\
+   See: [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
 
 For API additions beyond what the Arduino-style API provides, see:\
 [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
@@ -109,8 +115,9 @@ For API additions beyond what the Arduino-style API provides, see:\
 
 * UDP support is already included in _QNEthernet.h_. There's no need to also
   include _QNEthernetUDP.h_.
-* Ethernet `loop()` is called from `yield()`. The functions that wait for
-  timeouts rely on this. This also means that you must use `delay(ms)`,
+* Ethernet `loop()` is called from `yield()` (automatically on the Teensy
+  platform). The functions that wait for timeouts rely on this. This also means
+  that you must use `delay(ms)` (assuming it internally calls `yield()`),
   `yield()`, or `Ethernet.loop()` when waiting on conditions; waiting without
   calling these functions will cause the TCP/IP stack to never refresh. Note
   that many of the I/O functions call `loop()` so that there's less burden on
@@ -610,6 +617,18 @@ not limited to:
 * Using listeners to watch for network changes,
 * Monitoring and sending raw Ethernet frames, and
 * Setting up an mDNS service.
+
+### How to move the stack forward and receive data
+
+All reception is processed in `Ethernet.loop()`. There's no thread or ISR that
+regularly processes the input. This means that this function must be called
+regularly. For example, it could be called at the end of the main `loop()`
+function. Another good place is to hook into `yield()` because the Arduino
+framework calls that every time `loop()` finishes and likely during a call
+to `delay()`.
+
+On the Teensy platform, the call is already hooked into `yield()` via the
+built-in `EventResponder` approach, so there's nothing more to add.
 
 ### Concurrent use is not supported
 
@@ -1745,8 +1764,8 @@ _QNEthernet_ library.
 
 1. Compatible with the Arduino-style Ethernet API
 2. [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
-3. Automatic MAC address detection on Teensy 4; it's not necessary to initialize
-   the library with your own MAC address for that platform
+3. Automatic MAC address detection on the Teensy platform; it's not necessary to
+   initialize the library with your own MAC address for that platform
 4. A [DNS client](#dnsclient)
 5. [mDNS](#mdns) support
 6. [Raw Ethernet frame](#raw-ethernet-frames) support
@@ -1777,8 +1796,9 @@ _QNEthernet_ library.
 18. [`TCP_NODELAY`](#tcp-socket-options) support
 19. Configuration via [Configuration macros](#configuration-macros)
 20. Non-blocking TCP connections
-21. Internal [Entropy generation](#entropy-generation) functions to avoid the
-    _Entropy_ lib dependency; this can be disabled with a configuration macro
+21. Teensy platform: Internal [Entropy generation](#entropy-generation)
+    functions to avoid the _Entropy_ lib dependency; this can be disabled with a
+    configuration macro
 22. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
     requirement that provides access to hardware-generated entropy (see
     [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator))
