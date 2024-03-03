@@ -14,7 +14,9 @@ namespace network {
 
 namespace util {
 
-static constexpr uint8_t kBroadcastMAC[6]{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+static constexpr uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+};
 
 size_t writeFully(Print &p, const uint8_t *buf, size_t size,
                   std::function<bool()> breakf) {
@@ -37,16 +39,16 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
   return total - size;
 }
 
-size_t writeMagic(Print &p, const uint8_t mac[6],
+size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
                   std::function<bool()> breakf) {
-  size_t written = writeFully(p, kBroadcastMAC, 6, breakf);
-  if (written < 6) {
+  size_t written = writeFully(p, kBroadcastMAC, ETH_HWADDR_LEN, breakf);
+  if (written < ETH_HWADDR_LEN) {
     return written;
   }
   for (int i = 0; i < 16; i++) {
-    size_t w = writeFully(p, mac, 6, breakf);
+    size_t w = writeFully(p, mac, ETH_HWADDR_LEN, breakf);
     written += w;
-    if (w < 6) {
+    if (w < ETH_HWADDR_LEN) {
       return written;
     }
   }

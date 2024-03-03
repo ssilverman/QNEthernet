@@ -759,7 +759,7 @@ bool driver_is_unknown() {
   return s_initState == kInitStateStart;
 }
 
-void driver_get_system_mac(uint8_t *mac) {
+void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   uint32_t m1 = HW_OCOTP_MAC1;
   uint32_t m2 = HW_OCOTP_MAC0;
   mac[0] = m1 >> 8;
@@ -1078,7 +1078,8 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   return crc;
 }
 
-bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                    bool allow) {
   if (mac == NULL) {
     return false;
   }

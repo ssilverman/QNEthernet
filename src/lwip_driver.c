@@ -13,7 +13,6 @@
 #include "lwip/etharp.h"
 #include "lwip/init.h"
 #include "lwip/opt.h"
-#include "lwip/prot/ethernet.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
@@ -123,7 +122,7 @@ struct netif *enet_netif() {
   return &s_netif;
 }
 
-void enet_get_mac(uint8_t *mac) {
+void enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac != NULL) {
     driver_get_system_mac(mac);
   }
@@ -255,7 +254,7 @@ static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   }
 
   // Multicast MAC address.
-  static uint8_t multicastMAC[6] = {
+  static uint8_t multicastMAC[ETH_HWADDR_LEN] = {
       LL_IP4_MULTICAST_ADDR_0,
       LL_IP4_MULTICAST_ADDR_1,
       LL_IP4_MULTICAST_ADDR_2,

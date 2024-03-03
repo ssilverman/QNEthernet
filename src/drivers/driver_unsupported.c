@@ -12,7 +12,7 @@ bool driver_is_unknown() {
   return false;
 }
 
-void driver_get_system_mac(uint8_t *mac) {
+void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
@@ -64,7 +64,8 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow) {
+bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                    bool allow) {
   return false;
 }
 

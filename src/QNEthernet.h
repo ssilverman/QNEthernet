@@ -106,7 +106,7 @@ class EthernetClass final {
   };
 
   // Retrieves the MAC address. This does nothing if 'mac' is NULL.
-  void macAddress(uint8_t mac[6]) const;
+  void macAddress(uint8_t mac[kMACAddrSize]) const;
 
   // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
@@ -114,7 +114,7 @@ class EthernetClass final {
   //
   // If the given array is NULL, then the MAC address will be set to the
   // built-in one.
-  void setMACAddress(const uint8_t mac[6]);
+  void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
   // Call often.
   void loop();
@@ -270,16 +270,17 @@ class EthernetClass final {
   void setDNSServerIP(int index, const IPAddress &ip) const;
 
   // The MAC addresses are used in the following begin() functions
-  int begin(const uint8_t mac[6],
+  int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
-  void begin(const uint8_t mac[6], const IPAddress &ip);
+  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  void begin(const uint8_t mac[6], const IPAddress &ip, const IPAddress &dns);
+  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+             const IPAddress &dns);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  void begin(const uint8_t mac[6], const IPAddress &ip,
+  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway);
-  void begin(const uint8_t mac[6], const IPAddress &ip,
+  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway,
              const IPAddress &subnet);
 
@@ -298,7 +299,7 @@ class EthernetClass final {
   void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
 
   // These call something equivalent
-  void MACAddress(uint8_t mac[6]) const { macAddress(mac); }
+  void MACAddress(uint8_t mac[kMACAddrSize]) const { macAddress(mac); }
   void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
@@ -328,7 +329,7 @@ class EthernetClass final {
   // for there to be collisions. This means that it's not always possible to
   // disallow an address once it's been allowed. This will return false in that
   // case and true otherwise.
-  bool setMACAddressAllowed(const uint8_t mac[6], bool flag) const;
+  bool setMACAddressAllowed(const uint8_t mac[kMACAddrSize], bool flag) const;
 
   // Sets the DHCP client option 12 hostname. The empty string will set the
   // hostname to nothing. The default is "qnethernet-lwip".
@@ -364,7 +365,7 @@ class EthernetClass final {
   // Creates a new network interface. This sets the MAC address to the given MAC
   // address. If the given address is NULL then this uses the built-in
   // MAC address.
-  explicit EthernetClass(const uint8_t mac[6]);
+  explicit EthernetClass(const uint8_t mac[kMACAddrSize]);
 
   ~EthernetClass();
 
@@ -386,7 +387,7 @@ class EthernetClass final {
 
   uint32_t lastPollTime_ = 0;
 
-  uint8_t mac_[6];
+  uint8_t mac_[kMACAddrSize];
 #if LWIP_NETIF_HOSTNAME
   String hostname_{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME

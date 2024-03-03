@@ -21,6 +21,7 @@
 #include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
+#include "lwip/prot/ethernet.h"
 #include "lwip_driver.h"
 
 extern "C" {
@@ -66,12 +67,14 @@ class EthernetFrameClass final : public Stream {
 
   // Starts a frame and writes the given addresses and EtherType/length. This is
   // similar to EthernetUDP::beginPacket().
-  void beginFrame(const uint8_t dstAddr[6], const uint8_t srcAddr[6],
+  void beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
+                  const uint8_t srcAddr[ETH_HWADDR_LEN],
                   uint16_t typeOrLen);
 
   // Starts a VLAN-tagged frame and writes the given addresses, VLAN info, and
   // EtherType/length. This is similar to EthernetUDP::beginPacket().
-  void beginVLANFrame(const uint8_t dstAddr[6], const uint8_t srcAddr[6],
+  void beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
+                      const uint8_t srcAddr[ETH_HWADDR_LEN],
                       uint16_t vlanInfo, uint16_t typeOrLen);
 
   // Sends the frame. This is similar to EthernetUDP::endPacket(). This clears

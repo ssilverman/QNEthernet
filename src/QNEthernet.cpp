@@ -84,9 +84,9 @@ void EthernetClass::netifEventFunc(struct netif *netif,
 
 FLASHMEM EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[6]) {
+FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
-    std::copy_n(mac, 6, mac_);
+    std::copy_n(mac, kMACAddrSize, mac_);
   } else {
     enet_get_mac(mac_);
   }
@@ -96,26 +96,26 @@ FLASHMEM EthernetClass::~EthernetClass() {
   end();
 }
 
-void EthernetClass::macAddress(uint8_t mac[6]) const {
+void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
   if (mac != nullptr) {
-    std::copy_n(mac_, 6, mac);
+    std::copy_n(mac_, kMACAddrSize, mac);
   }
 }
 
-void EthernetClass::setMACAddress(const uint8_t mac[6]) {
-  uint8_t m[6];
+void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
+  uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
     // Use the system MAC address
     enet_get_mac(m);
     mac = m;
   }
 
-  if (std::equal(&mac_[0], &mac_[6], &mac[0])) {
+  if (std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
     // Do nothing if there's no change
     return;
   }
 
-  std::copy_n(mac, 6, mac_);
+  std::copy_n(mac, kMACAddrSize, mac_);
   if (netif_ == nullptr) {
     return;
   }
@@ -312,17 +312,17 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
   return netif_is_link_up(netif_);
 }
 
-int EthernetClass::begin(const uint8_t mac[6], uint32_t timeout) {
-  uint8_t m[6];
+int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
+  uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
     enet_get_mac(m);
     mac = m;
   }
-  std::copy_n(mac_, 6, m);  // Cache the current MAC address
-  std::copy_n(mac, 6, mac_);
+  std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin()) {
-    std::copy_n(m, 6, mac_);  // Restore what was there before
+    std::copy_n(m, kMACAddrSize, mac_);  // Restore what was there before
     return false;
   }
 
@@ -332,37 +332,38 @@ int EthernetClass::begin(const uint8_t mac[6], uint32_t timeout) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip) {
+void EthernetClass::begin(const uint8_t mac[kMACAddrSize],
+                          const IPAddress &ip) {
   begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
         IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
 }
 
-void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns) {
   begin(mac, ip, dns, IPAddress{ip[0], ip[1], ip[2], 1},
         IPAddress{255, 255, 255, 0});
 }
 
-void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway) {
   begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
 }
 #pragma GCC diagnostic pop
 
-void EthernetClass::begin(const uint8_t mac[6], const IPAddress &ip,
+void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
   // This doesn't return any error, so if the MAC is NULL then use the built-in
-  uint8_t m[6];
+  uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
     enet_get_mac(m);
     mac = m;
   }
-  std::copy_n(mac_, 6, m);  // Cache the current MAC address
-  std::copy_n(mac, 6, mac_);
+  std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin(ip, subnet, gateway, dns)) {
-    std::copy_n(m, 6, mac_);  // Restore the previous
+    std::copy_n(m, kMACAddrSize, mac_);  // Restore the previous
   }
 }
 
@@ -561,7 +562,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
 #endif  // LWIP_IGMP
 }
 
-bool EthernetClass::setMACAddressAllowed(const uint8_t mac[6],
+bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
                                          bool flag) const {
   if (netif_ == nullptr || mac == nullptr) {
     return false;

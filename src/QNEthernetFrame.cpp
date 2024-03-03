@@ -222,18 +222,18 @@ void EthernetFrameClass::beginFrame() {
   outFrame_.data.clear();
 }
 
-void EthernetFrameClass::beginFrame(const uint8_t dstAddr[6],
-                                    const uint8_t srcAddr[6],
+void EthernetFrameClass::beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
+                                    const uint8_t srcAddr[ETH_HWADDR_LEN],
                                     uint16_t typeOrLength) {
   beginFrame();
-  write(dstAddr, 6);
-  write(srcAddr, 6);
+  write(dstAddr, ETH_HWADDR_LEN);
+  write(srcAddr, ETH_HWADDR_LEN);
   write(static_cast<uint8_t>(typeOrLength >> 8));
   write(static_cast<uint8_t>(typeOrLength));
 }
 
-void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[6],
-                                        const uint8_t srcAddr[6],
+void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
+                                        const uint8_t srcAddr[ETH_HWADDR_LEN],
                                         uint16_t vlanInfo,
                                         uint16_t typeOrLength) {
   beginFrame(dstAddr, srcAddr, ETHTYPE_VLAN);

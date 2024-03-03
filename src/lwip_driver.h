@@ -69,7 +69,7 @@ bool driver_is_unknown();
 // Gets the built-in Ethernet MAC address.
 //
 // For systems without a built-in address, this should retrieve some default.
-void driver_get_system_mac(uint8_t *mac);
+void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the internal MAC address.
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
@@ -132,7 +132,8 @@ bool driver_output_frame(const uint8_t *frame, size_t len);
 // will also return false if 'mac' is NULL. Otherwise, this will return true.
 //
 // Note that this function may be passed a NULL MAC address.
-bool driver_set_mac_address_allowed(const uint8_t *mac, bool allow);
+bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                    bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
@@ -154,7 +155,7 @@ inline int enet_get_max_frame_len() {
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 //
 // For systems without a built-in address, this should retrieve some default.
-void enet_get_mac(uint8_t *mac);
+void enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Initializes Ethernet and returns whether successful. This does not set the
 // interface to "up".
