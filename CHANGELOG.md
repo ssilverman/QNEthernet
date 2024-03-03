@@ -41,6 +41,7 @@ and this project adheres to
 * Fixed `enet_output_frame()` to return false if there's no output buffer.
 * Fixed `EthernetClient::write(buf, size)` to re-check the state after a call
   to `loop()`.
+* Fixed `util::writeMagic()` `mac` parameter to be `const`.
 
 ## [0.26.0]
 

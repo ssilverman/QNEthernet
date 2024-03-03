@@ -37,7 +37,8 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
   return total - size;
 }
 
-size_t writeMagic(Print &p, uint8_t mac[6], std::function<bool()> breakf) {
+size_t writeMagic(Print &p, const uint8_t mac[6],
+                  std::function<bool()> breakf) {
   size_t written = writeFully(p, kBroadcastMAC, 6, breakf);
   if (written < 6) {
     return written;

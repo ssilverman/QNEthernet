@@ -34,7 +34,7 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 //
 // This utilizes `writeFully()` under the covers, meaning this loops until
 // all bytes are written or `breakf` returns true.
-size_t writeMagic(Print &p, uint8_t mac[6],
+size_t writeMagic(Print &p, const uint8_t mac[6],
                   std::function<bool()> breakf = nullptr);
 
 // A Print decorator for stdio output files. The purpose of this is to utilize
