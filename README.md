@@ -2,12 +2,13 @@
 or
 <a href="https://www.buymeacoffee.com/ssilverman" title="Donate to this project using Buy Me a Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" alt="Buy Me a Coffee donate button"></a>
 
-# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1
+# _QNEthernet_, an lwIP-Based Ethernet Library For Teensy 4.1 and other boards
 
 _Version: 0.27.0-snapshot_
 
-The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1.
-It's designed to be compatible with the Arduino-style Ethernet API.
+The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1 and
+other boards. It's designed to be compatible with the Arduino-style
+Ethernet API.
 
 This library is distributed under the "AGPL-3.0-or-later" license. Please
 contact the author if you wish to inquire about other license options.
@@ -121,8 +122,9 @@ For API additions beyond what the Arduino-style API provides, see:\
   checks `Ethernet.localIP()` for a valid IP. See also the new
   `Ethernet.waitForLocalIP(timeout)` or `Ethernet.onAddressChanged(cb)`.
 * The Arduino-style `Ethernet.begin(mac, ...)` functions all accept a NULL MAC
-  address. If the address is NULL then the internal MAC address will be used.
-  As well, if Ethernet fails to start then the MAC address will not be changed.
+  address. If the address is NULL then the internal or system default MAC
+  address will be used. As well, if Ethernet fails to start then the MAC address
+  will not be changed.
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples at
@@ -147,10 +149,10 @@ For API additions beyond what the Arduino-style API provides, see:\
   Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP" APIs
   and not in the main "Arduino Ethernet" API.\
   See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
-* The system starts with the Teensy's actual MAC address. If you want to use
-  that address with the deprecated API, you can collect it with
-  `Ethernet.macAddress(mac)` and then pass it to one of the deprecated
-  `begin(...)` functions.
+* The system starts with the Teensy's actual MAC address or some default MAC
+  address on other boards. If you want to use that address with the MAC-taking
+  API, you can collect it with `Ethernet.macAddress(mac)` and then pass it to
+  one of the MAC-taking `begin(...)` functions.
 * All classes and objects are in the `qindesign::network` namespace. This means
   you'll need to fully qualify any types. To avoid this, you could utilize a
   `using` directive:
@@ -201,18 +203,18 @@ Features:
 
 The `Ethernet` object is the main Ethernet interface.
 
-* `begin()`: Initializes the library, uses the Teensy's internal MAC address,
-  and starts the DHCP client. This returns whether startup was successful. This
-  does not wait for an IP address.
+* `begin()`: Initializes the library, uses the Teensy's internal MAC address or
+  some default MAC address, and starts the DHCP client. This returns whether
+  startup was successful. This does not wait for an IP address.
 * `begin(ipaddr, netmask, gw)`: Initializes the library, uses the Teensy's
-  internal MAC address, and uses the given parameters for the network
-  configuration. This returns whether startup was successful. The DNS server is
-  not set.
+  internal MAC address or some default MAC address, and uses the given
+  parameters for the network configuration. This returns whether startup was
+  successful. The DNS server is not set.
 * `begin(ipaddr, netmask, gw, dns)`: Initializes the library, uses the Teensy's
-  internal MAC address, and uses the given parameters for the network
-  configuration. This returns whether startup was successful. The DNS server is
-  only set if `dns` is not `INADDR_NONE`; it remains the same if `dns`
-  is `INADDR_NONE`.
+  internal MAC address or some default MAC address, and uses the given
+  parameters for the network configuration. This returns whether startup was
+  successful. The DNS server is only set if `dns` is not `INADDR_NONE`; it
+  remains the same if `dns` is `INADDR_NONE`.
 
   Passing `dns`, if not `INADDR_NONE`, ensures that the DNS server IP is set
   before the _address-changed_ callback is called. The alternative approach to
@@ -589,8 +591,8 @@ here are a few steps to follow:
    call `Ethernet.begin()` with no arguments to use DHCP, and the three- or
    four-argument version (IP, subnet mask, gateway[, DNS]) to set your own
    address. If you really want to set your own MAC address, see
-   `setMACAddress(mac)` or one of the deprecated `begin(...)` functions that
-   takes a MAC address parameter.
+   `setMACAddress(mac)` or one of the `begin(...)` functions that takes a MAC
+   address parameter.
 4. There is an `Ethernet.waitForLocalIP(timeout)` convenience function that can
    be used to wait for DHCP to supply an address because `Ethernet.begin()`
    doesn't wait. Try 15 seconds (15,000 ms) and see if that works for you.
@@ -853,7 +855,7 @@ data structures, vector::emplace_back, and std::move.
 
 For those that do have more C++ and larger project experience, I invite you to
 improve or add to the examples so that the set of examples here becomes what
-you've always hoped Teensy library examples could be.
+you've always hoped great library examples could be.
 
 ## A survey of how connections (aka `EthernetClient`) work
 
@@ -1599,7 +1601,7 @@ features, thus saving space.
 
 ### Configuring macros using the Arduino IDE
 
-_[Current as of this writing: Arduino IDE 2.3.0, Teensyduino 1.59]_
+_[Current as of this writing: Arduino IDE 2.3.2, Teensyduino 1.59]_
 
 The Arduino IDE provides a facility to override the build options specified in a
 platform's build configuration file, _platform.txt_. It does this by looking for
@@ -1669,7 +1671,8 @@ other ones defined in the Arduino AVR version, but those aren't really
 needed here.
 
 Lest you think I've forgotten to add it, here're the locations of the files for
-the current latest version of the IDE:
+the current latest version of the IDE (for Teensy, specifically; the locations
+will be different, but should be similar, for other boards):
 * Mac: _~/Library/Arduino15/packages/teensy/hardware/avr/{version}_
 * Linux: _~/.arduino15/packages/teensy/hardware/avr/{version}_
 * Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr\{version}_

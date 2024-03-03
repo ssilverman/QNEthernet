@@ -118,11 +118,12 @@ static inline Print *getPrint(int file) {
 
 #if QNETHERNET_ENABLE_CUSTOM_WRITE
 
-// Define this function to provide expanded stdio output behaviour.
+// Define this function to provide expanded stdio output behaviour. This should
+// work for Newlib-based systems.
 // See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
 // Note: Can't define as weak by default because we don't know which `_write`
-//       would be chosen by the linker, this one or the one defined
-//       in Print.cpp.
+//       would be chosen by the linker, this one or the one defined elsewhere
+//       (Print.cpp, for example)
 int _write(int file, const void *buf, size_t len) {
   Print *out = getPrint(file);
   if (out == nullptr) {
