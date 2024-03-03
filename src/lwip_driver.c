@@ -122,7 +122,7 @@ struct netif *enet_netif() {
   return &s_netif;
 }
 
-void enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac != NULL) {
     driver_get_system_mac(mac);
   }

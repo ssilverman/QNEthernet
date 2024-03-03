@@ -88,7 +88,7 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
     std::copy_n(mac, kMACAddrSize, mac_);
   } else {
-    enet_get_mac(mac_);
+    enet_get_system_mac(mac_);
   }
 }
 
@@ -106,7 +106,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
   uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
     // Use the system MAC address
-    enet_get_mac(m);
+    enet_get_system_mac(m);
     mac = m;
   }
 
@@ -315,7 +315,7 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
   uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
-    enet_get_mac(m);
+    enet_get_system_mac(m);
     mac = m;
   }
   std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address
@@ -356,7 +356,7 @@ void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
   // This doesn't return any error, so if the MAC is NULL then use the built-in
   uint8_t m[kMACAddrSize];
   if (mac == nullptr) {
-    enet_get_mac(m);
+    enet_get_system_mac(m);
     mac = m;
   }
   std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address

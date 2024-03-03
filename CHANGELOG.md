@@ -35,6 +35,7 @@ and this project adheres to
 * Using better randomness for `LWIP_RAND()`.
 * Changed attributes to use the C++ style.
 * Changed the default hostname to "qnethernet-lwip".
+* Renamed `enet_get_mac(mac)` to `enet_get_system_mac(mac)`.
 
 ### Fixed
 * Added missing `hostByName` to keywords.txt.

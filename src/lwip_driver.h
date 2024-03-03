@@ -155,7 +155,7 @@ inline int enet_get_max_frame_len() {
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 //
 // For systems without a built-in address, this should retrieve some default.
-void enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
+void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Initializes Ethernet and returns whether successful. This does not set the
 // interface to "up".
