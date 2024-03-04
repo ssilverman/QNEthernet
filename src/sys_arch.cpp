@@ -21,8 +21,6 @@
 
 #include "security/RandomDevice.h"
 
-extern "C" {
-
 #include "adapters/funcs.h"
 #include "adapters/pgmspace.h"
 #include "lwip/arch.h"
@@ -31,6 +29,8 @@ extern "C" {
 #ifdef LWIP_DEBUG
 #include "lwip/err.h"
 #endif  // LWIP_DEBUG
+
+extern "C" {
 
 u32_t sys_now(void) {
   return millis();
@@ -94,8 +94,6 @@ Print *volatile stderrPrint = nullptr;
 
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
-extern "C" {
-
 // Gets the Print* for the given file descriptor.
 static inline Print *getPrint(int file) {
   switch (file) {
@@ -115,6 +113,8 @@ static inline Print *getPrint(int file) {
       return reinterpret_cast<Print *>(file);
   }
 }
+
+extern "C" {
 
 #if QNETHERNET_ENABLE_CUSTOM_WRITE
 
