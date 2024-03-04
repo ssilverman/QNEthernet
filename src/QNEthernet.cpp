@@ -14,11 +14,16 @@
 #include <EventResponder.h>
 #endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
+#include <pgmspace.h>
+
 #include "QNDNSClient.h"
-#include "adapters/pgmspace.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
 #include "lwip/sys.h"
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 extern "C" void yield();
 

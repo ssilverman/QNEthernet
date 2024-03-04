@@ -6,7 +6,11 @@
 
 #include "RandomDevice.h"
 
-#include "adapters/pgmspace.h"
+#include <pgmspace.h>
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 #if (defined(TEENSYDUINO) && defined(__IMXRT1062__)) && \
     !QNETHERNET_USE_ENTROPY_LIB

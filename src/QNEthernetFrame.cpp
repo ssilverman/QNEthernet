@@ -17,10 +17,15 @@
 #include <Arduino.h>  // For noInterrupts() and interrupts()
 #endif  // defined(__has_include) && __has_include(<util/atomic.h>)
 
+#include <pgmspace.h>
+
 #include "QNEthernet.h"
-#include "adapters/pgmspace.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {

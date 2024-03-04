@@ -11,8 +11,13 @@
 // C++ includes
 #include <algorithm>
 
-#include "adapters/pgmspace.h"
+#include <pgmspace.h>
+
 #include "lwip/apps/mdns.h"
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 namespace qindesign {
 namespace network {
