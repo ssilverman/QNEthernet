@@ -929,7 +929,7 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-extern void unused_interrupt_vector(void);  // startup.c
+void unused_interrupt_vector(void);  // startup.c
 
 void driver_deinit() {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet

@@ -20,7 +20,7 @@ extern "C" {
 #endif  // __cplusplus
 
 #define LWIP_RAND() qnethernet_rand()
-extern uint32_t qnethernet_rand();
+uint32_t qnethernet_rand();
 
 #define LWIP_PLATFORM_ASSERT(x)                          \
   do {                                                   \
@@ -30,7 +30,7 @@ extern uint32_t qnethernet_rand();
     qnethernet_stdio_flush(STDOUT_FILENO);               \
     abort();                                             \
   } while (0)
-extern void qnethernet_stdio_flush(int file);
+void qnethernet_stdio_flush(int file);
 
 #if !QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
