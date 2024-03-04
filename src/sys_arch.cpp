@@ -96,7 +96,11 @@ Print *volatile stderrPrint = nullptr;
 
 #else
 
+#if defined(TEENSYDUINO)
+extern Print &Serial;
+#else
 #include <Arduino.h>  // For Serial
+#endif  // defined(TEENSYDUINO)
 
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 
