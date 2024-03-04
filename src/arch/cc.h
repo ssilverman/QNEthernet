@@ -26,7 +26,7 @@ uint32_t qnethernet_rand();
 #define LWIP_PLATFORM_ASSERT(x)                          \
   do {                                                   \
     printf("Assertion \"%s\" failed at line %d in %s\n", \
-           x, __LINE__, __FILE__);                       \
+           (x), __LINE__, __FILE__);                     \
     fflush(NULL);                                        \
     qnethernet_stdio_flush(STDOUT_FILENO);               \
     abort();                                             \
