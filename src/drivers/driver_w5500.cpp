@@ -24,6 +24,7 @@
 #include "lwip/err.h"
 #include "lwip/opt.h"
 #include "lwip/stats.h"
+#include "util/mac_tools.h"
 
 // --------------------------------------------------------------------------
 //  Types
@@ -455,20 +456,7 @@ bool driver_is_unknown() {
 }
 
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  if (mac != nullptr) {
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-    uint32_t m1 = HW_OCOTP_MAC1;
-    uint32_t m2 = HW_OCOTP_MAC0;
-    mac[0] = m1 >> 8;
-    mac[1] = m1 >> 0;
-    mac[2] = m2 >> 24;
-    mac[3] = m2 >> 16;
-    mac[4] = m2 >> 8;
-    mac[5] = m2 >> 0;
-#else
-    SMEMCPY(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
-#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
-  }
+  qnethernet_get_system_mac_address(mac);
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {

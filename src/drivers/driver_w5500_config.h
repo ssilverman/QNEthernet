@@ -8,8 +8,6 @@
 
 #include <SPI.h>
 
-#include "lwip/prot/ethernet.h"
-
 // SPI settings
 // static SPISettings kSPISettings{14000000, MSBFIRST, SPI_MODE0};
 static const SPISettings kSPISettings{30000000, MSBFIRST, SPI_MODE0};
@@ -17,11 +15,3 @@ static SPIClass &spi = SPI;
 static constexpr int kDefaultCSPin = 10;
 
 static constexpr bool kSocketInterruptsEnabled = false;
-
-#if !(defined(TEENSYDUINO) && defined(__IMXRT1062__))
-// The default MAC address if one isn't specified.
-// Local, non-multicast: Lower two bits of the top byte must be 0b10.
-static constexpr uint8_t kDefaultMACAddress[ETH_HWADDR_LEN]{
-    0x02, 0, 0, 0, 0, 0,
-};
-#endif  // !(defined(TEENSYDUINO) && defined(__IMXRT1062__))

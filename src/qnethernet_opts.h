@@ -29,6 +29,14 @@
 #define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT (((DNS_MAX_RETRIES) + 1)*(DNS_TMR_INTERVAL))
 #endif
 
+// The default MAC address if one isn't specified, or if a default one is needed.
+// Local, non-multicast: Lower two bits of the top byte must be 0b10.
+//
+// This is specified as a list of comma-separated bytes.
+#ifndef QNETHERNET_DEFAULT_MAC_ADDRESS
+#define QNETHERNET_DEFAULT_MAC_ADDRESS 0x02, 0, 0, 0, 0, 0
+#endif
+
 // The default hostname, used if the LWIP_NETIF_HOSTNAME option is set. Note
 // that the hostname can also be set programmatically; this value is just the
 // initial default.
