@@ -169,7 +169,9 @@ static uint8_t s_inputBuf[16 * 1024] BUFFER_DMAMEM;
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
 static int s_chipSelectPin = kDefaultCSPin;
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 static bool s_macFilteringEnabled = false;  // Whether actually enabled
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // PHY status, polled
 static bool s_linkSpeed10Not100 = false;
