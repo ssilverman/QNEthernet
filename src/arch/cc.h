@@ -15,6 +15,10 @@
 #include "adapters/pgmspace.h"
 #include "qnethernet_opts.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #define LWIP_RAND() qnethernet_rand()
 extern uint32_t qnethernet_rand();
 
@@ -40,3 +44,7 @@ extern void qnethernet_stdio_flush(int file);
 #define lwip_htons(x) __builtin_bswap16(x)
 #define lwip_htonl(x) __builtin_bswap32(x)
 #endif  // __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus

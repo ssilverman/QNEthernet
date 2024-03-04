@@ -8,6 +8,10 @@
 
 #include "qnethernet_opts.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 // NO SYS
 #define NO_SYS                 1  /* 0 */
 // #define NO_SYS_NO_TIMERS       0
@@ -559,3 +563,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define ALTCP_MBEDTLS_SESSION_TICKET_CIPHER          MBEDTLS_CIPHER_AES_256_GCM
 // #define ALTCP_MBEDTLS_SESSION_TICKET_TIMEOUT_SECONDS (60 * 60 * 24)
 // #define ALTCP_MBEDTLS_AUTHMODE                       MBEDTLS_SSL_VERIFY_OPTIONAL
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
