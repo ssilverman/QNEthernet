@@ -14,7 +14,7 @@
 #include <cstring>
 #include <type_traits>
 
-#include <Arduino.h>
+#include <Arduino.h>  // For pinMode() and digitalWrite()
 #include <SPI.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>

@@ -14,7 +14,7 @@
 #if defined(__has_include) && __has_include(<util/atomic.h>)
 #include <util/atomic.h>
 #else
-#include <Arduino.h>
+#include <Arduino.h>  // For noInterrupts() and interrupts()
 #endif  // defined(__has_include) && __has_include(<util/atomic.h>)
 
 #include "QNEthernet.h"
