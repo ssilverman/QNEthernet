@@ -46,16 +46,16 @@ static void attachLoopToYield() {
   ethLoop.triggerEvent();
 }
 #else
-#error "Need to hook into or replace yield()"
+// #warning "Need to hook into or replace yield()"
 // Example yield() implementation:
-// void yield() {
-//   static bool busy = false;  // Prevent reentrancy
-//   if (!busy && Ethernet) {
-//     busy = true;
-//     Ethernet.loop();
-//     busy = false;
-//   }
-// }
+void yield() {
+  static bool busy = false;  // Prevent reentrancy
+  if (!busy && Ethernet) {
+    busy = true;
+    Ethernet.loop();
+    busy = false;
+  }
+}
 #endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
 void EthernetClass::netifEventFunc(struct netif *netif,
