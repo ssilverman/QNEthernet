@@ -23,8 +23,8 @@
 #define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60000
 #endif
 
-// The default DNS lookup timeout. It's set, by default here, to a value based
-// on the DNS timer interval and maximum number of retries.
+// The default DNS lookup timeout, in milliseconds. It's set, by default here,
+// to a value based on the DNS timer interval and maximum number of retries.
 #ifndef QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT
 #define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT (((DNS_MAX_RETRIES) + 1)*(DNS_TMR_INTERVAL))
 #endif

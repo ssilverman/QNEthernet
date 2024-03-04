@@ -35,19 +35,6 @@
 namespace qindesign {
 namespace network {
 
-// Default DHCP client timeout, in milliseconds; default is 60 seconds
-#ifndef QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
-#define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60'000
-#endif  // !QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
-
-// Default DNS lookup timeout, in milliseconds
-#if LWIP_DNS
-#ifndef QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT
-#define QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT \
-  (((DNS_MAX_RETRIES) + 1) * (DNS_TMR_INTERVAL))
-#endif  // !QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT
-#endif  // LWIP_DNS
-
 // See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.linkstatus/
 enum EthernetLinkStatus {
   Unknown,
