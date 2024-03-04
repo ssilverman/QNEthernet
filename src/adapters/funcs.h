@@ -8,11 +8,7 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
-
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
+#if defined(TEENSYDUINO)
 
 // Teensyduino (currently at v1.59) declares millis() as static, so we need to
 // include this header instead of declaring the function ourselves.
@@ -20,11 +16,15 @@ extern "C" {
 
 #else
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 unsigned long millis();
 void yield();
-
-#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+
+#endif  // defined(TEENSYDUINO)
