@@ -128,7 +128,7 @@ class EthernetUDP : public UDP {
   IPAddress remoteIP() final;
   uint16_t remotePort() final;
 
-  // Returns the approximate packet arrival time, measured with millis(). This
+  // Returns the approximate packet arrival time, measured with sys_now(). This
   // is only valid if a packet has been received with parsePacket().
   //
   // This is useful in the case where packets have been queued and the caller

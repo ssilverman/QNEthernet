@@ -136,7 +136,7 @@ class EthernetFrameClass final : public Stream {
   // has been received with parseFrame().
   const uint8_t *data() const;
 
-  // Returns the approximate frame arrival time, measured with millis(). This
+  // Returns the approximate frame arrival time, measured with sys_now(). This
   // is only valid if a frame has been received with parseFrame().
   //
   // This is useful in the case where frames have been queued and the caller

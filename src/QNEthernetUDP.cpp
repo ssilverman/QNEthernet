@@ -13,9 +13,9 @@
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
-#include "adapters/funcs.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
+#include "lwip/sys.h"
 #include "qnethernet_opts.h"
 #include "util/ip_tools.h"
 
@@ -44,7 +44,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
     return;
   }
 
-  uint32_t timestamp = millis();
+  uint32_t timestamp = sys_now();
 
   struct pbuf *pHead = p;
 

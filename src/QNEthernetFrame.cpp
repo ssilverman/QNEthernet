@@ -18,9 +18,9 @@
 #endif  // defined(__has_include) && __has_include(<util/atomic.h>)
 
 #include "QNEthernet.h"
-#include "adapters/funcs.h"
 #include "adapters/pgmspace.h"
 #include "lwip/prot/ieee.h"
+#include "lwip/sys.h"
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif) {
@@ -40,7 +40,7 @@ STATIC_INIT_DEFN(EthernetFrameClass, EthernetFrame);
 
 err_t EthernetFrameClass::recvFunc(struct pbuf *p,
                                    [[maybe_unused]] struct netif *netif) {
-  uint32_t timestamp = millis();
+  uint32_t timestamp = sys_now();
 
   struct pbuf *pHead = p;
 

@@ -8,9 +8,11 @@
 
 #if LWIP_DNS
 
-#include "adapters/funcs.h"
 #include "lwip/dns.h"
+#include "lwip/sys.h"
 #include "util/ip_tools.h"
+
+extern "C" void yield();
 
 namespace qindesign {
 namespace network {
@@ -23,7 +25,7 @@ void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
   }
 
   Request *req = static_cast<Request *>(callback_arg);
-  if (req->timeout == 0 || millis() - req->startTime < req->timeout) {
+  if (req->timeout == 0 || sys_now() - req->startTime < req->timeout) {
     req->callback(ipaddr);
   }
   delete req;
@@ -54,7 +56,7 @@ bool DNSClient::getHostByName(const char *hostname,
 
   Request *req = new Request{};
   req->callback = callback;
-  req->startTime = millis();
+  req->startTime = sys_now();
   req->timeout = timeout;
 
   ip_addr_t addr;
@@ -91,8 +93,8 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
     return false;
   }
 
-  uint32_t t = millis();
-  while (!lookupDone && (millis() - t) < timeout) {
+  uint32_t t = sys_now();
+  while (!lookupDone && (sys_now() - t) < timeout) {
     // NOTE: Depends on Ethernet loop being called from yield()
     yield();
   }

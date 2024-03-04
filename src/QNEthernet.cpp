@@ -15,10 +15,12 @@
 #endif  // defined(__has_include) && __has_include(<EventResponder.h>)
 
 #include "QNDNSClient.h"
-#include "adapters/funcs.h"
 #include "adapters/pgmspace.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
+#include "lwip/sys.h"
+
+extern "C" void yield();
 
 namespace qindesign {
 namespace network {
@@ -143,9 +145,9 @@ void EthernetClass::loop() {
   }
 #endif  // LWIP_NETIF_LOOPBACK || LWIP_HAVE_LOOPIF
 
-  if ((millis() - lastPollTime_) >= kPollInterval) {
+  if ((sys_now() - lastPollTime_) >= kPollInterval) {
     enet_poll();
-    lastPollTime_ = millis();
+    lastPollTime_ = sys_now();
   }
 }
 
@@ -292,9 +294,9 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
     return false;
   }
 
-  uint32_t t = millis();
+  uint32_t t = sys_now();
   while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
-         (millis() - t) < timeout) {
+         (sys_now() - t) < timeout) {
     yield();
   }
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
@@ -305,8 +307,8 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
     return false;
   }
 
-  uint32_t t = millis();
-  while (!netif_is_link_up(netif_) && (millis() - t) < timeout) {
+  uint32_t t = sys_now();
+  while (!netif_is_link_up(netif_) && (sys_now() - t) < timeout) {
     yield();
   }
   return netif_is_link_up(netif_);

@@ -21,8 +21,6 @@
 
 #include "security/RandomDevice.h"
 
-#include "adapters/funcs.h"
-#include "adapters/pgmspace.h"
 #include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/opt.h"
@@ -32,9 +30,17 @@
 
 extern "C" {
 
+#if defined(TEENSYDUINO)
+extern volatile uint32_t systick_millis_count;
+u32_t sys_now(void) {
+  return systick_millis_count;
+}
+#else
+unsigned long millis();
 u32_t sys_now(void) {
   return millis();
 }
+#endif  // defined(TEENSYDUINO)
 
 #ifdef LWIP_DEBUG
 // include\lwip\err.h

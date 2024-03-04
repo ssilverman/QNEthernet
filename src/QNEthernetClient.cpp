@@ -14,15 +14,17 @@
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
-#include "adapters/funcs.h"
 #include "internal/ConnectionManager.h"
 #include "lwip/altcp.h"
 #include "lwip/priv/altcp_priv.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
+#include "lwip/sys.h"
 #include "qnethernet_opts.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"
+
+extern "C" void yield();
 
 namespace qindesign {
 namespace network {
@@ -105,10 +107,10 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
 
   // Wait for a connection
   if (wait) {
-    uint32_t t = millis();
+    uint32_t t = sys_now();
     // NOTE: conn_ could be set to NULL somewhere during the yield
     while (conn_ != nullptr && !conn_->connected &&
-           (millis() - t) < connTimeout_) {
+           (sys_now() - t) < connTimeout_) {
       // NOTE: Depends on Ethernet loop being called from yield()
       yield();
     }
@@ -238,11 +240,11 @@ void EthernetClient::close(bool wait) {
         altcp_abort(state->pcb);
 #if !LWIP_ALTCP
       } else if (wait) {
-        uint32_t t = millis();
+        uint32_t t = sys_now();
         // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
         while (conn_ != nullptr && conn_->connected &&
-               (millis() - t) < connTimeout_) {
+               (sys_now() - t) < connTimeout_) {
           // NOTE: Depends on Ethernet loop being called from yield()
           yield();
         }
