@@ -12,7 +12,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "adapters/pgmspace.h"
+#include <pgmspace.h>
+
 #include "qnethernet_opts.h"
 
 #ifdef __cplusplus
@@ -32,7 +33,8 @@ uint32_t qnethernet_rand();
   } while (0)
 void qnethernet_stdio_flush(int file);
 
-#if !QNETHERNET_LWIP_MEMORY_IN_RAM1
+#if !QNETHERNET_LWIP_MEMORY_IN_RAM1 && \
+    (defined(TEENSYDUINO) && defined(__IMXRT1062__))
 #define LWIP_DECLARE_MEMORY_ALIGNED(variable_name, size) \
   alignas(MEM_ALIGNMENT) u8_t variable_name[(size)] DMAMEM
 #else

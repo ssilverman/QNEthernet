@@ -154,7 +154,8 @@ namespace socketinterrupts {
 
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
-#if !QNETHERNET_BUFFERS_IN_RAM1
+#if !QNETHERNET_BUFFERS_IN_RAM1 && \
+    (defined(TEENSYDUINO) && defined(__IMXRT1062__))
 #define BUFFER_DMAMEM DMAMEM
 #else
 #define BUFFER_DMAMEM
