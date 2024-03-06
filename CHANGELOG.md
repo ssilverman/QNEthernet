@@ -43,6 +43,8 @@ and this project adheres to
 * Fixed `EthernetClient::write(buf, size)` to re-check the state after a call
   to `loop()`.
 * Fixed `util::writeMagic()` `mac` parameter to be `const`.
+* Fixed `test_ethernet`'s `tearDown()` to remove listeners before calling
+  `Ethernet.end()`. This ensures no out-of-scope variables are accessed.
 
 ## [0.26.0]
 

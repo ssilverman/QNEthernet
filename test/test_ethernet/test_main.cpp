@@ -78,6 +78,12 @@ void tearDown() {
   client = nullptr;
   server = nullptr;
 
+  // Remove any listeners before calling Ethernet.end()
+  // This avoids accessing any out-of-scope variables
+  Ethernet.onLinkState(nullptr);
+  Ethernet.onAddressChanged(nullptr);
+  Ethernet.onInterfaceStatus(nullptr);
+
   // Stop Ethernet and other services
   Ethernet.end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
@@ -93,11 +99,6 @@ void tearDown() {
 
   // Restore to no hostname
   Ethernet.setHostname(nullptr);
-
-  // Remove any listeners
-  Ethernet.onLinkState(nullptr);
-  Ethernet.onAddressChanged(nullptr);
-  Ethernet.onInterfaceStatus(nullptr);
 
   // Restore DHCP
   Ethernet.setDHCPEnabled(true);
