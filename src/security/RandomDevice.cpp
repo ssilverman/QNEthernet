@@ -88,11 +88,7 @@ RandomDevice &RandomDevice::instance() {
   return randomDevice;
 }
 
-FLASHMEM RandomDevice::RandomDevice() {
-  // Example seed:
-  // std::srand(std::time(nullptr));
-#warning "Need srand() initialization somewhere"
-}
+FLASHMEM RandomDevice::RandomDevice() = default;
 
 RandomDevice::result_type RandomDevice::operator()() {
   return std::rand();

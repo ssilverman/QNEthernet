@@ -182,7 +182,17 @@ void sys_check_core_locking(const char *file, int line, const char *func) {
 //  Randomness
 // --------------------------------------------------------------------------
 
+// Called in the EthernetClass constructor.
+[[gnu::weak]]
+void qnethernet_init_rand() {
+  // Example seed:
+  // std::srand(std::time(nullptr));
+// #warning "Need srand() initialization somewhere"
+  std::srand(sys_now());
+}
+
 // Gets a 32-bit random number for LWIP_RAND().
+[[gnu::weak]]
 uint32_t qnethernet_rand() {
   return qindesign::security::RandomDevice::instance()();
 }
