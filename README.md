@@ -29,7 +29,6 @@ files provided with the lwIP release.
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
-   9. [`IPAddress` operators](#ipaddress-operators)
 3. [How to run](#how-to-run)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [Write immediacy](#write-immediacy)
@@ -393,15 +392,6 @@ There is also a `Print` decorator for `stdio` output files, `util::StdioPrint`
 interface so that it is easy to print `Printable` objects to `stdout` or
 `stderr` without having to worry about buffering and the need to flush any
 output before printing a `Printable` directly to, say, `Serial`.
-
-### `IPAddress` operators
-
-The core library version of `IPAddress` is missing `==` and `!=` operators that
-can compare `const IPAddress` values. Provided in this library are these two
-operators. They are declared as follows in the usual namespace:
-
-1. `bool operator==(const IPAddress &a, const IPAddress &b);`
-2. `bool operator!=(const IPAddress &a, const IPAddress &b);`
 
 ## How to run
 
