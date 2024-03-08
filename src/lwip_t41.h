@@ -114,6 +114,10 @@ bool enet_ieee1588_read_timer(struct timespec *t);
 // This will return false if the argument is NULL.
 bool enet_ieee1588_write_timer(const struct timespec *t);
 
+// Adds an offset to the current timer value. Uses the read and write
+// functions under the hood. This returns whether successful.
+bool enet_ieee1588_offset_timer(int64_t ns);
+
 // Tells the driver to timestamp the next transmitted frame.
 void enet_ieee1588_timestamp_next_frame();
 
@@ -138,7 +142,7 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
 // `enet_ieee1588_adjust_timer()` under the hood.
-bool enet_ieee1588_adjust_freq(int nsps);
+bool enet_ieee1588_adjust_freq(double nsps);
 
 // Sets the channel mode for the given channel. This does not set the output
 // compare pulse modes. This returns whether successful.
@@ -154,10 +158,8 @@ bool enet_ieee1588_set_channel_mode(int channel, int mode);
 //
 // This will return false if:
 // 1. The channel is unknown,
-// 2. The mode is not one of the output compare pulse modes, or
-// 3. The pulse width is not in the range 1-32.
+// 2. The pulse width is not in the range 1-32.
 bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  int mode,
                                                   int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
@@ -165,9 +167,18 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
 // This will return false for an unknown channel.
 bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value);
 
-// Retrieves and then clears the status for the given channel. This will return
-// false for an unknown channel.
+// Gets the channel compare value. This returns whether successful.
+//
+// This will return false for an unknown channel.
+bool enet_ieee1588_get_channel_compare_value(int channel, uint32_t *value);
+
+// Retrieves and then clears the status for the given channel. This will
+// return false for an unknown channel.
 bool enet_ieee1588_get_and_clear_channel_status(int channel);
+
+// Enables or disables timer interrupt generation for a channel. This will
+// return false for an unknown channel.
+bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable);
 
 #ifdef __cplusplus
 }  // extern "C"

@@ -33,6 +33,10 @@ bool EthernetIEEE1588Class::writeTimer(const timespec &t) const {
   return enet_ieee1588_write_timer(&t);
 }
 
+bool EthernetIEEE1588Class::offsetTimer(int64_t ns) const{
+  return enet_ieee1588_offset_timer(ns);
+}
+
 void EthernetIEEE1588Class::timestampNextFrame() const {
   enet_ieee1588_timestamp_next_frame();
 }
@@ -47,7 +51,7 @@ bool EthernetIEEE1588Class::adjustTimer(uint32_t corrInc,
   return enet_ieee1588_adjust_timer(corrInc, corrPeriod);
 }
 
-bool EthernetIEEE1588Class::adjustFreq(int nsps) const {
+bool EthernetIEEE1588Class::adjustFreq(double nsps) const {
   return enet_ieee1588_adjust_freq(nsps);
 }
 
@@ -57,10 +61,8 @@ bool EthernetIEEE1588Class::setChannelMode(int channel,
 }
 
 bool EthernetIEEE1588Class::setChannelOutputPulseWidth(int channel,
-                                                       TimerChannelModes mode,
                                                        int pulseWidth) const {
   return enet_ieee1588_set_channel_output_pulse_width(channel,
-                                                      static_cast<int>(mode),
                                                       pulseWidth);
 }
 
@@ -69,8 +71,17 @@ bool EthernetIEEE1588Class::setChannelCompareValue(int channel,
   return enet_ieee1588_set_channel_compare_value(channel, value);
 }
 
+bool EthernetIEEE1588Class::getChannelCompareValue(int channel,
+                                                   uint32_t &value) const {
+  return enet_ieee1588_get_channel_compare_value(channel, &value);
+}
+
 bool EthernetIEEE1588Class::getAndClearChannelStatus(int channel) const {
   return enet_ieee1588_get_and_clear_channel_status(channel);
+}
+
+bool EthernetIEEE1588Class::setChannelInterruptEnable(int channel, bool enable) const {
+  return enet_ieee1588_set_channel_interrupt_enable(channel, enable);
 }
 
 EthernetIEEE1588Class::operator bool() const {

@@ -936,8 +936,14 @@ void enet_leave_group(const ip4_addr_t *group) {
 
 #define ENET_TCSR_TMODE_MASK (0x0000003cU)
 #define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+
+#define ENET_TCSR_TPWC_MASK  ((uint32_t)(0x1f << 11))
 #define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
+
 #define ENET_TCSR_TF         ((uint32_t)(1U << 7))
+
+#define ENET_TCSR_TIE_MASK   ((uint32_t)(1U << 6))
+#define ENET_TCSR_TIE(n)     ((uint32_t)(((n) & 0x01) << 6))
 
 void enet_ieee1588_init() {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
@@ -1004,6 +1010,18 @@ bool enet_ieee1588_write_timer(const struct timespec *t) {
   return true;
 }
 
+bool enet_ieee1588_offset_timer(int64_t ns){
+  struct timespec tm;
+  if(!enet_ieee1588_read_timer(&tm)){
+    return false;
+  }
+  int64_t t = (((int64_t)tm.tv_sec) * NANOSECONDS_PER_SECOND) + ((int64_t)tm.tv_nsec);
+  t += ns;
+  tm.tv_nsec = t % NANOSECONDS_PER_SECOND;
+  tm.tv_sec = t / NANOSECONDS_PER_SECOND;
+  return enet_ieee1588_write_timer(&tm);
+}
+
 void enet_ieee1588_timestamp_next_frame() {
   doTimestampNext = true;
 }
@@ -1026,12 +1044,12 @@ bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
   if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
     return false;
   }
-  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC(corrInc));
-  ENET_ATCOR = corrPeriod | ENET_ATCOR_COR_MASK;
+  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
+  ENET_ATCOR = corrPeriod & ENET_ATCOR_COR_MASK;
   return true;
 }
 
-bool enet_ieee1588_adjust_freq(int nsps) {
+bool enet_ieee1588_adjust_freq(double nsps) {
   if (nsps == 0) {
     ENET_ATCOR = 0;
     return true;
@@ -1047,7 +1065,7 @@ bool enet_ieee1588_adjust_freq(int nsps) {
     // Speed up
     inc++;
   }
-  return enet_ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+  return enet_ieee1588_adjust_timer(inc, round(F_ENET_TS_CLK / nsps));
 }
 
 // Channels
@@ -1076,44 +1094,38 @@ static volatile uint32_t *tccrReg(int channel) {
 }
 
 bool enet_ieee1588_set_channel_mode(int channel, int mode) {
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-    case 12:  // Reserved
-    case 13:  // Reserved
-      return false;
-    default:
-      if (mode < 0 || 0x0f < mode) {
-        return false;
-      }
-      break;
+  if (channel < 0 || channel > 3){
+    return false;
   }
-
+  
+  if (mode < 0 || mode > 15 || mode == 8 || mode == 12 || mode == 13) {//Check for reserverd modes
+    return false;
+  }
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
 
+  uint32_t state = *tcsr; // Backup current state
   *tcsr = 0;
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode);
+  CLRSET(state,ENET_TCSR_TMODE_MASK,ENET_TCSR_TMODE(mode));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
 
   return true;
 }
 
 bool enet_ieee1588_set_channel_output_pulse_width(int channel,
-                                                  int mode,
-                                                  int pulseWidth) {
-  switch (mode) {
-    case 14:  // kTimerChannelPulseLowOnCompare
-    case 15:  // kTimerChannelPulseHighOnCompare
-      break;
-    default:
-      return true;
+                                                  int pulseWidth) {       
+  if (channel < 0 || channel > 3){
+    return false;
   }
-
+  
   if (pulseWidth < 1 || 32 < pulseWidth) {
     return false;
   }
@@ -1122,17 +1134,23 @@ bool enet_ieee1588_set_channel_output_pulse_width(int channel,
   if (tcsr == NULL) {
     return false;
   }
-
+  uint32_t state = *tcsr; // Backup current state
   *tcsr = 0;
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  *tcsr = ENET_TCSR_TMODE(mode) | ENET_TCSR_TPWC(pulseWidth - 1);
-
+  CLRSET(state,ENET_TCSR_TPWC_MASK,ENET_TCSR_TPWC(pulseWidth - 1));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
   return true;
 }
 
 bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
   volatile uint32_t *tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
@@ -1141,7 +1159,22 @@ bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   return true;
 }
 
+bool enet_ieee1588_get_channel_compare_value(int channel, uint32_t *value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+  volatile uint32_t *tccr = tccrReg(channel);
+  if (tccr == NULL) {
+    return false;
+  }
+  *value = *tccr;
+  return true;
+}
+
 bool enet_ieee1588_get_and_clear_channel_status(int channel) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
   volatile uint32_t *tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
@@ -1150,9 +1183,21 @@ bool enet_ieee1588_get_and_clear_channel_status(int channel) {
     *tcsr |= ENET_TCSR_TF;
     ENET_TGSR = (1 << channel);
     return true;
-  } else {
+  }
+  return false;
+}
+
+bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable){
+  if (channel < 0 || channel > 3) {
     return false;
   }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  CLRSET(*tcsr,ENET_TCSR_TIE_MASK,ENET_TCSR_TIE(enable));
+  return true;
 }
 
 #endif  // ARDUINO_TEENSY41

@@ -28,7 +28,6 @@
 #include "lwip/opt.h"
 #include "lwip_t41.h"
 #include "util/PrintUtils.h"
-#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {

@@ -53,6 +53,9 @@ class EthernetIEEE1588Class final {
   // Writes the current IEEE 1588 timer value. This returns whether successful.
   bool writeTimer(const timespec &t) const;
 
+  // Adds an offset to the current IEEE 1588 timer value. This returns whether successful.
+  bool offsetTimer(int64_t ns) const;
+
   // Tells the driver to timestamp the next transmitted frame. This should be
   // called before functions like `EthernetUDP::endPacket()`,
   // `EthernetUDP::send()`, and any of the `EthernetFrame` send functions.
@@ -75,7 +78,7 @@ class EthernetIEEE1588Class final {
   // Adjusts the correction frequency in nanoseconds per second. To slow down
   // the timer, specify a negative value. To speed it up, specify a positive
   // value. This returns whether successful.
-  bool adjustFreq(int nsps) const;
+  bool adjustFreq(double nsps) const;
 
   // Sets the channel mode for the given channel. This does not set the output
   // compare pulse modes. This returns whether successful.
@@ -84,19 +87,24 @@ class EthernetIEEE1588Class final {
   // output compare pulse modes.
   bool setChannelMode(int channel, TimerChannelModes mode) const;
 
-  // Sets the output compare pulse mode and pulse width for the given channel.
-  // The pulse width must be in the range 1-32. This only sets the output
-  // compare pulse modes. This returns whether successful.
+  // Sets the output compare pulse width for the given channel.
+  // The pulse width must be in the range 1-32. This returns whether successful.
   bool setChannelOutputPulseWidth(int channel,
-                                  TimerChannelModes mode,
                                   int pulseWidth) const;
 
   // Sets the channel compare value. This returns whether successful.
   bool setChannelCompareValue(int channel, uint32_t value) const;
 
+  // Gets the channel compare value. This returns whether successful.
+  bool getChannelCompareValue(int channel, uint32_t &value) const;
+
   // Retrieves and then clears the status for the given channel. This will
   // return false for an unknown channel.
   bool getAndClearChannelStatus(int channel) const;
+
+  // Enables or disables timer interrupt generation for a channel. This will
+  // return false for an unknown channel.
+  bool setChannelInterruptEnable(int channel, bool enable) const;
 
   // Tests if the IEEE 1588 timer has been started.
   operator bool() const;

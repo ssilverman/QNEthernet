@@ -24,14 +24,6 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *ip) {
   return IPADDR_ANY;
 }
 
-bool operator==(const IPAddress &a, const IPAddress &b) {
-  return (const_cast<IPAddress &>(a) == b);
-}
-
-bool operator!=(const IPAddress &a, const IPAddress &b) {
-  return !(const_cast<IPAddress &>(a) == b);
-}
-
 uint32_t get_uint32(const IPAddress &ip) {
   // The uint32_t operator doesn't work with const IPAddress, hence
   // the const_cast
