@@ -243,6 +243,8 @@ bool EthernetClass::maybeStartDHCP() {
 }
 
 bool EthernetClass::start() {
+  driver_set_chip_select_pin(chipSelectPin_);
+
   if (!driver_has_hardware()) {
     return false;
   }
@@ -253,7 +255,6 @@ bool EthernetClass::start() {
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  driver_set_chip_select_pin(chipSelectPin_);
   if (!enet_init(mac_, &netifEventFunc)) {
     return false;
   }
