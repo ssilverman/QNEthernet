@@ -45,6 +45,7 @@ and this project adheres to
 * Fixed `util::writeMagic()` `mac` parameter to be `const`.
 * Fixed `test_ethernet`'s `tearDown()` to remove listeners before calling
   `Ethernet.end()`. This ensures no out-of-scope variables are accessed.
+* Updated `StdioPrint` to not use `errno` because stdio doesn't set this.
 
 ## [0.26.0]
 

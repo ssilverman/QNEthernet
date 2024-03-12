@@ -6,9 +6,6 @@
 
 #include "PrintUtils.h"
 
-// C++ includes
-#include <cerrno>
-
 namespace qindesign {
 namespace network {
 
@@ -62,7 +59,7 @@ size_t StdioPrint::write(uint8_t b) {
   checkAndClearErr();
 
   if (std::fputc(b, stream_) == EOF) {
-    setWriteError(errno);
+    setWriteError(1);
     return 0;
   }
   return 1;
@@ -73,7 +70,7 @@ size_t StdioPrint::write(const uint8_t *buffer, size_t size) {
 
   size_t retval = std::fwrite(buffer, 1, size, stream_);
   if (std::ferror(stream_) != 0) {
-    setWriteError(errno);
+    setWriteError(1);
   }
   return retval;
 }
@@ -86,7 +83,7 @@ void StdioPrint::flush() {
   checkAndClearErr();
 
   if (std::fflush(stream_) == EOF) {
-    setWriteError(errno);
+    setWriteError(1);
   }
 }
 
