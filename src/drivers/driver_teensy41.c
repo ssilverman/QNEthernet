@@ -1100,7 +1100,7 @@ bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
     collisionUpper = &collisionIAUR;
   }
 
-  uint32_t crc = (crc32(0, mac, 6) >> 26) & 0x3f;
+  uint32_t crc = (crc32(0, mac, ETH_HWADDR_LEN) >> 26) & 0x3f;
   uint32_t value = 1 << (crc & 0x1f);
   if (crc < 0x20) {
     if (allow) {
