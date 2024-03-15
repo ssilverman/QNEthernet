@@ -19,14 +19,14 @@
 
 #include <Print.h>
 
-#include "security/RandomDevice.h"
-
 #include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/opt.h"
 #ifdef LWIP_DEBUG
 #include "lwip/err.h"
 #endif  // LWIP_DEBUG
+
+#include "security/RandomDevice.h"
 
 extern "C" {
 
