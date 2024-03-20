@@ -15,6 +15,7 @@
 #endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <limits>
 
 #include <Print.h>
