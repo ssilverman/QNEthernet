@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added raw frame loopback support and a `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`
+  macro to enable.
+
 ## [0.27.0]
 
 ### Added

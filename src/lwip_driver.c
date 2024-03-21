@@ -13,6 +13,7 @@
 #include "lwip/etharp.h"
 #include "lwip/init.h"
 #include "lwip/opt.h"
+#include "lwip/pbuf.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
@@ -236,6 +237,28 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
       return false;
     }
   }
+
+#if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
+  // Check for a loopback frame
+  if (memcmp(frame, s_mac, 6) == 0) {
+    struct pbuf *p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
+    if (p) {
+#if ETH_PAD_SIZE > 0
+      if (!pbuf_add_header(p, ETH_PAD_SIZE)) {
+        return false;
+      }
+      pbuf_take_at(p, frame, len, ETH_PAD_SIZE);
+#else
+      pbuf_take(p, frame, len);
+#endif  // ETH_PAD_SIZE > 0
+      if (s_netif.input(p, &s_netif) != ERR_OK) {
+        pbuf_free(p);
+      }
+    }
+    // TODO: Collect stats?
+    return true;
+  }
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
   return driver_output_frame(frame, len);
 }

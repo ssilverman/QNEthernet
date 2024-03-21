@@ -57,6 +57,7 @@ lwIP release.
 14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
+    3. [Raw frame loopback](#raw-frame-loopback)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
     1. [About the allocator functions](#about-the-allocator-functions)
@@ -1213,6 +1214,12 @@ For a size of 1, any new frames will cause any existing frame to get dropped. If
 the size is 2 then there will be space for one additional frame for a total of 2
 frames, and so on.
 
+### Raw frame loopback
+
+Raw frames having a destination MAC address that matches the local MAC address
+can optionally be looped back up the stack. To enable this feature, set the
+`QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro to `1`.
+
 ## How to implement VLAN tagging
 
 The lwIP stack supports VLAN tagging. Here are the steps for how to implement
@@ -1603,6 +1610,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enables default implementations of the altcp interface functions                 | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
 | `QNETHERNET_ENABLE_CUSTOM_WRITE`            | Uses expanded `stdio` output behaviour                                           | [stdio](#stdio)                                                                         |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                         | [Promiscuous mode](#promiscuous-mode)                                                   |
+| `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC        | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                        | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
 | `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency | [Write immediacy](#write-immediacy)                                                     |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                              | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
