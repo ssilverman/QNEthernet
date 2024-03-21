@@ -29,20 +29,20 @@ template <typename T>
 struct StaticInit {
   StaticInit() {
     if (nifty_counter++ == 0) {
-      new (&t_) T();  // Placement new
+      pT = new (buf) T();  // Placement new
     }
   }
 
   ~StaticInit() {
     if (--nifty_counter == 0) {
-      (&t_)->~T();
+      pT->~T();
+      pT = nullptr;
     }
   }
 
   static int nifty_counter;
   alignas(T) static unsigned char buf[sizeof(T)];
-
-  T &t_ = reinterpret_cast<T &>(buf);
+  static T *pT;
 };
 
 // Notes:
@@ -54,7 +54,8 @@ struct StaticInit {
 
 // Notes:
 // 1. Need to define the static class members
-#define STATIC_INIT_DEFN(Type, name)                                  \
-  template<> int StaticInit<Type>::nifty_counter = 0;                 \
-  template<> decltype(StaticInit<Type>::buf) StaticInit<Type>::buf{}; \
-  Type &name = name##Init.t_
+#define STATIC_INIT_DEFN(Type, name)                                        \
+  template<> int StaticInit<Type>::nifty_counter = 0;                       \
+  template<> decltype(StaticInit<Type>::buf) StaticInit<Type>::buf{};       \
+  template<> decltype(StaticInit<Type>::pT) StaticInit<Type>::pT = nullptr; \
+  Type &name = *name##Init.pT
