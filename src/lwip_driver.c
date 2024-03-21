@@ -244,14 +244,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
   if (memcmp(frame, s_mac, 6) == 0) {
     struct pbuf *p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
     if (p) {
-#if ETH_PAD_SIZE > 0
-      if (!pbuf_add_header(p, ETH_PAD_SIZE)) {
-        return false;
-      }
       pbuf_take_at(p, frame, len, ETH_PAD_SIZE);
-#else
-      pbuf_take(p, frame, len);
-#endif  // ETH_PAD_SIZE > 0
       if (s_netif.input(p, &s_netif) != ERR_OK) {
         pbuf_free(p);
       }
