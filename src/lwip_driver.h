@@ -182,6 +182,7 @@ void enet_proc_input();
 // Polls the stack (if needed) and Ethernet link status.
 void enet_poll();
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
 // length is not in the correct range. The proper range is 14-(MAX_FRAME_LEN-8)
 // for non-VLAN frames and 18-(MAX_FRAME_LEN-4) for VLAN frames. Note that these
@@ -189,6 +190,7 @@ void enet_poll();
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
 bool enet_output_frame(const uint8_t *frame, size_t len);
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
