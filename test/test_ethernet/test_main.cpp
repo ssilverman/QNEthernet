@@ -998,6 +998,44 @@ static void test_other_state() {
   TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");
 }
 
+// Tests EthernetFrame.
+static void test_raw_frames() {
+  constexpr uint8_t srcMAC[6]{QNETHERNET_DEFAULT_MAC_ADDRESS};
+  constexpr uint8_t data[10]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+  Ethernet.setDHCPEnabled(false);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
+
+  // Create and listen
+  EthernetFrame.beginFrame(Ethernet.macAddress(), srcMAC, sizeof(data));
+  EthernetFrame.write(data, sizeof(data));
+
+  uint32_t t = millis();  // Current timestamp
+
+  TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.endFrame(), "Expected send success");
+
+  // Test that we actually received the packet
+  TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.parseFrame());
+  TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.size());
+
+  // This check shouldn't be necessary
+  // I don't know if it's some compiler ordering thing, or if it's something to
+  // do with how Unity works, but when raw frame loopback is not enabled, the
+  // program crashes when accessing the frame data, even if the above checks
+  // fail and the code below shouldn't execute
+  if (EthernetFrame.size() > 0) {
+    const uint8_t *frameData = EthernetFrame.data();
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(Ethernet.macAddress(), &frameData[0], 6);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(srcMAC, &frameData[6], 6);
+    TEST_ASSERT_EQUAL(sizeof(data) >> 8, frameData[12]);
+    TEST_ASSERT_EQUAL(sizeof(data) & 0xff, frameData[13]);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(data, &frameData[14], 10);
+
+    TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, EthernetFrame.receivedTimestamp(),
+                                         "Expected valid timestamp");
+  }
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -1045,6 +1083,7 @@ void setup() {
   RUN_TEST(test_client_addr_info);
   RUN_TEST(test_server_state);
   RUN_TEST(test_other_state);
+  RUN_TEST(test_raw_frames);
   UNITY_END();
 }
 
