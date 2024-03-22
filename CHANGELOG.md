@@ -12,6 +12,10 @@ and this project adheres to
 * Added raw frame loopback support and a `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`
   macro to enable.
 
+### Changed
+* Updated the Mbed TLS version in the README and comments to 2.28.7
+  (was 2.28.6).
+
 ## [0.27.0]
 
 ### Added
