@@ -636,10 +636,12 @@ err_t driver_output(struct pbuf *p) {
   return send_frame(p->tot_len);
 }
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool driver_output_frame(const uint8_t *frame, size_t len) {
   std::memcpy(s_frameBuf, frame, len);
   return send_frame(len);
 }
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // --------------------------------------------------------------------------
 //  MAC Address Filtering

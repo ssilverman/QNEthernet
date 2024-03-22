@@ -1034,6 +1034,7 @@ err_t driver_output(struct pbuf *p) {
   return ERR_OK;
 }
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool driver_output_frame(const uint8_t *frame, size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
@@ -1052,6 +1053,7 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 
   return true;
 }
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // --------------------------------------------------------------------------
 //  MAC Address Filtering

@@ -112,10 +112,12 @@ bool driver_link_is_crossover();
 // Note that the data will already contain any extra ETH_PAD_SIZE bytes.
 err_t driver_output(struct pbuf *p);
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add any extra padding bytes given by ETH_PAD_SIZE.
 bool driver_output_frame(const uint8_t *frame, size_t len);
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 

@@ -54,10 +54,12 @@ err_t driver_output([[maybe_unused]] struct pbuf *p) {
   return ERR_IF;
 }
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool driver_output_frame([[maybe_unused]] const uint8_t *frame,
                          [[maybe_unused]] size_t len) {
   return false;
 }
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 // --------------------------------------------------------------------------
 //  MAC Address Filtering
