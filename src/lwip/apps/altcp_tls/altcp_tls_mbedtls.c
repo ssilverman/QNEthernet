@@ -1040,6 +1040,9 @@ altcp_tls_configure_alpn_protocols(struct altcp_tls_config *conf, const char **p
 
   return ret;
 #else
+  LWIP_UNUSED_ARG(conf);
+  LWIP_UNUSED_ARG(protos);
+
   return -1;
 #endif
 }
