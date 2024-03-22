@@ -17,6 +17,8 @@ and this project adheres to
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
   (was 2.28.6).
+* Updated `mbedtls_hardware_poll()` in _MbedTLSDemo_ example for
+  other platforms.
 
 ### Fixed
 * Improved marking of unused parameters.
