@@ -12,30 +12,30 @@ bool driver_is_unknown() {
   return false;
 }
 
-void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_get_system_mac([[maybe_unused]] uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
-void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_set_mac([[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 bool driver_has_hardware() {
   return false;
 }
 
-void driver_set_chip_select_pin(int pin) {
+void driver_set_chip_select_pin([[maybe_unused]] int pin) {
 }
 
-bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_init([[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN]) {
   return false;
 }
 
 void driver_deinit() {
 }
 
-void driver_proc_input(struct netif *netif) {
+void driver_proc_input([[maybe_unused]] struct netif *netif) {
 }
 
-void driver_poll(struct netif *netif) {
+void driver_poll([[maybe_unused]] struct netif *netif) {
 }
 
 int driver_link_speed() {
@@ -50,11 +50,12 @@ bool driver_link_is_crossover() {
   return false;
 }
 
-err_t driver_output(struct pbuf *p) {
+err_t driver_output([[maybe_unused]] struct pbuf *p) {
   return ERR_IF;
 }
 
-bool driver_output_frame(const uint8_t *frame, size_t len) {
+bool driver_output_frame([[maybe_unused]] const uint8_t *frame,
+                         [[maybe_unused]] size_t len) {
   return false;
 }
 
@@ -64,8 +65,9 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                    bool allow) {
+bool driver_set_mac_address_allowed(
+    [[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN],
+    [[maybe_unused]] bool allow) {
   return false;
 }
 

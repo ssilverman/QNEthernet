@@ -17,6 +17,7 @@
 #include <pgmspace.h>
 
 #include "QNDNSClient.h"
+#include "lwip/arch.h"
 #include "lwip/dhcp.h"
 #include "lwip/igmp.h"
 #include "lwip/sys.h"
@@ -297,6 +298,7 @@ bool EthernetClass::setDHCPEnabled(bool flag) {
   }
   return retval;
 #else
+  LWIP_UNUSED_ARG(flag);
   return false;
 #endif  // LWIP_DHCP
 }
@@ -493,6 +495,7 @@ IPAddress EthernetClass::dnsServerIP(int index) const {
 #if LWIP_DNS
   return DNSClient::getServer(index);
 #else
+  LWIP_UNUSED_ARG(index);
   return INADDR_NONE;
 #endif  // LWIP_DNS
 }
@@ -536,6 +539,9 @@ void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
 void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
 #if LWIP_DNS
   DNSClient::setServer(index, ip);
+#else
+  LWIP_UNUSED_ARG(index);
+  LWIP_UNUSED_ARG(ip);
 #endif  // LWIP_DNS
 }
 
@@ -560,6 +566,7 @@ bool EthernetClass::joinGroup(const IPAddress &ip) const {
   ip4_addr_t groupaddr{get_uint32(ip)};
   return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
 #else
+  LWIP_UNUSED_ARG(ip);
   return false;
 #endif  // LWIP_IGMP
 }
@@ -572,6 +579,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
   ip4_addr_t groupaddr{get_uint32(ip)};
   return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
 #else
+  LWIP_UNUSED_ARG(ip);
   return false;
 #endif  // LWIP_IGMP
 }
@@ -598,6 +606,8 @@ void EthernetClass::setHostname(const char *hostname) {
       netif_set_hostname(netif_, hostname);
     }
   }
+#else
+  LWIP_UNUSED_ARG(hostname);
 #endif  // LWIP_NETIF_HOSTNAME
 }
 
@@ -621,6 +631,8 @@ bool EthernetClass::hostByName(const char *hostname, IPAddress &ip) {
   return DNSClient::getHostByName(hostname, ip,
                                   QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
 #else
+  LWIP_UNUSED_ARG(hostname);
+  LWIP_UNUSED_ARG(ip);
   return false;
 #endif  // LWIP_DNS
 }

@@ -16,6 +16,7 @@
 #include <limits>
 
 #include "QNEthernet.h"
+#include "lwip/arch.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
 #include "lwip/tcp.h"
@@ -260,8 +261,7 @@ void ConnectionManager::addConnection(
   };
 }
 
-static altcp_pcb *create_altcp_pcb([[maybe_unused]] const ip_addr_t *ipaddr,
-                                   [[maybe_unused]] uint16_t port,
+static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
                                    u8_t ip_type) {
 #if LWIP_ALTCP
   altcp_pcb *pcb = nullptr;
@@ -274,6 +274,8 @@ static altcp_pcb *create_altcp_pcb([[maybe_unused]] const ip_addr_t *ipaddr,
   }
   return pcb;
 #else
+  LWIP_UNUSED_ARG(ipaddr);
+  LWIP_UNUSED_ARG(port);
   return altcp_new_ip_type(nullptr, ip_type);
 #endif  // LWIP_ALTCP
 }

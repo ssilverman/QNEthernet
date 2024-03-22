@@ -176,6 +176,10 @@ void sys_check_core_locking(const char *file, int line, const char *func) {
     printf("%s:%d:%s()\r\n", file, line, func);
     LWIP_PLATFORM_ASSERT("Function called from interrupt context");
   }
+#else
+  LWIP_UNUSED_ARG(file);
+  LWIP_UNUSED_ARG(line);
+  LWIP_UNUSED_ARG(func);
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 }
 

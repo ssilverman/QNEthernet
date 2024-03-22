@@ -13,6 +13,7 @@
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
+#include "lwip/arch.h"
 #include "lwip/dns.h"
 #include "lwip/ip.h"
 #include "lwip/sys.h"
@@ -336,6 +337,8 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
   }
   return beginPacket(ip, port);
 #else
+  LWIP_UNUSED_ARG(host);
+  LWIP_UNUSED_ARG(port);
   return false;
 #endif  // LWIP_DNS
 }
@@ -414,6 +417,10 @@ bool EthernetUDP::send(const char *host, uint16_t port,
   }
   return send(ip, port, data, len);
 #else
+  LWIP_UNUSED_ARG(host);
+  LWIP_UNUSED_ARG(port);
+  LWIP_UNUSED_ARG(data);
+  LWIP_UNUSED_ARG(len);
   return false;
 #endif  // LWIP_DNS
 }

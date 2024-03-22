@@ -18,6 +18,9 @@ and this project adheres to
 * Updated the Mbed TLS version in the README and comments to 2.28.7
   (was 2.28.6).
 
+### Fixed
+* Improved marking of unused parameters.
+
 ## [0.27.0]
 
 ### Added

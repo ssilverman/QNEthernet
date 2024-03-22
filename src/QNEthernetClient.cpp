@@ -16,6 +16,7 @@
 #include "QNEthernet.h"
 #include "internal/ConnectionManager.h"
 #include "lwip/altcp.h"
+#include "lwip/arch.h"
 #include "lwip/priv/altcp_priv.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
@@ -72,6 +73,8 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   }
   return connect(ip, port);
 #else
+  LWIP_UNUSED_ARG(host);
+  LWIP_UNUSED_ARG(port);
   return static_cast<int>(ConnectReturns::INVALID_SERVER);
 #endif  // LWIP_DNS
 }
@@ -90,6 +93,8 @@ int EthernetClient::connectNoWait(const char *host, uint16_t port) {
   }
   return connectNoWait(ip, port);
 #else
+  LWIP_UNUSED_ARG(host);
+  LWIP_UNUSED_ARG(port);
   return static_cast<int>(ConnectReturns::INVALID_SERVER);
 #endif  // LWIP_DNS
 }
@@ -210,6 +215,10 @@ void EthernetClient::close() {
 }
 
 void EthernetClient::close(bool wait) {
+#if LWIP_ALTCP
+  LWIP_UNUSED_ARG(wait);
+#endif  // LWIP_ALTCP
+
   if (conn_ == nullptr) {
     return;
   }
