@@ -666,9 +666,7 @@ static void test_udp_receive_queueing() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
-  if (!waitForLink()) {  // send() won't work unless there's a link
-    return;
-  }
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
   udp = std::make_unique<EthernetUDP>();  // Receive queue of 1
@@ -714,9 +712,7 @@ static void test_udp_receive_timestamp() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
-  if (!waitForLink()) {  // send() won't work unless there's a link
-    return;
-  }
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
   udp = std::make_unique<EthernetUDP>();
@@ -868,9 +864,7 @@ static void test_client_connectNoWait() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
-  if (!waitForLink()) {
-    return;
-  }
+  Ethernet.setLinkState(true);  // Use loopback
 
   client = std::make_unique<EthernetClient>();
 
@@ -890,9 +884,7 @@ static void test_client_timeout() {
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
-  if (!waitForLink()) {
-    return;
-  }
+  Ethernet.setLinkState(true);  // Use loopback
 
   client = std::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
