@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // BroadcastChat is a simple chat application that broadcasts and
@@ -89,7 +89,7 @@ void loop() {
 // --------------------------------------------------------------------------
 
 // Control character names.
-static const String kCtrlNames[]{
+static const char *kCtrlNames[]{
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
   "BS",  "HT",  "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
   "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
@@ -113,7 +113,7 @@ static void receivePacket() {
   for (int i = 0; i < size; i++) {
     uint8_t b = data[i];
     if (b < 0x20) {
-      printf("<%s>", kCtrlNames[b].c_str());
+      printf("<%s>", kCtrlNames[b]);
     } else if (b < 0x7f) {
       putchar(data[i]);
     } else {
