@@ -1136,16 +1136,16 @@ Compared to the internal `printf` support, the _QNEthernet_ version:
 2. Can separate `stdout` and `stderr` outputs, and
 3. Disallows `stdin` as a valid output.
 
-To enable the _QNEthernet_ version, set the `QNETHERNET_ENABLE_CUSTOM_WRITE`
-macro to `1` and set the `stdoutPrint` or `stderrPrint` variables to point to a
-valid `Print` implementation. Note that if the feature is disabled, then neither
+To enable the _QNEthernet_ version, set the `QNETHERNET_CUSTOM_WRITE` macro to
+`1` and set the `stdoutPrint` or `stderrPrint` variables to point to a valid
+`Print` implementation. Note that if the feature is disabled, then neither
 `stdoutPrint` nor `stderrPrint` will be defined.
 
 Both variables default to NULL.
 
 For example:
 ```c++
-// Define QNETHERNET_ENABLE_CUSTOM_WRITE somewhere
+// Define QNETHERNET_CUSTOM_WRITE somewhere
 
 void setup() {
   Serial.begin(115200);
@@ -1157,8 +1157,7 @@ void setup() {
 ```
 
 If your application wants to define its own `_write()` implementation or to use
-the system default, then leave the `QNETHERNET_ENABLE_CUSTOM_WRITE`
-macro undefined.
+the system default, then leave the `QNETHERNET_CUSTOM_WRITE` macro undefined.
 
 ### Adapt stdio files to the Print interface
 
@@ -1607,8 +1606,8 @@ The _QNEthernet_-specific macros are as follows:
 | ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `QNETHERNET_ALTCP_TLS_ADAPTER`              | Enables the _altcp_tls_adapter_ functions for easier TLS library integration     | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
 | `QNETHERNET_BUFFERS_IN_RAM1`                | Puts the RX and TX buffers into RAM1                                             | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
+| `QNETHERNET_CUSTOM_WRITE`                   | Uses expanded `stdio` output behaviour                                           | [stdio](#stdio)                                                                         |
 | `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enables default implementations of the altcp interface functions                 | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
-| `QNETHERNET_ENABLE_CUSTOM_WRITE`            | Uses expanded `stdio` output behaviour                                           | [stdio](#stdio)                                                                         |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                         | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC        | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                        | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |

@@ -397,13 +397,13 @@ class EthernetClass final {
 // Instance for interacting with the library.
 STATIC_INIT_DECL(EthernetClass, Ethernet);
 
-#if QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_CUSTOM_WRITE
 // stdout output.
 extern Print *stdoutPrint;
 
 // stderr output.
 extern Print *stderrPrint;
-#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+#endif  // QNETHERNET_CUSTOM_WRITE
 
 }  // namespace network
 }  // namespace qindesign

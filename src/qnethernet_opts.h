@@ -18,6 +18,11 @@
 #define QNETHERNET_BUFFERS_IN_RAM1 0
 #endif
 
+// Changes 'stdio' output to use expanded behaviour.
+#ifndef QNETHERNET_CUSTOM_WRITE
+#define QNETHERNET_CUSTOM_WRITE 0
+#endif
+
 // The default DHCP client timeout, in milliseconds.
 #ifndef QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT
 #define QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT 60000
@@ -52,11 +57,6 @@
 // Enables default implementations of the altcp interface functions.
 #ifndef QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
-#endif
-
-// Enables use of expanded 'stdio' output behaviour.
-#ifndef QNETHERNET_ENABLE_CUSTOM_WRITE
-#define QNETHERNET_ENABLE_CUSTOM_WRITE 0
 #endif
 
 // Enables promiscuous mode.

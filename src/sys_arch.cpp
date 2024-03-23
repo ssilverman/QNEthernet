@@ -10,9 +10,9 @@
 #include "qnethernet_opts.h"
 
 // C++ includes
-#if QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_CUSTOM_WRITE
 #include <cerrno>
-#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+#endif  // QNETHERNET_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -82,7 +82,7 @@ const char *lwip_strerr(err_t err) {
 //  stdio
 // --------------------------------------------------------------------------
 
-#if QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_CUSTOM_WRITE
 
 // The user program can set these to something initialized. For example,
 // `&Serial`, after `Serial.begin(speed)`.
@@ -99,12 +99,12 @@ Print *volatile stderrPrint = nullptr;
 
 #include <Arduino.h>  // For Serial
 
-#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+#endif  // QNETHERNET_CUSTOM_WRITE
 
 // Gets the Print* for the given file descriptor.
 static inline Print *getPrint(int file) {
   switch (file) {
-#if QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_CUSTOM_WRITE
     case STDOUT_FILENO:
       return ::qindesign::network::stdoutPrint;
     case STDERR_FILENO:
@@ -113,7 +113,7 @@ static inline Print *getPrint(int file) {
     case STDOUT_FILENO:
     case STDERR_FILENO:
       return &Serial;
-#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+#endif  // QNETHERNET_CUSTOM_WRITE
     case STDIN_FILENO:
       return nullptr;
     default:
@@ -123,7 +123,7 @@ static inline Print *getPrint(int file) {
 
 extern "C" {
 
-#if QNETHERNET_ENABLE_CUSTOM_WRITE
+#if QNETHERNET_CUSTOM_WRITE
 
 // Define this function to provide expanded stdio output behaviour. This should
 // work for Newlib-based systems.
@@ -141,7 +141,7 @@ int _write(int file, const void *buf, size_t len) {
   return out->write(static_cast<const uint8_t *>(buf), len);
 }
 
-#endif  // QNETHERNET_ENABLE_CUSTOM_WRITE
+#endif  // QNETHERNET_CUSTOM_WRITE
 
 // Ensures the Print object is flushed because fflush() just flushes by writing
 // to the FILE*. This doesn't necessarily send all the bytes right away. For
