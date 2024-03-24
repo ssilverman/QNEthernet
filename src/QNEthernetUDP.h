@@ -61,7 +61,7 @@ class EthernetUDP : public UDP {
   //
   // This first calls stop() if the socket is already listening and the port or
   // _reuse_ socket option differ.
-  uint8_t begin(uint16_t localPort) final;
+  uint8_t begin(uint16_t localPort) final;  // Wish: Boolean return
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option. This
   // returns whether the attempt was successful.
@@ -72,7 +72,9 @@ class EthernetUDP : public UDP {
 
   // Multicast functions make use of Ethernet.joinGroup(). These first call the
   // appropriate `begin` functions.
-  uint8_t beginMulticast(IPAddress ip, uint16_t port) final;
+  //
+  // These return true if successful and false otherwise.
+  uint8_t beginMulticast(IPAddress ip, uint16_t port) final;  // Wish: Boolean return
   bool beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
@@ -81,6 +83,8 @@ class EthernetUDP : public UDP {
   void stop() final;
 
   // Sending UDP packets
+  // These really return Booleans
+  // Wish: Boolean returns
   int beginPacket(IPAddress ip, uint16_t port) final;
   int beginPacket(const char *host, uint16_t port) final;
   int endPacket() final;  // Always clears accumulated data

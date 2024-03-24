@@ -51,7 +51,7 @@ class EthernetServer : public Server {
   // SO_REUSEADDR socket option.
   //
   // This first calls end() if the _reuse_ socket option differs.
-  void begin() final;
+  void begin() final;  // Wish: Boolean return
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
   // socket option. This returns whether the server started listening. This will

@@ -257,6 +257,7 @@ class EthernetClass final {
   void setDNSServerIP(int index, const IPAddress &ip) const;
 
   // The MAC addresses are used in the following begin() functions
+  // Wish: Boolean returns
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]

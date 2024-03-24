@@ -60,7 +60,7 @@ class EthernetClient : public Client {
   // Returns INVALID_SERVER (-2) if DNS is disabled.
   int connectNoWait(const char *host, uint16_t port);
 
-  uint8_t connected() final;
+  uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
 
   void setConnectionTimeout(uint16_t timeout);
