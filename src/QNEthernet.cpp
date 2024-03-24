@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <cstdlib>
 
 #if defined(__has_include) && __has_include(<EventResponder.h>)
 #include <EventResponder.h>
