@@ -37,10 +37,10 @@ namespace network {
 //       using them as a bool, it assumes a successful connection even when
 //       connect() returns an error.
 enum class ConnectReturns {
-  SUCCESS = 1,
-  TIMED_OUT = -1,
-  INVALID_SERVER = -2,
-  TRUNCATED = -3,
+  SUCCESS          =  1,
+  TIMED_OUT        = -1,
+  INVALID_SERVER   = -2,
+  TRUNCATED        = -3,
   INVALID_RESPONSE = -4,
 };
 
