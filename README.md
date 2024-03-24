@@ -124,7 +124,7 @@ For API additions beyond what the Arduino-style API provides, see:\
   that many of the I/O functions call `loop()` so that there's less burden on
   the calling code.
 * All but one of the `Ethernet.begin(...)` functions don't block.
-  `Ethernet.begin(mac[, timeout])` blocks while waiting for an IP address to
+  `Ethernet.begin(mac[, timeout])` blocks, while waiting for an IP address, to
   match the Arduino-style API. It uses a default timeout of 60 seconds. This
   behaviour can be emulated by following a call to `begin()` with a loop that
   checks `Ethernet.localIP()` for a valid IP. See also the new
@@ -145,9 +145,9 @@ For API additions beyond what the Arduino-style API provides, see:\
 * The three Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address and that don't specify a subnet are deprecated because they make some
   incorrect assumptions about the subnet and gateway.
-* `Ethernet.hardwareStatus()`: Adds `EthernetOtherHardware` to the list of
-  possible return values. Note that this value is not defined in the
-  Arduino-style API.
+* `Ethernet.hardwareStatus()`: Adds `EthernetOtherHardware` and
+  `EthernetTeensy41` to the list of possible return values. Note that these
+  values are not defined in the Arduino-style API.
 * The following `Ethernet` functions are deprecated and do nothing or return
   some default value:
   * `maintain()`: Returns zero.

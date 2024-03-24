@@ -184,7 +184,10 @@ class EthernetClass final {
   // will return Unknown if the hardware hasn't yet been probed.
   EthernetLinkStatus linkStatus() const;
 
-  // Returns the link state, true for link and false for no or unknown link.
+  // Returns the link state, true for link (LinkON) and false for no (LinkOFF)
+  // or unknown (Unknown) link.
+  //
+  // This exists because linkStatus() already does.
   bool linkState() const;
 
   // Manually sets the link state. This is useful when using the loopback
