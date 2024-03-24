@@ -6,6 +6,7 @@
 
 #include "lwip_driver.h"
 
+// C includes
 #include <string.h>
 
 #include "lwip/autoip.h"

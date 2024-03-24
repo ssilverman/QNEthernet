@@ -10,6 +10,7 @@
 
 #if LWIP_ALTCP
 
+// C++ includes
 #include <cstdint>
 #include <cstdio>
 #include <functional>

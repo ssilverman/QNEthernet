@@ -10,6 +10,7 @@
 //
 // This file is part of the QNEthernet library.
 
+// C includes
 #include <stddef.h>
 
 #include <lwip/altcp.h>

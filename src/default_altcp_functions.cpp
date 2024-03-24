@@ -10,6 +10,7 @@
 
 #if LWIP_ALTCP && QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
 
+// C++ includes
 #include <cstdint>
 #include <functional>
 

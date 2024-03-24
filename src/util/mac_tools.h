@@ -6,6 +6,7 @@
 
 #pragma once
 
+// C includes
 #include <stdint.h>
 
 #include "lwip/prot/ethernet.h"
