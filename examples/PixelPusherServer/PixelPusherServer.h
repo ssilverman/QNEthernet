@@ -157,13 +157,13 @@ class PixelPusherServer final {
   class NullReceiver final : public Receiver {
     bool begin() override { return true; }
     void end() override {}
-    int numStrips() const override { return 0; }
-    int pixelsPerStrip() const override { return 0; }
-    uint8_t stripFlags(int stripNum) const override { return 0; }
+    size_t numStrips() const override { return 0; }
+    size_t pixelsPerStrip() const override { return 0; }
+    uint8_t stripFlags(size_t stripNum) const override { return 0; }
 
     void startPixels(bool complete) override {}
-    void pixels(int stripNum, const uint8_t *pixels,
-                int pixelsPerStrip) override {}
+    void pixels(size_t stripNum, const uint8_t *pixels,
+                size_t pixelsPerStrip) override {}
     void endPixels() override {}
     void loop() override {}
   };

@@ -5,6 +5,11 @@
 // output is sent to an OctoWS2811. The parameters are configurable
 // via constants.
 //
+// Easy things to alter:
+// 1. Number of strips (this file)
+// 2. Pixels per strip (this file)
+// 3. OctoWS2811 bytes per pixel and pixel config (OctoWS2811Receiver.cpp)
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
@@ -22,14 +27,14 @@ using namespace qindesign::network;
 // -------------------------------------------------------------------
 
 // PixelPusher configuration
-constexpr int kNumStrips = 8;
-constexpr int kPixelsPerStrip = 240;
+constexpr size_t kNumStrips      = 8;
+constexpr size_t kPixelsPerStrip = 240;
 // ----
 constexpr int kControllerNum = 0;
-constexpr int kGroupNum = 0;
-constexpr uint16_t kVendorId = 0;
+constexpr int kGroupNum      = 0;
+constexpr uint16_t kVendorId  = 0;
 constexpr uint16_t kProductId = 0;
-constexpr uint16_t kHWRev = 0;
+constexpr uint16_t kHWRev     = 0;
 
 // The OctoWS2811Receiver implementation supports global brightness.
 constexpr uint32_t kPixelPusherFlags =
@@ -131,8 +136,8 @@ void networkChanged(bool hasIP, bool linkState) {
 
   printf("done.\r\n");
   printf("-----------------------\r\n");
-  printf("Num strips:       %d\r\n", kNumStrips);
-  printf("Pixels per strip: %d\r\n", kPixelsPerStrip);
+  printf("Num strips:       %zu\r\n", kNumStrips);
+  printf("Pixels per strip: %zu\r\n", kPixelsPerStrip);
   printf("-----------------------\r\n");
   printf("Port:        %u\r\n", pp.pixelsPort());
   printf("Controller:  %d\r\n", kControllerNum);

@@ -20,6 +20,7 @@ and this project adheres to
 * Updated `mbedtls_hardware_poll()` in _MbedTLSDemo_ example for
   other platforms.
 * Renamed `QNETHERNET_ENABLE_CUSTOM_WRITE` to `QNETHERNET_CUSTOM_WRITE`.
+* Improved the _PixelPusherServer_ example.
 
 ### Fixed
 * Improved marking of unused parameters.

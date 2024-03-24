@@ -11,17 +11,22 @@
 #include <algorithm>
 #include <cstring>
 
-OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer &pp, int numStrips,
-                                       int pixelsPerStrip)
+// Pixel configuration
+static constexpr size_t kBytesPerPixel = 3;
+static constexpr uint8_t kConfig = WS2811_GRB | WS2811_800kHz;
+
+OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer &pp, size_t numStrips,
+                                       size_t pixelsPerStrip)
     : pp_(pp),
-      numStrips_(std::min(std::max(0, numStrips), UINT8_MAX)),
-      pixelsPerStrip_(std::max(0, pixelsPerStrip)),
-      displayMem_{std::make_unique<int[]>(pixelsPerStrip_ * 6)},
-      drawingMem_{std::make_unique<int[]>(pixelsPerStrip_ * 6)},
+      numStrips_(std::min(numStrips, size_t{UINT8_MAX})),
+      pixelsPerStrip_(pixelsPerStrip),
+      displayMem_{std::make_unique<uint8_t[]>(numStrips * pixelsPerStrip *
+                                              kBytesPerPixel)},
+      drawingMem_{std::make_unique<uint8_t[]>(numStrips * pixelsPerStrip *
+                                              kBytesPerPixel)},
       leds_{static_cast<uint32_t>(pixelsPerStrip_),
             displayMem_.get(), drawingMem_.get(),
-            WS2811_GRB | WS2811_800kHz,
-            static_cast<uint8_t>(numStrips_)} {}
+            kConfig, static_cast<uint8_t>(numStrips_)} {}
 
 bool OctoWS2811Receiver::begin() {
   leds_.begin();
@@ -36,16 +41,19 @@ bool OctoWS2811Receiver::begin() {
   return true;
 }
 
-uint8_t OctoWS2811Receiver::stripFlags(int stripNum) const {
+uint8_t OctoWS2811Receiver::stripFlags(size_t stripNum) const {
   return 0;
 }
 
-void OctoWS2811Receiver::handleCommand(int command,
-                                       const uint8_t *data, int len) {
+void OctoWS2811Receiver::handleCommand(uint8_t command,
+                                       const uint8_t *data, size_t len) {
   switch (command) {
     case PixelPusherServer::Commands::GLOBALBRIGHTNESS_SET:
       if (len >= 2) {
         std::memcpy(&globalBri_, data, 2);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        globalBri_ = __builtin_bswap16(globalBri_);
+#endif  // Big-endian
       }
       break;
     case PixelPusherServer::Commands::LED_CONFIGURE:
@@ -60,8 +68,14 @@ void OctoWS2811Receiver::handleCommand(int command,
       if (len >= 32) {
         uint16_t n;
         std::memcpy(&n, &data[24], 2);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        n = __builtin_bswap16(n);
+#endif  // Big-endian
         pp_.setGroupNum(n);
         std::memcpy(&n, &data[26], 2);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        n = __builtin_bswap16(n);
+#endif  // Big-endian
         pp_.setControllerNum(n);
       }
       break;
@@ -76,14 +90,14 @@ static inline uint8_t scale8(uint8_t b, uint8_t scale) {
   return (uint16_t{b} * (1 + uint16_t{scale})) >> 8;
 }
 
-void OctoWS2811Receiver::pixels(int stripNum, const uint8_t *pixels,
-                                int pixelsPerStrip) {
+void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
+                                size_t pixelsPerStrip) {
   if (stripNum < 0 || numStrips_ <= stripNum) {
     return;
   }
 
-  int it = stripNum * pixelsPerStrip;
-  int end = it + pixelsPerStrip;
+  size_t it = stripNum * pixelsPerStrip;
+  size_t end = it + pixelsPerStrip;
   uint8_t bri = globalBri_ >> 8;
   if (bri == 0xff) {
     while (it != end) {

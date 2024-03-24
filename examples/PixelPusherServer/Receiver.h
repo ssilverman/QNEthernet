@@ -9,6 +9,7 @@
 #pragma once
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 
 class Receiver {
@@ -29,16 +30,17 @@ class Receiver {
   virtual void end() = 0;
 
   // Returns the total number of strips.
-  virtual int numStrips() const = 0;
+  virtual size_t numStrips() const = 0;
 
   // Returns the number of pixels per strip.
-  virtual int pixelsPerStrip() const = 0;
+  virtual size_t pixelsPerStrip() const = 0;
 
   // Gets the strip flags for the given strip number.
-  virtual uint8_t stripFlags(int stripNum) const = 0;
+  virtual uint8_t stripFlags(size_t stripNum) const = 0;
 
   // Handles a PixelPusher command.
-  virtual void handleCommand(int command, const uint8_t *data, int len) {}
+  virtual void handleCommand(uint8_t command, const uint8_t *data, size_t len) {
+  }
 
   // Starts receiving pixels from a packet. The `complete` parameter
   // indicates whether the complete set of pixels will be included in
@@ -46,8 +48,8 @@ class Receiver {
   virtual void startPixels(bool complete) = 0;
 
   // Processes pixels for one strip.
-  virtual void pixels(int stripNum, const uint8_t *pixels,
-                      int pixelsPerStrip) = 0;
+  virtual void pixels(size_t stripNum, const uint8_t *pixels,
+                      size_t pixelsPerStrip) = 0;
 
   // All the pixels from the packet have been sent to this receiver.
   virtual void endPixels() = 0;

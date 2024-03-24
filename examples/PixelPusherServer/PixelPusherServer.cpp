@@ -46,10 +46,8 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
     recv = &nullReceiver_;
   }
   recv_ = recv;
-  size_t numStrips = std::min(std::max(0, recv->numStrips()), UINT8_MAX);
-  size_t pixelsPerStrip =
-      std::min(static_cast<size_t>(std::max(0, recv->pixelsPerStrip())),
-               kMaxPixelsPerStrip);
+  size_t numStrips = std::min(recv->numStrips(), size_t{UINT8_MAX});
+  size_t pixelsPerStrip = std::min(recv->pixelsPerStrip(), kMaxPixelsPerStrip);
 
   broadcastIP_ = Ethernet.broadcastIP();
   stripSize_ = 1 + pixelsPerStrip*3;
@@ -168,6 +166,9 @@ void PixelPusherServer::loop() {
 
   uint32_t seq;
   std::memcpy(&seq, data, 4);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+  seq = __builtin_bswap32(seq);
+#endif  // Big-endian
   data += 4;
   size -= 4;
 

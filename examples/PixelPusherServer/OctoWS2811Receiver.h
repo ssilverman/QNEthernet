@@ -9,6 +9,7 @@
 #pragma once
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 
@@ -20,9 +21,10 @@
 class OctoWS2811Receiver : public Receiver {
  public:
   // Creates a new object. The parameters are restricted:
-  // `numStrips`: 0-255
-  // `pixelsPerStrip`: >= 0
-  OctoWS2811Receiver(PixelPusherServer &pp, int numStrips, int pixelsPerStrip);
+  // * 'numStrips': 0-255
+  OctoWS2811Receiver(PixelPusherServer &pp,
+                     size_t numStrips,
+                     size_t pixelsPerStrip);
   ~OctoWS2811Receiver() override = default;
 
   // Initializes the receiver. This performs tasks that can't be done
@@ -34,28 +36,29 @@ class OctoWS2811Receiver : public Receiver {
 
   void end() override {}
 
-  int numStrips() const override {
+  size_t numStrips() const override {
     return numStrips_;
   };
 
-  int pixelsPerStrip() const override {
+  size_t pixelsPerStrip() const override {
     return pixelsPerStrip_;
   }
 
-  uint8_t stripFlags(int stripNum) const override;
-  void handleCommand(int command, const uint8_t *data, int len) override;
+  uint8_t stripFlags(size_t stripNum) const override;
+  void handleCommand(uint8_t command, const uint8_t *data, size_t len) override;
   void startPixels(bool complete) override {}
-  void pixels(int stripNum, const uint8_t *pixels, int pixelsPerStrip) override;
+  void pixels(size_t stripNum, const uint8_t *pixels,
+              size_t pixelsPerStrip) override;
   void endPixels() override;
   void loop() override {}
 
  private:
   PixelPusherServer &pp_;
-  const int numStrips_;
-  const int pixelsPerStrip_;
+  const size_t numStrips_;
+  const size_t pixelsPerStrip_;
 
-  std::unique_ptr<int[]> displayMem_;
-  std::unique_ptr<int[]> drawingMem_;
+  std::unique_ptr<uint8_t[]> displayMem_;
+  std::unique_ptr<uint8_t[]> drawingMem_;
   OctoWS2811 leds_;
 
   uint16_t globalBri_ = UINT16_MAX;
