@@ -6,9 +6,10 @@
 // This file is part of the QNEthernet library.
 
 #include "lwip/opt.h"
-#include "qnethernet_opts.h"
 
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
+
+#include "qnethernet_opts.h"
 
 // #include "lwip/apps/altcp_tls_mbedtls_opts.h"
 //
@@ -17,8 +18,6 @@
 // // TODO: Keep track of which implementations contain altcp_tls functions
 // #define QNETHERNET_ALTCP_TLS_ADAPTER LWIP_ALTCP_TLS_MBEDTLS
 // #endif  // !QNETHERNET_ALTCP_TLS_ADAPTER
-
-#include "qnethernet_opts.h"
 
 #if QNETHERNET_ALTCP_TLS_ADAPTER
 
