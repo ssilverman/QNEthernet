@@ -92,10 +92,12 @@ u16_t ip6_chksum_pseudo_partial(struct pbuf *p, u8_t proto, u16_t proto_len,
 #endif /* LWIP_IPV6 */
 
 
+#if LWIP_IPV4 || LWIP_IPV6
 u16_t ip_chksum_pseudo(struct pbuf *p, u8_t proto, u16_t proto_len,
        const ip_addr_t *src, const ip_addr_t *dest);
 u16_t ip_chksum_pseudo_partial(struct pbuf *p, u8_t proto, u16_t proto_len,
        u16_t chksum_len, const ip_addr_t *src, const ip_addr_t *dest);
+#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 #ifdef __cplusplus
 }
