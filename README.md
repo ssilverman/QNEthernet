@@ -7,8 +7,8 @@ or
 _Version: 0.28.0-snapshot_
 
 The _QNEthernet_ library provides Ethernet functionality for the Teensy 4.1 and
-other platforms. It's designed to be compatible with the Arduino-style
-Ethernet API.
+possibly some other platforms. It's designed to be compatible with the
+Arduino-style Ethernet API.
 
 This library is distributed under the "AGPL-3.0-or-later" license. Please
 contact the author if you wish to inquire about other license options.
