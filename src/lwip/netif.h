@@ -629,6 +629,7 @@ typedef union
     /** 1: up; 0: down */
     u8_t state;
   } status_changed;
+#if LWIP_IPV4
   /** Args to LWIP_NSC_IPV4_ADDRESS_CHANGED|LWIP_NSC_IPV4_GATEWAY_CHANGED|LWIP_NSC_IPV4_NETMASK_CHANGED|LWIP_NSC_IPV4_SETTINGS_CHANGED callback */
   struct ipv4_changed_s
   {
@@ -637,6 +638,8 @@ typedef union
     const ip_addr_t* old_netmask;
     const ip_addr_t* old_gw;
   } ipv4_changed;
+#endif /* LWIP_IPV4 */
+#if LWIP_IPV6
   /** Args to LWIP_NSC_IPV6_SET callback */
   struct ipv6_set_s
   {
@@ -655,6 +658,7 @@ typedef union
     /** Affected IPv6 address */
     const ip_addr_t* address;
   } ipv6_addr_state_changed;
+#endif /* LWIP_IPV6 */
 } netif_ext_callback_args_t;
 
 /**
