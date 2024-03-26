@@ -113,7 +113,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define ETHARP_TABLE_MATCH_NETIF      !LWIP_SINGLE_NETIF
 
 // IP options
+#ifndef LWIP_IPV4
 // #define LWIP_IPV4                       1
+#endif  // LWIP_IPV4
 // #define IP_FORWARD                      0
 // #define IP_REASSEMBLY                   1
 // #define IP_FRAG                         1
