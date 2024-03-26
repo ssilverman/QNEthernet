@@ -61,7 +61,9 @@ static err_t init_netif(struct netif *netif) {
   }
 
   netif->linkoutput = link_output;
+#if LWIP_IPV4
   netif->output     = etharp_output;
+#endif  // LWIP_IPV4
   netif->mtu        = MTU;
   netif->flags = 0
                  | NETIF_FLAG_BROADCAST
@@ -264,7 +266,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 //  MAC Address Filtering
 // --------------------------------------------------------------------------
 
-#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
 // Joins or leaves a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
@@ -298,4 +300,4 @@ bool enet_leave_group(const ip4_addr_t *group) {
   return enet_join_notleave_group(group, false);
 }
 
-#endif   // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4

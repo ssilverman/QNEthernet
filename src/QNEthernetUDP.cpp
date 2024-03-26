@@ -308,7 +308,11 @@ const uint8_t *EthernetUDP::data() const {
 }
 
 IPAddress EthernetUDP::remoteIP() {
+#if LWIP_IPV4
   return ip_addr_get_ip4_uint32(&packet_.addr);
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 uint16_t EthernetUDP::remotePort() {
@@ -324,8 +328,12 @@ uint32_t EthernetUDP::receivedTimestamp() const {
 // --------------------------------------------------------------------------
 
 int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
+#if LWIP_IPV4
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return beginPacket(&ipaddr, port);
+#else
+  return false;
+#endif  // LWIP_IPV4
 }
 
 int EthernetUDP::beginPacket(const char *host, uint16_t port) {
@@ -403,8 +411,12 @@ int EthernetUDP::endPacket() {
 
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
                        const uint8_t *data, size_t len) {
+#if LWIP_IPV4
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return send(&ipaddr, port, data, len);
+#else
+  return false;
+#endif  // LWIP_IPV4
 }
 
 bool EthernetUDP::send(const char *host, uint16_t port,

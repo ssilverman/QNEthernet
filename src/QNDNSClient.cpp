@@ -32,19 +32,30 @@ void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
 }
 
 bool DNSClient::setServer(int index, const IPAddress &ip) {
+#if LWIP_IPV4
   if (index < 0 || maxServers() <= index) {
     return false;
   }
   ip_addr_t addr IPADDR4_INIT(get_uint32(ip));
   dns_setserver(index, &addr);
   return true;
+#else
+  LWIP_UNUSED_ARG(index);
+  LWIP_UNUSED_ARG(ip);
+  return false;
+#endif  // LWIP_IPV4
 }
 
 IPAddress DNSClient::getServer(int index) {
+#if LWIP_IPV4
   if (index < 0 || maxServers() <= index) {
     return INADDR_NONE;
   }
   return ip_addr_get_ip4_uint32(dns_getserver(index));
+#else
+  LWIP_UNUSED_ARG(index);
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 bool DNSClient::getHostByName(const char *hostname,
@@ -78,6 +89,7 @@ bool DNSClient::getHostByName(const char *hostname,
 
 bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
                               uint32_t timeout) {
+#if LWIP_IPV4
   volatile bool found = false;
   volatile bool lookupDone = false;
   if (!DNSClient::getHostByName(
@@ -99,6 +111,12 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
     yield();
   }
   return found;
+#else
+  LWIP_UNUSED_ARG(hostname);
+  LWIP_UNUSED_ARG(ip);
+  LWIP_UNUSED_ARG(timeout);
+  return false;
+#endif  // LWIP_IPV4
 }
 
 }  // namespace network

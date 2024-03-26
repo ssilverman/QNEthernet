@@ -11,6 +11,8 @@
 namespace qindesign {
 namespace network {
 
+#if LWIP_IPV4
+
 uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *ip) {
   if (IP_IS_V4(ip)) {
     return ip4_addr_get_u32(ip_2_ip4(ip));
@@ -43,6 +45,8 @@ uint32_t get_uint32(const IPAddress &ip) {
   return static_cast<uint32_t>(ip);
 #endif  // defined(TEENSYDUINO) && TEENSYDUINO <= 158
 }
+
+#endif  // LWIP_IPV4
 
 }  // network
 }  // qindesign

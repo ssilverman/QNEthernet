@@ -194,7 +194,7 @@ void enet_poll();
 bool enet_output_frame(const uint8_t *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
-#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
 // For joining and leaving multicast groups; these call
 // driver_set_mac_address_allowed() with the MAC addresses related to the given
@@ -206,7 +206,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 bool enet_join_group(const ip4_addr_t *group);
 bool enet_leave_group(const ip4_addr_t *group);
 
-#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
 #ifdef __cplusplus
 }  // extern "C"

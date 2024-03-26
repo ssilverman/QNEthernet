@@ -167,7 +167,10 @@ bool EthernetClass::begin() {
     return false;
   }
 
+#if LWIP_IPV4
   netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+#endif  // LWIP_IPV4
+
   return maybeStartDHCP();
 }
 
@@ -181,6 +184,7 @@ bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
+#if LWIP_IPV4
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
   ip4_addr_t ipaddr{get_uint32(ip)};
   ip4_addr_t netmask{get_uint32(mask)};
@@ -198,6 +202,11 @@ bool EthernetClass::begin(const IPAddress &ip,
     }
 #endif  // LWIP_DHCP
   }
+#else
+  LWIP_UNUSED_ARG(ip);
+  LWIP_UNUSED_ARG(mask);
+  LWIP_UNUSED_ARG(gateway);
+#endif  // LWIP_IPV4
 
   if (!start()) {
     return false;
@@ -209,7 +218,10 @@ bool EthernetClass::begin(const IPAddress &ip,
     setDNSServerIP(dns);
   }
 
+#if LWIP_IPV4
   netif_set_addr(netif_, &ipaddr, &netmask, &gw);
+#endif  // LWIP_IPV4
+
   return maybeStartDHCP();
 }
 
@@ -303,6 +315,7 @@ bool EthernetClass::setDHCPEnabled(bool flag) {
 }
 
 bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return false;
   }
@@ -313,6 +326,10 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
     yield();
   }
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
+#else
+  LWIP_UNUSED_ARG(timeout);
+  return false;
+#endif  // LWIP_IPV4
 }
 
 bool EthernetClass::waitForLink(uint32_t timeout) const {
@@ -411,7 +428,9 @@ void EthernetClass::end() {
   }
   dhcpDesired_ = false;
 #else
+#if LWIP_IPV4
   netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+#endif  // LWIP_IPV4
 #endif  // LWIP_DHCP
 
   netif_set_link_down(netif_);
@@ -466,24 +485,36 @@ bool EthernetClass::interfaceStatus() const {
 }
 
 IPAddress EthernetClass::localIP() const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return ip4_addr_get_u32(netif_ip4_addr(netif_));
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 IPAddress EthernetClass::subnetMask() const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return ip4_addr_get_u32(netif_ip4_netmask(netif_));
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 IPAddress EthernetClass::gatewayIP() const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return ip4_addr_get_u32(netif_ip4_gw(netif_));
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 IPAddress EthernetClass::dnsServerIP() const {
@@ -500,35 +531,51 @@ IPAddress EthernetClass::dnsServerIP(int index) const {
 }
 
 IPAddress EthernetClass::broadcastIP() const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return INADDR_NONE;
   }
   return ip4_addr_get_u32(netif_ip4_addr(netif_)) |
          ~ip4_addr_get_u32(netif_ip4_netmask(netif_));
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 void EthernetClass::setLocalIP(const IPAddress &localIP) const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
   }
   ip4_addr_t ipaddr{get_uint32(localIP)};
   netif_set_ipaddr(netif_, &ipaddr);
+#else
+  LWIP_UNUSED_ARG(localIP);
+#endif  // LWIP_IPV4
 }
 
 void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
   }
   ip4_addr_t netmask{get_uint32(subnetMask)};
   netif_set_netmask(netif_, &netmask);
+#else
+  LWIP_UNUSED_ARG(subnetMask);
+#endif  // LWIP_IPV4
 }
 
 void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) const {
+#if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
   }
   ip4_addr_t gw{get_uint32(gatewayIP)};
   netif_set_gw(netif_, &gw);
+#else
+  LWIP_UNUSED_ARG(gatewayIP);
+#endif  // LWIP_IPV4
 }
 
 void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {

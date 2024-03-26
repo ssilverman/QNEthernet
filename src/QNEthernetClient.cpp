@@ -60,8 +60,14 @@ EthernetClient::~EthernetClient() {
 // --------------------------------------------------------------------------
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
+#if LWIP_IPV4
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, true);
+#else
+  LWIP_UNUSED_ARG(ip);
+  LWIP_UNUSED_ARG(port);
+  return 0;
+#endif  // LWIP_IPV4
 }
 
 int EthernetClient::connect(const char *host, uint16_t port) {
@@ -80,8 +86,14 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 }
 
 int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
+#if LWIP_IPV4
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, false);
+#else
+  LWIP_UNUSED_ARG(ip);
+  LWIP_UNUSED_ARG(port);
+  return 0;
+#endif  // LWIP_IPV4
 }
 
 int EthernetClient::connectNoWait(const char *host, uint16_t port) {
@@ -305,11 +317,15 @@ uint16_t EthernetClient::localPort() {
 }
 
 IPAddress EthernetClient::remoteIP() {
+#if LWIP_IPV4
   ip_addr_t ip;
   if (!getAddrInfo(false, &ip, nullptr)) {
     return INADDR_NONE;
   }
   return ip_addr_get_ip4_uint32(&ip);
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 uint16_t EthernetClient::remotePort() {
@@ -321,11 +337,15 @@ uint16_t EthernetClient::remotePort() {
 }
 
 IPAddress EthernetClient::localIP() {
+#if LWIP_IPV4
   ip_addr_t ip;
   if (!getAddrInfo(true, &ip, nullptr)) {
     return INADDR_NONE;
   }
   return ip_addr_get_ip4_uint32(&ip);
+#else
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
 }
 
 bool EthernetClient::getAddrInfo(bool local, ip_addr_t *addr, u16_t *port) {

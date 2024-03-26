@@ -16,6 +16,8 @@
 namespace qindesign {
 namespace network {
 
+#if LWIP_IPV4
+
 // Gets the 32-bit IPv4 address from the given ip_addr_t. This takes into
 // consideration IPv4-mapped IPv6 addresses. This will return zero for
 // non-IPv4-mapped addresses.
@@ -29,6 +31,8 @@ bool operator!=(const IPAddress &a, const IPAddress &b);
 
 // Gets the 32-bit address from the given const IPAddress.
 uint32_t get_uint32(const IPAddress &ip);
+
+#endif  // LWIP_IPV4
 
 }  // namespace network
 }  // namespace qindesign

@@ -169,7 +169,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // IGMP options
 #ifndef LWIP_IGMP
-#define LWIP_IGMP 1  /* 0 */
+#define LWIP_IGMP (LWIP_IPV4 || LWIP_IPV6)  /* 0 */
 #endif  // !LWIP_IGMP
 
 // DNS options
@@ -195,7 +195,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // UDP options
 #ifndef LWIP_UDP
-// #define LWIP_UDP             1
+#define LWIP_UDP             (LWIP_IPV4 || LWIP_IPV6)
 #endif  // !LWIP_UDP
 // #define LWIP_UDPLITE         0
 // #define UDP_TTL              IP_DEFAULT_TTL
@@ -204,7 +204,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // TCP options
 
 #ifndef LWIP_TCP
-// #define LWIP_TCP                   1
+#define LWIP_TCP                   (LWIP_IPV4 || LWIP_IPV6)
 #endif  // !LWIP_TCP
 // #define TCP_TTL                    IP_DEFAULT_TTL
 // #define TCP_MAXRTX                 12
