@@ -119,6 +119,10 @@ beginFrame	KEYWORD2
 beginVLANFrame	KEYWORD2
 endFrame	KEYWORD2
 parseFrame	KEYWORD2
+destinationMAC	KEYWORD2
+sourceMAC	KEYWORD2
+etherTypeOrLength	KEYWORD2
+payload	KEYWORD2
 writeMagic	KEYWORD2
 
 #######################################

@@ -13,6 +13,8 @@ and this project adheres to
   macro to enable.
 * Added a fourth step to the _MbedTLSDemo_ example instructions: modify
   the config.
+* New `EthernetFrameClass` functions: `destinationMAC()`, `sourceMAC()`,
+  and `etherTypeOrLength()`.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7

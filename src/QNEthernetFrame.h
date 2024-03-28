@@ -144,6 +144,34 @@ class EthernetFrameClass final : public Stream {
   // ethernet protocol receive callback is called.
   uint32_t receivedTimestamp() const;
 
+  // Returns a pointer to the destination MAC. This is only valid if a frame has
+  // been received with parseFrame() or has had this value written.
+  //
+  // This returns data().
+  const uint8_t *destinationMAC() const;
+
+  // Returns a pointer to the source MAC. This is only valid if a frame has been
+  // received with parseFrame() or has had this value written.
+  //
+  // This returns data() + 6.
+  const uint8_t *sourceMAC() const;
+
+  // Returns the EtherType/length value immediately following the source MAC.
+  // Note that VLAN frames are handled specially. This is only valid if a frame
+  // has been received with parseFrame() or has had this value written.
+  //
+  // This returns the two bytes starting at data() + 12, or zero if there aren't
+  // at least 14 bytes.
+  uint16_t etherTypeOrLength() const;
+
+  // Returns a pointer to the payload immediately following the
+  // EthernetType/length field. Note that VLAN frames are handled specially.
+  // This is only valid if a frame has been received with parseFrame() or has
+  // had at least 14 bytes written.
+  //
+  // This returns data() + 14.
+  const uint8_t *payload() const;
+
   // Sets the receive queue size. This will use a minimum of 1.
   //
   // If the new size is smaller than the number of elements in the queue then

@@ -432,10 +432,13 @@ read from a frame and the `Print` API can be used to write to the frame.
   VLAN-tagged frame and writes the given addresses, VLAN info, and
   EtherType/length.
 * `data()`: Returns a pointer to the received frame data.
+* `destinationMAC()`: Returns a pointer to the destination MAC.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
   frame must have been started, its data length must be in the range 14-1514 for
   non-VLAN frames or 18-1518 for VLAN frames, and Ethernet must have been
   initialized. This is similar to `EthernetUDP::endPacket()`.
+* `etherTypeOrLength()`: Returns the EtherType/length value immediately
+  following the source MAC. Note that VLAN frames are handled specially.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
 * `receiveQueueSize()`: Returns the current receive queue size.
@@ -451,6 +454,7 @@ read from a frame and the `Print` API can be used to write to the frame.
   to 1. If the new size is smaller than the number of items in the queue then
   all the oldest frames will get dropped.
 * `size()`: Returns the total size of the received frame data.
+* `sourceMAC()`: Returns a pointer to the source MAC.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the 4-byte FCS. Subtract 4 to get the maximum length that can be
   sent or received using this API. Note that this size includes VLAN frames,

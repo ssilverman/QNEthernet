@@ -169,6 +169,26 @@ uint32_t EthernetFrameClass::receivedTimestamp() const {
   return frame_.receivedTimestamp;
 }
 
+const uint8_t *EthernetFrameClass::destinationMAC() const {
+  return data();
+}
+
+const uint8_t *EthernetFrameClass::sourceMAC() const {
+  return data() + 6;
+}
+
+uint16_t EthernetFrameClass::etherTypeOrLength() const {
+  if (size() < 14) {
+    return 0;
+  }
+  const uint8_t *p = data();
+  return (uint16_t{p[12]} << 8) | uint16_t{p[13]};
+}
+
+const uint8_t *EthernetFrameClass::payload() const {
+  return data() + 14;
+}
+
 void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   if (size == inBuf_.size()) {
     return;
