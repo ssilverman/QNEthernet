@@ -441,6 +441,8 @@ read from a frame and the `Print` API can be used to write to the frame.
   following the source MAC. Note that VLAN frames are handled specially.
 * `parseFrame()`: Checks if a new frame is available. This is similar
   to `EthernetUDP::parseFrame()`.
+* `payload()`: Returns a pointer to the payload immediately following the
+  EtherType/length field. Note that VLAN frames are handled specially.
 * `receiveQueueSize()`: Returns the current receive queue size.
 * `receivedTimestamp()`: Returns the approximate frame arrival time, measured
   with `millis()`. This is useful in the case where frames have been queued and
