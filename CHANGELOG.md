@@ -14,7 +14,7 @@ and this project adheres to
 * Added a fourth step to the _MbedTLSDemo_ example instructions: modify
   the config.
 * New `EthernetFrameClass` functions: `destinationMAC()`, `sourceMAC()`,
-  and `etherTypeOrLength()`.
+  `etherTypeOrLength()`, and `payload()`.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
