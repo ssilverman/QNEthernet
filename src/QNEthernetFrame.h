@@ -129,11 +129,11 @@ class EthernetFrameClass final : public Stream {
   int availableForWrite() override;
 
   // Returns the total size of the received packet data. This is only valid if a
-  // frame has been received with parseFrame().
+  // frame has been received with parseFrame() or has been created.
   size_t size() const;
 
   // Returns a pointer to the received frame data. This is only valid if a frame
-  // has been received with parseFrame().
+  // has been received with parseFrame() or has been created.
   const uint8_t *data() const;
 
   // Returns the approximate frame arrival time, measured with sys_now(). This

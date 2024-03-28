@@ -431,7 +431,7 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`: Starts a new
   VLAN-tagged frame and writes the given addresses, VLAN info, and
   EtherType/length.
-* `data()`: Returns a pointer to the received frame data.
+* `data()`: Returns a pointer to the frame data.
 * `destinationMAC()`: Returns a pointer to the destination MAC.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
   frame must have been started, its data length must be in the range 14-1514 for
@@ -453,7 +453,7 @@ read from a frame and the `Print` API can be used to write to the frame.
   value is 1 and the default is 1. If a value of zero is used, it will default
   to 1. If the new size is smaller than the number of items in the queue then
   all the oldest frames will get dropped.
-* `size()`: Returns the total size of the received frame data.
+* `size()`: Returns the total size of the frame data.
 * `sourceMAC()`: Returns a pointer to the source MAC.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the 4-byte FCS. Subtract 4 to get the maximum length that can be
