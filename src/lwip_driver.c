@@ -67,7 +67,9 @@ static err_t init_netif(struct netif *netif) {
   netif->mtu        = MTU;
   netif->flags = 0
                  | NETIF_FLAG_BROADCAST
+#if LWIP_IPV4
                  | NETIF_FLAG_ETHARP
+#endif  // LWIP_IPV4
                  | NETIF_FLAG_ETHERNET
 #if LWIP_IGMP
                  | NETIF_FLAG_IGMP

@@ -98,14 +98,16 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define MEMP_NUM_NETIFAPI_MSG              MEMP_NUM_TCPIP_MSG_API
 
 // ARP options
-// #define LWIP_ARP                      1
+#ifndef LWIP_ARP
+#define LWIP_ARP                      LWIP_IPV4
+#endif  // LWIP_ARP
 // #define ARP_TABLE_SIZE                10
 // #define ARP_MAXAGE                    300
 // #define ARP_QUEUEING                  0
 // #define ARP_QUEUE_LEN                 3
 // #define ETHARP_SUPPORT_VLAN           0
 // #define LWIP_VLAN_PCP                 0
-// #define LWIP_ETHERNET                 LWIP_ARP
+#define LWIP_ETHERNET                 1  /* LWIP_ARP */
 #if !defined(QNETHERNET_DRIVER_W5500)
 #define ETH_PAD_SIZE                  2  /* 0 */
 #endif  // !defined(QNETHERNET_DRIVER_W5500)
@@ -128,7 +130,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // #define IP_FORWARD_ALLOW_TX_ON_RX_NETIF 0
 
 // ICMP options
-// #define LWIP_ICMP           1
+#ifndef LWIP_ICMP
+#define LWIP_ICMP           LWIP_IPV4
+#endif  // LWIP_ICMP
 // #define ICMP_TTL            IP_DEFAULT_TTL
 // #define LWIP_BROADCAST_PING 0
 // #define LWIP_MULTICAST_PING 0
@@ -139,7 +143,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // DHCP options
 #ifndef LWIP_DHCP
-#define LWIP_DHCP                       LWIP_UDP  /* 0 */
+#define LWIP_DHCP                       (LWIP_IPV4 && LWIP_UDP)  /* 0 */
 #endif  // !LWIP_DHCP
 #define LWIP_DHCP_DOES_ACD_CHECK        0  /* LWIP_DHCP */
 // #define LWIP_DHCP_BOOTP_FILE            0
@@ -151,7 +155,9 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 // AUTOIP options
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Add both for mDNS:
-#define LWIP_AUTOIP                 1  /* 0 */
+#ifndef LWIP_AUTOIP
+#define LWIP_AUTOIP                 LWIP_IPV4  /* 0 */
+#endif  // LWIP_AUTOIP
 #define LWIP_DHCP_AUTOIP_COOP       (LWIP_DHCP && LWIP_AUTOIP)  /* 0 */
 #else
 // #define LWIP_AUTOIP                 0
@@ -171,7 +177,7 @@ void sys_check_core_locking(const char *file, int line, const char *func);
 
 // IGMP options
 #ifndef LWIP_IGMP
-#define LWIP_IGMP (LWIP_IPV4 || LWIP_IPV6)  /* 0 */
+#define LWIP_IGMP LWIP_IPV4  /* 0 */
 #endif  // !LWIP_IGMP
 
 // DNS options
