@@ -77,7 +77,10 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   }
 
 #if LWIP_IPV4
-  if (reason & LWIP_NSC_IPV4_SETTINGS_CHANGED) {
+  if (reason & (LWIP_NSC_IPV4_SETTINGS_CHANGED |
+                LWIP_NSC_IPV4_ADDRESS_CHANGED  |
+                LWIP_NSC_IPV4_NETMASK_CHANGED  |
+                LWIP_NSC_IPV4_GATEWAY_CHANGED)) {
     if (Ethernet.addressChangedCB_ != nullptr) {
       Ethernet.addressChangedCB_();
     }

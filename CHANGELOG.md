@@ -23,6 +23,8 @@ and this project adheres to
   other platforms.
 * Renamed `QNETHERNET_ENABLE_CUSTOM_WRITE` to `QNETHERNET_CUSTOM_WRITE`.
 * Improved the _PixelPusherServer_ example.
+* The address-changed callback is now called for independent IP address,
+  netmask, and gateway changes.
 
 ### Fixed
 * Improved marking of unused parameters.
