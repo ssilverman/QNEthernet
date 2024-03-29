@@ -217,7 +217,9 @@ class EthernetClass final {
   //
   // Note that no network tasks should be done from inside the listener.
   void onAddressChanged(std::function<void()> cb) {
+#if LWIP_IPV4 || LWIP_IPV6
     addressChangedCB_ = cb;
+#endif  // LWIP_IPV4 || LWIP_IPV6
   }
 
   // Sets an interface status callback. This will be called AFTER the interface
@@ -392,7 +394,9 @@ class EthernetClass final {
 
   // Callbacks
   std::function<void(bool state)> linkStateCB_ = nullptr;
+#if LWIP_IPV4 || LWIP_IPV6
   std::function<void()> addressChangedCB_ = nullptr;
+#endif  // LWIP_IPV4 || LWIP_IPV6
   std::function<void(bool status)> interfaceStatusCB_ = nullptr;
 
   friend class StaticInit<EthernetClass>;
