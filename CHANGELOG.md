@@ -28,6 +28,8 @@ and this project adheres to
 
 ### Fixed
 * Improved marking of unused parameters.
+* Fixed up use of `__has_include()`, per:
+  [__has_include (The C Preprocessor)](https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html)
 
 ## [0.27.0]
 

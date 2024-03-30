@@ -11,11 +11,18 @@
 // C++ includes
 #include <algorithm>
 
-#if defined(__has_include) && __has_include(<util/atomic.h>)
+// https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
+#if defined(__has_include)
+#if __has_include(<util/atomic.h>)
+#define HAS_UTIL_ATOMIC
+#endif  // _has_include(<util/atomic.h>)
+#endif  // defined(__has_include)
+
+#if defined(HAS_UTIL_ATOMIC)
 #include <util/atomic.h>
 #else
 #include <Arduino.h>  // For noInterrupts() and interrupts()
-#endif  // defined(__has_include) && __has_include(<util/atomic.h>)
+#endif  // defined(HAS_UTIL_ATOMIC)
 
 #include <pgmspace.h>
 
@@ -197,11 +204,11 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   size = std::max(size, size_t{1});
 
   // Keep all the newest elements
-#if defined(__has_include) && __has_include(<util/atomic.h>)
+#if defined(HAS_UTIL_ATOMIC)
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 #else
   noInterrupts();
-#endif  // defined(__has_include) && __has_include(<util/atomic.h>)
+#endif  // defined(HAS_UTIL_ATOMIC)
     if (size <= inBufSize_) {
       // Keep all the newest frames
       if (inBufTail_ != 0) {
@@ -224,11 +231,11 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
       // }
     }
     inBufTail_ = 0;
-#if defined(__has_include) && __has_include(<util/atomic.h>)
+#if defined(HAS_UTIL_ATOMIC)
   }
 #else
   interrupts();
-#endif  // defined(__has_include) && __has_include(<util/atomic.h>)
+#endif  // defined(HAS_UTIL_ATOMIC)
 
   inBuf_.shrink_to_fit();
 }

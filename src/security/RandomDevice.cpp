@@ -12,8 +12,18 @@
 #define FLASHMEM
 #endif  // !FLASHMEM
 
+// https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
+
 #if (defined(TEENSYDUINO) && defined(__IMXRT1062__)) && \
     !QNETHERNET_USE_ENTROPY_LIB
+#define WHICH_TYPE 1  // Teensy 4
+#elif defined(__has_include)
+#if __has_include(<Entropy.h>)
+#define WHICH_TYPE 2  // Entropy library
+#endif  // __has_include(<Entropy.h>)
+#endif  // Which type
+
+#if WHICH_TYPE == 1  // Teensy 4
 
 #include "entropy.h"
 
@@ -39,7 +49,7 @@ RandomDevice::result_type RandomDevice::operator()() {
 }  // namespace security
 }  // namespace qindesign
 
-#elif defined(__has_include) && __has_include(<Entropy.h>)
+#elif WHICH_TYPE == 2  // Entropy library
 
 #include <Entropy.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
