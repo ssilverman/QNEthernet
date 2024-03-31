@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include <Arduino.h>  // For Serial, noInterrupts(), interrupts()
+#include <Arduino.h>  // For Serial, noInterrupts(), interrupts(), millis()
 #include <Print.h>
 
 // Processor-specific include
@@ -43,26 +43,10 @@
 extern "C" {
 
 // Returns the current time in milliseconds.
-
-#if defined(TEENSYDUINO)
-
-extern volatile uint32_t systick_millis_count;
-
-[[gnu::weak]]
-uint32_t qnethernet_hal_millis() {
-  return systick_millis_count;
-}
-
-#else
-
-unsigned long millis();
-
 [[gnu::weak]]
 uint32_t qnethernet_hal_millis() {
   return millis();
 }
-
-#endif  // defined(TEENSYDUINO)
 
 }  // extern "C"
 
