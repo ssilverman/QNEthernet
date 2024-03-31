@@ -515,7 +515,7 @@ void netif_set_link_callback(struct netif *netif, netif_status_callback_fn link_
 #define netif_set_mld_mac_filter(netif, function) do { if((netif) != NULL) { (netif)->mld_mac_filter = function; }}while(0)
 /** Get the mld mac filter function for a netif. */
 #define netif_get_mld_mac_filter(netif) (((netif) != NULL) ? ((netif)->mld_mac_filter) : NULL)
-#define netif_mld_mac_filter(netif, addr, action) do { if((netif) && (netif)->mld_mac_filter) { (netif)->mld_mac_filter((netif), (addr), (action)); }}while(0)
+#define netif_mld_mac_filter(netif, addr, action) do { if(((netif) != NULL) && (netif)->mld_mac_filter) { (netif)->mld_mac_filter((netif), (addr), (action)); }}while(0)
 #endif /* LWIP_IPV6 && LWIP_IPV6_MLD */
 
 #if ENABLE_LOOPBACK
