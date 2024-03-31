@@ -72,10 +72,22 @@ class NullPrint final : public Print {
   NullPrint() = default;
   ~NullPrint() = default;
 
-  size_t write(uint8_t b) override { return 1; }
-  size_t write(const uint8_t *buffer, size_t size) override { return size; }
-  int availableForWrite(void) override { return 0; }
-  void flush() override {}
+  size_t write(uint8_t b) override {
+    LWIP_UNUSED_ARG(b);
+    return 1;
+  }
+
+  size_t write(const uint8_t *buffer, size_t size) override {
+    LWIP_UNUSED_ARG(buffer);
+    return size;
+  }
+
+  int availableForWrite() override {
+    return 0;
+  }
+
+  void flush() override {
+  }
 };
 
 // PrintDecorator is a Print object that decorates another. This is meant to be
@@ -93,7 +105,7 @@ class PrintDecorator : public Print {
     return p_.write(buffer, size);
   }
 
-  int availableForWrite(void) override {
+  int availableForWrite() override {
     return p_.availableForWrite();
   }
 
