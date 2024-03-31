@@ -11,24 +11,16 @@
 // C++ includes
 #include <algorithm>
 
-// https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
-#if defined(__has_include)
-#if __has_include(<util/atomic.h>)
-#define HAS_UTIL_ATOMIC
-#endif  // _has_include(<util/atomic.h>)
-#endif  // defined(__has_include)
-
-#if defined(HAS_UTIL_ATOMIC)
-#include <util/atomic.h>
-#else
-#include <Arduino.h>  // For noInterrupts() and interrupts()
-#endif  // defined(HAS_UTIL_ATOMIC)
-
 #include <pgmspace.h>
 
 #include "QNEthernet.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
+
+extern "C" {
+void qnethernet_hal_disable_interrupts();
+void qnethernet_hal_enable_interrupts();
+}  // extern "C"
 
 #ifndef FLASHMEM
 #define FLASHMEM
@@ -204,38 +196,30 @@ void EthernetFrameClass::setReceiveQueueSize(size_t size) {
   size = std::max(size, size_t{1});
 
   // Keep all the newest elements
-#if defined(HAS_UTIL_ATOMIC)
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-#else
-  noInterrupts();
-#endif  // defined(HAS_UTIL_ATOMIC)
-    if (size <= inBufSize_) {
-      // Keep all the newest frames
-      if (inBufTail_ != 0) {
-        size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
-        std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
-      }
-      inBuf_.resize(size);
-      inBufHead_ = 0;
-      inBufSize_ = size;
-    } else {
-      if (inBufTail_ != 0) {
-        std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
-      }
-      inBuf_.resize(size);
-      inBufHead_ = inBufSize_;
-
-      // Don't reserve memory because that might exhaust the heap
-      // for (size_t i = oldSize; i < size; i++) {
-      //   inBuf_[i].data.reserve(maxFrameLen());
-      // }
+  qnethernet_hal_disable_interrupts();
+  if (size <= inBufSize_) {
+    // Keep all the newest frames
+    if (inBufTail_ != 0) {
+      size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
+      std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
     }
-    inBufTail_ = 0;
-#if defined(HAS_UTIL_ATOMIC)
+    inBuf_.resize(size);
+    inBufHead_ = 0;
+    inBufSize_ = size;
+  } else {
+    if (inBufTail_ != 0) {
+      std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
+    }
+    inBuf_.resize(size);
+    inBufHead_ = inBufSize_;
+
+    // Don't reserve memory because that might exhaust the heap
+    // for (size_t i = oldSize; i < size; i++) {
+    //   inBuf_[i].data.reserve(maxFrameLen());
+    // }
   }
-#else
-  interrupts();
-#endif  // defined(HAS_UTIL_ATOMIC)
+  inBufTail_ = 0;
+  qnethernet_hal_enable_interrupts();
 
   inBuf_.shrink_to_fit();
 }
