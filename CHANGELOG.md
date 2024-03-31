@@ -15,6 +15,8 @@ and this project adheres to
   the config.
 * New `EthernetFrameClass` functions: `destinationMAC()`, `sourceMAC()`,
   `etherTypeOrLength()`, and `payload()`.
+* Consolidated all the hardware abstraction layer (HAL) functions into one
+  place: `qnethernet_hal.cpp`.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
