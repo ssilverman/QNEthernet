@@ -34,7 +34,7 @@ extern "C" {
 extern volatile uint32_t systick_millis_count;
 
 [[gnu::weak]]
-uint32_t qnethernet_millis() {
+uint32_t qnethernet_hal_millis() {
   return systick_millis_count;
 }
 
@@ -43,7 +43,7 @@ uint32_t qnethernet_millis() {
 unsigned long millis();
 
 [[gnu::weak]]
-uint32_t qnethernet_millis() {
+uint32_t qnethernet_hal_millis() {
   return millis();
 }
 
@@ -119,7 +119,7 @@ int _write(int file, const void *buf, size_t len) {
 // Ensures the Print object is flushed because fflush() just flushes by writing
 // to the FILE*. This doesn't necessarily send all the bytes right away. For
 // example, Serial/USB output behaves this way.
-void qnethernet_stdio_flush(int file) {
+void qnethernet_hal_stdio_flush(int file) {
   Print *p = getPrint(file);
   if (p != nullptr) {
     p->flush();
@@ -136,8 +136,8 @@ extern "C" {
 
 // Asserts if this is called from an interrupt context.
 [[gnu::weak]]
-void qnethernet_check_core_locking(const char *file, int line,
-                                   const char *func) {
+void qnethernet_hal_check_core_locking(const char *file, int line,
+                                       const char *func) {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   uint32_t ipsr;
   __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
@@ -162,16 +162,16 @@ extern "C" {
 
 // Initializes randomness. This is called in the EthernetClass constructor.
 [[gnu::weak]]
-void qnethernet_init_rand() {
+void qnethernet_hal_init_rand() {
   // Example seed:
   // std::srand(std::time(nullptr));
 // #warning "Need srand() initialization somewhere"
-  std::srand(qnethernet_millis());
+  std::srand(qnethernet_hal_millis());
 }
 
 // Gets a 32-bit random number for LWIP_RAND().
 [[gnu::weak]]
-uint32_t qnethernet_rand() {
+uint32_t qnethernet_hal_rand() {
   return qindesign::security::RandomDevice::instance()();
 }
 

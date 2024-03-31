@@ -166,7 +166,7 @@ void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 // the interface is first removed and then re-added.
 //
 // It is suggested to initialize the random number generator with
-// qnethernet_init_random() before calling this.
+// qnethernet_hal_init_rand() before calling this.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback);
 

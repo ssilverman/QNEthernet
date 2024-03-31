@@ -27,10 +27,10 @@
 
 extern "C" {
 
-uint32_t qnethernet_millis();
+uint32_t qnethernet_hal_millis();
 
 u32_t sys_now(void) {
-  return qnethernet_millis();
+  return qnethernet_hal_millis();
 }
 
 }  // extern "C"

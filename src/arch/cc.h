@@ -20,18 +20,18 @@
 extern "C" {
 #endif  // __cplusplus
 
-#define LWIP_RAND() qnethernet_rand()
-uint32_t qnethernet_rand();
+#define LWIP_RAND() qnethernet_hal_rand()
+uint32_t qnethernet_hal_rand();
 
 #define LWIP_PLATFORM_ASSERT(x)                          \
   do {                                                   \
     printf("Assertion \"%s\" failed at line %d in %s\n", \
            (x), __LINE__, __FILE__);                     \
     fflush(NULL);                                        \
-    qnethernet_stdio_flush(STDOUT_FILENO);               \
+    qnethernet_hal_stdio_flush(STDOUT_FILENO);           \
     abort();                                             \
   } while (0)
-void qnethernet_stdio_flush(int file);
+void qnethernet_hal_stdio_flush(int file);
 
 #if !QNETHERNET_LWIP_MEMORY_IN_RAM1 && \
     (defined(TEENSYDUINO) && defined(__IMXRT1062__))
