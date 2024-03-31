@@ -52,6 +52,7 @@ size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
 class StdioPrint : public Print {
  public:
   explicit StdioPrint(std::FILE *stream) : stream_(stream) {}
+  ~StdioPrint() = default;
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
