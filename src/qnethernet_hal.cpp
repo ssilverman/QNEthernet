@@ -169,22 +169,74 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 //  Randomness
 // --------------------------------------------------------------------------
 
+// Choose what gets included and called
+#if (defined(TEENSYDUINO) && defined(__IMXRT1062__)) && \
+    !QNETHERNET_USE_ENTROPY_LIB
+
+#define WHICH_ENTROPY_TYPE 1  // Teensy 4
+#include "security/entropy.h"
+
+#elif defined(__has_include)
+// https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
+#if __has_include(<Entropy.h>)
+
+#define WHICH_ENTROPY_TYPE 2  // Entropy library
+#include <Entropy.h>
+#endif  // __has_include(<Entropy.h>)
+
+#endif  // Which entropy type
+
 extern "C" {
 
-// Initializes randomness. This is called in the EthernetClass constructor.
-[[gnu::weak]]
+// Initializes randomness. This is also called in the EthernetClass constructor.
+[[gnu::weak]] void qnethernet_hal_init_rand();
+
+// Gets a 32-bit random number for LWIP_RAND() and RandomDevice.
+[[gnu::weak]] uint32_t qnethernet_hal_rand();
+
+#if WHICH_ENTROPY_TYPE == 1
+
 void qnethernet_hal_init_rand() {
-  // Example seed:
-  // std::srand(std::time(nullptr));
-// #warning "Need srand() initialization somewhere"
+  if (!trng_is_started()) {
+    trng_init();
+  }
+}
+
+uint32_t qnethernet_hal_rand() {
+  return entropy_random();
+}
+
+#elif WHICH_ENTROPY_TYPE == 2
+
+void qnethernet_hal_init_rand() {
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
+  // Don't reinitialize
+  bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
+                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
+                       ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
+#else
+  bool doEntropyInit = true;
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
+  if (doEntropyInit) {
+    Entropy.Initialize();
+  }
+}
+
+uint32_t qnethernet_hal_rand() {
+  return Entropy.random();
+}
+
+#else
+
+void qnethernet_hal_init_rand() {
   std::srand(qnethernet_hal_millis());
 }
 
-// Gets a 32-bit random number for LWIP_RAND().
-[[gnu::weak]]
 uint32_t qnethernet_hal_rand() {
-  return qindesign::security::RandomDevice::instance()();
+  return std::rand();
 }
+
+#endif  // Which entropy type
 
 }  // extern "C"
 
