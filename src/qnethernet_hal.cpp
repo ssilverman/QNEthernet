@@ -160,7 +160,7 @@ void qnethernet_check_core_locking(const char *file, int line,
 
 extern "C" {
 
-// Called in the EthernetClass constructor.
+// Initializes randomness. This is called in the EthernetClass constructor.
 [[gnu::weak]]
 void qnethernet_init_rand() {
   // Example seed:
