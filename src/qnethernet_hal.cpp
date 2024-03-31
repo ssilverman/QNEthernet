@@ -34,7 +34,6 @@
 
 #include "lwip/arch.h"
 #include "lwip/prot/ethernet.h"
-#include "security/RandomDevice.h"
 
 // --------------------------------------------------------------------------
 //  Time
