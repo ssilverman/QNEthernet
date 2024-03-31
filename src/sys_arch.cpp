@@ -27,17 +27,11 @@
 
 extern "C" {
 
-#if defined(TEENSYDUINO)
-extern volatile uint32_t systick_millis_count;
+uint32_t qnethernet_millis();
+
 u32_t sys_now(void) {
-  return systick_millis_count;
+  return qnethernet_millis();
 }
-#else
-unsigned long millis();
-u32_t sys_now(void) {
-  return millis();
-}
-#endif  // defined(TEENSYDUINO)
 
 }  // extern "C"
 
@@ -96,20 +90,5 @@ sys_prot_t sys_arch_protect(void) {
 void sys_arch_unprotect(sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
-
-void sys_check_core_locking(const char *file, int line, const char *func) {
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-  uint32_t ipsr;
-  __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
-  if (ipsr != 0) {
-    printf("%s:%d:%s()\r\n", file, line, func);
-    LWIP_PLATFORM_ASSERT("Function called from interrupt context");
-  }
-#else
-  LWIP_UNUSED_ARG(file);
-  LWIP_UNUSED_ARG(line);
-  LWIP_UNUSED_ARG(func);
-#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
-}
 
 }  // extern "C"

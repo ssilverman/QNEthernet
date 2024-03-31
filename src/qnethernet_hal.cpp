@@ -26,6 +26,36 @@ u32_t sys_now(void);
 }  // extern "C"
 
 // --------------------------------------------------------------------------
+//  Time
+// --------------------------------------------------------------------------
+
+extern "C" {
+
+// Returns the current time in milliseconds.
+
+#if defined(TEENSYDUINO)
+
+extern volatile uint32_t systick_millis_count;
+
+[[gnu::weak]]
+uint32_t qnethernet_millis() {
+  return systick_millis_count;
+}
+
+#else
+
+unsigned long millis();
+
+[[gnu::weak]]
+uint32_t qnethernet_millis() {
+  return millis();
+}
+
+#endif  // defined(TEENSYDUINO)
+
+}  // extern "C"
+
+// --------------------------------------------------------------------------
 //  stdio
 // --------------------------------------------------------------------------
 
@@ -98,6 +128,32 @@ void qnethernet_stdio_flush(int file) {
   if (p != nullptr) {
     p->flush();
   }
+}
+
+}  // extern "C"
+
+// --------------------------------------------------------------------------
+//  Core Locking
+// --------------------------------------------------------------------------
+
+extern "C" {
+
+// Asserts if this is called from an interrupt context.
+[[gnu::weak]]
+void qnethernet_check_core_locking(const char *file, int line,
+                                   const char *func) {
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
+  uint32_t ipsr;
+  __asm__ volatile("mrs %0, ipsr\n" : "=r" (ipsr) ::);
+  if (ipsr != 0) {
+    printf("%s:%d:%s()\r\n", file, line, func);
+    LWIP_PLATFORM_ASSERT("Function called from interrupt context");
+  }
+#else
+  LWIP_UNUSED_ARG(file);
+  LWIP_UNUSED_ARG(line);
+  LWIP_UNUSED_ARG(func);
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 }
 
 }  // extern "C"
