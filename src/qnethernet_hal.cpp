@@ -21,10 +21,6 @@
 #include "lwip/arch.h"
 #include "security/RandomDevice.h"
 
-extern "C" {
-u32_t sys_now(void);
-}  // extern "C"
-
 // --------------------------------------------------------------------------
 //  Time
 // --------------------------------------------------------------------------
@@ -170,7 +166,7 @@ void qnethernet_init_rand() {
   // Example seed:
   // std::srand(std::time(nullptr));
 // #warning "Need srand() initialization somewhere"
-  std::srand(sys_now());
+  std::srand(qnethernet_millis());
 }
 
 // Gets a 32-bit random number for LWIP_RAND().
