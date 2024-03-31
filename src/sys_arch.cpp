@@ -4,21 +4,15 @@
 // sys_arch.cpp provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
 
+#include "arch/sys_arch.h"
+
 // C includes
 #include <unistd.h>
 
-#include "qnethernet_opts.h"
-
 // C++ includes
-#if QNETHERNET_CUSTOM_WRITE
-#include <cerrno>
-#endif  // QNETHERNET_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <limits>
-
-#include <Print.h>
 
 #include "lwip/arch.h"
 #include "lwip/debug.h"
@@ -27,7 +21,9 @@
 #include "lwip/err.h"
 #endif  // LWIP_DEBUG
 
-#include "security/RandomDevice.h"
+// --------------------------------------------------------------------------
+//  Time
+// --------------------------------------------------------------------------
 
 extern "C" {
 
@@ -42,6 +38,14 @@ u32_t sys_now(void) {
   return millis();
 }
 #endif  // defined(TEENSYDUINO)
+
+}  // extern "C"
+
+// --------------------------------------------------------------------------
+//  Error-to-String
+// --------------------------------------------------------------------------
+
+extern "C" {
 
 #ifdef LWIP_DEBUG
 // include\lwip\err.h
@@ -79,87 +83,12 @@ const char *lwip_strerr(err_t err) {
 }  // extern "C"
 
 // --------------------------------------------------------------------------
-//  stdio
-// --------------------------------------------------------------------------
-
-#if QNETHERNET_CUSTOM_WRITE
-
-// The user program can set these to something initialized. For example,
-// `&Serial`, after `Serial.begin(speed)`.
-namespace qindesign {
-namespace network {
-
-Print *volatile stdoutPrint = nullptr;
-Print *volatile stderrPrint = nullptr;
-
-}  // namespace network
-}  // namespace qindesign
-
-#else
-
-#include <Arduino.h>  // For Serial
-
-#endif  // QNETHERNET_CUSTOM_WRITE
-
-// Gets the Print* for the given file descriptor.
-static inline Print *getPrint(int file) {
-  switch (file) {
-#if QNETHERNET_CUSTOM_WRITE
-    case STDOUT_FILENO:
-      return ::qindesign::network::stdoutPrint;
-    case STDERR_FILENO:
-      return ::qindesign::network::stderrPrint;
-#else
-    case STDOUT_FILENO:
-    case STDERR_FILENO:
-      return &Serial;
-#endif  // QNETHERNET_CUSTOM_WRITE
-    case STDIN_FILENO:
-      return nullptr;
-    default:
-      return reinterpret_cast<Print *>(file);
-  }
-}
-
-extern "C" {
-
-#if QNETHERNET_CUSTOM_WRITE
-
-// Define this function to provide expanded stdio output behaviour. This should
-// work for Newlib-based systems.
-// See: https://forum.pjrc.com/threads/28473-Quick-Guide-Using-printf()-on-Teensy-ARM
-// Note: Can't define as weak by default because we don't know which `_write`
-//       would be chosen by the linker, this one or the one defined elsewhere
-//       (Print.cpp, for example)
-int _write(int file, const void *buf, size_t len) {
-  Print *out = getPrint(file);
-  if (out == nullptr) {
-    errno = EBADF;
-    return -1;
-  }
-
-  return out->write(static_cast<const uint8_t *>(buf), len);
-}
-
-#endif  // QNETHERNET_CUSTOM_WRITE
-
-// Ensures the Print object is flushed because fflush() just flushes by writing
-// to the FILE*. This doesn't necessarily send all the bytes right away. For
-// example, Serial/USB output behaves this way.
-void qnethernet_stdio_flush(int file) {
-  Print *p = getPrint(file);
-  if (p != nullptr) {
-    p->flush();
-  }
-}
-
-// --------------------------------------------------------------------------
 //  Core Locking
 // --------------------------------------------------------------------------
 
-#if SYS_LIGHTWEIGHT_PROT
-typedef uint32_t sys_prot_t;
+extern "C" {
 
+#if SYS_LIGHTWEIGHT_PROT
 sys_prot_t sys_arch_protect(void) {
   return 0;
 }
@@ -181,25 +110,6 @@ void sys_check_core_locking(const char *file, int line, const char *func) {
   LWIP_UNUSED_ARG(line);
   LWIP_UNUSED_ARG(func);
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
-}
-
-// --------------------------------------------------------------------------
-//  Randomness
-// --------------------------------------------------------------------------
-
-// Called in the EthernetClass constructor.
-[[gnu::weak]]
-void qnethernet_init_rand() {
-  // Example seed:
-  // std::srand(std::time(nullptr));
-// #warning "Need srand() initialization somewhere"
-  std::srand(sys_now());
-}
-
-// Gets a 32-bit random number for LWIP_RAND().
-[[gnu::weak]]
-uint32_t qnethernet_rand() {
-  return qindesign::security::RandomDevice::instance()();
 }
 
 }  // extern "C"
