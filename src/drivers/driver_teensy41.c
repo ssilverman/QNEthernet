@@ -23,7 +23,6 @@
 #include "lwip/err.h"
 #include "lwip/opt.h"
 #include "lwip/stats.h"
-#include "util/mac_tools.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
 // https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
@@ -760,8 +759,10 @@ bool driver_is_unknown() {
   return s_initState == kInitStateStart;
 }
 
+void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);
+
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  qnethernet_get_system_mac_address(mac);
+  qnethernet_hal_get_system_mac_address(mac);
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {

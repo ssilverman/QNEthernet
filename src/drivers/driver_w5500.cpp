@@ -25,7 +25,6 @@
 #include "lwip/err.h"
 #include "lwip/opt.h"
 #include "lwip/stats.h"
-#include "util/mac_tools.h"
 
 // --------------------------------------------------------------------------
 //  Types
@@ -459,8 +458,10 @@ bool driver_is_unknown() {
   return s_initState == EnetInitStates::kStart;
 }
 
+void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);
+
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  qnethernet_get_system_mac_address(mac);
+  qnethernet_hal_get_system_mac_address(mac);
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
