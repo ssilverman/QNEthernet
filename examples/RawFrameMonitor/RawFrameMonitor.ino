@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // RawFrameMonitor prints all unknown raw Ethernet frames. Known frame
-// types won't be printed and include:
+// types won't be printed if the associated features are enabled and
+// there's a handler for them. These may include:
 // 1. IPv4 (0x0800)
 // 2. ARP  (0x0806)
 // 3. IPv6 (0x86DD) (if enabled)
