@@ -12,30 +12,36 @@ bool driver_is_unknown() {
   return false;
 }
 
-void driver_get_system_mac([[maybe_unused]] uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  LWIP_UNUSED_ARG(mac);
 }
 
-void driver_set_mac([[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN]) {
+void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+  LWIP_UNUSED_ARG(mac);
 }
 
 bool driver_has_hardware() {
   return false;
 }
 
-void driver_set_chip_select_pin([[maybe_unused]] int pin) {
+void driver_set_chip_select_pin(int pin) {
+  LWIP_UNUSED_ARG(pin);
 }
 
-bool driver_init([[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+  LWIP_UNUSED_ARG(mac);
   return false;
 }
 
 void driver_deinit() {
 }
 
-void driver_proc_input([[maybe_unused]] struct netif *netif) {
+void driver_proc_input(struct netif *netif) {
+  LWIP_UNUSED_ARG(netif);
 }
 
-void driver_poll([[maybe_unused]] struct netif *netif) {
+void driver_poll(struct netif *netif) {
+  LWIP_UNUSED_ARG(netif);
 }
 
 int driver_link_speed() {
@@ -50,13 +56,15 @@ bool driver_link_is_crossover() {
   return false;
 }
 
-err_t driver_output([[maybe_unused]] struct pbuf *p) {
+err_t driver_output(struct pbuf *p) {
+  LWIP_UNUSED_ARG(p);
   return ERR_IF;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame([[maybe_unused]] const uint8_t *frame,
-                         [[maybe_unused]] size_t len) {
+bool driver_output_frame(const uint8_t *frame, size_t len) {
+  LWIP_UNUSED_ARG(frame);
+  LWIP_UNUSED_ARG(len);
   return false;
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -67,9 +75,10 @@ bool driver_output_frame([[maybe_unused]] const uint8_t *frame,
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-bool driver_set_mac_address_allowed(
-    [[maybe_unused]] const uint8_t mac[ETH_HWADDR_LEN],
-    [[maybe_unused]] bool allow) {
+bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                    bool allow) {
+  LWIP_UNUSED_ARG(mac);
+  LWIP_UNUSED_ARG(allow);
   return false;
 }
 

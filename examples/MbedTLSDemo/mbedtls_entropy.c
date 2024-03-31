@@ -21,8 +21,10 @@
 
 #include <security/entropy.h>
 
-int mbedtls_hardware_poll([[maybe_unused]] void *data,
+int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {
+  LWIP_UNUSED_ARG(data);
+
   size_t out = trng_data(output, len);
   if (olen != NULL) {
     *olen = out;
@@ -34,8 +36,10 @@ int mbedtls_hardware_poll([[maybe_unused]] void *data,
 
 #include <lwip/arch.h>
 
-int mbedtls_hardware_poll([[maybe_unused]] void *data,
+int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {
+  LWIP_UNUSED_ARG(data);
+
   for (size_t i = len; i-- > 0; ) {
     *(output++) = LWIP_RAND();
   }
