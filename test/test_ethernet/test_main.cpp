@@ -1035,6 +1035,11 @@ void setup() {
     // Wait for Serial
   }
 
+#if QNETHERNET_CUSTOM_WRITE
+  stdoutPrint = &Serial;
+  stderrPrint = &Serial;
+#endif  // QNETHERNET_CUSTOM_WRITE
+
   // NOTE!!! Wait for >2 secs
   // if board doesn't support software reset via Serial.DTR/RTS
   delay(2000);
