@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <Arduino.h>  // For Serial, noInterrupts(), interrupts()
 #include <Print.h>
 
 #include "lwip/arch.h"
@@ -67,10 +68,6 @@ Print *volatile stderrPrint = nullptr;
 
 }  // namespace network
 }  // namespace qindesign
-
-#else
-
-#include <Arduino.h>  // For Serial
 
 #endif  // QNETHERNET_CUSTOM_WRITE
 
@@ -173,6 +170,26 @@ void qnethernet_hal_init_rand() {
 [[gnu::weak]]
 uint32_t qnethernet_hal_rand() {
   return qindesign::security::RandomDevice::instance()();
+}
+
+}  // extern "C"
+
+// --------------------------------------------------------------------------
+//  Interrupts
+// --------------------------------------------------------------------------
+
+extern "C" {
+
+// Disables interrupts.
+[[gnu::weak]]
+void qnethernet_hal_disable_interrupts() {
+  noInterrupts();
+}
+
+// Enables interrupts.
+[[gnu::weak]]
+void qnethernet_hal_enable_interrupts() {
+  interrupts();
 }
 
 }  // extern "C"
