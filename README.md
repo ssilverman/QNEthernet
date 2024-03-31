@@ -505,14 +505,16 @@ The `DNSClient` class provides an interface to the DNS client.
 
 ### Print utilities
 
-The `util/PrintUtils.h` file declares some useful output functions. Note that
-this file is included when `QNEthernet.h` is included; there's no need to
-include it separately.
+The `util/PrintUtils.h` file declares some useful output functions and classes.
+Note that this file is included when `QNEthernet.h` is included; there's no need
+to include it separately.
 
-The functions are in the `qindesign::network::util` namespace, so if you've
-already added `using namespace qindesign::network;` to your code, they can be
-called with `util::writeMagic()` syntax. Otherwise, they need to be fully
+The functions and classes are in the `qindesign::network::util` namespace, so if
+you've already added `using namespace qindesign::network;` to your code, they
+can be called with `util::writeMagic()` syntax. Otherwise, they need to be fully
 qualified: `qindesign::network::util::writeMagic()`.
+
+Functions:
 
 1. `writeFully(Print &, buf, size, breakf = nullptr)`: Attempts to completely
    write bytes to the given `Print` object; the optional `breakf` function is
@@ -529,11 +531,16 @@ qualified: `qindesign::network::util::writeMagic()`.
    the given `Print` object. This uses `writeFully(...)` under the covers and
    passes along the `breakf` function as the stopping condition.
 
-There is also a `Print` decorator for `stdio` output files, `util::StdioPrint`
-(assuming the `qindesign::network` namespace is in scope). It provides a `Print`
-interface so that it is easy to print `Printable` objects to `stdout` or
-`stderr` without having to worry about buffering and the need to flush any
-output before printing a `Printable` directly to, say, `Serial`.
+Classes:
+
+1. `NullPrint`: A `Print` object that sends all data nowhere.
+
+2. `PrintDecorator`: A `Print` decorator meant to be used as a base class.
+
+3. `StdioPrint`: A `Print` decorator for `stdio` output files. It provides a
+   `Print` interface so that it is easy to print `Printable` objects to `stdout`
+   or `stderr` without having to worry about buffering and the need to flush any
+   output before printing a `Printable` directly to, say, `Serial`.
 
 ### `IPAddress` operators
 
