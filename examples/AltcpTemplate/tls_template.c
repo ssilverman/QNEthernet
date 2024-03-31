@@ -27,10 +27,13 @@ struct altcp_tls_config {
 };
 
 void altcp_tls_free_config(struct altcp_tls_config *conf) {
+  LWIP_UNUSED_ARG(conf);
 }
 
 struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
+  LWIP_UNUSED_ARG(config);
+  LWIP_UNUSED_ARG(inner_pcb);
   return NULL;
 }
 
@@ -38,6 +41,7 @@ struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
 // QNEthernet's altcp_tls_adapter needs these
 
 struct altcp_tls_config *altcp_tls_create_config_server(u8_t cert_count) {
+  LWIP_UNUSED_ARG(cert_count);
   return NULL;
 }
 
@@ -46,11 +50,20 @@ err_t altcp_tls_config_server_add_privkey_cert(
     const u8_t *privkey,      size_t privkey_len,
     const u8_t *privkey_pass, size_t privkey_pass_len,
     const u8_t *cert,         size_t cert_len) {
+  LWIP_UNUSED_ARG(config);
+  LWIP_UNUSED_ARG(privkey);
+  LWIP_UNUSED_ARG(privkey_len);
+  LWIP_UNUSED_ARG(privkey_pass);
+  LWIP_UNUSED_ARG(privkey_pass_len);
+  LWIP_UNUSED_ARG(cert);
+  LWIP_UNUSED_ARG(cert_len);
   return ERR_OK;
 }
 
 struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
                                                         size_t cert_len) {
+  LWIP_UNUSED_ARG(cert);
+  LWIP_UNUSED_ARG(cert_len);
   return NULL;
 }
 
@@ -62,6 +75,10 @@ struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
 int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {
   // A real implementation would fill in random data
+  LWIP_UNUSED_ARG(data);
+  LWIP_UNUSED_ARG(output);
+  LWIP_UNUSED_ARG(len);
+  LWIP_UNUSED_ARG(olen);
   return 0;
 }
 
