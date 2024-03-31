@@ -65,6 +65,45 @@ class StdioPrint : public Print {
   std::FILE *stream_;
 };
 
+// NullPrint is a Print object that accepts all writes and sends them nowhere.
+class NullPrint final : public Print {
+ public:
+  NullPrint() = default;
+  ~NullPrint() = default;
+
+  size_t write(uint8_t b) override { return 1; }
+  size_t write(const uint8_t *buffer, size_t size) override { return size; }
+  int availableForWrite(void) override { return 0; }
+  void flush() override {}
+};
+
+// PrintDecorator is a Print object that decorates another. This is meant to be
+// a base class.
+class PrintDecorator : public Print {
+ public:
+  PrintDecorator(Print &p) : p_(p) {}
+  ~PrintDecorator() = default;
+
+  size_t write(uint8_t b) override {
+    return p_.write(b);
+  }
+
+  size_t write(const uint8_t *buffer, size_t size) override {
+    return p_.write(buffer, size);
+  }
+
+  int availableForWrite(void) override {
+    return p_.availableForWrite();
+  }
+
+  void flush() override {
+    p_.flush();
+  }
+
+ private:
+  Print &p_;
+};
+
 }  // namespace util
 }  // namespace network
 }  // namespace qindesign

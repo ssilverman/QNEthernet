@@ -18,6 +18,8 @@ stdoutPrint	KEYWORD1
 stderrPrint	KEYWORD1
 EthernetFrame	KEYWORD1
 StdioPrint	KEYWORD1
+NullPrint	KEYWORD1
+PrintDecorator	KEYWORD1
 EthernetLinkStatus	KEYWORD1	EthernetLinkStatus
 EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
 

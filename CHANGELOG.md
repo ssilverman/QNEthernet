@@ -17,6 +17,8 @@ and this project adheres to
   `etherTypeOrLength()`, and `payload()`.
 * Consolidated all the hardware abstraction layer (HAL) functions into one
   place: `qnethernet_hal.cpp`.
+* New `NullPrint` and `PrintDecorator` utility classes in the
+  `qindesign::network::util` namespace.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
