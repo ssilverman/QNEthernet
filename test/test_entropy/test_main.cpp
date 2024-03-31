@@ -23,6 +23,7 @@ void setUp() {
 void tearDown() {
 }
 
+#if !QNETHERNET_USE_ENTROPY_LIB
 // Tests that the feature is active.
 static void test_active() {
   TEST_ASSERT_TRUE_MESSAGE(trng_is_started(), "Expected started");
@@ -72,14 +73,24 @@ static void test_random_range() {
     TEST_ASSERT_LESS_THAN_UINT32_MESSAGE(10, r, msg.c_str());
   }
 }
+#endif  // !QNETHERNET_USE_ENTROPY_LIB
 
 // Tests entropy_random().
 static void test_randomDevice() {
   qindesign::security::RandomDevice::instance()();
+  TEST_ASSERT_EQUAL_MESSAGE(&qindesign::security::randomDevice,
+                            &qindesign::security::RandomDevice::instance(),
+                            "Expected objects equal");
   TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::RandomDevice::min(),
                             "Expected full-range minimum");
   TEST_ASSERT_EQUAL_MESSAGE(UINT32_MAX, qindesign::security::RandomDevice::max(),
                             "Expected full-range maximum");
+
+  errno = 0;
+  for (int i = 0; i < (1 << 10); i++) {
+    qindesign::security::randomDevice();
+    TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+  }
 }
 
 // Main program setup.
@@ -98,6 +109,7 @@ void setup() {
   }
 
   UNITY_BEGIN();
+#if !QNETHERNET_USE_ENTROPY_LIB
   RUN_TEST(test_inactive);
   trng_init();
   RUN_TEST(test_active);
@@ -105,9 +117,12 @@ void setup() {
   RUN_TEST(test_data);
   RUN_TEST(test_random);
   RUN_TEST(test_random_range);
+#endif  // !QNETHERNET_USE_ENTROPY_LIB
   RUN_TEST(test_randomDevice);
+#if !QNETHERNET_USE_ENTROPY_LIB
   trng_deinit();
   RUN_TEST(test_inactive);
+#endif  // !QNETHERNET_USE_ENTROPY_LIB
   UNITY_END();
 }
 
