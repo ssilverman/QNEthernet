@@ -100,18 +100,12 @@ void EthernetClass::netifEventFunc(struct netif *netif,
 
 FLASHMEM EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-// Forward declare this
-extern "C" void qnethernet_hal_init_rand();
-
 FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
     std::copy_n(mac, kMACAddrSize, mac_);
   } else {
     enet_get_system_mac(mac_);
   }
-
-  // Initialize randomness
-  qnethernet_hal_init_rand();
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {

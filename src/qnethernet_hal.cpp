@@ -172,7 +172,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 extern "C" {
 
-// Initializes randomness. This is also called in the EthernetClass constructor.
+// Initializes randomness.
 [[gnu::weak]] void qnethernet_hal_init_rand();
 
 // Gets a 32-bit random number for LWIP_RAND() and RandomDevice.
