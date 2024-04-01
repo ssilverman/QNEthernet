@@ -88,6 +88,12 @@
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
 #endif
 
+// Use a user-defined custom yield() implementation to call loop() instead of
+// doing this internally.
+#ifndef QNETHERNET_USE_CUSTOM_YIELD
+#define QNETHERNET_USE_CUSTOM_YIELD 0
+#endif
+
 // Use the Entropy library instead of internal functions. (Teensy 4)
 #ifndef QNETHERNET_USE_ENTROPY_LIB
 #define QNETHERNET_USE_ENTROPY_LIB 0

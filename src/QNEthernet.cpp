@@ -9,6 +9,7 @@
 // C++ includes
 #include <algorithm>
 
+#if !QNETHERNET_USE_CUSTOM_YIELD
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
 #if defined(__has_include)
 #if __has_include(<EventResponder.h>)
@@ -16,6 +17,7 @@
 #include <EventResponder.h>
 #endif  // __has_include(<EventResponder.h>)
 #endif  // defined(__has_include)
+#endif  // !QNETHERNET_USE_CUSTOM_YIELD
 
 #include <pgmspace.h>
 
@@ -37,6 +39,7 @@ namespace network {
 // A reference to the singleton.
 STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
+#if !QNETHERNET_USE_CUSTOM_YIELD
 #if defined(HAS_EVENT_RESPONDER)
 // Global definitions for Arduino
 static EventResponder ethLoop;
@@ -66,6 +69,7 @@ void yield() {
   }
 }
 #endif  // defined(HAS_EVENT_RESPONDER)
+#endif  // !QNETHERNET_USE_CUSTOM_YIELD
 
 void EthernetClass::netifEventFunc(struct netif *netif,
                                    netif_nsc_reason_t reason,
