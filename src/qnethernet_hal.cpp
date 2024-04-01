@@ -134,11 +134,11 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
                                        const char *func) {
   bool inInterruptCtx = false;
 
-#if defined(TEENSYDUINO)
+#if defined(__arm__)
   uint32_t ipsr;
   __asm__ volatile ("mrs %0, ipsr\n" : "=r" (ipsr) ::);
   inInterruptCtx = (ipsr != 0);
-#endif  // defined(TEENSYDUINO)
+#endif  // defined(__arm__)
 
   if (inInterruptCtx) {
     printf("%s:%d:%s()\r\n", file, line, func);
