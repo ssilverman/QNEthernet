@@ -19,8 +19,6 @@ and this project adheres to
   place: `qnethernet_hal.cpp`.
 * New `NullPrint` and `PrintDecorator` utility classes in the
   `qindesign::network::util` namespace.
-* New `QNETHERNET_USE_CUSTOM_YIELD` setting for using a user-supplied custom
-  `yield()` implementation to call `loop()` instead of doing this internally.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
