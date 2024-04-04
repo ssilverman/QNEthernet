@@ -42,9 +42,19 @@ void qnethernet_hal_stdio_flush(int file);
   alignas(MEM_ALIGNMENT) u8_t variable_name[(size)]
 #endif  // !QNETHERNET_LWIP_MEMORY_IN_RAM1
 
+// Byte swapping
 #if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#if defined(__has_builtin)
+
+#if __has_builtin(__builtin_bswap16)
 #define lwip_htons(x) __builtin_bswap16(x)
+#endif  // __has_builtin(__builtin_bswap16)
+
+#if __has_builtin(__builtin_bswap32)
 #define lwip_htonl(x) __builtin_bswap32(x)
+#endif  // __has_builtin(__builtin_bswap32)
+
+#endif  // defined(__has_builtin)
 #endif  // __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 #ifdef __cplusplus
