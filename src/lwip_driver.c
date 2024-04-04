@@ -13,8 +13,6 @@
 #include "lwip/dhcp.h"
 #include "lwip/etharp.h"
 #include "lwip/init.h"
-#include "lwip/opt.h"
-#include "lwip/pbuf.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"

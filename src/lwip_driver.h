@@ -15,6 +15,7 @@
 
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
+#include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
 #include "qnethernet_opts.h"

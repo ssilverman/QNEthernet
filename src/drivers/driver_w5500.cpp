@@ -23,7 +23,6 @@
 
 #include "lwip/def.h"
 #include "lwip/err.h"
-#include "lwip/opt.h"
 #include "lwip/stats.h"
 
 // --------------------------------------------------------------------------
