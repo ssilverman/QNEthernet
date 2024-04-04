@@ -472,7 +472,7 @@ void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
       return;
   }
 
-  SMEMCPY(s_frameBuf, mac, ETH_HWADDR_LEN);
+  std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
   write_frame(kSHAR, ETH_HWADDR_LEN);
 }
 

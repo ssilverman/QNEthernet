@@ -74,7 +74,7 @@ static err_t init_netif(struct netif *netif) {
 #endif  // LWIP_IGMP
                  ;
 
-  SMEMCPY(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
+  memcpy(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 
 #if LWIP_NETIF_HOSTNAME
@@ -159,7 +159,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     // TODO: For some reason, remove_netif() prevents further operation
   }
 
-  SMEMCPY(s_mac, mac, ETH_HWADDR_LEN);
+  memcpy(s_mac, mac, ETH_HWADDR_LEN);
 
   if (!driver_init(s_mac)) {
     return false;
@@ -189,7 +189,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   } else {
     // Just set the MAC address
 
-    SMEMCPY(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
+    memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
     s_netif.hwaddr_len = ETH_HWADDR_LEN;
 
     driver_set_mac(s_mac);
