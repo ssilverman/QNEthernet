@@ -57,6 +57,10 @@ void qnethernet_hal_stdio_flush(int file);
 #endif  // defined(__has_builtin)
 #endif  // __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
+// Other functions
+#define lwip_itoa(result, bufsize, number) \
+  snprintf((result), (bufsize), "%d", (number))
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
