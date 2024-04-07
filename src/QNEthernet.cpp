@@ -100,7 +100,20 @@ void EthernetClass::netifEventFunc(struct netif *netif,
 
 FLASHMEM EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
 
-FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize]) {
+FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize])
+    : chipSelectPin_(-1),
+      lastPollTime_(0),
+#if LWIP_NETIF_HOSTNAME
+      hostname_{QNETHERNET_DEFAULT_HOSTNAME},
+#endif  // LWIP_NETIF_HOSTNAME
+      netif_(nullptr)
+#if LWIP_DHCP
+      ,
+      dhcpEnabled_(true),
+      dhcpDesired_(false),
+      dhcpActive_(false)
+#endif  // LWIP_DHCP
+{
   if (mac != nullptr) {
     std::copy_n(mac, kMACAddrSize, mac_);
   } else {

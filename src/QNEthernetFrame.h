@@ -205,16 +205,16 @@ class EthernetFrameClass final : public Stream {
 
   // Received frame; updated every time one is received
   std::vector<Frame> inBuf_;  // Holds received frames
-  size_t inBufTail_ = 0;
-  size_t inBufHead_ = 0;
-  size_t inBufSize_ = 0;
+  size_t inBufTail_;
+  size_t inBufHead_;
+  size_t inBufSize_;
 
   // Frame being processed by the caller
-  Frame frame_;        // Holds the frame being read
-  int framePos_ = -1;  // -1 if not currently reading a frame
+  Frame frame_;   // Holds the frame being read
+  int framePos_;  // -1 if not currently reading a frame
 
   // Outgoing frames
-  bool hasOutFrame_ = false;
+  bool hasOutFrame_;
   Frame outFrame_;
 
   friend class StaticInit<EthernetFrameClass>;

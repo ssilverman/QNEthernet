@@ -181,9 +181,9 @@ class EthernetUDP : public UDP {
 
   // Received packet; updated every time one is received
   std::vector<Packet> inBuf_;  // Holds received packets
-  size_t inBufTail_ = 0;
-  size_t inBufHead_ = 0;
-  size_t inBufSize_ = 0;
+  size_t inBufTail_;
+  size_t inBufHead_;
+  size_t inBufSize_;
 
   // Packet being processed by the caller
   Packet packet_;  // Holds the packet being read

@@ -150,7 +150,7 @@ class MDNSClass final {
     std::vector<String> (*getTXTFunc)(void);
   };
 
-  MDNSClass() = default;
+  MDNSClass();
   ~MDNSClass();
 
   // Finds the slot for the given service. This returns -1 if the service could
@@ -158,7 +158,7 @@ class MDNSClass final {
   int findService(const char *name, const char *type,
                   const char *protocol, uint16_t port);
 
-  struct netif *netif_ = nullptr;
+  struct netif *netif_;
   String hostname_;
 
   // Holds information about all the slots.

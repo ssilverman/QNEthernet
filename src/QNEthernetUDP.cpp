@@ -84,6 +84,9 @@ EthernetUDP::EthernetUDP(size_t queueSize)
       listening_(false),
       listenReuse_(false),
       inBuf_(std::max(queueSize, size_t{1})),
+      inBufTail_(0),
+      inBufHead_(0),
+      inBufSize_(0),
       packetPos_(-1),
       hasOutPacket_(false) {}
 

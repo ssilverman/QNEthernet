@@ -376,28 +376,28 @@ class EthernetClass final {
   [[nodiscard]]
   bool start();
 
-  int chipSelectPin_ = -1;
+  int chipSelectPin_;
 
-  uint32_t lastPollTime_ = 0;
+  uint32_t lastPollTime_;
 
   uint8_t mac_[kMACAddrSize];
 #if LWIP_NETIF_HOSTNAME
-  String hostname_{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
+  String hostname_;  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
-  struct netif *netif_ = nullptr;
+  struct netif *netif_;
 
 #if LWIP_DHCP
-  bool dhcpEnabled_ = true;
-  bool dhcpDesired_ = false;  // Whether the user wants static or dynamic IP
-  bool dhcpActive_ = false;
+  bool dhcpEnabled_;
+  bool dhcpDesired_;  // Whether the user wants static or dynamic IP
+  bool dhcpActive_;
 #endif  // LWIP_DHCP
 
   // Callbacks
-  std::function<void(bool state)> linkStateCB_ = nullptr;
+  std::function<void(bool state)> linkStateCB_;
 #if LWIP_IPV4 || LWIP_IPV6
-  std::function<void()> addressChangedCB_ = nullptr;
+  std::function<void()> addressChangedCB_;
 #endif  // LWIP_IPV4 || LWIP_IPV6
-  std::function<void(bool status)> interfaceStatusCB_ = nullptr;
+  std::function<void(bool status)> interfaceStatusCB_;
 
   friend class StaticInit<EthernetClass>;
 };

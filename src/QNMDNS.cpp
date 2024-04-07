@@ -47,6 +47,9 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
 static bool initialized = false;
 static bool netifAdded = false;
 
+FLASHMEM MDNSClass::MDNSClass()
+    : netif_(nullptr) {}
+
 FLASHMEM MDNSClass::~MDNSClass() {
   end();
 }

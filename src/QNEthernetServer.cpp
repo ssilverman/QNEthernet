@@ -17,10 +17,7 @@
 namespace qindesign {
 namespace network {
 
-EthernetServer::EthernetServer()
-    : port_(-1),
-      reuse_(false),
-      listening_(false) {}
+EthernetServer::EthernetServer() : EthernetServer(-1) {}
 
 EthernetServer::EthernetServer(uint16_t port)
     : port_(port),

@@ -78,7 +78,12 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p,
 }
 
 FLASHMEM EthernetFrameClass::EthernetFrameClass()
-    : inBuf_(1) {
+    : inBuf_(1),
+      inBufTail_(0),
+      inBufHead_(0),
+      inBufSize_(0),
+      framePos_(-1),
+      hasOutFrame_(false) {
   setReceiveQueueSize(1);
 }
 
