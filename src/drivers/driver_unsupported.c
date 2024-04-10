@@ -12,8 +12,8 @@ bool driver_is_unknown() {
   return false;
 }
 
-bool driver_is_link_state_unknown() {
-  return true;
+bool driver_is_link_state_detectable() {
+  return false;
 }
 
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {

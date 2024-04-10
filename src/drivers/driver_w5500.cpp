@@ -457,8 +457,8 @@ bool driver_is_unknown() {
   return s_initState == EnetInitStates::kStart;
 }
 
-bool driver_is_link_state_unknown() {
-  return false;
+bool driver_is_link_state_detectable() {
+  return true;
 }
 
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);

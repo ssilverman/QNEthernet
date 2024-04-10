@@ -464,7 +464,7 @@ EthernetLinkStatus EthernetClass::linkStatus() const {
 }
 
 bool EthernetClass::isLinkStateDetectable() const {
-  return !driver_is_link_state_unknown();
+  return driver_is_link_state_detectable();
 }
 
 bool EthernetClass::linkState() const {

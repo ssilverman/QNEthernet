@@ -19,8 +19,8 @@ and this project adheres to
   place: `qnethernet_hal.cpp`.
 * New `NullPrint` and `PrintDecorator` utility classes in the
   `qindesign::network::util` namespace.
-* Added `driver_is_link_state_unknown()` function to the driver. This is for
-  detecting whether the hardware knows about the link state.
+* Added `driver_is_link_state_detectable()` function to the driver. This is for
+  detecting whether the hardware is able to read the link state.
 * Added `EthernetClass::isLinkStateDetectable()` to detect whether the driver is
   capable of detecting link state.
 
