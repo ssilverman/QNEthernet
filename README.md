@@ -37,6 +37,7 @@ lwIP release.
 3. [How to run](#how-to-run)
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
    2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
+   3. [Link detection](#link-detection)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [`writeFully()` with more break conditions](#writefully-with-more-break-conditions)
    2. [Write immediacy](#write-immediacy)
@@ -656,6 +657,28 @@ First, the underlying lwIP stack must be configured and used a certain way in
 order to provide concurrent support. _QNEthernet_ does not configure lwIP for
 this. Second, the _QNEthernet_ API, the layer on top of lwIP, isn't designed for
 concurrent use.
+
+### Link detection
+
+Normally, a link is detected by the driver at some polling rate. (For the
+curious, see `driver_poll()` and its uses.) However, it's possible for a driver
+to not be able to detect a link. For example, the W5100 chip is unable to read
+this state.
+
+Since the underlying lwIP stack depends on the link being up in order to operate
+properly, the project will have to manage the link state itself. The suggestion
+is this:
+1. Start Ethernet as you normally would.
+2. If successful, check `Ethernet.isLinkStateDetectable()`.
+3. If `false`, then call `Ethernet.setLinkState(true)`.
+
+Code example:
+
+```c++
+if (ethernet_is_started && !Ethernet.isLinkStateDetectable()) {
+  Ethernet.setLinkState(true);
+}
+```
 
 ## How to write data to connections
 
