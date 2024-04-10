@@ -21,6 +21,8 @@ and this project adheres to
   `qindesign::network::util` namespace.
 * Added `driver_is_link_state_unknown()` function to the driver. This is for
   detecting whether the hardware knows about the link state.
+* Added `EthernetClass::isLinkStateDetectable()` to detect whether the driver is
+  capable of detecting link state.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7

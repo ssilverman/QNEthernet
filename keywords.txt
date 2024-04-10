@@ -42,6 +42,7 @@ waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2
 end	KEYWORD2
 linkStatus	KEYWORD2	Ethernet.linkStatus
+isLinkStateDetectable	KEYWORD2
 linkState	KEYWORD2
 setLinkState	KEYWORD2
 linkSpeed	KEYWORD2

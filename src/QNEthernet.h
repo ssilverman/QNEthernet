@@ -184,6 +184,10 @@ class EthernetClass final {
   // will return Unknown if the hardware hasn't yet been probed.
   EthernetLinkStatus linkStatus() const;
 
+  // Returns whether the driver can detect the link state. If this returns
+  // false, then the link state must be managed with 'setLinkState(flag)'.
+  bool isLinkStateDetectable() const;
+
   // Returns the link state, true for link (LinkON) and false for no (LinkOFF)
   // or unknown (Unknown) link.
   //

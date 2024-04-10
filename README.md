@@ -244,6 +244,9 @@ The `Ethernet` object is the main Ethernet interface.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `isDHCPEnabled()`: Returns whether the DHCP client is enabled. This is valid
   whether Ethernet has been started or not.
+* `isLinkStateDetectable()`: Returns whether the link state is detectable by the
+  driver. If it isn't detectable, then the link state must be managed with
+  `setLinkState(flag)`.
 * `linkState()`: Returns a `bool` indicating the link state. This returns `true`
   if the link is on and `false` otherwise.
 * `linkSpeed()`: Returns the link speed in Mbps.

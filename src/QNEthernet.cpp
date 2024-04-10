@@ -463,6 +463,10 @@ EthernetLinkStatus EthernetClass::linkStatus() const {
   return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
 }
 
+bool EthernetClass::isLinkStateDetectable() const {
+  return !driver_is_link_state_unknown();
+}
+
 bool EthernetClass::linkState() const {
   if (netif_ == nullptr) {
     return false;
