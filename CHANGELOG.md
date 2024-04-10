@@ -19,6 +19,8 @@ and this project adheres to
   place: `qnethernet_hal.cpp`.
 * New `NullPrint` and `PrintDecorator` utility classes in the
   `qindesign::network::util` namespace.
+* Added `driver_is_link_state_unknown()` function to the driver. This is for
+  detecting whether the hardware knows about the link state.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7

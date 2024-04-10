@@ -67,6 +67,10 @@ extern "C" {
 // Returns if the hardware hasn't yet been probed.
 bool driver_is_unknown();
 
+// Returns whether the link state is unknown. This will return true if the
+// hardware is not capable of detecting a link and false otherwise.
+bool driver_is_link_state_unknown();
+
 // Gets the built-in Ethernet MAC address.
 //
 // For systems without a built-in address, this should retrieve some default.
