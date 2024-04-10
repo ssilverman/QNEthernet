@@ -194,15 +194,16 @@ class EthernetClass final {
   // feature. Network operations will usually fail unless there's a link.
   void setLinkState(bool flag) const;
 
-  // Returns the link speed in Mbps. This is only valid if the link is up.
+  // Returns the link speed in Mbps. This is only valid if the link is up and
+  // the driver can read the link state.
   int linkSpeed() const;
 
   // Returns the link duplex mode, true for full and false for half. This is
-  // only valid if the link is up.
+  // only valid if the link is up and the driver can read the link state.
   bool linkIsFullDuplex() const;
 
   // Returns whether a crossover cable is detected. This is only valid if the
-  // link is up.
+  // link is up and the driver can read the link state.
   bool linkIsCrossover() const;
 
   // Sets a link state callback.
