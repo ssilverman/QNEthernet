@@ -287,17 +287,17 @@ static inline void write_reg_word(uint16_t addr, uint8_t block, uint16_t v) {
   write_frame(addr, block, 2);
 }
 
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
 // Sends a socket command and ensures it completes.
-static void write_socket_command(uint8_t v) {
+static void set_socket_command(uint8_t v) {
   kSn_CR = v;
   while (*kSn_CR != 0) {
     // Wait for Sn_CR to be zero
   }
 }
-
-// --------------------------------------------------------------------------
-//  Internal Functions
-// --------------------------------------------------------------------------
 
 // Soft resets the chip.
 static bool soft_reset() {
@@ -374,7 +374,7 @@ static void low_level_init() {
   } else {
     kSn_IMR = socketinterrupts::kSendOk | socketinterrupts::kRecv;
   }
-  write_socket_command(socketcommands::kOpen);
+  set_socket_command(socketcommands::kOpen);
   if (*kSn_SR != socketstates::kMacraw) {
     s_initState = EnetInitStates::kNotInitialized;
     return;
@@ -412,7 +412,7 @@ static err_t send_frame(size_t len) {
   uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = ptr + len;
-  write_socket_command(socketcommands::kSend);
+  set_socket_command(socketcommands::kSend);
   if (kSocketInterruptsEnabled) {
     // TODO: See if there's a way to make this non-blocking
     while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
@@ -529,7 +529,7 @@ void driver_deinit() {
   }
 
   // Close the socket
-  write_socket_command(socketcommands::kClose);
+  set_socket_command(socketcommands::kClose);
 
   spi.end();
   s_initState = EnetInitStates::kStart;
@@ -561,8 +561,8 @@ void driver_proc_input(struct netif *netif) {
     LINK_STATS_INC(link.lenerr);
 
     // Recommendation is to close and then re-open the socket
-    write_socket_command(socketcommands::kClose);
-    write_socket_command(socketcommands::kOpen);
+    set_socket_command(socketcommands::kClose);
+    set_socket_command(socketcommands::kOpen);
     if (*kSn_SR != socketstates::kMacraw) {
       s_initState = EnetInitStates::kNotInitialized;
       return;
@@ -580,7 +580,7 @@ void driver_proc_input(struct netif *netif) {
     read(ptr, blocks::kSocketRx, s_inputBuf, frameLen);
   }
   kSn_RX_RD = ptr + frameLen;
-  write_socket_command(socketcommands::kRecv);
+  set_socket_command(socketcommands::kRecv);
 
   if (frameLen > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
     return;
