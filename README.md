@@ -666,8 +666,8 @@ to not be able to detect a link. For example, the W5100 chip is unable to read
 this state.
 
 Since the underlying lwIP stack depends on the link being up in order to operate
-properly, the project will have to manage the link state itself. The suggestion
-is this:
+properly, a project will need to manage the link state itself for those drivers.
+The suggestion is this:
 1. Start Ethernet as you normally would.
 2. If successful, check `Ethernet.isLinkStateDetectable()`.
 3. If `false`, then call `Ethernet.setLinkState(true)`.
