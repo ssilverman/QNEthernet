@@ -135,6 +135,19 @@ class MDNSClass final {
 
  private:
   struct Service final {
+#if __cplusplus < 201402L
+    Service() = default;
+    Service(bool valid, const char *name, const char *type,
+            const char *protocol, uint16_t port,
+            std::vector<String> (*getTXTFunc)(void))
+        : valid(valid),
+          name{name},
+          type{type},
+          protocol{protocol},
+          port(port),
+          getTXTFunc(getTXTFunc) {}
+#endif  // __cplusplus < 201402L
+
     bool operator==(const Service &other) const {
       if (!valid || !other.valid) {
         // Invalid services compare unequal

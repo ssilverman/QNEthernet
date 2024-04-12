@@ -66,20 +66,20 @@ struct Reg {
         block((r.block & 0x03) + (socket << 2)) {}
 
   template <typename U,
-            std::enable_if_t<!std::is_same<U, T>::value, bool> = true>
+            typename std::enable_if<!std::is_same<U, T>::value, bool>::type = true>
   const Reg &operator=(U v) const {
     return operator=(static_cast<T>(v));
   }
 
   template <typename U = T,
-            std::enable_if_t<sizeof(U) == 1, bool> = true>
+            typename std::enable_if<sizeof(U) == 1, bool>::type = true>
   const Reg &operator=(T v) const {
     write_reg(addr, block, v);
     return *this;
   }
 
   template <typename U = T,
-            std::enable_if_t<sizeof(U) == 2, bool> = true>
+            typename std::enable_if<sizeof(U) == 2, bool>::type = true>
   const Reg &operator=(T v) const {
     write_reg_word(addr, block, v);
     return *this;
