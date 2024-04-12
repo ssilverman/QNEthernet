@@ -67,10 +67,7 @@ class EthernetClass final {
   // one group. Also note that this does not include the "all systems" group.
   static constexpr int maxMulticastGroups() {
     // Exclude the "All Systems" group
-    if (MEMP_NUM_IGMP_GROUP > 0) {
-      return MEMP_NUM_IGMP_GROUP - 1;
-    }
-    return 0;
+    return (MEMP_NUM_IGMP_GROUP > 0) ? (MEMP_NUM_IGMP_GROUP - 1) : 0;
   }
 
   // Gets the MTU.
