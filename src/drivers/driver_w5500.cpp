@@ -368,7 +368,7 @@ static void low_level_init() {
     Reg<uint8_t>{kSn_RXBUF_SIZE, i} = 0;
     Reg<uint8_t>{kSn_TXBUF_SIZE, i} = 0;
   }
-  if (!kSocketInterruptsEnabled) {
+  if /*constexpr*/ (!kSocketInterruptsEnabled) {
     // Disable the socket interrupts
     kSn_IMR = 0;
   } else {
@@ -413,7 +413,7 @@ static err_t send_frame(size_t len) {
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = ptr + len;
   set_socket_command(socketcommands::kSend);
-  if (kSocketInterruptsEnabled) {
+  if /*constexpr*/ (kSocketInterruptsEnabled) {
     // TODO: See if there's a way to make this non-blocking
     while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
       // Wait for the interrupt
@@ -581,7 +581,7 @@ void driver_proc_input(struct netif *netif) {
   }
   kSn_RX_RD = ptr + frameLen;
   set_socket_command(socketcommands::kRecv);
-  if (kSocketInterruptsEnabled) {
+  if /*constexpr*/ (kSocketInterruptsEnabled) {
     if (frameLen + 2 == size) {
       kSn_IR = socketinterrupts::kRecv;  // Clear the RECV interrupt
     }
