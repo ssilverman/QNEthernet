@@ -581,6 +581,11 @@ void driver_proc_input(struct netif *netif) {
   }
   kSn_RX_RD = ptr + frameLen;
   set_socket_command(socketcommands::kRecv);
+  if (kSocketInterruptsEnabled) {
+    if (frameLen + 2 == size) {
+      kSn_IR = socketinterrupts::kRecv;  // Clear the RECV interrupt
+    }
+  }
 
   if (frameLen > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
     return;
