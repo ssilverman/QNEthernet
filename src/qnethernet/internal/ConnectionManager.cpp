@@ -240,7 +240,12 @@ err_t ConnectionManager::acceptFunc(void *const arg,
   auto holder = std::make_shared<ConnectionHolder>();
   holder->lastError = err;
   holder->connected = true;
+#if __cplusplus < 201402L
+  holder->state = std::unique_ptr<ConnectionState>(
+      new ConnectionState(newpcb, holder.get()));
+#else
   holder->state = std::make_unique<ConnectionState>(newpcb, holder.get());
+#endif  // __cplusplus < 201402L
   altcp_err(newpcb, &errFunc);
   altcp_recv(newpcb, &recvFunc);
   m->addConnection(holder);
@@ -302,7 +307,12 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
 
   // Connect listeners
   auto holder = std::make_shared<ConnectionHolder>();
+#if __cplusplus < 201402L
+  holder->state =
+      std::unique_ptr<ConnectionState>(new ConnectionState(pcb, holder.get()));
+#else
   holder->state = std::make_unique<ConnectionState>(pcb, holder.get());
+#endif  // __cplusplus < 201402L
   altcp_err(pcb, &errFunc);
   altcp_recv(pcb, &recvFunc);
 
@@ -375,7 +385,7 @@ static uint16_t getLocalPort(altcp_pcb *pcb) {
 
 bool ConnectionManager::isListening(const uint16_t port) const {
   const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb *const &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   return (it != listeners_.cend());
@@ -383,7 +393,7 @@ bool ConnectionManager::isListening(const uint16_t port) const {
 
 bool ConnectionManager::stopListening(const uint16_t port) {
   const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb *const &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   if (it == listeners_.cend()) {
@@ -400,7 +410,8 @@ bool ConnectionManager::stopListening(const uint16_t port) {
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
     const uint16_t port) const {
   const auto it = std::find_if(
-      connections_.cbegin(), connections_.cend(), [port](const auto &elem) {
+      connections_.cbegin(), connections_.cend(),
+      [port](const std::shared_ptr<ConnectionHolder> &elem) {
         const auto &state = elem->state;
         return (state != nullptr) && (getLocalPort(state->pcb) == port);
       });
@@ -414,10 +425,10 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
 std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
     const uint16_t port) const {
   const auto it = std::find_if(
-      connections_.cbegin(), connections_.cend(), [port](const auto &elem) {
+      connections_.cbegin(), connections_.cend(),
+      [port](const std::shared_ptr<ConnectionHolder> &elem) {
         const auto &state = elem->state;
-        return (state != nullptr) &&
-               (getLocalPort(state->pcb) == port) &&
+        return (state != nullptr) && (getLocalPort(state->pcb) == port) &&
                isAvailable(state);
       });
   if (it != connections_.cend()) {
@@ -442,7 +453,7 @@ bool ConnectionManager::remove(
 
 size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
   std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, b](const auto &elem) {
+                [port, b](const std::shared_ptr<ConnectionHolder> &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
@@ -465,31 +476,31 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, b, size16](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  if (altcp_sndbuf(state->pcb) < size16) {
-                    if (altcp_output(state->pcb) != ERR_OK) {
-                      return;
-                    }
-                    Ethernet.loop();
-                  }
-                  const uint16_t len =
-                      std::min(size16, altcp_sndbuf(state->pcb));
-                  if (len > 0) {
-                    altcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
-                  }
-                });
+  std::for_each(
+      connections_.cbegin(), connections_.cend(),
+      [port, b, size16](const std::shared_ptr<ConnectionHolder> &elem) {
+        const auto &state = elem->state;
+        if (state == nullptr || getLocalPort(state->pcb) != port) {
+          return;
+        }
+        if (altcp_sndbuf(state->pcb) < size16) {
+          if (altcp_output(state->pcb) != ERR_OK) {
+            return;
+          }
+          Ethernet.loop();
+        }
+        const uint16_t len = std::min(size16, altcp_sndbuf(state->pcb));
+        if (len > 0) {
+          altcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
+        }
+      });
   Ethernet.loop();
   return actualLen;
 }
 
 void ConnectionManager::flush(const uint16_t port) {
   std::for_each(connections_.cbegin(), connections_.cend(),
-                [port](const auto &elem) {
+                [port](const std::shared_ptr<ConnectionHolder> &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
                     return;
@@ -503,15 +514,16 @@ void ConnectionManager::flush(const uint16_t port) {
 int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, &min, &found](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  min = std::min(min, altcp_sndbuf(state->pcb));
-                  found = true;
-                });
+  std::for_each(
+      connections_.cbegin(), connections_.cend(),
+      [port, &min, &found](const std::shared_ptr<ConnectionHolder> &elem) {
+        const auto &state = elem->state;
+        if (state == nullptr || getLocalPort(state->pcb) != port) {
+          return;
+        }
+        min = std::min(min, altcp_sndbuf(state->pcb));
+        found = true;
+      });
   if (!found) {
     return 0;
   }
