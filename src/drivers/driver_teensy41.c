@@ -15,9 +15,9 @@
 #include <stdatomic.h>
 #include <string.h>
 
+#include <avr/pgmspace.h>
 #include <core_pins.h>
 #include <imxrt.h>
-#include <pgmspace.h>
 
 #include "lwip/arch.h"
 #include "lwip/err.h"

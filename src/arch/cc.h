@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <pgmspace.h>
+#include <avr/pgmspace.h>
 
 #include "qnethernet_opts.h"
 

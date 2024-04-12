@@ -11,7 +11,7 @@
 // C++ includes
 #include <algorithm>
 
-#include <pgmspace.h>
+#include <avr/pgmspace.h>
 
 #include "QNEthernet.h"
 #include "lwip/prot/ieee.h"

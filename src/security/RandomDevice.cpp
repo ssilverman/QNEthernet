@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include <pgmspace.h>
+#include <avr/pgmspace.h>
 
 #ifndef FLASHMEM
 #define FLASHMEM

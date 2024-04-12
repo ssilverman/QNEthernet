@@ -17,7 +17,7 @@
 #endif  // __has_include(<EventResponder.h>)
 #endif  // defined(__has_include)
 
-#include <pgmspace.h>
+#include <avr/pgmspace.h>
 
 #include "QNDNSClient.h"
 #include "lwip/arch.h"
