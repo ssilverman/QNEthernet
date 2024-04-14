@@ -30,7 +30,7 @@
 
 using namespace qindesign::network;
 
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // Connection information
 #define HOST "www.example.com"
