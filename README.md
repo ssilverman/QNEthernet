@@ -246,10 +246,11 @@ The `Ethernet` object is the main Ethernet interface.
 * `isDHCPEnabled()`: Returns whether the DHCP client is enabled. This is valid
   whether Ethernet has been started or not.
 * `isLinkStateDetectable()`: Returns whether the link state is detectable by the
-  driver. If it isn't detectable, then the link state must be managed with
-  `setLinkState(flag)`.
+  driver. If it isn't detectable, then the link state must be managed manually
+  with `setLinkState(flag)`.
 * `linkState()`: Returns a `bool` indicating the link state. This returns `true`
-  if the link is on and `false` otherwise.
+  if the link is on and `false` otherwise. This may be managed manually
+  with `setLinkState(flag)`.
 * `linkSpeed()`: Returns the link speed in Mbps.
 * `linkIsCrossover()`: Returns whether a crossover cable is detected.
 * `linkIsFullDuplex()`: Returns whether the link is full duplex (`true`) or half
