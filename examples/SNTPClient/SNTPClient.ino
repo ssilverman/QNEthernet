@@ -6,8 +6,13 @@
 //
 // This file is part of the QNEthernet library.
 
+// C++ includes
+#include <ctime>
+
 #include <QNEthernet.h>
+#ifdef TEENSYDUINO
 #include <TimeLib.h>
+#endif  // TEENSYDUINO
 
 using namespace qindesign::network;
 
@@ -80,7 +85,7 @@ void setup() {
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
 
   // Set the Transmit Timestamp
-  uint32_t t = Teensy3Clock.get();
+  std::time_t t = std::time(nullptr);
   if (t >= kBreakTime) {
     t -= kBreakTime;
   } else {
@@ -143,13 +148,21 @@ void loop() {
   }
 
   // Set the RTC and time
+#ifdef TEENSYDUINO
   Teensy3Clock.set(t);
   setTime(t);
+#else
+  // Do something platform-specific here
+#endif  // TEENSYDUINO
 
   // Print the time
-  tmElements_t tm;
-  breakTime(t, tm);
-  printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\r\n",
-         tm.Year + 1970, tm.Month, tm.Day,
-         tm.Hour, tm.Minute, tm.Second);
+  std::time_t time = t;
+  std::tm *tm = std::gmtime(&time);
+  if (tm != nullptr) {
+    printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\r\n",
+           tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
+           tm->tm_hour, tm->tm_min, tm->tm_sec);
+  } else {
+    printf("std::gmtime() failed!\r\n");
+  }
 }
