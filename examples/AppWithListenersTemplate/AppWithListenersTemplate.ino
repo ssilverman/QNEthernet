@@ -83,10 +83,12 @@ void setup() {
     // Wait for Serial
   }
   delay(1500);  // Give external monitors a chance to start
+#ifdef TEENSYDUINO
   if (CrashReport) {  // Print any crash report
     Serial.println(CrashReport);
     CrashReport.clear();
   }
+#endif  // TEENSYDUINO
   printf("Starting...\r\n");
 
   // Unlike the Arduino API (which you can still use), QNEthernet uses
