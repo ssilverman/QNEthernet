@@ -181,17 +181,18 @@ class EthernetClass final {
   void end();
 
   // Returns the link status, one of the EthernetLinkStatus enumerators. This
-  // will return Unknown if the hardware hasn't yet been probed.
+  // will return Unknown if the hardware hasn't yet been probed, LinkON if
+  // linkState() returns true, and LinkOFF if linkState() returns false.
   EthernetLinkStatus linkStatus() const;
 
   // Returns whether the driver can detect the link state. If this returns
   // false, then the link state must be managed with 'setLinkState(flag)'.
   bool isLinkStateDetectable() const;
 
-  // Returns the link state, true for link (LinkON) and false for no (LinkOFF)
-  // or unknown (Unknown) link.
+  // Returns the interface-level link state. It may be managed manually with
+  // setLinkState(flag) if the driver can't detect the link.
   //
-  // This exists because linkStatus() already does.
+  // See also isLinkStateDetectable().
   bool linkState() const;
 
   // Manually sets the link state. This is useful when using the loopback
