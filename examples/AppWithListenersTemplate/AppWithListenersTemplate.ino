@@ -151,7 +151,7 @@ void setup() {
     // When setting a static IP, the address will be set but the
     // network interface might not yet be up
     bool hasIP = (Ethernet.localIP() != INADDR_NONE);
-    setNetworkReady(hasIP, Ethernet.linkState(), Ethernet.interfaceStatus());
+    setNetworkReady(hasIP, Ethernet.linkState(), status);
   });
 
   bool startWithStatic = false;
