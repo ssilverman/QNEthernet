@@ -655,7 +655,7 @@ static void test_udp() {
 
   // Print the time
   std::time_t time = sntpTime;
-  std::tm *tm = gmtime(&time);
+  std::tm *tm = std::gmtime(&time);
   TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u (UTC)",
                       tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
                       tm->tm_hour, tm->tm_min, tm->tm_sec).data());
