@@ -23,7 +23,7 @@ using namespace qindesign::network;
 //  Configuration
 // --------------------------------------------------------------------------
 
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 constexpr uint16_t kServerPort = 5000;
 
@@ -193,9 +193,10 @@ void loop() {
 
   // Clean up all the closed clients
   size_t size = clients.size();
-  clients.erase(std::remove_if(clients.begin(), clients.end(),
-                               [](const auto &state) { return state.closed; }),
-                clients.end());
+  clients.erase(
+      std::remove_if(clients.begin(), clients.end(),
+                     [](const ClientState &state) { return state.closed; }),
+      clients.end());
   if (clients.size() != size) {
     printf("Client count: %zu\r\n", clients.size());
   }
