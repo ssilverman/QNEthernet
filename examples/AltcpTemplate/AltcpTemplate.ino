@@ -30,7 +30,7 @@
 
 using namespace qindesign::network;
 
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // Connection information
 #define HOST "www.example.com"
@@ -97,7 +97,7 @@ void setup() {
   printf("Connecting and sending request...\r\n");
 #if LWIP_ALTCP
   if (kUseProxy) {
-    client.setConnectionTimeout(30'000);  // Proxies can take longer, maybe
+    client.setConnectionTimeout(30000);  // Proxies can take longer, maybe
   }
 #endif  // LWIP_ALTCP
   if (!client.connect(kHost, kPort)) {
