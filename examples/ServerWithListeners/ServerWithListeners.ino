@@ -40,20 +40,20 @@ using namespace qindesign::network;
 
 // The DHCP timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of an address assignment.
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // The link timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of a link.
-constexpr uint32_t kLinkTimeout = 5'000;  // 5 seconds
+constexpr uint32_t kLinkTimeout = 5000;  // 5 seconds
 
 constexpr uint16_t kServerPort = 80;
 
 // Timeout for waiting for input from the client.
-constexpr uint32_t kClientTimeout = 5'000;  // 5 seconds
+constexpr uint32_t kClientTimeout = 5000;  // 5 seconds
 
 // Timeout for waiting for a close from the client after a
 // half close.
-constexpr uint32_t kShutdownTimeout = 30'000;  // 30 seconds
+constexpr uint32_t kShutdownTimeout = 30000;  // 30 seconds
 
 // Set the static IP to something other than INADDR_NONE (all zeros)
 // to not use DHCP. The values here are just examples.
@@ -283,9 +283,10 @@ void loop() {
 
   // Clean up all the closed clients
   size_t size = clients.size();
-  clients.erase(std::remove_if(clients.begin(), clients.end(),
-                               [](const auto &state) { return state.closed; }),
-                clients.end());
+  clients.erase(
+      std::remove_if(clients.begin(), clients.end(),
+                     [](const ClientState &state) { return state.closed; }),
+      clients.end());
   if (clients.size() != size) {
     printf("New client count: %zu\r\n", clients.size());
   }
