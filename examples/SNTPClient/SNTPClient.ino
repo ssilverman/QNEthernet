@@ -20,15 +20,15 @@ using namespace qindesign::network;
 //  Configuration
 // --------------------------------------------------------------------------
 
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 constexpr uint16_t kNTPPort = 123;
 
 // 01-Jan-1900 00:00:00 -> 01-Jan-1970 00:00:00
-constexpr uint32_t kEpochDiff = 2'208'988'800;
+constexpr uint32_t kEpochDiff = 2208988800;
 
 // Epoch -> 07-Feb-2036 06:28:16
-constexpr uint32_t kBreakTime = 2'085'978'496;
+constexpr uint32_t kBreakTime = 2085978496;
 
 // --------------------------------------------------------------------------
 //  Program State
@@ -82,7 +82,11 @@ void setup() {
   // Send an SNTP request
 
   memset(buf, 0, 48);
+#if __cplusplus < 201402L
+  buf[0] = 0x23;
+#else
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
+#endif  // __cplusplus < 201402L
 
   // Set the Transmit Timestamp
   std::time_t t = std::time(nullptr);
