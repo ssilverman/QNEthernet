@@ -11,11 +11,9 @@
 //
 // This file is part of the QNEthernet library.
 
-#if defined(TEENSYDUINO) && TEENSYDUINO <= 158
 // Undefine Arduino nonsense so <random> can be included
 #undef round
 #undef abs
-#endif  // defined(TEENSYDUINO) && TEENSYDUINO <= 158
 
 // C++ includes
 #include <random>
