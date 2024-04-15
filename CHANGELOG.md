@@ -33,6 +33,8 @@ and this project adheres to
 * Improved the _PixelPusherServer_ example.
 * The address-changed callback is now called for independent IP address,
   netmask, and gateway changes.
+* Improved link function documentation. `linkStatus()`, `linkState()`,
+  and `isLinkStateDetectable()`.
 
 ### Fixed
 * Improved marking of unused parameters.
