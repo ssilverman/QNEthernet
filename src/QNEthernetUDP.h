@@ -153,6 +153,8 @@ class EthernetUDP : public UDP {
   //
   // Other functions that create the internal state: begin(), beginWithReuse(),
   // beginPacket(), and send().
+  //
+  // Note that this must be set again after calling stop().
   bool setDiffServ(uint8_t ds);
 
   // Returns the differentiated services (DiffServ) value from the IP header.

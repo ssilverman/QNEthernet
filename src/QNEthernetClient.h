@@ -157,6 +157,8 @@ class EthernetClient : public Client {
   // bottom 2 bits are the explicit congestion notification (ECN) value.
   //
   // This returns true if connected and the value was set, and false otherwise.
+  //
+  // Note that this must be set for each new connection.
   bool setDiffServ(uint8_t ds);
 
   // Returns the differentiated services (DiffServ) value from the IP header.
