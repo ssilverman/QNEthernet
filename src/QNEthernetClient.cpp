@@ -192,19 +192,20 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
   connTimeout_ = timeout;
 }
 
-void EthernetClient::setNoDelay(bool flag) {
+bool EthernetClient::setNoDelay(bool flag) {
   if (conn_ == nullptr) {
-    return;
+    return false;
   }
   const auto &state = conn_->state;
   if (state == nullptr) {
-    return;
+    return false;
   }
   if (flag) {
     altcp_nagle_disable(state->pcb);
   } else {
     altcp_nagle_enable(state->pcb);
   }
+  return true;
 }
 
 bool EthernetClient::isNoDelay() {

@@ -38,6 +38,7 @@ and this project adheres to
   netmask, and gateway changes.
 * Improved link function documentation. `linkStatus()`, `linkState()`,
   and `isLinkStateDetectable()`.
+* Updated `EthernetClient::setNoDelay(flag)` to return whether successful.
 
 ### Fixed
 * Improved marking of unused parameters.

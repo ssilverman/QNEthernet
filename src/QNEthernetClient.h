@@ -142,9 +142,11 @@ class EthernetClient : public Client {
   // ----------------
 
   // Disables or enables Nagle's algorithm. This sets or clears the TCP_NODELAY
-  // flag. If the flag is set then Nagle's algorithm is disabled, otherwise it
+  // flag. If the flag is true then Nagle's algorithm is disabled, otherwise it
   // is enabled. Note that this option must be set for each new connection.
-  void setNoDelay(bool flag);
+  //
+  // This returns true if connected and the option was set, and false otherwise.
+  bool setNoDelay(bool flag);
 
   // Returns the value of the TCP_NODELAY flag for the current connection. This
   // returns false if not connected.

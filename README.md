@@ -340,7 +340,8 @@ The `Ethernet` object is the main Ethernet interface.
 
  * `setNoDelay(flag)`: Sets or clears the TCP_NODELAY flag in order to disable
    or enable Nagle's algorithm, respectively. This must be changed for each
-   new connection.
+   new connection. Returns `true` if connected and the option was set, and
+   `false` otherwise.
  * `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
    connection. Returns `false` if not connected.
 
