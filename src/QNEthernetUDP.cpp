@@ -138,6 +138,15 @@ bool EthernetUDP::beginWithReuse(uint16_t localPort) {
   return begin(localPort, true);
 }
 
+void EthernetUDP::tryCreatePCB() {
+  if (pcb_ == nullptr) {
+    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
+    if (pcb_ == nullptr) {
+      Ethernet.loop();  // Allow the stack to move along
+    }
+  }
+}
+
 bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (listening_) {
     if (pcb_->local_port == localPort && listenReuse_ == reuse) {
@@ -145,11 +154,8 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     }
     stop();
   }
+  tryCreatePCB();
   if (pcb_ == nullptr) {
-    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
-  }
-  if (pcb_ == nullptr) {
-    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 
@@ -222,9 +228,7 @@ EthernetUDP::operator bool() const {
 }
 
 bool EthernetUDP::setDiffServ(uint8_t ds) {
-  if (pcb_ == nullptr) {
-    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
-  }
+  tryCreatePCB();
   if (pcb_ == nullptr) {
     return false;
   }
@@ -373,11 +377,8 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 }
 
 bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
+  tryCreatePCB();
   if (pcb_ == nullptr) {
-    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
-  }
-  if (pcb_ == nullptr) {
-    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 
@@ -463,11 +464,8 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   if (len > kMaxPossiblePayloadSize) {
     return false;
   }
+  tryCreatePCB();
   if (pcb_ == nullptr) {
-    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
-  }
-  if (pcb_ == nullptr) {
-    Ethernet.loop();  // Allow the stack to move along
     return false;
   }
 

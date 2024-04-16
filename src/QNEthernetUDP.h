@@ -173,6 +173,10 @@ class EthernetUDP : public UDP {
   static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
                        const ip_addr_t *addr, u16_t port);
 
+  // Attempts to create the internal PCB if it's not already set. If
+  // unsuccessful, this calls Ethernet.loop().
+  void tryCreatePCB();
+
   // Starts listening on a port and sets the SO_REUSEADDR socket option
   // according to the `reuse` parameter. This returns whether the attempt
   // was successful.
