@@ -25,9 +25,11 @@ lwIP release.
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
       1. [TCP socket options](#tcp-socket-options)
+      2. [IP header values](#ip-header-values)
    3. [`EthernetServer`](#ethernetserver)
    4. [`EthernetUDP`](#ethernetudp)
-      1. [`parsePacket()` return values](#parsepacket-return-values)
+      1. [IP header values](#ip-header-values-1)
+      2. [`parsePacket()` return values](#parsepacket-return-values)
    5. [`EthernetFrame`](#ethernetframe)
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
@@ -320,13 +322,8 @@ The `Ethernet` object is the main Ethernet interface.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
 * `connectionTimeout()`: Returns the current timeout value.
-* `diffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the IP header, or zero if not connected.
 * `localIP()`: Returns the local IP of the network interface used for the
   client. Currently, This returns the same value as `Ethernet.localIP()`.
-* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
-  header, if connected. Returns `true` if connected and the option was set, and
-  `false` otherwise.
 * `status()`: Returns the current TCP connection state. This returns one of
   lwIP's `tcp_state` enum values. To use with _altcp_, define the
   `LWIP_DEBUG` macro.
@@ -345,6 +342,14 @@ The `Ethernet` object is the main Ethernet interface.
    `false` otherwise.
  * `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
    connection. Returns `false` if not connected.
+
+#### IP header values
+
+* `diffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the IP header, or zero if not connected.
+* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
+  header, if connected. Returns `true` if connected and the option was set, and
+  `false` otherwise.
 
 ### `EthernetServer`
 
@@ -374,9 +379,6 @@ listening and the port or _reuse_ options have changed.
 * `beginMulticastWithReuse(ip, localPort)`: Similar to
   `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
-* `diffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the IP header, or zero if the object hasn't yet been
-  set up.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
 * `receiveQueueSize()`: Returns the current receive queue size.
@@ -387,8 +389,6 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
-* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
-  header, setting up any necessary internal state. Returns whether successful.
 * `setReceiveQueueSize(size)`: Changes the receive queue size. The minimum
   possible value is 1 and the default is 1. If a value of zero is used, it will
   default to 1. If the new size is smaller than the number of items in the queue
@@ -403,6 +403,14 @@ listening and the port or _reuse_ options have changed.
 
 All the `begin` functions call `stop()` first only if the socket is currently
 listening and the local port or _reuse_ options have changed.
+
+#### IP header values
+
+* `diffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the IP header, or zero if the object hasn't yet been
+  set up.
+* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
+  header, setting up any necessary internal state. Returns whether successful.
 
 #### `parsePacket()` return values
 
