@@ -1899,6 +1899,8 @@ Input is welcome.
   `end()`/`begin(...)`. This is a vexing one.
   See also:
   [Restarting  · Issue #31 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/31)
+* Raw IP.
+* Ping.
 
 ## Code style
 
