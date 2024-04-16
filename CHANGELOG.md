@@ -23,6 +23,9 @@ and this project adheres to
   detecting whether the hardware is able to read the link state.
 * Added `EthernetClass::isLinkStateDetectable()` to detect whether the driver is
   capable of detecting link state.
+* Added `setDiffServ(ds)` and `diffServ()` functions for modifying and accessing
+  the differentiated services (DiffServ) field, respectively, in the IP header,
+  to `EthernetClient` and `EthernetUDP`.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7

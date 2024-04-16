@@ -221,6 +221,24 @@ EthernetUDP::operator bool() const {
   return listening_;
 }
 
+bool EthernetUDP::setDiffServ(uint8_t ds) {
+  if (pcb_ == nullptr) {
+    pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
+  }
+  if (pcb_ == nullptr) {
+    return false;
+  }
+  pcb_->tos = ds;
+  return true;
+}
+
+uint8_t EthernetUDP::diffServ() const {
+  if (pcb_ == nullptr) {
+    return 0;
+  }
+  return pcb_->tos;
+}
+
 void EthernetUDP::Packet::clear() {
   data.clear();
   addr = *IP_ANY_TYPE;

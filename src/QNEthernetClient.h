@@ -150,6 +150,17 @@ class EthernetClient : public Client {
   // returns false if not connected.
   bool isNoDelay();
 
+  // Sets the differentiated services (DiffServ, DS) field in the IP header. The
+  // top 6 bits are the differentiated services code point (DSCP) value, and the
+  // bottom 2 bits are the explicit congestion notification (ECN) value.
+  //
+  // This returns true if connected and the value was set, and false otherwise.
+  bool setDiffServ(uint8_t ds);
+
+  // Returns the differentiated services (DiffServ) value from the IP header.
+  // This will return zero if not connected.
+  uint8_t diffServ() const;
+
  private:
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.

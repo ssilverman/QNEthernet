@@ -143,6 +143,22 @@ class EthernetUDP : public UDP {
   // Returns whether the socket is listening.
   explicit operator bool() const;
 
+  // Sets the differentiated services (DiffServ, DS) field in the IP header. The
+  // top 6 bits are the differentiated services code point (DSCP) value, and the
+  // bottom 2 bits are the explicit congestion notification (ECN) value.
+  //
+  // This attempts to create the necessary internal state, if not already
+  // created, and returns whether successful. This will not be successful if the
+  // internal state could not be created.
+  //
+  // Other functions that create the internal state: begin(), beginWithReuse(),
+  // beginPacket(), and send().
+  bool setDiffServ(uint8_t ds);
+
+  // Returns the differentiated services (DiffServ) value from the IP header.
+  // This will return zero if the internal state has not yet been created.
+  uint8_t diffServ() const;
+
  private:
   struct Packet final {
     std::vector<uint8_t> data;

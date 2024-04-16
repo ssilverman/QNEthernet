@@ -320,8 +320,12 @@ The `Ethernet` object is the main Ethernet interface.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
 * `connectionTimeout()`: Returns the current timeout value.
+* `diffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the IP header, or zero if not connected.
 * `localIP()`: Returns the local IP of the network interface used for the
   client. Currently, This returns the same value as `Ethernet.localIP()`.
+* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
+  header, if connected.
 * `status()`: Returns the current TCP connection state. This returns one of
   lwIP's `tcp_state` enum values. To use with _altcp_, define the
   `LWIP_DEBUG` macro.
@@ -368,6 +372,9 @@ listening and the port or _reuse_ options have changed.
 * `beginMulticastWithReuse(ip, localPort)`: Similar to
   `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
+* `diffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the IP header, or zero if the object hasn't yet been
+  set up.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
 * `receiveQueueSize()`: Returns the current receive queue size.
@@ -378,6 +385,8 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
+* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
+  header, setting up any necessary internal state.
 * `setReceiveQueueSize(size)`: Changes the receive queue size. The minimum
   possible value is 1 and the default is 1. If a value of zero is used, it will
   default to 1. If the new size is smaller than the number of items in the queue

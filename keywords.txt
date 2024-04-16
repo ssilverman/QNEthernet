@@ -95,6 +95,8 @@ peek	KEYWORD2
 status	KEYWORD2	client.status
 setNoDelay	KEYWORD2
 isNoDelay	KEYWORD2
+setDiffServ	KEYWORD2
+diffServ	KEYWORD2
 maxListeners	KEYWORD2
 port	KEYWORD2
 beginWithReuse	KEYWORD2
