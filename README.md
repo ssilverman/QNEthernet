@@ -1872,6 +1872,8 @@ _QNEthernet_ library.
     1. Teensy 4.1
     2. W5500
 24. Straightforward to add new Ethernet frame drivers
+25. Ability to toggle Nagle's algorithm for TCP
+26. Ability to set the differentiated services (DiffServ) IP header field
 
 ## Other notes
 
