@@ -21,6 +21,9 @@
 #include "lwip/dns.h"
 #include "lwip/netif.h"
 #include "lwip/sys.h"
+#if LWIP_ALTCP
+#include "lwip/tcp.h"
+#endif  // LWIP_ALTCP
 #include "qnethernet_opts.h"
 #include "util/PrintUtils.h"
 #include "util/ip_tools.h"
@@ -229,7 +232,15 @@ bool EthernetClient::setDiffServ(uint8_t ds) {
     return false;
   }
 
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  static_cast<tcp_pcb *>(innermost->state)->tos = ds;
+#else
   state->pcb->tos = ds;
+#endif  // LWIP_ALTCP
   return true;
 }
 
@@ -243,7 +254,15 @@ uint8_t EthernetClient::diffServ() const {
     return 0;
   }
 
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  return static_cast<tcp_pcb *>(innermost->state)->tos;
+#else
   return state->pcb->tos;
+#endif  // LWIP_ALTCP
 }
 
 void EthernetClient::stop() {
