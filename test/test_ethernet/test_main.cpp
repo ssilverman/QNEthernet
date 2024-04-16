@@ -755,6 +755,19 @@ static void test_udp_state() {
                             "Expected default UDP max. sockets");
 }
 
+// Tests IP DiffServ value.
+static void test_udp_options() {
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+
+  udp = std::make_unique<EthernetUDP>();
+
+  TEST_ASSERT_TRUE(udp->setDiffServ(0xa5));
+  TEST_ASSERT_EQUAL(0xa5, udp->diffServ());
+  TEST_ASSERT_TRUE(udp->setDiffServ(0));
+  TEST_ASSERT_EQUAL(0, udp->diffServ());
+}
+
 static void test_client() {
 #define HOST "www.example.com"
   constexpr char kHost[]{HOST};
@@ -955,6 +968,34 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
 }
 
+// Tests Nagle option and IP DiffServ value.
+static void test_client_options() {
+  constexpr uint16_t kPort = 80;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected start success");
+  Ethernet.setLinkState(true);  // Use loopback
+
+  client = std::make_unique<EthernetClient>();
+
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+
+  // Connect
+  TEST_ASSERT_EQUAL_MESSAGE(1, client->connectNoWait(Ethernet.localIP(), kPort),
+                            "Expected connect success");
+
+  TEST_ASSERT_TRUE(client->setNoDelay(true));
+  TEST_ASSERT_TRUE(client->isNoDelay());
+  TEST_ASSERT_TRUE(client->setNoDelay(false));
+  TEST_ASSERT_FALSE(client->isNoDelay());
+
+  TEST_ASSERT_TRUE(client->setDiffServ(0xa5));
+  TEST_ASSERT_EQUAL(0xa5, client->diffServ());
+  TEST_ASSERT_TRUE(client->setDiffServ(0));
+  TEST_ASSERT_EQUAL(0, client->diffServ());
+}
+
 // Tests a variety of server object states.
 static void test_server_state() {
   constexpr uint16_t kPort = 1025;
@@ -1072,12 +1113,14 @@ void setup() {
   RUN_TEST(test_udp_receive_queueing);
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
+  RUN_TEST(test_udp_options);
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
   RUN_TEST(test_client_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_client_addr_info);
+  RUN_TEST(test_client_options);
   RUN_TEST(test_server_state);
   RUN_TEST(test_other_state);
   RUN_TEST(test_raw_frames);
