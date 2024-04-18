@@ -396,7 +396,7 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode);
 //
 // This will return false if:
 // 1. The channel is unknown, or
-// 3. The pulse width is not in the range 1-32.
+// 2. The pulse width is not in the range 1-32.
 bool driver_ieee1588_set_channel_output_pulse_width(int channel,
                                                     int pulseWidth);
 
