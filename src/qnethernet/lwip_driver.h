@@ -324,7 +324,7 @@ bool ieee1588_set_channel_mode(size_t channel, int mode);
 //
 // This will return false if:
 // 1. The channel is unknown, or
-// 3. The pulse width is not in the range 1-32.
+// 2. The pulse width is not in the range 1-32.
 bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
