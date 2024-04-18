@@ -1083,6 +1083,10 @@ _address-changed_, it's possible to watch for state changes using listeners, and
 then act on those state changes. This will make your application more robust and
 responsive to state changes during program operation.
 
+Note that callbacks should be registered before any other Ethernet functions are
+called. This ensures that all events are captured. This includes
+`Ethernet.begin(...)`.
+
 The relevant functions are (see the [`Ethernet`](#ethernet) section for further
 descriptions):
 1. `Ethernet.onLinkState(cb)`
