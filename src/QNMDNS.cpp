@@ -26,13 +26,16 @@ namespace network {
 STATIC_INIT_DEFN(MDNSClass, MDNS);
 
 static void srv_txt(struct mdns_service *service, void *txt_userdata) {
+  // TODO: Not clear yet why we need at least an empty TXT record for SRV to appear
   if (txt_userdata == nullptr) {
+    mdns_resp_add_service_txtitem(service, "", 0);
     return;
   }
 
   auto fn = reinterpret_cast<std::vector<String> (*)()>(txt_userdata);
   std::vector<String> list = fn();
   if (list.empty()) {
+    mdns_resp_add_service_txtitem(service, "", 0);
     return;
   }
 
