@@ -39,6 +39,8 @@ and this project adheres to
 * Improved link function documentation. `linkStatus()`, `linkState()`,
   and `isLinkStateDetectable()`.
 * Updated `EthernetClient::setNoDelay(flag)` to return whether successful.
+* Add another 1 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS, for a total of an
+  additional 7. Timeout exhaustion was still observed with 6.
 
 ### Fixed
 * Improved marking of unused parameters.

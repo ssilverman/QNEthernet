@@ -81,8 +81,8 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
     LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                        \
     (LWIP_IPV6*(1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
-// Increment MEMP_NUM_SYS_TIMEOUT by 6 for mDNS:
-#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (6))  /* LWIP_NUM_SYS_TIMEOUT_INTERNAL */
+// Increment MEMP_NUM_SYS_TIMEOUT by 7 for mDNS:
+#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (7))  /* LWIP_NUM_SYS_TIMEOUT_INTERNAL */
 #else
 // #define MEMP_NUM_SYS_TIMEOUT               LWIP_NUM_SYS_TIMEOUT_INTERNAL
 #endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
