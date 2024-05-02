@@ -57,7 +57,7 @@ static void attachLoopToYield() {
 #else
 // #warning "Need to hook into or replace yield()"
 // Example yield() implementation:
-void yield() {
+extern "C" void yield() {
   static bool busy = false;  // Prevent reentrancy
   if (!busy && Ethernet) {
     busy = true;
