@@ -625,6 +625,10 @@ bool driver_link_is_crossover() {
 
 // Outputs data from the MAC.
 err_t driver_output(struct pbuf *p) {
+  if (s_initState != EnetInitStates::kInitialized) {
+    return ERR_IF;
+  }
+
 #if ETH_PAD_SIZE
   pbuf_remove_header(p, ETH_PAD_SIZE);
 #endif  // ETH_PAD_SIZE
@@ -648,6 +652,10 @@ err_t driver_output(struct pbuf *p) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool driver_output_frame(const uint8_t *frame, size_t len) {
+  if (s_initState != EnetInitStates::kInitialized) {
+    return false;
+  }
+
   std::memcpy(s_frameBuf, frame, len);
   return send_frame(len);
 }
