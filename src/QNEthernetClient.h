@@ -47,17 +47,22 @@ class EthernetClient : public Client {
     return MEMP_NUM_TCP_PCB;
   }
 
+  // Returns a Boolean value.
   int connect(IPAddress ip, uint16_t port) final;
 
-  // Returns INVALID_SERVER (-2) if DNS is disabled.
+  // Returns false if DNS is disabled.
   int connect(const char *host, uint16_t port) final;
 
-  // These functions start the connection process but don't wait for the
-  // connection to be complete. Note that DNS lookup might still take some time.
-  // Neither of these will return TIMED_OUT (-1).
+  // Starts the connection process but doesn't wait for the connection to
+  // be complete.
+  //
+  // This returns a Boolean value.
   int connectNoWait(const IPAddress &ip, uint16_t port);
 
-  // Returns INVALID_SERVER (-2) if DNS is disabled.
+  // Starts the connection process but doesn't wait for the connection to
+  // be complete. Note that DNS lookup might still take some time.
+  //
+  // This returns a Boolean value, and false if DNS is disabled.
   int connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;  // Wish: Boolean return

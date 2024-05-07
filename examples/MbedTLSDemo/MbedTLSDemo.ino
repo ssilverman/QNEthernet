@@ -83,7 +83,7 @@ void setup() {
 
   // Connect and send the request
   printf("Connecting and sending request...\r\n");
-  if (client.connect(kHost, kPort) != 1) {
+  if (!client.connect(kHost, kPort)) {
     printf("Failed to connect\r\n");
     disconnectedPrintLatch = true;
   } else {

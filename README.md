@@ -986,23 +986,9 @@ for a non-blocking way to connect.
 
 The Arduino-style API,
 [here](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/),
-defines a set of possible return values for this function. Note that the example
-on that page is not correct (at the time of this writing) because it assumes
-that only a return value of '1' will evaluate to `true`. The C++ spec,
-[here](https://en.cppreference.com/w/cpp/language/implicit_conversion#Boolean_conversions),
-however, says that all non-zero numeric values will be converted to `true`. The
-example, therefore, assumes that a successful connection has been made even if
-an error code was returned.
-
-Currently, _QNEthernet's_ implementation of this function will return one of the
-following values:
-
-| Value | Meaning                                                               | Arduino Name   |
-| ----: | --------------------------------------------------------------------- | -------------- |
-|     1 | Success                                                               | SUCCESS        |
-|     0 | Can't create connection (eg. no more sockets, network isn't up, etc.) | _None_         |
-|    -1 | Connection timeout                                                    | TIMED_OUT      |
-|    -2 | DNS lookup failed for the given name                                  | INVALID_SERVER |
+used to define a set of possible `int` return values for this function, but now
+it returns a Boolean value indicating success. Note that the function signatures
+still return an `int`.
 
 ### Non-blocking connection functions, `connectNoWait()`
 

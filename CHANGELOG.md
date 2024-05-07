@@ -41,6 +41,10 @@ and this project adheres to
 * Updated `EthernetClient::setNoDelay(flag)` to return whether successful.
 * Add another 1 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS, for a total of an
   additional 7. Timeout exhaustion was still observed with 6.
+* Updated `EthernetClient::connect()` to return a Boolean value. (The function
+  signatures don't change; they still return an `int`.) This matches the new
+  definition at
+  [Ethernet - client.connect()](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/).
 
 ### Fixed
 * Improved marking of unused parameters.

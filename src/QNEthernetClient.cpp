@@ -33,19 +33,12 @@ extern "C" void yield();
 namespace qindesign {
 namespace network {
 
-// connect() return values.
-// See: https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/
-// Note: The example on that page is not correct. Because non-zero values,
-//       including negative values, are converted to a value of 'true' when
-//       using them as a bool, it assumes a successful connection even when
-//       connect() returns an error.
-enum class ConnectReturns {
-  SUCCESS          =  1,
-  TIMED_OUT        = -1,
-  INVALID_SERVER   = -2,
-  TRUNCATED        = -3,
-  INVALID_RESPONSE = -4,
-};
+// Old connect() return values:
+//   SUCCESS          =  1
+//   TIMED_OUT        = -1
+//   INVALID_SERVER   = -2
+//   TRUNCATED        = -3
+//   INVALID_RESPONSE = -4
 
 EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
@@ -69,7 +62,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
 #else
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(port);
-  return 0;
+  return false;
 #endif  // LWIP_IPV4
 }
 
@@ -78,13 +71,14 @@ int EthernetClient::connect(const char *host, uint16_t port) {
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
                                 QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
-    return static_cast<int>(ConnectReturns::INVALID_SERVER);
+    // INVALID_SERVER (-2)
+    return false;
   }
   return connect(ip, port);
 #else
   LWIP_UNUSED_ARG(host);
   LWIP_UNUSED_ARG(port);
-  return static_cast<int>(ConnectReturns::INVALID_SERVER);
+  return false;
 #endif  // LWIP_DNS
 }
 
@@ -95,7 +89,7 @@ int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 #else
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(port);
-  return 0;
+  return false;
 #endif  // LWIP_IPV4
 }
 
@@ -104,13 +98,14 @@ int EthernetClient::connectNoWait(const char *host, uint16_t port) {
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
                                 QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
-    return static_cast<int>(ConnectReturns::INVALID_SERVER);
+    // INVALID_SERVER (-2)
+    return false;
   }
   return connectNoWait(ip, port);
 #else
   LWIP_UNUSED_ARG(host);
   LWIP_UNUSED_ARG(port);
-  return static_cast<int>(ConnectReturns::INVALID_SERVER);
+  return false;
 #endif  // LWIP_DNS
 }
 
@@ -120,7 +115,7 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
 
   conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
-    return 0;
+    return false;
   }
 
   pendingConnect_ = !wait;
@@ -136,11 +131,13 @@ int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
     }
     if (conn_ == nullptr || !conn_->connected) {
       close();
-      return static_cast<int>(ConnectReturns::TIMED_OUT);
+      // TIMED_OUT (-1)
+      return false;
     }
   }
 
-  return static_cast<int>(ConnectReturns::SUCCESS);
+  // SUCCESS (1)
+  return true;
 }
 
 bool EthernetClient::watchPendingConnect() {

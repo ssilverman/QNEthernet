@@ -100,7 +100,7 @@ void setup() {
     client.setConnectionTimeout(30'000);  // Proxies can take longer, maybe
   }
 #endif  // LWIP_ALTCP
-  if (client.connect(kHost, kPort) != 1) {
+  if (!client.connect(kHost, kPort)) {
     printf("Failed to connect\r\n");
     disconnectedPrintLatch = true;
   } else {
