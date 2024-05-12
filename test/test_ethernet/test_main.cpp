@@ -1039,6 +1039,9 @@ static void test_raw_frames() {
   Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
 
+  // Check that there's nothing there.
+  TEST_ASSERT_EQUAL_MESSAGE(-1, EthernetFrame.parseFrame(), "Expected nothing there");
+
   // Create and listen
   EthernetFrame.beginFrame(Ethernet.macAddress(), srcMAC, sizeof(data));
   EthernetFrame.write(data, sizeof(data));
@@ -1051,12 +1054,7 @@ static void test_raw_frames() {
   TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.parseFrame());
   TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.size());
 
-  // This check shouldn't be necessary
-  // I don't know if it's some compiler ordering thing, or if it's something to
-  // do with how Unity works, but when raw frame loopback is not enabled, the
-  // program crashes when accessing the frame data, even if the above checks
-  // fail and the code below shouldn't execute
-  if (EthernetFrame.size() > 0) {
+  if (EthernetFrame.size() > 0) {  // Avoid potentially accessing NULL data
     const uint8_t *frameData = EthernetFrame.data();
     TEST_ASSERT_EQUAL_UINT8_ARRAY(Ethernet.macAddress(), &frameData[0], 6);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(srcMAC, &frameData[6], 6);
