@@ -133,7 +133,8 @@ class EthernetFrameClass final : public Stream {
   size_t size() const;
 
   // Returns a pointer to the received frame data. This is only valid if a frame
-  // has been received with parseFrame() or has been created.
+  // has been received with parseFrame() or has been created. This may return
+  // NULL if the size is zero.
   const uint8_t *data() const;
 
   // Returns the approximate frame arrival time, measured with sys_now(). This

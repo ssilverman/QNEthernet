@@ -126,7 +126,8 @@ class EthernetUDP : public UDP {
   size_t size() const;
 
   // Returns a pointer to the received packet data. This is only valid if a
-  // packet has been received with parsePacket().
+  // packet has been received with parsePacket(). This may return NULL if the
+  // size is zero.
   const uint8_t *data() const;
 
   IPAddress remoteIP() final;
