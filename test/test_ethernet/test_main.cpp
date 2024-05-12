@@ -795,7 +795,7 @@ static void test_client() {
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
-  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
   client->writeFully(kRequest);
@@ -843,7 +843,7 @@ static void test_client_write_single_bytes() {
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
   uint32_t t = millis();
-  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
 
@@ -905,7 +905,7 @@ static void test_client_timeout() {
   TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
 
   uint32_t t = millis();
-  TEST_ASSERT_EQUAL_MESSAGE(-1, client->connect(Ethernet.localIP(), kPort), "Expected timeout");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connect(Ethernet.localIP(), kPort), "Expected connect failure");
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1000, millis() - t, "Expected timeout duration");
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
@@ -950,7 +950,7 @@ static void test_client_addr_info() {
   TEST_MESSAGE("Connecting...");
   client->setConnectionTimeout(kConnectTimeout);
   t = millis();
-  TEST_ASSERT_EQUAL_MESSAGE(1, client->connect(hostIP, kPort), "Expected connect success");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(hostIP, kPort), "Expected connect success");
   t = millis() - t;
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", t).data());
