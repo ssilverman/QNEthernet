@@ -64,6 +64,7 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   packet.addr = *addr;
   packet.port = port;
   packet.receivedTimestamp = timestamp;
+  packet.diffServ = pcb->tos;
 
   // Increment the size
   if (udp->inBufSize_ != 0 && udp->inBufTail_ == udp->inBufHead_) {
@@ -227,7 +228,7 @@ EthernetUDP::operator bool() const {
   return listening_;
 }
 
-bool EthernetUDP::setDiffServ(uint8_t ds) {
+bool EthernetUDP::setOutgoingDiffServ(uint8_t ds) {
   tryCreatePCB();
   if (pcb_ == nullptr) {
     return false;
@@ -236,7 +237,7 @@ bool EthernetUDP::setDiffServ(uint8_t ds) {
   return true;
 }
 
-uint8_t EthernetUDP::diffServ() const {
+uint8_t EthernetUDP::outgoingDiffServ() const {
   if (pcb_ == nullptr) {
     return 0;
   }
@@ -346,6 +347,10 @@ uint16_t EthernetUDP::remotePort() {
 
 uint32_t EthernetUDP::receivedTimestamp() const {
   return packet_.receivedTimestamp;
+}
+
+uint8_t EthernetUDP::receivedDiffServ() const {
+  return packet_.diffServ;
 }
 
 // --------------------------------------------------------------------------

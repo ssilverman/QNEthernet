@@ -20,6 +20,7 @@
 #include <Print.h>
 
 #include "internal/ConnectionHolder.h"
+#include "internal/DiffServ.h"
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
 
@@ -28,7 +29,7 @@ namespace network {
 
 class EthernetServer;
 
-class EthernetClient : public Client {
+class EthernetClient : public Client, public internal::DiffServ {
  public:
   EthernetClient();
   ~EthernetClient();
@@ -157,18 +158,19 @@ class EthernetClient : public Client {
   // returns false if not connected.
   bool isNoDelay();
 
-  // Sets the differentiated services (DiffServ, DS) field in the IP header. The
-  // top 6 bits are the differentiated services code point (DSCP) value, and the
-  // bottom 2 bits are the explicit congestion notification (ECN) value.
+  // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
+  // header. The top 6 bits are the differentiated services code point (DSCP)
+  // value, and the bottom 2 bits are the explicit congestion notification
+  // (ECN) value.
   //
   // This returns true if connected and the value was set, and false otherwise.
   //
   // Note that this must be set for each new connection.
-  bool setDiffServ(uint8_t ds);
+  bool setOutgoingDiffServ(uint8_t ds) final;
 
-  // Returns the differentiated services (DiffServ) value from the IP header.
-  // This will return zero if not connected.
-  uint8_t diffServ() const;
+  // Returns the differentiated services (DiffServ) value from the outgoing IP
+  // header. This will return zero if not connected.
+  uint8_t outgoingDiffServ() const final;
 
  private:
   // Sets up an already-connected client. If the holder is NULL then a new

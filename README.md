@@ -345,11 +345,11 @@ The `Ethernet` object is the main Ethernet interface.
 
 #### IP header values
 
-* `diffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the IP header, or zero if not connected.
-* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
-  header, if connected. Returns `true` if connected and the option was set, and
-  `false` otherwise.
+* `outgoingDiffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the outgoing IP header, or zero if not connected.
+* `outgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field in
+  the outgoing IP header, if connected. Returns `true` if connected and the
+  option was set, and `false` otherwise.
 
 ### `EthernetServer`
 
@@ -406,11 +406,13 @@ listening and the local port or _reuse_ options have changed.
 
 #### IP header values
 
-* `diffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the IP header, or zero if the object hasn't yet been
-  set up.
-* `setDiffServ(ds)`: Sets the differentiated services (DiffServ) field in the IP
-  header, setting up any necessary internal state. Returns whether successful.
+* `outgoingDiffServ()`: Returns the current value of the differentiated services
+  (DiffServ) field from the outgoing IP header, or zero if the object hasn't yet
+  been set up.
+* `receivedDiffServ()`: Returns the DiffServ value of the last received packet.
+* `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
+  in the outgoing IP header, setting up any necessary internal state. Returns
+  whether successful.
 
 #### `parsePacket()` return values
 

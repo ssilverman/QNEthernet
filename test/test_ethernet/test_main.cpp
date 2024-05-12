@@ -762,10 +762,10 @@ static void test_udp_options() {
 
   udp = std::make_unique<EthernetUDP>();
 
-  TEST_ASSERT_TRUE(udp->setDiffServ(0xa5));
-  TEST_ASSERT_EQUAL(0xa5, udp->diffServ());
-  TEST_ASSERT_TRUE(udp->setDiffServ(0));
-  TEST_ASSERT_EQUAL(0, udp->diffServ());
+  TEST_ASSERT_TRUE(udp->setOutgoingDiffServ(0xa5));
+  TEST_ASSERT_EQUAL(0xa5, udp->outgoingDiffServ());
+  TEST_ASSERT_TRUE(udp->setOutgoingDiffServ(0));
+  TEST_ASSERT_EQUAL(0, udp->outgoingDiffServ());
 }
 
 static void test_client() {
@@ -990,10 +990,10 @@ static void test_client_options() {
   TEST_ASSERT_TRUE(client->setNoDelay(false));
   TEST_ASSERT_FALSE(client->isNoDelay());
 
-  TEST_ASSERT_TRUE(client->setDiffServ(0xa5));
-  TEST_ASSERT_EQUAL(0xa5, client->diffServ());
-  TEST_ASSERT_TRUE(client->setDiffServ(0));
-  TEST_ASSERT_EQUAL(0, client->diffServ());
+  TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0xa5));
+  TEST_ASSERT_EQUAL(0xa5, client->outgoingDiffServ());
+  TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0));
+  TEST_ASSERT_EQUAL(0, client->outgoingDiffServ());
 }
 
 // Tests a variety of server object states.

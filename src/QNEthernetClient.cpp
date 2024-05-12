@@ -219,7 +219,7 @@ bool EthernetClient::isNoDelay() {
   return altcp_nagle_disabled(state->pcb);
 }
 
-bool EthernetClient::setDiffServ(uint8_t ds) {
+bool EthernetClient::setOutgoingDiffServ(uint8_t ds) {
   if (conn_ == nullptr) {
     return false;
   }
@@ -241,7 +241,7 @@ bool EthernetClient::setDiffServ(uint8_t ds) {
   return true;
 }
 
-uint8_t EthernetClient::diffServ() const {
+uint8_t EthernetClient::outgoingDiffServ() const {
   if (conn_ == nullptr) {
     return 0;
   }

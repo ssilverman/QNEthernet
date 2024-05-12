@@ -18,13 +18,14 @@
 #include <IPAddress.h>
 #include <Udp.h>
 
+#include "internal/DiffServ.h"
 #include "lwip/ip_addr.h"
 #include "lwip/udp.h"
 
 namespace qindesign {
 namespace network {
 
-class EthernetUDP : public UDP {
+class EthernetUDP : public UDP, public internal::DiffServ {
  public:
   EthernetUDP();
 
@@ -144,9 +145,10 @@ class EthernetUDP : public UDP {
   // Returns whether the socket is listening.
   explicit operator bool() const;
 
-  // Sets the differentiated services (DiffServ, DS) field in the IP header. The
-  // top 6 bits are the differentiated services code point (DSCP) value, and the
-  // bottom 2 bits are the explicit congestion notification (ECN) value.
+  // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
+  // header. The top 6 bits are the differentiated services code point (DSCP)
+  // value, and the bottom 2 bits are the explicit congestion notification
+  // (ECN) value.
   //
   // This attempts to create the necessary internal state, if not already
   // created, and returns whether successful. This will not be successful if the
@@ -156,14 +158,20 @@ class EthernetUDP : public UDP {
   // beginPacket(), and send().
   //
   // Note that this must be set again after calling stop().
-  bool setDiffServ(uint8_t ds);
+  bool setOutgoingDiffServ(uint8_t ds) final;
 
-  // Returns the differentiated services (DiffServ) value from the IP header.
-  // This will return zero if the internal state has not yet been created.
-  uint8_t diffServ() const;
+  // Returns the differentiated services (DiffServ) value from the outgoing IP
+  // header. This will return zero if the internal state has not yet
+  // been created.
+  uint8_t outgoingDiffServ() const final;
+
+  // Returns the received packet's DiffServ value. This is only valid if a
+  // packet has been received with parsePacket().
+  uint8_t receivedDiffServ() const;
 
  private:
   struct Packet final {
+    uint8_t diffServ = 0;
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
