@@ -822,7 +822,7 @@ static void test_client() {
   TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(), "Expected set timeout");
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
@@ -849,7 +849,7 @@ static void test_client() {
   UNITY_PRINT_EOL();
   TEST_MESSAGE(format("Read and print response time: %" PRIu32 "ms", millis() - t).data());
 
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no more data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no more data)");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
 }
 
@@ -914,14 +914,14 @@ static void test_client_connectNoWait() {
   client = std::make_unique<EthernetClient>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 
   // Connect
   TEST_MESSAGE("Connecting ...");
-  TEST_ASSERT_EQUAL_MESSAGE(1, client->connectNoWait(Ethernet.localIP(), kPort),
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connectNoWait(Ethernet.localIP(), kPort),
                             "Expected connect success");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 }
 
 static void test_client_timeout() {
@@ -934,14 +934,14 @@ static void test_client_timeout() {
   client = std::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 
   uint32_t t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connect(Ethernet.localIP(), kPort), "Expected connect failure");
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1000, millis() - t, "Expected timeout duration");
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 }
 
 // Tests a variety of client object states.
@@ -1011,10 +1011,10 @@ static void test_client_options() {
   client = std::make_unique<EthernetClient>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 
   // Connect
-  TEST_ASSERT_EQUAL_MESSAGE(1, client->connectNoWait(Ethernet.localIP(), kPort),
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connectNoWait(Ethernet.localIP(), kPort),
                             "Expected connect success");
 
   TEST_ASSERT_TRUE(client->setNoDelay(true));
