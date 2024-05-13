@@ -769,6 +769,37 @@ static void test_udp_options() {
   TEST_ASSERT_EQUAL(0, udp->outgoingDiffServ());
 }
 
+static void test_udp_zero_length() {
+  constexpr uint16_t kPort = 1025;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
+
+  // Create and listen
+  udp = std::make_unique<EthernetUDP>();
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
+
+  TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected nothing there");
+
+  // Send a packet with send()
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, nullptr, 0),
+                           "Expected packet send success");
+
+  // Test that we actually received the packet
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->parsePacket(), "Expected packet with size 0");
+
+  // Send a packet with beginPacket()/endPacket()
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->beginPacket(Ethernet.localIP(), kPort),
+                           "Expected beginPacket() success");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->endPacket(), "Expected endPacket() success");
+
+  // Test that we actually received the packet
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->parsePacket(), "Expected packet with size 0");
+
+  TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected nothing there");
+}
+
 static void test_client() {
 #define HOST "www.example.com"
   constexpr char kHost[]{HOST};
@@ -1113,6 +1144,7 @@ void setup() {
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
   RUN_TEST(test_udp_options);
+  RUN_TEST(test_udp_zero_length);
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
