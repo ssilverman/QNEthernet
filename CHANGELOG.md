@@ -50,6 +50,7 @@ and this project adheres to
   signatures don't change; they still return an `int`.) This matches the new
   definition at
   [Ethernet - client.connect()](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/).
+* Changed `EthernetClient::connectNoWait()` return types to `bool`.
 
 ### Fixed
 * Improved marking of unused parameters.

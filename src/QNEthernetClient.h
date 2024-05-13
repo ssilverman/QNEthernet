@@ -56,15 +56,13 @@ class EthernetClient : public Client, public internal::DiffServ {
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete.
-  //
-  // This returns a Boolean value.
-  int connectNoWait(const IPAddress &ip, uint16_t port);
+  bool connectNoWait(const IPAddress &ip, uint16_t port);
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete. Note that DNS lookup might still take some time.
   //
-  // This returns a Boolean value, and false if DNS is disabled.
-  int connectNoWait(const char *host, uint16_t port);
+  // This returns false if DNS is disabled.
+  bool connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
@@ -178,7 +176,7 @@ class EthernetClient : public Client, public internal::DiffServ {
   explicit EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
-  int connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);
+  bool connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);
 
   // Checks if there's a pending connection. If there is, the state is modified
   // appropriately. This returns false if the connection is inactive; 'conn_' is

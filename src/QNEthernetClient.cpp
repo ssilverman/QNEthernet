@@ -82,7 +82,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 #endif  // LWIP_DNS
 }
 
-int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
+bool EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 #if LWIP_IPV4
   ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
   return connect(&ipaddr, port, false);
@@ -93,7 +93,7 @@ int EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 #endif  // LWIP_IPV4
 }
 
-int EthernetClient::connectNoWait(const char *host, uint16_t port) {
+bool EthernetClient::connectNoWait(const char *host, uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -109,7 +109,7 @@ int EthernetClient::connectNoWait(const char *host, uint16_t port) {
 #endif  // LWIP_DNS
 }
 
-int EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
+bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) {
   // First close any existing connection (without waiting)
   close();
 
