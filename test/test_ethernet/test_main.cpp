@@ -800,6 +800,33 @@ static void test_udp_zero_length() {
   TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected nothing there");
 }
 
+static void test_udp_diffserv() {
+  constexpr uint16_t kPort = 1025;
+  constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
+
+  // Create and listen
+  udp = std::make_unique<EthernetUDP>();
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
+  udp->setOutgoingDiffServ(kDiffServ);
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->outgoingDiffServ(),
+                                  "Expected correct outgoing DiffServ");
+
+  uint8_t b = 13;
+
+  // Send a packet
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
+                           "Expected packet send success");
+
+  // Test that we actually received the packet
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->receivedDiffServ(), "Expected matching DiffServ");
+}
+
 static void test_client() {
 #define HOST "www.example.com"
   constexpr char kHost[]{HOST};
@@ -1029,6 +1056,34 @@ static void test_client_options() {
   TEST_ASSERT_EQUAL(0, client->outgoingDiffServ());
 }
 
+static void test_client_diffserv() {
+  constexpr uint16_t kPort = 80;
+  constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
+  constexpr char kHost[]{"www.example.com"};
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  client = std::make_unique<EthernetClient>();
+  client->setConnectionTimeout(kConnectTimeout);
+
+  // Check that can't set DiffServ before connect
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_FALSE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can't set DiffServ");
+
+  // Connect and set DiffServ
+  TEST_MESSAGE("Connecting ...");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, client->outgoingDiffServ(), "Expected matching DiffServ");
+
+  client->stop();
+}
+
 // Tests a variety of server object states.
 static void test_server_state() {
   constexpr uint16_t kPort = 1025;
@@ -1146,6 +1201,7 @@ void setup() {
   RUN_TEST(test_udp_state);
   RUN_TEST(test_udp_options);
   RUN_TEST(test_udp_zero_length);
+  RUN_TEST(test_udp_diffserv);
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
@@ -1153,6 +1209,7 @@ void setup() {
   RUN_TEST(test_client_state);
   RUN_TEST(test_client_addr_info);
   RUN_TEST(test_client_options);
+  RUN_TEST(test_client_diffserv);
   RUN_TEST(test_server_state);
   RUN_TEST(test_other_state);
   RUN_TEST(test_raw_frames);
