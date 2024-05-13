@@ -413,7 +413,12 @@ int EthernetUDP::endPacket() {
     return false;
   }
 
-  pbuf_take(p, outPacket_.data.data(), outPacket_.data.size());
+  // pbuf_take() considers NULL data an error
+  if (!outPacket_.data.empty() &&
+      pbuf_take(p, outPacket_.data.data(), outPacket_.data.size()) != ERR_OK) {
+    pbuf_free(p);
+    return false;
+  }
   err_t err;
 
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
@@ -481,7 +486,11 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
     return false;
   }
 
-  pbuf_take(p, data, len);
+  // pbuf_take() considers NULL data an error
+  if (len != 0 && pbuf_take(p, data, len) != ERR_OK) {
+    pbuf_free(p);
+    return false;
+  }
   err_t err;
 
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
