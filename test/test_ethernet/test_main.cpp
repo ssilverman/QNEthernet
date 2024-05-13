@@ -706,6 +706,8 @@ static void test_udp_receive_queueing() {
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 3, "Expected packet 3 data");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 4 with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 4, "Expected packet 4 data");
+
+  udp->stop();
 }
 
 static void test_udp_receive_timestamp() {
@@ -732,6 +734,8 @@ static void test_udp_receive_timestamp() {
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
 
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(), "Expected valid timestamp");
+
+  udp->stop();
 }
 
 // Tests a variety of UDP object states.
@@ -754,6 +758,8 @@ static void test_udp_state() {
 
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_UDP_PCB, EthernetUDP::maxSockets(),
                             "Expected default UDP max. sockets");
+
+  udp->stop();
 }
 
 // Tests IP DiffServ value.
@@ -798,6 +804,8 @@ static void test_udp_zero_length() {
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->parsePacket(), "Expected packet with size 0");
 
   TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected nothing there");
+
+  udp->stop();
 }
 
 static void test_udp_diffserv() {
@@ -825,6 +833,8 @@ static void test_udp_diffserv() {
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->receivedDiffServ(), "Expected matching DiffServ");
+
+  udp->stop();
 }
 
 static void test_client() {
@@ -950,6 +960,8 @@ static void test_client_connectNoWait() {
                             "Expected connect success");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
+
+  client->close();
 }
 
 static void test_client_timeout() {
@@ -970,6 +982,8 @@ static void test_client_timeout() {
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
+
+  client->close();
 }
 
 // Tests a variety of client object states.
@@ -1054,6 +1068,8 @@ static void test_client_options() {
   TEST_ASSERT_EQUAL(0xa5, client->outgoingDiffServ());
   TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0));
   TEST_ASSERT_EQUAL(0, client->outgoingDiffServ());
+
+  client->close();
 }
 
 static void test_client_diffserv() {
@@ -1081,7 +1097,7 @@ static void test_client_diffserv() {
   TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, client->outgoingDiffServ(), "Expected matching DiffServ");
 
-  client->stop();
+  client->close();
 }
 
 // Tests a variety of server object states.
