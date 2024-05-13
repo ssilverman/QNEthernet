@@ -77,6 +77,7 @@ void tearDown() {
   udp = nullptr;
   client = nullptr;
   server = nullptr;
+  EthernetFrame.clear();
 
   // Remove any listeners before calling Ethernet.end()
   // This avoids accessing any out-of-scope variables
