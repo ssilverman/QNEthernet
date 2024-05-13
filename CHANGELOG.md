@@ -59,6 +59,9 @@ and this project adheres to
 * In mDNS, ensure there's at least an empty TXT record, otherwise the SRV record
   doesn't appear.
 * Make the alternative `yield()` implementation `extern "C"`.
+* Fixed `EthernetUDP` data copy for zero-length outgoing packets. `pbuf_take()`
+  considers NULL data an error, so only copy the data if the packet's size is
+  not zero.
 
 ## [0.27.0]
 
