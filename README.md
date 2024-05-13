@@ -457,6 +457,7 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `beginVLANFrame(dstAddr, srcAddr, vlanInfo, typeOrLen)`: Starts a new
   VLAN-tagged frame and writes the given addresses, VLAN info, and
   EtherType/length.
+* `clear()`: Clears the outgoing and incoming buffers.
 * `data()`: Returns a pointer to the frame data.
 * `destinationMAC()`: Returns a pointer to the destination MAC.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A

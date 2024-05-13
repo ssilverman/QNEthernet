@@ -187,6 +187,9 @@ class EthernetFrameClass final : public Stream {
     return inBuf_.size();
   }
 
+  // Clears any outgoing packet and the incoming queue.
+  void clear();
+
  private:
   struct Frame final {
     std::vector<uint8_t> data;

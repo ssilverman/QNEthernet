@@ -92,6 +92,20 @@ void EthernetFrameClass::Frame::clear() {
   receivedTimestamp = 0;
 }
 
+void EthernetFrameClass::clear() {
+  // Outgoing
+  hasOutFrame_ = false;
+  outFrame_.clear();
+
+  // Incoming
+  for (Frame &f : inBuf_) {
+    f.clear();
+  }
+  inBufTail_ = 0;
+  inBufHead_ = 0;
+  inBufSize_ = 0;
+}
+
 // --------------------------------------------------------------------------
 //  Reception
 // --------------------------------------------------------------------------

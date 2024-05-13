@@ -29,6 +29,8 @@ and this project adheres to
   and `EthernetUDP`.
 * Added `EthernetUDP::receivedDiffServ()` for retrieving the DiffServ value of
   the last received packet.
+* Added `EthernetFrameClass::clear()` for clearing the outgoing and
+  incoming buffers.
 
 ### Changed
 * Updated the Mbed TLS version in the README and comments to 2.28.7
