@@ -829,6 +829,7 @@ static void test_client() {
   uint32_t t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
   client->writeFully(kRequest);
   client->flush();
