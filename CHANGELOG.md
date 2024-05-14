@@ -41,7 +41,7 @@ and this project adheres to
 * Improved the _PixelPusherServer_ example.
 * The address-changed callback is now called for independent IP address,
   netmask, and gateway changes.
-* Improved link function documentation. `linkStatus()`, `linkState()`,
+* Improved link function documentation for `linkStatus()`, `linkState()`,
   and `isLinkStateDetectable()`.
 * Updated `EthernetClient::setNoDelay(flag)` to return whether successful.
 * Add another 2 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS, for a total of an
