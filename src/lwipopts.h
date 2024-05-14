@@ -81,8 +81,11 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
     LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS +                        \
     (LWIP_IPV6*(1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD + LWIP_IPV6_DHCP6)))*/
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
-// Increment MEMP_NUM_SYS_TIMEOUT by 7 for mDNS:
-#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (7))  /* LWIP_NUM_SYS_TIMEOUT_INTERNAL */
+// Increment MEMP_NUM_SYS_TIMEOUT by 8 for mDNS
+// Refs:
+// * https://lists.nongnu.org/archive/html/lwip-users/2024-05/msg00000.html
+// * https://savannah.nongnu.org/patch/?9523#comment18
+#define MEMP_NUM_SYS_TIMEOUT               ((LWIP_NUM_SYS_TIMEOUT_INTERNAL) + (8))  /* LWIP_NUM_SYS_TIMEOUT_INTERNAL */
 #else
 // #define MEMP_NUM_SYS_TIMEOUT               LWIP_NUM_SYS_TIMEOUT_INTERNAL
 #endif  // !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
@@ -547,7 +550,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 #ifndef LWIP_MDNS_RESPONDER
 #define LWIP_MDNS_RESPONDER LWIP_UDP && LWIP_IGMP  /* 0 */
 // If you change LWIP_MDNS_RESPONDER to zero here then:
-// 1. Reduce MEMP_NUM_SYS_TIMEOUT by 6
+// 1. Reduce MEMP_NUM_SYS_TIMEOUT by 8
 // 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
 // 3. Reduce LWIP_NUM_NETIF_CLIENT_DATA by 1
 // 4. Optionally reduce MEMP_NUM_UDP_PCB by 1
