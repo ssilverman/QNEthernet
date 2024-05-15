@@ -1374,7 +1374,7 @@ Currently, this file is only built if the `LWIP_ALTCP`, `LWIP_ALTCP_TLS`, and
 
 The lwIP distribution comes with a way to use the Mbed TLS library as an ALTCP
 TLS layer. It currently only supports the 2.x.x versions; as of this writing,
-the latest version is 2.28.7.
+the latest version is 2.28.8.
 
 More detailed information are in the subsections below, but here is an outline
 of how to use this feature:
@@ -1393,11 +1393,11 @@ of how to use this feature:
 
 Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest 2.x.x version (current as
-of this writing is 2.28.7): http://github.com/Mbed-TLS/mbedtls
+of this writing is 2.28.8): http://github.com/Mbed-TLS/mbedtls
 
-See the `v2.28.7` or `mbedtls-2.28.7` tags for the 2.28.7 version, or the
+See the `v2.28.8` or `mbedtls-2.28.8` tags for the 2.28.8 version, or the
 `mbedtls-2.28` branch for the latest 2.28.x version. The `development` and
-`master` branches currently point to version 3.5.x.
+`master` branches currently point to version 3.6.x.
 
 ##### Mbed TLS library install for Arduino IDE
 
@@ -1416,7 +1416,7 @@ Next, create an empty _mbedtls.h_ file inside _"Libraries"/mbedtls/src/_.
 Next, create a _library.properties_ file inside _"Libraries"/mbedtls/_:
 ```properties
 name=Mbed TLS
-version=2.28.7
+version=2.28.8
 sentence=Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols.
 paragraph=Its small code footprint makes it suitable for embedded systems.
 category=Communication
@@ -1460,7 +1460,7 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
 ```json
 {
   "name": "Mbed TLS",
-  "version": "2.28.7",
+  "version": "2.28.8",
   "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
   "keywords": [
     "tls", "networking"
