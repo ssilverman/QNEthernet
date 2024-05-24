@@ -51,9 +51,6 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
     case PixelPusherServer::Commands::GLOBALBRIGHTNESS_SET:
       if (len >= 2) {
         std::memcpy(&globalBri_, data, 2);
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        globalBri_ = __builtin_bswap16(globalBri_);
-#endif  // Big-endian
       }
       break;
     case PixelPusherServer::Commands::LED_CONFIGURE:
@@ -68,14 +65,8 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
       if (len >= 32) {
         uint16_t n;
         std::memcpy(&n, &data[24], 2);
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        n = __builtin_bswap16(n);
-#endif  // Big-endian
         pp_.setGroupNum(n);
         std::memcpy(&n, &data[26], 2);
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        n = __builtin_bswap16(n);
-#endif  // Big-endian
         pp_.setControllerNum(n);
       }
       break;

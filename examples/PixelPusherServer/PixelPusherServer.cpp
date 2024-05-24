@@ -166,9 +166,6 @@ void PixelPusherServer::loop() {
 
   uint32_t seq;
   std::memcpy(&seq, data, 4);
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-  seq = __builtin_bswap32(seq);
-#endif  // Big-endian
   data += 4;
   size -= 4;
 
