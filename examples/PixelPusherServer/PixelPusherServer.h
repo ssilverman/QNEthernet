@@ -63,9 +63,9 @@ class PixelPusherServer final {
 
   enum StripTypes : uint8_t {
     LPD8806 = 0,
-    WS2801 = 1,
-    WS2811 = 2,
-    APA102 = 3,
+    WS2801  = 1,
+    WS2811  = 2,
+    APA102  = 3,
   };
 
   // The default port on which to receive pixel data.
@@ -111,7 +111,7 @@ class PixelPusherServer final {
 
  private:
   enum DeviceTypes : uint8_t {
-    ETHERDREAM = 0,
+    ETHERDREAM  = 0,
     LUMIABRIDGE = 1,
     PIXELPUSHER = 2,
   };
@@ -168,7 +168,7 @@ class PixelPusherServer final {
     void loop() override {}
   };
 
-  static constexpr uint32_t kDiscoveryPeriod = 1'000;
+  static constexpr uint32_t kDiscoveryPeriod = 1'000;  // In milliseconds
 
   static constexpr uint16_t kSoftwareRevision = 142;
 

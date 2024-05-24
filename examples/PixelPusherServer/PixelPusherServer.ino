@@ -30,11 +30,11 @@ using namespace qindesign::network;
 constexpr size_t kNumStrips      = 8;
 constexpr size_t kPixelsPerStrip = 240;
 // ----
-constexpr int kControllerNum = 0;
-constexpr int kGroupNum      = 0;
-constexpr uint16_t kVendorId  = 0;
-constexpr uint16_t kProductId = 0;
-constexpr uint16_t kHWRev     = 0;
+constexpr int      kControllerNum  = 0;
+constexpr int      kGroupNum       = 0;
+constexpr uint16_t kVendorId       = 0;
+constexpr uint16_t kProductId      = 0;
+constexpr uint16_t kHWRev          = 0;
 
 // The OctoWS2811Receiver implementation supports global brightness.
 constexpr uint32_t kPixelPusherFlags =
