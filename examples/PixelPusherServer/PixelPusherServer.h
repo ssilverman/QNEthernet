@@ -105,7 +105,7 @@ class PixelPusherServer final {
   void setGroupNum(int n);
 
   // Tests if the server has been started.
-  operator bool() const {
+  explicit operator bool() const {
     return started_;
   }
 
