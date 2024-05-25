@@ -91,12 +91,8 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
   ppData2_.lastDrivenPort = 0;
 
   // Fill in the strip flags
-  if (recv == nullptr) {
-    std::fill_n(stripFlags_.get(), stripFlagsSize_, 0);
-  } else {
-    for (size_t i = 0; i < numStrips; i++) {
-      stripFlags_[i] = recv->stripFlags(i);
-    }
+  for (size_t i = 0; i < numStrips; i++) {
+    stripFlags_[i] = recv->stripFlags(i);
   }
 
   // Prepare the circular buffer
