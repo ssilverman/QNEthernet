@@ -56,8 +56,15 @@ class OctoWS2811Receiver : public Receiver {
  private:
   struct StripConfig {
     uint16_t brightness = UINT16_MAX;
+    uint8_t flags = 0;
     size_t rgbOrder[3]{1, 0, 2};  // GRB
   };
+
+  static const StripConfig kDefaultStripConfig;
+
+  // Gets the config for the given strip. This returns the default config if the
+  // strip number is out of range.
+  const StripConfig &getStripConfig(size_t stripNum) const;
 
   PixelPusherServer &pp_;
   const size_t numStrips_;
