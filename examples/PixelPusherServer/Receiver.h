@@ -29,7 +29,7 @@ class Receiver {
   // Stops the receiver. For some receivers, this may be a no-op.
   virtual void end() = 0;
 
-  // Returns the total number of strips.
+  // Returns the total number of strips. This will be limited to 255.
   virtual size_t numStrips() const = 0;
 
   // Returns the number of pixels per strip.
