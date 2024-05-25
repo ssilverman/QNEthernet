@@ -9,6 +9,7 @@
 #pragma once
 
 // C++ includes
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -53,9 +54,16 @@ class OctoWS2811Receiver : public Receiver {
   void loop() override {}
 
  private:
+  struct StripConfig {
+    uint16_t brightness = UINT16_MAX;
+    size_t rgbOrder[3]{1, 0, 2};  // GRB
+  };
+
   PixelPusherServer &pp_;
   const size_t numStrips_;
   const size_t pixelsPerStrip_;
+
+  std::array<StripConfig, 8> stripConfigs_;
 
   std::unique_ptr<uint8_t[]> displayMem_;
   std::unique_ptr<uint8_t[]> drawingMem_;

@@ -13,7 +13,8 @@
 
 // Pixel configuration
 static constexpr size_t kBytesPerPixel = 3;
-static constexpr uint8_t kConfig = WS2811_GRB | WS2811_800kHz;
+static constexpr uint8_t kConfig = WS2811_RGB | WS2811_800kHz;
+    // Use RGB because the actual ordering is captured in the strip config
 
 OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer &pp, size_t numStrips,
                                        size_t pixelsPerStrip)
@@ -53,6 +54,7 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
         std::memcpy(&globalBri_, data, 2);
       }
       break;
+
     case PixelPusherServer::Commands::LED_CONFIGURE:
       // uint32_t num_strips
       // uint32_t strip_length
@@ -63,6 +65,43 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
       // uint16_t artnet_universe
       // uint16_t artnet_channel
       if (len >= 32) {
+        // Colour order
+        for (size_t i = 0; i < 8; i++) {
+          auto &config = stripConfigs_[i];
+          switch (data[16 + i]) {
+            case PixelPusherServer::ColourOrders::RGB:
+              config.rgbOrder[0] = 0;
+              config.rgbOrder[1] = 1;
+              config.rgbOrder[2] = 2;
+              break;
+            case PixelPusherServer::ColourOrders::RBG:
+              config.rgbOrder[0] = 0;
+              config.rgbOrder[1] = 2;
+              config.rgbOrder[2] = 1;
+              break;
+            case PixelPusherServer::ColourOrders::GBR:
+              config.rgbOrder[0] = 1;
+              config.rgbOrder[1] = 2;
+              config.rgbOrder[2] = 0;
+              break;
+            case PixelPusherServer::ColourOrders::GRB:
+              config.rgbOrder[0] = 1;
+              config.rgbOrder[1] = 0;
+              config.rgbOrder[2] = 2;
+              break;
+            case PixelPusherServer::ColourOrders::BGR:
+              config.rgbOrder[0] = 2;
+              config.rgbOrder[1] = 1;
+              config.rgbOrder[2] = 0;
+              break;
+            case PixelPusherServer::ColourOrders::BRG:
+              config.rgbOrder[0] = 2;
+              config.rgbOrder[1] = 0;
+              config.rgbOrder[2] = 1;
+              break;
+          }
+        }
+
         uint16_t n;
         std::memcpy(&n, &data[24], 2);
         pp_.setGroupNum(n);
@@ -70,6 +109,15 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
         pp_.setControllerNum(n);
       }
       break;
+
+    case PixelPusherServer::Commands::STRIPBRIGHTNESS_SET:
+      if (len >= 3) {
+        if (data[0] < 8) {  // Strip number
+          std::memcpy(&stripConfigs_[data[0]].brightness, &data[1], 2);
+        }
+      }
+      break;
+
     default:
       // Unknown command
       break;
@@ -81,6 +129,11 @@ static inline uint8_t scale8(uint8_t b, uint8_t scale) {
   return (uint16_t{b} * (1 + uint16_t{scale})) >> 8;
 }
 
+// Scales a 16-bit value by another.
+static inline uint16_t scale16(uint16_t b, uint16_t scale) {
+  return (uint32_t{b} * (1 + uint32_t{scale})) >> 16;
+}
+
 void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
                                 size_t pixelsPerStrip) {
   if (stripNum < 0 || numStrips_ <= stripNum) {
@@ -89,19 +142,28 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
 
   size_t it = stripNum * pixelsPerStrip;
   size_t end = it + pixelsPerStrip;
-  uint8_t bri = globalBri_ >> 8;
-  if (bri == 0xff) {
+
+  static StripConfig kDefaultSripConfig;
+  auto &config = (stripNum < stripConfigs_.size()) ? stripConfigs_[stripNum]
+                                                   : kDefaultSripConfig;
+  const uint8_t bri = scale16(config.brightness, globalBri_) >> 8;
+  const auto &rgbOrder = config.rgbOrder;
+
+  if (bri == UINT8_MAX) {
     while (it != end) {
-      leds_.setPixel(it, pixels[0], pixels[1], pixels[2]);
+      leds_.setPixel(it,
+                     pixels[rgbOrder[0]],
+                     pixels[rgbOrder[1]],
+                     pixels[rgbOrder[2]]);
       pixels += 3;
       it++;
     }
   } else {
     while (it != end) {
       leds_.setPixel(it,
-                     scale8(pixels[0], bri),
-                     scale8(pixels[1], bri),
-                     scale8(pixels[2], bri));
+                     scale8(pixels[rgbOrder[0]], bri),
+                     scale8(pixels[rgbOrder[1]], bri),
+                     scale8(pixels[rgbOrder[2]], bri));
       pixels += 3;
       it++;
     }
