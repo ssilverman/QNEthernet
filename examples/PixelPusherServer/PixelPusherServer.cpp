@@ -228,12 +228,14 @@ void PixelPusherServer::sendDiscovery() {
   // software aligns the strip flags, a byte array, on a 4-byte
   // boundary, even though this goes against common C struct alignment
   // rules, where byte arrays don't need to be aligned.
-  discoveryUDP_.write(uint8_t{0}); discoveryUDP_.write(uint8_t{0});
+  discoveryUDP_.write(uint8_t{0});
+  discoveryUDP_.write(uint8_t{0});
 
   discoveryUDP_.write(stripFlags_.get(), stripFlagsSize_);
 
   // More mystery padding
-  discoveryUDP_.write(uint8_t{0}); discoveryUDP_.write(uint8_t{0});
+  discoveryUDP_.write(uint8_t{0});
+  discoveryUDP_.write(uint8_t{0});
 
   discoveryUDP_.write(reinterpret_cast<unsigned char *>(&ppData2_),
                       sizeof(ppData2_));
