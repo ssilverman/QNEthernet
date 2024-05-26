@@ -36,9 +36,11 @@ constexpr uint16_t kVendorId       = 0;
 constexpr uint16_t kProductId      = 0;
 constexpr uint16_t kHWRev          = 0;
 
-// The OctoWS2811Receiver implementation supports global brightness.
+// The OctoWS2811Receiver implementation supports global brightness
+// and per-strip brightness.
 constexpr uint32_t kPixelPusherFlags =
-    PixelPusherServer::PusherFlags::GLOBALBRIGHTNESS;
+    PixelPusherServer::PusherFlags::GLOBALBRIGHTNESS |
+    PixelPusherServer::PusherFlags::STRIPBRIGHTNESS;
 
 // -------------------------------------------------------------------
 //  Main Program
