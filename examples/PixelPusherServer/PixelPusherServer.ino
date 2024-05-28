@@ -10,6 +10,19 @@
 // 2. Pixels per strip (this file)
 // 3. OctoWS2811 bytes per pixel and pixel config (OctoWS2811Receiver.cpp)
 //
+// ## A note on packet sizes
+//
+// For best operation, choose the number of pixels per strip such that
+// the size of one strip doesn't exceed the maximum non-fragmented UDP
+// packet size. For IPv4, this is often 1500-20-8=1472 bytes, where
+// 1500 is a common Ethernet MTU (maximum transmission unit), 20 is
+// the IPv4 header size, and 8 is the UDP header size.
+//
+// Notes:
+// * Bytes for each strip: 1 + pixelsPerStrip*3
+// * Each packet can hold multiple strips.
+// * In this library, the MTU is returned by `Ethernet.mtu()`.
+//
 // This file is part of the QNEthernet library.
 
 // C++ includes
