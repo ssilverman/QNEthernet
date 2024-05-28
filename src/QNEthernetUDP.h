@@ -58,7 +58,7 @@ class EthernetUDP : public UDP, public internal::DiffServ {
   void setReceiveQueueSize(size_t size);
 
   // Starts listening on a port. This returns true if successful and false if
-  // the port is in use. This calls begin(localPort, false).
+  // the port is in use.
   //
   // This first calls stop() if the socket is already listening and the port or
   // _reuse_ socket option differ.
