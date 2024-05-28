@@ -116,6 +116,7 @@ class PixelPusherServer final {
     PIXELPUSHER = 2,
   };
 
+  // Device data, stores the data in wire format.
   struct [[gnu::packed]] DeviceData {
     uint8_t macAddr[6];
     uint8_t ipAddr[4];
@@ -128,6 +129,7 @@ class PixelPusherServer final {
     uint32_t linkSpeed;  // In bits per second
   };
 
+  // Data 1, stores the data in wire format.
   struct [[gnu::packed]] PixelPusherData1 {
     uint8_t stripsAttached;
     uint8_t maxStripsPerPacket;
@@ -146,6 +148,7 @@ class PixelPusherServer final {
     // [strip flags, one per strip, at least 8], Index 32
   };
 
+  // Data 2, stores the data in wire format.
   struct [[gnu::packed]] PixelPusherData2 {
     uint32_t pusherFlags;  // Flags for the whole pusher
     uint32_t segments;     // Number of segments in each strip
@@ -189,7 +192,7 @@ class PixelPusherServer final {
 
   // Useful cached values
   IPAddress broadcastIP_;
-  size_t stripSize_ = 0;  // Strip size in bytes
+  size_t stripSize_ = 0;  // Strip size in bytes, including the strip number
 
   // Computed packet data
   elapsedMillis discoveryTimer_;
