@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Updated and improved _PixelPusherServer_ example.
+
 ## [0.28.0]
 
 ### Added
