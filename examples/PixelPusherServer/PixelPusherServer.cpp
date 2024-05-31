@@ -21,9 +21,8 @@ using namespace qindesign::network;
 // The alternative would be to use bit shifting.
 static_assert(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "Not little-endian");
 
-static constexpr size_t kMaxUDPSize = Ethernet.mtu() - 8 - 20;
-static constexpr size_t kMaxPixelsPerStrip = std::min((kMaxUDPSize - 4 - 1)/3,
-                                                      size_t{UINT16_MAX});
+static constexpr size_t kMaxUDPSize = UINT16_MAX - 8 - 20;
+static constexpr size_t kMaxPixelsPerStrip = (kMaxUDPSize - 4 - 1)/3;
 
 // Indicates that the packet is a PixelPusher command.
 static constexpr uint8_t kCommandMagic[]{
