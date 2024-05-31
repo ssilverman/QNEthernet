@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added protected access to the internal `std::FILE*` stream in the
+  `StdioPrint` utility class.
+
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
 

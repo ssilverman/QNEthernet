@@ -59,6 +59,11 @@ class StdioPrint : public Print {
   int availableForWrite() override;
   void flush() override;
 
+ protected:
+  std::FILE *stream() const {
+    return stream_;
+  }
+
  private:
   // Checks and clears any error because clearWriteError() is not overridable.
   void checkAndClearErr();
