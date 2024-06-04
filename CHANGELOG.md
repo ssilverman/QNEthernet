@@ -11,6 +11,10 @@ and this project adheres to
 ### Added
 * Added protected access to the internal `std::FILE*` stream in the
   `StdioPrint` utility class.
+* Added more unit tests:
+  * test_ethernet:
+    * test_server_zero_port
+    * test_server_accept
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
