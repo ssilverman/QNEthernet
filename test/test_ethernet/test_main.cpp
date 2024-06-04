@@ -1152,6 +1152,26 @@ static void test_server_zero_port() {
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 }
 
+// Tests server accept().
+static void test_server_accept() {
+  constexpr uint16_t kPort = 1025;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+  Ethernet.setLinkState(true);  // connect() won't work unless there's a link
+
+  server = std::make_unique<EthernetServer>();
+  client = std::make_unique<EthernetClient>();
+
+  TEST_ASSERT_TRUE_MESSAGE(server->beginWithReuse(kPort), "Expected listen success");
+  TEST_ASSERT_TRUE_MESSAGE(client->connect(Ethernet.localIP(), kPort), "Expected connect success");
+  EthernetClient c = server->accept();
+  TEST_ASSERT_TRUE_MESSAGE(c, "Expected accepted connection");
+  c.close();
+  client->close();
+  server->end();
+}
+
 // Tests state from some of the other classes.
 static void test_other_state() {
   TEST_ASSERT_EQUAL_MESSAGE(DNS_MAX_SERVERS, DNSClient::maxServers(), "Expected default DNS max. servers");
@@ -1258,6 +1278,7 @@ void setup() {
   RUN_TEST(test_client_diffserv);
   RUN_TEST(test_server_state);
   RUN_TEST(test_server_zero_port);
+  RUN_TEST(test_server_accept);
   RUN_TEST(test_other_state);
   RUN_TEST(test_raw_frames);
   UNITY_END();
