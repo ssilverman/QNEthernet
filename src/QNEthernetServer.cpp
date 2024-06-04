@@ -17,31 +17,35 @@
 namespace qindesign {
 namespace network {
 
-EthernetServer::EthernetServer() : EthernetServer(int32_t{-1}) {}
+EthernetServer::EthernetServer() {}
 
-EthernetServer::EthernetServer(uint16_t port) : EthernetServer(int32_t{port}) {}
-
-EthernetServer::EthernetServer(int32_t port)
-    : port_(port),
-      reuse_(false),
-      listening_(false) {}
+EthernetServer::EthernetServer(uint16_t port)
+    : hasPort_(true),
+      port_(port) {}
 
 EthernetServer::~EthernetServer() {
   end();
 }
 
+int32_t EthernetServer::port() const {
+  if (!hasPort_) {
+    return -1;
+  }
+  return (listeningPort_ > 0) ? listeningPort_ : port_;
+}
+
 void EthernetServer::begin() {
-  if (port_ < 0) {
+  if (!hasPort_) {
     return;
   }
-  begin(static_cast<uint16_t>(port_), false);
+  begin(port_, false);
 }
 
 bool EthernetServer::beginWithReuse() {
-  if (port_ < 0) {
+  if (!hasPort_) {
     return false;
   }
-  return begin(static_cast<uint16_t>(port_), true);
+  return begin(port_, true);
 }
 
 bool EthernetServer::begin(uint16_t port) {
@@ -54,33 +58,39 @@ bool EthernetServer::beginWithReuse(uint16_t port) {
 
 bool EthernetServer::begin(uint16_t port, bool reuse) {
   // Only call end() if parameters have changed
-  if (listening_) {
-    if (port_ == port && reuse_ == reuse) {
+  if (listeningPort_ > 0) {
+    // If the request port is zero then choose another port
+    if (port != 0 && port_ == port && reuse_ == reuse) {
       return true;
     }
     end();  // TODO: Should we call end() only if the new begin is successful?
   }
 
   // Only change the port if listening was successful
-  listening_ = internal::ConnectionManager::instance().listen(port, reuse);
-  if (listening_) {
-    port_ = port;
+  int32_t p = internal::ConnectionManager::instance().listen(port, reuse);
+  if (p > 0) {
+    listeningPort_ = p;
+    port_ = (port == 0) ? 0 : p;
+    hasPort_ = true;
     reuse_ = reuse;
+    return true;
   }
-  return listening_;
+  return false;
 }
 
 void EthernetServer::end() {
-  if (listening_) {
-    listening_ = false;
-    internal::ConnectionManager::instance().stopListening(port_);
+  if (listeningPort_ > 0) {
+    internal::ConnectionManager::instance().stopListening(listeningPort_);
+    listeningPort_ = 0;
   }
-  port_ = -1;
+  port_ = 0;
+  hasPort_ = false;
 }
 
 EthernetClient EthernetServer::accept() const {
-  if (port_ >= 0) {
-    auto conn = internal::ConnectionManager::instance().findConnected(port_);
+  if (listeningPort_ > 0) {
+    auto conn =
+        internal::ConnectionManager::instance().findConnected(listeningPort_);
     Ethernet.loop();
     if (conn != nullptr) {
       internal::ConnectionManager::instance().remove(conn);
@@ -91,8 +101,9 @@ EthernetClient EthernetServer::accept() const {
 }
 
 EthernetClient EthernetServer::available() const {
-  if (port_ >= 0) {
-    auto conn = internal::ConnectionManager::instance().findAvailable(port_);
+  if (listeningPort_ > 0) {
+    auto conn =
+        internal::ConnectionManager::instance().findAvailable(listeningPort_);
     Ethernet.loop();
     if (conn != nullptr) {
       return EthernetClient{conn};
@@ -102,35 +113,37 @@ EthernetClient EthernetServer::available() const {
 }
 
 EthernetServer::operator bool() const {
-  return listening_;
+  return listeningPort_ > 0;
 }
 
 size_t EthernetServer::write(uint8_t b) {
-  if (port_ < 0) {
+  if (listeningPort_ == 0) {
     return 1;
   }
-  return internal::ConnectionManager::instance().write(port_, b);
+  return internal::ConnectionManager::instance().write(listeningPort_, b);
 }
 
 size_t EthernetServer::write(const uint8_t *buffer, size_t size) {
-  if (port_ < 0) {
+  if (listeningPort_ == 0) {
     return size;
   }
-  return internal::ConnectionManager::instance().write(port_, buffer, size);
+  return internal::ConnectionManager::instance().write(listeningPort_,
+                                                       buffer, size);
 }
 
 int EthernetServer::availableForWrite() {
-  if (port_ < 0) {
+  if (listeningPort_ == 0) {
     return 0;
   }
-  return internal::ConnectionManager::instance().availableForWrite(port_);
+  return internal::ConnectionManager::instance().availableForWrite(
+      listeningPort_);
 }
 
 void EthernetServer::flush() {
-  if (port_ < 0) {
+  if (listeningPort_ == 0) {
     return;
   }
-  internal::ConnectionManager::instance().flush(port_);
+  internal::ConnectionManager::instance().flush(listeningPort_);
 }
 
 }  // namespace network

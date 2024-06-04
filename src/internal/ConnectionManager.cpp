@@ -315,11 +315,11 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   return holder;
 }
 
-bool ConnectionManager::listen(uint16_t port, bool reuse) {
+int32_t ConnectionManager::listen(uint16_t port, bool reuse) {
   altcp_pcb *pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
-    return false;
+    return -1;
   }
 
   // Try to bind
@@ -336,7 +336,7 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   }
   if (altcp_bind(pcb, IP_ANY_TYPE, port) != ERR_OK) {
     altcp_abort(pcb);
-    return false;
+    return -1;
   }
 
   // Try to listen
@@ -344,7 +344,7 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   if (pcbNew == nullptr) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
-    return false;
+    return -1;
   }
   pcb = pcbNew;
 
@@ -353,7 +353,10 @@ bool ConnectionManager::listen(uint16_t port, bool reuse) {
   altcp_arg(pcb, this);
   altcp_accept(pcb, &acceptFunc);
 
-  return true;
+  if (port == 0) {
+    altcp_get_tcp_addrinfo(pcb, true, nullptr, &port);
+  }
+  return port;
 }
 
 // Gets the local port from the given tcp_pcb.

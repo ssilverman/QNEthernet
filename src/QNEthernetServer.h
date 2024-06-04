@@ -40,12 +40,12 @@ class EthernetServer : public Server {
     return MEMP_NUM_TCP_PCB_LISTEN;
   }
 
-  // Returns the server port. This will return -1 if it has not been set.
+  // Returns the server port. This will return -1 if it is not set. If the port
+  // was specified to be zero, then this will return a system-chosen value if
+  // the socket has been started or zero if the socket has not been started.
   //
   // Note that the value is still a 16-bit quantity if it is non-negative.
-  int32_t port() const {
-    return port_;
-  }
+  int32_t port() const;
 
   // Starts listening on the server port, if set. This does not set the
   // SO_REUSEADDR socket option.
@@ -107,14 +107,15 @@ class EthernetServer : public Server {
   explicit operator bool() const;
 
  private:
-  explicit EthernetServer(int32_t port);
-
   bool begin(uint16_t port, bool reuse);
 
-  int32_t port_;  // We also want to be able to represent a signed value
-                  // Non-negative is 16 bits
-  bool reuse_;    // Whether the SO_REUSEADDR socket option is set
-  bool listening_;
+  bool hasPort_ = false;
+  uint16_t port_ = 0;   // Zero means let the system choose a port
+  bool reuse_ = false;  // Whether the SO_REUSEADDR socket option is set
+
+  // The listening port may be different from the requested port, say if the
+  // requested port is zero.
+  uint16_t listeningPort_ = 0;
 };
 
 }  // namespace network

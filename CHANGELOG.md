@@ -15,6 +15,10 @@ and this project adheres to
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
 
+### Fixed
+* Fixed `EthernetServer::port()` to return the system-chosen port if a zero
+  value was specified.
+
 ## [0.28.0]
 
 ### Added

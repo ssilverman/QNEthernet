@@ -32,8 +32,9 @@ class ConnectionManager final {
                                             uint16_t port);
 
   // Listens on a port. The `reuse` parameter controls the SO_REUSEADDR flag.
-  // This returns whether the attempt was successful.
-  bool listen(uint16_t port, bool reuse);
+  // This returns a negative value if the attempt was not successful or the port
+  // number otherwise. In theory, this shouldn't return zero.
+  int32_t listen(uint16_t port, bool reuse);
 
   bool isListening(uint16_t port) const;
 
