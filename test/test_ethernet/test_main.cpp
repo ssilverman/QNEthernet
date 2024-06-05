@@ -1122,6 +1122,14 @@ static void test_server_state() {
                             "Expected default TCP max. listeners");
 }
 
+// Tests constructing EthernetServer with an int.
+static void test_server_construct_int_port() {
+  constexpr int port = 1025;
+
+  server = std::make_unique<EthernetServer>(port);
+  TEST_ASSERT_EQUAL(uint16_t{1025}, server->port());
+}
+
 // Tests setting a server port of zero to have the system choose one.
 static void test_server_zero_port() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
@@ -1277,6 +1285,7 @@ void setup() {
   RUN_TEST(test_client_options);
   RUN_TEST(test_client_diffserv);
   RUN_TEST(test_server_state);
+  RUN_TEST(test_server_construct_int_port);
   RUN_TEST(test_server_zero_port);
   RUN_TEST(test_server_accept);
   RUN_TEST(test_other_state);

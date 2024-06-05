@@ -15,6 +15,7 @@ and this project adheres to
   * test_ethernet:
     * test_server_zero_port
     * test_server_accept
+    * test_server_construct_int_port
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
