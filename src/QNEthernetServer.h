@@ -18,11 +18,12 @@
 #include <Server.h>
 
 #include "QNEthernetClient.h"
+#include "internal/PrintfChecked.h"
 
 namespace qindesign {
 namespace network {
 
-class EthernetServer : public Server {
+class EthernetServer : public Server, public internal::PrintfChecked {
  public:
   EthernetServer();
   explicit EthernetServer(uint16_t port);
@@ -85,6 +86,9 @@ class EthernetServer : public Server {
   // Finds a connection with available data. This returns an unconnected client
   // if there is no client with available data or if the port is not set.
   EthernetClient available() const;
+
+  // Use the one from here instead of the one from Print
+  using internal::PrintfChecked::printf;
 
   // Bring Print::write functions into scope
   using Print::write;

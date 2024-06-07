@@ -19,13 +19,16 @@
 #include <Udp.h>
 
 #include "internal/DiffServ.h"
+#include "internal/PrintfChecked.h"
 #include "lwip/ip_addr.h"
 #include "lwip/udp.h"
 
 namespace qindesign {
 namespace network {
 
-class EthernetUDP : public UDP, public internal::DiffServ {
+class EthernetUDP : public UDP,
+                    public internal::DiffServ,
+                    public internal::PrintfChecked {
  public:
   EthernetUDP();
 
@@ -98,6 +101,9 @@ class EthernetUDP : public UDP, public internal::DiffServ {
 
   // Calls the other send() function after performing a DNS lookup.
   bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
+
+  // Use the one from here instead of the one from Print
+  using internal::PrintfChecked::printf;
 
   // Bring Print::write functions into scope
   using Print::write;

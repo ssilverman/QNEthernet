@@ -21,6 +21,7 @@
 
 #include "internal/ConnectionHolder.h"
 #include "internal/DiffServ.h"
+#include "internal/PrintfChecked.h"
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
 
@@ -29,7 +30,9 @@ namespace network {
 
 class EthernetServer;
 
-class EthernetClient : public Client, public internal::DiffServ {
+class EthernetClient : public Client,
+                       public internal::DiffServ,
+                       public internal::PrintfChecked {
  public:
   EthernetClient();
   ~EthernetClient();
@@ -118,6 +121,9 @@ class EthernetClient : public Client, public internal::DiffServ {
   size_t writeFully(const char *s);
   size_t writeFully(const char *s, size_t size);
   size_t writeFully(const uint8_t *buf, size_t size);
+
+  // Use the one from here instead of the one from Print
+  using internal::PrintfChecked::printf;
 
   size_t write(uint8_t b) final;
   size_t write(const uint8_t *buf, size_t size) final;

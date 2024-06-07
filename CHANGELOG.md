@@ -23,6 +23,9 @@ and this project adheres to
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
   value was specified.
+* Fixed lack of `printf` format string checking for `Print`-derived classes.
+  As of this writing, Teensyduino (1.59) and other platforms don't do compiler
+  checking for `Print::printf`.
 
 ## [0.28.0]
 
