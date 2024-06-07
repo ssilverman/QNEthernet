@@ -1366,16 +1366,17 @@ void driver_ieee1588_timestamp_next_frame() {
 }
 
 bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    if (hasTxTimestamp) {
-      hasTxTimestamp = false;
-      if (timestamp != NULL) {
-        timestamp->tv_sec = txTimestamp.tv_sec;
-        timestamp->tv_nsec = txTimestamp.tv_nsec;
-      }
-      return true;
+  qnethernet_hal_disable_interrupts();  // {
+  if (hasTxTimestamp) {
+    hasTxTimestamp = false;
+    if (timestamp != NULL) {
+      timestamp->tv_sec = txTimestamp.tv_sec;
+      timestamp->tv_nsec = txTimestamp.tv_nsec;
     }
+    return true;
   }
+  qnethernet_hal_enable_interrupts();  // }
+
   return false;
 }
 
