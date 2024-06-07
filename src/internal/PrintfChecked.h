@@ -18,7 +18,7 @@ namespace internal {
 class PrintfChecked {
  public:
   // Define a format-checked printf.
-  __attribute__((format(printf, 2, 3)))
+  [[gnu::format(printf, 2, 3)]]
   int printf(const char *format, ...) {
     std::va_list args;
     va_start(args, format);
