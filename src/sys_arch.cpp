@@ -39,31 +39,40 @@ u32_t sys_now(void) {
 //  Error-to-String
 // --------------------------------------------------------------------------
 
+// Returns the size of the given array.
+template <typename T, size_t N>
+constexpr size_t countof(const T (&)[N]) {
+  return N;
+}
+
 extern "C" {
 
 #ifdef LWIP_DEBUG
 // include\lwip\err.h
+
+static const char *err_strerr[]{
+    "Ok",
+    "Out of memory error",
+    "Buffer error",
+    "Timeout",
+    "Routing problem",
+    "Operation in progress",
+    "Illegal value",
+    "Operation would block",
+    "Address in use",
+    "Already connecting",
+    "Conn already established",
+    "Not connected",
+    "Low-level netif error",
+    "Connection aborted",
+    "Connection reset",
+    "Connection closed",
+    "Illegal argument",
+};
+
 const char *lwip_strerr(err_t err) {
-  switch (err) {
-    case ERR_OK:         return "err Ok";
-    case ERR_MEM:        return "err Out of Memory";
-    case ERR_BUF:        return "err Buffer";
-    case ERR_TIMEOUT:    return "err Timeout";
-    case ERR_RTE:        return "err Routing Problem";
-    case ERR_INPROGRESS: return "err Operation in Progress";
-    case ERR_VAL:        return "err Illegal Value";
-    case ERR_WOULDBLOCK: return "err Operation Would Block";
-    case ERR_USE:        return "err Address in Use";
-    case ERR_ALREADY:    return "err Already Connecting";
-    case ERR_ISCONN:     return "err Connection Already Established";
-    case ERR_CONN:       return "err Not Connected";
-    case ERR_IF:         return "err Low-Level netif";
-    case ERR_ABRT:       return "err Connection Aborted";
-    case ERR_RST:        return "err Connection Reset";
-    case ERR_CLSD:       return "err Connection Closed";
-    case ERR_ARG:        return "err Illegal Argument";
-    default:
-      break;
+  if (0 <= -err && -err < static_cast<err_t>(countof(err_strerr))) {
+    return err_strerr[-err];
   }
 
   static constexpr size_t kDigits = std::numeric_limits<err_t>::digits10 + 1;  // Add 1 for ceiling
@@ -72,6 +81,7 @@ const char *lwip_strerr(err_t err) {
   std::snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
   return buf;
 }
+
 #endif  // LWIP_DEBUG
 
 }  // extern "C"
