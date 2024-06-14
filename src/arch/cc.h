@@ -16,6 +16,9 @@
 
 #include "qnethernet_opts.h"
 
+// Define this for err_to_errno()
+#define LWIP_ERRNO_STDINCLUDE
+
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
