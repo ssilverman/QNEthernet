@@ -309,6 +309,8 @@ class EthernetClass final {
   // called multiple times, paired with a matching number of leaveGroup() calls.
   //
   // This always returns false if `LWIP_IGMP` is disabled.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool joinGroup(const IPAddress &ip) const;
 
   // Leaves a multicast group. This returns whether the call was successful.
@@ -317,6 +319,8 @@ class EthernetClass final {
   // should match the number of joinGroup() calls.
   //
   // This always returns false if `LWIP_IGMP` is disabled.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool leaveGroup(const IPAddress &ip) const;
 
   // Sets whether Ethernet frames addressed to the given MAC address are allowed
@@ -352,6 +356,8 @@ class EthernetClass final {
 
   // Convenience function that tries to resolve the given hostname into an IP
   // address. This returns whether successful.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool hostByName(const char *hostname, IPAddress &ip);
 
  private:

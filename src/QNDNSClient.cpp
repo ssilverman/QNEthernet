@@ -8,7 +8,11 @@
 
 #if LWIP_DNS
 
+// C++ includes
+#include <cerrno>
+
 #include "lwip/dns.h"
+#include "lwip/err.h"
 #include "lwip/sys.h"
 #include "util/ip_tools.h"
 
@@ -71,7 +75,8 @@ bool DNSClient::getHostByName(const char *hostname,
   req->timeout = timeout;
 
   ip_addr_t addr;
-  switch (dns_gethostbyname(hostname, &addr, &dnsFoundFunc, req)) {
+  err_t err;
+  switch (err = dns_gethostbyname(hostname, &addr, &dnsFoundFunc, req)) {
     case ERR_OK:
       delete req;
       callback(&addr);
@@ -83,6 +88,7 @@ bool DNSClient::getHostByName(const char *hostname,
     case ERR_ARG:
     default:
       delete req;
+      errno = err_to_errno(err);
       return false;
   }
 }

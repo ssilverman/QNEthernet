@@ -39,6 +39,8 @@ class MDNSClass final {
   //
   // This first calls end() if the responder is already running and the hostname
   // is different.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool begin(const char *hostname);
 
   // Stops the mDNS responder.
@@ -64,6 +66,8 @@ class MDNSClass final {
   //
   // This calls `addService(name, type, protocol, port, nullptr)` with the host
   // name as the service name.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool addService(const char *type, const char *protocol, uint16_t port);
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
@@ -72,6 +76,8 @@ class MDNSClass final {
   // No TXT records are added.
   //
   // This calls `addService(name, type, protocol, port, nullptr)`.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool addService(const char *name, const char *type,
                   const char *protocol, uint16_t port);
 
@@ -80,6 +86,8 @@ class MDNSClass final {
   //
   // This calls `addService(name, type, protocol, port, getTXTFunc)` with the
   // host name as the service name.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool addService(const char *type, const char *protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)(void));
 
@@ -91,15 +99,21 @@ class MDNSClass final {
   // maximum of 255 bytes, including length bytes, and each item in the record
   // can be a maximum of 63 bytes. The function may be NULL, in which case no
   // items are added.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool addService(const char *name, const char *type,
                   const char *protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)(void));
 
   // Removes a service. The host name is used as the service name. This will
   // return whether the service was removed.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool removeService(const char *type, const char *protocol, uint16_t port);
 
   // Removes a service and returns whether the service was removed.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool removeService(const char *name, const char *type,
                      const char *protocol, uint16_t port);
 

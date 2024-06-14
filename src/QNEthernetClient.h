@@ -55,6 +55,8 @@ class EthernetClient : public Client,
   int connect(IPAddress ip, uint16_t port) final;
 
   // Returns false if DNS is disabled.
+  //
+  // If this returns false and there was an error then errno will be set.
   int connect(const char *host, uint16_t port) final;
 
   // Starts the connection process but doesn't wait for the connection to
@@ -65,6 +67,8 @@ class EthernetClient : public Client,
   // be complete. Note that DNS lookup might still take some time.
   //
   // This returns false if DNS is disabled.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;  // Wish: Boolean return
@@ -125,8 +129,12 @@ class EthernetClient : public Client,
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
 
+  // If this returns zero and there was an error then errno will be set.
   size_t write(uint8_t b) final;
+
+  // If this returns zero and there was an error then errno will be set.
   size_t write(const uint8_t *buf, size_t size) final;
+
   int availableForWrite() final;
   void flush() final;
 

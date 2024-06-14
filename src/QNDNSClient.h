@@ -50,6 +50,8 @@ class DNSClient final {
   //
   // If the timeout has been reached then the callback will no longer be called.
   // The timeout is ignored if it is zero.
+  //
+  // If this returns false and there was an error then errno will be set.
   static bool getHostByName(const char *hostname,
                             std::function<void(const ip_addr_t *)> callback,
                             uint32_t timeout);
@@ -60,6 +62,8 @@ class DNSClient final {
   // * Invalid hostname
   // * The DNS client is not initialized
   // * No DNS server is set
+  //
+  // If this returns false and there was an error then errno will be set.
   static bool getHostByName(const char *hostname, IPAddress &ip,
                             uint32_t timeout);
 

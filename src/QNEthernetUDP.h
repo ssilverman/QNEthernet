@@ -65,6 +65,8 @@ class EthernetUDP : public UDP,
   //
   // This first calls stop() if the socket is already listening and the port or
   // _reuse_ socket option differ.
+  //
+  // If this returns false and there was an error then errno will be set.
   uint8_t begin(uint16_t localPort) final;  // Wish: Boolean return
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option. This
@@ -72,12 +74,16 @@ class EthernetUDP : public UDP,
   //
   // This first calls stop() if the socket is already listening and the port or
   // _reuse_ socket option differ.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool beginWithReuse(uint16_t localPort);
 
   // Multicast functions make use of Ethernet.joinGroup(). These first call the
   // appropriate `begin` functions.
   //
   // These return true if successful and false otherwise.
+  //
+  // If these return false and there was an error then errno will be set.
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;  // Wish: Boolean return
   bool beginMulticastWithReuse(IPAddress ip, uint16_t port);
 
@@ -89,6 +95,8 @@ class EthernetUDP : public UDP,
   // Sending UDP packets
   // These really return Booleans
   // Wish: Boolean returns
+  //
+  // If these return false and there was an error then errno will be set.
   int beginPacket(IPAddress ip, uint16_t port) final;
   int beginPacket(const char *host, uint16_t port) final;
   int endPacket() final;  // Always clears accumulated data
@@ -96,10 +104,14 @@ class EthernetUDP : public UDP,
   // Sends a UDP packet and returns whether the attempt was successful. This
   // combines the functions of beginPacket(), write(), and endPacket(), and
   // causes less overhead.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool send(const IPAddress &ip, uint16_t port,
             const uint8_t *data, size_t len);
 
   // Calls the other send() function after performing a DNS lookup.
+  //
+  // If this returns false and there was an error then errno will be set.
   bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
 
   // Use the one from here instead of the one from Print
@@ -200,10 +212,14 @@ class EthernetUDP : public UDP,
   bool begin(uint16_t localPort, bool reuse);
 
   // Multicast functions make use of Ethernet.joinGroup()
+  //
+  // If this returns false and there was an error then errno will be set.
   bool beginMulticast(IPAddress ip, uint16_t port, bool reuse);
 
   // ip_addr_t versions of transmission functions
   bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
+
+  // If this returns false and there was an error then errno will be set.
   bool send(const ip_addr_t *ipaddr, uint16_t port,
             const uint8_t *data, size_t len);
 

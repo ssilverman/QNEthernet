@@ -10,10 +10,12 @@
 
 // C++ includes
 #include <algorithm>
+#include <cerrno>
 
 #include <avr/pgmspace.h>
 
 #include "lwip/apps/mdns.h"
+#include "lwip/err.h"
 
 #ifndef FLASHMEM
 #define FLASHMEM
@@ -43,7 +45,7 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
     const char *txt = item.c_str();
     uint8_t len = std::min(item.length(), 63U);
     err_t res = mdns_resp_add_service_txtitem(service, txt, len);
-    LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK), return );
+    LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK), errno = res; return );
   }
 }
 
@@ -70,6 +72,7 @@ bool MDNSClass::begin(const char *hostname) {
 
   // Treat nullptr hostname as not allowed
   if (hostname == nullptr) {
+    errno = EINVAL;
     return false;
   }
 
@@ -79,9 +82,13 @@ bool MDNSClass::begin(const char *hostname) {
     }
     end();
   }
-  if (mdns_resp_add_netif(netif_default, hostname) != ERR_OK) {
+
+  err_t err;
+  if ((err = mdns_resp_add_netif(netif_default, hostname)) != ERR_OK) {
+    errno = err_to_errno(err);
     return false;
   }
+
   netifAdded = true;
   netif_ = netif_default;
   hostname_ = hostname;
@@ -185,7 +192,13 @@ bool MDNSClass::removeService(const char *name, const char *type,
   if (found < maxServices()) {
     slots_[found].reset();
   }
-  return (mdns_resp_del_service(netif_, found) == ERR_OK);
+
+  err_t err;
+  if ((err = mdns_resp_del_service(netif_, found)) != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
 }
 
 void MDNSClass::announce() const {

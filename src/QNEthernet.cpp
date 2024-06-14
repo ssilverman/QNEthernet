@@ -8,6 +8,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cerrno>
 
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
 #if defined(__has_include)
@@ -22,6 +23,7 @@
 #include "QNDNSClient.h"
 #include "lwip/arch.h"
 #include "lwip/dhcp.h"
+#include "lwip/err.h"
 #include "lwip/igmp.h"
 #include "lwip/sys.h"
 
@@ -629,8 +631,14 @@ bool EthernetClass::joinGroup(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return false;
   }
+
   ip4_addr_t groupaddr{get_uint32(ip)};
-  return (igmp_joingroup_netif(netif_, &groupaddr) == ERR_OK);
+  err_t err;
+  if ((err = igmp_joingroup_netif(netif_, &groupaddr)) != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
 #else
   LWIP_UNUSED_ARG(ip);
   return false;
@@ -642,8 +650,14 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return false;
   }
+
   ip4_addr_t groupaddr{get_uint32(ip)};
-  return (igmp_leavegroup_netif(netif_, &groupaddr) == ERR_OK);
+  err_t err;
+  if ((err = igmp_leavegroup_netif(netif_, &groupaddr)) != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
 #else
   LWIP_UNUSED_ARG(ip);
   return false;

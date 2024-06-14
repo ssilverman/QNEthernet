@@ -19,6 +19,8 @@ and this project adheres to
 * Added `printf` format string checking for `Print`-derived classes. As of this
   writing, Teensyduino (1.59) and other platforms don't do compiler checking
   for `Print::printf`.
+* Added support for `errno`. Appropriate functions will set this after
+  encountering an error.
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.

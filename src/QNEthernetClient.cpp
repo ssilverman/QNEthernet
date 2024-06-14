@@ -10,6 +10,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cerrno>
 #include <cstring>
 
 #include "QNDNSClient.h"
@@ -19,6 +20,7 @@
 #include "lwip/arch.h"
 #include "lwip/priv/altcp_priv.h"
 #include "lwip/dns.h"
+#include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/sys.h"
 #if LWIP_ALTCP
@@ -471,7 +473,9 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
   }
   size = std::min(size, sndBufSize);
   if (size > 0) {
-    if (altcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY) != ERR_OK) {
+    err_t err;
+    if ((err = altcp_write(state->pcb, buf, size, TCP_WRITE_FLAG_COPY)) != ERR_OK) {
+      errno = err_to_errno(err);
       size = 0;
     }
 #if QNETHERNET_FLUSH_AFTER_WRITE

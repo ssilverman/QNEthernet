@@ -10,11 +10,13 @@
 
 // C++ includes
 #include <algorithm>
+#include <cerrno>
 
 #include "QNDNSClient.h"
 #include "QNEthernet.h"
 #include "lwip/arch.h"
 #include "lwip/dns.h"
+#include "lwip/err.h"
 #include "lwip/ip.h"
 #include "lwip/sys.h"
 #include "qnethernet_opts.h"
@@ -164,10 +166,14 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   if (reuse) {
     ip_set_option(pcb_, SOF_REUSEADDR);
   }
-  if (udp_bind(pcb_, IP_ANY_TYPE, localPort) != ERR_OK) {
+
+  err_t err;
+  if ((err = udp_bind(pcb_, IP_ANY_TYPE, localPort))!= ERR_OK) {
     stop();
+    errno = err_to_errno(err);
     return false;
   }
+
   listening_ = true;
   listenReuse_ = reuse;
 
@@ -414,12 +420,13 @@ int EthernetUDP::endPacket() {
   }
 
   // pbuf_take() considers NULL data an error
+  err_t err;
   if (!outPacket_.data.empty() &&
-      pbuf_take(p, outPacket_.data.data(), outPacket_.data.size()) != ERR_OK) {
+      (err = pbuf_take(p, outPacket_.data.data(), outPacket_.data.size())) != ERR_OK) {
     pbuf_free(p);
+    errno = err_to_errno(err);
     return false;
   }
-  err_t err;
 
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
   // if there are no internal TX buffers available
@@ -438,7 +445,11 @@ int EthernetUDP::endPacket() {
   outPacket_.clear();
   pbuf_free(p);
 
-  return (err == ERR_OK);
+  if (err != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
 }
 
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
@@ -487,11 +498,12 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   }
 
   // pbuf_take() considers NULL data an error
-  if (len != 0 && pbuf_take(p, data, len) != ERR_OK) {
+  err_t err;
+  if (len != 0 && (err = pbuf_take(p, data, len)) != ERR_OK) {
     pbuf_free(p);
+    errno = err_to_errno(err);
     return false;
   }
-  err_t err;
 
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
   // if there are no internal TX buffers available
@@ -509,7 +521,11 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
 
   pbuf_free(p);
 
-  return (err == ERR_OK);
+  if (err != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
 }
 
 size_t EthernetUDP::write(uint8_t b) {
