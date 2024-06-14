@@ -36,57 +36,6 @@ u32_t sys_now(void) {
 }  // extern "C"
 
 // --------------------------------------------------------------------------
-//  Error-to-String
-// --------------------------------------------------------------------------
-
-// Returns the size of the given array.
-template <typename T, size_t N>
-constexpr size_t countof(const T (&)[N]) {
-  return N;
-}
-
-extern "C" {
-
-#ifdef LWIP_DEBUG
-// include\lwip\err.h
-
-static const char *err_strerr[]{
-    "Ok",
-    "Out of memory error",
-    "Buffer error",
-    "Timeout",
-    "Routing problem",
-    "Operation in progress",
-    "Illegal value",
-    "Operation would block",
-    "Address in use",
-    "Already connecting",
-    "Conn already established",
-    "Not connected",
-    "Low-level netif error",
-    "Connection aborted",
-    "Connection reset",
-    "Connection closed",
-    "Illegal argument",
-};
-
-const char *lwip_strerr(err_t err) {
-  if (0 <= -err && -err < static_cast<err_t>(countof(err_strerr))) {
-    return err_strerr[-err];
-  }
-
-  static constexpr size_t kDigits = std::numeric_limits<err_t>::digits10 + 1;  // Add 1 for ceiling
-  static constexpr char kPrefix[]{"err "};
-  static char buf[sizeof(kPrefix) + kDigits + 1];  // Includes the NUL and sign
-  std::snprintf(buf, sizeof(buf), "%s%d", kPrefix, err);
-  return buf;
-}
-
-#endif  // LWIP_DEBUG
-
-}  // extern "C"
-
-// --------------------------------------------------------------------------
 //  Core Locking
 // --------------------------------------------------------------------------
 
