@@ -90,6 +90,8 @@ class EthernetUDP : public UDP,
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort() const;
 
+  // If there was an error leaving the multicast group joined when starting to
+  // listen on a multicast address then errno will be set.
   void stop() final;
 
   // Sending UDP packets
@@ -231,6 +233,8 @@ class EthernetUDP : public UDP,
   // Listening parameters
   bool listening_;
   bool listenReuse_;
+  bool listeningMulticast_;
+  IPAddress multicastIP_;
 
   // Received packet; updated every time one is received
   std::vector<Packet> inBuf_;  // Holds received packets

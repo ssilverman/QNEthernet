@@ -86,6 +86,7 @@ EthernetUDP::EthernetUDP(size_t queueSize)
     : pcb_(nullptr),
       listening_(false),
       listenReuse_(false),
+      listeningMulticast_(false),
       inBuf_(std::max(queueSize, size_t{1})),
       inBufTail_(0),
       inBufHead_(0),
@@ -208,6 +209,8 @@ bool EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
     stop();
     return false;
   }
+  listeningMulticast_ = true;
+  multicastIP_ = ip;
   return true;
 }
 
@@ -222,6 +225,13 @@ void EthernetUDP::stop() {
   if (pcb_ == nullptr) {
     return;
   }
+
+  if (listeningMulticast_) {
+    Ethernet.leaveGroup(multicastIP_);
+    listeningMulticast_ = false;
+    multicastIP_ = INADDR_NONE;
+  }
+
   udp_remove(pcb_);
   pcb_ = nullptr;
   listening_ = false;

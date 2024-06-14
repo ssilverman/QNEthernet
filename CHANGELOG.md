@@ -28,6 +28,8 @@ and this project adheres to
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
   value was specified.
+* Fixed `EthernetUDP::stop()` to leave any multicast group joined when starting
+  to listen on a multicast address.
 
 ## [0.28.0]
 
