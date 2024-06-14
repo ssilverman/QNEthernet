@@ -39,7 +39,7 @@ class CircularBuffer {
     }
 
     T element = buf_[tail_];
-    tail_ = (tail_ + 1)%capacity_;
+    tail_ = (tail_ + 1) % capacity_;
     size_--;
     return element;
   }
@@ -47,11 +47,11 @@ class CircularBuffer {
   void put(const T &t) {
     buf_[head_] = t;
     if (size_ == capacity_) {
-      tail_ = (tail_ + 1)%capacity_;
+      tail_ = (tail_ + 1) % capacity_;
     } else {
       size_++;
     }
-    head_ = (head_ + 1)%capacity_;
+    head_ = (head_ + 1) % capacity_;
   }
 
   void clear() {
@@ -61,16 +61,18 @@ class CircularBuffer {
   }
 
   T &operator[](size_t n) {
-    return buf_[(tail_ + n)%capacity_];
+    return buf_[(tail_ + n ) % capacity_];
   }
 
   const T &operator[](size_t n) const {
-    return buf_[(tail_ + n)%capacity_];
+    return buf_[(tail_ + n) % capacity_];
   }
 
  private:
   const size_t capacity_;
+
   std::unique_ptr<T[]> buf_;
+
   size_t size_;
   size_t head_;
   size_t tail_;
