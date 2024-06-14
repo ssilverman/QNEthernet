@@ -42,10 +42,8 @@ class Receiver {
   virtual void handleCommand(uint8_t command, const uint8_t *data, size_t len) {
   }
 
-  // Starts receiving pixels from a packet. The `complete` parameter
-  // indicates whether the complete set of pixels will be included in
-  // the pixel data.
-  virtual void startPixels(bool complete) = 0;
+  // Starts receiving pixels from a packet.
+  virtual void startPixels() = 0;
 
   // Processes pixels for one strip.
   virtual void pixels(size_t stripNum, const uint8_t *pixels,

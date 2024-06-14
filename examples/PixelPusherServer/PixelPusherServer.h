@@ -14,6 +14,7 @@
 // C++ includes
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <QNEthernet.h>
 #include <elapsedMillis.h>
@@ -164,7 +165,7 @@ class PixelPusherServer final {
     size_t pixelsPerStrip() const override { return 0; }
     uint8_t stripFlags(size_t stripNum) const override { return 0; }
 
-    void startPixels(bool complete) override {}
+    void startPixels() override {}
     void pixels(size_t stripNum, const uint8_t *pixels,
                 size_t pixelsPerStrip) override {}
     void endPixels() override {}
@@ -200,6 +201,9 @@ class PixelPusherServer final {
   std::unique_ptr<CircularBuffer<uint32_t>> lastUpdateTimes_;
       // Used for averaging the last set of update times
   float avUpdateTime_;
+
+  // Track frames and which strips have been received
+  std::vector<bool> frameStrips_;
 
   // Packet data
   DeviceData deviceData_;

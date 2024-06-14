@@ -100,6 +100,10 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
       ppData1_.maxStripsPerPacket);
   printf("k=%zu\r\n", lastUpdateTimes_->capacity());
 
+  // Prepare the frame strip tracker
+  frameStrips_.resize(numStrips);
+  frameStrips_.clear();
+
   if (started_) {
     end();
   }
@@ -126,6 +130,11 @@ void PixelPusherServer::setControllerNum(int n) {
 
 void PixelPusherServer::setGroupNum(int n) {
   ppData1_.groupOrdinal = n;
+}
+
+// Checks if all values in a std::vector<bool> are a specific value.
+static bool isAll(const std::vector<bool> &v, bool flag) {
+  return (std::find(v.begin(), v.end(), !flag) == v.end());
 }
 
 void PixelPusherServer::loop() {
@@ -176,12 +185,37 @@ void PixelPusherServer::loop() {
     return;
   }
 
-  recv_->startPixels(ppData1_.stripsAttached == stripsInPacket);
-  for (size_t i = 0; i < stripsInPacket; i++) {
-    recv_->pixels(*data, data + 1, ppData1_.pixelsPerStrip);
-    data += 1 + uintptr_t{ppData1_.pixelsPerStrip}*3;
+  if (stripsInPacket > 0) {
+    // Start a new frame if no strips have been received
+    if (isAll(frameStrips_, false)) {
+      recv_->startPixels();
+    }
+
+    for (size_t i = 0; i < stripsInPacket; i++) {
+      // If we've already seen a particular strip, it probably means a
+      // new frame has started, so show what we've got and start again
+      size_t stripNum = *data;
+      if (stripNum < frameStrips_.size()) {
+        if (frameStrips_[stripNum]) {
+          // We've already seen the strip so trigger an end-of-frame
+          // and restart
+          recv_->endPixels();
+          frameStrips_.clear();
+          recv_->startPixels();
+        }
+        frameStrips_[stripNum] = true;
+      }
+
+      recv_->pixels(stripNum, data + 1, ppData1_.pixelsPerStrip);
+      data += 1 + uintptr_t{ppData1_.pixelsPerStrip}*3;
+    }
+
+    // If there's a whole frame then show the pixels
+    if (isAll(frameStrips_, true)) {
+      recv_->endPixels();
+      frameStrips_.clear();
+    }
   }
-  recv_->endPixels();
 
   // Update the discovery packet
   IPAddress ip = pixelsUDP_.remoteIP();
