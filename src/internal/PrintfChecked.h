@@ -4,6 +4,12 @@
 // PrintfChecked.h defines a printf with format string checking. As of this
 // writing, format string checking for Print::printf isn't enabled on some
 // platforms, which is why this is defined here.
+//
+// To use this class:
+// 1. Derive from PrintfChecked in addition to Print, and
+// 2. Put `using qindesign::network::internal::PrintfChecked::printf;` in the
+//    public area of your class.
+//
 // This file is part of the QNEthernet library.
 
 #pragma once
