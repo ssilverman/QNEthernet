@@ -94,10 +94,12 @@ bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
     stripFlags_[i] = recv->stripFlags(i);
   }
 
-  // Prepare the circular buffer
-  lastUpdateTimes_ = std::make_unique<CircularBuffer<uint32_t>>(
-      (numStrips + ppData1_.maxStripsPerPacket - 1)/
-      ppData1_.maxStripsPerPacket);
+  // Prepare the circular buffer with capacity equal to the minimum
+  // number of packets needed to accomplish one frame
+  size_t packetsPerFrame = (numStrips + ppData1_.maxStripsPerPacket - 1) /
+                           size_t{ppData1_.maxStripsPerPacket};
+  lastUpdateTimes_ =
+      std::make_unique<CircularBuffer<uint32_t>>(packetsPerFrame);
   printf("k=%zu\r\n", lastUpdateTimes_->capacity());
 
   // Prepare the frame strip tracker
