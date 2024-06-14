@@ -42,7 +42,7 @@
 
 #include "lwip/errno.h"
 
-#if !NO_SYS
+// #if !NO_SYS
 /** Table to quickly map an lwIP error (err_t) to a socket error
   * by using -err as an index */
 static const int err_to_errno_table[] = {
@@ -73,7 +73,7 @@ err_to_errno(err_t err)
   }
   return err_to_errno_table[-err];
 }
-#endif /* !NO_SYS */
+// #endif /* !NO_SYS */
 
 #ifdef LWIP_DEBUG
 
