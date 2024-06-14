@@ -43,7 +43,7 @@ class Receiver {
   }
 
   // Starts receiving pixels from a packet.
-  virtual void startPixels() = 0;
+  virtual void startPixels() {}
 
   // Processes pixels for one strip.
   virtual void pixels(size_t stripNum, const uint8_t *pixels,
@@ -54,5 +54,5 @@ class Receiver {
 
   // Executes periodically whenever PixelPusherServer::loop()
   // is called.
-  virtual void loop() = 0;
+  virtual void loop() {}
 };

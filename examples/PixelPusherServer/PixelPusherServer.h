@@ -165,11 +165,9 @@ class PixelPusherServer final {
     size_t pixelsPerStrip() const override { return 0; }
     uint8_t stripFlags(size_t stripNum) const override { return 0; }
 
-    void startPixels() override {}
     void pixels(size_t stripNum, const uint8_t *pixels,
                 size_t pixelsPerStrip) override {}
     void endPixels() override {}
-    void loop() override {}
   };
 
   static constexpr uint32_t kDiscoveryPeriod = 1'000;  // In milliseconds

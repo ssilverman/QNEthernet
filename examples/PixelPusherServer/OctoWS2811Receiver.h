@@ -47,11 +47,9 @@ class OctoWS2811Receiver : public Receiver {
 
   uint8_t stripFlags(size_t stripNum) const override;
   void handleCommand(uint8_t command, const uint8_t *data, size_t len) override;
-  void startPixels() override {}
   void pixels(size_t stripNum, const uint8_t *pixels,
               size_t pixelsPerStrip) override;
   void endPixels() override;
-  void loop() override {}
 
  private:
   struct StripConfig {
