@@ -198,7 +198,9 @@ void PixelPusherServer::loop() {
       // new frame has started, so show what we've got and start again
       size_t stripNum = *data;
       if (stripNum < frameStrips_.size()) {
-        if (frameStrips_[stripNum]) {
+        // Also check for incrementing sequence, in case we're seeing
+        // an old or duplicate packet
+        if (seq - lastSeq_ > 0 && frameStrips_[stripNum]) {
           // We've already seen the strip so trigger an end-of-frame
           // and restart
           recv_->endPixels();
