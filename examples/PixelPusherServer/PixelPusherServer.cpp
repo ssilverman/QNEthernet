@@ -196,23 +196,34 @@ void PixelPusherServer::loop() {
     for (size_t i = 0; i < stripsInPacket; i++) {
       // If we've already seen a particular strip, it probably means a
       // new frame has started, so show what we've got and start again
+
       size_t stripNum = *data;
+      bool useData = true;  // Only use if we haven't seen this strip
+                            // or the sequence number increased
+
       if (stripNum < frameStrips_.size()) {
-        // Also check for incrementing sequence, in case we're seeing
-        // an old or duplicate packet
-        if (seq - lastSeq_ > 0 && frameStrips_[stripNum]) {
-          // We've already seen the strip so trigger an end-of-frame
-          // and restart
-          recv_->endPixels();
-          frameStrips_.clear();
-          recv_->startPixels();
+        if (frameStrips_[stripNum]) {
+          // Check for incrementing sequence, in case we're seeing an
+          // old or duplicate packet
+          if (seq - lastSeq_ > 0) {
+            // We've already seen the strip so trigger an end-of-frame
+            // and restart
+            recv_->endPixels();
+            frameStrips_.clear();
+            recv_->startPixels();
+          } else {
+            // This appears to be duplicate data
+            useData = false;
+          }
         }
         frameStrips_[stripNum] = true;
       }
 
-      recv_->pixels(stripNum, data + 1, ppData1_.pixelsPerStrip);
+      if (useData) {
+        recv_->pixels(stripNum, data + 1, ppData1_.pixelsPerStrip);
+      }
       data += 1 + uintptr_t{ppData1_.pixelsPerStrip}*3;
-    }
+  }
 
     // If there's a whole frame then show the pixels
     if (isAll(frameStrips_, true)) {
