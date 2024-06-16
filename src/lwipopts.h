@@ -104,7 +104,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // ARP options
 #ifndef LWIP_ARP
-#define LWIP_ARP                      LWIP_IPV4
+#define LWIP_ARP                      LWIP_IPV4  /* 1 */
 #endif  // LWIP_ARP
 // #define ARP_TABLE_SIZE                10
 // #define ARP_MAXAGE                    300
@@ -136,7 +136,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // ICMP options
 #ifndef LWIP_ICMP
-#define LWIP_ICMP           LWIP_IPV4
+#define LWIP_ICMP           LWIP_IPV4  /* 1 */
 #endif  // LWIP_ICMP
 // #define ICMP_TTL            IP_DEFAULT_TTL
 // #define LWIP_BROADCAST_PING 0
@@ -208,7 +208,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // UDP options
 #ifndef LWIP_UDP
-#define LWIP_UDP             (LWIP_IPV4 || LWIP_IPV6)
+#define LWIP_UDP             (LWIP_IPV4 || LWIP_IPV6)  /* 1 */
 #endif  // !LWIP_UDP
 // #define LWIP_UDPLITE         0
 // #define UDP_TTL              IP_DEFAULT_TTL
@@ -217,7 +217,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // TCP options
 
 #ifndef LWIP_TCP
-#define LWIP_TCP                   (LWIP_IPV4 || LWIP_IPV6)
+#define LWIP_TCP                   (LWIP_IPV4 || LWIP_IPV6)  /* 1 */
 #endif  // !LWIP_TCP
 // #define TCP_TTL                    IP_DEFAULT_TTL
 // #define TCP_MAXRTX                 12
