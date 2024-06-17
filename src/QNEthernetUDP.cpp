@@ -160,6 +160,7 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   }
   tryCreatePCB();
   if (pcb_ == nullptr) {
+    errno = ENOMEM;
     return false;
   }
 
@@ -247,6 +248,7 @@ EthernetUDP::operator bool() const {
 bool EthernetUDP::setOutgoingDiffServ(uint8_t ds) {
   tryCreatePCB();
   if (pcb_ == nullptr) {
+    errno = ENOMEM;
     return false;
   }
   pcb_->tos = ds;
@@ -400,6 +402,7 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
   tryCreatePCB();
   if (pcb_ == nullptr) {
+    errno = ENOMEM;
     return false;
   }
 
@@ -426,6 +429,7 @@ int EthernetUDP::endPacket() {
   if (p == nullptr) {
     outPacket_.clear();
     Ethernet.loop();  // Allow the stack to move along
+    errno = ENOMEM;
     return false;
   }
 
@@ -493,10 +497,12 @@ bool EthernetUDP::send(const char *host, uint16_t port,
 bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
                        const uint8_t *data, size_t len) {
   if (len > kMaxPossiblePayloadSize) {
+    errno = ENOBUFS;
     return false;
   }
   tryCreatePCB();
   if (pcb_ == nullptr) {
+    errno = ENOMEM;
     return false;
   }
 
@@ -504,6 +510,7 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
   if (p == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
+    errno = ENOMEM;
     return false;
   }
 

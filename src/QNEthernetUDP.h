@@ -178,6 +178,8 @@ class EthernetUDP : public UDP,
   // beginPacket(), and send().
   //
   // Note that this must be set again after calling stop().
+  //
+  // If this returns false and there was an error then errno will be set.
   bool setOutgoingDiffServ(uint8_t ds) final;
 
   // Returns the differentiated services (DiffServ) value from the outgoing IP

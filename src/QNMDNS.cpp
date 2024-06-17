@@ -30,14 +30,16 @@ STATIC_INIT_DEFN(MDNSClass, MDNS);
 static void srv_txt(struct mdns_service *service, void *txt_userdata) {
   // TODO: Not clear yet why we need at least an empty TXT record for SRV to appear
   if (txt_userdata == nullptr) {
-    mdns_resp_add_service_txtitem(service, "", 0);
+    err_t err = mdns_resp_add_service_txtitem(service, "", 0);
+    errno = err_to_errno(err);
     return;
   }
 
   auto fn = reinterpret_cast<std::vector<String> (*)()>(txt_userdata);
   std::vector<String> list = fn();
   if (list.empty()) {
-    mdns_resp_add_service_txtitem(service, "", 0);
+    err_t err = mdns_resp_add_service_txtitem(service, "", 0);
+    errno = err_to_errno(err);
     return;
   }
 
@@ -45,7 +47,9 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
     const char *txt = item.c_str();
     uint8_t len = std::min(item.length(), 63U);
     err_t res = mdns_resp_add_service_txtitem(service, txt, len);
-    LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK), errno = res; return );
+    LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK),
+               errno = err_to_errno(res);
+               return);
   }
 }
 
@@ -62,6 +66,7 @@ FLASHMEM MDNSClass::~MDNSClass() {
 bool MDNSClass::begin(const char *hostname) {
   if (netif_default == nullptr) {
     // Return false for no netif
+    errno = ENOTCONN;
     return false;
   }
 
@@ -97,10 +102,13 @@ bool MDNSClass::begin(const char *hostname) {
 
 void MDNSClass::end() {
   if (netifAdded) {
-    mdns_resp_remove_netif(netif_);
+    err_t err = mdns_resp_remove_netif(netif_);
     netifAdded = false;
     netif_ = nullptr;
     hostname_ = "";
+    if (err != ERR_OK) {
+      errno = err_to_errno(err);
+    }
   }
 }
 
@@ -142,6 +150,7 @@ bool MDNSClass::addService(const char *name, const char *type,
                            std::vector<String> (*getTXTFunc)(void)) {
   if (!netifAdded) {
     // Return false for no netif
+    errno = ENOTCONN;
     return false;
   }
 
@@ -152,6 +161,9 @@ bool MDNSClass::addService(const char *name, const char *type,
     if (slot >= 0) {
       // Remove if the addition was successful but we couldn't add it
       mdns_resp_del_service(netif_, slot);
+      errno = ENOBUFS;
+    } else {
+      errno = err_to_errno(slot);
     }
     return false;
   }
@@ -203,6 +215,7 @@ bool MDNSClass::removeService(const char *name, const char *type,
 
 void MDNSClass::announce() const {
   if (!netifAdded) {
+    errno = ENOTCONN;
     return;
   }
   mdns_resp_announce(netif_);

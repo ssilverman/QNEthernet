@@ -44,6 +44,8 @@ class MDNSClass final {
   bool begin(const char *hostname);
 
   // Stops the mDNS responder.
+  //
+  // If there was an error then errno will be set.
   void end();
 
   // Returns the hostname. This will return an empty string if the responder
@@ -127,6 +129,8 @@ class MDNSClass final {
 
   // Performs an announcement. This isn't usually necessary for
   // normal operation.
+  //
+  // If there was an error then errno will be set.
   void announce() const;
 
  private:

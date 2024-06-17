@@ -66,6 +66,7 @@ bool DNSClient::getHostByName(const char *hostname,
                               std::function<void(const ip_addr_t *)> callback,
                               uint32_t timeout) {
   if (callback == nullptr || hostname == nullptr) {
+    errno = EINVAL;
     return false;
   }
 

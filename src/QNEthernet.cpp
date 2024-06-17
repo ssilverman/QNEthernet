@@ -629,6 +629,7 @@ EthernetHardwareStatus EthernetClass::hardwareStatus() const {
 bool EthernetClass::joinGroup(const IPAddress &ip) const {
 #if LWIP_IGMP
   if (netif_ == nullptr) {
+    errno = ENOTCONN;
     return false;
   }
 
