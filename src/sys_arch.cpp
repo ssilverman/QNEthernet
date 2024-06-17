@@ -6,20 +6,10 @@
 
 #include "arch/sys_arch.h"
 
-// C includes
-#include <unistd.h>
-
 // C++ includes
 #include <cstdint>
-#include <cstdio>
-#include <limits>
 
-#include "lwip/arch.h"
-#include "lwip/debug.h"
 #include "lwip/opt.h"
-#ifdef LWIP_DEBUG
-#include "lwip/err.h"
-#endif  // LWIP_DEBUG
 
 // --------------------------------------------------------------------------
 //  Time
