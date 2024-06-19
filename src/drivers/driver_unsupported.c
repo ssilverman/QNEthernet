@@ -16,8 +16,10 @@ bool driver_is_link_state_detectable() {
   return false;
 }
 
+void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);
+
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  LWIP_UNUSED_ARG(mac);
+  qnethernet_hal_get_system_mac_address(mac);
 }
 
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
