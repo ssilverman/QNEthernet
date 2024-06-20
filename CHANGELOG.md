@@ -26,7 +26,8 @@ and this project adheres to
 * Updated and improved _PixelPusherServer_ example.
 * Call `qnethernet_hal_get_system_mac_address(mac)` in the unsupported driver's
   `driver_get_system_mac(mac)` implementation. This enables MAC address
-  retrieval for more platforms; Teensy 4.0, for example.
+  retrieval for more platforms when communication isn't needed; Teensy 4.0,
+  for example.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
