@@ -157,8 +157,8 @@ namespace socketinterrupts {
 //  Internal Variables
 // --------------------------------------------------------------------------
 
-static constexpr size_t kMTU         = MTU;
-static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Includes the 4-byte FCS (frame check sequence)
+static constexpr size_t kMTU         = 1500;
+static constexpr size_t kMaxFrameLen = 1522;  // Includes the 4-byte FCS (frame check sequence)
 
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
@@ -468,6 +468,14 @@ void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->hasLinkSpeed      = true;
   dc->hasLinkFullDuplex = true;
   dc->hasLinkCrossover  = false;
+}
+
+size_t driver_get_mtu() {
+  return kMTU;
+}
+
+size_t driver_get_max_frame_len() {
+  return kMaxFrameLen;
 }
 
 bool driver_is_unknown() {
