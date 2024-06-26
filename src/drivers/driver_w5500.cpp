@@ -151,6 +151,9 @@ namespace socketinterrupts {
 //  Internal Variables
 // --------------------------------------------------------------------------
 
+static constexpr size_t kMTU         = 1500;
+static constexpr size_t kMaxFrameLen = 1522;
+
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
 #if !QNETHERNET_BUFFERS_IN_RAM1 && \
@@ -161,7 +164,7 @@ static constexpr uint8_t kControlRWBit = (1 << 2);
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
 
 // Buffers
-static uint8_t s_spiBuf[3 + MAX_FRAME_LEN - 4] BUFFER_DMAMEM;  // Exclude the 4-byte FCS
+static uint8_t s_spiBuf[3 + kMaxFrameLen - 4] BUFFER_DMAMEM;  // Exclude the 4-byte FCS
 static uint8_t *const s_frameBuf = &s_spiBuf[3];
 static uint8_t s_inputBuf[16 * 1024] BUFFER_DMAMEM;
 
@@ -453,6 +456,14 @@ static void check_link_status(struct netif *netif) {
 
 extern "C" {
 
+size_t driver_get_mtu() {
+  return kMTU;
+}
+
+size_t driver_get_max_frame_len() {
+  return kMaxFrameLen;
+}
+
 bool driver_is_unknown() {
   return s_initState == EnetInitStates::kStart;
 }
@@ -574,7 +585,7 @@ void driver_proc_input(struct netif *netif) {
 
   LINK_STATS_INC(link.recv);
 
-  if (frameLen > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
+  if (frameLen > kMaxFrameLen - 4) {  // Exclude the 4-byte FCS
     LINK_STATS_INC(link.drop);
   } else {
     read(ptr, blocks::kSocketRx, s_inputBuf, frameLen);
@@ -587,7 +598,7 @@ void driver_proc_input(struct netif *netif) {
     }
   }
 
-  if (frameLen > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
+  if (frameLen > kMaxFrameLen - 4) {  // Exclude the 4-byte FCS
     return;
   }
 
@@ -634,7 +645,7 @@ err_t driver_output(struct pbuf *p) {
 #endif  // ETH_PAD_SIZE
 
   // Shouldn't need this check:
-  // if (p->tot_len > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
+  // if (p->tot_len > kMaxFrameLen - 4) {  // Exclude the 4-byte FCS
   //   LINK_STATS_INC(link.drop);
   //   LINK_STATS_INC(link.lenerr);
   //   return ERR_BUF;

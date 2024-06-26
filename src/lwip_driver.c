@@ -62,7 +62,7 @@ static err_t init_netif(struct netif *netif) {
 #if LWIP_IPV4
   netif->output     = etharp_output;
 #endif  // LWIP_IPV4
-  netif->mtu        = MTU;
+  netif->mtu        = driver_get_mtu();
   netif->flags = 0
                  | NETIF_FLAG_BROADCAST
 #if LWIP_IPV4
@@ -234,11 +234,11 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
-    if (len > MAX_FRAME_LEN - 4) {  // Don't include 4-byte FCS
+    if (len > driver_get_max_frame_len() - 4) {  // Don't include 4-byte FCS
       return false;
     }
   } else {
-    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include 4-byte FCS and VLAN
+    if (len > driver_get_max_frame_len() - 4 - 4) {  // Don't include 4-byte FCS and VLAN
       return false;
     }
   }
