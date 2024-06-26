@@ -100,11 +100,10 @@ void EthernetClass::netifEventFunc(struct netif *netif,
   }
 }
 
-FLASHMEM EthernetClass::EthernetClass() : EthernetClass(nullptr) {}
-
-FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize])
+FLASHMEM EthernetClass::EthernetClass()
     : chipSelectPin_(-1),
       lastPollTime_(0),
+      hasMAC_(false),
 #if LWIP_NETIF_HOSTNAME
       hostname_{QNETHERNET_DEFAULT_HOSTNAME},
 #endif  // LWIP_NETIF_HOSTNAME
@@ -116,20 +115,25 @@ FLASHMEM EthernetClass::EthernetClass(const uint8_t mac[kMACAddrSize])
       dhcpActive_(false)
 #endif  // LWIP_DHCP
 {
-  if (mac != nullptr) {
-    std::copy_n(mac, kMACAddrSize, mac_);
-  } else {
-    enet_get_system_mac(mac_);
-  }
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {
   end();
 }
 
-void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) const {
+const uint8_t *EthernetClass::macAddress() {
+  // First ensure there's a value
+  if (!hasMAC_) {
+    enet_get_system_mac(mac_);
+    hasMAC_ = true;
+  }
+  return mac_;
+};
+
+void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) {
+  const uint8_t *m = macAddress();
   if (mac != nullptr) {
-    std::copy_n(mac_, kMACAddrSize, mac);
+    std::copy_n(m, kMACAddrSize, mac);
   }
 }
 
@@ -139,14 +143,19 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
     // Use the system MAC address
     enet_get_system_mac(m);
     mac = m;
+    if (!hasMAC_) {  // Take the opportunity to fill this in if we need
+      std::copy_n(&m[0], kMACAddrSize, &mac_[0]);
+      hasMAC_ = true;
+    }
   }
 
-  if (std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
+  if (hasMAC_ && std::equal(&mac_[0], &mac_[kMACAddrSize], &mac[0])) {
     // Do nothing if there's no change
     return;
   }
 
   std::copy_n(mac, kMACAddrSize, mac_);
+  hasMAC_ = true;
   if (netif_ == nullptr) {
     return;
   }
@@ -285,7 +294,7 @@ bool EthernetClass::start() {
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  if (!enet_init(mac_, &netifEventFunc)) {
+  if (!enet_init(macAddress(), &netifEventFunc)) {
     return false;
   }
 
@@ -367,8 +376,12 @@ int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
   if (mac == nullptr) {
     enet_get_system_mac(m);
     mac = m;
+    if (!hasMAC_) {  // Take the opportunity to fill this in if we need
+      std::copy_n(&m[0], kMACAddrSize, &mac_[0]);
+      hasMAC_ = true;
+    }
   }
-  std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(macAddress(), kMACAddrSize, m);  // Cache the current MAC address
   std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin()) {
@@ -408,8 +421,12 @@ void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
   if (mac == nullptr) {
     enet_get_system_mac(m);
     mac = m;
+    if (!hasMAC_) {  // Take the opportunity to fill this in if we need
+      std::copy_n(&m[0], kMACAddrSize, &mac_[0]);
+      hasMAC_ = true;
+    }
   }
-  std::copy_n(mac_, kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(macAddress(), kMACAddrSize, m);  // Cache the current MAC address
   std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin(ip, subnet, gateway, dns)) {

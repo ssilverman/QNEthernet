@@ -87,20 +87,20 @@ class EthernetClass final {
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
   }
 
-  // Returns a pointer to the current MAC address.
-  const uint8_t *macAddress() const {
-    return mac_;
-  };
+  // Returns a pointer to the current MAC address. If it has not yet been
+  // accessed, then this first retrieves the system MAC address from the driver.
+  const uint8_t *macAddress();
 
-  // Retrieves the MAC address. This does nothing if 'mac' is NULL.
-  void macAddress(uint8_t mac[kMACAddrSize]) const;
+  // Retrieves the MAC address. If it has not yet been accessed, then this first
+  // retrieves the system MAC address from the driver.
+  void macAddress(uint8_t mac[kMACAddrSize]);
 
   // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted.
   //
-  // If the given array is NULL, then the MAC address will be set to the
-  // built-in one.
+  // If the given array is NULL, then the MAC address will be set to the system
+  // one, retrieving it from the driver if it has not yet been accessed.
   void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
   // Call often.
@@ -112,6 +112,9 @@ class EthernetClass final {
   //
   // Note that when this returns, an IP address may not yet have been acquired,
   // if DHCP is enabled. In other words, it does not block.
+  //
+  // This also retrieves the system MAC address from the driver if it has not
+  // yet been accessed.
   //
   // See: waitForLocalIP(timeout)
   bool begin();
@@ -157,6 +160,9 @@ class EthernetClass final {
   // This returns whether bringing up the interface, and possibly the DHCP
   // client, was successful.
   //
+  // This also retrieves the system MAC address from the driver if it has not
+  // yet been accessed.
+  //
   // This calls `begin(ipaddr, netmask, gw, INADDR_NONE)`.
   bool begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
@@ -166,6 +172,9 @@ class EthernetClass final {
   // and gateway are all INADDR_NONE then this will start a DHCP client, if
   // enabled. This only sets the DNS server if `dns` is not INADDR_NONE; there
   // is no change if `dns` is INADDR_NONE.
+  //
+  // This also retrieves the system MAC address from the driver if it has not
+  // yet been accessed.
   //
   // This returns whether starting Ethernet was successful.
   bool begin(const IPAddress &ipaddr,
@@ -267,7 +276,9 @@ class EthernetClass final {
   // range [0, DNSClient::maxServers()).
   void setDNSServerIP(int index, const IPAddress &ip) const;
 
-  // The MAC addresses are used in the following begin() functions
+  // The MAC addresses are used in the following begin() functions. If NULL, the
+  // system MAC address is first retrieved from the driver.
+  //
   // Wish: Boolean returns
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
@@ -298,7 +309,7 @@ class EthernetClass final {
   void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
 
   // These call something equivalent
-  void MACAddress(uint8_t mac[kMACAddrSize]) const { macAddress(mac); }
+  void MACAddress(uint8_t mac[kMACAddrSize]) { macAddress(mac); }
   void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
@@ -363,14 +374,8 @@ class EthernetClass final {
  private:
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
 
-  // Creates a new network interface. This sets the MAC address to the built-in
-  // MAC address. This calls the other constructor with a NULL address.
+  // Creates a new network interface. The MAC address will be unset.
   EthernetClass();
-
-  // Creates a new network interface. This sets the MAC address to the given MAC
-  // address. If the given address is NULL then this uses the built-in
-  // MAC address.
-  explicit EthernetClass(const uint8_t mac[kMACAddrSize]);
 
   ~EthernetClass();
 
@@ -392,6 +397,7 @@ class EthernetClass final {
 
   uint32_t lastPollTime_;
 
+  bool hasMAC_;
   uint8_t mac_[kMACAddrSize];
 #if LWIP_NETIF_HOSTNAME
   String hostname_;  // Empty means no hostname
