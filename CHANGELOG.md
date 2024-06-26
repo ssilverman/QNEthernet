@@ -28,6 +28,9 @@ and this project adheres to
   `driver_get_system_mac(mac)` implementation. This enables MAC address
   retrieval for more platforms when communication isn't needed; Teensy 4.0,
   for example.
+* Turned the internal MAC address into an optional and simplified the `Ethernet`
+  constructor. This change should make it easier to initialze a MAC address from
+  a custom driver.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
