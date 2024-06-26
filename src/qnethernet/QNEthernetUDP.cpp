@@ -31,10 +31,10 @@ namespace network {
 // Total header size: Minimum IPv4 header size + UDP header size.
 static constexpr size_t kHeaderSize = IP_HLEN + 8;
 
-// Maximum UDP payload size without fragmentation.
-static constexpr size_t kMaxPayloadSize =
-    (EthernetClass::mtu() >= kHeaderSize) ? (EthernetClass::mtu() - kHeaderSize)
-                                          : 0;
+// // Maximum UDP payload size without fragmentation.
+// static constexpr size_t kMaxPayloadSize =
+//     (EthernetClass::mtu() >= kHeaderSize) ? (EthernetClass::mtu() - kHeaderSize)
+//                                           : 0;
 
 // Maximum possible payload size.
 static constexpr size_t kMaxPossiblePayloadSize =
