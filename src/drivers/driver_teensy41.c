@@ -33,6 +33,9 @@
 //  Defines
 // --------------------------------------------------------------------------
 
+#define MTU           1500
+#define MAX_FRAME_LEN 1522
+
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 #define GPIO_PAD_OUTPUT (0                         \
@@ -762,6 +765,14 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isLinkFullDuplexDetectable = true;
   dc->isLinkFullDuplexSettable   = false;
   dc->isLinkCrossoverDetectable  = true;
+}
+
+size_t driver_get_mtu() {
+  return MTU;
+}
+
+size_t driver_get_max_frame_len() {
+  return MAX_FRAME_LEN;
 }
 
 bool driver_is_unknown() {
