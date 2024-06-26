@@ -6,9 +6,6 @@
 
 #pragma once
 
-#define MTU           1500
-#define MAX_FRAME_LEN 1522
-
 // lwIP options
 
 // ARP options
