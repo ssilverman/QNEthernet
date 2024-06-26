@@ -33,6 +33,9 @@
 //  Defines
 // --------------------------------------------------------------------------
 
+#define MTU           1500
+#define MAX_FRAME_LEN 1522
+
 #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 #define GPIO_PAD_OUTPUT (0                         \
@@ -753,6 +756,14 @@ static inline int check_link_status(struct netif *netif, int state) {
 // --------------------------------------------------------------------------
 //  Driver Interface
 // --------------------------------------------------------------------------
+
+size_t driver_get_mtu() {
+  return MTU;
+}
+
+size_t driver_get_max_frame_len() {
+  return MAX_FRAME_LEN;
+}
 
 bool driver_is_unknown() {
   return s_initState == kInitStateStart;
