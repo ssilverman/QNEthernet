@@ -320,6 +320,8 @@ and this project adheres to
 * Renamed `driver_set_mac_address_allowed()` to
   `driver_set_incoming_mac_address_allowed()`.
 * Changed `driver_proc_input(netif)` to return a `pbuf*`.
+* Made MTU and max-frame-len dynamic to support drivers that don't know the
+  values at compile time.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero

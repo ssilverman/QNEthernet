@@ -208,8 +208,8 @@ class SPITransaction final {
 //  Internal Variables
 // --------------------------------------------------------------------------
 
-static constexpr size_t kMTU         = MTU;
-static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Does not include the 4-byte FCS (frame check sequence)
+static constexpr size_t kMTU         = 1500;
+static constexpr size_t kMaxFrameLen = 1518;  // Does not include the 4-byte FCS (frame check sequence)
 
 // static_assert(kMaxFrameLen >= 0, "Max. frame len must be >= 0");
 
@@ -664,6 +664,14 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isAutoNegotiationSettable    = true;
   dc->isLinkCrossoverDetectable    = false;
   dc->isAutoNegotiationRestartable = true;
+}
+
+size_t driver_get_mtu(void) {
+  return kMTU;
+}
+
+size_t driver_get_max_frame_len(void) {
+  return kMaxFrameLen;
 }
 
 bool driver_is_unknown(void) {

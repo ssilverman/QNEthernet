@@ -24,10 +24,6 @@
 #include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
-// Check things that are supposed to be set properly by the driver headers
-STATIC_ASSERT(MTU >= 0, "MTU must be defined and > 0");
-STATIC_ASSERT(MAX_FRAME_LEN >= 0, "MAX_FRAME_LEN must be defined and >= 0");
-
 enum {
   MIN_FRAME_LEN = 60,
 };
@@ -38,16 +34,13 @@ enum {
 STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // Requirements for driver-specific headers:
-// 1. Define MTU
-// 2. Define MAX_FRAME_LEN (not including the 4-byte FCS (frame check sequence))
-//    1. It will usually be MTU + 14 (2 6-byte MACs, 2-byte tag) + 4 (VLAN)
-// 3. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
+// 1. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
 //    for your driver. For example, Ethernet padding, checksum generation, and
 //    checksum checking.
 
 // How to create a driver:
-// 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
-//    either `#pragma once` or a #define guard.
+// 1. Create a driver header. Don't forget to use either `#pragma once` or a
+//    #define guard.
 // 2. Create driver source and include lwip_driver.h. Implement all the
 //    `driver_x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
@@ -65,9 +58,8 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 //    be returned if hardware is found (driver_has_hardware() returns true).
 
 // How to create an external driver that isn't inside the distribution:
-// 1. Create a header named "qnethernet_external_driver.h" that defines MTU and
-//    MAX_FRAME_LEN. MAX_FRAME_LEN should not include the 4-byte FCS. Don't
-//    forget to use either `#pragma once` or a #define guard.
+// 1. Create a header named "qnethernet_external_driver.h". Don't forget to use
+//    either `#pragma once` or a #define guard.
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 3. Create driver source and include lwip_driver.h. Implement all the
@@ -158,6 +150,15 @@ struct LinkSettings {
 // called more than once but may not be valid until after driver_init()
 // is called.
 void driver_get_capabilities(struct DriverCapabilities* dc);
+
+// Returns the MTU.
+ATTRIBUTE_NODISCARD
+size_t driver_get_mtu(void);
+
+// Returns the maximum frame length. This does not include the 4-byte FCS (frame
+// check sequence).
+ATTRIBUTE_NODISCARD
+size_t driver_get_max_frame_len(void);
 
 // Returns if the hardware hasn't yet been probed.
 ATTRIBUTE_NODISCARD
@@ -283,19 +284,6 @@ void driver_restart_auto_negotiation();
 // --------------------------------------------------------------------------
 //  Public Interface
 // --------------------------------------------------------------------------
-
-// Returns the MTU.
-ATTRIBUTE_NODISCARD
-inline size_t enet_get_mtu(void) {
-  return MTU;
-}
-
-// Returns the maximum frame length. This does not include the 4-byte FCS (frame
-// check sequence).
-ATTRIBUTE_NODISCARD
-inline size_t enet_get_max_frame_len(void) {
-  return MAX_FRAME_LEN;
-}
 
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 //

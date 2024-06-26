@@ -24,6 +24,14 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isAutoNegotiationRestartable = false;
 }
 
+size_t driver_get_mtu(void) {
+  return 0;
+}
+
+size_t driver_get_max_frame_len(void) {
+  return 0;
+}
+
 bool driver_is_unknown(void) {
   return false;
 }

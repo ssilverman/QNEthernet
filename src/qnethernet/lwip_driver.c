@@ -97,7 +97,7 @@ FLASHMEM static err_t init_netif(struct netif* const netif) {
 #if LWIP_IPV4
   netif->output     = etharp_output;
 #endif  // LWIP_IPV4
-  netif->mtu        = MTU;
+  netif->mtu        = driver_get_mtu();
   netif->flags = 0
                  | NETIF_FLAG_BROADCAST
 #if LWIP_IPV4
@@ -270,18 +270,21 @@ bool enet_output_frame(const void* const frame, const size_t len) {
     return false;
   }
 
+  size_t maxFrameLen = driver_get_max_frame_len();
+
   // Check length depending on VLAN
   if ((((const uint8_t*)frame)[12] == (uint8_t)(ETHTYPE_VLAN >> 8)) &&
       (((const uint8_t*)frame)[13] == (uint8_t)(ETHTYPE_VLAN))) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
-    if (len > MAX_FRAME_LEN) {
+
+    if (len > maxFrameLen) {
       return false;
     }
   } else {
     // Don't include 4-byte FCS and VLAN
-    if ((MAX_FRAME_LEN < 4) || (len > (MAX_FRAME_LEN - 4))) {
+    if ((maxFrameLen < 4) || (len > (maxFrameLen - 4))) {
       return false;
     }
   }
