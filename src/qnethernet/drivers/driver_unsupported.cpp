@@ -28,6 +28,14 @@ FLASHMEM void get_capabilities(DriverCapabilities* const dc) {
   dc->isPHYResettable              = false;
 }
 
+size_t get_mtu() {
+  return 0;
+}
+
+size_t get_max_frame_len() {
+  return 0;
+}
+
 bool is_unknown() {
   return false;
 }

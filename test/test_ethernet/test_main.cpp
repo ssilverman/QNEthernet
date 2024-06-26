@@ -1594,9 +1594,8 @@ static void test_other_state() {
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_IGMP_GROUP > 0 ? MEMP_NUM_IGMP_GROUP - 1 : 0,
                             Ethernet.maxMulticastGroups(),
                             "Expected default max. multicast groups");
-  TEST_ASSERT_EQUAL_MESSAGE(enet::get_mtu(), Ethernet.mtu(), "Expected default MTU");
-#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-  TEST_ASSERT_EQUAL_MESSAGE(enet::get_max_frame_len(), EthernetFrame.maxFrameLen(),
+  TEST_ASSERT_EQUAL_MESSAGE(driver::get_mtu(), Ethernet.mtu(), "Expected default MTU");
+  TEST_ASSERT_EQUAL_MESSAGE(driver::get_max_frame_len(), EthernetFrame.maxFrameLen(),
                             "Expected default max. frame len");
   TEST_ASSERT_EQUAL_MESSAGE(60, EthernetFrame.minFrameLen(), "Expected default min. frame len");
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
