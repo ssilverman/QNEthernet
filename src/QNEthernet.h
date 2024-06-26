@@ -78,9 +78,9 @@ class EthernetClass final {
 #endif  // LWIP_IGMP
   }
 
-  // Gets the MTU.
-  static constexpr size_t mtu() {
-    return MTU;
+  // Gets the MTU. This retrieves the value from the driver.
+  static size_t mtu() {
+    return driver_get_mtu();
   }
 
   // Returns whether promiscuous mode is enabled.

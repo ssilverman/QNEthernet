@@ -48,8 +48,10 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   //
   // Note that this size includes VLAN frames, which are 4 bytes larger.
   // Also note that the padding does not need to be managed by the caller.
-  static constexpr size_t maxFrameLen() {
-    return MAX_FRAME_LEN;
+  //
+  // This retrieves the value from the driver.
+  static size_t maxFrameLen() {
+    return driver_get_max_frame_len();
   }
 
   // Returns the minimum frame length. This includes any padding but not the
