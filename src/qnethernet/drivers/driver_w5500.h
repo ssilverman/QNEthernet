@@ -5,6 +5,3 @@
 // This file is part of the QNEthernet library.
 
 #pragma once
-
-#define MTU           1500
-#define MAX_FRAME_LEN 1522  /* Includes the 4-byte FCS (frame check sequence) */
