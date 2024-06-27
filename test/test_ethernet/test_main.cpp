@@ -151,7 +151,7 @@ static void test_set_mac() {
 
   TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
 
-  const uint8_t testMAC[6]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+  const uint8_t testMAC[6]{0x02, 0x01, 0x03, 0x04, 0x05, 0x06};
   TEST_ASSERT_FALSE_MESSAGE(std::equal(&builtInMAC[0], &builtInMAC[6], testMAC),
                             "Expected internal MAC");
   Ethernet.setMACAddress(testMAC);
