@@ -190,15 +190,7 @@ void EthernetClass::loop() {
 }
 
 bool EthernetClass::begin() {
-  if (!start()) {
-    return false;
-  }
-
-#if LWIP_IPV4
-  netif_set_addr(netif_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-#endif  // LWIP_IPV4
-
-  return maybeStartDHCP();
+  return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
