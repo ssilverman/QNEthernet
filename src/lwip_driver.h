@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "driver_select.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
@@ -30,33 +31,18 @@
 // 2. Create driver source and include lwip_driver.h. Implement all the
 //    `driver_x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
-// 3. Adjust the following driver selection logic to define an appropriate macro
-//    (such as INTERNAL_DRIVER_Y) when the desired driver condition
-//    is satisfied.
-// 4. Include your driver header in the correct place in the logic below.
+// 3. Adjust the driver selection logic in driver_select.h to define an
+//    appropriate macro (such as INTERNAL_DRIVER_Y) when the desired driver
+//    condition is satisfied.
+// 4. Include your driver header in the correct place in driver_select.h.
 // 5. In your driver source, gate the whole file(s) on the macro you chose
 //    above. Of course, test the macro after the lwip_driver.h include.
 //    (Example: INTERNAL_DRIVER_Y)
-// 6. Update lwipopts.h with appropriate values for your driver.
-//    Hint: Look for sections gated by macros that start with
-//          `QNETHERNET_DRIVER_`. For example, Ethernet padding, checksum
-//          generation, and checksum checking. The check logic should match the
-//          driver selection logic in this file.
+// 6. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
+//    For example, Ethernet padding, checksum generation, and checksum checking.
 // 7. Optionally update EthernetClass::hardwareStatus() to return an appropriate
 //    enum value. If no change is made, the default 'EthernetOtherHardware' will
 //    be returned if hardware is found (driver_has_hardware() returns true).
-
-// Select a driver
-#if defined(QNETHERNET_DRIVER_W5500)
-#include "drivers/driver_w5500.h"
-#define QNETHERNET_INTERNAL_DRIVER_W5500
-#elif defined(ARDUINO_TEENSY41)
-#include "drivers/driver_teensy41.h"
-#define QNETHERNET_INTERNAL_DRIVER_TEENSY41
-#else
-#include "drivers/driver_unsupported.h"
-#define QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
-#endif  // Driver selection
 
 #ifdef __cplusplus
 extern "C" {

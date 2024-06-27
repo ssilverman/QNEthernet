@@ -33,6 +33,8 @@ and this project adheres to
   constructor. This change should make it easier to initialze a MAC address from
   a custom driver.
 * Changed Arduino-API non-DHCP `begin(...)` functions to return `bool`.
+* Improved driver logic so that lwIP options can be included in the
+  driver headers.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
