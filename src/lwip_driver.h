@@ -38,6 +38,10 @@
 //    above. Of course, test the macro after the lwip_driver.h include.
 //    (Example: INTERNAL_DRIVER_Y)
 // 6. Update lwipopts.h with appropriate values for your driver.
+//    Hint: Look for sections gated by macros that start with
+//          `QNETHERNET_DRIVER_`. For example, Ethernet padding, checksum
+//          generation, and checksum checking. The check logic should match the
+//          driver selection logic in this file.
 // 7. Optionally update EthernetClass::hardwareStatus() to return an appropriate
 //    enum value. If no change is made, the default 'EthernetOtherHardware' will
 //    be returned if hardware is found (driver_has_hardware() returns true).

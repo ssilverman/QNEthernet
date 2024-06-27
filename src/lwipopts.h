@@ -113,9 +113,9 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define ETHARP_SUPPORT_VLAN           0
 // #define LWIP_VLAN_PCP                 0
 #define LWIP_ETHERNET                 1  /* LWIP_ARP */
-#if !defined(QNETHERNET_DRIVER_W5500)
+#if !defined(QNETHERNET_DRIVER_W5500) && defined(ARDUINO_TEENSY41)
 #define ETH_PAD_SIZE                  2  /* 0 */
-#endif  // !defined(QNETHERNET_DRIVER_W5500)
+#endif  // !defined(QNETHERNET_DRIVER_W5500) && defined(ARDUINO_TEENSY41)
 // #define ETHARP_SUPPORT_STATIC_ENTRIES 0
 // #define ETHARP_TABLE_MATCH_NETIF      !LWIP_SINGLE_NETIF
 
@@ -374,7 +374,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // Checksum options
 // #define LWIP_CHECKSUM_CTRL_PER_NETIF 0
-#if !defined(QNETHERNET_DRIVER_W5500)
+#if !defined(QNETHERNET_DRIVER_W5500) && defined(ARDUINO_TEENSY41)
 #define CHECKSUM_GEN_IP              0  /* 1 */
 #define CHECKSUM_GEN_UDP             0  /* 1 */
 #define CHECKSUM_GEN_TCP             0  /* 1 */
@@ -385,7 +385,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 #define CHECKSUM_CHECK_TCP           0  /* 1 */
 #define CHECKSUM_CHECK_ICMP          0  /* 1 */
 // #define CHECKSUM_CHECK_ICMP6         1
-#endif  // !defined(QNETHERNET_DRIVER_W5500)
+#endif  // !defined(QNETHERNET_DRIVER_W5500) && defined(ARDUINO_TEENSY41)
 // #define LWIP_CHECKSUM_ON_COPY        0
 
 // IPv6 options
