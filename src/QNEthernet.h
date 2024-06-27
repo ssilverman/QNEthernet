@@ -280,17 +280,19 @@ class EthernetClass final {
   // system MAC address is first retrieved from the driver.
   //
   // Wish: Boolean returns
+  // Technically, the non-DHCP begin() functions aren't supposed to
+  // return anything
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
-  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip);
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
              const IPAddress &dns);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway);
-  void begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
              const IPAddress &dns, const IPAddress &gateway,
              const IPAddress &subnet);
 

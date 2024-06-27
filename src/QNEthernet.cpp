@@ -364,21 +364,7 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 }
 
 int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
-  uint8_t m1[kMACAddrSize];
-  uint8_t m2[kMACAddrSize];
-  if (mac == nullptr) {
-    enet_get_system_mac(m1);
-    mac = m1;
-    if (!hasMAC_) {  // Take the opportunity to fill this in if we need
-      std::copy_n(&m1[0], kMACAddrSize, &mac_[0]);
-      hasMAC_ = true;
-    }
-  }
-  std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
-  std::copy_n(mac, kMACAddrSize, mac_);
-
-  if (!begin()) {
-    std::copy_n(m2, kMACAddrSize, mac_);  // Restore what was there before
+  if (!begin(mac, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE)) {
     return false;
   }
 
@@ -388,28 +374,27 @@ int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-void EthernetClass::begin(const uint8_t mac[kMACAddrSize],
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize],
                           const IPAddress &ip) {
-  begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
-        IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
+  return begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
+               IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
 }
 
-void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns) {
-  begin(mac, ip, dns, IPAddress{ip[0], ip[1], ip[2], 1},
-        IPAddress{255, 255, 255, 0});
+  return begin(mac, ip, dns, IPAddress{ip[0], ip[1], ip[2], 1},
+               IPAddress{255, 255, 255, 0});
 }
 
-void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway) {
-  begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
+  return begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
 }
 #pragma GCC diagnostic pop
 
-void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
-  // This doesn't return any error, so if the MAC is NULL then use the built-in
   uint8_t m1[kMACAddrSize];
   uint8_t m2[kMACAddrSize];
   if (mac == nullptr) {
@@ -425,7 +410,10 @@ void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
 
   if (!begin(ip, subnet, gateway, dns)) {
     std::copy_n(m2, kMACAddrSize, mac_);  // Restore the previous
+    return false;
   }
+
+  return true;
 }
 
 void EthernetClass::end() {
