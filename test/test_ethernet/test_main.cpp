@@ -58,6 +58,7 @@ static constexpr uint32_t kConnectTimeout = 10000;
 static const IPAddress kStaticIP  {192, 168, 0, 2};
 static const IPAddress kSubnetMask{255, 255, 255, 0};
 static const IPAddress kGateway   {192, 168, 0, 1};
+static const IPAddress kDNS       {192, 168, 0, 253};
 
 // Test hostname for mDNS and DHCP option 12.
 static constexpr char kTestHostname[]{"test-hostname"};
@@ -246,11 +247,17 @@ static void test_other_null_mac() {
   TEST_ASSERT_EQUAL_MESSAGE(1, Ethernet.begin(nullptr), "Expected start success (1)");
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  Ethernet.begin(nullptr, INADDR_NONE);
-  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE);
-  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, INADDR_NONE),
+                           "Expected start success (2)");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE),
+                           "Expected start success (3)");
+  TEST_ASSERT_TRUE_MESSAGE(
+      Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE),
+      "Expected start success (4)");
 #pragma GCC diagnostic pop
-  Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  TEST_ASSERT_TRUE_MESSAGE(
+      Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE),
+      "Expected start success (5)");
 
   TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, true));
   TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, false));
@@ -319,6 +326,93 @@ void test_static_ip() {
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (2)");
   TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (2)");
   TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expecting matching DNS (2)");
+}
+
+// Tests the Arduino-style begin() functions.
+static void test_arduino_begin() {
+  const uint8_t testMAC[6]{0x02, 0x01, 0x03, 0x04, 0x05, 0x06};
+  uint8_t systemMAC[6];
+  Ethernet.macAddress(systemMAC);
+
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP before start");
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP), "Expected start success (1)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (1)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (1)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (1)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (1)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (1)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected matching DNS (1)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP), "Expected start success (2)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (2)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected matching DNS (2)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS), "Expected start success (3)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (3)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (3)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (3)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (3)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (3)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (3)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS), "Expected start success (4)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (4)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (4)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (4)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (4)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (4)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (4)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS, kGateway), "Expected start success (5)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (5)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (5)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (5)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (5)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (5)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (5)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS, kGateway), "Expected start success (6)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (6)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (6)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (6)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (6)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (6)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (6)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS, kGateway, kSubnetMask), "Expected start success (7)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (7)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (7)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (7)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (7)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (7)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (7)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS, kGateway, kSubnetMask), "Expected start success (8)");
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (8)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (8)");
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (8)");
+  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (8)");
+  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (8)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (8)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE), "Expected start success (9)");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPActive(), "Expected active DHCP (9)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (9)");
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE), "Expected start success (10)");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPActive(), "Expected active DHCP (10)");
+  TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (10)");
+
+#pragma GCC diagnostic pop
 }
 
 // Tests mDNS.
@@ -1260,6 +1354,7 @@ void setup() {
   RUN_TEST(test_null_frame);
   RUN_TEST(test_dhcp);
   RUN_TEST(test_static_ip);
+  RUN_TEST(test_arduino_begin);
   RUN_TEST(test_mdns);
   RUN_TEST(test_dns_lookup);
   RUN_TEST(test_hostname);
