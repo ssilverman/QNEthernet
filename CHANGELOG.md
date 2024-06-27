@@ -35,6 +35,7 @@ and this project adheres to
 * Changed Arduino-API non-DHCP `begin(...)` functions to return `bool`.
 * Improved driver logic so that lwIP options can be included in the
   driver headers.
+* Improved `OSCPrinter` example to use the UDP data directly.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero

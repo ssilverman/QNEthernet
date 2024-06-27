@@ -23,8 +23,7 @@ constexpr uint16_t kOSCPort = 8000;
 constexpr char kServiceName[] = "osc-example";
 
 EthernetUDP udp;
-uint8_t buf[Ethernet.mtu() - 20 - 8];  // Maximum UDP payload size
-                                       // 20-byte IP, 8-byte UDP header
+// Note: We'll be reading the data directly; don't need a buffer
 
 // Main program setup.
 void setup() {
@@ -85,8 +84,7 @@ void setup() {
 // Main program loop.
 void loop() {
   int size = udp.parsePacket();
-  if (0 < size && static_cast<unsigned int>(size) <= sizeof(buf)) {
-    udp.read(buf, size);
-    printOSC(Serial, buf, size);
+  if (size > 0) {
+    printOSC(Serial, udp.data(), size);
   }
 }
