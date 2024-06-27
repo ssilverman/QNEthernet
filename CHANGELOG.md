@@ -21,6 +21,7 @@ and this project adheres to
   for `Print::printf`.
 * Added more support for `errno`. Appropriate functions will set this after
   encountering an error.
+* Added tests for the Arduino-API `begin(...)` functions.
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
@@ -31,12 +32,14 @@ and this project adheres to
 * Turned the internal MAC address into an optional and simplified the `Ethernet`
   constructor. This change should make it easier to initialze a MAC address from
   a custom driver.
+* Changed Arduino-API non-DHCP `begin(...)` functions to return `bool`.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
   value was specified.
 * Fixed `EthernetUDP::stop()` to leave any multicast group joined when starting
   to listen on a multicast address.
+* Fixed MAC address restore if an Arduino-API non-DHCP `begin(...)` call fails.
 
 ## [0.28.0]
 
