@@ -364,20 +364,21 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 }
 
 int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
-  uint8_t m[kMACAddrSize];
+  uint8_t m1[kMACAddrSize];
+  uint8_t m2[kMACAddrSize];
   if (mac == nullptr) {
-    enet_get_system_mac(m);
-    mac = m;
+    enet_get_system_mac(m1);
+    mac = m1;
     if (!hasMAC_) {  // Take the opportunity to fill this in if we need
-      std::copy_n(&m[0], kMACAddrSize, &mac_[0]);
+      std::copy_n(&m1[0], kMACAddrSize, &mac_[0]);
       hasMAC_ = true;
     }
   }
-  std::copy_n(macAddress(), kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
   std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin()) {
-    std::copy_n(m, kMACAddrSize, mac_);  // Restore what was there before
+    std::copy_n(m2, kMACAddrSize, mac_);  // Restore what was there before
     return false;
   }
 
@@ -409,20 +410,21 @@ void EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &dns, const IPAddress &gateway,
                           const IPAddress &subnet) {
   // This doesn't return any error, so if the MAC is NULL then use the built-in
-  uint8_t m[kMACAddrSize];
+  uint8_t m1[kMACAddrSize];
+  uint8_t m2[kMACAddrSize];
   if (mac == nullptr) {
-    enet_get_system_mac(m);
-    mac = m;
+    enet_get_system_mac(m1);
+    mac = m1;
     if (!hasMAC_) {  // Take the opportunity to fill this in if we need
-      std::copy_n(&m[0], kMACAddrSize, &mac_[0]);
+      std::copy_n(&m1[0], kMACAddrSize, &mac_[0]);
       hasMAC_ = true;
     }
   }
-  std::copy_n(macAddress(), kMACAddrSize, m);  // Cache the current MAC address
+  std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
   std::copy_n(mac, kMACAddrSize, mac_);
 
   if (!begin(ip, subnet, gateway, dns)) {
-    std::copy_n(m, kMACAddrSize, mac_);  // Restore the previous
+    std::copy_n(m2, kMACAddrSize, mac_);  // Restore the previous
   }
 }
 
