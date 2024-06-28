@@ -209,13 +209,14 @@ bool EthernetClass::begin(const IPAddress &ip,
   ip4_addr_t netmask{get_uint32(mask)};
   ip4_addr_t gw{get_uint32(gateway)};
 
+  bool isDHCP = ip4_addr_isany_val(ipaddr) &&
+                ip4_addr_isany_val(netmask) &&
+                ip4_addr_isany_val(gw);
+
   if (netif_ != nullptr) {
 #if LWIP_DHCP
     // Stop any running DHCP client if we don't need one
-    if (dhcpActive_ &&
-        (!ip4_addr_isany_val(ipaddr) ||
-         !ip4_addr_isany_val(netmask) ||
-         !ip4_addr_isany_val(gw))) {
+    if (dhcpActive_ && !isDHCP) {
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
     }
