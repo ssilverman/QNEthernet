@@ -203,15 +203,15 @@ bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
+bool isDHCP = (ip == INADDR_NONE) &&
+              (mask == INADDR_NONE) &&
+              (gateway == INADDR_NONE);
+
 #if LWIP_IPV4
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
   ip4_addr_t ipaddr{get_uint32(ip)};
   ip4_addr_t netmask{get_uint32(mask)};
   ip4_addr_t gw{get_uint32(gateway)};
-
-  bool isDHCP = ip4_addr_isany_val(ipaddr) &&
-                ip4_addr_isany_val(netmask) &&
-                ip4_addr_isany_val(gw);
 
   if (netif_ != nullptr) {
 #if LWIP_DHCP
