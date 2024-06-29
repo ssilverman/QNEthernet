@@ -22,6 +22,7 @@ and this project adheres to
 * Added more support for `errno`. Appropriate functions will set this after
   encountering an error.
 * Added tests for the Arduino-API `begin(...)` functions.
+* Added a way to utilize an externally-defined driver.
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
