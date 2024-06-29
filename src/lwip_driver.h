@@ -24,6 +24,9 @@
 // Requirements for driver-specific headers:
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN (including the 4-byte FCS (frame check sequence))
+// 3. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
+//    for your driver. For example, Ethernet padding, checksum generation, and
+//    checksum checking.
 
 // How to create a driver:
 // 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
