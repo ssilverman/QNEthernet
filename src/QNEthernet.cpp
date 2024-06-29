@@ -139,7 +139,7 @@ void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) {
 
 void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
   uint8_t m[kMACAddrSize];
-  if (mac == nullptr) {
+  if (mac == nullptr || !driver_is_mac_settable()) {
     // Use the system MAC address
     enet_get_system_mac(m);
     mac = m;
@@ -398,7 +398,7 @@ bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &subnet) {
   uint8_t m1[kMACAddrSize];
   uint8_t m2[kMACAddrSize];
-  if (mac == nullptr) {
+  if (mac == nullptr || !driver_is_mac_settable()) {
     enet_get_system_mac(m1);
     mac = m1;
     if (!hasMAC_) {  // Take the opportunity to fill this in if we need

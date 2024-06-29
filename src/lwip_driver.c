@@ -138,7 +138,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
-  if (mac == NULL) {
+  if (mac == NULL || !driver_is_mac_settable()) {
     driver_get_system_mac(m);
     mac = m;
   }

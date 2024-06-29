@@ -99,8 +99,9 @@ class EthernetClass final {
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted.
   //
-  // If the given array is NULL, then the MAC address will be set to the system
-  // one, retrieving it from the driver if it has not yet been accessed.
+  // If the given array is NULL or the driver cannot set the MAC address, then
+  // the MAC address will be set to the system one, retrieving it from the
+  // driver if it has not yet been accessed.
   void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
   // Call often.
@@ -276,8 +277,9 @@ class EthernetClass final {
   // range [0, DNSClient::maxServers()).
   void setDNSServerIP(int index, const IPAddress &ip) const;
 
-  // The MAC addresses are used in the following begin() functions. If NULL, the
-  // system MAC address is first retrieved from the driver.
+  // The MAC addresses are used in the following begin() functions. If NULL or
+  // the driver can't set the MAC address, then the system MAC address is first
+  // retrieved from the driver.
   //
   // Wish: Boolean returns
   // Technically, the non-DHCP begin() functions aren't supposed to

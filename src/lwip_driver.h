@@ -79,6 +79,9 @@ bool driver_is_link_state_detectable();
 // For systems without a built-in address, this should retrieve some default.
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
+// Returns whether the driver supports setting the MAC address.
+bool driver_is_mac_settable();
+
 // Sets the internal MAC address.
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
@@ -175,6 +178,9 @@ void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 //
 // It is suggested to initialize the random number generator with
 // qnethernet_hal_init_rand() before calling this.
+//
+// If driver_is_mac_settable() returns false then this will use the system
+// MAC address and 'mac' will be ignored.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback);
 

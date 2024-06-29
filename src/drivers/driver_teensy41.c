@@ -768,6 +768,10 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
+bool driver_is_mac_settable() {
+  return true;
+}
+
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine

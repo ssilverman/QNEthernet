@@ -23,6 +23,8 @@ and this project adheres to
   encountering an error.
 * Added tests for the Arduino-API `begin(...)` functions.
 * Added a way to utilize an externally-defined driver.
+* Added `driver_is_mac_settable()` to the driver API. This checks if the MAC
+  address can be set.
 
 ### Changed
 * Updated and improved _PixelPusherServer_ example.
