@@ -671,8 +671,8 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                    bool allow) {
+bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                             bool allow) {
   if (mac == nullptr) {
     return false;
   }

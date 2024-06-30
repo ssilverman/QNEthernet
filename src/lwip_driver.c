@@ -289,7 +289,7 @@ static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   multicastMAC[4] = ip4_addr3(group);
   multicastMAC[5] = ip4_addr4(group);
 
-  return driver_set_mac_address_allowed(multicastMAC, flag);
+  return driver_set_incoming_mac_address_allowed(multicastMAC, flag);
 }
 
 bool enet_join_group(const ip4_addr_t *group) {

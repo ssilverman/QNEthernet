@@ -1082,8 +1082,8 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
   return crc;
 }
 
-bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                    bool allow) {
+bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                             bool allow) {
   if (mac == NULL) {
     return false;
   }

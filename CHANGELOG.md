@@ -39,6 +39,8 @@ and this project adheres to
 * Improved driver logic so that lwIP options can be included in the
   driver headers.
 * Improved `OSCPrinter` example to use the UDP data directly.
+* Renamed `driver_set_mac_address_allowed()` to
+  `driver_set_incoming_mac_address_allowed()`.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero

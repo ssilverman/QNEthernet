@@ -259,8 +259,8 @@ static void test_other_null_mac() {
       Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE),
       "Expected start success (5)");
 
-  TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, true));
-  TEST_ASSERT_FALSE(driver_set_mac_address_allowed(nullptr, false));
+  TEST_ASSERT_FALSE(driver_set_incoming_mac_address_allowed(nullptr, true));
+  TEST_ASSERT_FALSE(driver_set_incoming_mac_address_allowed(nullptr, false));
 }
 
 // Tests NULL join/leave groups.

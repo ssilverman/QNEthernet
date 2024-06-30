@@ -153,8 +153,8 @@ bool driver_output_frame(const uint8_t *frame, size_t len);
 // will also return false if 'mac' is NULL. Otherwise, this will return true.
 //
 // Note that this function may be passed a NULL MAC address.
-bool driver_set_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                    bool allow);
+bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                             bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
@@ -219,9 +219,9 @@ bool enet_output_frame(const uint8_t *frame, size_t len);
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
 // For joining and leaving multicast groups; these call
-// driver_set_mac_address_allowed() with the MAC addresses related to the given
-// multicast group. Note that this affects low-level MAC filtering and not the
-// IP stack's use of multicast groups.
+// driver_set_incoming_mac_address_allowed() with the MAC addresses related to
+// the given multicast group. Note that this affects low-level MAC filtering and
+// not the IP stack's use of multicast groups.
 //
 // If 'group' is NULL then these return false. Otherwise, these return the
 // result of 'enet_set_mac_address_allowed()'.
