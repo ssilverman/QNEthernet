@@ -80,9 +80,14 @@ bool driver_is_link_state_detectable();
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Returns whether the driver supports setting the MAC address.
+//
+// See also: driver_set_mac()
 bool driver_is_mac_settable();
 
-// Sets the internal MAC address.
+// Sets the internal MAC address. This will be set as a transmitted Ethernet
+// frame's source address.
+//
+// See also: driver_is_mac_settable()
 void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
@@ -132,9 +137,12 @@ bool driver_output_frame(const uint8_t *frame, size_t len);
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-// Allows or disallows frames addressed to the specified MAC address. This is
-// not meant to be used for joining or leaving a multicast group at the IP
-// layer; use the IP stack for that.
+// Allows or disallows frames addressed to the specified MAC address. In other
+// words, this controls the allowable "destination address" of received
+// Ethernet frames.
+//
+// This is not not meant to be used for joining or leaving a multicast group at
+// the IP layer; use the IP stack for that.
 //
 // Because the underlying system might use a hash of the MAC address, it's
 // possible for there to be collisions. This means that it's not always possible
