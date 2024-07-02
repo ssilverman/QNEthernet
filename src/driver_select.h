@@ -13,6 +13,7 @@
 #if defined(__has_include)
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
 #if __has_include(<qnethernet_external_driver.h>)
+#include <qnethernet_external_driver.h>
 #define QNETHERNET_INTERNAL_DRIVER_EXTERNAL
 #endif  // __has_include(<qnethernet_external_driver.h>)
 #endif  // defined(__has_include)
