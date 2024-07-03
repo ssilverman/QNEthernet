@@ -76,7 +76,10 @@ void setUp() {
 void tearDown() {
   // Clean up any stray objects because of the longjmp
   udp = nullptr;
-  client = nullptr;
+  if (client != nullptr) {
+    client->abort();
+    client = nullptr;
+  }
   server = nullptr;
   EthernetFrame.clear();
 
