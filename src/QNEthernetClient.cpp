@@ -593,7 +593,7 @@ int EthernetClient::read() {
 
   const auto &state = conn_->state;
   if (state == nullptr) {
-    return 0;
+    return -1;
   }
   Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
@@ -680,7 +680,7 @@ int EthernetClient::peek() {
 
   const auto &state = conn_->state;
   if (state == nullptr) {
-    return 0;
+    return -1;
   }
   Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state

@@ -48,6 +48,8 @@ and this project adheres to
 * Fixed `EthernetUDP::stop()` to leave any multicast group joined when starting
   to listen on a multicast address.
 * Fixed MAC address restore if an Arduino-API non-DHCP `begin(...)` call fails.
+* Fixed `EthernetClient::read()` and `peek()` to return -1 instead of 0 when
+  there's no internal state.
 
 ## [0.28.0]
 
