@@ -105,7 +105,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // are no connections or if the port is not set.
   int availableForWrite() final;
 
-  // Flushes all the connections, but does nothing is the port is not set.
+  // Flushes all the connections, but does nothing if the port is not set.
   void flush() final;
 
   explicit operator bool() const;
