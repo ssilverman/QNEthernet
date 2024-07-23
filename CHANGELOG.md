@@ -50,6 +50,8 @@ and this project adheres to
 * Fixed MAC address restore if an Arduino-API non-DHCP `begin(...)` call fails.
 * Fixed `EthernetClient::read()` and `peek()` to return -1 instead of 0 when
   there's no internal state.
+* Properly initializing multicast filtering so that it happens before
+  `igmp_start()`, which sets up the all-systems group.
 
 ## [0.28.0]
 

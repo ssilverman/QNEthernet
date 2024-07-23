@@ -52,6 +52,29 @@ static err_t link_output(struct netif *netif, struct pbuf *p) {
   return driver_output(p);
 }
 
+#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+// Multicast filter for letting the hardware know which packets to let in.
+static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
+                              enum netif_mac_filter_action action) {
+  LWIP_UNUSED_ARG(netif);
+
+  bool retval = true;
+  switch (action) {
+    case NETIF_ADD_MAC_FILTER:
+      retval = enet_join_group(group);
+      break;
+    case NETIF_DEL_MAC_FILTER:
+      retval = enet_leave_group(group);
+      break;
+    default:
+      break;
+  }
+  return retval ? ERR_OK : ERR_USE;
+      // ERR_USE seems like the best fit of the choices
+      // Next best seems to be ERR_IF
+}
+#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
 // Initializes the netif.
 static err_t init_netif(struct netif *netif) {
   if (netif == NULL) {
@@ -81,31 +104,13 @@ static err_t init_netif(struct netif *netif) {
   netif_set_hostname(netif, NULL);
 #endif  // LWIP_NETIF_HOSTNAME
 
+#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+  // Multicast filtering, to allow desired multicast packets in
+  netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
+#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
   return ERR_OK;
 }
-
-#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-// Multicast filter for letting the hardware know which packets to let in.
-static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
-                              enum netif_mac_filter_action action) {
-  LWIP_UNUSED_ARG(netif);
-
-  bool retval = true;
-  switch (action) {
-    case NETIF_ADD_MAC_FILTER:
-      retval = enet_join_group(group);
-      break;
-    case NETIF_DEL_MAC_FILTER:
-      retval = enet_leave_group(group);
-      break;
-    default:
-      break;
-  }
-  return retval ? ERR_OK : ERR_USE;
-      // ERR_USE seems like the best fit of the choices
-      // Next best seems to be ERR_IF
-}
-#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
 // Removes the current netif, if any.
@@ -181,11 +186,6 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 #if LWIP_AUTOIP
     autoip_set_struct(&s_netif, &s_autoip);
 #endif  // LWIP_AUTOIP
-
-#if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-    // Multicast filtering, to allow desired multicast packets in
-    netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
-#endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
   } else {
     // Just set the MAC address
 
