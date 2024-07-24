@@ -214,7 +214,14 @@ void enet_deinit() {
 }
 
 void enet_proc_input() {
-  driver_proc_input(&s_netif);
+  struct pbuf *p = driver_proc_input(&s_netif);
+
+  if (p != NULL) {  // Happens on frame error or pbuf allocation error
+    // Process one chunk of input data
+    if (s_netif.input(p, &s_netif) != ERR_OK) {
+      pbuf_free(p);
+    }
+  }
 }
 
 void enet_poll() {

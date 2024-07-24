@@ -977,14 +977,14 @@ void driver_deinit() {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-void driver_proc_input(struct netif *netif) {
+struct pbuf *driver_proc_input(struct netif *netif) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
   }
 
   if (atomic_flag_test_and_set(&s_rxNotAvail)) {
-    return;
+    return NULL;
   }
 
   for (int i = RX_SIZE*2; --i >= 0; ) {
@@ -993,14 +993,10 @@ void driver_proc_input(struct netif *netif) {
     if (pBD == NULL) {
       break;
     }
-    struct pbuf *p = low_level_input(pBD);
-    if (p != NULL) {  // Happens on frame error or pbuf allocation error
-      // Process one chunk of input data
-      if (netif->input(p, netif) != ERR_OK) {
-        pbuf_free(p);
-      }
-    }
+    return low_level_input(pBD);
   }
+
+  return NULL;
 }
 
 void driver_poll(struct netif *netif) {

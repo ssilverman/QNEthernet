@@ -41,6 +41,7 @@ and this project adheres to
 * Improved `OSCPrinter` example to use the UDP data directly.
 * Renamed `driver_set_mac_address_allowed()` to
   `driver_set_incoming_mac_address_allowed()`.
+* Changed `driver_proc_input(netif)` to return a `pbuf*`.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero

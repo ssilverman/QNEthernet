@@ -106,8 +106,8 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]);
 // Uninitializes the driver.
 void driver_deinit();
 
-// Processes any input and passes any received frames to the netif.
-void driver_proc_input(struct netif *netif);
+// Processes any input and returns any received frames as a pbuf.
+struct pbuf *driver_proc_input(struct netif *netif);
 
 // Polls anything that needs to be polled, for example, the link status.
 void driver_poll(struct netif *netif);

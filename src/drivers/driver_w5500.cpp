@@ -539,18 +539,18 @@ void driver_deinit() {
   s_initState = EnetInitStates::kStart;
 }
 
-void driver_proc_input(struct netif *netif) {
+struct pbuf *driver_proc_input(struct netif *netif) {
   if (s_initState != EnetInitStates::kInitialized) {
     return;
   }
 
   uint16_t size;
   if (!read_reg_word(kSn_RX_RSR, size)) {
-    return;
+    return NULL;
   }
   if (size == 0) {
     // TODO: Do we need to process the size < 2 case?
-    return;
+    return NULL;
   }
 
   // [MACRAW Application Note?](https://forum.wiznet.io/t/topic/979/3)
@@ -569,9 +569,9 @@ void driver_proc_input(struct netif *netif) {
     set_socket_command(socketcommands::kOpen);
     if (*kSn_SR != socketstates::kMacraw) {
       s_initState = EnetInitStates::kNotInitialized;
-      return;
+      return NULL;
     }
-    return;
+    return NULL;
   }
   frameLen -= 2;
   ptr += 2;
@@ -592,7 +592,7 @@ void driver_proc_input(struct netif *netif) {
   }
 
   if (frameLen > MAX_FRAME_LEN - 4) {  // Exclude the 4-byte FCS
-    return;
+    return NULL;
   }
 
   // Process the frame
@@ -602,10 +602,8 @@ void driver_proc_input(struct netif *netif) {
     LINK_STATS_INC(link.memerr);
   } else {
     pbuf_take(p, s_inputBuf, p->tot_len);
-    if (netif->input(p, netif) != ERR_OK) {
-      pbuf_free(p);
-    }
   }
+  return p;
 
   // Process only a single frame because the whole RX buffer might have partial
   // frames, it seems
