@@ -544,7 +544,7 @@ void driver_deinit() {
 
 struct pbuf *driver_proc_input(struct netif *netif) {
   if (s_initState != EnetInitStates::kInitialized) {
-    return;
+    return NULL;
   }
 
   uint16_t size;
