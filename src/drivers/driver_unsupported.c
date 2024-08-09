@@ -46,8 +46,9 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
 void driver_deinit() {
 }
 
-struct pbuf *driver_proc_input(struct netif *netif) {
+struct pbuf *driver_proc_input(struct netif *netif, int counter) {
   LWIP_UNUSED_ARG(netif);
+  LWIP_UNUSED_ARG(counter);
   return NULL;
 }
 

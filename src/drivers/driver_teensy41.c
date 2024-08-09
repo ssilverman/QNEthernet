@@ -977,7 +977,7 @@ void driver_deinit() {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-struct pbuf *driver_proc_input(struct netif *netif) {
+struct pbuf *driver_proc_input(struct netif *netif, int counter) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
@@ -987,16 +987,16 @@ struct pbuf *driver_proc_input(struct netif *netif) {
     return NULL;
   }
 
-  for (int i = RX_SIZE*2; --i >= 0; ) {
-    // Get the next chunk of input data
-    volatile enetbufferdesc_t *pBD = rxbd_next();
-    if (pBD == NULL) {
-      break;
-    }
-    return low_level_input(pBD);
+  if (counter >= RX_SIZE * 2) {
+    return NULL;
   }
 
-  return NULL;
+  // Get the next chunk of input data
+  volatile enetbufferdesc_t *pBD = rxbd_next();
+  if (pBD == NULL) {
+    return NULL;
+  }
+  return low_level_input(pBD);
 }
 
 void driver_poll(struct netif *netif) {

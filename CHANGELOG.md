@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Fixed being able to process more than one incoming frame in a row in
+  the driver.
+
 ## [0.29.0]
 
 ### Added

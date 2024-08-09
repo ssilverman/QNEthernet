@@ -106,8 +106,11 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]);
 // Uninitializes the driver.
 void driver_deinit();
 
-// Processes any input and returns any received frames as a pbuf.
-struct pbuf *driver_proc_input(struct netif *netif);
+// Processes any input and returns any received frames as a pbuf. The counter
+// parameter indicates how many times the call has looped. This is useful so
+// that drivers can know when to stop checking to give the rest of the program a
+// chance to run.
+struct pbuf *driver_proc_input(struct netif *netif, int counter);
 
 // Polls anything that needs to be polled, for example, the link status.
 void driver_poll(struct netif *netif);
