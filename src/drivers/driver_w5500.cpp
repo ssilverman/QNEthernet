@@ -543,6 +543,7 @@ void driver_deinit() {
 }
 
 struct pbuf *driver_proc_input(struct netif *netif, int counter) {
+  LWIP_UNUSED_ARG(netif);
   LWIP_UNUSED_ARG(counter);
 
   if (s_initState != EnetInitStates::kInitialized) {
