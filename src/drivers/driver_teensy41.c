@@ -983,11 +983,11 @@ struct pbuf *driver_proc_input(struct netif *netif, int counter) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
   }
 
-  if (atomic_flag_test_and_set(&s_rxNotAvail)) {
-    return NULL;
-  }
-
-  if (counter >= RX_SIZE * 2) {
+  if (counter == 0) {
+    if (atomic_flag_test_and_set(&s_rxNotAvail)) {
+      return NULL;
+    }
+  } else if (counter >= RX_SIZE * 2) {
     return NULL;
   }
 
