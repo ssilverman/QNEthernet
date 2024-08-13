@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added a _SimpleHTTPClient_ example.
+
 ## [0.29.1]
 
 ### Fixed
