@@ -22,12 +22,14 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
-bool driver_is_mac_settable() {
-  return false;
+bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  driver_get_system_mac(mac);
+  return true;
 }
 
-void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   LWIP_UNUSED_ARG(mac);
+  return false;
 }
 
 bool driver_has_hardware() {

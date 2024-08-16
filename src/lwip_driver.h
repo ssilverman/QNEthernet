@@ -76,19 +76,19 @@ bool driver_is_link_state_detectable();
 
 // Gets the built-in Ethernet MAC address.
 //
-// For systems without a built-in address, this should retrieve some default.
+// For systems without a built-in address, this should retrieve some
+// valid default.
 void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
-// Returns whether the driver supports setting the MAC address.
+// Gets the internal MAC address. This will retrieve the system default if the
+// internal address has not yet been set.
 //
-// See also: driver_set_mac()
-bool driver_is_mac_settable();
+// This returns whether the address was retrieved.
+bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
-// Sets the internal MAC address. This will be set as a transmitted Ethernet
-// frame's source address.
-//
-// See also: driver_is_mac_settable()
-void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
+// Sets the internal MAC address and returns whether successful. This will be
+// set as a transmitted Ethernet frame's source address.
+bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
 // probed (driver_is_unknown() would return 'true'), then this will check
@@ -100,8 +100,8 @@ bool driver_has_hardware();
 void driver_set_chip_select_pin(int pin);
 
 // Does low-level initialization. This returns whether the initialization
-// was successful.
-bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]);
+// was successful. Most functions depend on the driver being initialized.
+bool driver_init();
 
 // Uninitializes the driver.
 void driver_deinit();
@@ -181,17 +181,23 @@ inline int enet_get_max_frame_len() {
 // For systems without a built-in address, this should retrieve some default.
 void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
+// Gets the current MAC address and returns whether it was retrieved. This does
+// nothing if 'mac' is NULL.
+bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
+
+// Sets the current MAC address and returns whether it was changed. This does
+// nothing if 'mac' is NULL.
+bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
+
 // Initializes Ethernet and returns whether successful. This does not set the
-// interface to "up".
+// interface to "up". If the MAC is not settable or 'mac' is NULL then this will
+// use the system MAC address and 'mac' will be ignored.
 //
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
 // It is suggested to initialize the random number generator with
 // qnethernet_hal_init_rand() before calling this.
-//
-// If driver_is_mac_settable() returns false then this will use the system
-// MAC address and 'mac' will be ignored.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback);
 

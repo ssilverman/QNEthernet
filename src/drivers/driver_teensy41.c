@@ -768,21 +768,38 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
-bool driver_is_mac_settable() {
-  return true;
-}
-
-void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
   if ((CCM_CCGR1 & CCM_CCGR1_ENET(CCM_CCGR_ON)) == 0) {
-    return;
+    return false;
+  }
+
+  uint32_t r = ENET_PALR;
+  mac[0] = r >> 24;
+  mac[1] = r >> 16;
+  mac[2] = r >> 8;
+  mac[3] = r;
+  r = ENET_PAUR;
+  mac[4] = r >> 24;
+  mac[5] = r >> 16;
+
+  return true;
+}
+
+bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+  // Don't do anything if the Ethernet clock isn't running because register
+  // access will freeze the machine
+  if ((CCM_CCGR1 & CCM_CCGR1_ENET(CCM_CCGR_ON)) == 0) {
+    return false;
   }
 
   __disable_irq();  // TODO: Not sure if disabling interrupts is really needed
   ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
   ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
   __enable_irq();
+
+  return true;
 }
 
 bool driver_has_hardware() {
@@ -806,7 +823,7 @@ void driver_set_chip_select_pin(int pin) {
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
-bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_init() {
   if (s_initState == kInitStateInitialized) {
     return true;
   }
@@ -902,8 +919,8 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  // ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+  // ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;

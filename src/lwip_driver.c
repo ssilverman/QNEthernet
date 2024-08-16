@@ -146,12 +146,30 @@ void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   }
 }
 
+bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  if (mac == NULL) {
+    return false;
+  }
+  return driver_get_mac(mac);
+}
+
+bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+  if (mac == NULL) {
+    return false;
+  }
+  return driver_set_mac(mac);
+}
+
 // This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback) {
+  if (!driver_init()) {
+    return false;
+  }
+
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
-  if (mac == NULL || !driver_is_mac_settable()) {
+  if (mac == NULL) {
     driver_get_system_mac(m);
     mac = m;
   }
@@ -172,11 +190,8 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     // TODO: For some reason, remove_netif() prevents further operation
   }
 
-  memcpy(s_mac, mac, ETH_HWADDR_LEN);
-
-  if (!driver_init(s_mac)) {
-    return false;
-  }
+  driver_set_mac(mac);
+  driver_get_mac(s_mac);
 
   if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
@@ -191,8 +206,6 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
     memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
     s_netif.hwaddr_len = ETH_HWADDR_LEN;
-
-    driver_set_mac(s_mac);
   }
 
   return true;

@@ -11,6 +11,9 @@ and this project adheres to
 ### Added
 * Added a _SimpleHTTPClient_ example.
 
+### Changed
+* Separated setting the MAC address from driver initialization.
+
 ## [0.29.1]
 
 ### Fixed

@@ -91,17 +91,24 @@ class EthernetClass final {
   // accessed, then this first retrieves the system MAC address from the driver.
   const uint8_t *macAddress();
 
-  // Retrieves the MAC address. If it has not yet been accessed, then this first
-  // retrieves the system MAC address from the driver.
+  // Retrieves the MAC address. If 'mac' is not NULL and if the MAC address has
+  // not yet been accessed, then this first retrieves the system MAC address
+  // from the driver.
+  //
+  // Note that if the driver can't set the MAC address then this will retrieve
+  // the currently set one.
   void macAddress(uint8_t mac[kMACAddrSize]);
 
   // Sets the MAC address. If the address is different than the current address,
   // and if the network interface is already up, then the network interface will
   // be reset and any DHCP client will be restarted.
   //
-  // If the given array is NULL or the driver cannot set the MAC address, then
-  // the MAC address will be set to the system one, retrieving it from the
-  // driver if it has not yet been accessed.
+  // If the given array is NULL then the MAC address will be set to the system
+  // one, retrieving it from the driver if it has not yet been accessed.
+  //
+  // If the driver has not yet been initialized then the MAC address will be set
+  // to the given address until initialization, where the driver may change it
+  // if the MAC address can't be set.
   void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
   // Call often.

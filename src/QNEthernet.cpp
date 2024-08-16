@@ -131,15 +131,14 @@ const uint8_t *EthernetClass::macAddress() {
 };
 
 void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) {
-  const uint8_t *m = macAddress();
   if (mac != nullptr) {
-    std::copy_n(m, kMACAddrSize, mac);
+    std::copy_n(macAddress(), kMACAddrSize, mac);
   }
 }
 
 void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
   uint8_t m[kMACAddrSize];
-  if (mac == nullptr || !driver_is_mac_settable()) {
+  if (mac == nullptr) {
     // Use the system MAC address
     enet_get_system_mac(m);
     mac = m;
@@ -291,6 +290,8 @@ bool EthernetClass::start() {
     return false;
   }
 
+  enet_get_mac(mac_);
+
 #if LWIP_NETIF_HOSTNAME
   if (hostname_.length() == 0) {
     netif_set_hostname(netif_, nullptr);
@@ -398,7 +399,7 @@ bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
                           const IPAddress &subnet) {
   uint8_t m1[kMACAddrSize];
   uint8_t m2[kMACAddrSize];
-  if (mac == nullptr || !driver_is_mac_settable()) {
+  if (mac == nullptr) {
     enet_get_system_mac(m1);
     mac = m1;
     if (!hasMAC_) {  // Take the opportunity to fill this in if we need

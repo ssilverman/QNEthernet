@@ -99,6 +99,12 @@ struct Reg {
   T operator*() const {
     return operator T();
   }
+
+  // Pre-decrement operator.
+  Reg &operator++() {
+    addr++;
+    return *this;
+  }
 };
 
 static constexpr Reg<uint8_t> kMR{0x0000, blocks::kCommon};             // Mode register
@@ -470,21 +476,37 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
-bool driver_is_mac_settable() {
-  return true;
-}
-
-void driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
     case EnetInitStates::kInitialized:
       break;
     default:
-      return;
+      return false;
+  }
+
+  auto reg = kSHAR;
+  for (int i = 0; i < ETH_HWADDR_LEN; i++) {
+    mac[i] = *reg;
+    ++reg;
+  }
+
+  return true;
+}
+
+bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+  switch (s_initState) {
+    case EnetInitStates::kHardwareInitialized:
+    case EnetInitStates::kInitialized:
+      break;
+    default:
+      return false;
   }
 
   std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
   write_frame(kSHAR, ETH_HWADDR_LEN);
+
+  return true;
 }
 
 bool driver_has_hardware() {
@@ -509,7 +531,7 @@ void driver_set_chip_select_pin(int pin) {
   s_chipSelectPin = pin;
 }
 
-bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool driver_init() {
   if (s_initState == EnetInitStates::kInitialized) {
     return true;
   }
@@ -519,7 +541,6 @@ bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   if (s_initState != EnetInitStates::kHardwareInitialized) {
     return false;
   }
-  driver_set_mac(mac);
 
   s_initState = EnetInitStates::kInitialized;
 
