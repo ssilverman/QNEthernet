@@ -57,6 +57,24 @@
 //    `driver_x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
 
+// Flags that indicate driver capabilities.
+struct DriverCapabilities {
+#ifdef __cplusplus
+  DriverCapabilities()
+      : isMACSettable(false),
+        hasLinkState(false),
+        hasLinkSpeed(false),
+        hasLinkFullDuplex(false),
+        hasLinkCrossover(false) {}
+#endif  // __cplusplus
+
+  bool isMACSettable;
+  bool hasLinkState;
+  bool hasLinkSpeed;
+  bool hasLinkFullDuplex;
+  bool hasLinkCrossover;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -67,12 +85,13 @@ extern "C" {
 
 // It can be assumed that any parameters passed in will not be NULL.
 
+// Gets the driver capabilities and fills in the given struct. This may be
+// called more than once but may not be valid until after driver_init()
+// is called.
+void driver_get_capabilities(struct DriverCapabilities *dc);
+
 // Returns if the hardware hasn't yet been probed.
 bool driver_is_unknown();
-
-// Returns whether the link state is detectable. This will return true if the
-// hardware is capable of detecting a link and false otherwise.
-bool driver_is_link_state_detectable();
 
 // Gets the built-in Ethernet MAC address.
 //
@@ -88,6 +107,8 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the internal MAC address and returns whether successful. This will be
 // set as a transmitted Ethernet frame's source address.
+//
+// See also: driver_get_capabilities(dc)
 bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
@@ -116,14 +137,20 @@ struct pbuf *driver_proc_input(struct netif *netif, int counter);
 void driver_poll(struct netif *netif);
 
 // Returns the link speed in Mbps. The value is only valid if the link is up.
+//
+// See also: driver_get_capabilities(dc)
 int driver_link_speed();
 
 // Returns the link duplex mode, true for full and false for half. The value is
 // only valid if the link is up.
+//
+// See also: driver_get_capabilities(dc)
 bool driver_link_is_full_duplex();
 
 // Returns whether a crossover cable is detected. The value is only valid if the
 // link is up.
+//
+// See also: driver_get_capabilities(dc)
 bool driver_link_is_crossover();
 
 // Outputs the given pbuf data.
@@ -191,15 +218,19 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Initializes Ethernet and returns whether successful. This does not set the
 // interface to "up". If the MAC is not settable or 'mac' is NULL then this will
-// use the system MAC address and 'mac' will be ignored.
+// use the system MAC address and 'mac' will be ignored. This also fills in the
+// driver capabilities struct.
 //
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
 // It is suggested to initialize the random number generator with
 // qnethernet_hal_init_rand() before calling this.
+//
+// See also: driver_get_capabilities(dc)
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               netif_ext_callback_fn callback);
+               netif_ext_callback_fn callback,
+               struct DriverCapabilities *dc);
 
 // Shuts down the Ethernet stack and driver.
 void enet_deinit();

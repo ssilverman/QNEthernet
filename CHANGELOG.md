@@ -10,9 +10,15 @@ and this project adheres to
 
 ### Added
 * Added a _SimpleHTTPClient_ example.
+* Added a way to get the driver capabilities:
+  `EthernetClass::driverCapabilities()` and `driver_get_capabilities(dc)`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.
+
+### Removed
+* Removed `EtheretClass::isLinkStateDetectable()` in favour of the
+  driver capabilities.
 
 ## [0.29.1]
 

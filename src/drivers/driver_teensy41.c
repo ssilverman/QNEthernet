@@ -754,12 +754,16 @@ static inline int check_link_status(struct netif *netif, int state) {
 //  Driver Interface
 // --------------------------------------------------------------------------
 
-bool driver_is_unknown() {
-  return s_initState == kInitStateStart;
+void driver_get_capabilities(struct DriverCapabilities *dc) {
+  dc->isMACSettable     = true;
+  dc->hasLinkState      = true;
+  dc->hasLinkSpeed      = true;
+  dc->hasLinkFullDuplex = true;
+  dc->hasLinkCrossover  = true;
 }
 
-bool driver_is_link_state_detectable() {
-  return true;
+bool driver_is_unknown() {
+  return s_initState == kInitStateStart;
 }
 
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);

@@ -162,9 +162,14 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
 // This only uses the callback if the interface has not been added.
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               netif_ext_callback_fn callback) {
+               netif_ext_callback_fn callback,
+               struct DriverCapabilities *dc) {
   if (!driver_init()) {
     return false;
+  }
+
+  if (dc != NULL) {
+    driver_get_capabilities(dc);
   }
 
   // Sanitize the inputs

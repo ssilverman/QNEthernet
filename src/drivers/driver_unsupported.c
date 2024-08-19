@@ -8,11 +8,15 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
-bool driver_is_unknown() {
-  return false;
+void driver_get_capabilities(struct DriverCapabilities *dc) {
+  dc->isMACSettable     = false;
+  dc->hasLinkState      = false;
+  dc->hasLinkSpeed      = false;
+  dc->hasLinkFullDuplex = false;
+  dc->hasLinkCrossover  = false;
 }
 
-bool driver_is_link_state_detectable() {
+bool driver_is_unknown() {
   return false;
 }
 

@@ -87,6 +87,16 @@ class EthernetClass final {
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
   }
 
+  // Returns the set of driver capabilities. This might not be available until
+  // after the driver is initialized with one of the begin() calls.
+  //
+  // Notes:
+  // * If the link state is not detectable then it must be managed
+  //   with 'setLinkState(flag)'.
+  const DriverCapabilities &driverCapabilities() const {
+    return driverCapabilities_;
+  }
+
   // Returns a pointer to the current MAC address. If it has not yet been
   // accessed, then this first retrieves the system MAC address from the driver.
   const uint8_t *macAddress();
@@ -109,6 +119,8 @@ class EthernetClass final {
   // If the driver has not yet been initialized then the MAC address will be set
   // to the given address until initialization, where the driver may change it
   // if the MAC address can't be set.
+  //
+  // See: driverCapabilities()
   void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
   // Call often.
@@ -202,14 +214,10 @@ class EthernetClass final {
   // linkState() returns true, and LinkOFF if linkState() returns false.
   EthernetLinkStatus linkStatus() const;
 
-  // Returns whether the driver can detect the link state. If this returns
-  // false, then the link state must be managed with 'setLinkState(flag)'.
-  bool isLinkStateDetectable() const;
-
   // Returns the interface-level link state. It may be managed manually with
   // setLinkState(flag) if the driver can't detect the link.
   //
-  // See also isLinkStateDetectable().
+  // See: driverCapabilities()
   bool linkState() const;
 
   // Manually sets the link state. This is useful when using the loopback
@@ -218,14 +226,20 @@ class EthernetClass final {
 
   // Returns the link speed in Mbps. This is only valid if the link is up and
   // the driver can read the link state.
+  //
+  // See: driverCapabilities()
   int linkSpeed() const;
 
   // Returns the link duplex mode, true for full and false for half. This is
   // only valid if the link is up and the driver can read the link state.
+  //
+  // See: driverCapabilities()
   bool linkIsFullDuplex() const;
 
   // Returns whether a crossover cable is detected. This is only valid if the
   // link is up and the driver can read the link state.
+  //
+  // See: driverCapabilities()
   bool linkIsCrossover() const;
 
   // Sets a link state callback.
@@ -403,6 +417,9 @@ class EthernetClass final {
   // restart the netif.
   [[nodiscard]]
   bool start();
+
+  // Driver configuration
+  DriverCapabilities driverCapabilities_;
 
   int chipSelectPin_;
 

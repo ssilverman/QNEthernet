@@ -286,7 +286,7 @@ bool EthernetClass::start() {
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
-  if (!enet_init(macAddress(), &netifEventFunc)) {
+  if (!enet_init(macAddress(), &netifEventFunc, &driverCapabilities_)) {
     return false;
   }
 
@@ -464,10 +464,6 @@ EthernetLinkStatus EthernetClass::linkStatus() const {
     return EthernetLinkStatus::Unknown;
   }
   return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
-}
-
-bool EthernetClass::isLinkStateDetectable() const {
-  return driver_is_link_state_detectable();
 }
 
 bool EthernetClass::linkState() const {

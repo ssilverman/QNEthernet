@@ -22,6 +22,7 @@ NullPrint	KEYWORD1
 PrintDecorator	KEYWORD1
 EthernetLinkStatus	KEYWORD1	EthernetLinkStatus
 EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
+DriverCapabilities	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -30,6 +31,7 @@ EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
 maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
 isPromiscuousMode	KEYWORD2
+driverCapabilities	KEYWORD2
 MACAddress	KEYWORD2	Ethernet.MACAddress
 macAddress	KEYWORD2	Ethernet.MACAddress
 setMACAddress	KEYWORD2	Ethernet.setMACAddress
@@ -42,7 +44,6 @@ waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2
 end	KEYWORD2
 linkStatus	KEYWORD2	Ethernet.linkStatus
-isLinkStateDetectable	KEYWORD2
 linkState	KEYWORD2
 setLinkState	KEYWORD2
 linkSpeed	KEYWORD2
