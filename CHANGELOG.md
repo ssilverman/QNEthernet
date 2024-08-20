@@ -12,6 +12,7 @@ and this project adheres to
 * Added a _SimpleHTTPClient_ example.
 * Added a way to get the driver capabilities:
   `EthernetClass::driverCapabilities()` and `driver_get_capabilities(dc)`.
+* Added a way to get the library version: `EthernetClass::version()`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

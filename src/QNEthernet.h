@@ -63,6 +63,11 @@ class EthernetClass final {
   EthernetClass(const EthernetClass &) = delete;
   EthernetClass &operator=(const EthernetClass &) = delete;
 
+  // Returns a string containing the library version number.
+  static const char *version() {
+    return "0.30.0-snapshot";
+  }
+
   // Returns the maximum number of multicast groups. Note that mDNS will use
   // one group. Also note that this does not include the "all systems" group.
   static constexpr int maxMulticastGroups() {
