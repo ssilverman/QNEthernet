@@ -202,10 +202,6 @@ bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
-bool isDHCP = (ip == INADDR_NONE) &&
-              (mask == INADDR_NONE) &&
-              (gateway == INADDR_NONE);
-
 #if LWIP_IPV4
   // NOTE: The uint32_t cast doesn't currently work on const IPAddress
   ip4_addr_t ipaddr{get_uint32(ip)};
@@ -215,6 +211,9 @@ bool isDHCP = (ip == INADDR_NONE) &&
   if (netif_ != nullptr) {
 #if LWIP_DHCP
     // Stop any running DHCP client if we don't need one
+    bool isDHCP = (ip == INADDR_NONE) &&
+                  (mask == INADDR_NONE) &&
+                  (gateway == INADDR_NONE);
     if (dhcpActive_ && !isDHCP) {
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
