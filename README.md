@@ -305,10 +305,10 @@ The `Ethernet` object is the main Ethernet interface.
     interface goes down.
 * `static constexpr bool isPromiscuousMode()`: Returns whether promiscuous mode
   is enabled.
+* `static const char *libraryVersion()`: Returns the library version.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   available multicast groups, not including the "all systems" group.
 * `static constexpr size_t mtu()`: Returns the MTU.
-* `static const char *version()`: Returns the library version.
 
 ### `EthernetClient`
 

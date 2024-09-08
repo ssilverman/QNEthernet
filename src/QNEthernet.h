@@ -64,7 +64,7 @@ class EthernetClass final {
   EthernetClass &operator=(const EthernetClass &) = delete;
 
   // Returns a string containing the library version number.
-  static const char *version() {
+  static const char *libraryVersion() {
     return "0.30.0-snapshot";
   }
 

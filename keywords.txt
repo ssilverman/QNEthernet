@@ -28,7 +28,7 @@ DriverCapabilities	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-version	KEYWORD2
+libraryVersion	KEYWORD2
 maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
 isPromiscuousMode	KEYWORD2
