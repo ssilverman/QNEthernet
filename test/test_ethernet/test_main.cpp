@@ -109,6 +109,11 @@ void tearDown() {
   Ethernet.setDHCPEnabled(true);
 }
 
+// Tests version functions.
+static void test_version() {
+  TEST_ASSERT_NOT_NULL(Ethernet.libraryVersion());
+}
+
 // Tests using the built-in MAC address.
 static void test_builtin_mac() {
   static constexpr uint8_t zeros[6]{0, 0, 0, 0, 0, 0};
@@ -1349,6 +1354,7 @@ void setup() {
 #endif  // defined(TEENSYDUINO)
 
   UNITY_BEGIN();
+  RUN_TEST(test_version);
   RUN_TEST(test_builtin_mac);
   RUN_TEST(test_set_mac);
   RUN_TEST(test_get_mac);
