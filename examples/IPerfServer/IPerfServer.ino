@@ -168,6 +168,9 @@ std::vector<ConnectionState> conns;
 // The server.
 EthernetServer server{kServerPort};
 
+// Other buffers
+uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
+
 // Forward declarations
 void networkChanged(bool hasIP, bool linkState);
 bool connectToClient(ConnectionState &state,
@@ -540,12 +543,11 @@ void processConnection(ConnectionState &state,
         }
 
         // Read settings
-        uint8_t buf[size];
-        state.client.read(buf, size);
+        state.client.read(settingsBuf, size);
         state.byteCount += size;
 
         // Compare with the existing settings
-        if (std::memcmp(buf, state.settingsRaw, size) != 0) {
+        if (std::memcmp(settingsBuf, state.settingsRaw, size) != 0) {
           printf("%u.%u.%u.%u:%u: Settings error: bytes=%zu\r\n",
                  state.remoteIP[0],
                  state.remoteIP[1],
@@ -584,8 +586,7 @@ void processConnection(ConnectionState &state,
           }
         }
 
-        uint8_t buf[avail];
-        state.client.read(buf, avail);
+        state.client.read(nullptr, avail);  // Skip
         state.byteCount += avail;
         break;
       }
