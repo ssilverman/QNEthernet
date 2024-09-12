@@ -430,6 +430,19 @@ void send(ConnectionState &state) {
   }
 }
 
+// Compares a signed available value with an unsigned size. This returns -1 if
+// avail < size, zero if avail == size, or 1 if avail > size.
+static int compareAvail(int avail, size_t size) {
+  size_t a = static_cast<size_t>(avail);
+  if (avail < 0 || a < size) {
+    return -1;
+  }
+  if (a == size) {
+    return 0;
+  }
+  return 1;
+}
+
 // Processes data from a single connection. This adds any new
 // connections to the given list.
 void processConnection(ConnectionState &state,
@@ -437,7 +450,7 @@ void processConnection(ConnectionState &state,
   while (true) {
     switch (state.ioState) {
       case IOStates::kReadSettingsV1: {
-        if (state.client.available() < static_cast<int>(sizeof(SettingsV1))) {
+        if (compareAvail(state.client.available(), sizeof(SettingsV1)) < 0) {
           return;
         }
 
@@ -494,7 +507,7 @@ void processConnection(ConnectionState &state,
       }
 
       case IOStates::kReadExtSettings: {
-        if (state.client.available() < static_cast<int>(sizeof(ExtSettings))) {
+        if (compareAvail(state.client.available(), sizeof(ExtSettings)) < 0) {
           return;
         }
 
@@ -538,7 +551,7 @@ void processConnection(ConnectionState &state,
 
       case IOStates::kReadBlockSettings: {
         size_t size = std::min(state.settingsSize, state.repeatSize);
-        if (state.client.available() < static_cast<int>(size)) {
+        if (compareAvail(state.client.available(), size) < 0) {
           return;
         }
 
@@ -580,7 +593,7 @@ void processConnection(ConnectionState &state,
             state.ioState = IOStates::kReadBlockSettings;
             break;
           }
-          if (avail >= static_cast<int>(rem)) {
+          if (static_cast<size_t>(avail) >= rem) {
             avail = rem;
             state.ioState = IOStates::kReadBlockSettings;
           }
