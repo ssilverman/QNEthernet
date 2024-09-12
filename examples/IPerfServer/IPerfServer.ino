@@ -559,18 +559,20 @@ void processConnection(ConnectionState &state,
         state.client.read(settingsBuf, size);
         state.byteCount += size;
 
-        // Compare with the existing settings
-        if (std::memcmp(settingsBuf, state.settingsRaw, size) != 0) {
-          printf("%u.%u.%u.%u:%u: Settings error: bytes=%zu\r\n",
-                 state.remoteIP[0],
-                 state.remoteIP[1],
-                 state.remoteIP[2],
-                 state.remoteIP[3],
-                 state.remotePort,
-                 state.byteCount);
-          state.client.close();
-          return;
-        }
+        // The iperf code is hard to understand, so I'm unclear how to
+        // handle settings mismatch; comment this out for now:
+        // // Compare with the existing settings
+        // if (std::memcmp(settingsBuf, state.settingsRaw, size) != 0) {
+        //   printf("%u.%u.%u.%u:%u: Settings error: bytes=%zu\r\n",
+        //          state.remoteIP[0],
+        //          state.remoteIP[1],
+        //          state.remoteIP[2],
+        //          state.remoteIP[3],
+        //          state.remotePort,
+        //          state.byteCount);
+        //   state.client.close();
+        //   return;
+        // }
 
         if (size != state.repeatSize) {  // Stay here otherwise
           state.ioState = IOStates::kRead;
