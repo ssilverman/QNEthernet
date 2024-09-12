@@ -560,7 +560,7 @@ void processConnection(ConnectionState &state,
         state.byteCount += size;
 
         // The iperf code is hard to understand, so I'm unclear how to
-        // handle settings mismatch; comment this out for now:
+        // handle settings mismatch; comment the following out for now:
         // // Compare with the existing settings
         // if (std::memcmp(settingsBuf, state.settingsRaw, size) != 0) {
         //   printf("%u.%u.%u.%u:%u: Settings error: bytes=%zu\r\n",
@@ -573,6 +573,7 @@ void processConnection(ConnectionState &state,
         //   state.client.close();
         //   return;
         // }
+        // What we see instead: 4-byte zero flags followed by ASCII digits
 
         if (size != state.repeatSize) {  // Stay here otherwise
           state.ioState = IOStates::kRead;
