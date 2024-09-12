@@ -21,6 +21,9 @@ and this project adheres to
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the
   driver capabilities.
 
+### Fixed
+* Fixed iperf v2 tests by commenting out per-block settings compare.
+
 ## [0.29.1]
 
 ### Fixed
