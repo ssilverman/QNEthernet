@@ -105,16 +105,16 @@ static err_t init_netif(struct netif *netif) {
 #endif  // LWIP_NETIF_HOSTNAME
 
 #if LWIP_DHCP
-  dhcp_set_struct(&s_netif, &s_dhcp);
+  dhcp_set_struct(netif, &s_dhcp);
 #endif  // LWIP_DHCP
 
 #if LWIP_AUTOIP
-  autoip_set_struct(&s_netif, &s_autoip);
+  autoip_set_struct(netif, &s_autoip);
 #endif  // LWIP_AUTOIP
 
 #if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
   // Multicast filtering, to allow desired multicast packets in
-  netif_set_igmp_mac_filter(&s_netif, &multicast_filter);
+  netif_set_igmp_mac_filter(netif, &multicast_filter);
 #endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
   return ERR_OK;
