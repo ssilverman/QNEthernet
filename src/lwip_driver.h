@@ -57,6 +57,14 @@
 //    `driver_x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
+// --------------------------------------------------------------------------
+//  Types
+// --------------------------------------------------------------------------
+
 // Flags that indicate driver capabilities.
 struct DriverCapabilities {
 #ifdef __cplusplus
@@ -74,10 +82,6 @@ struct DriverCapabilities {
   bool hasLinkFullDuplex;
   bool hasLinkCrossover;
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
 
 // --------------------------------------------------------------------------
 //  Driver Interface
