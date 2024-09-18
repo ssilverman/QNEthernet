@@ -280,6 +280,7 @@ bool EthernetClass::start() {
   }
 
   if (netif_ != nullptr) {
+    netif_set_link_down(netif_);
     netif_set_down(netif_);
   }
 

@@ -419,7 +419,7 @@ class EthernetClass final {
 
   // Starts Ethernet. See the public version of this function, with IPAddress
   // parameters, for information about what this does. This always attempts to
-  // restart the netif.
+  // restart the netif, including bringing the link and interface down.
   [[nodiscard]]
   bool start();
 

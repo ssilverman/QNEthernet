@@ -301,6 +301,25 @@ static void test_dhcp() {
   waitForLocalIP();
 }
 
+// Tests double DHCP: begin() twice.
+static void test_double_dhcp() {
+  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
+
+  TEST_MESSAGE("Begin (1)...");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start with DHCP okay");
+  TEST_MESSAGE("Waiting for DHCP (1)...");
+  uint32_t t = millis();
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.waitForLocalIP(kDHCPTimeout), "Wait for IP failed");
+  TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
+
+  TEST_MESSAGE("Begin (2)...");
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start with DHCP okay");
+  TEST_MESSAGE("Waiting for DHCP (2)...");
+  t = millis();
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.waitForLocalIP(kDHCPTimeout), "Wait for IP failed");
+  TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
+}
+
 // Tests using a static IP.
 void test_static_ip() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
@@ -1362,6 +1381,7 @@ void setup() {
   RUN_TEST(test_null_group);
   RUN_TEST(test_null_frame);
   RUN_TEST(test_dhcp);
+  RUN_TEST(test_double_dhcp);
   RUN_TEST(test_static_ip);
   RUN_TEST(test_arduino_begin);
   RUN_TEST(test_mdns);

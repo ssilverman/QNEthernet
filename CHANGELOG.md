@@ -23,6 +23,7 @@ and this project adheres to
 
 ### Fixed
 * Fixed iperf v2 tests by commenting out per-block settings compare.
+* Fixed restarting the netif by also bringing the link down.
 
 ## [0.29.1]
 
