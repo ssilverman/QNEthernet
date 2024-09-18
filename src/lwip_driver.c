@@ -120,7 +120,6 @@ static err_t init_netif(struct netif *netif) {
   return ERR_OK;
 }
 
-#if QNETHERNET_INTERNAL_END_STOPS_ALL
 // Removes the current netif, if any.
 static void remove_netif() {
   if (s_isNetifAdded) {
@@ -130,7 +129,6 @@ static void remove_netif() {
     s_isNetifAdded = false;
   }
 }
-#endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 
 // --------------------------------------------------------------------------
 //  Public Interface
@@ -191,8 +189,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     // MAC address has changed
 
     // Remove any previous configuration
-    // remove_netif();
-    // TODO: For some reason, remove_netif() prevents further operation
+    remove_netif();
   }
 
   driver_set_mac(mac);
@@ -224,9 +221,7 @@ void enet_deinit() {
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
 
-#if QNETHERNET_INTERNAL_END_STOPS_ALL
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
-#endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 
   driver_deinit();
 }
