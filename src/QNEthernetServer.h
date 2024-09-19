@@ -108,6 +108,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // Flushes all the connections, but does nothing if the port is not set.
   void flush() final;
 
+  // Returns whether the server is listening on a port.
   explicit operator bool() const;
 
  private:
