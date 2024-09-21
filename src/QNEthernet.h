@@ -70,11 +70,15 @@ class EthernetClass final {
 
   // Returns the maximum number of multicast groups. Note that mDNS will use
   // one group. Also note that this does not include the "all systems" group.
+  //
+  // This will return zero if IGMP is disabled.
   static constexpr int maxMulticastGroups() {
+#if LWIP_IGMP
     // Exclude the "All Systems" group
     if (MEMP_NUM_IGMP_GROUP > 0) {
       return MEMP_NUM_IGMP_GROUP - 1;
     }
+#endif  // LWIP_IGMP
     return 0;
   }
 
