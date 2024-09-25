@@ -25,7 +25,7 @@
 static uint8_t s_mac[ETH_HWADDR_LEN];
 
 // netif state
-static struct netif s_netif = { .name = {'e', '0'} };
+static struct netif s_netif = { .name = {'e', 'n'}, .num = 0 };
 static bool s_isNetifAdded  = false;
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 

@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Changed
 * Separated setting the MAC address from driver initialization.
+* Changed the netif name to "en0".
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the
