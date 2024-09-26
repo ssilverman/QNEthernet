@@ -58,7 +58,11 @@ static void attachLoopToYield() {
 }
 #else
 // #warning "Need to hook into or replace yield()"
-// Example yield() implementation:
+// Example yield() implementation. Note that if you override yield()
+// another way then be sure to call Ethernet.loop() either from the
+// main program loop or from your own yield() implementation (assuming
+// yield() gets called between main program loop calls, as is common
+// in Arduino-style programs).
 extern "C" void yield() {
   static bool busy = false;  // Prevent reentrancy
   if (!busy && Ethernet) {

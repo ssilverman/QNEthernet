@@ -24,6 +24,8 @@ and this project adheres to
   * `EthernetClass::waitForLink()`
   * `EthernetClient::connect()`
   * `EthernetClient::stop()`
+* Updated example `yield()` implementation notes for
+  non-EventResponder versions.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the
