@@ -17,6 +17,13 @@ and this project adheres to
 ### Changed
 * Separated setting the MAC address from driver initialization.
 * Changed the netif name to "en0".
+* Added calls to `Ethernet.loop()` before any `yield()`s in case an overridden
+  version doesn't call this. This affects:
+  * `DNSClient::getHostByName()`
+  * `EthernetClass::waitForLocalIP()`
+  * `EthernetClass::waitForLink()`
+  * `EthernetClient::connect()`
+  * `EthernetClient::stop()`
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

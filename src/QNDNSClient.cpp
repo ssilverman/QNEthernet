@@ -11,6 +11,7 @@
 // C++ includes
 #include <cerrno>
 
+#include "QNEthernet.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -114,7 +115,8 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
 
   uint32_t t = sys_now();
   while (!lookupDone && (sys_now() - t) < timeout) {
-    // NOTE: Depends on Ethernet loop being called from yield()
+    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+    Ethernet.loop();
     yield();
   }
   return found;

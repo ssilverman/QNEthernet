@@ -344,6 +344,8 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
   uint32_t t = sys_now();
   while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
          (sys_now() - t) < timeout) {
+    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+    Ethernet.loop();
     yield();
   }
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
@@ -360,6 +362,8 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
 
   uint32_t t = sys_now();
   while (!netif_is_link_up(netif_) && (sys_now() - t) < timeout) {
+    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+    Ethernet.loop();
     yield();
   }
   return netif_is_link_up(netif_);

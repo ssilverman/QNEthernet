@@ -128,7 +128,8 @@ bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) 
     // NOTE: conn_ could be set to NULL somewhere during the yield
     while (conn_ != nullptr && !conn_->connected &&
            (sys_now() - t) < connTimeout_) {
-      // NOTE: Depends on Ethernet loop being called from yield()
+      // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+      Ethernet.loop();
       yield();
     }
     if (conn_ == nullptr || !conn_->connected) {
@@ -312,7 +313,8 @@ void EthernetClient::close(bool wait) {
         // NOTE: conn_ could be set to NULL somewhere during the yield
         while (conn_ != nullptr && conn_->connected &&
                (sys_now() - t) < connTimeout_) {
-          // NOTE: Depends on Ethernet loop being called from yield()
+          // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+          Ethernet.loop();
           yield();
         }
 #endif  // !LWIP_ALTCP
