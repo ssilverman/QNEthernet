@@ -40,6 +40,7 @@ lwIP release.
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
    2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
    3. [Link detection](#link-detection)
+   4. [Notes on `yield()`](#notes-on-yield)
 4. [How to write data to connections](#how-to-write-data-to-connections)
    1. [`writeFully()` with more break conditions](#writefully-with-more-break-conditions)
    2. [Write immediacy](#write-immediacy)
@@ -704,6 +705,31 @@ if (ethernet_is_started && !Ethernet.driverCapabilities().hasLinkState) {
   Ethernet.setLinkState(true);
 }
 ```
+
+### Notes on `yield()`
+
+It may be the case that the `yield()` function is overridden, say to implement
+cooperative multitasking. If that implementation doesn't call `Ethernet.loop()`
+then there are two things to be aware of:
+1. `Ethernet.loop()` needs to be called regularly somewhere. One good place is
+   at the end of the main program loop.
+2. Any library functions that use `yield()` while waiting for an event, say in
+  `Ethernet.waitForLocalIP()` or `EthernetClient::connect()`, need to call
+  `Ethernet.loop()` during the wait, otherwise the stack won't move forward and
+  the event will never occur. A good place to do this is after the
+  `yield()` call.
+
+To accomplish #2, there is a configuration macro,
+`QNETHERNET_LOOP_AFTER_YIELD`, that enables a call to `Ethernet.loop()` after
+each `yield()` call, guaranteeing that the stack moves forward. See the
+[Configuration macros](#configuration-macros) section.
+
+The complete list of functions, as of this writing, that use `yield()` is:
+1. `DNSClient::getHostByName()`
+2. `EthernetClass::waitForLink()`
+3. `EthernetClass::waitForLocalIP()`
+4. `EthernetClient::connect()`
+5. `EthernetClient::stop()`
 
 ## How to write data to connections
 
@@ -1666,6 +1692,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC        | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                        | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
 | `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency | [Write immediacy](#write-immediacy)                                                     |
+| `QNETHERNET_LOOP_AFTER_YIELD`               | Follows `yield()` calls with `Ethernet.loop()`                                   | [Notes on `yield()`](#notes-on-yield)                                                   |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                              | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
 | `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                             | [Entropy collection](#entropy-collection)                                               |
 

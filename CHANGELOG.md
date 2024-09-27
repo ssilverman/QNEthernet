@@ -13,15 +13,17 @@ and this project adheres to
 * Added a way to get the driver capabilities:
   `EthernetClass::driverCapabilities()` and `driver_get_capabilities(dc)`.
 * Added a way to get the library version: `EthernetClass::libraryVersion()`.
+* New `QNETHERNET_LOOP_AFTER_YIELD` configuration macro for calling
+  `Ethernet.loop()` after any `yield()` calls.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.
 * Changed the netif name to "en0".
-* Added calls to `Ethernet.loop()` before any `yield()`s in case an overridden
-  version doesn't call this. This affects:
+* Added macro-gated calls to `Ethernet.loop()` after any `yield()`s in case an
+  overridden version doesn't call this. This affects:
   * `DNSClient::getHostByName()`
-  * `EthernetClass::waitForLocalIP()`
   * `EthernetClass::waitForLink()`
+  * `EthernetClass::waitForLocalIP()`
   * `EthernetClient::connect()`
   * `EthernetClient::stop()`
 * Updated example `yield()` implementation notes for

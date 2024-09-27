@@ -81,6 +81,14 @@
 #define QNETHERNET_FLUSH_AFTER_WRITE 0
 #endif
 
+// Calls Ethernet.loop() after yield() calls in any library functions that wait,
+// for example, in Ethernet.waitForLocalIP(). Enabling this is useful when a
+// program overrides yield() but that implementation doesn't
+// call Ethernet.loop().
+#ifndef QNETHERNET_LOOP_AFTER_YIELD
+#define QNETHERNET_LOOP_AFTER_YIELD 0
+#endif
+
 // Put lwIP-declared memory into RAM1. (Teensy 4)
 #ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
