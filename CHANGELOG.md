@@ -13,8 +13,9 @@ and this project adheres to
 * Added a way to get the driver capabilities:
   `EthernetClass::driverCapabilities()` and `driver_get_capabilities(dc)`.
 * Added a way to get the library version: `EthernetClass::libraryVersion()`.
-* New `QNETHERNET_LOOP_AFTER_YIELD` configuration macro for calling
-  `Ethernet.loop()` after any `yield()` calls.
+* New `QNETHERNET_DO_LOOP_IN_YIELD` configuration macro for indicating that
+  the library should attempt to hook into or override `yield()` to
+  call `Ethernet.loop()`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

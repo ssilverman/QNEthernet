@@ -11,12 +11,14 @@
 #include <cerrno>
 
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
+#if QNETHERNET_DO_LOOP_IN_YIELD
 #if defined(__has_include)
 #if __has_include(<EventResponder.h>)
 #define HAS_EVENT_RESPONDER
 #include <EventResponder.h>
 #endif  // __has_include(<EventResponder.h>)
 #endif  // defined(__has_include)
+#endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
 #include <avr/pgmspace.h>
 
@@ -39,6 +41,7 @@ namespace network {
 // A reference to the singleton.
 STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
+#if QNETHERNET_DO_LOOP_IN_YIELD
 #if defined(HAS_EVENT_RESPONDER)
 // Global definitions for Arduino
 static EventResponder ethLoop;
@@ -51,6 +54,7 @@ static void attachLoopToYield() {
   }
   loopAttached = true;
   ethLoop.attach([](EventResponderRef r) {
+    // NOTE: EventResponder calls aren't reentrant
     Ethernet.loop();
     r.triggerEvent();
   });
@@ -72,6 +76,7 @@ extern "C" void yield() {
   }
 }
 #endif  // defined(HAS_EVENT_RESPONDER)
+#endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
 void EthernetClass::netifEventFunc(struct netif *netif,
                                    netif_nsc_reason_t reason,
@@ -349,10 +354,9 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
   while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
          (sys_now() - t) < timeout) {
     yield();
-#if QNETHERNET_LOOP_AFTER_YIELD
-    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+#if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
-#endif  // QNETHERNET_LOOP_AFTER_YIELD
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
   }
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
 #else
@@ -369,10 +373,9 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
   uint32_t t = sys_now();
   while (!netif_is_link_up(netif_) && (sys_now() - t) < timeout) {
     yield();
-#if QNETHERNET_LOOP_AFTER_YIELD
-    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+#if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
-#endif  // QNETHERNET_LOOP_AFTER_YIELD
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
   }
   return netif_is_link_up(netif_);
 }

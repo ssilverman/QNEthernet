@@ -49,6 +49,15 @@
 #define QNETHERNET_DEFAULT_HOSTNAME "qnethernet-lwip"
 #endif
 
+// Indicates that the library should try to call Ethernet.loop() inside yield().
+// This means that the library will use EventResponder, if available, or
+// override yield() with its own version. If disabled, Ethernet.loop() should be
+// called regularly by the main application, and in places where the program
+// needs to wait.
+#ifndef QNETHERNET_DO_LOOP_IN_YIELD
+#define QNETHERNET_DO_LOOP_IN_YIELD 1
+#endif
+
 // Builds with the W5500 driver.
 // #define QNETHERNET_DRIVER_W5500
 
@@ -79,14 +88,6 @@
 // flush() in the code or library.
 #ifndef QNETHERNET_FLUSH_AFTER_WRITE
 #define QNETHERNET_FLUSH_AFTER_WRITE 0
-#endif
-
-// Calls Ethernet.loop() after yield() calls in any library functions that wait,
-// for example, in Ethernet.waitForLocalIP(). Enabling this is useful when a
-// program overrides yield() but that implementation doesn't
-// call Ethernet.loop().
-#ifndef QNETHERNET_LOOP_AFTER_YIELD
-#define QNETHERNET_LOOP_AFTER_YIELD 0
 #endif
 
 // Put lwIP-declared memory into RAM1. (Teensy 4)

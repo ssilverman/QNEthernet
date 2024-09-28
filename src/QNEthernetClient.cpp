@@ -129,10 +129,9 @@ bool EthernetClient::connect(const ip_addr_t *ipaddr, uint16_t port, bool wait) 
     while (conn_ != nullptr && !conn_->connected &&
            (sys_now() - t) < connTimeout_) {
       yield();
-#if QNETHERNET_LOOP_AFTER_YIELD
-      // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+#if !QNETHERNET_DO_LOOP_IN_YIELD
       Ethernet.loop();
-#endif  // QNETHERNET_LOOP_AFTER_YIELD
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
     }
     if (conn_ == nullptr || !conn_->connected) {
       close();
@@ -316,10 +315,9 @@ void EthernetClient::close(bool wait) {
         while (conn_ != nullptr && conn_->connected &&
                (sys_now() - t) < connTimeout_) {
           yield();
-#if QNETHERNET_LOOP_AFTER_YIELD
-          // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+#if !QNETHERNET_DO_LOOP_IN_YIELD
           Ethernet.loop();
-#endif  // QNETHERNET_LOOP_AFTER_YIELD
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
         }
 #endif  // !LWIP_ALTCP
       }

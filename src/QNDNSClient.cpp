@@ -116,10 +116,9 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
   uint32_t t = sys_now();
   while (!lookupDone && (sys_now() - t) < timeout) {
     yield();
-#if QNETHERNET_LOOP_AFTER_YIELD
-    // NOTE: Call Ethernet loop in case an overridden yield() doesn't
+#if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
-#endif  // QNETHERNET_LOOP_AFTER_YIELD
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
   }
   return found;
 #else
