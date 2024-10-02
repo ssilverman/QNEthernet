@@ -66,6 +66,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p,
     // Full
     EthernetFrame.inBufTail_ =
         (EthernetFrame.inBufTail_ + 1) % EthernetFrame.inBuf_.size();
+    EthernetFrame.droppedReceiveCount_++;
   } else {
     EthernetFrame.inBufSize_++;
   }
@@ -73,6 +74,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *p,
       (EthernetFrame.inBufHead_ + 1) % EthernetFrame.inBuf_.size();
 
   pbuf_free(pHead);
+  EthernetFrame.totalReceiveCount_++;
 
   return ERR_OK;
 }
@@ -83,7 +85,9 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
       inBufHead_(0),
       inBufSize_(0),
       framePos_(-1),
-      hasOutFrame_(false) {
+      hasOutFrame_(false),
+      droppedReceiveCount_(0),
+      totalReceiveCount_(0) {
   setReceiveQueueCapacity(1);
 }
 

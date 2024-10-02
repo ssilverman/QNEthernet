@@ -65,6 +65,20 @@ class EthernetUDP : public UDP,
   // then all the oldest packets that don't fit are dropped.
   void setReceiveQueueCapacity(size_t capacity);
 
+  // Returns the total number of dropped received packets since reception was
+  // started. Note that this is the count of dropped packets at the layer above
+  // the driver.
+  uint32_t droppedReceiveCount() const {
+    return droppedReceiveCount_;
+  }
+
+  // Returns the total number of received packets, including dropped packets,
+  // since reception was started. Note that this is the count at the layer above
+  // the driver.
+  uint32_t totalReceiveCount() const {
+    return totalReceiveCount_;
+  }
+
   // Starts listening on a port. This returns true if successful and false if
   // the port is in use.
   //
@@ -256,6 +270,10 @@ class EthernetUDP : public UDP,
   // Outgoing packets
   Packet outPacket_;
   bool hasOutPacket_;
+
+  // Stats
+  uint32_t droppedReceiveCount_;
+  uint32_t totalReceiveCount_;
 };
 
 }  // namespace network

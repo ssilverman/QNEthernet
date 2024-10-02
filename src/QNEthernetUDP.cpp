@@ -72,12 +72,15 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   if (udp->inBufSize_ != 0 && udp->inBufTail_ == udp->inBufHead_) {
     // Full
     udp->inBufTail_ = (udp->inBufTail_ + 1) % udp->inBuf_.size();
+    udp->droppedReceiveCount_++;
   } else {
     udp->inBufSize_++;
   }
   udp->inBufHead_ = (udp->inBufHead_ + 1) % udp->inBuf_.size();
 
   pbuf_free(pHead);
+
+  udp->totalReceiveCount_++;
 }
 
 EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
@@ -92,7 +95,9 @@ EthernetUDP::EthernetUDP(size_t capacity)
       inBufHead_(0),
       inBufSize_(0),
       packetPos_(-1),
-      hasOutPacket_(false) {}
+      hasOutPacket_(false),
+      droppedReceiveCount_(0),
+      totalReceiveCount_(0) {}
 
 EthernetUDP::~EthernetUDP() {
   stop();
@@ -188,6 +193,10 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   // }
 
   udp_recv(pcb_, &recvFunc, this);
+
+  // Reset some state
+  droppedReceiveCount_ = 0;
+  totalReceiveCount_ = 0;
 
   return true;
 }

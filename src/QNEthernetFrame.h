@@ -196,6 +196,20 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
     return inBufSize_;
   }
 
+  // Returns the total number of dropped received frames since reception was
+  // started. Note that this is the count of dropped frames at the layer above
+  // the driver.
+  uint32_t droppedReceiveCount() const {
+    return droppedReceiveCount_;
+  }
+
+  // Returns the total number of received frames, including dropped frames,
+  // since reception was started. Note that this is the count at the layer above
+  // the driver.
+  uint32_t totalReceiveCount() const {
+    return totalReceiveCount_;
+  }
+
   // Clears any outgoing packet and the incoming queue.
   void clear();
 
@@ -229,6 +243,10 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Outgoing frames
   bool hasOutFrame_;
   Frame outFrame_;
+
+  // Stats
+  uint32_t droppedReceiveCount_;
+  uint32_t totalReceiveCount_;
 
   friend class StaticInit<EthernetFrameClass>;
   friend err_t ::unknown_eth_protocol(struct pbuf *p, struct netif *netif);

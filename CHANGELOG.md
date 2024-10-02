@@ -18,6 +18,8 @@ and this project adheres to
   call `Ethernet.loop()`.
 * New version of `receiveQueueSize()` in `EthernetUDP` and `EthernetFrame` that
   returns the number of unprocessed packets or frames.
+* Added `droppedReceiveCount()` and `totalReceiveCount()` to `EthernetUDP`
+  and `EthernetFrame`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

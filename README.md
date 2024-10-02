@@ -382,6 +382,9 @@ listening and the port or _reuse_ options have changed.
 * `beginMulticastWithReuse(ip, localPort)`: Similar to
   `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
+* `droppedReceiveCount()`: Returns the total number of dropped received packets
+  since reception was started. Note that this is the count of dropped packets at
+  the layer above the driver.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
 * `receiveQueueCapacity()`: Returns the receive queue capacity.
@@ -399,6 +402,9 @@ listening and the port or _reuse_ options have changed.
   it will default to 1. If the new capacity is smaller than the number of items
   in the queue then all the oldest packets will get dropped.
 * `size()`: Returns the total size of the received packet data.
+* `totalReceiveCount()`: Returns the total number of received packets, including
+  dropped packets, since reception was started. Note that this is the count at
+  the layer above the driver.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
@@ -465,6 +471,9 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `clear()`: Clears the outgoing and incoming buffers.
 * `data()`: Returns a pointer to the frame data.
 * `destinationMAC()`: Returns a pointer to the destination MAC.
+* `droppedReceiveCount()`: Returns the total number of dropped received frames
+  since reception was started. Note that this is the count of dropped frames at
+  the layer above the driver.
 * `endFrame()`: Sends the frame. This returns whether the send was successful. A
   frame must have been started, its data length must be in the range 14-1514 for
   non-VLAN frames or 18-1518 for VLAN frames, and Ethernet must have been
@@ -491,6 +500,9 @@ read from a frame and the `Print` API can be used to write to the frame.
   in the queue then all the oldest frames will get dropped.
 * `size()`: Returns the total size of the frame data.
 * `sourceMAC()`: Returns a pointer to the source MAC.
+* `totalReceiveCount()`: Returns the total number of received frames, including
+  dropped frames, since reception was started. Note that this is the count at
+  the layer above the driver.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
   including the 4-byte FCS. Subtract 4 to get the maximum length that can be
   sent or received using this API. Note that this size includes VLAN frames,
