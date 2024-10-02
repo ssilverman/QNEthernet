@@ -84,7 +84,7 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
       inBufSize_(0),
       framePos_(-1),
       hasOutFrame_(false) {
-  setReceiveQueueSize(1);
+  setReceiveQueueCapacity(1);
 }
 
 void EthernetFrameClass::Frame::clear() {
@@ -207,33 +207,33 @@ const uint8_t *EthernetFrameClass::payload() const {
   return data() + 14;
 }
 
-void EthernetFrameClass::setReceiveQueueSize(size_t size) {
-  if (size == inBuf_.size()) {
+void EthernetFrameClass::setReceiveQueueCapacity(size_t capacity) {
+  if (capacity == inBuf_.size()) {
     return;
   }
 
-  size = std::max(size, size_t{1});
+  capacity = std::max(capacity, size_t{1});
 
   // Keep all the newest elements
   qnethernet_hal_disable_interrupts();
-  if (size <= inBufSize_) {
+  if (capacity <= inBufSize_) {
     // Keep all the newest frames
     if (inBufTail_ != 0) {
-      size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
+      size_t n = (inBufTail_ + (inBufSize_ - capacity)) % inBuf_.size();
       std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
     }
-    inBuf_.resize(size);
+    inBuf_.resize(capacity);
     inBufHead_ = 0;
-    inBufSize_ = size;
+    inBufSize_ = capacity;
   } else {
     if (inBufTail_ != 0) {
       std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
     }
-    inBuf_.resize(size);
+    inBuf_.resize(capacity);
     inBufHead_ = inBufSize_;
 
     // Don't reserve memory because that might exhaust the heap
-    // for (size_t i = oldSize; i < size; i++) {
+    // for (size_t i = oldSize; i < capacity; i++) {
     //   inBuf_[i].data.reserve(maxFrameLen());
     // }
   }

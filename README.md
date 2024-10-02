@@ -384,7 +384,9 @@ listening and the port or _reuse_ options have changed.
 * `data()`: Returns a pointer to the received packet data.
 * `localPort()`: Returns the port to which the socket is bound, or zero if it is
   not bound.
-* `receiveQueueSize()`: Returns the current receive queue size.
+* `receiveQueueCapacity()`: Returns the receive queue capacity.
+* `receiveQueueSize()`: Returns the number of packets currently in the
+  receive queue.
 * `receivedTimestamp()`: Returns the approximate packet arrival time, measured
   with `millis()`. This is useful in the case where packets have been queued and
   the caller needs the approximate arrival time. Packets are timestamped when
@@ -392,17 +394,17 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
-* `setReceiveQueueSize(size)`: Changes the receive queue size. The minimum
-  possible value is 1 and the default is 1. If a value of zero is used, it will
-  default to 1. If the new size is smaller than the number of items in the queue
-  then all the oldest packets will get dropped.
+* `setReceiveQueueCapacity(capacity)`: Changes the receive queue capacity. The
+  minimum possible value is 1 and the default is 1. If a value of zero is used,
+  it will default to 1. If the new capacity is smaller than the number of items
+  in the queue then all the oldest packets will get dropped.
 * `size()`: Returns the total size of the received packet data.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr int maxSockets()`: Returns the maximum number of
   UDP sockets.
-* `EthernetUDP(queueSize)`: Creates a new UDP socket having the specified packet
-  queue size. The minimum possible value is 1 and the default is 1. If a value
-  of zero is used, it will default to 1.
+* `EthernetUDP(capacity)`: Creates a new UDP socket having the specified receive
+  packet queue capacity. The minimum possible value is 1 and the default is 1.
+  If a value of zero is used, it will default to 1.
 
 All the `begin` functions call `stop()` first only if the socket is currently
 listening and the local port or _reuse_ options have changed.
@@ -473,7 +475,9 @@ read from a frame and the `Print` API can be used to write to the frame.
   to `EthernetUDP::parseFrame()`.
 * `payload()`: Returns a pointer to the payload immediately following the
   EtherType/length field. Note that VLAN frames are handled specially.
-* `receiveQueueSize()`: Returns the current receive queue size.
+* `receiveQueueCapacity()`: Returns the receive queue capacity.
+* `receiveQueueSize()`: Returns the number of frames currently in the
+  receive queue.
 * `receivedTimestamp()`: Returns the approximate frame arrival time, measured
   with `millis()`. This is useful in the case where frames have been queued and
   the caller needs the approximate arrival time. Frames are timestamped when
@@ -481,10 +485,10 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
   `beginFrame()`/`write()`/`endFrame()`. See the description of `endFrame()` for
   size limits. This is similar to `EthernetUDP::send(data, len)`.
-* `setReceiveQueueSize(size)`: Sets the receive queue size. The minimum possible
-  value is 1 and the default is 1. If a value of zero is used, it will default
-  to 1. If the new size is smaller than the number of items in the queue then
-  all the oldest frames will get dropped.
+* `setReceiveQueueCapacity(capacity)`: Sets the receive queue capacity. The
+  minimum possible value is 1 and the default is 1. If a value of zero is used,
+  it will default to 1. If the new capacity is smaller than the number of items
+  in the queue then all the oldest frames will get dropped.
 * `size()`: Returns the total size of the frame data.
 * `sourceMAC()`: Returns a pointer to the source MAC.
 * `static constexpr int maxFrameLen()`: Returns the maximum frame length
@@ -1155,8 +1159,8 @@ shows how to change the number for each socket type.
 ## UDP receive buffering
 
 If UDP packets come in at a faster rate than they are consumed, some may get
-dropped. To help mitigate this, the `EthernetUDP(queueSize)` constructor can be
-called with a size > 1. The minimum size is 1, meaning any new packets will
+dropped. To help mitigate this, the `EthernetUDP(capacity)` constructor can be
+called with a value > 1. The minimum capacity is 1, meaning any new packets will
 cause any existing packet to get dropped. If it's set to 2 then there will be
 space for one additional packet for a total of 2 packets, and so on. Setting a
 value of zero will use the default of 1.
@@ -1284,10 +1288,10 @@ macro to `1`.
 
 Similar to [UDP buffering](#udp-receive-buffering), if raw frames come in at a
 faster rate than they are consumed, some may get dropped. To help mitigate this,
-the receive queue size can be adjusted with the
-`EthernetFrame.setReceiveQueueSize(size)` function. The default queue size is 1
-and the minimum size is also 1 (if a zero is passed in then 1 will be used
-instead).
+the receive queue capacity can be adjusted with the
+`EthernetFrame.setReceiveQueueCapacity(capacity)` function. The default queue
+capacity is 1 and the minimum is also 1 (if a zero is passed in then 1 will be
+used instead).
 
 For a size of 1, any new frames will cause any existing frame to get dropped. If
 the size is 2 then there will be space for one additional frame for a total of 2

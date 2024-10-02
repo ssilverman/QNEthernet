@@ -32,9 +32,9 @@ class EthernetUDP : public UDP,
  public:
   EthernetUDP();
 
-  // Creates a new UDP socket with the given receive queue size. It will be set
-  // to a minimum of 1.
-  explicit EthernetUDP(size_t queueSize);
+  // Creates a new UDP socket with the given receive queue capacity. It will be
+  // set to a minimum of 1.
+  explicit EthernetUDP(size_t capacity);
 
   // Disallow copying but allow moving
   EthernetUDP(const EthernetUDP &) = delete;
@@ -49,16 +49,21 @@ class EthernetUDP : public UDP,
     return MEMP_NUM_UDP_PCB;
   }
 
-  // Returns the current queue size.
-  size_t receiveQueueSize() const {
+  // Returns the receive queue capacity.
+  size_t receiveQueueCapacity() const {
     return inBuf_.size();
   }
 
-  // Changes the receive queue size. This will use a minimum of 1.
+  // Returns the number of packets currently in the receive queue.
+  size_t receiveQueueSize() const {
+    return inBufSize_;
+  }
+
+  // Changes the receive queue capacity. This will use a minimum of 1.
   //
-  // If the new size is smaller than the number of elements in the queue then
-  // all the oldest packets that don't fit are dropped.
-  void setReceiveQueueSize(size_t size);
+  // If the new capacity is smaller than the number of elements in the queue
+  // then all the oldest packets that don't fit are dropped.
+  void setReceiveQueueCapacity(size_t capacity);
 
   // Starts listening on a port. This returns true if successful and false if
   // the port is in use.

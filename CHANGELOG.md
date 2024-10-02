@@ -16,6 +16,8 @@ and this project adheres to
 * New `QNETHERNET_DO_LOOP_IN_YIELD` configuration macro for indicating that
   the library should attempt to hook into or override `yield()` to
   call `Ethernet.loop()`.
+* New version of `receiveQueueSize()` in `EthernetUDP` and `EthernetFrame` that
+  returns the number of unprocessed packets or frames.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.
@@ -29,6 +31,9 @@ and this project adheres to
   * `EthernetClient::stop()`
 * Updated example `yield()` implementation notes for
   non-EventResponder versions.
+* Changed `setReceiveQueueSize(size)` to `setReceiveQueueCapacity(capacity)`
+  and `receiveQueueSize()` to `receiveQueueCapacity()` in both `EthernetUDP`
+  and `EthernetFrame`.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

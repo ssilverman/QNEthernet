@@ -82,12 +82,12 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
 
 EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
 
-EthernetUDP::EthernetUDP(size_t queueSize)
+EthernetUDP::EthernetUDP(size_t capacity)
     : pcb_(nullptr),
       listening_(false),
       listenReuse_(false),
       listeningMulticast_(false),
-      inBuf_(std::max(queueSize, size_t{1})),
+      inBuf_(std::max(capacity, size_t{1})),
       inBufTail_(0),
       inBufHead_(0),
       inBufSize_(0),
@@ -98,29 +98,29 @@ EthernetUDP::~EthernetUDP() {
   stop();
 }
 
-void EthernetUDP::setReceiveQueueSize(size_t size) {
-  if (size == inBuf_.size()) {
+void EthernetUDP::setReceiveQueueCapacity(size_t capacity) {
+  if (capacity == inBuf_.size()) {
     return;
   }
 
-  size = std::max(size, size_t{1});
+  capacity = std::max(capacity, size_t{1});
 
   // Keep all the newest elements
   // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    if (size <= inBufSize_) {
+    if (capacity <= inBufSize_) {
       // Keep all the newest packets
       if (inBufTail_ != 0) {
-        size_t n = (inBufTail_ + (inBufSize_ - size)) % inBuf_.size();
+        size_t n = (inBufTail_ + (inBufSize_ - capacity)) % inBuf_.size();
         std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
       }
-      inBuf_.resize(size);
+      inBuf_.resize(capacity);
       inBufHead_ = 0;
-      inBufSize_ = size;
+      inBufSize_ = capacity;
     } else {
       if (inBufTail_ != 0) {
         std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
       }
-      inBuf_.resize(size);
+      inBuf_.resize(capacity);
       inBufHead_ = inBufSize_;
 
       // Don't reserve memory because that might exhaust the heap
