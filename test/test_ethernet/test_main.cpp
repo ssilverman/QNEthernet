@@ -1407,7 +1407,7 @@ static void test_raw_frames_receive_queueing() {
   uint8_t buf[15];
   std::copy_n(Ethernet.macAddress(), 6, &buf[0]);
   std::copy_n(Ethernet.macAddress(), 6, &buf[6]);
-  buf[12] = 0;
+  buf[12] = 0;  // Length (16-bit)
   buf[13] = 1;
 
   // NOTE: Use >= for receive counts because if this is on a network
