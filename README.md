@@ -1798,7 +1798,7 @@ the current latest version of the IDE (for Teensy, specifically; the locations
 will be different, but should be similar, for other platforms):
 * Mac: _~/Library/Arduino15/packages/teensy/hardware/avr/{version}_
 * Linux: _~/.arduino15/packages/teensy/hardware/avr/{version}_
-* Windows: _%userprofile%\AppData\Local\Arduino15\packages\teensy\hardware\avr\{version}_
+* Windows: _%userprofile%\\AppData\\Local\\Arduino15\\packages\\teensy\\hardware\\avr\\{version}_
 
 References:
 1. [Additional compiler options - Programming Questions - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
