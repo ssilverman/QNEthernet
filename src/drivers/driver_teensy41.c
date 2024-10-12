@@ -1101,58 +1101,53 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              bool allow) {
-  if (mac == NULL) {
-    return false;
-  }
-
   // Don't release bits that have had a collision. Track these here.
   static uint32_t collisionGALR = 0;
   static uint32_t collisionGAUR = 0;
   static uint32_t collisionIALR = 0;
   static uint32_t collisionIAUR = 0;
 
-  volatile uint32_t *lower;
-  volatile uint32_t *upper;
-  uint32_t *collisionLower;
-  uint32_t *collisionUpper;
-  if ((mac[0] & 0x01) != 0) {  // Group
-    lower = &ENET_GALR;
-    upper = &ENET_GAUR;
-    collisionLower = &collisionGALR;
-    collisionUpper = &collisionGAUR;
-  } else {  // Individual
-    lower = &ENET_IALR;
-    upper = &ENET_IAUR;
-    collisionLower = &collisionIALR;
-    collisionUpper = &collisionIAUR;
+  if (mac == NULL) {
+    return false;
   }
 
   uint32_t crc = (crc32(0, mac, ETH_HWADDR_LEN) >> 26) & 0x3f;
   uint32_t value = 1 << (crc & 0x1f);
+
+  // Choose which locations
+
+  const bool isGroup = (mac[0] & 0x01) != 0;
+  volatile uint32_t *reg;
+  uint32_t *collision;
+
   if (crc < 0x20) {
-    if (allow) {
-      if ((*lower & value) != 0) {
-        *collisionLower |= value;
-      } else {
-        *lower |= value;
-      }
+    if (isGroup) {
+      reg = &ENET_GALR;
+      collision = &collisionGALR;
     } else {
-      // Keep collided bits set
-      *lower &= ~value | *collisionLower;
-      return ((*collisionLower & value) == 0);  // False if can't remove
+      reg = &ENET_IALR;
+      collision = &collisionIALR;
     }
   } else {
-    if (allow) {
-      if ((*upper & value) != 0) {
-        *collisionUpper |= value;
-      } else {
-        *upper |= value;
-      }
+    if (isGroup) {  // Group
+      reg = &ENET_IAUR;
+      collision = &collisionGAUR;
     } else {
-      // Keep collided bits set
-      *upper &= ~value | *collisionUpper;
-      return ((*collisionUpper & value) == 0);  // False if can't remove
+      reg = &ENET_IAUR;
+      collision = &collisionIAUR;
     }
+  }
+
+  if (allow) {
+    if ((*reg & value) != 0) {
+      *collision |= value;
+    } else {
+      *reg |= value;
+    }
+  } else {
+    // Keep collided bits set
+    *reg &= ~value | *collision;
+    return ((*collision & value) == 0);  // False if can't remove
   }
 
   return true;
