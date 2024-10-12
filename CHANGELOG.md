@@ -36,6 +36,8 @@ and this project adheres to
 * Changed `setReceiveQueueSize(size)` to `setReceiveQueueCapacity(capacity)`
   and `receiveQueueSize()` to `receiveQueueCapacity()` in both `EthernetUDP`
   and `EthernetFrame`.
+* Updated `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` behaviour to also check for
+  the broadcast MAC addresses.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

@@ -21,6 +21,11 @@
 //  Internal Variables
 // --------------------------------------------------------------------------
 
+#if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
+static const uint8_t kBroadcastMAC[ETH_HWADDR_LEN] = {0xff, 0xff, 0xff,
+                                                      0xff, 0xff, 0xff};
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
+
 // Current MAC address.
 static uint8_t s_mac[ETH_HWADDR_LEN];
 
@@ -269,7 +274,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
   // Check for a loopback frame
-  if (memcmp(frame, s_mac, 6) == 0) {
+  if (memcmp(frame, s_mac, 6) == 0 || memcmp(frame, kBroadcastMAC, 6) == 0) {
     struct pbuf *p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
     if (p) {
       pbuf_take_at(p, frame, len, ETH_PAD_SIZE);

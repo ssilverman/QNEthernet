@@ -1312,8 +1312,9 @@ frames, and so on.
 ### Raw frame loopback
 
 Raw frames having a destination MAC address that matches the local MAC address
-can optionally be looped back up the stack. To enable this feature, set the
-`QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro to `1`.
+or the broadcast MAC address can optionally be looped back up the stack. To
+enable this feature, set the `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro
+to `1`.
 
 ## How to implement VLAN tagging
 
@@ -1698,19 +1699,19 @@ in the relevant configuration file:
 
 The _QNEthernet_-specific macros are as follows:
 
-| Macro                                       | Description                                                                      | Link                                                                                    |
-| ------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `QNETHERNET_ALTCP_TLS_ADAPTER`              | Enables the _altcp_tls_adapter_ functions for easier TLS library integration     | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
-| `QNETHERNET_BUFFERS_IN_RAM1`                | Puts the RX and TX buffers into RAM1                                             | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_CUSTOM_WRITE`                   | Uses expanded `stdio` output behaviour                                           | [stdio](#stdio)                                                                         |
-| `QNETHERNET_DO_LOOP_IN_YIELD`               | The library should try to hook into or override yield() to call Ethernet.loop()  | [Notes on `yield()`](#notes-on-yield)                                                   |
-| `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enables default implementations of the altcp interface functions                 | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
-| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                         | [Promiscuous mode](#promiscuous-mode)                                                   |
-| `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC        | [Raw frame loopback](#raw-frame-loopback)                                               |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                        | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
-| `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency | [Write immediacy](#write-immediacy)                                                     |
-| `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                              | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                             | [Entropy collection](#entropy-collection)                                               |
+| Macro                                       | Description                                                                                    | Link                                                                                    |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `QNETHERNET_ALTCP_TLS_ADAPTER`              | Enables the _altcp_tls_adapter_ functions for easier TLS library integration                   | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
+| `QNETHERNET_BUFFERS_IN_RAM1`                | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
+| `QNETHERNET_CUSTOM_WRITE`                   | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                         |
+| `QNETHERNET_DO_LOOP_IN_YIELD`               | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                   |
+| `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Enables default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
+| `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
+| `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                     |
+| `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
+| `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                               |
 
 To enable a feature, set the associated macro to `1` or just define it. To
 disable a feature, either set the same macro to `0` or leave it undefined.
