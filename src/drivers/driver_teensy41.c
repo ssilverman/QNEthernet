@@ -1030,7 +1030,7 @@ int driver_link_speed() {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool driver_set_link_speed(int speed) {
+bool driver_link_set_speed(int speed) {
   LWIP_UNUSED_ARG(speed);
   return false;
 }
@@ -1039,7 +1039,7 @@ bool driver_link_is_full_duplex() {
   return s_linkIsFullDuplex;
 }
 
-bool driver_set_link_full_duplex(bool flag) {
+bool driver_link_set_full_duplex(bool flag) {
   LWIP_UNUSED_ARG(flag);
   return false;
 }
