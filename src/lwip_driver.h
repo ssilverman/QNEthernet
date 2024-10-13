@@ -70,17 +70,21 @@ struct DriverCapabilities {
 #ifdef __cplusplus
   DriverCapabilities()
       : isMACSettable(false),
-        hasLinkState(false),
-        hasLinkSpeed(false),
-        hasLinkFullDuplex(false),
-        hasLinkCrossover(false) {}
+        isLinkStateDetectable(false),
+        isLinkSpeedDetectable(false),
+        isLinkSpeedSettable(false),
+        isLinkFullDuplexDetectable(false),
+        isLinkFullDuplexSettable(false),
+        isLinkCrossoverDetectable(false) {}
 #endif  // __cplusplus
 
   bool isMACSettable;
-  bool hasLinkState;
-  bool hasLinkSpeed;
-  bool hasLinkFullDuplex;
-  bool hasLinkCrossover;
+  bool isLinkStateDetectable;
+  bool isLinkSpeedDetectable;
+  bool isLinkSpeedSettable;
+  bool isLinkFullDuplexDetectable;
+  bool isLinkFullDuplexSettable;
+  bool isLinkCrossoverDetectable;
 };
 
 // --------------------------------------------------------------------------

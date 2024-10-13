@@ -463,11 +463,13 @@ static void check_link_status(struct netif *netif) {
 extern "C" {
 
 void driver_get_capabilities(struct DriverCapabilities *dc) {
-  dc->isMACSettable     = true;
-  dc->hasLinkState      = true;
-  dc->hasLinkSpeed      = true;
-  dc->hasLinkFullDuplex = true;
-  dc->hasLinkCrossover  = false;
+  dc->isMACSettable              = true;
+  dc->isLinkStateDetectable      = true;
+  dc->isLinkSpeedDetectable      = true;
+  dc->isLinkSpeedSettable        = false;
+  dc->isLinkFullDuplexDetectable = true;
+  dc->isLinkFullDuplexSettable   = false;
+  dc->isLinkCrossoverDetectable  = false;
 }
 
 bool driver_is_unknown() {
