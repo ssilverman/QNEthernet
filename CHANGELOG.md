@@ -20,6 +20,7 @@ and this project adheres to
   returns the number of unprocessed packets or frames.
 * Added `droppedReceiveCount()` and `totalReceiveCount()` to `EthernetUDP`
   and `EthernetFrame`.
+* Added `driver_set_link_speed(speed)` and `driver_set_link_full_duplex(flag)`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

@@ -149,11 +149,22 @@ void driver_poll(struct netif *netif);
 // See also: driver_get_capabilities(dc)
 int driver_link_speed();
 
+// Sets the link speed in Mbps and returns whether successful.
+//
+// See also: driver_get_capabilities(dc)
+bool driver_set_link_speed(int speed);
+
 // Returns the link duplex mode, true for full and false for half. The value is
 // only valid if the link is up.
 //
 // See also: driver_get_capabilities(dc)
 bool driver_link_is_full_duplex();
+
+// Sets the link duplex mode, true for full and false for half. This returns
+// whether successful.
+//
+// See also: driver_get_capabilities(dc)
+bool driver_set_link_full_duplex(bool flag);
 
 // Returns whether a crossover cable is detected. The value is only valid if the
 // link is up.
