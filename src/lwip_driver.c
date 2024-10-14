@@ -21,10 +21,10 @@
 //  Internal Variables
 // --------------------------------------------------------------------------
 
-#if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT && QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 static const uint8_t kBroadcastMAC[ETH_HWADDR_LEN] = {0xff, 0xff, 0xff,
                                                       0xff, 0xff, 0xff};
-#endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT && QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
 // Current MAC address.
 static uint8_t s_mac[ETH_HWADDR_LEN];
