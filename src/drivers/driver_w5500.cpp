@@ -17,6 +17,7 @@
 
 #include <Arduino.h>  // For pinMode() and digitalWrite()
 #include <SPI.h>
+#include <avr/pgmspace.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
@@ -24,6 +25,10 @@
 #include "lwip/def.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 // --------------------------------------------------------------------------
 //  Types
@@ -309,7 +314,7 @@ static void set_socket_command(uint8_t v) {
 }
 
 // Soft resets the chip.
-static bool soft_reset() {
+FLASHMEM static bool soft_reset() {
   int count = 0;
 
   // Loop up to 20 times
@@ -325,7 +330,7 @@ static bool soft_reset() {
 }
 
 // Initializes the interface. This sets the init state.
-static void low_level_init() {
+FLASHMEM static void low_level_init() {
   if (s_initState != EnetInitStates::kStart) {
     return;
   }
@@ -462,7 +467,7 @@ static void check_link_status(struct netif *netif) {
 
 extern "C" {
 
-void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isMACSettable              = true;
   dc->isLinkStateDetectable      = true;
   dc->isLinkSpeedDetectable      = true;
@@ -530,14 +535,14 @@ bool driver_has_hardware() {
   return (s_initState != EnetInitStates::kNoHardware);
 }
 
-void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(int pin) {
   if (pin < 0) {
     pin = kDefaultCSPin;
   }
   s_chipSelectPin = pin;
 }
 
-bool driver_init() {
+FLASHMEM bool driver_init() {
   if (s_initState == EnetInitStates::kInitialized) {
     return true;
   }
@@ -553,7 +558,7 @@ bool driver_init() {
   return true;
 }
 
-void driver_deinit() {
+FLASHMEM void driver_deinit() {
   switch (s_initState) {
     case EnetInitStates::kStart:
     case EnetInitStates::kNoHardware:

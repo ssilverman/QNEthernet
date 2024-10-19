@@ -9,6 +9,8 @@
 // C includes
 #include <string.h>
 
+#include <avr/pgmspace.h>
+
 #include "lwip/autoip.h"
 #include "lwip/dhcp.h"
 #include "lwip/etharp.h"
@@ -16,6 +18,10 @@
 #include "lwip/prot/ieee.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
 
 // --------------------------------------------------------------------------
 //  Internal Variables
@@ -81,7 +87,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 #endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // Initializes the netif.
-static err_t init_netif(struct netif *netif) {
+FLASHMEM static err_t init_netif(struct netif *netif) {
   if (netif == NULL) {
     return ERR_ARG;
   }
@@ -126,7 +132,7 @@ static err_t init_netif(struct netif *netif) {
 }
 
 // Removes the current netif, if any.
-static void remove_netif() {
+FLASHMEM static void remove_netif() {
   if (s_isNetifAdded) {
     netif_set_default(NULL);
     netif_remove(&s_netif);
@@ -164,7 +170,7 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 // This only uses the callback if the interface has not been added.
-bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
+FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback,
                struct DriverCapabilities *dc) {
   if (!driver_init()) {
@@ -218,7 +224,7 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   return true;
 }
 
-void enet_deinit() {
+FLASHMEM void enet_deinit() {
   // Restore state
   memset(s_mac, 0, sizeof(s_mac));
 

@@ -398,7 +398,7 @@ void mdio_write(uint16_t regaddr, uint16_t data) {
 // --------------------------------------------------------------------------
 
 // Enables the Ethernet-related clocks. See also disable_enet_clocks().
-static void enable_enet_clocks() {
+FLASHMEM static void enable_enet_clocks() {
   // Enable the Ethernet clock
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
 
@@ -430,7 +430,7 @@ static void enable_enet_clocks() {
 }
 
 // Disables everything enabled with enable_enet_clocks().
-static void disable_enet_clocks() {
+FLASHMEM static void disable_enet_clocks() {
   // Configure REFCLK
   CLRSET(IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
 
@@ -447,7 +447,7 @@ static void disable_enet_clocks() {
 }
 
 // Configures all the pins necessary for communicating with the PHY.
-static void configure_phy_pins() {
+FLASHMEM static void configure_phy_pins() {
   // Configure strap pins
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
@@ -488,7 +488,7 @@ static void configure_phy_pins() {
 
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
-static void configure_rmii_pins() {
+FLASHMEM static void configure_rmii_pins() {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
@@ -519,7 +519,7 @@ static void configure_rmii_pins() {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-static void init_phy() {
+FLASHMEM static void init_phy() {
   if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
     return;
   }
@@ -754,7 +754,7 @@ static inline int check_link_status(struct netif *netif, int state) {
 //  Driver Interface
 // --------------------------------------------------------------------------
 
-void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isMACSettable              = true;
   dc->isLinkStateDetectable      = true;
   dc->isLinkSpeedDetectable      = true;
@@ -823,13 +823,13 @@ bool driver_has_hardware() {
   return (s_initState != kInitStateNoHardware);
 }
 
-void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
-bool driver_init() {
+FLASHMEM bool driver_init() {
   if (s_initState == kInitStateInitialized) {
     return true;
   }
@@ -962,7 +962,7 @@ bool driver_init() {
 
 void unused_interrupt_vector(void);  // startup.c
 
-void driver_deinit() {
+FLASHMEM void driver_deinit() {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now

@@ -6,9 +6,15 @@
 
 #include "lwip_driver.h"
 
+#include <avr/pgmspace.h>
+
+#ifndef FLASHMEM
+#define FLASHMEM
+#endif  // !FLASHMEM
+
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
-void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isMACSettable              = false;
   dc->isLinkStateDetectable      = false;
   dc->isLinkSpeedDetectable      = false;
@@ -42,16 +48,16 @@ bool driver_has_hardware() {
   return false;
 }
 
-void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
-bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
+FLASHMEM bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   LWIP_UNUSED_ARG(mac);
   return false;
 }
 
-void driver_deinit() {
+FLASHMEM void driver_deinit() {
 }
 
 struct pbuf *driver_proc_input(struct netif *netif, int counter) {

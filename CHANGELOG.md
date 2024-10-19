@@ -39,6 +39,7 @@ and this project adheres to
   and `EthernetFrame`.
 * Updated `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` behaviour to also check for
   the broadcast MAC addresses.
+* Added `FLASHMEM` to some driver functions.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the
