@@ -695,8 +695,12 @@ void EthernetClass::setHostname(const char *hostname) {
   if (hostname == hostname_) {
     return;
   }
-  std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
-  hostname_[sizeof(hostname_) - 1] = '\0';
+  if (hostname == nullptr) {
+    hostname_[0] = '\0';
+  } else {
+    std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
+    hostname_[sizeof(hostname_) - 1] = '\0';
+  }
   if (netif_ != nullptr) {
     if (std::strlen(hostname_) == 0) {
       netif_set_hostname(netif_, nullptr);
