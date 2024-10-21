@@ -9,6 +9,7 @@
 // C++ includes
 #include <algorithm>
 #include <cerrno>
+#include <cstring>
 
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
 #if QNETHERNET_DO_LOOP_IN_YIELD
@@ -302,10 +303,10 @@ bool EthernetClass::start() {
   enet_get_mac(mac_);
 
 #if LWIP_NETIF_HOSTNAME
-  if (hostname_.length() == 0) {
+  if (std::strlen(hostname_) == 0) {
     netif_set_hostname(netif_, nullptr);
   } else {
-    netif_set_hostname(netif_, hostname_.c_str());
+    netif_set_hostname(netif_, hostname_);
   }
 #endif  // LWIP_NETIF_HOSTNAME
 
@@ -691,12 +692,16 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
 
 void EthernetClass::setHostname(const char *hostname) {
 #if LWIP_NETIF_HOSTNAME
-  hostname_ = hostname;
+  if (hostname == hostname_) {
+    return;
+  }
+  std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
+  hostname_[sizeof(hostname_) - 1] = '\0';
   if (netif_ != nullptr) {
-    if (hostname_.length() == 0) {
+    if (std::strlen(hostname_) == 0) {
       netif_set_hostname(netif_, nullptr);
     } else {
-      netif_set_hostname(netif_, hostname);
+      netif_set_hostname(netif_, hostname_);
     }
   }
 #else
@@ -704,7 +709,7 @@ void EthernetClass::setHostname(const char *hostname) {
 #endif  // LWIP_NETIF_HOSTNAME
 }
 
-String EthernetClass::hostname() const {
+const char *EthernetClass::hostname() const {
 #if LWIP_NETIF_HOSTNAME
   return hostname_;
 #else

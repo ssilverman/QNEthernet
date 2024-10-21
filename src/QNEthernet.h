@@ -12,7 +12,6 @@
 #include <functional>
 
 #include <IPAddress.h>
-#include <WString.h>
 
 #include "QNEthernetClient.h"
 #include "QNEthernetFrame.h"
@@ -394,7 +393,7 @@ class EthernetClass final {
   // hostname is set. The default is "qnethernet-lwip".
   //
   // This returns the empty string if 'LWIP_NETIF_HOSTNAME' is not enabled.
-  String hostname() const;
+  const char *hostname() const;
 
   // Tests if Ethernet is initialized.
   explicit operator bool() const;
@@ -437,7 +436,7 @@ class EthernetClass final {
   bool hasMAC_;
   uint8_t mac_[kMACAddrSize];
 #if LWIP_NETIF_HOSTNAME
-  String hostname_;  // Empty means no hostname
+  char hostname_[256];  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_;
 

@@ -488,9 +488,13 @@ static void test_dns_lookup() {
 
 // Tests setting and getting the option 12 hostname.
 static void test_hostname() {
-  TEST_ASSERT_MESSAGE(Ethernet.hostname().length() == 0, "Expected no hostname");
+  TEST_ASSERT_MESSAGE(std::strlen(Ethernet.hostname()) == 0, "Expected no hostname");
   Ethernet.setHostname(kTestHostname);
-  TEST_ASSERT_MESSAGE(Ethernet.hostname() == kTestHostname, "Expected set hostname");
+  TEST_ASSERT_MESSAGE(
+      std::strlen(Ethernet.hostname()) == std::strlen(kTestHostname) &&
+          std::strncmp(Ethernet.hostname(), kTestHostname,
+                       sizeof(kTestHostname)) == 0,
+      "Expected set hostname");
 }
 
 // Tests hardware type.

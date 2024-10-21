@@ -44,7 +44,7 @@
 
 // The default hostname, used if the LWIP_NETIF_HOSTNAME option is set. Note
 // that the hostname can also be set programmatically; this value is just the
-// initial default.
+// initial default. The length must be <= 255.
 #ifndef QNETHERNET_DEFAULT_HOSTNAME
 #define QNETHERNET_DEFAULT_HOSTNAME "qnethernet-lwip"
 #endif
