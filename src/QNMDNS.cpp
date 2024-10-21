@@ -14,7 +14,6 @@
 
 #include <avr/pgmspace.h>
 
-#include "lwip/apps/mdns.h"
 #include "lwip/err.h"
 
 #ifndef FLASHMEM
@@ -154,8 +153,10 @@ bool MDNSClass::addService(const char *name, const char *type,
     return false;
   }
 
+  enum mdns_sd_proto proto = toProto(protocol);
+
   int8_t slot = mdns_resp_add_service(netif_, name, type,
-                                      toProto(protocol), port, &srv_txt,
+                                      proto, port, &srv_txt,
                                       reinterpret_cast<void *>(getTXTFunc));
   if (slot < 0 || maxServices() <= slot) {
     if (slot >= 0) {
@@ -168,14 +169,14 @@ bool MDNSClass::addService(const char *name, const char *type,
     return false;
   }
 
-  Service service{true, name, type, protocol, port, getTXTFunc};
+  Service service{true, name, type, proto, port, getTXTFunc};
   slots_[slot] = service;
   return true;
 }
 
 int MDNSClass::findService(const char *name, const char *type,
                            const char *protocol, uint16_t port) {
-  Service service{true, name, type, protocol, port, nullptr};
+  Service service{true, name, type, toProto(protocol), port, nullptr};
   for (int i = 0; i < maxServices(); i++) {
     if (slots_[i] == service) {
       return i;
@@ -233,7 +234,7 @@ bool MDNSClass::Service::operator==(const Service &other) const {
   // Don't compare the functions
   return (name == other.name) &&
          (type == other.type) &&
-         (protocol == other.protocol) &&
+         (proto == other.proto) &&
          (port == other.port);
 }
 
@@ -241,7 +242,7 @@ bool MDNSClass::Service::operator==(const Service &other) const {
 void MDNSClass::Service::reset() {
   valid = false;
   type = "";
-  protocol = "";
+  proto = DNSSD_PROTO_UDP;
   port = 0;
   getTXTFunc = nullptr;
 }

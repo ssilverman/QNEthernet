@@ -17,6 +17,7 @@
 #include <WString.h>
 
 #include "StaticInit.h"
+#include "lwip/apps/mdns.h"
 #include "lwip/netif.h"
 
 namespace qindesign {
@@ -144,7 +145,7 @@ class MDNSClass final {
     bool valid = false;
     String name;
     String type;
-    String protocol;
+    enum mdns_sd_proto proto;
     uint16_t port;
     std::vector<String> (*getTXTFunc)(void);
   };
