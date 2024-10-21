@@ -135,30 +135,11 @@ class MDNSClass final {
 
  private:
   struct Service final {
-    bool operator==(const Service &other) const {
-      if (!valid || !other.valid) {
-        // Invalid services compare unequal
-        return false;
-      }
-      if (this == &other) {
-        return true;
-      }
-
-      // Don't compare the functions
-      return (name == other.name) &&
-             (type == other.type) &&
-             (protocol == other.protocol) &&
-             (port == other.port);
-    }
+    // Compares this object to another. This doesn't compare the functions.
+    bool operator==(const Service &other) const;
 
     // Resets this service to be invalid and empty.
-    void reset() {
-      valid = false;
-      type = "";
-      protocol = "";
-      port = 0;
-      getTXTFunc = nullptr;
-    }
+    void reset();
 
     bool valid = false;
     String name;

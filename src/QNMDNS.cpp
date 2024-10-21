@@ -221,6 +221,31 @@ void MDNSClass::announce() const {
   mdns_resp_announce(netif_);
 }
 
+bool MDNSClass::Service::operator==(const Service &other) const {
+  if (!valid || !other.valid) {
+    // Invalid services compare unequal
+    return false;
+  }
+  if (this == &other) {
+    return true;
+  }
+
+  // Don't compare the functions
+  return (name == other.name) &&
+         (type == other.type) &&
+         (protocol == other.protocol) &&
+         (port == other.port);
+}
+
+// Resets this service to be invalid and empty.
+void MDNSClass::Service::reset() {
+  valid = false;
+  type = "";
+  protocol = "";
+  port = 0;
+  getTXTFunc = nullptr;
+}
+
 }  // namespace network
 }  // namespace qindesign
 
