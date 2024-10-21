@@ -450,7 +450,7 @@ static void test_mdns() {
   TEST_MESSAGE(format("Starting mDNS: %s", kTestHostname).data());
   TEST_ASSERT_TRUE_MESSAGE(MDNS.begin(kTestHostname), "Expected start success");
 
-  TEST_ASSERT_MESSAGE(MDNS.hostname() == String{kTestHostname}, "Expected matching hostname");
+  TEST_ASSERT_MESSAGE(MDNS.hostname() == kTestHostname, "Expected matching hostname");
 }
 
 // Tests DNS lookup.
