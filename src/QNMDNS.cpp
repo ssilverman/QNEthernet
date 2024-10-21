@@ -241,6 +241,7 @@ bool MDNSClass::Service::operator==(const Service &other) const {
 // Resets this service to be invalid and empty.
 void MDNSClass::Service::reset() {
   valid = false;
+  name = "";
   type = "";
   proto = DNSSD_PROTO_UDP;
   port = 0;
