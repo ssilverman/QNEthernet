@@ -45,7 +45,7 @@ static void srv_txt(struct mdns_service *service, void *txt_userdata) {
 
   for (const auto &item : list) {
     const char *txt = item.c_str();
-    uint8_t len = std::min(item.length(), 63U);
+    uint8_t len = std::min(item.length(), (unsigned int){MDNS_LABEL_MAXLEN});
     err_t res = mdns_resp_add_service_txtitem(service, txt, len);
     LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK),
                errno = err_to_errno(res);
