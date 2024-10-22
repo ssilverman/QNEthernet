@@ -11,6 +11,7 @@
 // C++ includes
 #include <algorithm>
 #include <cerrno>
+#include <cstring>
 
 #include <avr/pgmspace.h>
 
@@ -56,7 +57,8 @@ static bool initialized = false;
 static bool netifAdded = false;
 
 FLASHMEM MDNSClass::MDNSClass()
-    : netif_(nullptr) {}
+    : netif_(nullptr),
+      hostname_{'\0'} {}
 
 FLASHMEM MDNSClass::~MDNSClass() {
   end();
@@ -81,7 +83,8 @@ bool MDNSClass::begin(const char *hostname) {
   }
 
   if (netifAdded) {
-    if (hostname_ == hostname) {
+    if (std::strlen(hostname_) == std::strlen(hostname) &&
+        std::strncmp(hostname_, hostname, std::strlen(hostname_)) == 0) {
       return true;
     }
     end();
@@ -95,7 +98,8 @@ bool MDNSClass::begin(const char *hostname) {
 
   netifAdded = true;
   netif_ = netif_default;
-  hostname_ = hostname;
+  std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
+  hostname_[sizeof(hostname_) - 1] = '\0';
   return true;
 }
 
@@ -104,7 +108,7 @@ void MDNSClass::end() {
     err_t err = mdns_resp_remove_netif(netif_);
     netifAdded = false;
     netif_ = nullptr;
-    hostname_ = "";
+    hostname_[0] = '\0';
     if (err != ERR_OK) {
       errno = err_to_errno(err);
     }
@@ -130,7 +134,7 @@ static enum mdns_sd_proto toProto(const char *protocol) {
 
 bool MDNSClass::addService(const char *type, const char *protocol,
                            uint16_t port) {
-  return addService(hostname_.c_str(), type, protocol, port, nullptr);
+  return addService(hostname_, type, protocol, port, nullptr);
 }
 
 bool MDNSClass::addService(const char *name, const char *type,
@@ -141,7 +145,7 @@ bool MDNSClass::addService(const char *name, const char *type,
 bool MDNSClass::addService(const char *type, const char *protocol,
                            uint16_t port,
                            std::vector<String> (*getTXTFunc)(void)) {
-  return addService(hostname_.c_str(), type, protocol, port, getTXTFunc);
+  return addService(hostname_, type, protocol, port, getTXTFunc);
 }
 
 bool MDNSClass::addService(const char *name, const char *type,
@@ -187,7 +191,7 @@ int MDNSClass::findService(const char *name, const char *type,
 
 bool MDNSClass::removeService(const char *type, const char *protocol,
                               uint16_t port) {
-  return removeService(hostname_.c_str(), type, protocol, port);
+  return removeService(hostname_, type, protocol, port);
 }
 
 bool MDNSClass::removeService(const char *name, const char *type,

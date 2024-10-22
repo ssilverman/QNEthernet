@@ -51,7 +51,7 @@ class MDNSClass final {
 
   // Returns the hostname. This will return an empty string if the responder
   // is not currently running.
-  String hostname() const {
+  const char *hostname() const {
     return hostname_;
   }
 
@@ -159,7 +159,7 @@ class MDNSClass final {
                   const char *protocol, uint16_t port);
 
   struct netif *netif_;
-  String hostname_;
+  char hostname_[MDNS_LABEL_MAXLEN + 1];
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
