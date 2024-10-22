@@ -40,6 +40,8 @@ and this project adheres to
 * Updated `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` behaviour to also check for
   the broadcast MAC addresses.
 * Added `FLASHMEM` to some driver functions.
+* Changed `EthernetClass` and `MDNSClass` `hostname()` function to return a
+  `const char *` instead of a `String`.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the
