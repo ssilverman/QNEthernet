@@ -1142,7 +1142,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
     }
   } else {
     if (isGroup) {  // Group
-      reg = &ENET_IAUR;
+      reg = &ENET_GAUR;
       collision = &collisionGAUR;
     } else {
       reg = &ENET_IAUR;
