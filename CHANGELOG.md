@@ -42,6 +42,8 @@ and this project adheres to
 * Added `FLASHMEM` to some driver functions.
 * Changed `EthernetClass` and `MDNSClass` `hostname()` function to return a
   `const char *` instead of a `String`.
+* Now always setting the DNS in `EthernetClass::begin(ip, mask, gateway, dns)`,
+  even if it's zero.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

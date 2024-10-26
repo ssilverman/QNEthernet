@@ -242,9 +242,7 @@ bool EthernetClass::begin(const IPAddress &ip,
 
   // Set this before setting the address so any address listeners will see
   // a valid DNS server
-  if (dns != INADDR_NONE) {
-    setDNSServerIP(dns);
-  }
+  setDNSServerIP(dns);
 
 #if LWIP_IPV4
   netif_set_addr(netif_, &ipaddr, &netmask, &gw);
