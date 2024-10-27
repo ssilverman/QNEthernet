@@ -343,6 +343,27 @@ bool EthernetClass::setDHCPEnabled(bool flag) {
 #endif  // LWIP_DHCP
 }
 
+bool EthernetClass::renewDHCP() const {
+#if LWIP_DHCP
+  if (netif_ == nullptr) {
+    return false;
+  }
+
+  if (!dhcpActive_) {
+    return false;
+  }
+
+  err_t err;
+  if ((err = dhcp_renew(netif_)) != ERR_OK) {
+    errno = err_to_errno(err);
+    return false;
+  }
+  return true;
+#else
+  return false;
+#endif  // LWIP_DHCP
+}
+
 bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {

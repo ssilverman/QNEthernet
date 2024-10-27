@@ -21,6 +21,7 @@ and this project adheres to
 * Added `droppedReceiveCount()` and `totalReceiveCount()` to `EthernetUDP`
   and `EthernetFrame`.
 * Added `driver_set_link_speed(speed)` and `driver_set_link_full_duplex(flag)`.
+* Added `EthernetClass::renewDHCP()`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

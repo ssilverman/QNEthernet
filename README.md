@@ -265,6 +265,8 @@ The `Ethernet` object is the main Ethernet interface.
   MAC address.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
+* `renewDHCP()`: Renews any active DHCP lease and returns whether the request
+  was sent successfully.
 * `setDHCPEnabled(flag)`: Enables or disables the DHCP client. This may be
   called either before or after Ethernet has started. If DHCP is desired and
   Ethernet is up, but DHCP is not active, an attempt will be made to start the

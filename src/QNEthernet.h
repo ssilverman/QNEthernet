@@ -176,6 +176,12 @@ class EthernetClass final {
 #endif  // LWIP_DHCP
   }
 
+  // Renews any active DHCP lease. This returns true if the request was sent
+  // successfully and false if DHCP is not active or there was an error.
+  //
+  // If this returns false and there was an error then errno will be set.
+  bool renewDHCP() const;
+
   // Waits, up to the specified timeout, for an IP address and returns whether
   // one was acquired. The timeout is in milliseconds.
   bool waitForLocalIP(uint32_t timeout) const;
