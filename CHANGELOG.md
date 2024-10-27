@@ -45,6 +45,8 @@ and this project adheres to
   `const char *` instead of a `String`.
 * Now always setting the DNS in `EthernetClass::begin(ip, mask, gateway, dns)`,
   even if it's zero.
+* Use rename instead of end-then-start when the netif has already been added,
+  in `MDNSClass::begin(hostname)`.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

@@ -82,22 +82,26 @@ bool MDNSClass::begin(const char *hostname) {
     return false;
   }
 
+  err_t err;
   if (netifAdded) {
     if (std::strlen(hostname_) == std::strlen(hostname) &&
         std::strncmp(hostname_, hostname, std::strlen(hostname_)) == 0) {
       return true;
     }
-    end();
+    if ((err = mdns_resp_rename_netif(netif_, hostname)) != ERR_OK) {
+      errno = err_to_errno(err);
+      return false;
+    }
+  } else {
+    if ((err = mdns_resp_add_netif(netif_default, hostname)) != ERR_OK) {
+      errno = err_to_errno(err);
+      return false;
+    }
+
+    netifAdded = true;
+    netif_ = netif_default;
   }
 
-  err_t err;
-  if ((err = mdns_resp_add_netif(netif_default, hostname)) != ERR_OK) {
-    errno = err_to_errno(err);
-    return false;
-  }
-
-  netifAdded = true;
-  netif_ = netif_default;
   std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
   hostname_[sizeof(hostname_) - 1] = '\0';
   return true;
