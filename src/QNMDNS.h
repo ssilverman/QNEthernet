@@ -122,7 +122,7 @@ class MDNSClass final {
 
   // Returns whether mDNS has been started.
   explicit operator bool() const {
-    return netifAdded;
+    return netif_ != nullptr;
   }
 
   // The following functions are for periodically re-announcing the services.
