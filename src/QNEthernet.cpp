@@ -9,6 +9,7 @@
 // C++ includes
 #include <algorithm>
 #include <cerrno>
+#include <cstdio>
 #include <cstring>
 
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
@@ -117,7 +118,8 @@ FLASHMEM EthernetClass::EthernetClass()
 #if LWIP_NETIF_HOSTNAME
       hostname_{QNETHERNET_DEFAULT_HOSTNAME},
 #endif  // LWIP_NETIF_HOSTNAME
-      netif_(nullptr)
+      netif_(nullptr),
+      ifName_{0}
 #if LWIP_DHCP
       ,
       dhcpEnabled_(true),
@@ -294,6 +296,11 @@ bool EthernetClass::start() {
 
   // Initialize Ethernet, set up the callback, and set the netif to UP
   netif_ = enet_netif();
+
+  ifName_[0] = netif_->name[0];
+  ifName_[1] = netif_->name[1];
+  std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u", netif_->num);
+
   if (!enet_init(macAddress(), &netifEventFunc, &driverCapabilities_)) {
     return false;
   }
@@ -492,6 +499,7 @@ void EthernetClass::end() {
 
   enet_deinit();
   netif_ = nullptr;
+  ifName_[0] = '\0';
 }
 
 EthernetLinkStatus EthernetClass::linkStatus() const {

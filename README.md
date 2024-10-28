@@ -247,6 +247,8 @@ The `Ethernet` object is the main Ethernet interface.
   IP address. This returns whether successful.
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "qnethernet-lwip".
+* `interfaceName()`: Returns the interface name, or, if Ethernet has not been
+  initialized, an empty string.
 * `interfaceStatus()`: Returns the network interface status, `true` for UP and
   `false` for DOWN.
 * `isDHCPActive()`: Returns whether DHCP is active.

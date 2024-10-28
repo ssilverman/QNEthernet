@@ -105,6 +105,12 @@ class EthernetClass final {
     return driverCapabilities_;
   }
 
+  // Gets the interface name. This will return an empty string if Ethernet has
+  // not been initialized.
+  const char *interfaceName() const {
+    return ifName_;
+  }
+
   // Returns a pointer to the current MAC address. If it has not yet been
   // accessed, then this first retrieves the system MAC address from the driver.
   const uint8_t *macAddress();
@@ -445,6 +451,7 @@ class EthernetClass final {
   char hostname_[256];  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
   struct netif *netif_;
+  char ifName_[6];  // Two letters plus up to 3-digit number
 
 #if LWIP_DHCP
   bool dhcpEnabled_;
