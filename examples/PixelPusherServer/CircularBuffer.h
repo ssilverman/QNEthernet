@@ -21,7 +21,7 @@ class CircularBuffer {
         head_(0),
         tail_(0) {}
 
-  size_t empty() const {
+  bool empty() const {
     return size_ == 0;
   }
 
