@@ -61,7 +61,7 @@ class CircularBuffer {
   }
 
   T &operator[](size_t n) {
-    return buf_[(tail_ + n ) % capacity_];
+    return buf_[(tail_ + n) % capacity_];
   }
 
   const T &operator[](size_t n) const {
