@@ -61,14 +61,20 @@ class CircularBuffer {
   }
 
   T &operator[](size_t n) {
-    return buf_[(tail_ + n) % capacity_];
+    return get(*this, n, capacity_);
   }
 
   const T &operator[](size_t n) const {
-    return buf_[(tail_ + n) % capacity_];
+    return get(*this, n, capacity_);
   }
 
  private:
+  // Handles both const and non-const cases
+  template <typename U>
+  static inline auto &get(U &t, size_t n, size_t capacity) {
+    return t.buf_[(t.tail_ + n) % capacity];
+  }
+
   const size_t capacity_;
 
   std::unique_ptr<T[]> buf_;
