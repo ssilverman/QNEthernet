@@ -354,8 +354,8 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `outgoingDiffServ()`: Returns the current value of the differentiated services
   (DiffServ) field from the outgoing IP header, or zero if not connected.
-* `outgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field in
-  the outgoing IP header, if connected. Returns `true` if connected and the
+* `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
+  in the outgoing IP header, if connected. Returns `true` if connected and the
   option was set, and `false` otherwise.
 
 ### `EthernetServer`
