@@ -20,7 +20,7 @@
 #include <Print.h>
 
 #include "internal/ConnectionHolder.h"
-#include "internal/DiffServ.h"
+#include "internal/IPOpts.h"
 #include "internal/PrintfChecked.h"
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
@@ -31,7 +31,7 @@ namespace network {
 class EthernetServer;
 
 class EthernetClient : public Client,
-                       public internal::DiffServ,
+                       public internal::IPOpts,
                        public internal::PrintfChecked {
  public:
   EthernetClient();

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// DiffServ.h defines an interface for DiffServ functions.
+// IPOpts.h defines an interface for getting and setting various IP options.
 // This file is part of the QNEthernet library.
 
 #pragma once
@@ -12,11 +12,11 @@ namespace qindesign {
 namespace network {
 namespace internal {
 
-// DiffServ defines some DiffServ-related methods.
-class DiffServ {
+// IPOpts defines getters and setters for various IP options.
+class IPOpts {
  public:
-  DiffServ() = default;
-  virtual ~DiffServ() = default;
+  IPOpts() = default;
+  virtual ~IPOpts() = default;
 
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)

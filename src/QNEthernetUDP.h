@@ -18,7 +18,7 @@
 #include <IPAddress.h>
 #include <Udp.h>
 
-#include "internal/DiffServ.h"
+#include "internal/IPOpts.h"
 #include "internal/PrintfChecked.h"
 #include "lwip/ip_addr.h"
 #include "lwip/udp.h"
@@ -27,7 +27,7 @@ namespace qindesign {
 namespace network {
 
 class EthernetUDP : public UDP,
-                    public internal::DiffServ,
+                    public internal::IPOpts,
                     public internal::PrintfChecked {
  public:
   EthernetUDP();
