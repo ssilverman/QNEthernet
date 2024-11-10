@@ -210,9 +210,32 @@ class EthernetUDP : public UDP,
   // packet has been received with parsePacket().
   uint8_t receivedDiffServ() const;
 
+  // Sets the TTL field in the outgoing IP header.
+  //
+  // This attempts to create the necessary internal state, if not already
+  // created, and returns whether successful. This will not be successful if the
+  // internal state could not be created.
+  //
+  // Other functions that create the internal state: begin(), beginWithReuse(),
+  // beginPacket(), and send().
+  //
+  // Note that this must be set again after calling stop().
+  //
+  // If this returns false and there was an error then errno will be set.
+  bool setOutgoingTTL(uint8_t ttl) final;
+
+  // Returns the TTL value from the outgoing IP header. This will return zero if
+  // the internal state has not yet been created.
+  uint8_t outgoingTTL() const final;
+
+  // Returns the received packet's TTL value. This is only valid if a packet has
+  // been received with parsePacket().
+  uint8_t receivedTTL() const;
+
  private:
   struct Packet final {
     uint8_t diffServ = 0;
+    uint8_t ttl = 0;
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;

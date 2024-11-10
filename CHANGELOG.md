@@ -23,6 +23,11 @@ and this project adheres to
 * Added `driver_set_link_speed(speed)` and `driver_set_link_full_duplex(flag)`.
 * Added `EthernetClass::renewDHCP()`.
 * Added `EthernetClass::interfaceName()`.
+* Added `setOutgoingTTL(ttl)` and `outgoingTTL()` functions for modifying and
+  accessing the TTL field, respectively, in the outgoing IP header, to
+  `EthernetClient` and `EthernetUDP`.
+* Added `EthernetUDP::receivedTTL()` for retrieving the TTL value of the last
+  received packet.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

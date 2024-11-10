@@ -357,6 +357,11 @@ The `Ethernet` object is the main Ethernet interface.
 * `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
   in the outgoing IP header, if connected. Returns `true` if connected and the
   option was set, and `false` otherwise.
+* `outgoingTTL()`: Returns the current value of the TTL field from the outgoing
+  IP header, or zero if not connected.
+* `setOutgoingTTL(ttl)`: Sets the TTL field in the outgoing IP header, if
+  connected. Returns `true` if connected and the option was set, and
+  `false` otherwise.
 
 ### `EthernetServer`
 
@@ -428,6 +433,11 @@ listening and the local port or _reuse_ options have changed.
 * `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
   in the outgoing IP header, setting up any necessary internal state. Returns
   whether successful.
+* `outgoingTTL()`: Returns the current value of the TTL field from the outgoing
+  IP header, or zero if the object hasn't yet been set up.
+* `receivedTTL()`: Returns the TTL value of the last received packet.
+* `setOutgoingTTL(ttl)`: Sets the TTL field in the outgoing IP header, setting
+  up any necessary internal state. Returns whether successful.
 
 #### `parsePacket()` return values
 
@@ -1921,7 +1931,8 @@ _QNEthernet_ library.
     2. W5500
 24. Straightforward to add new Ethernet frame drivers
 25. Ability to toggle Nagle's algorithm for TCP
-26. Ability to set the differentiated services (DiffServ) IP header field
+26. Ability to set some IP header fields: differentiated services (DiffServ)
+    and TTL
 
 ## Other notes
 

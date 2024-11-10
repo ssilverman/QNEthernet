@@ -29,6 +29,14 @@ class IPOpts {
   // Returns the differentiated services (DiffServ) value from the outgoing
   // IP header.
   virtual uint8_t outgoingDiffServ() const = 0;
+
+  // Sets the TTL field in the outgoing IP header.
+  //
+  // This returns whether successful.
+  virtual bool setOutgoingTTL(uint8_t ttl) = 0;
+
+  // Returns the TTL value from the outgoing IP header.
+  virtual uint8_t outgoingTTL() const = 0;
 };
 
 }  // namespace internal

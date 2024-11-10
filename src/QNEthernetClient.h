@@ -184,6 +184,17 @@ class EthernetClient : public Client,
   // header. This will return zero if not connected.
   uint8_t outgoingDiffServ() const final;
 
+  // Sets the TTL field in the outgoing IP header.
+  //
+  // This returns true if connected and the value was set, and false otherwise.
+  //
+  // Note that this must be set for each new connection.
+  bool setOutgoingTTL(uint8_t ttl) final;
+
+  // Returns the TTL value from the outgoing IP header. This will return zero if
+  // not connected.
+  uint8_t outgoingTTL() const final;
+
  private:
   // Sets up an already-connected client. If the holder is NULL then a new
   // unconnected client will be created.

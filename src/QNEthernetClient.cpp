@@ -266,6 +266,49 @@ uint8_t EthernetClient::outgoingDiffServ() const {
 #endif  // LWIP_ALTCP
 }
 
+bool EthernetClient::setOutgoingTTL(uint8_t ttl) {
+  if (conn_ == nullptr) {
+    return false;
+  }
+
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return false;
+  }
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  static_cast<tcp_pcb *>(innermost->state)->ttl = ttl;
+#else
+  state->pcb->ttl = ttl;
+#endif  // LWIP_ALTCP
+  return true;
+}
+
+uint8_t EthernetClient::outgoingTTL() const {
+  if (conn_ == nullptr) {
+    return 0;
+  }
+
+  const auto &state = conn_->state;
+  if (state == nullptr) {
+    return 0;
+  }
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  return static_cast<tcp_pcb *>(innermost->state)->ttl;
+#else
+  return state->pcb->ttl;
+#endif  // LWIP_ALTCP
+}
+
 void EthernetClient::stop() {
   close(true);
 }
