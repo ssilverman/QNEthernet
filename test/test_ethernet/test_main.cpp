@@ -933,7 +933,7 @@ static void test_udp_state() {
   udp->stop();
 }
 
-// Tests IP DiffServ value.
+// Tests IP field values for UDP.
 static void test_udp_options() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
@@ -944,6 +944,11 @@ static void test_udp_options() {
   TEST_ASSERT_EQUAL(0xa5, udp->outgoingDiffServ());
   TEST_ASSERT_TRUE(udp->setOutgoingDiffServ(0));
   TEST_ASSERT_EQUAL(0, udp->outgoingDiffServ());
+
+  TEST_ASSERT_TRUE(udp->setOutgoingTTL(UDP_TTL - 1));
+  TEST_ASSERT_EQUAL(UDP_TTL - 1, udp->outgoingTTL());
+  TEST_ASSERT_TRUE(udp->setOutgoingTTL(UDP_TTL));
+  TEST_ASSERT_EQUAL(UDP_TTL, udp->outgoingTTL());
 }
 
 static void test_udp_zero_length() {
@@ -1004,6 +1009,35 @@ static void test_udp_diffserv() {
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->receivedDiffServ(), "Expected matching DiffServ");
+
+  udp->stop();
+}
+
+// Tests the TTL field for UDP.
+static void test_udp_ttl() {
+  constexpr uint16_t kPort = 1025;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
+
+  // Create and listen
+  udp = std::make_unique<EthernetUDP>();
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
+  udp->setOutgoingTTL(UDP_TTL - 1);
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(),
+                                  "Expected correct outgoing TTL");
+
+  uint8_t b = 13;
+
+  // Send a packet
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
+                           "Expected packet send success");
+
+  // Test that we actually received the packet
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->receivedTTL(), "Expected matching TTL");
 
   udp->stop();
 }
@@ -1213,7 +1247,7 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
 }
 
-// Tests Nagle option and IP DiffServ value.
+// Tests the Nagle option and IP field values for TCP.
 static void test_client_options() {
   constexpr uint16_t kPort = 80;
 
@@ -1239,6 +1273,11 @@ static void test_client_options() {
   TEST_ASSERT_EQUAL(0xa5, client->outgoingDiffServ());
   TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0));
   TEST_ASSERT_EQUAL(0, client->outgoingDiffServ());
+
+  TEST_ASSERT_TRUE(client->setOutgoingTTL(TCP_TTL - 1));
+  TEST_ASSERT_EQUAL(TCP_TTL - 1, client->outgoingTTL());
+  TEST_ASSERT_TRUE(client->setOutgoingTTL(TCP_TTL));
+  TEST_ASSERT_EQUAL(TCP_TTL, client->outgoingTTL());
 
   client->close();
 }
@@ -1267,6 +1306,34 @@ static void test_client_diffserv() {
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
   TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, client->outgoingDiffServ(), "Expected matching DiffServ");
+
+  client->close();
+}
+
+// Tests the TTL field for TCP.
+static void test_client_ttl() {
+  constexpr uint16_t kPort = 80;
+  constexpr char kHost[]{"www.example.com"};
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  client = std::make_unique<EthernetClient>();
+  client->setConnectionTimeout(kConnectTimeout);
+
+  // Check that can't set TTL before connect
+  TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
+  TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
+  TEST_ASSERT_FALSE_MESSAGE(client->setOutgoingTTL(TCP_TTL - 1), "Expected can't set TTL");
+
+  // Connect and set TTL
+  TEST_MESSAGE("Connecting ...");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTTL(TCP_TTL - 1), "Expected can set TTL");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(TCP_TTL - 1, client->outgoingTTL(), "Expected matching TTL");
 
   client->close();
 }
@@ -1549,6 +1616,7 @@ void setup() {
   RUN_TEST(test_udp_options);
   RUN_TEST(test_udp_zero_length);
   RUN_TEST(test_udp_diffserv);
+  RUN_TEST(test_udp_ttl);
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
@@ -1557,6 +1625,7 @@ void setup() {
   RUN_TEST(test_client_addr_info);
   RUN_TEST(test_client_options);
   RUN_TEST(test_client_diffserv);
+  RUN_TEST(test_client_ttl);
   RUN_TEST(test_server_state);
   RUN_TEST(test_server_construct_int_port);
   RUN_TEST(test_server_zero_port);
