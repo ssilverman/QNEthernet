@@ -111,6 +111,9 @@ void setup() {
   }
 }
 
+static void dnsLookup();
+static void clientConnect();
+
 // Main program loop.
 void loop() {
   // Check for a network change
@@ -120,19 +123,74 @@ void loop() {
     if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
       // Do network things here, but only if there's an address and a link
 
-#if LWIP_DNS
-      IPAddress ip;
-      constexpr char kHostname[]{"dns.google"};
-      if (!DNSClient::getHostByName(kHostname, ip,
-                                    QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
-        printf("[Main] Lookup for \"%s\" failed\r\n", kHostname);
-      } else {
-        printf("[Main] Lookup \"%s\": %u.%u.%u.%u\r\n",
-               kHostname, ip[0], ip[1], ip[2], ip[3]);
-      }
-#endif  // LWIP_DNS
+      dnsLookup();
+      clientConnect();
     }
   }
+}
+
+static void dnsLookup() {
+#if LWIP_DNS
+  static constexpr char kHostname[]{"dns.google"};
+  IPAddress ip;
+  printf("[Main] Looking up \"%s\"...\r\n", kHostname);
+  if (!DNSClient::getHostByName(kHostname, ip,
+                                QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
+    printf("[Main] Lookup failed\r\n");
+  } else {
+    printf("[Main] IP address: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+  }
+#endif  // LWIP_DNS
+}
+
+#define HOST "www.example.com"
+static constexpr char kHost[]{HOST};
+static constexpr char kRequest[]{
+    "HEAD / HTTP/1.1\r\n"
+    "Host: " HOST "\r\n"
+    "Connection: close\r\n"
+    "\r\n"
+};
+#undef HOST
+static constexpr uint16_t kPort = 80;
+
+static void clientConnect() {
+  EthernetClient client;
+  printf("[Main] Connecting to %s...\r\n", kHost);
+  if (!client.connect(kHost, 80)) {
+    printf("[Main] Error connecting\r\n");
+    return;
+  }
+
+  // Send the request
+  client.writeFully(kRequest);
+  client.flush();
+
+  // Read the response
+  while (client.connected()) {
+    int avail = client.available();
+    if (avail <= 0) {
+      continue;
+    }
+    for (int i = 0; i < avail; i++) {
+      int c = client.read();
+      switch (c) {
+        case '\t':
+        case '\n':
+        case '\r':
+          printf("%c", c);
+          break;
+        default:
+          if (c < ' ' || 0x7f <= c) {
+            printf("<%02x>", c);
+          } else {
+            printf("%c", c);
+          }
+          break;
+      }
+    }
+  }
+  printf("\r\n");
 }
 
 #endif  // MAIN_TEST_PROGRAM
