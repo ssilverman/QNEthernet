@@ -1413,6 +1413,9 @@ static void test_server_accept() {
   TEST_ASSERT_TRUE_MESSAGE(client->connect(Ethernet.localIP(), kPort), "Expected connect success");
   EthernetClient c = server->accept();
   TEST_ASSERT_TRUE_MESSAGE(c, "Expected accepted connection");
+  TEST_ASSERT_EQUAL_MESSAGE(-1, c.read(), "Expected no data");
+  TEST_ASSERT_EQUAL_MESSAGE(0, c.read(nullptr, 0), "Expected no 0-length data");
+  TEST_ASSERT_EQUAL_MESSAGE(0, c.read(nullptr, 1), "Expected no 1-length data");
   c.close();
   client->close();
   server->end();
