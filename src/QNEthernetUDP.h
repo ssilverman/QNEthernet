@@ -249,8 +249,9 @@ class EthernetUDP : public UDP,
                        const ip_addr_t *addr, u16_t port);
 
   // Attempts to create the internal PCB if it's not already set. If
-  // unsuccessful, this calls Ethernet.loop().
-  void tryCreatePCB();
+  // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns
+  // false. This returns true if the PCB is set.
+  bool tryCreatePCB();
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option
   // according to the `reuse` parameter. This returns whether the attempt

@@ -148,13 +148,16 @@ bool EthernetUDP::beginWithReuse(uint16_t localPort) {
   return begin(localPort, true);
 }
 
-void EthernetUDP::tryCreatePCB() {
+bool EthernetUDP::tryCreatePCB() {
   if (pcb_ == nullptr) {
     pcb_ = udp_new_ip_type(IPADDR_TYPE_ANY);
     if (pcb_ == nullptr) {
       Ethernet.loop();  // Allow the stack to move along
+      errno = ENOMEM;
+      return false;
     }
   }
+  return true;
 }
 
 bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
@@ -164,9 +167,7 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     }
     stop();
   }
-  tryCreatePCB();
-  if (pcb_ == nullptr) {
-    errno = ENOMEM;
+  if (!tryCreatePCB()) {
     return false;
   }
 
@@ -256,9 +257,7 @@ EthernetUDP::operator bool() const {
 }
 
 bool EthernetUDP::setOutgoingDiffServ(uint8_t ds) {
-  tryCreatePCB();
-  if (pcb_ == nullptr) {
-    errno = ENOMEM;
+  if (!tryCreatePCB()) {
     return false;
   }
   pcb_->tos = ds;
@@ -273,9 +272,7 @@ uint8_t EthernetUDP::outgoingDiffServ() const {
 }
 
 bool EthernetUDP::setOutgoingTTL(uint8_t ttl) {
-  tryCreatePCB();
-  if (pcb_ == nullptr) {
-    errno = ENOMEM;
+  if (!tryCreatePCB()) {
     return false;
   }
   pcb_->ttl = ttl;
@@ -431,9 +428,7 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 }
 
 bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
-  tryCreatePCB();
-  if (pcb_ == nullptr) {
-    errno = ENOMEM;
+  if (!tryCreatePCB()) {
     return false;
   }
 
@@ -531,9 +526,7 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
     errno = ENOBUFS;
     return false;
   }
-  tryCreatePCB();
-  if (pcb_ == nullptr) {
-    errno = ENOMEM;
+  if (!tryCreatePCB()) {
     return false;
   }
 
