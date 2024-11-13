@@ -196,14 +196,18 @@ void EthernetClient::setConnectionTimeout(uint16_t timeout) {
   connTimeout_ = timeout;
 }
 
+#define GET_STATE(R)                \
+  if (conn_ == nullptr) {           \
+    return (R);                     \
+  }                                 \
+  const auto &state = conn_->state; \
+  if (state == nullptr) {           \
+    return (R);                     \
+  }
+
 bool EthernetClient::setNoDelay(bool flag) {
-  if (conn_ == nullptr) {
-    return false;
-  }
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return false;
-  }
+  GET_STATE(false)
+
   if (flag) {
     altcp_nagle_disable(state->pcb);
   } else {
@@ -213,25 +217,13 @@ bool EthernetClient::setNoDelay(bool flag) {
 }
 
 bool EthernetClient::isNoDelay() {
-  if (conn_ == nullptr) {
-    return false;
-  }
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return false;
-  }
+  GET_STATE(false)
+
   return altcp_nagle_disabled(state->pcb);
 }
 
 bool EthernetClient::setOutgoingDiffServ(uint8_t ds) {
-  if (conn_ == nullptr) {
-    return false;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return false;
-  }
+  GET_STATE(false)
 
 #if LWIP_ALTCP
   altcp_pcb *innermost = state->pcb;
@@ -246,14 +238,7 @@ bool EthernetClient::setOutgoingDiffServ(uint8_t ds) {
 }
 
 uint8_t EthernetClient::outgoingDiffServ() const {
-  if (conn_ == nullptr) {
-    return 0;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
+  GET_STATE(0)
 
 #if LWIP_ALTCP
   altcp_pcb *innermost = state->pcb;
@@ -267,14 +252,7 @@ uint8_t EthernetClient::outgoingDiffServ() const {
 }
 
 bool EthernetClient::setOutgoingTTL(uint8_t ttl) {
-  if (conn_ == nullptr) {
-    return false;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return false;
-  }
+  GET_STATE(false)
 
 #if LWIP_ALTCP
   altcp_pcb *innermost = state->pcb;
@@ -289,14 +267,7 @@ bool EthernetClient::setOutgoingTTL(uint8_t ttl) {
 }
 
 uint8_t EthernetClient::outgoingTTL() const {
-  if (conn_ == nullptr) {
-    return 0;
-  }
-
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
+  GET_STATE(0)
 
 #if LWIP_ALTCP
   altcp_pcb *innermost = state->pcb;
@@ -308,6 +279,8 @@ uint8_t EthernetClient::outgoingTTL() const {
   return state->pcb->ttl;
 #endif  // LWIP_ALTCP
 }
+
+#undef GET_STATE
 
 void EthernetClient::stop() {
   close(true);
@@ -580,31 +553,36 @@ static inline bool isAvailable(
          (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
 }
 
-int EthernetClient::available() {
-  if (conn_ == nullptr) {
-    return 0;
+#define CHECK_STATE(R)           \
+  if (conn_ == nullptr) {        \
+    return 0;                    \
+  }                              \
+  /* For non-blocking connect */ \
+  if (pendingConnect_) {         \
+    watchPendingConnect();       \
+    return 0;                    \
   }
 
-  // For non-blocking connect
-  if (pendingConnect_) {
-    watchPendingConnect();
-    return 0;
-  }
+#define GET_STATE_AND_LOOP_OR_CLOSE(R) \
+  if (!conn_->connected) {             \
+    conn_ = nullptr;                   \
+    return (R);                        \
+  }                                    \
+  const auto &state = conn_->state;    \
+  if (state == nullptr) {              \
+    return (R);                        \
+  }                                    \
+  Ethernet.loop();  /* Allow data to come in */
+
+int EthernetClient::available() {
+  CHECK_STATE(0)
 
   if (!conn_->remaining.empty()) {
     return conn_->remaining.size() - conn_->remainingPos;
   }
 
-  if (!conn_->connected) {
-    conn_ = nullptr;
-    return 0;
-  }
+  GET_STATE_AND_LOOP_OR_CLOSE(0)
 
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
-  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return 0;
@@ -614,15 +592,7 @@ int EthernetClient::available() {
 }
 
 int EthernetClient::read() {
-  if (conn_ == nullptr) {
-    return -1;
-  }
-
-  // For non-blocking connect
-  if (pendingConnect_) {
-    watchPendingConnect();
-    return -1;
-  }
+  CHECK_STATE(-1)
 
   if (!conn_->remaining.empty()) {
     int c = conn_->remaining[conn_->remainingPos++];
@@ -633,16 +603,8 @@ int EthernetClient::read() {
     return c;
   }
 
-  if (!conn_->connected) {
-    conn_ = nullptr;
-    return -1;
-  }
+  GET_STATE_AND_LOOP_OR_CLOSE(-1)
 
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return -1;
-  }
-  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
@@ -651,15 +613,7 @@ int EthernetClient::read() {
 }
 
 int EthernetClient::read(uint8_t *buf, size_t size) {
-  if (conn_ == nullptr) {
-    return 0;
-  }
-
-  // For non-blocking connect
-  if (pendingConnect_) {
-    watchPendingConnect();
-    return 0;
-  }
+  CHECK_STATE(0)
 
   auto &rem = conn_->remaining;
   if (!rem.empty()) {
@@ -678,17 +632,8 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
     return size;
   }
 
-  if (!conn_->connected) {
-    conn_ = nullptr;
-    return 0;
-  }
+  GET_STATE_AND_LOOP_OR_CLOSE(0)
 
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return 0;
-  }
-
-  Ethernet.loop();  // Allow data to come in
   if (size == 0) {
     return 0;
   }
@@ -706,36 +651,23 @@ int EthernetClient::read(uint8_t *buf, size_t size) {
 }
 
 int EthernetClient::peek() {
-  if (conn_ == nullptr) {
-    return -1;
-  }
-
-  // For non-blocking connect
-  if (pendingConnect_) {
-    watchPendingConnect();
-    return -1;
-  }
+  CHECK_STATE(-1)
 
   if (!conn_->remaining.empty()) {
     return conn_->remaining[conn_->remainingPos];
   }
 
-  if (!conn_->connected) {
-    conn_ = nullptr;
-    return -1;
-  }
+  GET_STATE_AND_LOOP_OR_CLOSE(-1)
 
-  const auto &state = conn_->state;
-  if (state == nullptr) {
-    return -1;
-  }
-  Ethernet.loop();  // Allow data to come in
   // NOTE: loop() requires a re-check of the state
   if (!isAvailable(state)) {
     return -1;
   }
   return state->buf[state->bufPos];
 }
+
+#undef CHECK_STATE
+#undef GET_STATE_AND_LOOP_OR_CLOSE
 
 #if !LWIP_ALTCP || defined(LWIP_DEBUG)
 // LWIP_DEBUG is required for altcp_dbg_get_tcp_state(), but not for
