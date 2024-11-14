@@ -15,6 +15,8 @@ and this project adheres to
 * Made `EthernetClient::isNoDelay()` `const`.
 * Disallow compilation for Teensyduino < 1.59 because there's no support for
   casting a `const IPAddress` to a `uint32_t`.
+* Made MTU and max-frame-len dynamic to support drivers that don't know the
+  values at compile time.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because
@@ -133,8 +135,6 @@ and this project adheres to
 * Renamed `driver_set_mac_address_allowed()` to
   `driver_set_incoming_mac_address_allowed()`.
 * Changed `driver_proc_input(netif)` to return a `pbuf*`.
-* Made MTU and max-frame-len dynamic to support drivers that don't know the
-  values at compile time.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
