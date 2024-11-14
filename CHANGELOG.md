@@ -17,6 +17,8 @@ and this project adheres to
 * Changed some functions to take a `void*` instead of a `uint8_t*`.
 * Changed definition of `TCP_MSS` to be based on `MTU` instead of being
   a constant.
+* Made MTU and max-frame-len dynamic to support drivers that don't know the
+  values at compile time.
 
 ### Fixed
 * Restored automatic entropy initialization when including
@@ -176,8 +178,6 @@ and this project adheres to
 * Renamed `driver_set_mac_address_allowed()` to
   `driver_set_incoming_mac_address_allowed()`.
 * Changed `driver_proc_input(netif)` to return a `pbuf*`.
-* Made MTU and max-frame-len dynamic to support drivers that don't know the
-  values at compile time.
 
 ### Fixed
 * Fixed `EthernetServer::port()` to return the system-chosen port if a zero
