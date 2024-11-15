@@ -222,6 +222,18 @@ bool MDNSClass::removeService(const char *name, const char *type,
   return true;
 }
 
+MDNSClass::operator bool() const {
+  return netif_ != nullptr;
+}
+
+bool MDNSClass::operator==(bool b) const {
+  return static_cast<bool>(*this) == b;
+}
+
+bool MDNSClass::operator!=(bool b) const {
+  return !(*this == b);
+}
+
 void MDNSClass::announce() const {
   if (!netifAdded) {
     errno = ENOTCONN;

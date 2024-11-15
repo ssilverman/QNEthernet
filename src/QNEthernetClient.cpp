@@ -192,6 +192,14 @@ EthernetClient::operator bool() {
   return true;
 }
 
+bool EthernetClient::operator==(bool b) {
+  return static_cast<bool>(*this) == b;
+}
+
+bool EthernetClient::operator!=(bool b) {
+  return !(*this == b);
+}
+
 void EthernetClient::setConnectionTimeout(uint16_t timeout) {
   connTimeout_ = timeout;
 }

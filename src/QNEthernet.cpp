@@ -752,6 +752,14 @@ EthernetClass::operator bool() const {
   return (netif_ != nullptr);
 }
 
+bool EthernetClass::operator==(bool b) const {
+  return static_cast<bool>(*this) == b;
+}
+
+bool EthernetClass::operator!=(bool b) const {
+  return !(*this == b);
+}
+
 bool EthernetClass::hostByName(const char *hostname, IPAddress &ip) {
 #if LWIP_DNS
   if (netif_ == nullptr) {
