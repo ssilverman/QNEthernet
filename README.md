@@ -140,12 +140,13 @@ For API additions beyond what the Arduino-style API provides, see:\
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples at
-  https://www.arduino.cc/reference/en/libraries/ethernet/server.accept/ and
-  https://www.arduino.cc/reference/en/libraries/ethernet/if-ethernetclient/
-  directly contradict each other with regard to what `operator bool()` means in
-  `EthernetClient`. The first example uses it as "already connected", while the
-  second uses it as "available to connect". "Connected" is the chosen concept,
-  but different from `connected()` in that it doesn't check for unread data.
+  https://docs.arduino.cc/libraries/ethernet/#Server%20Class (server.accept())
+  and https://docs.arduino.cc/libraries/ethernet/#Client%20Class
+  (if&nbsp;(EthernetClient)) directly contradict each other with regard to what
+  `operator bool()` means in `EthernetClient`. The first example uses it as
+  "already connected", while the second uses it as "available to connect".
+  "Connected" is the chosen concept, but different from `connected()` in that it
+  doesn't check for unread data.
 * The three Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address and that don't specify a subnet are deprecated because they make some
   incorrect assumptions about the subnet and gateway.
@@ -160,7 +161,7 @@ For API additions beyond what the Arduino-style API provides, see:\
 * The `EthernetUDP::flush()` function does nothing because it is ill-defined.
   Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP" APIs
   and not in the main "Arduino Ethernet" API.\
-  See: https://www.arduino.cc/reference/en/libraries/wifi/wifiudp.flush/
+  See: https://docs.arduino.cc/libraries/wifi/#UDP%20class (WiFiUDP.flush())
 * The system starts with the Teensy's actual MAC address or some default MAC
   address on other platforms. If you want to use that address with the
   MAC-taking API, you can collect it with `Ethernet.macAddress(mac)` and then
@@ -204,7 +205,7 @@ For API additions beyond what the Arduino-style API provides, see:\
 
 _QNEthernet_ defines functions that don't exist in the Arduino-style API as it's
 currently defined. (See:
-[Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/))
+[Arduino Ethernet Reference](https://docs.arduino.cc/libraries/ethernet/))
 This section documents those functions.
 
 Features:
@@ -1046,10 +1047,10 @@ Firstly, `connect()` blocks. See the [next section](#connectnowait-doesnt-wait)
 for a non-blocking way to connect.
 
 The Arduino-style API,
-[here](https://www.arduino.cc/reference/en/libraries/ethernet/client.connect/),
-used to define a set of possible `int` return values for this function, but now
-it returns a Boolean value indicating success. Note that the function signatures
-still return an `int`.
+[here](https://docs.arduino.cc/libraries/ethernet/#Client%20Class
+(client.connect())), used to define a set of possible `int` return values for
+this function, but now it returns a Boolean value indicating success. Note that
+the function signatures still return an `int`.
 
 ### Non-blocking connection functions, `connectNoWait()`
 
@@ -1095,7 +1096,8 @@ included by _QNEthernet.h_.
 References:
 1. [TCP states](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview)
 2. [consider adding `status()` in EthernetClient · Issue #52 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/52#issuecomment-1737950354)
-3. [WiFiNINA - client.status() - Arduino Reference](https://www.arduino.cc/reference/en/libraries/wifinina/client.status/)
+3. [WiFiNINA - client.status() - Arduino Reference](https://docs.arduino.cc/libraries/wifinina/#Client%20Class)
+   (client.status())
 
 ## How to use multicast
 
@@ -1976,7 +1978,7 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 ## References
 
 * [manitou48's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
-* [Arduino Ethernet Reference](https://www.arduino.cc/reference/en/libraries/ethernet/)
+* [Arduino Ethernet Reference](https://docs.arduino.cc/libraries/ethernet/)
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
 * [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
 * [lwIP testing by manitou](https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096)
