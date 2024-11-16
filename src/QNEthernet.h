@@ -308,13 +308,13 @@ class EthernetClass final {
 
   // None of the following address setting functions do anything unless the
   // system is initialized after a `begin` call
-  void setLocalIP(const IPAddress &localIP) const;
+  void setLocalIP(const IPAddress &ip) const;
   void setSubnetMask(const IPAddress &subnetMask) const;
-  void setGatewayIP(const IPAddress &gatewayIP) const;
+  void setGatewayIP(const IPAddress &ip) const;
 
   // Sets the DNS server address at index zero. This does nothing if DNS is
   // is disabled.
-  void setDNSServerIP(const IPAddress &dnsServerIP) const;
+  void setDNSServerIP(const IPAddress &ip) const;
 
   // Sets a specific DNS server IP. This does nothing if the index is not in the
   // range [0, DNSClient::maxServers()).

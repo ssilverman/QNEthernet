@@ -604,15 +604,15 @@ IPAddress EthernetClass::broadcastIP() const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setLocalIP(const IPAddress &localIP) const {
+void EthernetClass::setLocalIP(const IPAddress &ip) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t ipaddr{get_uint32(localIP)};
+  ip4_addr_t ipaddr{get_uint32(ip)};
   netif_set_ipaddr(netif_, &ipaddr);
 #else
-  LWIP_UNUSED_ARG(localIP);
+  LWIP_UNUSED_ARG(ip);
 #endif  // LWIP_IPV4
 }
 
@@ -628,20 +628,20 @@ void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setGatewayIP(const IPAddress &gatewayIP) const {
+void EthernetClass::setGatewayIP(const IPAddress &ip) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t gw{get_uint32(gatewayIP)};
+  ip4_addr_t gw{get_uint32(ip)};
   netif_set_gw(netif_, &gw);
 #else
-  LWIP_UNUSED_ARG(gatewayIP);
+  LWIP_UNUSED_ARG(ip);
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setDNSServerIP(const IPAddress &dnsServerIP) const {
-  setDNSServerIP(0, dnsServerIP);
+void EthernetClass::setDNSServerIP(const IPAddress &ip) const {
+  setDNSServerIP(0, ip);
 }
 
 void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
