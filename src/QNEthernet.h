@@ -294,7 +294,8 @@ class EthernetClass final {
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
 
-  // Returns INADDR_NONE if DNS is disabled.
+  // Returns the DNS server address at index zero. This returns INADDR_NONE if
+  // DNS is disabled.
   IPAddress dnsServerIP() const;
 
   // Returns the DNS server IP at the specified index. This returns INADDR_NONE
@@ -311,7 +312,8 @@ class EthernetClass final {
   void setSubnetMask(const IPAddress &subnetMask) const;
   void setGatewayIP(const IPAddress &gatewayIP) const;
 
-  // Does nothing if DNS is disabled.
+  // Sets the DNS server address at index zero. This does nothing if DNS is
+  // is disabled.
   void setDNSServerIP(const IPAddress &dnsServerIP) const;
 
   // Sets a specific DNS server IP. This does nothing if the index is not in the
