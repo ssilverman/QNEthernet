@@ -94,7 +94,8 @@ class EthernetClient : public Client,
   // Closes the sending side of this connection.
   void closeOutput();
 
-  // Kills the connection without going through the TCP close process.
+  // Kills the connection without going through the TCP close process. This
+  // sends a RST segment to the remote host.
   void abort();
 
   uint16_t localPort();
