@@ -596,7 +596,7 @@ IPAddress EthernetClass::dnsServerIP(int index) const {
 IPAddress EthernetClass::broadcastIP() const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
-    return INADDR_NONE;
+    return IPAddress{UINT32_MAX};
   }
   return ip4_addr_get_u32(netif_ip4_addr(netif_)) |
          ~ip4_addr_get_u32(netif_ip4_netmask(netif_));

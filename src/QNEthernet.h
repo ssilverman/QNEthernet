@@ -296,6 +296,8 @@ class EthernetClass final {
 
   // Returns the broadcast IP address. This is equal to:
   // localIP | ~subnetMask
+  //
+  // This will return 255.255.255.255 if Ethernet is not initialized.
   IPAddress broadcastIP() const;
 
   // None of the following address setting functions do anything unless the

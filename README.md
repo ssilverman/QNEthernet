@@ -238,7 +238,8 @@ The `Ethernet` object is the main Ethernet interface.
   `setDNSServerIP(ip)` before the three-parameter version.
 
 * `broadcastIP()`: Returns the broadcast IP address associated with the current
-  local IP and subnet mask.
+  local IP and subnet mask. If Ethernet is not initialized then this will return
+  255.255.255.255.
 * `dnsServerIP(index)`: Gets a specific DNS server IP address. This returns
   `INADDR_NONE` if the index not in the exclusive range,
   [0, `DNSClient::maxServers()`).
