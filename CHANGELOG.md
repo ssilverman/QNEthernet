@@ -58,7 +58,7 @@ and this project adheres to
   of the IP address, netmask, and gateway.
 
 ### Removed
-* Removed `EtheretClass::isLinkStateDetectable()` in favour of the
+* Removed `EthernetClass::isLinkStateDetectable()` in favour of the
   driver capabilities.
 
 ### Fixed
