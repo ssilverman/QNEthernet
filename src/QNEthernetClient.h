@@ -74,10 +74,6 @@ class EthernetClient : public Client,
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
 
-  // Comparison operators for bool
-  bool operator==(bool b);
-  bool operator!=(bool b);
-
   void setConnectionTimeout(uint16_t timeout);
 
   // Returns the current timeout value.

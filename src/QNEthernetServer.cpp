@@ -116,14 +116,6 @@ EthernetServer::operator bool() const {
   return listeningPort_ > 0;
 }
 
-bool EthernetServer::operator==(bool b) const {
-  return static_cast<bool>(*this) == b;
-}
-
-bool EthernetServer::operator!=(bool b) const {
-  return !(*this == b);
-}
-
 size_t EthernetServer::write(uint8_t b) {
   if (listeningPort_ == 0) {
     return 1;

@@ -111,10 +111,6 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // Returns whether the server is listening on a port.
   explicit operator bool() const;
 
-  // Comparison operators for bool
-  bool operator==(bool b) const;
-  bool operator!=(bool b) const;
-
  private:
   bool begin(uint16_t port, bool reuse);
 

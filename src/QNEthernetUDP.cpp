@@ -256,14 +256,6 @@ EthernetUDP::operator bool() const {
   return listening_;
 }
 
-bool EthernetUDP::operator==(bool b) const {
-  return static_cast<bool>(*this) == b;
-}
-
-bool EthernetUDP::operator!=(bool b) const {
-  return !(*this == b);
-}
-
 bool EthernetUDP::setOutgoingDiffServ(uint8_t ds) {
   if (!tryCreatePCB()) {
     return false;

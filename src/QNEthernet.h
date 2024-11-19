@@ -412,10 +412,6 @@ class EthernetClass final {
   // Tests if Ethernet is initialized.
   explicit operator bool() const;
 
-  // Comparison operators for bool
-  bool operator==(bool b) const;
-  bool operator!=(bool b) const;
-
   // Convenience function that tries to resolve the given hostname into an IP
   // address. This returns whether successful.
   //

@@ -184,10 +184,6 @@ class EthernetUDP : public UDP,
   // Returns whether the socket is listening.
   explicit operator bool() const;
 
-  // Comparison operators for bool
-  bool operator==(bool b) const;
-  bool operator!=(bool b) const;
-
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)
   // value, and the bottom 2 bits are the explicit congestion notification

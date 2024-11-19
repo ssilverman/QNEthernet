@@ -28,8 +28,6 @@ and this project adheres to
   `EthernetClient` and `EthernetUDP`.
 * Added `EthernetUDP::receivedTTL()` for retrieving the TTL value of the last
   received packet.
-* Added Boolean compare operators to `EthernetClass`, `EthernetClient`,
-  `EthernetServer`, `EthernetUDP`, and `MDNSClass`.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

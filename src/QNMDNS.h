@@ -121,11 +121,9 @@ class MDNSClass final {
                      const char *protocol, uint16_t port);
 
   // Returns whether mDNS has been started.
-  explicit operator bool() const;
-
-  // Comparison operators for bool
-  bool operator==(bool b) const;
-  bool operator!=(bool b) const;
+  explicit operator bool() const {
+    return netif_ != nullptr;
+  }
 
   // The following functions are for periodically re-announcing the services.
   // They are not normally needed.
