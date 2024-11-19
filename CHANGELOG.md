@@ -66,6 +66,7 @@ and this project adheres to
 ### Fixed
 * Fixed iperf v2 tests by commenting out per-block settings compare.
 * Fixed restarting the netif by also bringing the link down.
+* Fixed to not set the DNS IP if the `begin` argument is `INADDR_NONE`.
 
 ## [0.29.1]
 

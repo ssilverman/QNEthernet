@@ -345,13 +345,14 @@ void test_static_ip() {
   Ethernet.setLocalIP(kStaticIP);
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP after set static");
 
+  Ethernet.setDNSServerIP(kGateway);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, INADDR_NONE, INADDR_NONE),
                            "Expected start success (2)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (2)");
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == INADDR_NONE, "Expected empty subnet mask (2)");
   TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == INADDR_NONE, "Expected unset gateway (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected gateway as DNS (2)");
 
   // With a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway),
