@@ -28,6 +28,7 @@ and this project adheres to
   `EthernetClient` and `EthernetUDP`.
 * Added `EthernetUDP::receivedTTL()` for retrieving the TTL value of the last
   received packet.
+* Added "Compatibility with other APIs" section to the README.
 
 ### Changed
 * Separated setting the MAC address from driver initialization.

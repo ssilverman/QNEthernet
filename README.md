@@ -83,10 +83,11 @@ lwIP release.
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
 23. [Complete list of features](#complete-list-of-features)
-24. [Other notes](#other-notes)
-25. [To do](#to-do)
-26. [Code style](#code-style)
-27. [References](#references)
+24. [Compatibility with other APIs](#compatibility-with-other-apis)
+25. [Other notes](#other-notes)
+26. [To do](#to-do)
+27. [Code style](#code-style)
+28. [References](#references)
 
 ## Introduction
 
@@ -1935,6 +1936,55 @@ _QNEthernet_ library.
 25. Ability to toggle Nagle's algorithm for TCP
 26. Ability to set some IP header fields: differentiated services (DiffServ)
     and TTL
+
+## Compatibility with other APIs
+
+This section describes compatibility with other Ethernet APIs. The term
+"API unifictation effort" will be used to describe the information from here:
+[Guide for Arduino networking library developers](https://github.com/Networking-for-Arduino/Arduino-Networking-API/blob/6370554129b4728bd1deb7ca5d429105c54d8bba/ArduinoNetAPIDev.md)
+
+What follows are explanatory notes for each differing API function from
+that link.
+
+`uint8_t *Ethernet.macAddress(uint8_t * mac)`:-\
+For MAC address retrieval, see `uint8_t *Ethernet.macAddress()` and
+`void Ethernet.macAddress(uint8_t *mac)`. This form isn't implemented because
+the return value is ambiguous when the input is NULL.
+
+`Ethernet.begin(...)` functions:-\
+Except for the Arduino-defined `begin(mac, timeout)` function, the `begin`
+functions are all non-blocking. Regarding parameter order, the "ip, subnet,
+gateway, dns" order is more sensible than the "ip, dns, gateway, subnet" order.
+Additionally, the default values for the "ip, dns, gateway, subnet" order don't
+work well except for very specific networks.
+
+`Ethernet.config(address, dns, gateway, mask)`:-\
+There's some ambiguity on how this function is defined with relation to `begin`.
+
+DNS functions:-\
+The Arduino API defines `Ethernet.dnsServerIP()` and
+`Ethernet.setDnsServerIP(dns)`. The _QNEthernet_ library defines `dnsServerIP()`
+and `setDNSServerIP(dns)` for more consistent naming. There are also versions
+that take an index parameter for retrieving and setting different DNS addresses.
+The unification effort describes inconsistent `setDNS(dns1, dns2)` and
+`dnsIP(index)` functions. These are inconsistent in two ways: the names, and the
+imbalance between only allowing two to be set but any number to be retrieved. So
+as not to add more variants, it was chosen to keep the original names.
+
+`EthernetClient::stop()`:-\
+The Arduino version, while it doesn't explicitly say that the function waits for
+disconnect, implies that it does in the description for
+`setConnectionTimeout(ms)`. The _QNEthernet_ library version waits for a timeout
+and provides a `close()` function that does not wait. There is also an `abort()`
+function that aborts the connection with a RST segment.
+
+`EthernetClient::status()`:-\
+Returns a value of type `enum tcp_state`, an lwIP type.
+
+`EthernetUDP::parsePacket()`:-\
+The _QNEthernet_ library version returns -1 for no packet available and not zero
+because empty UDP packets exist. If zero is returned when no packet is
+available then empty packets could not be detected.
 
 ## Other notes
 
