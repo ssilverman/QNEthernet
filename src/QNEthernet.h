@@ -192,8 +192,8 @@ class EthernetClass final {
   // one was acquired. The timeout is in milliseconds.
   bool waitForLocalIP(uint32_t timeout) const;
 
-  // Starts Ethernet with the given address configuration. This calls
-  // `begin(ipaddr, netmask, gw, INADDR_NONE)`.
+  // Starts Ethernet with the given address configuration. This is similar to
+  // `begin(ipaddr, netmask, gw, dns)`, but doesn't set the DNS address.
   bool begin(const IPAddress &ipaddr,
              const IPAddress &netmask,
              const IPAddress &gateway);
@@ -204,9 +204,6 @@ class EthernetClass final {
   //
   // This returns whether bringing up the interface, and possibly the DHCP
   // client, was successful.
-  //
-  // This only sets the DNS server if `dns` is not INADDR_NONE; there is no
-  // change to the DNS server if `dns` is INADDR_NONE.
   //
   // This also retrieves the system MAC address from the driver if it has not
   // yet been accessed.
@@ -434,6 +431,14 @@ class EthernetClass final {
   // restart the netif, including bringing the link and interface down.
   [[nodiscard]]
   bool start();
+
+  // Starts Ethernet with the given address configuration. If the IP address is
+  // INADDR_NONE then DHCP will be started. This sets the DNS address if the
+  // argument is not NULL.
+  bool begin(const IPAddress &ipaddr,
+             const IPAddress &netmask,
+             const IPAddress &gateway,
+             const IPAddress *dns);
 
   // Driver configuration
   DriverCapabilities driverCapabilities_;

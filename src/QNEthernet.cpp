@@ -207,13 +207,20 @@ bool EthernetClass::begin() {
 bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway) {
-  return begin(ip, mask, gateway, INADDR_NONE);
+  return begin(ip, mask, gateway, (const IPAddress *){nullptr});
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
+  return begin(ip, mask, gateway, &dns);
+}
+
+bool EthernetClass::begin(const IPAddress &ip,
+                          const IPAddress &mask,
+                          const IPAddress &gateway,
+                          const IPAddress *dns) {
 #if LWIP_IPV4
   ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
   ip4_addr_t netmask{static_cast<uint32_t>(mask)};
@@ -241,8 +248,8 @@ bool EthernetClass::begin(const IPAddress &ip,
 
   // Set this before setting the address so any address listeners will see
   // a valid DNS server
-  if (dns != INADDR_NONE) {
-    setDNSServerIP(dns);
+  if (dns != nullptr) {
+    setDNSServerIP(*dns);
   }
 
 #if LWIP_IPV4

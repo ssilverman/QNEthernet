@@ -56,6 +56,7 @@ and this project adheres to
   in `MDNSClass::begin(hostname)`.
 * DHCP is started when just the IP address is the "any" address instead of all
   of the IP address, netmask, and gateway.
+* `begin(ip, mask, gateway, dns)` now always sets the DNS address.
 
 ### Removed
 * Removed `EthernetClass::isLinkStateDetectable()` in favour of the

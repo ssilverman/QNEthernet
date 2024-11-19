@@ -352,7 +352,7 @@ void test_static_ip() {
   TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
   TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == INADDR_NONE, "Expected empty subnet mask (2)");
   TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == INADDR_NONE, "Expected unset gateway (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected gateway as DNS (2)");
+  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected DNS not modified(2)");
 
   // With a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway),
