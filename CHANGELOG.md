@@ -54,6 +54,8 @@ and this project adheres to
   even if it's zero.
 * Use rename instead of end-then-start when the netif has already been added,
   in `MDNSClass::begin(hostname)`.
+* DHCP is started when just the IP address is the "any" address instead of all
+  of the IP address, netmask, and gateway.
 
 ### Removed
 * Removed `EtheretClass::isLinkStateDetectable()` in favour of the

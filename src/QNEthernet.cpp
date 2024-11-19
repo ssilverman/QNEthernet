@@ -223,9 +223,7 @@ bool EthernetClass::begin(const IPAddress &ip,
   if (netif_ != nullptr) {
 #if LWIP_DHCP
     // Stop any running DHCP client if we don't need one
-    bool isDHCP = (ip == INADDR_NONE) &&
-                  (mask == INADDR_NONE) &&
-                  (gateway == INADDR_NONE);
+    bool isDHCP = ip4_addr_isany_val(ipaddr);
     if (dhcpActive_ && !isDHCP) {
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
@@ -258,13 +256,8 @@ bool EthernetClass::maybeStartDHCP() {
   // otherwise start DHCP
 #if LWIP_DHCP
   bool retval = true;
-  const ip4_addr_t *ipaddr  = netif_ip4_addr(netif_);
-  const ip4_addr_t *netmask = netif_ip4_netmask(netif_);
-  const ip4_addr_t *gw      = netif_ip4_gw(netif_);
-
-  if (!ip4_addr_isany(ipaddr) ||
-      !ip4_addr_isany(netmask) ||
-      !ip4_addr_isany(gw)) {
+  bool isDHCP = ip4_addr_isany(netif_ip4_addr(netif_));
+  if (!isDHCP) {
     // Don't send a DHCP INFORM message because we don't want the other
     // parameters potentially sent by the server; it also seems to interfere
     // with any first subsequent DHCP requests
