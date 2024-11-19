@@ -215,10 +215,9 @@ bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &gateway,
                           const IPAddress &dns) {
 #if LWIP_IPV4
-  // NOTE: The uint32_t cast doesn't currently work on const IPAddress
-  ip4_addr_t ipaddr{get_uint32(ip)};
-  ip4_addr_t netmask{get_uint32(mask)};
-  ip4_addr_t gw{get_uint32(gateway)};
+  ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
+  ip4_addr_t netmask{static_cast<uint32_t>(mask)};
+  ip4_addr_t gw{static_cast<uint32_t>(gateway)};
 
   if (netif_ != nullptr) {
 #if LWIP_DHCP
@@ -602,7 +601,7 @@ void EthernetClass::setLocalIP(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t ipaddr{get_uint32(ip)};
+  ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
   netif_set_ipaddr(netif_, &ipaddr);
 #else
   LWIP_UNUSED_ARG(ip);
@@ -614,7 +613,7 @@ void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t netmask{get_uint32(subnetMask)};
+  ip4_addr_t netmask{static_cast<uint32_t>(subnetMask)};
   netif_set_netmask(netif_, &netmask);
 #else
   LWIP_UNUSED_ARG(subnetMask);
@@ -626,7 +625,7 @@ void EthernetClass::setGatewayIP(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t gw{get_uint32(ip)};
+  ip4_addr_t gw{static_cast<uint32_t>(ip)};
   netif_set_gw(netif_, &gw);
 #else
   LWIP_UNUSED_ARG(ip);
@@ -666,7 +665,7 @@ bool EthernetClass::joinGroup(const IPAddress &ip) const {
     return false;
   }
 
-  ip4_addr_t groupaddr{get_uint32(ip)};
+  ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
   err_t err;
   if ((err = igmp_joingroup_netif(netif_, &groupaddr)) != ERR_OK) {
     errno = err_to_errno(err);
@@ -685,7 +684,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
     return false;
   }
 
-  ip4_addr_t groupaddr{get_uint32(ip)};
+  ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
   err_t err;
   if ((err = igmp_leavegroup_netif(netif_, &groupaddr)) != ERR_OK) {
     errno = err_to_errno(err);

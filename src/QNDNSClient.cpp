@@ -41,7 +41,7 @@ bool DNSClient::setServer(int index, const IPAddress &ip) {
   if (index < 0 || maxServers() <= index) {
     return false;
   }
-  ip_addr_t addr IPADDR4_INIT(get_uint32(ip));
+  ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
   dns_setserver(index, &addr);
   return true;
 #else

@@ -59,7 +59,7 @@ EthernetClient::~EthernetClient() {
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return connect(&ipaddr, port, true);
 #else
   LWIP_UNUSED_ARG(ip);
@@ -86,7 +86,7 @@ int EthernetClient::connect(const char *host, uint16_t port) {
 
 bool EthernetClient::connectNoWait(const IPAddress &ip, uint16_t port) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return connect(&ipaddr, port, false);
 #else
   LWIP_UNUSED_ARG(ip);

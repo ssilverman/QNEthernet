@@ -60,6 +60,8 @@ and this project adheres to
 ### Removed
 * Removed `EthernetClass::isLinkStateDetectable()` in favour of the
   driver capabilities.
+* Removed `get_uint32(ip)` utility function because a `static_cast<uint32_t>()`
+  is sufficient.
 
 ### Fixed
 * Fixed iperf v2 tests by commenting out per-block settings compare.

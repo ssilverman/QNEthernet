@@ -405,7 +405,7 @@ uint8_t EthernetUDP::receivedTTL() const {
 
 int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return beginPacket(&ipaddr, port);
 #else
   return false;
@@ -495,7 +495,7 @@ int EthernetUDP::endPacket() {
 bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
                        const uint8_t *data, size_t len) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(get_uint32(ip));
+  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return send(&ipaddr, port, data, len);
 #else
   return false;

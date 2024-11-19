@@ -26,26 +26,6 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *ip) {
   return IPADDR_ANY;
 }
 
-#if defined(TEENSYDUINO) && TEENSYDUINO <= 158
-bool operator==(const IPAddress &a, const IPAddress &b) {
-  return (const_cast<IPAddress &>(a) == b);
-}
-
-bool operator!=(const IPAddress &a, const IPAddress &b) {
-  return !(const_cast<IPAddress &>(a) == b);
-}
-#endif  // defined(TEENSYDUINO) && TEENSYDUINO <= 158
-
-uint32_t get_uint32(const IPAddress &ip) {
-#if defined(TEENSYDUINO) && TEENSYDUINO <= 158
-  // The uint32_t operator doesn't work with const IPAddress, hence
-  // the const_cast
-  return static_cast<uint32_t>(const_cast<IPAddress &>(ip));
-#else
-  return static_cast<uint32_t>(ip);
-#endif  // defined(TEENSYDUINO) && TEENSYDUINO <= 158
-}
-
 #endif  // LWIP_IPV4
 
 }  // network
