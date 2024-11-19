@@ -105,8 +105,8 @@ class EthernetClass final {
     return driverCapabilities_;
   }
 
-  // Gets the interface name. This will return an empty string if Ethernet has
-  // not been initialized.
+  // Gets the interface name. This will return an empty string if Ethernet is
+  // not initialized.
   const char *interfaceName() const {
     return ifName_;
   }
