@@ -321,10 +321,15 @@ void EthernetClient::close(bool wait) {
     }
 
     if (state != nullptr) {
-      if (altcp_close(state->pcb) != ERR_OK) {
+      auto err = altcp_close(state->pcb);  // In altcp, removes TCP callbacks
+      if (err != ERR_OK) {
         altcp_abort(state->pcb);
-#if !LWIP_ALTCP
-      } else if (wait) {
+      }
+#if LWIP_ALTCP
+      conn_->connected = false;
+      state = nullptr;
+#else
+      if (err == ERR_OK && wait) {
         uint32_t t = sys_now();
         // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
@@ -335,8 +340,8 @@ void EthernetClient::close(bool wait) {
           Ethernet.loop();
 #endif  // !QNETHERNET_DO_LOOP_IN_YIELD
         }
-#endif  // !LWIP_ALTCP
       }
+#endif  // LWIP_ALTCP
     }
   }
 

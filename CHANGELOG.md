@@ -70,6 +70,7 @@ and this project adheres to
 * Fixed iperf v2 tests by commenting out per-block settings compare.
 * Fixed restarting the netif by also bringing the link down.
 * Fixed to not set the DNS IP if the `begin` argument is `INADDR_NONE`.
+* Fixed a bug related to closing a TCP socket when using altcp.
 
 ## [0.29.1]
 
