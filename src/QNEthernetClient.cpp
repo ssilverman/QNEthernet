@@ -326,6 +326,7 @@ void EthernetClient::close(bool wait) {
         altcp_abort(state->pcb);
       }
 #if LWIP_ALTCP
+      // Altcp sockets don't seem to receive close or error events
       conn_->connected = false;
       state = nullptr;
 #else
