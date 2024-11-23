@@ -325,9 +325,9 @@ void EthernetClient::close(bool wait) {
       if (err != ERR_OK) {
         altcp_abort(state->pcb);
       }
-      state = nullptr;
 #if LWIP_ALTCP
       conn_->connected = false;
+      state = nullptr;
 #else
       if (err == ERR_OK && wait) {
         uint32_t t = sys_now();
