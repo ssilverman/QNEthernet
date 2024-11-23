@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Fixed wait-for-close for non-altcp connections.
+
 ## [0.30.0]
 
 ### Added
