@@ -199,6 +199,7 @@ static void test_set_mac() {
   TEST_ASSERT_EQUAL_MESSAGE(1, downCount, "Expected matching down count");
 }
 
+// Tests getting the MAC address.
 static void test_get_mac() {
   TEST_ASSERT_NOT_NULL_MESSAGE(Ethernet.macAddress(), "Expected not NULL");
 
@@ -597,6 +598,7 @@ static void test_link_listener() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
 }
 
+// Tests getting the link state.
 static void test_setLinkState() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 
@@ -890,6 +892,7 @@ static void test_udp_receive_queueing() {
   udp->stop();
 }
 
+// Tests the UDP receive timestamp.
 static void test_udp_receive_timestamp() {
   constexpr uint16_t kPort = 1025;
 
@@ -960,6 +963,7 @@ static void test_udp_options() {
   TEST_ASSERT_EQUAL(UDP_TTL, udp->outgoingTTL());
 }
 
+// Tests zero-length UDP packets.
 static void test_udp_zero_length() {
   constexpr uint16_t kPort = 1025;
 
@@ -993,6 +997,7 @@ static void test_udp_zero_length() {
   udp->stop();
 }
 
+// Tests the DiffServ field for UDP.
 static void test_udp_diffserv() {
   constexpr uint16_t kPort = 1025;
   constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
@@ -1051,6 +1056,7 @@ static void test_udp_ttl() {
   udp->stop();
 }
 
+// Tests a TCP client.
 static void test_client() {
 #define HOST "www.example.com"
   constexpr char kHost[]{HOST};
@@ -1105,6 +1111,7 @@ static void test_client() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
 }
 
+// Tests writing single bytes to a TCP client.
 static void test_client_write_single_bytes() {
 #define HOST "www.example.com"
   constexpr char kHost[]{HOST};
@@ -1156,6 +1163,7 @@ static void test_client_write_single_bytes() {
   TEST_MESSAGE(format("Read and print response time: %" PRIu32 "ms", millis() - t).data());
 }
 
+// Tests connecting TCP with no wait.
 static void test_client_connectNoWait() {
   constexpr uint16_t kPort = 80;
 
@@ -1178,7 +1186,8 @@ static void test_client_connectNoWait() {
   client->close();
 }
 
-static void test_client_timeout() {
+// Tests TCP connection timeout.
+static void test_client_connect_timeout() {
   constexpr uint16_t kPort = 1025;
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
@@ -1214,6 +1223,7 @@ static void test_client_state() {
                             "Expected default TCP max. sockets");
 }
 
+// Tests remote address info.
 static void test_client_addr_info() {
   constexpr char kHost[]{"www.example.com"};
   constexpr uint16_t kPort = 80;
@@ -1291,6 +1301,7 @@ static void test_client_options() {
   client->close();
 }
 
+// Tests the DiffServ field for TCP.
 static void test_client_diffserv() {
   constexpr uint16_t kPort = 80;
   constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
@@ -1632,7 +1643,7 @@ void setup() {
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
-  RUN_TEST(test_client_timeout);
+  RUN_TEST(test_client_connect_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_client_addr_info);
   RUN_TEST(test_client_options);
