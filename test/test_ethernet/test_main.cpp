@@ -1266,6 +1266,35 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
 }
 
+// Tests waiting for client disconnect.
+static void test_client_wait_for_disconnect() {
+  constexpr char kHost[]{"www.example.com"};
+  constexpr uint16_t kPort = 80;
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  client = std::make_unique<EthernetClient>();
+
+  // Connect and check address info
+  TEST_MESSAGE("Connecting...");
+  client->setConnectionTimeout(kConnectTimeout);
+  uint32_t t = millis();
+  TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
+  t = millis() - t;
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
+  TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", t).data());
+
+  TEST_MESSAGE("Stopping client...");
+  t = millis();
+  client->stop();
+  t = millis() - t;
+  TEST_ASSERT_MESSAGE(!static_cast<bool>(*client) && t < kConnectTimeout,
+                      "Expected disconnected before timeout");
+  TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
+}
+
 // Tests the Nagle option and IP field values for TCP.
 static void test_client_options() {
   constexpr uint16_t kPort = 80;
@@ -1646,6 +1675,7 @@ void setup() {
   RUN_TEST(test_client_connect_timeout);
   RUN_TEST(test_client_state);
   RUN_TEST(test_client_addr_info);
+  RUN_TEST(test_client_wait_for_disconnect);
   RUN_TEST(test_client_options);
   RUN_TEST(test_client_diffserv);
   RUN_TEST(test_client_ttl);
