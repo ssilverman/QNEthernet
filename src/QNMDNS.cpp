@@ -177,16 +177,14 @@ bool MDNSClass::addService(const char *name, const char *type,
     return false;
   }
 
-  Service service{true, name, type, proto, port, getTXTFunc};
-  slots_[slot] = service;
+  slots_[slot].set(true, name, type, proto, port, getTXTFunc);
   return true;
 }
 
 int MDNSClass::findService(const char *name, const char *type,
                            const char *protocol, uint16_t port) {
-  Service service{true, name, type, toProto(protocol), port, nullptr};
   for (int i = 0; i < maxServices(); i++) {
-    if (slots_[i] == service) {
+    if (slots_[i].equals(true, name, type, toProto(protocol), port)) {
       return i;
     }
   }
@@ -234,30 +232,43 @@ void MDNSClass::announce() const {
   mdns_resp_announce(netif_);
 }
 
-bool MDNSClass::Service::operator==(const Service &other) const {
-  if (!valid || !other.valid) {
+MDNSClass::Service::Service() {
+  reset();
+}
+
+void MDNSClass::Service::set(bool valid, const char *name, const char *type,
+                             enum mdns_sd_proto proto, uint16_t port,
+                             std::vector<String> (*getTXTFunc)(void)) {
+  valid_ = valid;
+  std::strncpy(name_, name, sizeof(name_) - 1);
+  std::strncpy(type_, type, sizeof(type_) - 1);
+  proto_ = proto;
+  port_ = port;
+  getTXTFunc_ = getTXTFunc;
+}
+
+bool MDNSClass::Service::equals(bool valid, const char *name, const char *type,
+                                enum mdns_sd_proto proto, uint16_t port) const {
+  if (!valid_ || !valid) {
     // Invalid services compare unequal
     return false;
   }
-  if (this == &other) {
-    return true;
-  }
 
   // Don't compare the functions
-  return (name == other.name) &&
-         (type == other.type) &&
-         (proto == other.proto) &&
-         (port == other.port);
+  return (std::strncmp(name_, name, sizeof(name_)) == 0) &&
+         (std::strncmp(type_, type, sizeof(type_)) == 0) &&
+         (proto_ == proto) &&
+         (port_ == port);
 }
 
 // Resets this service to be invalid and empty.
 void MDNSClass::Service::reset() {
-  valid = false;
-  name = "";
-  type = "";
-  proto = DNSSD_PROTO_UDP;
-  port = 0;
-  getTXTFunc = nullptr;
+  valid_ = false;
+  name_[0] = '\0';
+  type_[0] = '\0';
+  proto_ = DNSSD_PROTO_UDP;
+  port_ = 0;
+  getTXTFunc_ = nullptr;
 }
 
 }  // namespace network

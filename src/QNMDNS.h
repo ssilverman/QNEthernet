@@ -133,19 +133,27 @@ class MDNSClass final {
   void announce() const;
 
  private:
-  struct Service final {
-    // Compares this object to another. This doesn't compare the functions.
-    bool operator==(const Service &other) const;
+  class Service final {
+   public:
+    Service();
+    ~Service() = default;
+
+    void set(bool valid, const char *name, const char *type,
+             enum mdns_sd_proto proto, uint16_t port,
+             std::vector<String> (*getTXTFunc)(void));
+    bool equals(bool valid, const char *name, const char *type,
+                enum mdns_sd_proto proto, uint16_t port) const;
 
     // Resets this service to be invalid and empty.
     void reset();
 
-    bool valid = false;
-    String name;
-    String type;
-    enum mdns_sd_proto proto;
-    uint16_t port;
-    std::vector<String> (*getTXTFunc)(void);
+   private:
+    bool valid_;
+    char name_[MDNS_LABEL_MAXLEN + 1];
+    char type_[MDNS_LABEL_MAXLEN + 1];
+    enum mdns_sd_proto proto_;
+    uint16_t port_;
+    std::vector<String> (*getTXTFunc_)(void);
   };
 
   MDNSClass();

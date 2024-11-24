@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Remove internal uses of `String` from `MDNSClass` and replace them with
+  char arrays.
+
 ## [0.30.1]
 
 ### Fixed
