@@ -92,7 +92,7 @@ class MDNSClass final {
   //
   // If this returns false and there was an error then errno will be set.
   bool addService(const char *type, const char *protocol, uint16_t port,
-                  std::vector<String> (*getTXTFunc)(void));
+                  std::vector<String> (*getTXTFunc)());
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
   // "_tcp". The strings should have a "_" prefix.
@@ -106,7 +106,7 @@ class MDNSClass final {
   // If this returns false and there was an error then errno will be set.
   bool addService(const char *name, const char *type,
                   const char *protocol, uint16_t port,
-                  std::vector<String> (*getTXTFunc)(void));
+                  std::vector<String> (*getTXTFunc)());
 
   // Removes a service. The host name is used as the service name. This will
   // return whether the service was removed.
@@ -140,7 +140,7 @@ class MDNSClass final {
 
     void set(bool valid, const char *name, const char *type,
              enum mdns_sd_proto proto, uint16_t port,
-             std::vector<String> (*getTXTFunc)(void));
+             std::vector<String> (*getTXTFunc)());
     bool equals(bool valid, const char *name, const char *type,
                 enum mdns_sd_proto proto, uint16_t port) const;
 
@@ -153,7 +153,7 @@ class MDNSClass final {
     char type_[MDNS_LABEL_MAXLEN + 1];
     enum mdns_sd_proto proto_;
     uint16_t port_;
-    std::vector<String> (*getTXTFunc_)(void);
+    std::vector<String> (*getTXTFunc_)();
   };
 
   MDNSClass();

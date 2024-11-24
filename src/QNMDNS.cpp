@@ -148,13 +148,13 @@ bool MDNSClass::addService(const char *name, const char *type,
 
 bool MDNSClass::addService(const char *type, const char *protocol,
                            uint16_t port,
-                           std::vector<String> (*getTXTFunc)(void)) {
+                           std::vector<String> (*getTXTFunc)()) {
   return addService(hostname_, type, protocol, port, getTXTFunc);
 }
 
 bool MDNSClass::addService(const char *name, const char *type,
                            const char *protocol, uint16_t port,
-                           std::vector<String> (*getTXTFunc)(void)) {
+                           std::vector<String> (*getTXTFunc)()) {
   if (!netifAdded) {
     // Return false for no netif
     errno = ENOTCONN;
@@ -238,7 +238,7 @@ MDNSClass::Service::Service() {
 
 void MDNSClass::Service::set(bool valid, const char *name, const char *type,
                              enum mdns_sd_proto proto, uint16_t port,
-                             std::vector<String> (*getTXTFunc)(void)) {
+                             std::vector<String> (*getTXTFunc)()) {
   valid_ = valid;
   std::strncpy(name_, name, sizeof(name_) - 1);
   std::strncpy(type_, type, sizeof(type_) - 1);
