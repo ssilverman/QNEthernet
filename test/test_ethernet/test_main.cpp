@@ -114,7 +114,7 @@ void tearDown() {
 
 // Tests version functions.
 static void test_version() {
-  TEST_ASSERT_NOT_NULL(Ethernet.libraryVersion());
+  TEST_ASSERT_NOT_NULL_MESSAGE(Ethernet.libraryVersion(), "Expected non-null version");
 }
 
 // Tests using the built-in MAC address.
@@ -271,8 +271,10 @@ static void test_other_null_mac() {
       Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE),
       "Expected start success (5)");
 
-  TEST_ASSERT_FALSE(driver_set_incoming_mac_address_allowed(nullptr, true));
-  TEST_ASSERT_FALSE(driver_set_incoming_mac_address_allowed(nullptr, false));
+  TEST_ASSERT_FALSE_MESSAGE(driver_set_incoming_mac_address_allowed(nullptr, true),
+                            "Expected can't allow NULL MAC");
+  TEST_ASSERT_FALSE_MESSAGE(driver_set_incoming_mac_address_allowed(nullptr, false),
+                            "Expected can't disallow NULL MAC");
 }
 
 // Tests NULL join/leave groups.
@@ -505,8 +507,10 @@ static void test_dns_lookup() {
   constexpr char kName2[]{"dms.goomgle"};
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName2).data());
   t = millis();
-  TEST_ASSERT_FALSE(DNSClient::getHostByName(
-      kName2, ip, QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT));
+  TEST_ASSERT_FALSE_MESSAGE(
+      DNSClient::getHostByName(kName2, ip,
+                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
+      "Expected can't look up");
   t = millis() - t;
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", t).data());
   TEST_ASSERT_LESS_THAN_MESSAGE(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT, t,
@@ -633,7 +637,7 @@ static void test_setLinkState() {
 
 // Tests the address-changed listener.
 static void test_address_listener() {
-  TEST_ASSERT_TRUE(Ethernet.localIP() == INADDR_NONE);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP");
 
   volatile bool latch = false;
   volatile bool hasIP = false;
@@ -668,7 +672,7 @@ static void test_address_listener() {
 
 // Tests the interface status listener.
 static void test_interface_listener() {
-  TEST_ASSERT_FALSE(Ethernet.interfaceStatus());
+  TEST_ASSERT_FALSE_MESSAGE(Ethernet.interfaceStatus(), "Expected interface not up");
 
   volatile bool latch = false;
   volatile bool interfaceState = false;
@@ -836,71 +840,71 @@ static void test_udp_receive_queueing() {
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 1 send success");
   Ethernet.loop();
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(0, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(1, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected queue size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->droppedReceiveCount(), "Expected dropped 0");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->totalReceiveCount(), "Expected total 1");
   b = 2;
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 2 send success");
   Ethernet.loop();
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(2, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected queue size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->totalReceiveCount(), "Expected total 2");
 
   // Expect to receive only the last packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 2, "Expected packet 2 data");
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(2, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->totalReceiveCount(), "Expected total 2");
   TEST_ASSERT_LESS_THAN_MESSAGE(0, udp->parsePacket(), "Expected no second packet");
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(2, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->totalReceiveCount(), "Expected total 2");
 
   // Increase the buffer to two
   udp->setReceiveQueueCapacity(2);
   TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(),
                             "Expected updated queue capacity");
-  TEST_ASSERT_EQUAL(0, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(2, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->totalReceiveCount(), "Expected total 2");
 
   // Send the two packets again
   b = 3;
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 3 send success");
   Ethernet.loop();
-  TEST_ASSERT_EQUAL(2, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(3, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected queue size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(3, udp->totalReceiveCount(), "Expected total 3");
   b = 4;
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
                            "Expected packet 4 send success");
   Ethernet.loop();
-  TEST_ASSERT_EQUAL(2, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(2, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(4, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueSize(), "Expected queue size 2");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(4, udp->totalReceiveCount(), "Expected total 4");
 
   // Expect to receive both packets
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 3 with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 3, "Expected packet 3 data");
-  TEST_ASSERT_EQUAL(2, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(4, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected queue size 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(4, udp->totalReceiveCount(), "Expected total 4");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 4 with size 1");
   TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 4, "Expected packet 4 data");
-  TEST_ASSERT_EQUAL(2, udp->receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, udp->receiveQueueSize());
-  TEST_ASSERT_EQUAL(1, udp->droppedReceiveCount());
-  TEST_ASSERT_EQUAL(4, udp->totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
+  TEST_ASSERT_EQUAL_MESSAGE(4, udp->totalReceiveCount(), "Expected total 4");
 
   udp->stop();
 }
@@ -965,15 +969,15 @@ static void test_udp_options() {
 
   udp = std::make_unique<EthernetUDP>();
 
-  TEST_ASSERT_TRUE(udp->setOutgoingDiffServ(0xa5));
-  TEST_ASSERT_EQUAL(0xa5, udp->outgoingDiffServ());
-  TEST_ASSERT_TRUE(udp->setOutgoingDiffServ(0));
-  TEST_ASSERT_EQUAL(0, udp->outgoingDiffServ());
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(0xa5), "Expected set DiffServ success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(0xa5, udp->outgoingDiffServ(), "Expected Diffserv 0xa5");
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(0), "Expected set DiffServ success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->outgoingDiffServ(), "Expected DiffServ 0");
 
-  TEST_ASSERT_TRUE(udp->setOutgoingTTL(UDP_TTL - 1));
-  TEST_ASSERT_EQUAL(UDP_TTL - 1, udp->outgoingTTL());
-  TEST_ASSERT_TRUE(udp->setOutgoingTTL(UDP_TTL));
-  TEST_ASSERT_EQUAL(UDP_TTL, udp->outgoingTTL());
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL - 1), "Expected set TTL success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(), "Expected TTL UDP_TTL-1");
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL), "Expected set TTL success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(UDP_TTL, udp->outgoingTTL(), "Expected TTL UDP_TTL");
 }
 
 // Tests zero-length UDP packets.
@@ -1022,7 +1026,7 @@ static void test_udp_diffserv() {
   // Create and listen
   udp = std::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
-  udp->setOutgoingDiffServ(kDiffServ);
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->outgoingDiffServ(),
                                   "Expected correct outgoing DiffServ");
 
@@ -1051,7 +1055,7 @@ static void test_udp_ttl() {
   // Create and listen
   udp = std::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
-  udp->setOutgoingTTL(UDP_TTL - 1);
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL - 1), "Expected can set TTL");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(),
                                   "Expected correct outgoing TTL");
 
@@ -1325,20 +1329,20 @@ static void test_client_options() {
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connectNoWait(Ethernet.localIP(), kPort),
                             "Expected connect success");
 
-  TEST_ASSERT_TRUE(client->setNoDelay(true));
-  TEST_ASSERT_TRUE(client->isNoDelay());
-  TEST_ASSERT_TRUE(client->setNoDelay(false));
-  TEST_ASSERT_FALSE(client->isNoDelay());
+  TEST_ASSERT_TRUE_MESSAGE(client->setNoDelay(true), "Expected set no-delay true success");
+  TEST_ASSERT_TRUE_MESSAGE(client->isNoDelay(), "Expected no-delay");
+  TEST_ASSERT_TRUE_MESSAGE(client->setNoDelay(false), "Expected set no-delay false success");
+  TEST_ASSERT_FALSE_MESSAGE(client->isNoDelay(), "Expected not no-delay");
 
-  TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0xa5));
-  TEST_ASSERT_EQUAL(0xa5, client->outgoingDiffServ());
-  TEST_ASSERT_TRUE(client->setOutgoingDiffServ(0));
-  TEST_ASSERT_EQUAL(0, client->outgoingDiffServ());
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(0xa5), "Expected set DiffServ success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(0xa5, client->outgoingDiffServ(), "Expected DiffServ 0xa5");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(0), "Expected set DiffServ success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->outgoingDiffServ(), "Expected DiffServ 0");
 
-  TEST_ASSERT_TRUE(client->setOutgoingTTL(TCP_TTL - 1));
-  TEST_ASSERT_EQUAL(TCP_TTL - 1, client->outgoingTTL());
-  TEST_ASSERT_TRUE(client->setOutgoingTTL(TCP_TTL));
-  TEST_ASSERT_EQUAL(TCP_TTL, client->outgoingTTL());
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTTL(TCP_TTL - 1), "Expected set TTL success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(TCP_TTL - 1, client->outgoingTTL(), "Expected TTL TCP_TTL-1");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTTL(TCP_TTL), "Expected set TTL success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(TCP_TTL, client->outgoingTTL(), "Expected TTL TCP_TTL");
 
   client->close();
 }
@@ -1427,7 +1431,7 @@ static void test_server_construct_int_port() {
   constexpr int port = 1025;
 
   server = std::make_unique<EthernetServer>(port);
-  TEST_ASSERT_EQUAL(uint16_t{1025}, server->port());
+  TEST_ASSERT_EQUAL_MESSAGE(uint16_t{1025}, server->port(), "Expected port 1025");
 }
 
 // Tests setting a server port of zero to have the system choose one.
@@ -1517,19 +1521,27 @@ static void test_raw_frames() {
   //       then many frames might have been received or dropped
 
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.endFrame(), "Expected send success");
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 1 frame");
 
   // Test that we actually received the packet
-  TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.parseFrame());
-  TEST_ASSERT_EQUAL(14 + sizeof(data), EthernetFrame.size());
+  TEST_ASSERT_EQUAL_MESSAGE(14 + sizeof(data), EthernetFrame.parseFrame(),
+                            "Expected frame of proper size");
+  TEST_ASSERT_EQUAL_MESSAGE(14 + sizeof(data), EthernetFrame.size(),
+                            "Expected correct frame size");
 
   if (EthernetFrame.size() > 0) {  // Avoid potentially accessing NULL data
     const uint8_t *frameData = EthernetFrame.data();
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(Ethernet.macAddress(), &frameData[0], 6);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(srcMAC, &frameData[6], 6);
-    TEST_ASSERT_EQUAL(sizeof(data) >> 8, frameData[12]);
-    TEST_ASSERT_EQUAL(sizeof(data) & 0xff, frameData[13]);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(data, &frameData[14], 10);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), &frameData[0], 6,
+                                          "Expected matching dest MAC");
+    TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(srcMAC, &frameData[6], 6,
+                                          "Expected matching src MAC");
+    TEST_ASSERT_EQUAL_MESSAGE(sizeof(data) >> 8, frameData[12],
+                              "Expected matching data len (1)");
+    TEST_ASSERT_EQUAL_MESSAGE(sizeof(data) & 0xff, frameData[13],
+                              "Expected matching data len (2)");
+    TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(data, &frameData[14], 10,
+                                          "Expected matching data");
 
     TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, EthernetFrame.receivedTimestamp(),
                                          "Expected valid timestamp");
@@ -1557,17 +1569,25 @@ static void test_raw_frames_receive_queueing() {
   buf[14] = 1;
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.send(buf, sizeof(buf)),
                            "Expected frame 1 send success");
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(0, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 1");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(0, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 0 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 1 total");
   buf[14] = 2;
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.send(buf, sizeof(buf)),
                    "Expected frame 2 send success");
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(2, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 1");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(2, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 2 total");
 
   // Expect to receive only the last packet
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
@@ -1575,40 +1595,59 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_MESSAGE(
       EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 2,
       "Expected frame 2 data");
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(2, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(0, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 0");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(2, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 2 total");
   TEST_ASSERT_LESS_THAN_MESSAGE(0, EthernetFrame.parseFrame(),
                                 "Expected no second frame");
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(2, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 1");
+  TEST_ASSERT_EQUAL_MESSAGE(0, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 0");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(2, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 2 total");
 
   // Increase the buffer to two
   EthernetFrame.setReceiveQueueCapacity(2);
   TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
                             "Expected updated queue capacity");
-  TEST_ASSERT_EQUAL(0, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(2, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(0, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 0");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(2, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 2 total");
 
   // Send the two packets again
   buf[14] = 3;
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.send(buf, sizeof(buf)),
                            "Expected frame 3 send success");
-  TEST_ASSERT_EQUAL(2, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(3, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 1");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(3, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 3 total");
   buf[14] = 4;
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.send(buf, sizeof(buf)),
                            "Expected frame 4 send success");
-  TEST_ASSERT_EQUAL(2, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(2, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(4, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 2");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(4, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 4 total");
 
   // Expect to receive both packets
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
@@ -1616,19 +1655,27 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_MESSAGE(
       EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 3,
       "Expected frame 3 data");
-  TEST_ASSERT_EQUAL(2, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(1, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(4, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 1");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(4, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 4 total");
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
                             "Expected frame 4 with size 1");
   TEST_ASSERT_MESSAGE(
       EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 4,
       "Expected frame 4 data");
-  TEST_ASSERT_EQUAL(2, EthernetFrame.receiveQueueCapacity());
-  TEST_ASSERT_EQUAL(0, EthernetFrame.receiveQueueSize());
-  TEST_ASSERT_GREATER_OR_EQUAL(1, EthernetFrame.droppedReceiveCount());
-  TEST_ASSERT_GREATER_OR_EQUAL(4, EthernetFrame.totalReceiveCount());
+  TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity 2");
+  TEST_ASSERT_EQUAL_MESSAGE(0, EthernetFrame.receiveQueueSize(),
+                            "Expected queue size 0");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1, EthernetFrame.droppedReceiveCount(),
+                                       "Expected at least 1 dropped");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(4, EthernetFrame.totalReceiveCount(),
+                                       "Expected at least 4 total");
 }
 
 // Main program setup.
