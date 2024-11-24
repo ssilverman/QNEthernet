@@ -18,8 +18,8 @@ namespace qindesign {
 namespace security {
 
 extern "C" {
-void qnethernet_hal_init_rand();
-uint32_t qnethernet_hal_rand();
+void qnethernet_hal_init_rand(void);
+uint32_t qnethernet_hal_rand(void);
 }  // extern "C"
 
 STATIC_INIT_DEFN(RandomDevice, randomDevice);

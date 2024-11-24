@@ -21,18 +21,18 @@ extern "C" {
 #include <stdint.h>
 
 // Initializes the TRNG. This always starts by enabling the clock.
-void trng_init();
+void trng_init(void);
 
 // Uninitializes the TRNG. The last thing this does is disable the clock.
-void trng_deinit();
+void trng_deinit(void);
 
 // Returns whether the TRNG has been started. This checks the clock.
-bool trng_is_started();
+bool trng_is_started(void);
 
 // Returns the number of bytes available in the entropy pool without having to
 // restart entropy generation. Once the pool is empty, entropy generation will
 // be restarted automatically.
-size_t trng_available();
+size_t trng_available(void);
 
 // Fills data from the entropy pool and keeps refreshing the pool until the
 // requested size has been reached or a failure was encountered. This returns
@@ -42,7 +42,7 @@ size_t trng_data(uint8_t *data, size_t size);
 
 // Returns a random 4-byte number from the entropy generator. If there was any
 // entropy generation error then errno will be set to EAGAIN.
-uint32_t entropy_random();
+uint32_t entropy_random(void);
 
 // Returns a random number in the range [0, range). This uses an unbiased
 // algorithm. If there was any entropy generation error then errno will be set

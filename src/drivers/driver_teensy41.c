@@ -288,7 +288,7 @@ static bool s_linkIsFullDuplex  = false;
 static bool s_linkIsCrossover   = false;
 
 // Forward declarations
-static void enet_isr();
+static void enet_isr(void);
 
 // --------------------------------------------------------------------------
 //  PHY I/O
@@ -398,7 +398,7 @@ void mdio_write(uint16_t regaddr, uint16_t data) {
 // --------------------------------------------------------------------------
 
 // Enables the Ethernet-related clocks. See also disable_enet_clocks().
-FLASHMEM static void enable_enet_clocks() {
+FLASHMEM static void enable_enet_clocks(void) {
   // Enable the Ethernet clock
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
 
@@ -430,7 +430,7 @@ FLASHMEM static void enable_enet_clocks() {
 }
 
 // Disables everything enabled with enable_enet_clocks().
-FLASHMEM static void disable_enet_clocks() {
+FLASHMEM static void disable_enet_clocks(void) {
   // Configure REFCLK
   CLRSET(IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
 
@@ -447,7 +447,7 @@ FLASHMEM static void disable_enet_clocks() {
 }
 
 // Configures all the pins necessary for communicating with the PHY.
-FLASHMEM static void configure_phy_pins() {
+FLASHMEM static void configure_phy_pins(void) {
   // Configure strap pins
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
@@ -488,7 +488,7 @@ FLASHMEM static void configure_phy_pins() {
 
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
-FLASHMEM static void configure_rmii_pins() {
+FLASHMEM static void configure_rmii_pins(void) {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
@@ -519,7 +519,7 @@ FLASHMEM static void configure_rmii_pins() {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-FLASHMEM static void init_phy() {
+FLASHMEM static void init_phy(void) {
   if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
     return;
   }
@@ -636,7 +636,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
 
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This returns NULL if there is no TX buffer available.
-static inline volatile enetbufferdesc_t *get_bufdesc() {
+static inline volatile enetbufferdesc_t *get_bufdesc(void) {
   volatile enetbufferdesc_t *pBD = s_pTxBD;
 
   if ((pBD->status & kEnetTxBdReady) != 0) {
@@ -667,7 +667,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
 }
 
 // Finds the next non-empty BD.
-static inline volatile enetbufferdesc_t *rxbd_next() {
+static inline volatile enetbufferdesc_t *rxbd_next(void) {
   volatile enetbufferdesc_t *pBD = s_pRxBD;
 
   while (pBD->status & kEnetRxBdEmpty) {
@@ -690,7 +690,7 @@ static inline volatile enetbufferdesc_t *rxbd_next() {
 }
 
 // The Ethernet ISR.
-static void enet_isr() {
+static void enet_isr(void) {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
     atomic_flag_clear(&s_rxNotAvail);
@@ -764,7 +764,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isLinkCrossoverDetectable  = true;
 }
 
-bool driver_is_unknown() {
+bool driver_is_unknown(void) {
   return s_initState == kInitStateStart;
 }
 
@@ -808,7 +808,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_has_hardware() {
+bool driver_has_hardware(void) {
   switch (s_initState) {
     case kInitStateHasHardware:
     case kInitStatePHYInitialized:
@@ -829,7 +829,7 @@ FLASHMEM void driver_set_chip_select_pin(int pin) {
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
-FLASHMEM bool driver_init() {
+FLASHMEM bool driver_init(void) {
   if (s_initState == kInitStateInitialized) {
     return true;
   }
@@ -962,7 +962,7 @@ FLASHMEM bool driver_init() {
 
 void unused_interrupt_vector(void);  // startup.c
 
-FLASHMEM void driver_deinit() {
+FLASHMEM void driver_deinit(void) {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1026,7 +1026,7 @@ void driver_poll(struct netif *netif) {
   s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
-int driver_link_speed() {
+int driver_link_speed(void) {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
@@ -1035,7 +1035,7 @@ bool driver_link_set_speed(int speed) {
   return false;
 }
 
-bool driver_link_is_full_duplex() {
+bool driver_link_is_full_duplex(void) {
   return s_linkIsFullDuplex;
 }
 
@@ -1044,7 +1044,7 @@ bool driver_link_set_full_duplex(bool flag) {
   return false;
 }
 
-bool driver_link_is_crossover() {
+bool driver_link_is_crossover(void) {
   return s_linkIsCrossover;
 }
 

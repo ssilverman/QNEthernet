@@ -18,8 +18,8 @@
 #include "lwip/sys.h"
 
 extern "C" {
-void qnethernet_hal_disable_interrupts();
-void qnethernet_hal_enable_interrupts();
+void qnethernet_hal_disable_interrupts(void);
+void qnethernet_hal_enable_interrupts(void);
 }  // extern "C"
 
 #ifndef FLASHMEM

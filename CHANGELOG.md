@@ -12,6 +12,10 @@ and this project adheres to
 * Remove internal uses of `String` from `MDNSClass` and replace them with
   char arrays.
 
+### Fixed
+* Now using `(void)` instead of `()` for all C function declarations because
+  `()` doesn't mean "no parameters" in C.
+
 ## [0.30.1]
 
 ### Fixed

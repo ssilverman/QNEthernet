@@ -132,7 +132,7 @@ FLASHMEM static err_t init_netif(struct netif *netif) {
 }
 
 // Removes the current netif, if any.
-FLASHMEM static void remove_netif() {
+FLASHMEM static void remove_netif(void) {
   if (s_isNetifAdded) {
     netif_set_default(NULL);
     netif_remove(&s_netif);
@@ -145,7 +145,7 @@ FLASHMEM static void remove_netif() {
 //  Public Interface
 // --------------------------------------------------------------------------
 
-struct netif *enet_netif() {
+struct netif *enet_netif(void) {
   return &s_netif;
 }
 
@@ -224,7 +224,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   return true;
 }
 
-FLASHMEM void enet_deinit() {
+FLASHMEM void enet_deinit(void) {
   // Restore state
   memset(s_mac, 0, sizeof(s_mac));
 
@@ -237,7 +237,7 @@ FLASHMEM void enet_deinit() {
   driver_deinit();
 }
 
-void enet_proc_input() {
+void enet_proc_input(void) {
   int counter = 0;
   while (true) {
     struct pbuf *p = driver_proc_input(&s_netif, counter++);
@@ -252,7 +252,7 @@ void enet_proc_input() {
   }
 }
 
-void enet_poll() {
+void enet_poll(void) {
   sys_check_timeouts();
   driver_poll(&s_netif);
 }

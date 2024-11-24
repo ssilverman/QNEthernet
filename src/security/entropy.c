@@ -74,7 +74,7 @@
 static uint32_t s_entropy[ENTROPY_COUNT] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
-bool trng_is_started() {
+bool trng_is_started(void) {
   // Two checks:
   // 1. Clock is running
   // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
@@ -83,13 +83,13 @@ bool trng_is_started() {
 }
 
 // Restarts entropy generation.
-static void restartEntropy() {
+static void restartEntropy(void) {
   TRNG_ENT15;
   TRNG_ENT0;  // Dummy read for defect workaround
   s_entropySizeBytes = 0;
 }
 
-FLASHMEM void trng_init() {
+FLASHMEM void trng_init(void) {
   // Enable the clock
   CCM_CCGR6 |= CCM_CCGR6_TRNG(CCM_CCGR_ON);
 
@@ -145,7 +145,7 @@ FLASHMEM void trng_init() {
   restartEntropy();
 }
 
-FLASHMEM void trng_deinit() {
+FLASHMEM void trng_deinit(void) {
   TRNG_MCTL |= TRNG_MCTL_PRGM;  // Move to program mode; stop entropy generation
 
   // Check this bit before stopping the clock
@@ -158,7 +158,7 @@ FLASHMEM void trng_deinit() {
 
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
 // available. This checks for an error, and if there is one, returns false.
-static bool fillEntropyBuf() {
+static bool fillEntropyBuf(void) {
   // Check for an error
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
     TRNG_MCTL = TRNG_MCTL_ERR;  // Clear error
@@ -178,7 +178,7 @@ static bool fillEntropyBuf() {
 
 // Fills the entropy pool if empty. This waits for entropy to be available or
 // an error.
-static bool fillEntropy() {
+static bool fillEntropy(void) {
   if (s_entropySizeBytes > 0) {
     return true;
   }
@@ -199,7 +199,7 @@ static bool fillEntropy() {
 //   return true;
 // }
 
-size_t trng_available() {
+size_t trng_available(void) {
   if (s_entropySizeBytes == 0) {
     // Check for Valid
     if ((TRNG_MCTL & TRNG_MCTL_ENT_VAL) == 0) {
@@ -251,7 +251,7 @@ size_t trng_data(uint8_t *data, size_t size) {
 
 #undef min
 
-uint32_t entropy_random() {
+uint32_t entropy_random(void) {
   uint32_t r;
   if (trng_data((uint8_t *)&r, sizeof(r)) < sizeof(r)) {
     errno = EAGAIN;

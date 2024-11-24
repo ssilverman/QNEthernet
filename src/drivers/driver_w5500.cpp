@@ -477,7 +477,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isLinkCrossoverDetectable  = false;
 }
 
-bool driver_is_unknown() {
+bool driver_is_unknown(void) {
   return s_initState == EnetInitStates::kStart;
 }
 
@@ -520,7 +520,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_has_hardware() {
+bool driver_has_hardware(void) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
     case EnetInitStates::kInitialized:
@@ -542,7 +542,7 @@ FLASHMEM void driver_set_chip_select_pin(int pin) {
   s_chipSelectPin = pin;
 }
 
-FLASHMEM bool driver_init() {
+FLASHMEM bool driver_init(void) {
   if (s_initState == EnetInitStates::kInitialized) {
     return true;
   }
@@ -558,7 +558,7 @@ FLASHMEM bool driver_init() {
   return true;
 }
 
-FLASHMEM void driver_deinit() {
+FLASHMEM void driver_deinit(void) {
   switch (s_initState) {
     case EnetInitStates::kStart:
     case EnetInitStates::kNoHardware:
@@ -651,7 +651,7 @@ void driver_poll(struct netif *netif) {
   check_link_status(netif);
 }
 
-int driver_link_speed() {
+int driver_link_speed(void) {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
@@ -660,7 +660,7 @@ bool driver_link_set_speed(int speed) {
   return false;
 }
 
-bool driver_link_is_full_duplex() {
+bool driver_link_is_full_duplex(void) {
   return s_linkIsFullDuplex;
 }
 
@@ -669,7 +669,7 @@ bool driver_link_set_full_duplex(bool flag) {
   return false;
 }
 
-bool driver_link_is_crossover() {
+bool driver_link_is_crossover(void) {
   return false;
 }
 

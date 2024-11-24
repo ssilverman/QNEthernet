@@ -99,7 +99,7 @@ struct DriverCapabilities {
 void driver_get_capabilities(struct DriverCapabilities *dc);
 
 // Returns if the hardware hasn't yet been probed.
-bool driver_is_unknown();
+bool driver_is_unknown(void);
 
 // Gets the built-in Ethernet MAC address.
 //
@@ -122,7 +122,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
 // probed (driver_is_unknown() would return 'true'), then this will check
 // the hardware.
-bool driver_has_hardware();
+bool driver_has_hardware(void);
 
 // Sets the SPI chip select pin given in Ethernet.init(). The pin will be -1 if
 // it has not been initialized.
@@ -130,10 +130,10 @@ void driver_set_chip_select_pin(int pin);
 
 // Does low-level initialization. This returns whether the initialization
 // was successful. Most functions depend on the driver being initialized.
-bool driver_init();
+bool driver_init(void);
 
 // Uninitializes the driver.
-void driver_deinit();
+void driver_deinit(void);
 
 // Processes any input and returns any received frames as a pbuf. The counter
 // parameter indicates how many times the call has looped. This is useful so
@@ -147,7 +147,7 @@ void driver_poll(struct netif *netif);
 // Returns the link speed in Mbps. The value is only valid if the link is up.
 //
 // See also: driver_get_capabilities(dc)
-int driver_link_speed();
+int driver_link_speed(void);
 
 // Sets the link speed in Mbps and returns whether successful.
 //
@@ -158,7 +158,7 @@ bool driver_link_set_speed(int speed);
 // only valid if the link is up.
 //
 // See also: driver_get_capabilities(dc)
-bool driver_link_is_full_duplex();
+bool driver_link_is_full_duplex(void);
 
 // Sets the link duplex mode, true for full and false for half. This returns
 // whether successful.
@@ -170,7 +170,7 @@ bool driver_link_set_full_duplex(bool flag);
 // link is up.
 //
 // See also: driver_get_capabilities(dc)
-bool driver_link_is_crossover();
+bool driver_link_is_crossover(void);
 
 // Outputs the given pbuf data.
 //
@@ -212,13 +212,13 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 // --------------------------------------------------------------------------
 
 // Returns the MTU.
-inline int enet_get_mtu() {
+inline int enet_get_mtu(void) {
   return MTU;
 }
 
 // Returns the maximum frame length. This includes the 4-byte FCS (frame
 // check sequence).
-inline int enet_get_max_frame_len() {
+inline int enet_get_max_frame_len(void) {
   return MAX_FRAME_LEN;
 }
 
@@ -252,18 +252,18 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                struct DriverCapabilities *dc);
 
 // Shuts down the Ethernet stack and driver.
-void enet_deinit();
+void enet_deinit(void);
 
 // Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
-struct netif *enet_netif();
+struct netif *enet_netif(void);
 
 // Processes any Ethernet input. This is meant to be called often by the
 // main loop.
-void enet_proc_input();
+void enet_proc_input(void);
 
 // Polls the stack (if needed) and Ethernet link status.
-void enet_poll();
+void enet_poll(void);
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the

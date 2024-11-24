@@ -17,7 +17,7 @@
 
 extern "C" {
 
-uint32_t qnethernet_hal_millis();
+uint32_t qnethernet_hal_millis(void);
 
 u32_t sys_now(void) {
   return qnethernet_hal_millis();

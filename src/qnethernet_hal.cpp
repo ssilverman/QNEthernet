@@ -43,7 +43,7 @@ extern "C" {
 
 // Returns the current time in milliseconds.
 [[gnu::weak]]
-uint32_t qnethernet_hal_millis() {
+uint32_t qnethernet_hal_millis(void) {
   return millis();
 }
 
@@ -172,26 +172,26 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 extern "C" {
 
 // Initializes randomness.
-[[gnu::weak]] void qnethernet_hal_init_rand();
+[[gnu::weak]] void qnethernet_hal_init_rand(void);
 
 // Gets a 32-bit random number for LWIP_RAND() and RandomDevice.
-[[gnu::weak]] uint32_t qnethernet_hal_rand();
+[[gnu::weak]] uint32_t qnethernet_hal_rand(void);
 
 #if WHICH_ENTROPY_TYPE == 1
 
-void qnethernet_hal_init_rand() {
+void qnethernet_hal_init_rand(void) {
   if (!trng_is_started()) {
     trng_init();
   }
 }
 
-uint32_t qnethernet_hal_rand() {
+uint32_t qnethernet_hal_rand(void) {
   return entropy_random();
 }
 
 #elif WHICH_ENTROPY_TYPE == 2
 
-void qnethernet_hal_init_rand() {
+void qnethernet_hal_init_rand(void) {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   // Don't reinitialize
   bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
@@ -205,17 +205,17 @@ void qnethernet_hal_init_rand() {
   }
 }
 
-uint32_t qnethernet_hal_rand() {
+uint32_t qnethernet_hal_rand(void) {
   return Entropy.random();
 }
 
 #else
 
-void qnethernet_hal_init_rand() {
+void qnethernet_hal_init_rand(void) {
   std::srand(qnethernet_hal_millis());
 }
 
-uint32_t qnethernet_hal_rand() {
+uint32_t qnethernet_hal_rand(void) {
   return std::rand();
 }
 
@@ -231,13 +231,13 @@ extern "C" {
 
 // Disables interrupts.
 [[gnu::weak]]
-void qnethernet_hal_disable_interrupts() {
+void qnethernet_hal_disable_interrupts(void) {
   noInterrupts();
 }
 
 // Enables interrupts.
 [[gnu::weak]]
-void qnethernet_hal_enable_interrupts() {
+void qnethernet_hal_enable_interrupts(void) {
   interrupts();
 }
 

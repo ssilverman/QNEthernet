@@ -24,7 +24,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
   dc->isLinkCrossoverDetectable  = false;
 }
 
-bool driver_is_unknown() {
+bool driver_is_unknown(void) {
   return false;
 }
 
@@ -44,7 +44,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return false;
 }
 
-bool driver_has_hardware() {
+bool driver_has_hardware(void) {
   return false;
 }
 
@@ -57,7 +57,7 @@ FLASHMEM bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
   return false;
 }
 
-FLASHMEM void driver_deinit() {
+FLASHMEM void driver_deinit(void) {
 }
 
 struct pbuf *driver_proc_input(struct netif *netif, int counter) {
@@ -70,7 +70,7 @@ void driver_poll(struct netif *netif) {
   LWIP_UNUSED_ARG(netif);
 }
 
-int driver_link_speed() {
+int driver_link_speed(void) {
   return 0;
 }
 
@@ -79,7 +79,7 @@ bool driver_link_set_speed(int speed) {
   return false;
 }
 
-bool driver_link_is_full_duplex() {
+bool driver_link_is_full_duplex(void) {
   return false;
 }
 
@@ -88,7 +88,7 @@ bool driver_link_set_full_duplex(bool flag) {
   return false;
 }
 
-bool driver_link_is_crossover() {
+bool driver_link_is_crossover(void) {
   return false;
 }
 
