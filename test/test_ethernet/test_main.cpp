@@ -83,6 +83,9 @@ void tearDown() {
   server = nullptr;
   EthernetFrame.clear();
 
+  // Clean up mDNS
+  MDNS.end();
+
   // Remove any listeners before calling Ethernet.end()
   // This avoids accessing any out-of-scope variables
   Ethernet.onLinkState(nullptr);
@@ -454,6 +457,8 @@ static void test_arduino_begin() {
 
 // Tests mDNS.
 static void test_mdns() {
+  constexpr uint16_t kHTTPPort = 80;
+
   if (!waitForLocalIP()) {
     return;
   }
@@ -465,6 +470,14 @@ static void test_mdns() {
           std::strncmp(MDNS.hostname(), kTestHostname,
                        sizeof(kTestHostname)) == 0,
       "Expected matching hostname");
+
+  TEST_ASSERT_FALSE_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
+                            "Expected didn't remove service");
+  auto txtf = []() { return std::vector<String>{"path=/"}; };
+  TEST_ASSERT_MESSAGE(MDNS.addService("_http", "_tcp", kHTTPPort, txtf),
+                      "Expected add service success");
+  TEST_ASSERT_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
+                      "Expected remove service success");
 }
 
 // Tests DNS lookup.
