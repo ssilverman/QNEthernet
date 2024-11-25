@@ -52,8 +52,7 @@ FLASHMEM void driver_set_chip_select_pin(int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
-FLASHMEM bool driver_init(const uint8_t mac[ETH_HWADDR_LEN]) {
-  LWIP_UNUSED_ARG(mac);
+FLASHMEM bool driver_init(void) {
   return false;
 }
 

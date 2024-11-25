@@ -15,6 +15,7 @@ and this project adheres to
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because
   `()` doesn't mean "no parameters" in C.
+* Fixed `driver_unsupported`'s `driver_init(void)` parameters to be empty.
 
 ## [0.30.1]
 
