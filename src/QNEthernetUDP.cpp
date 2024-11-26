@@ -207,11 +207,12 @@ uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
   return beginMulticast(ip, localPort, false);
 }
 
-bool EthernetUDP::beginMulticastWithReuse(IPAddress ip, uint16_t localPort) {
+bool EthernetUDP::beginMulticastWithReuse(const IPAddress &ip,
+                                          uint16_t localPort) {
   return beginMulticast(ip, localPort, true);
 }
 
-bool EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort,
+bool EthernetUDP::beginMulticast(const IPAddress &ip, uint16_t localPort,
                                  bool reuse) {
   if (!begin(localPort, reuse)) {
     return false;

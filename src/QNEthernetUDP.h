@@ -104,7 +104,7 @@ class EthernetUDP : public UDP,
   //
   // If these return false and there was an error then errno will be set.
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;  // Wish: Boolean return
-  bool beginMulticastWithReuse(IPAddress ip, uint16_t port);
+  bool beginMulticastWithReuse(const IPAddress &ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort() const;
@@ -261,7 +261,7 @@ class EthernetUDP : public UDP,
   // Multicast functions make use of Ethernet.joinGroup()
   //
   // If this returns false and there was an error then errno will be set.
-  bool beginMulticast(IPAddress ip, uint16_t port, bool reuse);
+  bool beginMulticast(const IPAddress &ip, uint16_t port, bool reuse);
 
   // ip_addr_t versions of transmission functions
   bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
