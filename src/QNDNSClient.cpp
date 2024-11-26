@@ -22,9 +22,11 @@ extern "C" void yield();
 namespace qindesign {
 namespace network {
 
-void DNSClient::dnsFoundFunc([[maybe_unused]] const char *name,
+void DNSClient::dnsFoundFunc(const char *name,
                              const ip_addr_t *ipaddr,
                              void *callback_arg) {
+  LWIP_UNUSED_ARG(name);
+
   if (callback_arg == nullptr) {
     return;
   }

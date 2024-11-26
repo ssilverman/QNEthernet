@@ -345,9 +345,13 @@ class EthernetClass final {
   [[deprecated("DHCP maintained internally")]]
   uint8_t maintain() const { return 0; }
   [[deprecated("See TCP_MAXRTX")]]
-  void setRetransmissionCount([[maybe_unused]] uint8_t number) const {}
+  void setRetransmissionCount(uint8_t number) const {
+    LWIP_UNUSED_ARG(number);
+  }
   [[deprecated("Handled internally")]]
-  void setRetransmissionTimeout([[maybe_unused]] uint16_t milliseconds) const {}
+  void setRetransmissionTimeout(uint16_t milliseconds) const {
+    LWIP_UNUSED_ARG(milliseconds);
+  }
 
   // These call something equivalent
   void MACAddress(uint8_t mac[kMACAddrSize]) { macAddress(mac); }

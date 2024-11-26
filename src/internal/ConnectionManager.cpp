@@ -249,8 +249,9 @@ err_t ConnectionManager::acceptFunc(void *arg, struct altcp_pcb *newpcb,
 void ConnectionManager::addConnection(
     const std::shared_ptr<ConnectionHolder> &holder) {
   connections_.push_back(holder);
-  holder->state->removeFunc = [this, holder](
-                                  [[maybe_unused]] ConnectionState *state) {
+  holder->state->removeFunc = [this, holder](ConnectionState *state) {
+    LWIP_UNUSED_ARG(state);
+
     // Remove the connection from the list
     auto it =
         std::find_if(connections_.begin(), connections_.end(),

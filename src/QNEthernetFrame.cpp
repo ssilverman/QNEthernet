@@ -43,7 +43,9 @@ namespace network {
 STATIC_INIT_DEFN(EthernetFrameClass, EthernetFrame);
 
 err_t EthernetFrameClass::recvFunc(struct pbuf *p,
-                                   [[maybe_unused]] struct netif *netif) {
+                                   struct netif *netif) {
+  LWIP_UNUSED_ARG(netif);
+
   uint32_t timestamp = sys_now();
 
   struct pbuf *pHead = p;
