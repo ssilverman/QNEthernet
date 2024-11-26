@@ -56,13 +56,14 @@ ConnectionManager &ConnectionManager::instance() {
 }
 
 // Connection state callback.
-err_t ConnectionManager::connectedFunc(void *arg, struct altcp_pcb *tpcb,
-                                       err_t err) {
+err_t ConnectionManager::connectedFunc(void *const arg,
+                                       struct altcp_pcb *const tpcb,
+                                       const err_t err) {
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_ARG;
   }
 
-  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -89,7 +90,7 @@ static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
 // clears the 'remaining' buffer.
 //
 // This assumes holder->state != NULL.
-static void maybeCopyRemaining(ConnectionHolder *holder) {
+static void maybeCopyRemaining(ConnectionHolder *const holder) {
   auto &v = holder->remaining;
   const auto &state = holder->state;
 
@@ -103,12 +104,12 @@ static void maybeCopyRemaining(ConnectionHolder *holder) {
 }
 
 // Error callback.
-void ConnectionManager::errFunc(void *arg, err_t err) {
+void ConnectionManager::errFunc(void *const arg, const err_t err) {
   if (arg == nullptr) {
     return;
   }
 
-  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -122,17 +123,17 @@ void ConnectionManager::errFunc(void *arg, err_t err) {
 }
 
 // Data reception callback.
-err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
-                                  struct pbuf *p, err_t err) {
+err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
+                                  struct pbuf *const p, const err_t err) {
   if (arg == nullptr || tpcb == nullptr) {
     return ERR_ARG;
   }
 
-  ConnectionHolder *holder = static_cast<ConnectionHolder *>(arg);
+  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
 
-  struct pbuf *pHead = p;
+  struct pbuf *pNext = p;
   const auto &state = holder->state;
 
   // Check for errors and null packets
@@ -146,18 +147,18 @@ err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
 
       if (p != nullptr) {
         // Copy pbuf contents
-        while (p != nullptr) {
-          uint8_t *data = static_cast<uint8_t *>(p->payload);
-          holder->remaining.insert(holder->remaining.end(),
-                                   &data[0], &data[p->len]);
-          p = p->next;
+        while (pNext != nullptr) {
+          uint8_t *data = static_cast<uint8_t *>(pNext->payload);
+          holder->remaining.insert(holder->remaining.end(), &data[0],
+                                   &data[pNext->len]);
+          pNext = pNext->next;
         }
       }
     }
 
-    if (pHead != nullptr) {
-      altcp_recved(tpcb, pHead->tot_len);
-      pbuf_free(pHead);
+    if (p != nullptr) {
+      altcp_recved(tpcb, p->tot_len);
+      pbuf_free(p);
     }
 
     holder->state = nullptr;
@@ -201,27 +202,28 @@ err_t ConnectionManager::recvFunc(void *arg, struct altcp_pcb *tpcb,
     }
 
     // Copy all the data from the pbuf
-    while (p != nullptr) {
-      uint8_t *data = static_cast<uint8_t *>(p->payload);
-      v.insert(v.end(), &data[0], &data[p->len]);
-      p = p->next;
+    while (pNext != nullptr) {
+      uint8_t *data = static_cast<uint8_t *>(pNext->payload);
+      v.insert(v.end(), &data[0], &data[pNext->len]);
+      pNext = pNext->next;
     }
   }
 
-  altcp_recved(tpcb, pHead->tot_len);
-  pbuf_free(pHead);
+  altcp_recved(tpcb, p->tot_len);
+  pbuf_free(p);
 
   return ERR_OK;
 }
 
 // Accepted connection callback.
-err_t ConnectionManager::acceptFunc(void *arg, struct altcp_pcb *newpcb,
-                                    err_t err) {
+err_t ConnectionManager::acceptFunc(void *const arg,
+                                    struct altcp_pcb *const newpcb,
+                                    const err_t err) {
   if (newpcb == nullptr || arg == nullptr) {
     return ERR_ARG;
   }
 
-  ConnectionManager *m = static_cast<ConnectionManager *>(arg);
+  ConnectionManager *const m = static_cast<ConnectionManager *>(arg);
 
   if (err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {
@@ -253,7 +255,7 @@ void ConnectionManager::addConnection(
     LWIP_UNUSED_ARG(state);
 
     // Remove the connection from the list
-    auto it =
+    const auto it =
         std::find_if(connections_.begin(), connections_.end(),
                      [holder](const auto &elem) { return elem == holder; });
     if (it != connections_.end()) {
@@ -262,8 +264,8 @@ void ConnectionManager::addConnection(
   };
 }
 
-static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
-                                   u8_t ip_type) {
+static altcp_pcb *create_altcp_pcb(const ip_addr_t *const ipaddr,
+                                   const uint16_t port, const u8_t ip_type) {
 #if LWIP_ALTCP
   altcp_pcb *pcb = nullptr;
   altcp_allocator_t allocator{nullptr, nullptr};
@@ -282,12 +284,12 @@ static altcp_pcb *create_altcp_pcb(const ip_addr_t *ipaddr, uint16_t port,
 }
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
-    const ip_addr_t *ipaddr, uint16_t port) {
+    const ip_addr_t *const ipaddr, const uint16_t port) {
   if (ipaddr == nullptr) {
     return nullptr;
   }
 
-  altcp_pcb *pcb = create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
+  altcp_pcb *const pcb = create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     return nullptr;
@@ -316,7 +318,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   return holder;
 }
 
-int32_t ConnectionManager::listen(uint16_t port, bool reuse) {
+int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
   altcp_pcb *pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
@@ -341,7 +343,7 @@ int32_t ConnectionManager::listen(uint16_t port, bool reuse) {
   }
 
   // Try to listen
-  altcp_pcb *pcbNew = altcp_listen(pcb);
+  altcp_pcb *const pcbNew = altcp_listen(pcb);
   if (pcbNew == nullptr) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
@@ -354,10 +356,11 @@ int32_t ConnectionManager::listen(uint16_t port, bool reuse) {
   altcp_arg(pcb, this);
   altcp_accept(pcb, &acceptFunc);
 
+  uint16_t actualPort = port;
   if (port == 0) {
-    altcp_get_tcp_addrinfo(pcb, true, nullptr, &port);
+    altcp_get_tcp_addrinfo(pcb, true, nullptr, &actualPort);
   }
-  return port;
+  return actualPort;
 }
 
 // Gets the local port from the given tcp_pcb.
@@ -371,23 +374,23 @@ static uint16_t getLocalPort(altcp_pcb *pcb) {
 #endif  // LWIP_ALTCP
 }
 
-bool ConnectionManager::isListening(uint16_t port) const {
-  auto it = std::find_if(
+bool ConnectionManager::isListening(const uint16_t port) const {
+  const auto it = std::find_if(
       listeners_.begin(), listeners_.end(), [port](const auto &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   return (it != listeners_.end());
 }
 
-bool ConnectionManager::stopListening(uint16_t port) {
-  auto it = std::find_if(
+bool ConnectionManager::stopListening(const uint16_t port) {
+  const auto it = std::find_if(
       listeners_.begin(), listeners_.end(), [port](const auto &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   if (it == listeners_.end()) {
     return false;
   }
-  altcp_pcb *pcb = *it;
+  altcp_pcb *const pcb = *it;
   listeners_.erase(it);
   if (altcp_close(pcb) != ERR_OK) {
     altcp_abort(pcb);
@@ -396,8 +399,8 @@ bool ConnectionManager::stopListening(uint16_t port) {
 }
 
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
-    uint16_t port) const {
-  auto it = std::find_if(
+    const uint16_t port) const {
+  const auto it = std::find_if(
       connections_.begin(), connections_.end(), [port](const auto &elem) {
         const auto &state = elem->state;
         return (state != nullptr) && (getLocalPort(state->pcb) == port);
@@ -410,8 +413,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
 
 // TODO: Should we implement some kind of fairness?
 std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
-    uint16_t port) const {
-  auto it = std::find_if(
+    const uint16_t port) const {
+  const auto it = std::find_if(
       connections_.begin(), connections_.end(), [port](const auto &elem) {
         const auto &state = elem->state;
         return (state != nullptr) &&
@@ -426,7 +429,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
 
 bool ConnectionManager::remove(
     const std::shared_ptr<ConnectionHolder> &holder) {
-  auto it =
+  const auto it =
       std::find_if(connections_.begin(), connections_.end(),
                    [holder](const auto &elem) { return (elem == holder); });
   if (it != connections_.end()) {
@@ -440,7 +443,7 @@ bool ConnectionManager::remove(
   return false;
 }
 
-size_t ConnectionManager::write(uint16_t port, uint8_t b) {
+size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
   std::for_each(connections_.begin(), connections_.end(),
                 [port, b](const auto &elem) {
                   const auto &state = elem->state;
@@ -461,11 +464,10 @@ size_t ConnectionManager::write(uint16_t port, uint8_t b) {
   return 1;
 }
 
-size_t ConnectionManager::write(uint16_t port, const uint8_t *b, size_t len) {
-  if (len > UINT16_MAX) {
-    len = UINT16_MAX;
-  }
-  uint16_t size16 = len;
+size_t ConnectionManager::write(const uint16_t port,
+                                const uint8_t *const b, const size_t len) {
+  const size_t actualLen = std::min(len, size_t{UINT16_MAX});
+  const uint16_t size16 = actualLen;
   std::for_each(connections_.begin(), connections_.end(),
                 [port, b, size16](const auto &elem) {
                   const auto &state = elem->state;
@@ -478,16 +480,17 @@ size_t ConnectionManager::write(uint16_t port, const uint8_t *b, size_t len) {
                     }
                     Ethernet.loop();
                   }
-                  uint16_t len = std::min(size16, altcp_sndbuf(state->pcb));
+                  const uint16_t len =
+                      std::min(size16, altcp_sndbuf(state->pcb));
                   if (len > 0) {
                     altcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
                   }
                 });
   Ethernet.loop();
-  return len;
+  return actualLen;
 }
 
-void ConnectionManager::flush(uint16_t port) {
+void ConnectionManager::flush(const uint16_t port) {
   std::for_each(connections_.begin(), connections_.end(),
                 [port](const auto &elem) {
                   const auto &state = elem->state;
@@ -500,7 +503,7 @@ void ConnectionManager::flush(uint16_t port) {
   Ethernet.loop();
 }
 
-int ConnectionManager::availableForWrite(uint16_t port) {
+int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
   std::for_each(connections_.begin(), connections_.end(),

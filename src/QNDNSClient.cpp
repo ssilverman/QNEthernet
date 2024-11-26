@@ -22,28 +22,28 @@ extern "C" void yield();
 namespace qindesign {
 namespace network {
 
-void DNSClient::dnsFoundFunc(const char *name,
-                             const ip_addr_t *ipaddr,
-                             void *callback_arg) {
+void DNSClient::dnsFoundFunc(const char *const name,
+                             const ip_addr_t *const ipaddr,
+                             void *const callback_arg) {
   LWIP_UNUSED_ARG(name);
 
   if (callback_arg == nullptr) {
     return;
   }
 
-  Request *req = static_cast<Request *>(callback_arg);
+  const Request *const req = static_cast<Request *>(callback_arg);
   if (req->timeout == 0 || sys_now() - req->startTime < req->timeout) {
     req->callback(ipaddr);
   }
   delete req;
 }
 
-bool DNSClient::setServer(int index, const IPAddress &ip) {
+bool DNSClient::setServer(const int index, const IPAddress &ip) {
 #if LWIP_IPV4
   if (index < 0 || maxServers() <= index) {
     return false;
   }
-  ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  const ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
   dns_setserver(index, &addr);
   return true;
 #else
@@ -53,7 +53,7 @@ bool DNSClient::setServer(int index, const IPAddress &ip) {
 #endif  // LWIP_IPV4
 }
 
-IPAddress DNSClient::getServer(int index) {
+IPAddress DNSClient::getServer(const int index) {
 #if LWIP_IPV4
   if (index < 0 || maxServers() <= index) {
     return INADDR_NONE;
@@ -65,22 +65,23 @@ IPAddress DNSClient::getServer(int index) {
 #endif  // LWIP_IPV4
 }
 
-bool DNSClient::getHostByName(const char *hostname,
-                              std::function<void(const ip_addr_t *)> callback,
-                              uint32_t timeout) {
+bool DNSClient::getHostByName(
+    const char *const hostname,
+    const std::function<void(const ip_addr_t *)> callback,
+    const uint32_t timeout) {
   if (callback == nullptr || hostname == nullptr) {
     errno = EINVAL;
     return false;
   }
 
-  Request *req = new Request{};
+  Request *const req = new Request{};
   req->callback = callback;
   req->startTime = sys_now();
   req->timeout = timeout;
 
   ip_addr_t addr;
-  err_t err;
-  switch (err = dns_gethostbyname(hostname, &addr, &dnsFoundFunc, req)) {
+  const err_t err = dns_gethostbyname(hostname, &addr, &dnsFoundFunc, req);
+  switch (err) {
     case ERR_OK:
       delete req;
       callback(&addr);
@@ -97,8 +98,8 @@ bool DNSClient::getHostByName(const char *hostname,
   }
 }
 
-bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
-                              uint32_t timeout) {
+bool DNSClient::getHostByName(const char *const hostname, IPAddress &ip,
+                              const uint32_t timeout) {
 #if LWIP_IPV4
   volatile bool found = false;
   volatile bool lookupDone = false;
@@ -115,7 +116,7 @@ bool DNSClient::getHostByName(const char *hostname, IPAddress &ip,
     return false;
   }
 
-  uint32_t t = sys_now();
+  const uint32_t t = sys_now();
   while (!lookupDone && (sys_now() - t) < timeout) {
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD

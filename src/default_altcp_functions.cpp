@@ -21,7 +21,8 @@
 // This implementation uses the TCP allocator and returns true.
 [[gnu::weak]]
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
-    qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
+    qnethernet_altcp_get_allocator = [](const ip_addr_t *const ipaddr,
+                                        const uint16_t port,
                                         altcp_allocator_t &allocator) {
       LWIP_UNUSED_ARG(ipaddr);
       LWIP_UNUSED_ARG(port);

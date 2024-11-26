@@ -71,7 +71,7 @@ Print *volatile stderrPrint = nullptr;
 extern "C" {
 
 // Gets the Print* for the given file descriptor.
-static inline Print *getPrint(int file) {
+static inline Print *getPrint(const int file) {
   switch (file) {
 #if QNETHERNET_CUSTOM_WRITE
     case STDOUT_FILENO:
@@ -98,8 +98,8 @@ static inline Print *getPrint(int file) {
 // Note: Can't define as weak by default because we don't know which `_write`
 //       would be chosen by the linker, this one or the one defined elsewhere
 //       (Print.cpp, for example)
-int _write(int file, const void *buf, size_t len) {
-  Print *out = getPrint(file);
+int _write(const int file, const void *const buf, const size_t len) {
+  Print *const out = getPrint(file);
   if (out == nullptr) {
     errno = EBADF;
     return -1;
@@ -113,8 +113,8 @@ int _write(int file, const void *buf, size_t len) {
 // Ensures the Print object is flushed because fflush() just flushes by writing
 // to the FILE*. This doesn't necessarily send all the bytes right away. For
 // example, Serial/USB output behaves this way.
-void qnethernet_hal_stdio_flush(int file) {
-  Print *p = getPrint(file);
+void qnethernet_hal_stdio_flush(const int file) {
+  Print *const p = getPrint(file);
   if (p != nullptr) {
     p->flush();
   }
@@ -130,8 +130,8 @@ extern "C" {
 
 // Asserts if this is called from an interrupt context.
 [[gnu::weak]]
-void qnethernet_hal_check_core_locking(const char *file, int line,
-                                       const char *func) {
+void qnethernet_hal_check_core_locking(const char *const file, const int line,
+                                       const char *const func) {
   bool inInterruptCtx = false;
 
 #if defined(__arm__)
@@ -194,11 +194,12 @@ uint32_t qnethernet_hal_rand(void) {
 void qnethernet_hal_init_rand(void) {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   // Don't reinitialize
-  bool doEntropyInit = ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
-                        CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
-                       ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
+  const bool doEntropyInit =
+      ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
+       CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
+      ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
 #else
-  bool doEntropyInit = true;
+  const bool doEntropyInit = true;
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
   if (doEntropyInit) {
     Entropy.Initialize();
@@ -263,8 +264,8 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   }
 
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-  uint32_t m1 = HW_OCOTP_MAC1;
-  uint32_t m2 = HW_OCOTP_MAC0;
+  const uint32_t m1 = HW_OCOTP_MAC1;
+  const uint32_t m2 = HW_OCOTP_MAC0;
   mac[0] = m1 >> 8;
   mac[1] = m1 >> 0;
   mac[2] = m2 >> 24;
@@ -301,7 +302,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  uint32_t num = *(uint32_t *)&FTFL_FCCOBB;
+  const uint32_t num = *(uint32_t *)&FTFL_FCCOBB;
   kinetis_hsrun_enable();
   __enable_irq();
   mac[0] = 0x04;

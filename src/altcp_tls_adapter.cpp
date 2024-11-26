@@ -76,7 +76,8 @@ extern std::function<void(
 //
 // This returns false if the config could not be created and true otherwise.
 std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
-    qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
+    qnethernet_altcp_get_allocator = [](const ip_addr_t *const ipaddr,
+                                        const uint16_t port,
                                         altcp_allocator_t &allocator) {
       if (qnethernet_altcp_is_tls && qnethernet_altcp_is_tls(ipaddr, port)) {
         // TLS
@@ -93,7 +94,7 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
             cert_count = qnethernet_altcp_tls_server_cert_count(port);
           }
 
-          struct altcp_tls_config *config =
+          struct altcp_tls_config *const config =
               altcp_tls_create_config_server(cert_count);
           if (config == nullptr) {
             return false;
@@ -145,7 +146,7 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
     [](const altcp_allocator_t &allocator) {
       // For altcp_tcp_alloc, there's nothing to free
       if (allocator.alloc == &altcp_tls_alloc) {
-        struct altcp_tls_config *config =
+        struct altcp_tls_config *const config =
             (struct altcp_tls_config *)allocator.arg;
         if (config != nullptr) {
           altcp_tls_free_config(config);

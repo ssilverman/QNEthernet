@@ -24,7 +24,7 @@ namespace internal {
 struct ConnectionState final {
   // Creates a new object and sets `arg` as the pcb's arg. This also reserves
   // TCP_WND bytes as buffer space.
-  ConnectionState(altcp_pcb *tpcb, void *arg) : pcb(tpcb) {
+  ConnectionState(altcp_pcb *const tpcb, void *const arg) : pcb(tpcb) {
     altcp_arg(tpcb, arg);
     buf.reserve(TCP_WND);
   }

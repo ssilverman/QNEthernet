@@ -53,7 +53,7 @@ static struct autoip s_autoip;
 // --------------------------------------------------------------------------
 
 // Outputs the given pbuf to the driver.
-static err_t link_output(struct netif *netif, struct pbuf *p) {
+static err_t link_output(struct netif *const netif, struct pbuf *const p) {
   LWIP_UNUSED_ARG(netif);
 
   if (p == NULL) {
@@ -65,8 +65,9 @@ static err_t link_output(struct netif *netif, struct pbuf *p) {
 
 #if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 // Multicast filter for letting the hardware know which packets to let in.
-static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
-                              enum netif_mac_filter_action action) {
+static err_t multicast_filter(struct netif *const netif,
+                              const ip4_addr_t *const group,
+                              const enum netif_mac_filter_action action) {
   LWIP_UNUSED_ARG(netif);
 
   bool retval = true;
@@ -87,7 +88,7 @@ static err_t multicast_filter(struct netif *netif, const ip4_addr_t *group,
 #endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // Initializes the netif.
-FLASHMEM static err_t init_netif(struct netif *netif) {
+FLASHMEM static err_t init_netif(struct netif *const netif) {
   if (netif == NULL) {
     return ERR_ARG;
   }
@@ -171,8 +172,8 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
 // This only uses the callback if the interface has not been added.
 FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               netif_ext_callback_fn callback,
-               struct DriverCapabilities *dc) {
+               const netif_ext_callback_fn callback,
+               struct DriverCapabilities *const dc) {
   if (!driver_init()) {
     return false;
   }
@@ -240,7 +241,7 @@ FLASHMEM void enet_deinit(void) {
 void enet_proc_input(void) {
   int counter = 0;
   while (true) {
-    struct pbuf *p = driver_proc_input(&s_netif, counter++);
+    struct pbuf *const p = driver_proc_input(&s_netif, counter++);
     if (p == NULL) {  // Happens on frame error, pbuf allocation error, or loop end
       break;
     }
@@ -258,7 +259,7 @@ void enet_poll(void) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool enet_output_frame(const uint8_t *frame, size_t len) {
+bool enet_output_frame(const uint8_t *const frame, const size_t len) {
   if (frame == NULL || len < (6 + 6 + 2)) {  // dst + src + len/type
     return false;
   }
@@ -281,7 +282,7 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 #if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
   // Check for a loopback frame
   if (memcmp(frame, s_mac, 6) == 0 || memcmp(frame, kBroadcastMAC, 6) == 0) {
-    struct pbuf *p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
+    struct pbuf *const p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
     if (p) {
       pbuf_take_at(p, frame, len, ETH_PAD_SIZE);
       if (s_netif.input(p, &s_netif) != ERR_OK) {
@@ -305,7 +306,8 @@ bool enet_output_frame(const uint8_t *frame, size_t len) {
 
 // Joins or leaves a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
-static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
+static bool enet_join_notleave_group(const ip4_addr_t *const group,
+                                     const bool flag) {
   if (group == NULL) {
     return false;
   }
@@ -327,11 +329,11 @@ static bool enet_join_notleave_group(const ip4_addr_t *group, bool flag) {
   return driver_set_incoming_mac_address_allowed(multicastMAC, flag);
 }
 
-bool enet_join_group(const ip4_addr_t *group) {
+bool enet_join_group(const ip4_addr_t *const group) {
   return enet_join_notleave_group(group, true);
 }
 
-bool enet_leave_group(const ip4_addr_t *group) {
+bool enet_leave_group(const ip4_addr_t *const group) {
   return enet_join_notleave_group(group, false);
 }
 

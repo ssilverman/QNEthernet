@@ -257,7 +257,7 @@ class EthernetClass final {
   // Sets a link state callback.
   //
   // Note that no network tasks should be done from inside the listener.
-  void onLinkState(std::function<void(bool state)> cb) {
+  void onLinkState(const std::function<void(bool state)> cb) {
     linkStateCB_ = cb;
   }
 
@@ -265,7 +265,7 @@ class EthernetClass final {
   // addresses changed: IP address, subnet mask, or gateway.
   //
   // Note that no network tasks should be done from inside the listener.
-  void onAddressChanged(std::function<void()> cb) {
+  void onAddressChanged(const std::function<void()> cb) {
 #if LWIP_IPV4 || LWIP_IPV6
     addressChangedCB_ = cb;
 #endif  // LWIP_IPV4 || LWIP_IPV6
@@ -275,7 +275,7 @@ class EthernetClass final {
   // is up but BEFORE the interface goes down.
   //
   // Note that no network tasks should be done from inside the listener.
-  void onInterfaceStatus(std::function<void(bool status)> cb) {
+  void onInterfaceStatus(const std::function<void(bool status)> cb) {
     interfaceStatusCB_ = cb;
   }
 
@@ -337,7 +337,7 @@ class EthernetClass final {
 
   EthernetHardwareStatus hardwareStatus() const;
 
-  void init(int sspin) {
+  void init(const int sspin) {
     chipSelectPin_ = sspin;
   }
 
@@ -345,11 +345,11 @@ class EthernetClass final {
   [[deprecated("DHCP maintained internally")]]
   uint8_t maintain() const { return 0; }
   [[deprecated("See TCP_MAXRTX")]]
-  void setRetransmissionCount(uint8_t number) const {
+  void setRetransmissionCount(const uint8_t number) const {
     LWIP_UNUSED_ARG(number);
   }
   [[deprecated("Handled internally")]]
-  void setRetransmissionTimeout(uint16_t milliseconds) const {
+  void setRetransmissionTimeout(const uint16_t milliseconds) const {
     LWIP_UNUSED_ARG(milliseconds);
   }
 

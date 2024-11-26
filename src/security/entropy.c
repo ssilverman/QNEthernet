@@ -220,7 +220,7 @@ size_t trng_available(void) {
   (_a < _b) ? _a : _b; \
 })
 
-size_t trng_data(uint8_t *data, size_t size) {
+size_t trng_data(uint8_t *const data, const size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
@@ -231,22 +231,23 @@ size_t trng_data(uint8_t *data, size_t size) {
     restartEntropy();
   }
 
-  size_t origSize = size;
+  uint8_t *p = data;
+  size_t rem = size;
 
-  while (size > 0) {
+  while (rem > 0) {
     if (!fillEntropy()) {
-      return origSize - size;
+      return size - rem;
     }
-    size_t toCopy = min(size, s_entropySizeBytes);
-    memcpy(data,
+    const size_t toCopy = min(rem, s_entropySizeBytes);
+    memcpy(p,
            &((uint8_t *)s_entropy)[ENTROPY_COUNT_BYTES - s_entropySizeBytes],
            toCopy);
-    data += toCopy;
+    p += toCopy;
     s_entropySizeBytes -= toCopy;
-    size -= toCopy;
+    rem -= toCopy;
   }
 
-  return origSize;
+  return size;
 }
 
 #undef min
@@ -259,7 +260,7 @@ uint32_t entropy_random(void) {
   return r;
 }
 
-uint32_t entropy_random_range(uint32_t range) {
+uint32_t entropy_random_range(const uint32_t range) {
   if (range == 0) {
     errno = EDOM;
     return 0;
@@ -282,7 +283,7 @@ uint32_t entropy_random_range(uint32_t range) {
   uint64_t product = (uint64_t)r * (uint64_t)range;
   uint32_t low = (uint32_t)product;
   if (low < range) {  // Application of the rejection method
-    uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
+    const uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
     while (low < threshold) {
       r = entropy_random();
       if (errno == EAGAIN) {

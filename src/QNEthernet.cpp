@@ -80,9 +80,10 @@ extern "C" void yield() {
 #endif  // defined(HAS_EVENT_RESPONDER)
 #endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
-void EthernetClass::netifEventFunc(struct netif *netif,
-                                   netif_nsc_reason_t reason,
-                                   const netif_ext_callback_args_t *args) {
+void EthernetClass::netifEventFunc(
+    struct netif *const netif,
+    const netif_nsc_reason_t reason,
+    const netif_ext_callback_args_t *const args) {
   if (netif != Ethernet.netif_) {
     return;
   }
@@ -222,14 +223,14 @@ bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &gateway,
                           const IPAddress *dns) {
 #if LWIP_IPV4
-  ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
-  ip4_addr_t netmask{static_cast<uint32_t>(mask)};
-  ip4_addr_t gw{static_cast<uint32_t>(gateway)};
+  const ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
+  const ip4_addr_t netmask{static_cast<uint32_t>(mask)};
+  const ip4_addr_t gw{static_cast<uint32_t>(gateway)};
 
   if (netif_ != nullptr) {
 #if LWIP_DHCP
     // Stop any running DHCP client if we don't need one
-    bool isDHCP = ip4_addr_isany_val(ipaddr);
+    const bool isDHCP = ip4_addr_isany_val(ipaddr);
     if (dhcpActive_ && !isDHCP) {
       dhcp_release_and_stop(netif_);
       dhcpActive_ = false;
@@ -263,8 +264,12 @@ bool EthernetClass::maybeStartDHCP() {
   // If this is using a manual configuration then inform the network,
   // otherwise start DHCP
 #if LWIP_DHCP
-  bool retval = true;
-  bool isDHCP = ip4_addr_isany(netif_ip4_addr(netif_));
+  const bool isDHCP = ip4_addr_isany(netif_ip4_addr(netif_));
+  if (isDHCP && dhcpEnabled_ && !dhcpActive_) {
+    dhcpActive_ = (dhcp_start(netif_) == ERR_OK);
+    dhcpDesired_ = true;
+    return dhcpActive_;
+  }
   if (!isDHCP) {
     // Don't send a DHCP INFORM message because we don't want the other
     // parameters potentially sent by the server; it also seems to interfere
@@ -272,15 +277,9 @@ bool EthernetClass::maybeStartDHCP() {
     // dhcp_inform(netif_);
     dhcpActive_ = false;
     dhcpDesired_ = false;
-  } else if (dhcpEnabled_ && !dhcpActive_) {
-    retval = (dhcp_start(netif_) == ERR_OK);
-    dhcpActive_ = retval;
-    dhcpDesired_ = true;
   }
-  return retval;
-#else
-  return true;
 #endif  // LWIP_DHCP
+  return true;
 }
 
 bool EthernetClass::start() {
@@ -325,18 +324,17 @@ bool EthernetClass::start() {
   return true;
 }
 
-bool EthernetClass::setDHCPEnabled(bool flag) {
+bool EthernetClass::setDHCPEnabled(const bool flag) {
 #if LWIP_DHCP
   dhcpEnabled_ = flag;
   if (netif_ == nullptr) {
     return true;
   }
 
-  bool retval = true;
   if (flag) {  // DHCP enabled
     if (dhcpDesired_ && !dhcpActive_) {
-      retval = (dhcp_start(netif_) == ERR_OK);
-      dhcpActive_ = retval;
+      dhcpActive_ = (dhcp_start(netif_) == ERR_OK);
+      return dhcpActive_;
     }
   } else {  // DHCP disabled
     if (dhcpActive_) {
@@ -344,7 +342,7 @@ bool EthernetClass::setDHCPEnabled(bool flag) {
       dhcpActive_ = false;
     }
   }
-  return retval;
+  return true;
 #else
   LWIP_UNUSED_ARG(flag);
   return false;
@@ -361,8 +359,8 @@ bool EthernetClass::renewDHCP() const {
     return false;
   }
 
-  err_t err;
-  if ((err = dhcp_renew(netif_)) != ERR_OK) {
+  const err_t err = dhcp_renew(netif_);
+  if (err != ERR_OK) {
     errno = err_to_errno(err);
     return false;
   }
@@ -372,13 +370,13 @@ bool EthernetClass::renewDHCP() const {
 #endif  // LWIP_DHCP
 }
 
-bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
+bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return false;
   }
 
-  uint32_t t = sys_now();
+  const uint32_t t = sys_now();
   while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
          (sys_now() - t) < timeout) {
     yield();
@@ -393,12 +391,12 @@ bool EthernetClass::waitForLocalIP(uint32_t timeout) const {
 #endif  // LWIP_IPV4
 }
 
-bool EthernetClass::waitForLink(uint32_t timeout) const {
+bool EthernetClass::waitForLink(const uint32_t timeout) const {
   if (netif_ == nullptr) {
     return false;
   }
 
-  uint32_t t = sys_now();
+  const uint32_t t = sys_now();
   while (!netif_is_link_up(netif_) && (sys_now() - t) < timeout) {
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
@@ -408,7 +406,8 @@ bool EthernetClass::waitForLink(uint32_t timeout) const {
   return netif_is_link_up(netif_);
 }
 
-int EthernetClass::begin(const uint8_t mac[kMACAddrSize], uint32_t timeout) {
+int EthernetClass::begin(const uint8_t mac[kMACAddrSize],
+                         const uint32_t timeout) {
   if (!begin(mac, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE)) {
     return false;
   }
@@ -517,7 +516,7 @@ bool EthernetClass::linkState() const {
   return netif_is_link_up(netif_);
 }
 
-void EthernetClass::setLinkState(bool flag) const {
+void EthernetClass::setLinkState(const bool flag) const {
   if (netif_ == nullptr) {
     return;
   }
@@ -584,7 +583,7 @@ IPAddress EthernetClass::dnsServerIP() const {
   return dnsServerIP(0);
 }
 
-IPAddress EthernetClass::dnsServerIP(int index) const {
+IPAddress EthernetClass::dnsServerIP(const int index) const {
 #if LWIP_DNS
   return DNSClient::getServer(index);
 #else
@@ -610,7 +609,7 @@ void EthernetClass::setLocalIP(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
+  const ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
   netif_set_ipaddr(netif_, &ipaddr);
 #else
   LWIP_UNUSED_ARG(ip);
@@ -622,7 +621,7 @@ void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t netmask{static_cast<uint32_t>(subnetMask)};
+  const ip4_addr_t netmask{static_cast<uint32_t>(subnetMask)};
   netif_set_netmask(netif_, &netmask);
 #else
   LWIP_UNUSED_ARG(subnetMask);
@@ -634,7 +633,7 @@ void EthernetClass::setGatewayIP(const IPAddress &ip) const {
   if (netif_ == nullptr) {
     return;
   }
-  ip4_addr_t gw{static_cast<uint32_t>(ip)};
+  const ip4_addr_t gw{static_cast<uint32_t>(ip)};
   netif_set_gw(netif_, &gw);
 #else
   LWIP_UNUSED_ARG(ip);
@@ -645,7 +644,7 @@ void EthernetClass::setDNSServerIP(const IPAddress &ip) const {
   setDNSServerIP(0, ip);
 }
 
-void EthernetClass::setDNSServerIP(int index, const IPAddress &ip) const {
+void EthernetClass::setDNSServerIP(const int index, const IPAddress &ip) const {
 #if LWIP_DNS
   DNSClient::setServer(index, ip);
 #else
@@ -674,9 +673,9 @@ bool EthernetClass::joinGroup(const IPAddress &ip) const {
     return false;
   }
 
-  ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
-  err_t err;
-  if ((err = igmp_joingroup_netif(netif_, &groupaddr)) != ERR_OK) {
+  const ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
+  const err_t err = igmp_joingroup_netif(netif_, &groupaddr);
+  if (err != ERR_OK) {
     errno = err_to_errno(err);
     return false;
   }
@@ -693,9 +692,9 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
     return false;
   }
 
-  ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
-  err_t err;
-  if ((err = igmp_leavegroup_netif(netif_, &groupaddr)) != ERR_OK) {
+  const ip4_addr_t groupaddr{static_cast<uint32_t>(ip)};
+  const err_t err = igmp_leavegroup_netif(netif_, &groupaddr);
+  if (err != ERR_OK) {
     errno = err_to_errno(err);
     return false;
   }
@@ -707,7 +706,7 @@ bool EthernetClass::leaveGroup(const IPAddress &ip) const {
 }
 
 bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
-                                         bool flag) const {
+                                         const bool flag) const {
   if (netif_ == nullptr || mac == nullptr) {
     return false;
   }
@@ -718,7 +717,7 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 }
 
-void EthernetClass::setHostname(const char *hostname) {
+void EthernetClass::setHostname(const char *const hostname) {
 #if LWIP_NETIF_HOSTNAME
   if (hostname == hostname_) {
     return;
@@ -753,7 +752,7 @@ EthernetClass::operator bool() const {
   return (netif_ != nullptr);
 }
 
-bool EthernetClass::hostByName(const char *hostname, IPAddress &ip) {
+bool EthernetClass::hostByName(const char *const hostname, IPAddress &ip) {
 #if LWIP_DNS
   if (netif_ == nullptr) {
     return false;

@@ -34,33 +34,34 @@ static constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
 // Maximum possible payload size.
 static constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
 
-void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
-                           const ip_addr_t *addr, u16_t port) {
+void EthernetUDP::recvFunc(void *const arg, struct udp_pcb *const pcb,
+                           struct pbuf *const p,
+                           const ip_addr_t *const addr, const u16_t port) {
   if (arg == nullptr || pcb == nullptr) {
     return;
   }
 
-  EthernetUDP *udp = static_cast<EthernetUDP *>(arg);
+  EthernetUDP *const udp = static_cast<EthernetUDP *>(arg);
 
   if (p == nullptr) {
     udp->stop();
     return;
   }
 
-  uint32_t timestamp = sys_now();
+  const uint32_t timestamp = sys_now();
 
-  struct pbuf *pHead = p;
+  struct pbuf *pNext = p;
 
   // Push (replace the head)
   Packet &packet = udp->inBuf_[udp->inBufHead_];
   packet.data.clear();
-  if (p->tot_len > 0) {
-    packet.data.reserve(p->tot_len);
+  if (pNext->tot_len > 0) {
+    packet.data.reserve(pNext->tot_len);
     // TODO: Limit vector size
-    while (p != nullptr) {
-      uint8_t *data = static_cast<uint8_t *>(p->payload);
-      packet.data.insert(packet.data.end(), &data[0], &data[p->len]);
-      p = p->next;
+    while (pNext != nullptr) {
+      uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
+      packet.data.insert(packet.data.end(), &data[0], &data[pNext->len]);
+      pNext = pNext->next;
     }
   }
   packet.addr = *addr;
@@ -79,14 +80,14 @@ void EthernetUDP::recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
   }
   udp->inBufHead_ = (udp->inBufHead_ + 1) % udp->inBuf_.size();
 
-  pbuf_free(pHead);
+  pbuf_free(p);
 
   udp->totalReceiveCount_++;
 }
 
 EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
 
-EthernetUDP::EthernetUDP(size_t capacity)
+EthernetUDP::EthernetUDP(const size_t capacity)
     : pcb_(nullptr),
       listening_(false),
       listenReuse_(false),
@@ -104,29 +105,29 @@ EthernetUDP::~EthernetUDP() {
   stop();
 }
 
-void EthernetUDP::setReceiveQueueCapacity(size_t capacity) {
+void EthernetUDP::setReceiveQueueCapacity(const size_t capacity) {
   if (capacity == inBuf_.size()) {
     return;
   }
 
-  capacity = std::max(capacity, size_t{1});
+  const size_t actualCap = std::max(capacity, size_t{1});
 
   // Keep all the newest elements
   // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    if (capacity <= inBufSize_) {
+    if (actualCap <= inBufSize_) {
       // Keep all the newest packets
       if (inBufTail_ != 0) {
-        size_t n = (inBufTail_ + (inBufSize_ - capacity)) % inBuf_.size();
+        size_t n = (inBufTail_ + (inBufSize_ - actualCap)) % inBuf_.size();
         std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
       }
-      inBuf_.resize(capacity);
+      inBuf_.resize(actualCap);
       inBufHead_ = 0;
-      inBufSize_ = capacity;
+      inBufSize_ = actualCap;
     } else {
       if (inBufTail_ != 0) {
         std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
       }
-      inBuf_.resize(capacity);
+      inBuf_.resize(actualCap);
       inBufHead_ = inBufSize_;
 
       // Don't reserve memory because that might exhaust the heap
@@ -140,11 +141,11 @@ void EthernetUDP::setReceiveQueueCapacity(size_t capacity) {
   inBuf_.shrink_to_fit();
 }
 
-uint8_t EthernetUDP::begin(uint16_t localPort) {
+uint8_t EthernetUDP::begin(const uint16_t localPort) {
   return begin(localPort, false);
 }
 
-bool EthernetUDP::beginWithReuse(uint16_t localPort) {
+bool EthernetUDP::beginWithReuse(const uint16_t localPort) {
   return begin(localPort, true);
 }
 
@@ -160,7 +161,7 @@ bool EthernetUDP::tryCreatePCB() {
   return true;
 }
 
-bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
+bool EthernetUDP::begin(const uint16_t localPort, const bool reuse) {
   if (listening_) {
     if (pcb_->local_port == localPort && listenReuse_ == reuse) {
       return true;
@@ -176,8 +177,8 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
     ip_set_option(pcb_, SOF_REUSEADDR);
   }
 
-  err_t err;
-  if ((err = udp_bind(pcb_, IP_ANY_TYPE, localPort))!= ERR_OK) {
+  const err_t err = udp_bind(pcb_, IP_ANY_TYPE, localPort);
+  if (err != ERR_OK) {
     stop();
     errno = err_to_errno(err);
     return false;
@@ -203,17 +204,18 @@ bool EthernetUDP::begin(uint16_t localPort, bool reuse) {
   return true;
 }
 
-uint8_t EthernetUDP::beginMulticast(IPAddress ip, uint16_t localPort) {
+uint8_t EthernetUDP::beginMulticast(const IPAddress ip,
+                                    const uint16_t localPort) {
   return beginMulticast(ip, localPort, false);
 }
 
 bool EthernetUDP::beginMulticastWithReuse(const IPAddress &ip,
-                                          uint16_t localPort) {
+                                          const uint16_t localPort) {
   return beginMulticast(ip, localPort, true);
 }
 
-bool EthernetUDP::beginMulticast(const IPAddress &ip, uint16_t localPort,
-                                 bool reuse) {
+bool EthernetUDP::beginMulticast(const IPAddress &ip, const uint16_t localPort,
+                                 const bool reuse) {
   if (!begin(localPort, reuse)) {
     return false;
   }
@@ -257,7 +259,7 @@ EthernetUDP::operator bool() const {
   return listening_;
 }
 
-bool EthernetUDP::setOutgoingDiffServ(uint8_t ds) {
+bool EthernetUDP::setOutgoingDiffServ(const uint8_t ds) {
   if (!tryCreatePCB()) {
     return false;
   }
@@ -272,7 +274,7 @@ uint8_t EthernetUDP::outgoingDiffServ() const {
   return pcb_->tos;
 }
 
-bool EthernetUDP::setOutgoingTTL(uint8_t ttl) {
+bool EthernetUDP::setOutgoingTTL(const uint8_t ttl) {
   if (!tryCreatePCB()) {
     return false;
   }
@@ -339,19 +341,19 @@ int EthernetUDP::read() {
   return packet_.data[packetPos_++];
 }
 
-int EthernetUDP::read(uint8_t *buffer, size_t len) {
+int EthernetUDP::read(uint8_t *const buffer, const size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
-  len = std::min(len, packet_.data.size() - packetPos_);
+  const size_t actualLen = std::min(len, packet_.data.size() - packetPos_);
   if (buffer != nullptr) {
-    std::copy_n(&packet_.data.data()[packetPos_], len, buffer);
+    std::copy_n(&packet_.data.data()[packetPos_], actualLen, buffer);
   }
-  packetPos_ += len;
-  return len;
+  packetPos_ += actualLen;
+  return actualLen;
 }
 
-int EthernetUDP::read(char *buffer, size_t len) {
+int EthernetUDP::read(char *const buffer, const size_t len) {
   return read(reinterpret_cast<uint8_t *>(buffer), len);
 }
 
@@ -404,16 +406,16 @@ uint8_t EthernetUDP::receivedTTL() const {
 //  Transmission
 // --------------------------------------------------------------------------
 
-int EthernetUDP::beginPacket(IPAddress ip, uint16_t port) {
+int EthernetUDP::beginPacket(const IPAddress ip, const uint16_t port) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return beginPacket(&ipaddr, port);
 #else
   return false;
 #endif  // LWIP_IPV4
 }
 
-int EthernetUDP::beginPacket(const char *host, uint16_t port) {
+int EthernetUDP::beginPacket(const char *const host, const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -428,7 +430,8 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port) {
 #endif  // LWIP_DNS
 }
 
-bool EthernetUDP::beginPacket(const ip_addr_t *ipaddr, uint16_t port) {
+bool EthernetUDP::beginPacket(const ip_addr_t *const ipaddr,
+                              const uint16_t port) {
   if (!tryCreatePCB()) {
     return false;
   }
@@ -452,7 +455,8 @@ int EthernetUDP::endPacket() {
   hasOutPacket_ = false;
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, outPacket_.data.size(), PBUF_RAM);
+  struct pbuf *const p =
+      pbuf_alloc(PBUF_TRANSPORT, outPacket_.data.size(), PBUF_RAM);
   if (p == nullptr) {
     outPacket_.clear();
     Ethernet.loop();  // Allow the stack to move along
@@ -493,18 +497,18 @@ int EthernetUDP::endPacket() {
   return true;
 }
 
-bool EthernetUDP::send(const IPAddress &ip, uint16_t port,
-                       const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const IPAddress &ip, const uint16_t port,
+                       const uint8_t *const data, const size_t len) {
 #if LWIP_IPV4
-  ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return send(&ipaddr, port, data, len);
 #else
   return false;
 #endif  // LWIP_IPV4
 }
 
-bool EthernetUDP::send(const char *host, uint16_t port,
-                       const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const char *const host, const uint16_t port,
+                       const uint8_t *const data, const size_t len) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -521,8 +525,8 @@ bool EthernetUDP::send(const char *host, uint16_t port,
 #endif  // LWIP_DNS
 }
 
-bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
-                       const uint8_t *data, size_t len) {
+bool EthernetUDP::send(const ip_addr_t *const ipaddr, const uint16_t port,
+                       const uint8_t *const data, const size_t len) {
   if (len > kMaxPossiblePayloadSize) {
     errno = ENOBUFS;
     return false;
@@ -532,7 +536,7 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   }
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
+  struct pbuf *const p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
   if (p == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
@@ -570,7 +574,7 @@ bool EthernetUDP::send(const ip_addr_t *ipaddr, uint16_t port,
   return true;
 }
 
-size_t EthernetUDP::write(uint8_t b) {
+size_t EthernetUDP::write(const uint8_t b) {
   if (!hasOutPacket_) {
     return 0;
   }
@@ -581,13 +585,15 @@ size_t EthernetUDP::write(uint8_t b) {
   return 1;
 }
 
-size_t EthernetUDP::write(const uint8_t *buffer, size_t size) {
+size_t EthernetUDP::write(const uint8_t *const buffer, const size_t size) {
   if (!hasOutPacket_ || size == 0) {
     return 0;
   }
-  size = std::min(kMaxPossiblePayloadSize - outPacket_.data.size(), size);
-  outPacket_.data.insert(outPacket_.data.end(), &buffer[0], &buffer[size]);
-  return size;
+  const size_t actualSize =
+      std::min(kMaxPossiblePayloadSize - outPacket_.data.size(), size);
+  outPacket_.data.insert(outPacket_.data.end(), &buffer[0],
+                         &buffer[actualSize]);
+  return actualSize;
 }
 
 int EthernetUDP::availableForWrite() {
