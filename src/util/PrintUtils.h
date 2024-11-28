@@ -52,7 +52,7 @@ size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
 class StdioPrint : public Print {
  public:
   explicit StdioPrint(std::FILE *stream) : stream_(stream) {}
-  ~StdioPrint() = default;
+  virtual ~StdioPrint() = default;
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
@@ -75,7 +75,7 @@ class StdioPrint : public Print {
 class NullPrint final : public Print {
  public:
   NullPrint() = default;
-  ~NullPrint() = default;
+  virtual ~NullPrint() = default;
 
   size_t write(uint8_t b) override {
     LWIP_UNUSED_ARG(b);
@@ -100,7 +100,7 @@ class NullPrint final : public Print {
 class PrintDecorator : public Print {
  public:
   PrintDecorator(Print &p) : p_(p) {}
-  ~PrintDecorator() = default;
+  virtual ~PrintDecorator() = default;
 
   size_t write(uint8_t b) override {
     return p_.write(b);

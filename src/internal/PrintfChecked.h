@@ -23,6 +23,9 @@ namespace internal {
 
 class PrintfChecked {
  public:
+  PrintfChecked() = default;
+  virtual ~PrintfChecked() = default;
+
   // Define a format-checked printf.
   [[gnu::format(printf, 2, 3)]]
   int printf(const char *const format, ...) {

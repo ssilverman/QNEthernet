@@ -34,7 +34,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   EthernetServer(EthernetServer &&) = default;
   EthernetServer &operator=(EthernetServer &&) = default;
 
-  ~EthernetServer();
+  virtual ~EthernetServer();
 
   // Returns the maximum number of TCP listeners.
   static constexpr int maxListeners() {

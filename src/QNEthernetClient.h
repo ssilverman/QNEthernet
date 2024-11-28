@@ -35,7 +35,7 @@ class EthernetClient : public Client,
                        public internal::PrintfChecked {
  public:
   EthernetClient();
-  ~EthernetClient();
+  virtual ~EthernetClient();
 
   // Ideally, we only want move semantics because the state should only be owned
   // by one client at a time. However, user code may need to copy and the writer

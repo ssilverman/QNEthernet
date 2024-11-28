@@ -42,7 +42,7 @@ class EthernetUDP : public UDP,
   EthernetUDP(EthernetUDP &&) = default;
   EthernetUDP &operator=(EthernetUDP &&) = default;
 
-  ~EthernetUDP();
+  virtual ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.
   static constexpr int maxSockets() {
