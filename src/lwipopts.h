@@ -28,7 +28,7 @@ extern "C" {
 // #define LWIP_TCPIP_CORE_LOCKING_INPUT 0
 #define SYS_LIGHTWEIGHT_PROT          0  /* 1 */
 #define LWIP_ASSERT_CORE_LOCKED() \
-  qnethernet_hal_check_core_locking(__FILE__, __LINE__, __FUNCTION__)
+  qnethernet_hal_check_core_locking(__FILE__, __LINE__, __func__)
 void qnethernet_hal_check_core_locking(const char *file, int line,
                                        const char *func);
 
