@@ -133,9 +133,9 @@ void MDNSClass::restart() {
 // for "_tcp" and DNSSD_PROTO_UDP for all else.
 static enum mdns_sd_proto toProto(const char *const protocol) {
   if (String{protocol}.equalsIgnoreCase("_tcp")) {
-    return DNSSD_PROTO_TCP;
+    return mdns_sd_proto::DNSSD_PROTO_TCP;
   } else {
-    return DNSSD_PROTO_UDP;
+    return mdns_sd_proto::DNSSD_PROTO_UDP;
   }
 }
 
@@ -272,7 +272,7 @@ void MDNSClass::Service::reset() {
   valid_ = false;
   name_[0] = '\0';
   type_[0] = '\0';
-  proto_ = DNSSD_PROTO_UDP;
+  proto_ = mdns_sd_proto::DNSSD_PROTO_UDP;
   port_ = 0;
   getTXTFunc_ = nullptr;
 }
