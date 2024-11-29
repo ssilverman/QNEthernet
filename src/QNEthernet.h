@@ -59,6 +59,7 @@ class EthernetClass final {
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
 
   // EthernetClass is neither copyable nor movable
+  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
   EthernetClass(const EthernetClass &) = delete;
   EthernetClass &operator=(const EthernetClass &) = delete;
 

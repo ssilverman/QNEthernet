@@ -54,6 +54,11 @@ class StdioPrint : public Print {
   explicit StdioPrint(std::FILE *stream) : stream_(stream) {}
   virtual ~StdioPrint() = default;
 
+  // Define these because there's a pointer data member
+  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
+  StdioPrint(const StdioPrint &) = delete;
+  StdioPrint &operator=(const StdioPrint &) = delete;
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
   int availableForWrite() override;

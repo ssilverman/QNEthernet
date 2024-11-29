@@ -44,6 +44,11 @@ struct ConnectionState final {
     }
   }
 
+  // Define these because there's a pointer data member
+  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
+  ConnectionState(const ConnectionState &) = delete;
+  ConnectionState &operator=(const ConnectionState &) = delete;
+
   altcp_pcb * /*volatile*/ pcb;
 
   // Incoming data buffer
