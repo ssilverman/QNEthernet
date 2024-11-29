@@ -148,12 +148,12 @@ class MDNSClass final {
     void reset();
 
    private:
-    bool valid_;
+    bool valid_ = false;
     char name_[MDNS_LABEL_MAXLEN + 1];
     char type_[MDNS_LABEL_MAXLEN + 1];
-    enum mdns_sd_proto proto_;
-    uint16_t port_;
-    std::vector<String> (*getTXTFunc_)();
+    enum mdns_sd_proto proto_ = mdns_sd_proto::DNSSD_PROTO_UDP;
+    uint16_t port_ = 0;
+    std::vector<String> (*getTXTFunc_)() = nullptr;
   };
 
   MDNSClass();

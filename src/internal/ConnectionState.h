@@ -24,7 +24,11 @@ namespace internal {
 struct ConnectionState final {
   // Creates a new object and sets `arg` as the pcb's arg. This also reserves
   // TCP_WND bytes as buffer space.
-  ConnectionState(altcp_pcb *const tpcb, void *const arg) : pcb(tpcb) {
+  ConnectionState(altcp_pcb *const tpcb, void *const arg)
+      : pcb(tpcb),
+        buf{},
+        bufPos(0),
+        removeFunc{} {
     altcp_arg(tpcb, arg);
     buf.reserve(TCP_WND);
   }
@@ -40,14 +44,14 @@ struct ConnectionState final {
     }
   }
 
-  altcp_pcb * /*volatile*/ pcb = nullptr;
+  altcp_pcb * /*volatile*/ pcb;
 
   // Incoming data buffer
   std::vector<uint8_t> buf;
-  /*volatile*/ size_t bufPos = 0;
+  /*volatile*/ size_t bufPos;
 
   // Called from the destructor after the callback arg is deleted.
-  std::function<void(ConnectionState *)> removeFunc = nullptr;
+  std::function<void(ConnectionState *)> removeFunc;
 };
 
 }  // namespace internal

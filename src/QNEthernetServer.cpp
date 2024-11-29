@@ -17,7 +17,9 @@
 namespace qindesign {
 namespace network {
 
-EthernetServer::EthernetServer() {}
+EthernetServer::EthernetServer()
+    : hasPort_(false),
+      port_(0) {}
 
 EthernetServer::EthernetServer(const uint16_t port)
     : hasPort_(true),

@@ -236,7 +236,7 @@ class EthernetUDP : public UDP,
   struct Packet final {
     uint8_t diffServ = 0;
     uint8_t ttl = 0;
-    std::vector<uint8_t> data;
+    std::vector<uint8_t> data{};
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time

@@ -114,8 +114,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
  private:
   bool begin(uint16_t port, bool reuse);
 
-  bool hasPort_ = false;
-  uint16_t port_ = 0;   // Zero means let the system choose a port
+  bool hasPort_;
+  uint16_t port_;       // Zero means let the system choose a port
   bool reuse_ = false;  // Whether the SO_REUSEADDR socket option is set
 
   // The listening port may be different from the requested port, say if the

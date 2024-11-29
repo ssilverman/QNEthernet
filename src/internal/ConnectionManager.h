@@ -60,7 +60,9 @@ class ConnectionManager final {
   int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
  private:
-  ConnectionManager() = default;
+  ConnectionManager()
+      : connections_{},
+        listeners_{} {}
   ~ConnectionManager() = default;
 
   static err_t connectedFunc(void *arg, struct altcp_pcb *tpcb, err_t err);

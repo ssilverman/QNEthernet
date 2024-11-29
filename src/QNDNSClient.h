@@ -71,9 +71,9 @@ class DNSClient final {
   // DNS request state.
   struct Request final {
     bool found = false;
-    std::function<void(const ip_addr_t *)> callback;
-    uint32_t startTime;
-    uint32_t timeout;
+    std::function<void(const ip_addr_t *)> callback{};
+    uint32_t startTime = 0;
+    uint32_t timeout = 0;
   };
 
   DNSClient() = delete;

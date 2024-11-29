@@ -26,12 +26,12 @@ namespace internal {
 struct ConnectionHolder final {
   err_t lastError = ERR_OK;
   /*volatile*/ bool connected = false;
-  std::unique_ptr<ConnectionState> state;
+  std::unique_ptr<ConnectionState> state{};
 
   // Remaining data after a connection is closed
   // Will only be non-empty after the connection is closed
   /*volatile*/ size_t remainingPos = 0;
-  std::vector<uint8_t> remaining;
+  std::vector<uint8_t> remaining{};
   // `remainingPos` should never be past the end of `remaining`
 };
 
