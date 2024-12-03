@@ -1444,15 +1444,15 @@ the latest version is 2.28.8.
 More detailed information are in the subsections below, but here is an outline
 of how to use this feature:
 1. Set the following macros to `1` in _lwipopts.h_:
-   1. LWIP_ALTCP &mdash; Enables the ALTCP layer
-   2. LWIP_ALTCP_TLS &mdash; Enables the TLS features of ALTCP
-   3. LWIP_ALTCP_TLS_MBEDTLS &mdash; Enables the Mbed TLS code for ALTCP TLS
-   4. QNETHERNET_ALTCP_TLS_ADAPTER &mdash; Enables the _altcp_tls_adapter_
-      functions that help ease integration
-2. Install the latest Mbed TLS v2.x.x.
-3. Implement the functions required by _src/altcp_tls_adapter.cpp_. This file
+   1. `LWIP_ALTCP` &mdash; Enables the ALTCP layer
+   2. `LWIP_ALTCP_TLS` &mdash; Enables the TLS features of ALTCP
+   3. `LWIP_ALTCP_TLS_MBEDTLS` &mdash; Enables the Mbed TLS code for ALTCP TLS
+2. Set the `QNETHERNET_ALTCP_TLS_ADAPTER` macro to `1` in _qnethernet_opts.h_.
+   This enables the _altcp_tls_adapter_ functions that help ease integration.
+3. Install the latest Mbed TLS v2.x.x.
+4. Implement the functions required by _src/altcp_tls_adapter.cpp_. This file
    implements the above allocator functions and simplifies the integration.
-4. Implement an entropy function for internal Mbed TLS use.
+5. Implement an entropy function for internal Mbed TLS use.
 
 #### Installing the Mbed TLS library
 
@@ -1467,8 +1467,8 @@ See the `v2.28.8` or `mbedtls-2.28.8` tags for the 2.28.8 version, or the
 ##### Mbed TLS library install for Arduino IDE
 
 In your preferred "Libraries" folder, create a folder named _mbedtls_.
-Underneath that, create a _src_ folder. Copy, recursively, all files from the
-distribution as follows:
+Underneath that, create a _src_ folder. Copy, recursively, all files and folders
+from the distribution as follows:
 1. distro/library/* -> "Libraries"/mbedtls/src
 2. distro/include/* -> "Libraries"/mbedtls/src
 
@@ -1498,15 +1498,15 @@ presence rather than macro values.
 For posterity, the following changes are the minimum possible set just to be
 able to get the library to compile:
 1. Define:
-   1. MBEDTLS_NO_PLATFORM_ENTROPY
-   2. MBEDTLS_ENTROPY_HARDWARE_ALT &mdash; Requires `mbedtls_hardware_poll()`
+   1. `MBEDTLS_NO_PLATFORM_ENTROPY`
+   2. `MBEDTLS_ENTROPY_HARDWARE_ALT` &mdash; Requires `mbedtls_hardware_poll()`
       function implementation
 2. Undefine:
-   1. MBEDTLS_NET_C
-   2. MBEDTLS_TIMING_C
-   3. MBEDTLS_FS_IO
-   4. MBEDTLS_PSA_ITS_FILE_C
-   5. MBEDTLS_PSA_CRYPTO_STORAGE_C
+   1. `MBEDTLS_NET_C`
+   2. `MBEDTLS_TIMING_C`
+   3. `MBEDTLS_FS_IO`
+   4. `MBEDTLS_PSA_ITS_FILE_C`
+   5. `MBEDTLS_PSA_CRYPTO_STORAGE_C`
 
 There are also example configuration headers in Mbed TLS under _configs/_.
 
@@ -1516,7 +1516,7 @@ after installing the library.
 ##### Mbed TLS library install for PlatformIO
 
 In your preferred "Libraries" folder, create a folder named _mbedtls_. Copy all
-files, recursively, from the Mbed TLS distribution into that folder.
+files and folders, recursively, from the Mbed TLS distribution into that folder.
 
 The "Libraries" folder is either PlatformIO's global libraries location or the
 application's local _lib/_ folder.
