@@ -24,7 +24,6 @@ MbedTLSClient::MbedTLSClient(Client &c)
     // Error
   }
 
-  mbedtls_ssl_conf_ciphersuites(&sslConf_, mbedtls_ssl_list_ciphersuites());
   if (mbedtls_ssl_config_defaults(&sslConf_, MBEDTLS_SSL_IS_CLIENT,
                                   MBEDTLS_SSL_TRANSPORT_STREAM,
                                   MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
