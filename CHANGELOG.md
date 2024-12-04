@@ -11,6 +11,7 @@ and this project adheres to
 ### Changed
 * Remove internal uses of `String` from `MDNSClass` and replace them with
   char arrays.
+* Updated Mbed TLS version mentions to 2.28.9 from 2.28.8.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because
