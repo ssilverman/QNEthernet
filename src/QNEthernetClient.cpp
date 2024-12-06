@@ -219,7 +219,7 @@ bool EthernetClient::setNoDelay(const bool flag) {
   return true;
 }
 
-bool EthernetClient::isNoDelay() {
+bool EthernetClient::isNoDelay() const {
   GET_STATE(false)
 
   return altcp_nagle_disabled(state->pcb);

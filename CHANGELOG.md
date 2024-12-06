@@ -12,6 +12,7 @@ and this project adheres to
 * Remove internal uses of `String` from `MDNSClass` and replace them with
   char arrays.
 * Updated Mbed TLS version mentions to 2.28.9 from 2.28.8.
+* Made `EthernetClient::isNoDelay()` `const`.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because

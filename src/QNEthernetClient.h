@@ -169,7 +169,7 @@ class EthernetClient : public Client,
 
   // Returns the value of the TCP_NODELAY flag for the current connection. This
   // returns false if not connected.
-  bool isNoDelay();
+  bool isNoDelay() const;
 
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)
