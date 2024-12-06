@@ -62,30 +62,30 @@ struct Reg {
   uint16_t addr;
   uint8_t block;
 
-  constexpr Reg(uint16_t a, uint8_t b, uint8_t socket = 0)
+  constexpr Reg(const uint16_t a, const uint8_t b, const uint8_t socket = 0)
       : addr(a),
         block(b + (socket << 2)) {}
 
-  constexpr Reg(const Reg &r, uint8_t socket = 0)
+  constexpr Reg(const Reg &r, const uint8_t socket = 0)
       : addr(r.addr),
         block((r.block & 0x03) + (socket << 2)) {}
 
   template <typename U,
             std::enable_if_t<!std::is_same<U, T>::value, bool> = true>
-  const Reg &operator=(U v) const {
-    return operator=(static_cast<T>(v));
+  const Reg &operator=(const U v) const {
+    return operator=(static_cast<const T>(v));
   }
 
   template <typename U = T,
             std::enable_if_t<sizeof(U) == 1, bool> = true>
-  const Reg &operator=(T v) const {
+  const Reg &operator=(const T v) const {
     write_reg(addr, block, v);
     return *this;
   }
 
   template <typename U = T,
             std::enable_if_t<sizeof(U) == 2, bool> = true>
-  const Reg &operator=(T v) const {
+  const Reg &operator=(const T v) const {
     write_reg_word(addr, block, v);
     return *this;
   }
@@ -195,7 +195,8 @@ static bool s_linkIsFullDuplex  = false;
 // --------------------------------------------------------------------------
 
 // Reads bytes starting from the specified register.
-static void read(uint16_t addr, uint8_t block, void *buf, size_t len) {
+static void read(const uint16_t addr, const uint8_t block,
+                 void *const buf, const size_t len) {
   s_spiBuf[0] = addr >> 8;
   s_spiBuf[1] = addr;
   s_spiBuf[2] = block << 3;
@@ -213,7 +214,7 @@ static void read(uint16_t addr, uint8_t block, void *buf, size_t len) {
 
 // // Writes to the specified register.
 // [[maybe_unused]]
-// static void write(const Reg &reg, uint8_t *buf, size_t len) {
+// static void write(const Reg &reg, uint8_t *const buf, const size_t len) {
 //   s_spiBuf[0] = reg.addr >> 8;
 //   s_spiBuf[1] = reg.addr;
 //   s_spiBuf[2] = (reg.block << 3) | kControlRWBit;
@@ -221,23 +222,27 @@ static void read(uint16_t addr, uint8_t block, void *buf, size_t len) {
 //   spi.beginTransaction(kSPISettings);
 //   digitalWrite(s_chipSelectPin, LOW);
 
+//   uint8_t *pBuf = buf;
+//   size_t lenRem = len;
+
 //   size_t index = 3;
 //   do {
-//     size_t size = std::min(len, std::size(s_spiBuf) - index);
-//     std::memcpy(&s_spiBuf[index], buf, size);
-//     len -= size;
-//     buf += size;
+//     size_t size = std::min(lenRem, std::size(s_spiBuf) - index);
+//     std::memcpy(&s_spiBuf[index], pBuf, size);
+//     lenRem -= size;
+//     pBuf += size;
 
 //     spi.transfer(s_spiBuf, index + size);
 //     index = 0;
-//   } while (len > 0);
+//   } while (lenRem > 0);
 
 //   digitalWrite(s_chipSelectPin, HIGH);
 //   spi.endTransaction();
 // }
 
 // Writes a frame to the specified register. The data starts at &s_spiBuf[3].
-static void write_frame(uint16_t addr, uint8_t block, size_t len) {
+static void write_frame(const uint16_t addr, const uint8_t block,
+                        const size_t len) {
   s_spiBuf[0] = addr >> 8;
   s_spiBuf[1] = addr;
   s_spiBuf[2] = (block << 3) | kControlRWBit;
@@ -251,12 +256,13 @@ static void write_frame(uint16_t addr, uint8_t block, size_t len) {
 
 // Writes to the specified register. The data starts at &s_spiBuf[3].
 template <typename T>
-static void write_frame(const Reg<T> &reg, size_t len) {
+static void write_frame(const Reg<T> &reg, const size_t len) {
   write_frame(reg.addr, reg.block, len);
 }
 
 // Writes a value to the specified register.
-static inline void write_reg(uint16_t addr, uint8_t block, uint8_t v) {
+static inline void write_reg(const uint16_t addr, const uint8_t block,
+                             const uint8_t v) {
   s_frameBuf[0] = v;
   write_frame(addr, block, 1);
 }
@@ -295,7 +301,8 @@ static bool read_reg_word(const Reg<uint16_t> &reg, uint16_t &v) {
   return true;
 }
 
-static inline void write_reg_word(uint16_t addr, uint8_t block, uint16_t v) {
+static inline void write_reg_word(const uint16_t addr, const uint8_t block,
+                                  const uint16_t v) {
   s_frameBuf[0] = v >> 8;
   s_frameBuf[1] = v;
   write_frame(addr, block, 2);
@@ -306,7 +313,7 @@ static inline void write_reg_word(uint16_t addr, uint8_t block, uint16_t v) {
 // --------------------------------------------------------------------------
 
 // Sends a socket command and ensures it completes.
-static void set_socket_command(uint8_t v) {
+static void set_socket_command(const uint8_t v) {
   kSn_CR = v;
   while (*kSn_CR != 0) {
     // Wait for Sn_CR to be zero
@@ -403,7 +410,7 @@ low_level_init_nohardware:
 }
 
 // Sends a frame. This uses data already in s_frameBuf.
-static err_t send_frame(size_t len) {
+static err_t send_frame(const size_t len) {
   if (len == 0) {
     return ERR_OK;
   }
@@ -423,7 +430,7 @@ static err_t send_frame(size_t len) {
   }
 
   // Send the data
-  uint16_t ptr = *kSn_TX_WR;
+  const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = ptr + len;
   set_socket_command(socketcommands::kSend);
@@ -441,10 +448,10 @@ static err_t send_frame(size_t len) {
 }
 
 // Checks the current link status.
-static void check_link_status(struct netif *netif) {
+static void check_link_status(struct netif *const netif) {
   static uint8_t is_link_up = false;
 
-  uint8_t status = *kPHYCFGR;
+  const uint8_t status = *kPHYCFGR;
 
   is_link_up = ((status & 0x01) != 0);
 
@@ -467,7 +474,7 @@ static void check_link_status(struct netif *netif) {
 
 extern "C" {
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
   dc->isMACSettable              = true;
   dc->isLinkStateDetectable      = true;
   dc->isLinkSpeedDetectable      = true;
@@ -535,11 +542,12 @@ bool driver_has_hardware(void) {
   return (s_initState != EnetInitStates::kNoHardware);
 }
 
-FLASHMEM void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(const int pin) {
   if (pin < 0) {
-    pin = kDefaultCSPin;
+    s_chipSelectPin = kDefaultCSPin;
+  } else {
+    s_chipSelectPin = pin;
   }
-  s_chipSelectPin = pin;
 }
 
 FLASHMEM bool driver_init(void) {
@@ -574,7 +582,7 @@ FLASHMEM void driver_deinit(void) {
   s_initState = EnetInitStates::kStart;
 }
 
-struct pbuf *driver_proc_input(struct netif *netif, int counter) {
+struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
   LWIP_UNUSED_ARG(netif);
   LWIP_UNUSED_ARG(counter);
 
@@ -634,7 +642,7 @@ struct pbuf *driver_proc_input(struct netif *netif, int counter) {
   }
 
   // Process the frame
-  struct pbuf *p = pbuf_alloc(PBUF_RAW, frameLen, PBUF_POOL);
+  struct pbuf *const p = pbuf_alloc(PBUF_RAW, frameLen, PBUF_POOL);
   if (p == nullptr) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
@@ -647,7 +655,7 @@ struct pbuf *driver_proc_input(struct netif *netif, int counter) {
   // frames, it seems
 }
 
-void driver_poll(struct netif *netif) {
+void driver_poll(struct netif *const netif) {
   check_link_status(netif);
 }
 
@@ -655,7 +663,7 @@ int driver_link_speed(void) {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool driver_link_set_speed(int speed) {
+bool driver_link_set_speed(const int speed) {
   LWIP_UNUSED_ARG(speed);
   return false;
 }
@@ -664,7 +672,7 @@ bool driver_link_is_full_duplex(void) {
   return s_linkIsFullDuplex;
 }
 
-bool driver_link_set_full_duplex(bool flag) {
+bool driver_link_set_full_duplex(const bool flag) {
   LWIP_UNUSED_ARG(flag);
   return false;
 }
@@ -674,7 +682,7 @@ bool driver_link_is_crossover(void) {
 }
 
 // Outputs data from the MAC.
-err_t driver_output(struct pbuf *p) {
+err_t driver_output(struct pbuf *const p) {
   if (s_initState != EnetInitStates::kInitialized) {
     return ERR_IF;
   }
@@ -690,7 +698,7 @@ err_t driver_output(struct pbuf *p) {
   //   return ERR_BUF;
   // }
 
-  uint16_t copied = pbuf_copy_partial(p, s_frameBuf, p->tot_len, 0);
+  const uint16_t copied = pbuf_copy_partial(p, s_frameBuf, p->tot_len, 0);
   if (copied == 0) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.err);
@@ -701,7 +709,7 @@ err_t driver_output(struct pbuf *p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const uint8_t *frame, size_t len) {
+bool driver_output_frame(const uint8_t *const frame, const size_t len) {
   if (s_initState != EnetInitStates::kInitialized) {
     return false;
   }
@@ -718,7 +726,7 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             bool allow) {
+                                             const bool allow) {
   if (mac == nullptr) {
     return false;
   }

@@ -334,8 +334,9 @@ static void enet_isr(void);
 // continuation is needed (not complete). If continuation is needed, then this
 // should be called again with 'cont' set to true. If this is the first call,
 // then 'cont' should be set to false.
-static bool mdio_read_nonblocking(uint16_t regaddr, uint16_t data[static 1],
-                                  bool cont) {
+static bool mdio_read_nonblocking(const uint16_t regaddr,
+                                  uint16_t data[static 1],
+                                  const bool cont) {
   if (!cont) {
     ENET_EIR = ENET_EIR_MII;  // Clear status
 
@@ -354,7 +355,7 @@ static bool mdio_read_nonblocking(uint16_t regaddr, uint16_t data[static 1],
 }
 
 // Blocking MDIO read.
-uint16_t mdio_read(uint16_t regaddr) {
+uint16_t mdio_read(const uint16_t regaddr) {
   uint16_t data;
   bool doCont = false;
   do {
@@ -367,7 +368,8 @@ uint16_t mdio_read(uint16_t regaddr) {
 // continuation is needed (not complete). If continuation is needed, then this
 // should be called again with 'cont' set to true. If this is the first call,
 // then 'cont' should be set to false.
-static bool mdio_write_nonblocking(uint16_t regaddr, uint16_t data, bool cont) {
+static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
+                                   const bool cont) {
   if (!cont) {
     ENET_EIR = ENET_EIR_MII;  // Clear status
 
@@ -386,7 +388,7 @@ static bool mdio_write_nonblocking(uint16_t regaddr, uint16_t data, bool cont) {
 }
 
 // Blocking MDIO write.
-void mdio_write(uint16_t regaddr, uint16_t data) {
+void mdio_write(const uint16_t regaddr, const uint16_t data) {
   bool doCont = false;
   do {
     doCont = mdio_write_nonblocking(regaddr, data, doCont);
@@ -580,7 +582,7 @@ FLASHMEM static void init_phy(void) {
 // Low-level input function that transforms a received frame into an lwIP pbuf.
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
-static struct pbuf *low_level_input(volatile enetbufferdesc_t *pBD) {
+static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
   const u16_t err_mask = kEnetRxBdTrunc    |
                          kEnetRxBdOverrun  |
                          kEnetRxBdCrc      |
@@ -647,8 +649,8 @@ static inline volatile enetbufferdesc_t *get_bufdesc(void) {
 }
 
 // Updates a buffer descriptor. Meant to be used with get_bufdesc().
-static inline void update_bufdesc(volatile enetbufferdesc_t *pBD,
-                                  uint16_t len) {
+static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
+                                  const uint16_t len) {
   pBD->length = len;
   pBD->status = (pBD->status & kEnetTxBdWrap) |
                 kEnetTxBdTransmitCrc          |
@@ -700,7 +702,8 @@ static void enet_isr(void) {
 // Checks the link status and returns zero if complete and a state value if
 // not complete. The return value should be used in the next call to
 // this function.
-static inline int check_link_status(struct netif *netif, int state) {
+static inline int check_link_status(struct netif *const netif,
+                                    const int state) {
   static uint16_t bmsr;
   static uint16_t physts;
   static uint8_t is_link_up;
@@ -754,7 +757,7 @@ static inline int check_link_status(struct netif *netif, int state) {
 //  Driver Interface
 // --------------------------------------------------------------------------
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
   dc->isMACSettable              = true;
   dc->isLinkStateDetectable      = true;
   dc->isLinkSpeedDetectable      = true;
@@ -823,7 +826,7 @@ bool driver_has_hardware(void) {
   return (s_initState != kInitStateNoHardware);
 }
 
-FLASHMEM void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
@@ -1000,7 +1003,7 @@ FLASHMEM void driver_deinit(void) {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-struct pbuf *driver_proc_input(struct netif *netif, int counter) {
+struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
@@ -1015,14 +1018,14 @@ struct pbuf *driver_proc_input(struct netif *netif, int counter) {
   }
 
   // Get the next chunk of input data
-  volatile enetbufferdesc_t *pBD = rxbd_next();
+  volatile enetbufferdesc_t *const pBD = rxbd_next();
   if (pBD == NULL) {
     return NULL;
   }
   return low_level_input(pBD);
 }
 
-void driver_poll(struct netif *netif) {
+void driver_poll(struct netif *const netif) {
   s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
@@ -1030,7 +1033,7 @@ int driver_link_speed(void) {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool driver_link_set_speed(int speed) {
+bool driver_link_set_speed(const int speed) {
   LWIP_UNUSED_ARG(speed);
   return false;
 }
@@ -1039,7 +1042,7 @@ bool driver_link_is_full_duplex(void) {
   return s_linkIsFullDuplex;
 }
 
-bool driver_link_set_full_duplex(bool flag) {
+bool driver_link_set_full_duplex(const bool flag) {
   LWIP_UNUSED_ARG(flag);
   return false;
 }
@@ -1049,9 +1052,9 @@ bool driver_link_is_crossover(void) {
 }
 
 // Outputs data from the MAC.
-err_t driver_output(struct pbuf *p) {
+err_t driver_output(struct pbuf *const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
-  volatile enetbufferdesc_t *pBD = get_bufdesc();
+  volatile enetbufferdesc_t *const pBD = get_bufdesc();
   if (pBD == NULL) {
     LINK_STATS_INC(link.memerr);
     LINK_STATS_INC(link.drop);
@@ -1072,12 +1075,12 @@ err_t driver_output(struct pbuf *p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const uint8_t *frame, size_t len) {
+bool driver_output_frame(const uint8_t *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
 
-  volatile enetbufferdesc_t *pBD = get_bufdesc();
+  volatile enetbufferdesc_t *const pBD = get_bufdesc();
   if (pBD == NULL) {
     return false;
   }
@@ -1098,12 +1101,18 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-// CRC-32 routine for computing the 4-byte FCS for multicast lookup.
-static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
+// CRC-32 routine for computing the 4-byte FCS for multicast lookup. The initial
+// value will be zero.
+static uint32_t crc32(const uint8_t *const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
+
+  uint32_t crc = 0;  // Initial value
+  const uint8_t *pData = data;
+  size_t lenRem = len;
+
   crc = ~crc;
-  while (len--) {
-    crc ^= *(data++);
+  while (lenRem--) {
+    crc ^= *(pData++);
     for (int j = 0; j < 8; j++) {
       crc = (crc >> 1) ^ (-(crc & 0x01) & 0xEDB88320);
     }
@@ -1112,7 +1121,7 @@ static uint32_t crc32(uint32_t crc, const uint8_t *data, size_t len) {
 }
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             bool allow) {
+                                             const bool allow) {
   // Don't release bits that have had a collision. Track these here.
   static uint32_t collisionGALR = 0;
   static uint32_t collisionGAUR = 0;
@@ -1123,8 +1132,8 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
     return false;
   }
 
-  uint32_t crc = (crc32(0, mac, ETH_HWADDR_LEN) >> 26) & 0x3f;
-  uint32_t value = 1 << (crc & 0x1f);
+  const uint32_t crc = (crc32(mac, ETH_HWADDR_LEN) >> 26) & 0x3f;
+  const uint32_t value = 1 << (crc & 0x1f);
 
   // Choose which locations
 

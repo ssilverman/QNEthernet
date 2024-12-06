@@ -14,7 +14,7 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
   dc->isMACSettable              = false;
   dc->isLinkStateDetectable      = false;
   dc->isLinkSpeedDetectable      = false;
@@ -48,7 +48,7 @@ bool driver_has_hardware(void) {
   return false;
 }
 
-FLASHMEM void driver_set_chip_select_pin(int pin) {
+FLASHMEM void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
@@ -59,13 +59,13 @@ FLASHMEM bool driver_init(void) {
 FLASHMEM void driver_deinit(void) {
 }
 
-struct pbuf *driver_proc_input(struct netif *netif, int counter) {
+struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
   LWIP_UNUSED_ARG(netif);
   LWIP_UNUSED_ARG(counter);
   return NULL;
 }
 
-void driver_poll(struct netif *netif) {
+void driver_poll(struct netif *const netif) {
   LWIP_UNUSED_ARG(netif);
 }
 
@@ -73,7 +73,7 @@ int driver_link_speed(void) {
   return 0;
 }
 
-bool driver_link_set_speed(int speed) {
+bool driver_link_set_speed(const int speed) {
   LWIP_UNUSED_ARG(speed);
   return false;
 }
@@ -82,7 +82,7 @@ bool driver_link_is_full_duplex(void) {
   return false;
 }
 
-bool driver_link_set_full_duplex(bool flag) {
+bool driver_link_set_full_duplex(const bool flag) {
   LWIP_UNUSED_ARG(flag);
   return false;
 }
@@ -91,13 +91,13 @@ bool driver_link_is_crossover(void) {
   return false;
 }
 
-err_t driver_output(struct pbuf *p) {
+err_t driver_output(struct pbuf *const p) {
   LWIP_UNUSED_ARG(p);
   return ERR_IF;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const uint8_t *frame, size_t len) {
+bool driver_output_frame(const uint8_t *const frame, const size_t len) {
   LWIP_UNUSED_ARG(frame);
   LWIP_UNUSED_ARG(len);
   return false;
@@ -111,7 +111,7 @@ bool driver_output_frame(const uint8_t *frame, size_t len) {
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             bool allow) {
+                                             const bool allow) {
   LWIP_UNUSED_ARG(mac);
   LWIP_UNUSED_ARG(allow);
   return false;
