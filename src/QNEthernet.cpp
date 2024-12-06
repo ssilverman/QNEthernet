@@ -12,6 +12,11 @@
 #include <cstdio>
 #include <cstring>
 
+#if defined(TEENSYDUINO)
+// Teensyduino < 1.59 doesn't support casting a `const IPAddress` to uint32_t
+static_assert(TEENSYDUINO >= 159, "Must be built with Teensydino >= 1.59");
+#endif
+
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
 #if QNETHERNET_DO_LOOP_IN_YIELD
 #if defined(__has_include)

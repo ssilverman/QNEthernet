@@ -13,6 +13,8 @@ and this project adheres to
   char arrays.
 * Updated Mbed TLS version mentions to 2.28.9 from 2.28.8.
 * Made `EthernetClient::isNoDelay()` `const`.
+* Disallow compilation for Teensyduino < 1.59 because there's no support for
+  casting a `const IPAddress` to a `uint32_t`.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because
