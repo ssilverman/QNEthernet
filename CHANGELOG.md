@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `qnethernet_hal_rand(buf, size)` for filling a buffer with
+  random values.
+
 ### Changed
 * Remove internal uses of `String` from `MDNSClass` and replace them with
   char arrays.

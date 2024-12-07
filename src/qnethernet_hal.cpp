@@ -15,6 +15,7 @@
 #endif  // QNETHERNET_CUSTOM_WRITE
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #include <Arduino.h>  // For Serial, noInterrupts(), interrupts(), millis()
 #include <Print.h>
@@ -177,6 +178,10 @@ extern "C" {
 // Gets a 32-bit random number for LWIP_RAND() and RandomDevice.
 [[gnu::weak]] uint32_t qnethernet_hal_rand(void);
 
+// Fills a buffer with random values. This will return the number of bytes
+// actually filled.
+[[gnu::weak]] size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t size);
+
 #if WHICH_ENTROPY_TYPE == 1
 
 void qnethernet_hal_init_rand(void) {
@@ -187,6 +192,10 @@ void qnethernet_hal_init_rand(void) {
 
 uint32_t qnethernet_hal_rand(void) {
   return entropy_random();
+}
+
+size_t qnethernet_hal_fill_rand(uint8_t *const buf, const size_t size) {
+  return trng_data(buf, size);
 }
 
 #elif WHICH_ENTROPY_TYPE == 2
@@ -218,6 +227,30 @@ void qnethernet_hal_init_rand(void) {
 
 uint32_t qnethernet_hal_rand(void) {
   return std::rand();
+}
+
+#endif  // Which entropy type
+
+// Multi-byte fill
+#if WHICH_ENTROPY_TYPE != 1
+
+size_t qnethernet_hal_fill_rand(uint8_t *const buf, const size_t size) {
+  uint8_t *pBuf = buf;
+
+  size_t count = size / 4;
+  for (size_t i = 0; i < count; i++) {
+    uint32_t r = qnethernet_hal_rand();
+    std::memcpy(pBuf, &r, 4);
+    pBuf += 4;
+  }
+
+  size_t rem = size % 4;
+  if (rem != 0) {
+    uint32_t r = qnethernet_hal_rand();
+    std::memcpy(pBuf, &r, rem);
+  }
+
+  return size;
 }
 
 #endif  // Which entropy type
