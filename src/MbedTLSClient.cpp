@@ -6,32 +6,398 @@
 
 #include "MbedTLSClient.h"
 
+#include <lwip/arch.h>
+#include <lwip/ip_addr.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
+
+extern "C" {
+size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t len);
+uint32_t qnethernet_hal_millis(void);
+
+// Global random state
+static bool s_randInit = false;
+static mbedtls_ctr_drbg_context s_drbg;
+static mbedtls_entropy_context s_entropy;
+
+// Initializes the random context. This uses a single context.
+static void initRand() {
+  if (s_randInit) {
+    return;
+  }
+  s_randInit = true;
+
+  mbedtls_ctr_drbg_init(&s_drbg);
+  mbedtls_entropy_init(&s_entropy);
+
+  // Build a nonce
+  uint8_t nonce[128];
+  qnethernet_hal_fill_rand(nonce, sizeof(nonce));
+
+  mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
+                        nonce, sizeof(nonce));
+}
+
+// Gets entropy for MbedTLS.
+int mbedtls_hardware_poll(void *const data,
+                          unsigned char *const output, const size_t len,
+                          size_t *const olen) {
+  LWIP_UNUSED_ARG(data);
+
+  size_t filled = qnethernet_hal_fill_rand(output, len);
+  if (olen != NULL) {
+    *olen = filled;
+  }
+  return 0;  // Success
+}
+}  // extern "C"
 
 namespace qindesign {
 namespace network {
 
-MbedTLSClient::MbedTLSClient(Client &c)
-    : c_(c) {
-  mbedtls_ssl_init(&sslCtx_);
-  mbedtls_ssl_config_init(&sslConf_);
-  mbedtls_ctr_drbg_init(&drbgCtx_);
-  mbedtls_entropy_init(&entropyCtx_);
+MbedTLSClient::MbedTLSClient(Client &client)
+    : client_(client) {}
 
-  if (mbedtls_ctr_drbg_seed(&drbgCtx_, mbedtls_entropy_func, &entropyCtx_,
-                            nullptr, 0) != 0) {
-    // Error
-  }
+void MbedTLSClient::setCACert(const uint8_t *const caCert,
+                              const size_t caCertLen) {
+  caCertBuf_ = caCert;
+  caCertLen_ = caCertLen;
+}
 
-  if (mbedtls_ssl_config_defaults(&sslConf_, MBEDTLS_SSL_IS_CLIENT,
+void MbedTLSClient::setPSK(const uint8_t *const psk, const size_t pskLen,
+                           const uint8_t *const pskId, const size_t pskIdLen) {
+  psk_ = psk;
+  pskLen_ = pskLen;
+  pskId_ = pskId;
+  pskIdLen_ = pskIdLen;
+}
+
+void MbedTLSClient::setClientCert(const uint8_t *const clientCert,
+                                  const size_t clientCertLen,
+                                  const uint8_t *const clientKey,
+                                  const size_t clientKeyLen) {
+  clientCertBuf_ = clientCert;
+  clientCertLen_ = clientCertLen;
+  clientKeyBuf_ = clientKey;
+  clientKeyLen_ = clientKeyLen;
+}
+
+void MbedTLSClient::setHandshakeTimeout(uint32_t timeout) {
+  handshakeTimeout_ = timeout;
+}
+
+bool MbedTLSClient::init() {
+  const bool hasCACert = (caCertBuf_ != nullptr) && (caCertLen_ != 0);
+  const bool hasPSK = (psk_ != nullptr) && (pskLen_ != 0) &&
+                      (pskId_ != nullptr) && (pskIdLen_ != 0);
+  const bool hasClientCert =
+      (clientCertBuf_ != nullptr) && (clientCertLen_ != 0) &&
+      (clientKeyBuf_ != nullptr) && (clientKeyLen_ != 0);
+
+  // Initialize state
+  mbedtls_ssl_init(&ssl_);
+  mbedtls_ssl_config_init(&conf_);
+  mbedtls_x509_crt_init(&caCert_);
+  mbedtls_x509_crt_init(&clientCert_);
+  mbedtls_pk_init(&clientKey_);
+
+  if (mbedtls_ssl_config_defaults(&conf_, MBEDTLS_SSL_IS_CLIENT,
                                   MBEDTLS_SSL_TRANSPORT_STREAM,
                                   MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
-    // Error
+    goto init_error;
+  }
+
+  initRand();
+
+  mbedtls_ssl_conf_rng(&conf_, mbedtls_ctr_drbg_random, &s_drbg);
+  // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
+
+  if (hasCACert) {
+    mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_REQUIRED);
+    if (mbedtls_x509_crt_parse(&caCert_, caCertBuf_, caCertLen_) < 0) {
+      goto init_error;
+    }
+    mbedtls_ssl_conf_ca_chain(&conf_, &caCert_, nullptr);
+  }
+
+  if (hasPSK) {
+    if (mbedtls_ssl_conf_psk(&conf_, psk_, pskLen_, pskId_, pskIdLen_) != 0) {
+      goto init_error;
+    }
+    if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_, &clientKey_) != 0) {
+      goto init_error;
+    }
+  }
+
+  if (hasClientCert) {
+    if (mbedtls_x509_crt_parse(&clientCert_, clientCertBuf_,
+                               clientCertLen_) < 0) {
+      goto init_error;
+    }
+    mbedtls_ssl_conf_ca_chain(&conf_, &caCert_, nullptr);
+  }
+
+  mbedtls_ssl_conf_rng(&conf_, mbedtls_ctr_drbg_random, &s_drbg);
+
+  initialized_ = true;
+  return true;
+
+init_error:
+  deinit();
+  return false;
+}
+
+void MbedTLSClient::deinit() {
+  mbedtls_pk_free(&clientKey_);
+  mbedtls_x509_crt_free(&clientCert_);
+  mbedtls_x509_crt_free(&caCert_);
+  mbedtls_ssl_config_free(&conf_);
+  mbedtls_ssl_free(&ssl_);
+
+  initialized_ = false;
+}
+
+int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
+  if (!initialized_) {
+    return false;
+  }
+
+  if (connected_) {
+    stop();
+  }
+
+  int retval = client_.connect(ip, port);
+  if (retval == 0) {
+    return false;
+  }
+
+  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  return connect(ipaddr_ntoa(&ipaddr));
+}
+
+int MbedTLSClient::connect(const char *const host, const uint16_t port) {
+  if (!initialized_) {
+    return false;
+  }
+
+  if (connected_) {
+    stop();
+  }
+
+  int retval = client_.connect(host, port);
+  if (retval == 0) {
+    return false;
+  }
+
+  return connect(host);
+}
+
+static int sendf(void *const ctx,
+                 const unsigned char *const buf, const size_t len) {
+  Client *const c = static_cast<Client *>(ctx);
+  if (c == nullptr) {
+    return -1;
+  }
+  return c->write(buf, len);
+}
+
+static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
+  Client *const c = static_cast<Client *>(ctx);
+  if (c == nullptr) {
+    return -1;
+  }
+  if (!(*c)) {
+    return -1;
+  }
+  return c->read(buf, len);
+}
+
+bool MbedTLSClient::connect(const char *const hostname) {
+  if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
+    deinit();
+    return false;
+  }
+  if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
+    deinit();
+    return false;
+  }
+  mbedtls_ssl_set_bio(&ssl_, &client_, &sendf, &recvf, nullptr);
+
+  uint32_t startTime = qnethernet_hal_millis();
+  while (true) {
+    int ret = mbedtls_ssl_handshake(&ssl_);
+    if (ret == 0) {
+      connected_ = true;
+      return true;
+    }
+
+    if (handshakeTimeout_ != 0 &&
+        qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
+      deinit();
+      return false;
+    }
+
+    switch (ret) {
+      case MBEDTLS_ERR_SSL_WANT_READ:
+      case MBEDTLS_ERR_SSL_WANT_WRITE:
+      case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
+      case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
+        continue;
+
+      case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
+      case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+      default:
+        deinit();
+        return false;
+    }
   }
 }
 
-MbedTLSClient::connect();
+size_t MbedTLSClient::write(const uint8_t b) {
+  return write(&b, 1);
+}
+
+size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
+  if (!connected_ || size == 0) {
+    return 0;
+  }
+
+  while (true) {
+    int written = mbedtls_ssl_write(&ssl_, buf, sizeRem);
+    if (written >= 0) {  // TODO: Should we continue looping on zero?
+      return written;
+    }
+
+    switch (written) {
+      case MBEDTLS_ERR_SSL_WANT_READ:
+      case MBEDTLS_ERR_SSL_WANT_WRITE:
+      case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
+      case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
+        break;
+
+      case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
+      case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+      default:
+        stop();
+        return 0;
+    }
+  }
+}
+
+int MbedTLSClient::available() {
+  if (!connected_) {
+    return 0;
+  }
+
+  return mbedtls_ssl_get_bytes_avail(&ssl_);
+}
+
+int MbedTLSClient::read() {
+  // Process any peeked byte
+  if (peeked_ >= 0) {
+    int retval = peeked_;
+    peeked_ = -1;
+    return retval;
+  }
+
+  if (!connected_) {
+    return -1;
+  }
+
+  uint8_t data;
+  int retval = read(&data, 1);
+  if (retval <= 0) {
+    return -1;
+  }
+  return data;
+}
+
+int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
+  if (!connected_ || size == 0) {
+    return 0;
+  }
+
+  uint8_t *pBuf = buf;
+  size_t sizeRem = size;
+  int totalRead = 0;
+
+  // Process any peeked byte
+  if (peeked_ >= 0) {
+    if (buf != nullptr) {
+      *(pBuf++) = peeked_;
+    }
+    peeked_ = -1;
+
+    totalRead = 1;
+    sizeRem--;
+  }
+
+  int read = mbedtls_ssl_read(&ssl_, pBuf, sizeRem);
+  if (read > 0) {
+    return totalRead + read;
+  }
+
+  switch (read) {
+    case MBEDTLS_ERR_SSL_WANT_READ:
+    case MBEDTLS_ERR_SSL_WANT_WRITE:
+    case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
+    case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
+      break;
+
+    // case MBEDTLS_ERR_SSL_CLIENT_RECONNECT:  // Only server-side
+    case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
+    case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+    default:
+      stop();
+  }
+
+  return totalRead;
+}
+
+int MbedTLSClient::peek() {
+  if (peeked_ >= 0) {
+    return peeked_;
+  }
+
+  peeked_ = read();
+  return peeked_;
+}
+
+int MbedTLSClient::availableForWrite() {
+  return 0;
+}
+
+void MbedTLSClient::flush() {
+  if (!connected_) {
+    return;
+  }
+
+  client_.flush();
+}
+
+void MbedTLSClient::stop() {
+  if (!connected_) {
+    return;
+  }
+
+  // TODO: Should we process the return value?
+  mbedtls_ssl_close_notify(&ssl_);
+  connected_ = false;
+
+  deinit();
+}
+
+uint8_t MbedTLSClient::connected() {
+  return connected_ || peeked_ >= 0;
+}
+
+MbedTLSClient::operator bool() {
+  return const_cast<const MbedTLSClient *>(this)->operator bool();
+}
+
+MbedTLSClient::operator bool() const {
+  return connected_;
+}
 
 }  // namespace network
 }  // namespace qindesign
