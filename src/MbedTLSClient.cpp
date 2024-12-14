@@ -158,7 +158,6 @@ bool MbedTLSClient::init() {
 
   mbedtls_ssl_conf_rng(&conf_, mbedtls_ctr_drbg_random, &s_drbg);
 
-  initialized_ = true;
   return true;
 
 init_error:
@@ -172,45 +171,36 @@ void MbedTLSClient::deinit() {
   mbedtls_x509_crt_free(&caCert_);
   mbedtls_ssl_config_free(&conf_);
   mbedtls_ssl_free(&ssl_);
-
-  initialized_ = false;
 }
 
 int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
   if (connected_) {
     stop();
   }
-  if (!initialized_) {
-    if (!init()) {
-      return false;
-    }
-  }
-
-  int retval = client_.connect(ip, port);
-  if (retval == 0) {
+  if (!init()) {
     return false;
   }
 
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return connect(ipaddr_ntoa(&ipaddr));
+
+  if (client_.connect(ip, port) == 0 || !connect(ipaddr_ntoa(&ipaddr))) {
+    deinit();
+    return false;
+  }
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
   if (connected_) {
     stop();
   }
-  if (!initialized_) {
-    if (!init()) {
-      return false;
-    }
-  }
-
-  int retval = client_.connect(host, port);
-  if (retval == 0) {
+  if (!init()) {
     return false;
   }
 
-  return connect(host);
+  if (client_.connect(host, port) == 0 || !connect(host)) {
+    deinit();
+    return false;
+  }
 }
 
 static int sendf(void *const ctx,
@@ -243,11 +233,9 @@ static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
 
 bool MbedTLSClient::connect(const char *const hostname) {
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
-    deinit();
     return false;
   }
   if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
-    deinit();
     return false;
   }
   mbedtls_ssl_set_bio(&ssl_, &client_, &sendf, &recvf, nullptr);
@@ -262,7 +250,6 @@ bool MbedTLSClient::connect(const char *const hostname) {
 
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
-      deinit();
       return false;
     }
 
@@ -276,7 +263,6 @@ bool MbedTLSClient::connect(const char *const hostname) {
       case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
       case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
       default:
-        deinit();
         return false;
     }
   }
