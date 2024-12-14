@@ -64,6 +64,7 @@ class MbedTLSClient : public Client {
   // Uninitializes the client.
   void deinit();
 
+  // Connects to the given host. This performs the handshake step.
   bool connect(const char *hostname);
 
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
