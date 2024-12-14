@@ -76,7 +76,6 @@ class MbedTLSClient : public Client {
   bool MbedTLSClient::checkWrite(int ret);
 
   Client &client_;
-  bool initialized_ = false;
   uint32_t handshakeTimeout_ = 0;
 
   int peeked_ = -1;  // < 0 for not there
