@@ -244,12 +244,10 @@ static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
 bool MbedTLSClient::connect(const char *const hostname) {
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
     deinit();
-    ::printf("HERE 1\r\n");
     return false;
   }
   if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
     deinit();
-    ::printf("HERE 2\r\n");
     return false;
   }
   mbedtls_ssl_set_bio(&ssl_, &client_, &sendf, &recvf, nullptr);
@@ -265,7 +263,6 @@ bool MbedTLSClient::connect(const char *const hostname) {
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
       deinit();
-      ::printf("HERE 3\r\n");
       return false;
     }
 
@@ -280,7 +277,6 @@ bool MbedTLSClient::connect(const char *const hostname) {
       case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
       default:
         deinit();
-        ::printf("HERE 4: %d\r\n", ret);
         return false;
     }
   }
