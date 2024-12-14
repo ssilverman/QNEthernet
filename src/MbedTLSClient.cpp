@@ -32,7 +32,13 @@ static void initRand() {
 
   // Build a nonce
   uint8_t nonce[128];
-  qnethernet_hal_fill_rand(nonce, sizeof(nonce));
+  uint8_t *pNonce = nonce;
+  size_t sizeRem = sizeof(nonce);
+  while (sizeRem != 0) {
+    size_t size = qnethernet_hal_fill_rand(pNonce, sizeRem);
+    sizeRem -= size;
+    pNonce += size;
+  }
 
   mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
                         nonce, sizeof(nonce));
