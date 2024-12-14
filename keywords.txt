@@ -33,6 +33,7 @@ maxMulticastGroups	KEYWORD2
 mtu	KEYWORD2
 isPromiscuousMode	KEYWORD2
 driverCapabilities	KEYWORD2
+interfaceName	KEYWORD2
 MACAddress	KEYWORD2	Ethernet.MACAddress
 macAddress	KEYWORD2	Ethernet.MACAddress
 setMACAddress	KEYWORD2	Ethernet.setMACAddress
@@ -41,6 +42,7 @@ begin	KEYWORD2
 setDHCPEnabled	KEYWORD2
 isDHCPEnabled	KEYWORD2
 isDHCPActive	KEYWORD2
+renewDHCP	KEYWORD2
 waitForLocalIP	KEYWORD2
 waitForLink	KEYWORD2
 end	KEYWORD2
@@ -105,8 +107,11 @@ maxListeners	KEYWORD2
 port	KEYWORD2
 beginWithReuse	KEYWORD2
 accept	KEYWORD2	server.accept
+receiveQueueCapacity	KEYWORD2
 receiveQueueSize	KEYWORD2
-setReceiveQueueSize	KEYWORD2
+setReceiveQueueCapacity	KEYWORD2
+droppedReceiveCount	KEYWORD2
+totalReceiveCount	KEYWORD2
 beginMulticast	KEYWORD2	WiFiUDP.beginMulticast
 beginMulticastWithReuse	KEYWORD2
 beginPacket	KEYWORD2	EthernetUDP.beginPacket
