@@ -280,7 +280,7 @@ size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
   }
 
   while (true) {
-    int written = mbedtls_ssl_write(&ssl_, buf, sizeRem);
+    int written = mbedtls_ssl_write(&ssl_, buf, size);
     if (written >= 0) {  // TODO: Should we continue looping on zero?
       return written;
     }
