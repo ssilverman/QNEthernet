@@ -21,9 +21,6 @@ class MbedTLSClient : public Client {
   MbedTLSClient(Client &client);
   virtual ~MbedTLSClient() = default;
 
-  // Initializes the connection.
-  bool init();
-
   // Sets the CA cert. This only uses the value if it is non-NULL and the length
   // is positive. The pointer and length are stored.
   void setCACert(const uint8_t *caCert, size_t caCertLen);
@@ -61,10 +58,21 @@ class MbedTLSClient : public Client {
   explicit operator bool() const;
 
  private:
+  // Initializes the client.
+  bool init();
+
   // Uninitializes the client.
   void deinit();
 
   bool connect(const char *hostname);
+
+  // Checks the value returned from mbedtls_ssl_read(). If this returns false
+  // then stop() will have been called.
+  bool MbedTLSClient::checkRead(int ret);
+
+  // Checks the value returned from mbedtls_ssl_write(). If this returns false
+  // then stop() will have been called.
+  bool MbedTLSClient::checkWrite(int ret);
 
   Client &client_;
   bool initialized_ = false;
