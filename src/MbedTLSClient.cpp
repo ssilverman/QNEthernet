@@ -366,13 +366,15 @@ int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
     return 0;
   }
 
+  // TODO: Handle NULL buffer for skipping?
+
   uint8_t *pBuf = buf;
   size_t sizeRem = size;
   int totalRead = 0;
 
   // Process any peeked byte
   if (peeked_ >= 0) {
-    *(pBuf++) = peeked_;  // TODO: Handle NULL buffer
+    *(pBuf++) = peeked_;
     peeked_ = -1;
 
     totalRead = 1;
