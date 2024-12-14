@@ -56,6 +56,17 @@ int mbedtls_hardware_poll(void *const data,
   }
   return 0;  // Success
 }
+
+mbedtls_ms_time_t mbedtls_ms_time(void) {
+  static int64_t top = 0;
+  static uint32_t last = 0;
+  uint32_t t = qnethernet_hal_millis();
+  if (t < last) {
+    top += (int64_t{1} << 32);
+  }
+  last = t;
+  return top | t;
+}
 }  // extern "C"
 
 namespace qindesign {
