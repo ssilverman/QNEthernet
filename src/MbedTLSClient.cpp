@@ -135,6 +135,8 @@ bool MbedTLSClient::init() {
       goto init_error;
     }
     mbedtls_ssl_conf_ca_chain(&conf_, &caCert_, nullptr);
+  } else {
+    mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_NONE);
   }
 
   if (hasPSK) {
@@ -175,12 +177,13 @@ void MbedTLSClient::deinit() {
 }
 
 int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
-  if (!initialized_) {
-    return false;
-  }
-
   if (connected_) {
     stop();
+  }
+  if (!initialized_) {
+    if (!init()) {
+      return false;
+    }
   }
 
   int retval = client_.connect(ip, port);
@@ -193,12 +196,13 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
-  if (!initialized_) {
-    return false;
-  }
-
   if (connected_) {
     stop();
+  }
+  if (!initialized_) {
+    if (!init()) {
+      return false;
+    }
   }
 
   int retval = client_.connect(host, port);
@@ -215,7 +219,11 @@ static int sendf(void *const ctx,
   if (c == nullptr) {
     return -1;
   }
-  return c->write(buf, len);
+  size_t written = c->write(buf, len);  // TODO: Flush?
+  if (len != 0 && written == 0) {
+    return MBEDTLS_ERR_SSL_WANT_WRITE;
+  }
+  return written;
 }
 
 static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
@@ -226,16 +234,22 @@ static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   if (!(*c)) {
     return -1;
   }
-  return c->read(buf, len);
+  int read = c->read(buf, len);
+  if (read <= 0) {
+    return MBEDTLS_ERR_SSL_WANT_READ;
+  }
+  return read;
 }
 
 bool MbedTLSClient::connect(const char *const hostname) {
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
     deinit();
+    ::printf("HERE 1\r\n");
     return false;
   }
   if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
     deinit();
+    ::printf("HERE 2\r\n");
     return false;
   }
   mbedtls_ssl_set_bio(&ssl_, &client_, &sendf, &recvf, nullptr);
@@ -251,6 +265,7 @@ bool MbedTLSClient::connect(const char *const hostname) {
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
       deinit();
+      ::printf("HERE 3\r\n");
       return false;
     }
 
@@ -265,8 +280,25 @@ bool MbedTLSClient::connect(const char *const hostname) {
       case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
       default:
         deinit();
+        ::printf("HERE 4: %d\r\n", ret);
         return false;
     }
+  }
+}
+
+bool MbedTLSClient::checkWrite(int ret) {
+  switch (ret) {
+    case MBEDTLS_ERR_SSL_WANT_READ:
+    case MBEDTLS_ERR_SSL_WANT_WRITE:
+    case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
+    case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
+      return true;
+
+    case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
+    case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+    default:
+      stop();
+      return false;
   }
 }
 
@@ -284,43 +316,43 @@ size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
     if (written >= 0) {  // TODO: Should we continue looping on zero?
       return written;
     }
-
-    switch (written) {
-      case MBEDTLS_ERR_SSL_WANT_READ:
-      case MBEDTLS_ERR_SSL_WANT_WRITE:
-      case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
-      case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-        break;
-
-      case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
-      case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
-      default:
-        stop();
-        return 0;
+    if (!checkWrite(written)) {
+      return 0;
     }
   }
 }
 
+bool MbedTLSClient::checkRead(int ret) {
+  switch (ret) {
+    case MBEDTLS_ERR_SSL_WANT_READ:
+    case MBEDTLS_ERR_SSL_WANT_WRITE:
+    case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
+    case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
+      return true;
+
+    // case MBEDTLS_ERR_SSL_CLIENT_RECONNECT:  // Only server-side
+    case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
+    case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+    default:
+      stop();
+      return false;
+  }
+}
+
 int MbedTLSClient::available() {
+  int peekSize = (peeked_ >= 0) ? 1 : 0;
   if (!connected_) {
-    return 0;
+    return peekSize;
   }
 
-  return mbedtls_ssl_get_bytes_avail(&ssl_);
+  int read = mbedtls_ssl_read(&ssl_, nullptr, 0);  // Move the stack along
+  if (read != 0) {  // Ordinarily, zero is an error
+    (void)checkRead(read);
+  }
+  return peekSize + mbedtls_ssl_get_bytes_avail(&ssl_);
 }
 
 int MbedTLSClient::read() {
-  // Process any peeked byte
-  if (peeked_ >= 0) {
-    int retval = peeked_;
-    peeked_ = -1;
-    return retval;
-  }
-
-  if (!connected_) {
-    return -1;
-  }
-
   uint8_t data;
   int retval = read(&data, 1);
   if (retval <= 0) {
@@ -340,9 +372,7 @@ int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
 
   // Process any peeked byte
   if (peeked_ >= 0) {
-    if (buf != nullptr) {
-      *(pBuf++) = peeked_;
-    }
+    *(pBuf++) = peeked_;  // TODO: Handle NULL buffer
     peeked_ = -1;
 
     totalRead = 1;
@@ -351,23 +381,10 @@ int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
 
   int read = mbedtls_ssl_read(&ssl_, pBuf, sizeRem);
   if (read > 0) {
-    return totalRead + read;
+    totalRead += read;
+  } else {
+    (void)checkRead(read);
   }
-
-  switch (read) {
-    case MBEDTLS_ERR_SSL_WANT_READ:
-    case MBEDTLS_ERR_SSL_WANT_WRITE:
-    case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
-    case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-      break;
-
-    // case MBEDTLS_ERR_SSL_CLIENT_RECONNECT:  // Only server-side
-    case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
-    case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
-    default:
-      stop();
-  }
-
   return totalRead;
 }
 
