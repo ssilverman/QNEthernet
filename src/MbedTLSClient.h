@@ -21,8 +21,10 @@ class MbedTLSClient : public Client {
   MbedTLSClient(Client &client);
   virtual ~MbedTLSClient() = default;
 
-  // Sets the CA cert. This only uses the value if it is non-NULL and the length
-  // is positive. The pointer and length are stored.
+  // Sets the CA cert(s). This only uses the value if it is non-NULL and the
+  // length is positive. The pointer and length are stored.
+  //
+  // If it is in PEM format then it must be NUL-terminated.
   void setCACert(const uint8_t *caCert, size_t caCertLen);
 
   // Sets the pre-shared key. This only uses the value if both buffers are
@@ -36,8 +38,8 @@ class MbedTLSClient : public Client {
   // positive. The password can be NULL or have a length of zero. The pointers
   // and lengths are stored.
   //
-  // If the key is in PEM format, then it must be NULL-terminated. The password
-  // can be NULL or its length zero if the key is not encrypted.
+  // If the cert or key is in PEM format, then it must be NUL-terminated. The
+  // password can be NULL or its length zero if the key is not encrypted.
   void setClientCert(const uint8_t *clientCert, size_t clientCertLen,
                      const uint8_t *clientKey, size_t clientKeyLen,
                      const uint8_t *pwd, size_t pwdLen);
