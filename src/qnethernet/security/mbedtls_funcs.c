@@ -24,10 +24,11 @@ static mbedtls_ctr_drbg_context s_drbg;
 static mbedtls_entropy_context s_entropy;
 
 // Initializes the random context and sets it up for the config configuration.
-// The config object may be NULL.
+// The config object may be NULL. This will return whether the initialization
+// succeeded.
 //
 // This uses a single global context.
-void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
+bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   if (!s_randInit) {
     mbedtls_ctr_drbg_init(&s_drbg);
     mbedtls_entropy_init(&s_entropy);
@@ -42,9 +43,12 @@ void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
       pNonce += size;
     }
 
-    mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
-                          nonce, sizeof(nonce));
+    int ret = mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
+                                    nonce, sizeof(nonce));
     memset(nonce, 0, sizeof(nonce));  // Clear the nonce after use
+    if (ret) {
+      return false;
+    }
 
     s_randInit = true;
   }
@@ -52,6 +56,7 @@ void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   if (conf != NULL) {
     mbedtls_ssl_conf_rng(conf, mbedtls_ctr_drbg_random, &s_drbg);
   }
+  return true;
 }
 
 // Gets entropy for MbedTLS.
