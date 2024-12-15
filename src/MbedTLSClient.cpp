@@ -187,6 +187,8 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
     deinit();
     return false;
   }
+
+  return true;
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
@@ -201,6 +203,8 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
     deinit();
     return false;
   }
+
+  return true;
 }
 
 static int sendf(void *const ctx,
