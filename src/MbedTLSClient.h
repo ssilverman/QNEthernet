@@ -69,11 +69,11 @@ class MbedTLSClient : public Client {
 
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
   // then stop() will have been called.
-  bool MbedTLSClient::checkRead(int ret);
+  bool checkRead(int ret);
 
   // Checks the value returned from mbedtls_ssl_write(). If this returns false
   // then stop() will have been called.
-  bool MbedTLSClient::checkWrite(int ret);
+  bool checkWrite(int ret);
 
   Client &client_;
   uint32_t handshakeTimeout_ = 0;
