@@ -8,8 +8,9 @@
 
 #include <lwip/ip_addr.h>
 
+#include "security/mbedtls_funcs.h"
+
 extern "C" {
-bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf);
 uint32_t qnethernet_hal_millis(void);
 }  // extern "C"
 
@@ -104,7 +105,8 @@ bool MbedTLSClient::init() {
     }
     if (mbedtls_pk_parse_key(&clientKey_, clientKeyBuf_, clientKeyLen_,
                              clientKeyPwd_, clientKeyPwdLen_,
-                             conf_.private_f_rng, conf_.private_p_rng)) {
+                             qnethernet_mbedtls_rand_f_rng,
+                             qnethernet_mbedtls_rand_p_rng)) {
       goto init_error;
     }
     if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_, &clientKey_) != 0) {
