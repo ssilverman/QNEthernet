@@ -36,7 +36,7 @@ void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
     uint8_t nonce[128];
     uint8_t *pNonce = nonce;
     size_t sizeRem = sizeof(nonce);
-    while (sizeRem != 0) {
+    while (sizeRem != 0) {  // TODO: What to do on failure?
       size_t size = qnethernet_hal_fill_rand(pNonce, sizeRem);
       sizeRem -= size;
       pNonce += size;
