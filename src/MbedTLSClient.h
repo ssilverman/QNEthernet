@@ -21,6 +21,12 @@ class MbedTLSClient : public Client {
   MbedTLSClient(Client &client);
   virtual ~MbedTLSClient();
 
+  // Allow moving but not copying
+  MbedTLSClient(const MbedTLSClient &) = delete;
+  MbedTLSClient &operator=(const MbedTLSClient &) = delete;
+  MbedTLSClient(MbedTLSClient &&other) = default;
+  MbedTLSClient &operator=(MbedTLSClient &&other) = default;
+
   // Sets the CA cert(s). This only uses the value if it is non-NULL and the
   // length is positive. The pointer and length are stored.
   //
