@@ -3,8 +3,9 @@
 
 // mbedtls_funcs.c implements functions required for MbedTLS.
 
+#include "mbedtls_funcs.h"
+
 // C includes
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -12,7 +13,6 @@
 #include <lwip/arch.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
-#include <mbedtls/ssl.h>
 
 // Forward declarations
 size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t len);
@@ -20,17 +20,15 @@ uint32_t qnethernet_hal_millis(void);
 
 // Global random state
 static bool s_randInit = false;
-static mbedtls_ctr_drbg_context s_drbg;
+static mbedtls_ctr_drbg_context s_ctr_drbg;
 static mbedtls_entropy_context s_entropy;
 
-// Initializes the random context and sets it up for the config configuration.
-// The config object may be NULL. This will return whether the initialization
-// succeeded.
-//
-// This uses a single global context.
+static int (*const f_rng)(void *, unsigned char *, size_t) = mbedtls_ctr_drbg_random;
+static void *const p_rng = &s_ctr_drbg;
+
 bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   if (!s_randInit) {
-    mbedtls_ctr_drbg_init(&s_drbg);
+    mbedtls_ctr_drbg_init(&s_ctr_drbg);
     mbedtls_entropy_init(&s_entropy);
 
     // Build a nonce
@@ -43,8 +41,8 @@ bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
       pNonce += size;
     }
 
-    int ret = mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
-                                    nonce, sizeof(nonce));
+    int ret = mbedtls_ctr_drbg_seed(&s_ctr_drbg, mbedtls_entropy_func,
+                                    &s_entropy, nonce, sizeof(nonce));
     memset(nonce, 0, sizeof(nonce));  // Clear the nonce after use
     if (ret) {
       return false;
@@ -54,7 +52,7 @@ bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   }
 
   if (conf != NULL) {
-    mbedtls_ssl_conf_rng(conf, mbedtls_ctr_drbg_random, &s_drbg);
+    mbedtls_ssl_conf_rng(conf, f_rng, p_rng);
   }
   return true;
 }
