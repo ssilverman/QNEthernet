@@ -329,15 +329,12 @@ size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
     return 0;
   }
 
-  while (true) {
-    int written = mbedtls_ssl_write(&ssl_, buf, size);
-    if (written >= 0) {  // TODO: Should we continue looping on zero?
-      return written;
-    }
-    if (!checkWrite(written)) {
-      return 0;
-    }
+  int written = mbedtls_ssl_write(&ssl_, buf, size);
+  if (written >= 0) {  // TODO: Should we continue looping on zero?
+    return written;
   }
+  (void)checkWrite(written);
+  return 0;
 }
 
 bool MbedTLSClient::checkRead(int ret) {
