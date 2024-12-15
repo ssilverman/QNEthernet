@@ -75,6 +75,15 @@ class MbedTLSClient : public Client {
   // handshake step.
   bool connect(const char *hostname, bool wait);
 
+  // If we're in the middle of a handshake then this moves the handshake along.
+  // If the handshake is complete then this sets the state to Connected.
+  //
+  // This returns true if the handshake is still in flight or complete, and
+  // false on error. If there was an error then deinit() will be called.
+  //
+  // This assumes that we're in the Handshake state.
+  bool watchHandshake();
+
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
   // then stop() will have been called.
   bool checkRead(int ret);
