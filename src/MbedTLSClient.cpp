@@ -9,7 +9,7 @@
 #include <lwip/ip_addr.h>
 
 extern "C" {
-void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf);
+bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf);
 uint32_t qnethernet_hal_millis(void);
 }  // extern "C"
 
@@ -76,7 +76,9 @@ bool MbedTLSClient::init() {
     goto init_error;
   }
 
-  qnethernet_mbedtls_init_rand(&conf_);
+  if (!qnethernet_mbedtls_init_rand(&conf_)) {
+    goto init_error;
+  }
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
 
   if (hasCACert) {
