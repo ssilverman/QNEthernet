@@ -31,11 +31,16 @@ class MbedTLSClient : public Client {
   void setPSK(const uint8_t *psk, size_t pskLen,
                const uint8_t *pskId, size_t pskIdLen);
 
-  // Sets the client certificate and key. This only uses the value if both
-  // buffers are non-NULL and the lengths are both positive. The pointers and
-  // lengths are stored.
+  // Sets the client certificate, key, and key password. This only uses the
+  // value if the first two buffers are non-NULL and the lengths are both
+  // positive. The password can be NULL or have a length of zero. The pointers
+  // and lengths are stored.
+  //
+  // If the key is in PEM format, then it must be NULL-terminated. The password
+  // can be NULL or its length zero if the key is not encrypted.
   void setClientCert(const uint8_t *clientCert, size_t clientCertLen,
-                     const uint8_t *clientKey, size_t clientKeyLen);
+                     const uint8_t *clientKey, size_t clientKeyLen,
+                     const uint8_t *pwd, size_t pwdLen);
 
   // Sets the handshake timeout, in milliseconds. The default is zero, meaning
   // "wait forever".
@@ -119,6 +124,8 @@ class MbedTLSClient : public Client {
   size_t pskIdLen_ = 0;
   const uint8_t *clientKeyBuf_ = nullptr;
   size_t clientKeyLen_ = 0;
+  const uint8_t *clientKeyPwd_ = nullptr;
+  size_t clientKeyPwdLen_ = 0;
 };
 
 }  // namespace network
