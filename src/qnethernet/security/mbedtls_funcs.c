@@ -23,8 +23,9 @@ static bool s_randInit = false;
 static mbedtls_ctr_drbg_context s_ctr_drbg;
 static mbedtls_entropy_context s_entropy;
 
-static int (*const f_rng)(void *, unsigned char *, size_t) = mbedtls_ctr_drbg_random;
-static void *const p_rng = &s_ctr_drbg;
+int (*const qnethernet_mbedtls_rand_f_rng)(void *, unsigned char *,
+                                           size_t) = mbedtls_ctr_drbg_random;
+ void *const qnethernet_mbedtls_rand_p_rng = &s_ctr_drbg;
 
 bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   if (!s_randInit) {
@@ -52,7 +53,8 @@ bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   }
 
   if (conf != NULL) {
-    mbedtls_ssl_conf_rng(conf, f_rng, p_rng);
+    mbedtls_ssl_conf_rng(conf, qnethernet_mbedtls_rand_f_rng,
+                         qnethernet_mbedtls_rand_p_rng);
   }
   return true;
 }
