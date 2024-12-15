@@ -56,12 +56,19 @@ class MbedTLSClient : public Client {
 
   int connect(IPAddress ip, uint16_t port) final;
   int connect(const char *host, uint16_t port) final;
+
+  // Write functions
+  // The connection may be closed if there was an error.
   size_t write(uint8_t b) final;
   size_t write(const uint8_t *buf, size_t size) final;
+
+  // Read functions
+  // The connection may be closed if there was an error.
   int available() final;
   int read() final;
   int read(uint8_t *buf, size_t size) final;
   int peek() final;
+
   int availableForWrite() final;
   void flush() final;
   void stop() final;
