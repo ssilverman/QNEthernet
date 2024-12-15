@@ -11,6 +11,9 @@ and this project adheres to
 ### Added
 * Added `qnethernet_hal_rand(buf, size)` for filling a buffer with
   random values.
+* Added `EthernetClient::setConnectionTimeoutEnabled(flag)` to enable or disable
+  blocking with calls to `connect(...)` and `stop()`. This supersedes calls to
+  `connectNoWait(...)` and `close()`. Also added `isConnectionTimeoutEnabled()`.
 
 ### Changed
 * Remove internal uses of `String` from `MDNSClass` and replace them with

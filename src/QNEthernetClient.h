@@ -52,15 +52,22 @@ class EthernetClient : public Client,
   }
 
   // Returns a Boolean value.
+  //
+  // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   int connect(IPAddress ip, uint16_t port) final;
 
   // Returns false if DNS is disabled.
   //
   // If this returns false and there was an error then errno will be set.
+  //
+  // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   int connect(const char *host, uint16_t port) final;
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete.
+  //
+  // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
+  // with connect().
   bool connectNoWait(const IPAddress &ip, uint16_t port);
 
   // Starts the connection process but doesn't wait for the connection to
@@ -69,6 +76,9 @@ class EthernetClient : public Client,
   // This returns false if DNS is disabled.
   //
   // If this returns false and there was an error then errno will be set.
+  //
+  // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
+  // with connect().
   bool connectNoWait(const char *host, uint16_t port);
 
   uint8_t connected() final;  // Wish: Boolean return
@@ -81,10 +91,24 @@ class EthernetClient : public Client,
     return connTimeout_;
   }
 
+  // Sets whether to use the connection-timeout property for connect() and
+  // stop(). If disabled, these opertions will be non-blocking. The default
+  // is enabled.
+  void setConnectionTimeoutEnabled(bool flag);
+
+  // Returns whether connection timeout is enabled.
+  bool isConnectionTimeoutEnabled() const {
+    return connTimeoutEnabled_;
+  }
+
+  // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   void stop() final;
 
   // Closes the connection. This works the same as stop(), but without waiting
   // for the connection to close.
+  //
+  // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
+  // with stop().
   void close();
 
   // Closes the sending side of this connection.
@@ -225,6 +249,7 @@ class EthernetClient : public Client,
   // Connection state
   uint16_t connTimeout_;
   bool pendingConnect_;
+  bool connTimeoutEnabled_;
 
   std::shared_ptr<internal::ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we

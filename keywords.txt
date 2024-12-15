@@ -79,6 +79,8 @@ connectNoWait	KEYWORD2
 connected	KEYWORD2	client.connected
 setConnectionTimeout	KEYWORD2	client.setConnectionTimeout
 connectionTimeout	KEYWORD2
+setConnectionTimeoutEnabled	KEYWORD2
+isConnectionTimeoutEnabled	KEYWORD2
 stop	KEYWORD2
 close	KEYWORD2
 closeOutput	KEYWORD2

@@ -48,6 +48,7 @@ EthernetClient::EthernetClient(
     const std::shared_ptr<internal::ConnectionHolder> conn)
     : connTimeout_(1000),
       pendingConnect_(false),
+      connTimeoutEnabled_(true),
       conn_(conn) {}
 
 EthernetClient::~EthernetClient() {
@@ -61,7 +62,7 @@ EthernetClient::~EthernetClient() {
 int EthernetClient::connect(const IPAddress ip, const uint16_t port) {
 #if LWIP_IPV4
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return connect(&ipaddr, port, true);
+  return connect(&ipaddr, port, connTimeoutEnabled_);
 #else
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(port);
@@ -199,6 +200,10 @@ void EthernetClient::setConnectionTimeout(const uint16_t timeout) {
   connTimeout_ = timeout;
 }
 
+void EthernetClient::setConnectionTimeoutEnabled(const bool flag) {
+  connTimeoutEnabled_ = flag;
+}
+
 #define GET_STATE(R)                \
   if (conn_ == nullptr) {           \
     return (R);                     \
@@ -286,7 +291,7 @@ uint8_t EthernetClient::outgoingTTL() const {
 #undef GET_STATE
 
 void EthernetClient::stop() {
-  close(true);
+  close(connTimeoutEnabled_);
 }
 
 void EthernetClient::close() {

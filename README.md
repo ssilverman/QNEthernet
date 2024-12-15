@@ -334,8 +334,12 @@ The `Ethernet` object is the main Ethernet interface.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
 * `connectionTimeout()`: Returns the current timeout value.
+* `isConnectionTimeoutEnabled()`: Returns whether connection timeout is enabled.
 * `localIP()`: Returns the local IP of the network interface used for the
   client. Currently, This returns the same value as `Ethernet.localIP()`.
+* `setConnectionTimeoutEnabled(flag)`: Enables or disables use of a connection
+  timeout. If disabled, then calls to `connect(...)` and `stop()` won't block.
+  This supersedes the `connectNoWait(...)` and `close()` calls.
 * `status()`: Returns the current TCP connection state. This returns one of
   lwIP's `tcp_state` enum values. To use with _altcp_, define the
   `LWIP_DEBUG` macro.
