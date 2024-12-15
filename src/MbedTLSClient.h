@@ -113,7 +113,7 @@ class MbedTLSClient : public Client {
   mbedtls_x509_crt clientCert_{};
   mbedtls_pk_context clientKey_{};
 
-  // Certificates and keys
+  // Certificates
   const uint8_t *caCertBuf_ = nullptr;
   size_t caCertLen_ = 0;
   const uint8_t *clientCertBuf_ = nullptr;
