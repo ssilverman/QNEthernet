@@ -420,7 +420,7 @@ void MbedTLSClient::stop() {
 }
 
 uint8_t MbedTLSClient::connected() {
-  return static_cast<bool>(state_) || (peeked_ >= 0);
+  return static_cast<bool>(*this) || (peeked_ >= 0);
 }
 
 MbedTLSClient::operator bool() {
