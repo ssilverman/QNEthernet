@@ -98,34 +98,34 @@ class MbedTLSClient : public Client {
   bool checkWrite(int ret);
 
   Client &client_;
-  uint32_t handshakeTimeout_ = 0;
+  uint32_t handshakeTimeout_;
 
-  States state_ = States::kStart;
+  States state_;
 
-  int peeked_ = -1;  // < 0 for not there
+  int peeked_;  // < 0 for not there
 
   // State
-  mbedtls_ssl_context ssl_{};
-  mbedtls_ssl_config conf_{};
-  mbedtls_x509_crt caCert_{};
-  mbedtls_x509_crt clientCert_{};
-  mbedtls_pk_context clientKey_{};
+  mbedtls_ssl_context ssl_;
+  mbedtls_ssl_config conf_;
+  mbedtls_x509_crt caCert_;
+  mbedtls_x509_crt clientCert_;
+  mbedtls_pk_context clientKey_;
 
   // Certificates
-  const uint8_t *caCertBuf_ = nullptr;
-  size_t caCertLen_ = 0;
-  const uint8_t *clientCertBuf_ = nullptr;
-  size_t clientCertLen_ = 0;
+  const uint8_t *caCertBuf_;
+  size_t caCertLen_;
+  const uint8_t *clientCertBuf_;
+  size_t clientCertLen_;
 
   // Keys
-  const uint8_t *psk_ = nullptr;
-  size_t pskLen_ = 0;
-  const uint8_t *pskId_ = nullptr;
-  size_t pskIdLen_ = 0;
-  const uint8_t *clientKeyBuf_ = nullptr;
+  const uint8_t *psk_;
+  size_t pskLen_;
+  const uint8_t *pskId_;
+  size_t pskIdLen_;
+  const uint8_t *clientKeyBuf_;
   size_t clientKeyLen_ = 0;
-  const uint8_t *clientKeyPwd_ = nullptr;
-  size_t clientKeyPwdLen_ = 0;
+  const uint8_t *clientKeyPwd_;
+  size_t clientKeyPwdLen_;
 };
 
 }  // namespace network

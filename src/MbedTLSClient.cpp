@@ -18,7 +18,27 @@ namespace qindesign {
 namespace network {
 
 MbedTLSClient::MbedTLSClient(Client &client)
-    : client_(client) {}
+    : client_(client),
+      handshakeTimeout_(0),
+      state_(States::kStart),
+      peeked_(-1),
+      ssl_{},
+      conf_{},
+      caCert_{},
+      clientCert_{},
+      clientKey_{},
+      caCertBuf_(nullptr),
+      caCertLen_(0),
+      clientCertBuf_(nullptr),
+      clientCertLen_(0),
+      psk_(nullptr),
+      pskLen_(0),
+      pskId_(nullptr),
+      pskIdLen_(0),
+      clientKeyBuf_(nullptr),
+      clientKeyLen_(0),
+      clientKeyPwd_(nullptr),
+      clientKeyPwdLen_(0) {}
 
 MbedTLSClient::~MbedTLSClient() {
   // Clear everything
