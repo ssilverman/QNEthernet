@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <lwip/arch.h>
 #include <mbedtls/ctr_drbg.h>
@@ -43,6 +44,7 @@ void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
 
     mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
                           nonce, sizeof(nonce));
+    memset(nonce, 0, sizeof(nonce));  // Clear the nonce after use
 
     s_randInit = true;
   }
