@@ -20,6 +20,27 @@ namespace network {
 MbedTLSClient::MbedTLSClient(Client &client)
     : client_(client) {}
 
+MbedTLSClient::~MbedTLSClient() {
+  // Clear everything
+  deinit();
+
+  // Certificates
+  caCertBuf_ = nullptr;
+  caCertLen_ = 0;
+  clientCertBuf_ = nullptr;
+  clientCertLen_ = 0;
+
+  // Keys
+  psk_ = nullptr;
+  pskLen_ = 0;
+  pskId_ = nullptr;
+  pskIdLen_ = 0;
+  clientKeyBuf_ = nullptr;
+  clientKeyLen_ = 0;
+  clientKeyPwd_ = nullptr;
+  clientKeyPwdLen_ = 0;
+}
+
 void MbedTLSClient::setCACert(const uint8_t *const caCert,
                               const size_t caCertLen) {
   caCertBuf_ = caCert;
