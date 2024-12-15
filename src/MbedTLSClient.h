@@ -62,8 +62,6 @@ class MbedTLSClient : public Client {
   uint8_t connected() final;
   explicit operator bool() final;
 
-  explicit operator bool() const;
-
  private:
   enum class States {
     kStart,
