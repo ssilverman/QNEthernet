@@ -58,14 +58,22 @@ class MbedTLSClient : public Client {
   explicit operator bool() const;
 
  private:
+  enum class States {
+    kStart,
+    kInitialized,
+    kHandshake,
+    kConnected,
+  };
+
   // Initializes the client.
   bool init();
 
   // Uninitializes the client.
   void deinit();
 
-  // Connects to the given host. This performs the handshake step.
-  bool connect(const char *hostname);
+  // Connects to the given host and optionally waits. This performs the
+  // handshake step.
+  bool connect(const char *hostname, bool wait);
 
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
   // then stop() will have been called.
@@ -78,8 +86,9 @@ class MbedTLSClient : public Client {
   Client &client_;
   uint32_t handshakeTimeout_ = 0;
 
+  States state_ = States::kStart;
+
   int peeked_ = -1;  // < 0 for not there
-  bool connected_ = false;
 
   // State
   mbedtls_ssl_context ssl_{};
