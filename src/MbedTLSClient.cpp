@@ -36,11 +36,15 @@ void MbedTLSClient::setPSK(const uint8_t *const psk, const size_t pskLen,
 void MbedTLSClient::setClientCert(const uint8_t *const clientCert,
                                   const size_t clientCertLen,
                                   const uint8_t *const clientKey,
-                                  const size_t clientKeyLen) {
+                                  const size_t clientKeyLen,
+                                  const uint8_t *const pwd,
+                                  const size_t pwdLen) {
   clientCertBuf_ = clientCert;
   clientCertLen_ = clientCertLen;
   clientKeyBuf_ = clientKey;
   clientKeyLen_ = clientKeyLen;
+  clientKeyPwd_ = pwd;
+  clientKeyPwdLen_ = pwdLen;
 }
 
 void MbedTLSClient::setHandshakeTimeout(uint32_t timeout) {
