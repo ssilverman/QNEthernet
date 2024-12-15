@@ -440,7 +440,8 @@ void MbedTLSClient::stop() {
   if (state_ >= States::kConnected) {
     // TODO: Should we process the return value?
     mbedtls_ssl_close_notify(&ssl_);
-    // TODO: Should we stop the underlying Client?
+    client_.flush();
+    client_.stop();  // TODO: Should we stop the underlying Client?
     state_ = States::kInitialized;
   }
 
