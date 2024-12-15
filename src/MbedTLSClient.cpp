@@ -273,10 +273,10 @@ bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
       case MBEDTLS_ERR_SSL_WANT_WRITE:
       case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
       case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-        continue;
-
       case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
       case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+        continue;
+
       default:
         return false;
     }
@@ -289,10 +289,10 @@ bool MbedTLSClient::checkWrite(int ret) {
     case MBEDTLS_ERR_SSL_WANT_WRITE:
     case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
     case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-      return true;
-
     case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
     case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+      return true;
+
     default:
       stop();
       return false;
@@ -325,11 +325,11 @@ bool MbedTLSClient::checkRead(int ret) {
     case MBEDTLS_ERR_SSL_WANT_WRITE:
     case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
     case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-      return true;
-
     // case MBEDTLS_ERR_SSL_CLIENT_RECONNECT:  // Only server-side
     case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
     case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
+      return true;
+
     default:
       stop();
       return false;
