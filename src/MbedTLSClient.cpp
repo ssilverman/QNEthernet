@@ -6,67 +6,11 @@
 
 #include "MbedTLSClient.h"
 
-#include <lwip/arch.h>
 #include <lwip/ip_addr.h>
-#include <mbedtls/ctr_drbg.h>
-#include <mbedtls/entropy.h>
 
 extern "C" {
-size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t len);
+void qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf);
 uint32_t qnethernet_hal_millis(void);
-
-// Global random state
-static bool s_randInit = false;
-static mbedtls_ctr_drbg_context s_drbg;
-static mbedtls_entropy_context s_entropy;
-
-// Initializes the random context. This uses a single context.
-static void initRand() {
-  if (s_randInit) {
-    return;
-  }
-  s_randInit = true;
-
-  mbedtls_ctr_drbg_init(&s_drbg);
-  mbedtls_entropy_init(&s_entropy);
-
-  // Build a nonce
-  uint8_t nonce[128];
-  uint8_t *pNonce = nonce;
-  size_t sizeRem = sizeof(nonce);
-  while (sizeRem != 0) {
-    size_t size = qnethernet_hal_fill_rand(pNonce, sizeRem);
-    sizeRem -= size;
-    pNonce += size;
-  }
-
-  mbedtls_ctr_drbg_seed(&s_drbg, mbedtls_entropy_func, &s_entropy,
-                        nonce, sizeof(nonce));
-}
-
-// Gets entropy for MbedTLS.
-int mbedtls_hardware_poll(void *const data,
-                          unsigned char *const output, const size_t len,
-                          size_t *const olen) {
-  LWIP_UNUSED_ARG(data);
-
-  size_t filled = qnethernet_hal_fill_rand(output, len);
-  if (olen != NULL) {
-    *olen = filled;
-  }
-  return 0;  // Success
-}
-
-mbedtls_ms_time_t mbedtls_ms_time(void) {
-  static int64_t top = 0;
-  static uint32_t last = 0;
-  uint32_t t = qnethernet_hal_millis();
-  if (t < last) {
-    top += (int64_t{1} << 32);
-  }
-  last = t;
-  return top | t;
-}
 }  // extern "C"
 
 namespace qindesign {
@@ -128,9 +72,6 @@ bool MbedTLSClient::init() {
     goto init_error;
   }
 
-  initRand();
-
-  mbedtls_ssl_conf_rng(&conf_, mbedtls_ctr_drbg_random, &s_drbg);
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
 
   if (hasCACert) {
@@ -160,7 +101,7 @@ bool MbedTLSClient::init() {
     mbedtls_ssl_conf_ca_chain(&conf_, &caCert_, nullptr);
   }
 
-  mbedtls_ssl_conf_rng(&conf_, mbedtls_ctr_drbg_random, &s_drbg);
+  qnethernet_mbedtls_init_rand(&conf_);
 
   state_ = States::kInitialized;
   return true;
