@@ -72,6 +72,7 @@ bool MbedTLSClient::init() {
     goto init_error;
   }
 
+  qnethernet_mbedtls_init_rand(&conf_);
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
 
   if (hasCACert) {
@@ -88,9 +89,6 @@ bool MbedTLSClient::init() {
     if (mbedtls_ssl_conf_psk(&conf_, psk_, pskLen_, pskId_, pskIdLen_) != 0) {
       goto init_error;
     }
-    if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_, &clientKey_) != 0) {
-      goto init_error;
-    }
   }
 
   if (hasClientCert) {
@@ -98,10 +96,15 @@ bool MbedTLSClient::init() {
                                clientCertLen_) < 0) {
       goto init_error;
     }
-    mbedtls_ssl_conf_ca_chain(&conf_, &caCert_, nullptr);
+    if (mbedtls_pk_parse_key(&clientKey_, clientKeyBuf_, clientKeyLen_,
+                             clientKeyPwd_, clientKeyPwdLen_,
+                             conf_.private_f_rng, conf_.private_p_rng)) {
+      goto init_error;
+    }
+    if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_, &clientKey_) != 0) {
+      goto init_error;
+    }
   }
-
-  qnethernet_mbedtls_init_rand(&conf_);
 
   state_ = States::kInitialized;
   return true;
