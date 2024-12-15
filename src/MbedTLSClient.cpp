@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// TLSClient.h defines a Client wrapper for TLS connections.
+// MbedTLSClient.cpp implements the MbedTLS client wrapper.
 // This file is part of the QNEthernet library.
 
 #include "MbedTLSClient.h"
