@@ -458,7 +458,15 @@ MbedTLSClient::operator bool() {
       return false;
     }
   }
-  return (state_ >= States::kConnected);
+  if (state_ >= States::kConnected) {
+    if (!static_cast<bool>(client_)) {
+      state_ = States::kInitialized;
+      deinit();
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 
 }  // namespace network
