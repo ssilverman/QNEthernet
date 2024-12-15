@@ -19,7 +19,7 @@ namespace network {
 class MbedTLSClient : public Client {
  public:
   MbedTLSClient(Client &client);
-  virtual ~MbedTLSClient() = default;
+  virtual ~MbedTLSClient();
 
   // Sets the CA cert(s). This only uses the value if it is non-NULL and the
   // length is positive. The pointer and length are stored.
