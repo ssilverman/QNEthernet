@@ -223,11 +223,8 @@ static int sendf(void *const ctx,
 
 static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
-  if (c == nullptr) {
-    return -1;
-  }
-  if (!(*c)) {
-    return -1;
+  if (c == nullptr || !(static_cast<bool>(*c))) {
+    return 0;
   }
   int read = c->read(buf, len);
   if (read <= 0) {
@@ -470,7 +467,8 @@ MbedTLSClient::operator bool() {
       return false;
     }
   }
-  // TODO: Should we also check the underlying socket for connection?
+  // Don't need to check the underlying client for a connection
+  // because recvf() already does
   return (state_ >= States::kConnected);
 }
 
