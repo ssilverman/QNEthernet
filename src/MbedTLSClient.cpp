@@ -470,6 +470,7 @@ MbedTLSClient::operator bool() {
       return false;
     }
   }
+  // TODO: Should we also check the underlying socket for connection?
   return (state_ >= States::kConnected);
 }
 
