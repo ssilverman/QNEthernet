@@ -422,7 +422,20 @@ int MbedTLSClient::availableForWrite() {
   if (!static_cast<bool>(*this)) {
     return 0;
   }
-  return 0;
+  int avail = client_.availableForWrite();
+  if (avail <= 0) {
+    return 0;
+  }
+  int expan = mbedtls_ssl_get_record_expansion(&ssl_);
+  if (expan < 0 || avail <= expan) {
+    return 0;
+  }
+  avail -= expan;
+  int payload = mbedtls_ssl_get_max_out_record_payload(&ssl_);
+  if (payload < 0 || avail <= payload) {
+    return avail;
+  }
+  return payload;
 }
 
 void MbedTLSClient::flush() {
