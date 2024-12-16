@@ -6,8 +6,7 @@
 
 #include "MbedTLSClient.h"
 
-#include <lwip/ip_addr.h>
-
+#include "lwip/ip_addr.h"
 #include "security/mbedtls_funcs.h"
 
 extern "C" {
