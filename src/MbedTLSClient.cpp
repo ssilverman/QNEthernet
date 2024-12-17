@@ -211,7 +211,7 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
 static int sendf(void *const ctx,
                  const unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
-  if (c == nullptr) {
+  if (c == nullptr || !c->connected()) {
     return -1;
   }
   size_t written = c->write(buf, len);  // TODO: Flush?
@@ -223,7 +223,7 @@ static int sendf(void *const ctx,
 
 static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
-  if (c == nullptr || !(c->connected())) {
+  if (c == nullptr || !c->connected()) {
     return 0;
   }
   int read = c->read(buf, len);
@@ -318,7 +318,7 @@ size_t MbedTLSClient::write(const uint8_t b) {
 }
 
 size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
-  if (!static_cast<bool>(*this)) {
+  if (!isConnected()) {
     return 0;
   }
   if (size == 0) {
@@ -351,7 +351,7 @@ bool MbedTLSClient::checkRead(int ret) {
 }
 
 int MbedTLSClient::available() {
-  if (!connected()) {
+  if (!isConnected()) {
     return 0;
   }
 
@@ -386,7 +386,7 @@ int MbedTLSClient::read() {
 }
 
 int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
-  if (!connected()) {
+  if (!isConnected()) {
     return 0;
   }
   if (size == 0) {
@@ -431,9 +431,6 @@ int MbedTLSClient::peek() {
 }
 
 int MbedTLSClient::availableForWrite() {
-  if (!static_cast<bool>(*this)) {
-    return 0;
-  }
   int avail = client_.availableForWrite();
   if (avail <= 0) {
     return 0;
@@ -451,10 +448,9 @@ int MbedTLSClient::availableForWrite() {
 }
 
 void MbedTLSClient::flush() {
-  if (!static_cast<bool>(*this)) {
-    return;
+  if (isConnected()) {
+    client_.flush();
   }
-  client_.flush();
 }
 
 void MbedTLSClient::stop() {
@@ -470,21 +466,24 @@ void MbedTLSClient::stop() {
   deinit();
 }
 
-uint8_t MbedTLSClient::connected() {
-  // TODO: Should we cache readable data?
-  return static_cast<bool>(*this) || (peeked_ >= 0);
-}
-
-// This also moves any pending handshake along.
-MbedTLSClient::operator bool() {
+bool MbedTLSClient::isConnected() {
   if (state_ == States::kHandshake) {
     if (!watchHandshake()) {
       return false;
     }
   }
-  // Don't need to check the underlying client for a connection
-  // because recvf() already does
   return (state_ >= States::kConnected);
+}
+
+uint8_t MbedTLSClient::connected() {
+  // TODO: Should we cache readable data?
+  return isConnected() || (peeked_ >= 0) ||
+         (mbedtls_ssl_get_bytes_avail(&ssl_) > 0);
+}
+
+// This also moves any pending handshake along.
+MbedTLSClient::operator bool() {
+  return isConnected() && static_cast<bool>(client_);
 }
 
 }  // namespace network
