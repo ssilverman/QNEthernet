@@ -84,9 +84,16 @@ class EthernetClient : public Client,
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
 
+  // Sets the connection timeout, in milliseconds. The default is 1000. If the
+  // connection timeout is disabled, then the operation will be non-blocking.
+  //
+  // See: setConnectionTimeoutEnabled(flag)
   void setConnectionTimeout(uint16_t timeout);
 
-  // Returns the current timeout value.
+  // Returns the connection timeout. The default is 1000. This is only used if
+  // the property is enabled.
+  //
+  // See: isConnectionTimeoutEnabled()
   uint16_t connectionTimeout() const {
     return connTimeout_;
   }
@@ -96,7 +103,7 @@ class EthernetClient : public Client,
   // is enabled.
   void setConnectionTimeoutEnabled(bool flag);
 
-  // Returns whether connection timeout is enabled.
+  // Returns whether connection timeout is enabled. The default is enabled.
   bool isConnectionTimeoutEnabled() const {
     return connTimeoutEnabled_;
   }
