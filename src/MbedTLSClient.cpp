@@ -318,10 +318,7 @@ size_t MbedTLSClient::write(const uint8_t b) {
 }
 
 size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
-  if (!isConnected()) {
-    return 0;
-  }
-  if (size == 0) {
+  if (!isConnected() || size == 0) {
     return 0;
   }
 
@@ -386,10 +383,7 @@ int MbedTLSClient::read() {
 }
 
 int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
-  if (!isConnected()) {
-    return 0;
-  }
-  if (size == 0) {
+  if (!isConnected() || size == 0) {
     return 0;
   }
 
@@ -422,11 +416,9 @@ int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
 }
 
 int MbedTLSClient::peek() {
-  if (peeked_ >= 0) {
-    return peeked_;
+  if (peeked_ < 0) {
+    peeked_ = read();
   }
-
-  peeked_ = read();
   return peeked_;
 }
 
