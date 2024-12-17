@@ -19,6 +19,7 @@ namespace network {
 MbedTLSClient::MbedTLSClient(Client &client)
     : client_(client),
       handshakeTimeout_(0),
+      handshakeTimeoutEnabled_(true),
       state_(States::kStart),
       peeked_(-1),
       ssl_{},
@@ -88,8 +89,12 @@ void MbedTLSClient::setClientCert(const uint8_t *const clientCert,
   clientKeyPwdLen_ = pwdLen;
 }
 
-void MbedTLSClient::setHandshakeTimeout(uint32_t timeout) {
+void MbedTLSClient::setHandshakeTimeout(const uint32_t timeout) {
   handshakeTimeout_ = timeout;
+}
+
+void MbedTLSClient::setHandshakeTimeoutEnabled(const bool flag) {
+  handshakeTimeoutEnabled_ = flag;
 }
 
 bool MbedTLSClient::init() {
@@ -190,7 +195,7 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
   }
 
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return connect(ipaddr_ntoa(&ipaddr), true);
+  return connect(ipaddr_ntoa(&ipaddr), handshakeTimeoutEnabled_);
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
@@ -205,7 +210,7 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
     deinit();
     return false;
   }
-  return connect(host, true);
+  return connect(host, handshakeTimeoutEnabled_);
 }
 
 static int sendf(void *const ctx,
