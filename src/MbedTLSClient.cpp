@@ -223,7 +223,7 @@ static int sendf(void *const ctx,
 
 static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
-  if (c == nullptr || !(static_cast<bool>(*c))) {
+  if (c == nullptr || !(c->connected())) {
     return 0;
   }
   int read = c->read(buf, len);
