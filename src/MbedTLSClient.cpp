@@ -355,14 +355,25 @@ int MbedTLSClient::available() {
     return 0;
   }
 
-  int peekSize = (peeked_ >= 0) ? 1 : 0;
-  int read = mbedtls_ssl_read(&ssl_, nullptr, 0);  // Move the stack along
-  if (read != 0) {  // Ordinarily, zero is an error
-    if (!checkRead(read)) {
-      return peekSize;
-    }
+  size_t avail = mbedtls_ssl_get_bytes_avail(&ssl_);
+  if (peeked_ >= 0) {
+    return 1 + avail;
   }
-  return peekSize + mbedtls_ssl_get_bytes_avail(&ssl_);
+  if (avail != 0) {
+    return avail;
+  }
+
+  // Move the stack along
+  uint8_t b;
+  int read = mbedtls_ssl_read(&ssl_, &b, 1);
+  if (read == 1) {
+    peeked_ = b;
+    return 1 + mbedtls_ssl_get_bytes_avail(&ssl_);
+  } else if (checkRead(read)) {
+    return mbedtls_ssl_get_bytes_avail(&ssl_);
+  } else {
+    return 0;
+  }
 }
 
 int MbedTLSClient::read() {
