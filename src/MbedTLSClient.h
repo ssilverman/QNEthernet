@@ -10,7 +10,6 @@
 #include <vector>
 
 #include <Client.h>
-#include <mbedtls/ctr_drbg.h>
 #include <mbedtls/ssl.h>
 
 namespace qindesign {
