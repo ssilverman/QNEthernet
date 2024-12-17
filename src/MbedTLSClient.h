@@ -109,6 +109,10 @@ class MbedTLSClient : public Client {
   // then stop() will have been called.
   bool checkWrite(int ret);
 
+  // Returns whether the TLS client is connected. This doesn't check whether
+  // there's data available.
+  bool isConnected();
+
   Client &client_;
   uint32_t handshakeTimeout_;
 
