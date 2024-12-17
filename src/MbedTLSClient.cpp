@@ -401,10 +401,14 @@ int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
 
   // Process any peeked byte
   if (peeked_ >= 0) {
-    *(pBuf++) = peeked_;
+    *buf = peeked_;
     peeked_ = -1;
+    if (size == 1) {
+      return 1;
+    }
 
     totalRead = 1;
+    pBuf++;
     sizeRem--;
   }
 
