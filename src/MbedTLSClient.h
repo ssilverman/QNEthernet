@@ -50,8 +50,28 @@ class MbedTLSClient : public Client {
                      const uint8_t *pwd, size_t pwdLen);
 
   // Sets the handshake timeout, in milliseconds. The default is zero, meaning
-  // "wait forever".
+  // "wait forever". If the handshake timeout is disabled, then the operation
+  // will be non-blocking.
+  //
+  // See: setHandshakeTimeoutEnabled(flag)
   void setHandshakeTimeout(uint32_t timeout);
+
+  // Returns the handshake timeout. The default is zero, meaning "wait forever".
+  // This is only used if the property is enabled.
+  //
+  // See: isHandshakeTimeoutEnabled()
+  uint32_t handshakeTimeout() const {
+    return handshakeTimeout_;
+  }
+
+  // Sets whether to use the handshake-timeout property for connect(). If
+  // disabled, the operation will be non-blocking. The default is enabled.
+  void setHandshakeTimeoutEnabled(bool flag);
+
+  // Returns whether handshake timeout is enabled. The default is enabled.
+  bool isHandshakeTimeoutEnabled() const {
+    return handshakeTimeoutEnabled_;
+  }
 
   int connect(IPAddress ip, uint16_t port) final;
   int connect(const char *host, uint16_t port) final;
@@ -115,6 +135,7 @@ class MbedTLSClient : public Client {
 
   Client &client_;
   uint32_t handshakeTimeout_;
+  bool handshakeTimeoutEnabled_;
 
   States state_;
 
