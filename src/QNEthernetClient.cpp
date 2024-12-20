@@ -462,7 +462,7 @@ size_t EthernetClient::writeFully(const uint8_t b) {
 }
 
 size_t EthernetClient::writeFully(const char *const buf) {
-  return writeFully(buf, strlen(buf));
+  return writeFully(buf, std::strlen(buf));
 }
 
 size_t EthernetClient::writeFully(const void *const buf, const size_t size) {
