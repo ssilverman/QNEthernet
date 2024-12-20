@@ -12,9 +12,11 @@
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 #include <Arduino.h>
 
+#include "MbedTLSClient.h"
 #include "QNEthernet.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/chrono_clocks.h"
@@ -217,24 +219,27 @@ static constexpr uint16_t kPort = 80;
 static void clientConnect() {
 #if LWIP_TCP
   EthernetClient client;
+  MbedTLSClient tlsclient{client};
   printf("[Client] Connecting to %s...\r\n", kHost);
-  if (!client.connect(kHost, 80)) {
+  if (!tlsclient.connect(kHost, uint16_t{80})) {
     printf("[Client] Error connecting\r\n");
     return;
   }
 
   // Send the request
-  client.writeFully(kRequest);
-  client.flush();
+  ::util::writeFully(tlsclient, reinterpret_cast<const uint8_t *>(kRequest),
+                     std::strlen(kRequest),
+                     [&tlsclient]() { return !static_cast<bool>(tlsclient); });
+  tlsclient.flush();
 
   // Read the response
-  while (client.connected()) {
-    const int avail = client.available();
+  while (tlsclient.connected()) {
+    const int avail = tlsclient.available();
     if (avail <= 0) {
       continue;
     }
     for (int i = 0; i < avail; ++i) {
-      const int c = client.read();
+      const int c = tlsclient.read();
       switch (c) {
         case '\t':
           ATTRIBUTE_FALLTHROUGH;
