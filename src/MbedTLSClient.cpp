@@ -6,8 +6,11 @@
 
 #include "MbedTLSClient.h"
 
+#include <cstring>
+
 #include "lwip/ip_addr.h"
 #include "security/mbedtls_funcs.h"
+#include "util/PrintUtils.h"
 
 extern "C" {
 uint32_t qnethernet_hal_millis(void);
@@ -333,6 +336,23 @@ size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
   }
   (void)checkWrite(written);
   return 0;
+}
+
+size_t MbedTLSClient::writeFully(const uint8_t b) {
+  return writeFully(&b, 1);
+}
+
+size_t MbedTLSClient::writeFully(const char *const buf) {
+  return writeFully(buf, std::strlen(buf));
+}
+
+size_t MbedTLSClient::writeFully(const void *const buf, const size_t size) {
+  // Don't use connected() as the "connected" check because that will
+  // return true if there's data available, and the loop doesn't check
+  // for data available. Instead, use operator bool().
+
+  return util::writeFully(*this, static_cast<const uint8_t *>(buf), size,
+                          [&]() { return !static_cast<bool>(*this); });
 }
 
 bool MbedTLSClient::checkRead(int ret) {
