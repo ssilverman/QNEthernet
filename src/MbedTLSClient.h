@@ -81,6 +81,14 @@ class MbedTLSClient : public Client {
   size_t write(uint8_t b) final;
   size_t write(const uint8_t *buf, size_t size) final;
 
+  // Functions that loop until all bytes are written. If the connection is
+  // closed before all bytes are sent then these break early and return the
+  // actual number of bytes sent. In other words, these only return a value less
+  // than the specified size if the connection was closed.
+  size_t writeFully(uint8_t b);
+  size_t writeFully(const char *s);
+  size_t writeFully(const void *buf, size_t size);
+
   // Read functions
   // The connection may be closed if there was an error.
   int available() final;
