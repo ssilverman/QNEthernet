@@ -462,19 +462,15 @@ size_t EthernetClient::writeFully(const uint8_t b) {
 }
 
 size_t EthernetClient::writeFully(const char *const buf) {
-  return writeFully(reinterpret_cast<const uint8_t *>(buf), strlen(buf));
+  return writeFully(buf, strlen(buf));
 }
 
-size_t EthernetClient::writeFully(const char *const buf, const size_t size) {
-  return writeFully(reinterpret_cast<const uint8_t *>(buf), size);
-}
-
-size_t EthernetClient::writeFully(const uint8_t *const buf, const size_t size) {
+size_t EthernetClient::writeFully(const void *const buf, const size_t size) {
   // Don't use connected() as the "connected" check because that will
   // return true if there's data available, and the loop doesn't check
   // for data available. Instead, use operator bool().
 
-  return util::writeFully(*this, buf, size,
+  return util::writeFully(*this, static_cast<const uint8_t *>(buf), size,
                           [&]() { return !static_cast<bool>(*this); });
 }
 

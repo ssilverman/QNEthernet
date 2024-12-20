@@ -22,6 +22,8 @@ and this project adheres to
 * Made `EthernetClient::isNoDelay()` `const`.
 * Disallow compilation for Teensyduino < 1.59 because there's no support for
   casting a `const IPAddress` to a `uint32_t`.
+* Replaced `EthernetClient::writeFully(const char *, size_t)` and
+  `writeFully(const uint8_t *, size_t)` with `writeFully(const void *, size_t)`.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because

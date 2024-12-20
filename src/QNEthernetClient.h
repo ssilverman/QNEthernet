@@ -155,8 +155,7 @@ class EthernetClient : public Client,
   // than the specified size if the connection was closed.
   size_t writeFully(uint8_t b);
   size_t writeFully(const char *s);
-  size_t writeFully(const char *s, size_t size);
-  size_t writeFully(const uint8_t *buf, size_t size);
+  size_t writeFully(const void *buf, size_t size);
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;

@@ -345,8 +345,7 @@ The `Ethernet` object is the main Ethernet interface.
   `LWIP_DEBUG` macro.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
-* `writeFully(s, size)`: Writes characters (`const char *`).
-* `writeFully(buf, size)`: Writes a data buffer (`const uint8_t *`).
+* `writeFully(buf, size)`: Writes a data buffer (`const void *`).
 * `static constexpr int maxSockets()`: Returns the maximum number of
   TCP connections.
 
