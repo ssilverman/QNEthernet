@@ -15,35 +15,36 @@ static constexpr uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 };
 
-size_t writeFully(Print &p, const uint8_t *buf, size_t size,
-                  std::function<bool()> breakf) {
-  size_t total = size;
+size_t writeFully(Print &p, const uint8_t *const buf, const size_t size,
+                  const std::function<bool()> breakf) {
+  const uint8_t *pBuf = buf;
+  size_t sizeRem = size;
 
   if (breakf == nullptr) {
-    while (size > 0) {
-      size_t written = p.write(buf, size);
-      size -= written;
-      buf += written;
+    while (sizeRem > 0) {
+      const size_t written = p.write(pBuf, sizeRem);
+      sizeRem -= written;
+      pBuf += written;
     }
-    return total;
+    return size;
   }
 
-  while (size > 0 && !breakf()) {
-    size_t written = p.write(buf, size);
-    size -= written;
-    buf += written;
+  while (sizeRem > 0 && !breakf()) {
+    const size_t written = p.write(pBuf, sizeRem);
+    sizeRem -= written;
+    pBuf += written;
   }
-  return total - size;
+  return size - sizeRem;
 }
 
 size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
-                  std::function<bool()> breakf) {
+                  const std::function<bool()> breakf) {
   size_t written = writeFully(p, kBroadcastMAC, ETH_HWADDR_LEN, breakf);
   if (written < ETH_HWADDR_LEN) {
     return written;
   }
   for (int i = 0; i < 16; i++) {
-    size_t w = writeFully(p, mac, ETH_HWADDR_LEN, breakf);
+    const size_t w = writeFully(p, mac, ETH_HWADDR_LEN, breakf);
     written += w;
     if (w < ETH_HWADDR_LEN) {
       return written;
@@ -55,7 +56,7 @@ size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
 // NOTE: It's not possible to override clearWriteError(), so check it in
 //       each function
 
-size_t StdioPrint::write(uint8_t b) {
+size_t StdioPrint::write(const uint8_t b) {
   checkAndClearErr();
 
   if (std::fputc(b, stream_) == EOF) {
@@ -65,10 +66,10 @@ size_t StdioPrint::write(uint8_t b) {
   return 1;
 }
 
-size_t StdioPrint::write(const uint8_t *buffer, size_t size) {
+size_t StdioPrint::write(const uint8_t *const buffer, const size_t size) {
   checkAndClearErr();
 
-  size_t retval = std::fwrite(buffer, 1, size, stream_);
+  const size_t retval = std::fwrite(buffer, 1, size, stream_);
   if (std::ferror(stream_) != 0) {
     setWriteError(1);
   }
