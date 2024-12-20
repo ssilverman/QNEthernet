@@ -98,9 +98,7 @@ void setup() {
     printf("Failed to connect\r\n");
     disconnectedPrintLatch = true;
   } else {
-    util::writeFully(tlsclient, reinterpret_cast<const uint8_t *>(kRequest),
-                     std::strlen(kRequest),
-                     []() { return !static_cast<bool>(tlsclient); });
+    tlsclient.writeFully(kRequest);
     tlsclient.flush();
     dataCount = 0;
     printf("[Awaiting response...]\r\n");
