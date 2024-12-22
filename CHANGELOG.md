@@ -14,6 +14,8 @@ and this project adheres to
 * Added `EthernetClient::setConnectionTimeoutEnabled(flag)` to enable or disable
   blocking with calls to `connect(...)` and `stop()`. This supersedes calls to
   `connectNoWait(...)` and `close()`. Also added `isConnectionTimeoutEnabled()`.
+* Added templated versions of `util::writeFully()` and `util::writeMagic()` that
+  use a break function that static_casts a given object to a `bool`.
 
 ### Changed
 * Remove internal uses of `String` from `MDNSClass` and replace them with

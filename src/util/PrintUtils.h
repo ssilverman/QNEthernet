@@ -31,6 +31,15 @@ namespace util {
 size_t writeFully(Print &p, const uint8_t *buf, size_t size,
                   std::function<bool()> breakf = nullptr);
 
+// Calls writeFully() with a break function that static_casts the given object
+// to a bool.
+template <typename T>
+size_t writeFully(Print &p, const uint8_t *const buf, const size_t size,
+                  T *const breakobj) {
+  return writeFully(p, buf, size,
+                    [&]() { return !static_cast<bool>(*breakobj); });
+}
+
 // Writes "magic packet" bytes to the given Print object. This passes `breakf`
 // to `writeFully()`.
 //
@@ -38,6 +47,14 @@ size_t writeFully(Print &p, const uint8_t *buf, size_t size,
 // all bytes are written or `breakf` returns true.
 size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
                   std::function<bool()> breakf = nullptr);
+
+// Calls writeMagic() with a break function that static_casts the given object
+// to a bool.
+template <typename T>
+size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
+                  T *const breakobj) {
+  return writeMagic(p, mac, [&]() { return !static_cast<bool>(*breakobj); });
+}
 
 // A Print decorator for stdio output files. The purpose of this is to utilize
 // the Print class's ability to print Printable objects but using the underlying
