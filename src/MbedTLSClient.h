@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
