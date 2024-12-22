@@ -154,7 +154,7 @@ bool MbedTLSClient::init() {
     if (mbedtls_pk_parse_key(&clientKey_, clientKeyBuf_, clientKeyLen_,
                              clientKeyPwd_, clientKeyPwdLen_,
                              qnethernet_mbedtls_rand_f_rng,
-                             qnethernet_mbedtls_rand_p_rng)) {
+                             qnethernet_mbedtls_rand_p_rng) != 0) {
       goto init_error;
     }
     if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_, &clientKey_) != 0) {
