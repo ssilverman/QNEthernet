@@ -351,8 +351,7 @@ size_t MbedTLSClient::writeFully(const void *const buf, const size_t size) {
   // return true if there's data available, and the loop doesn't check
   // for data available. Instead, use operator bool().
 
-  return util::writeFully(*this, static_cast<const uint8_t *>(buf), size,
-                          [&]() { return !static_cast<bool>(*this); });
+  return util::writeFully(*this, static_cast<const uint8_t *>(buf), size, this);
 }
 
 bool MbedTLSClient::checkRead(int ret) {
