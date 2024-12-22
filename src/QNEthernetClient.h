@@ -87,6 +87,8 @@ class EthernetClient : public Client,
   // Sets the connection timeout, in milliseconds. The default is 1000. If the
   // connection timeout is disabled, then the operation will be non-blocking.
   //
+  // This function is defined by the Arduino API.
+  //
   // See: setConnectionTimeoutEnabled(flag)
   void setConnectionTimeout(uint16_t timeout);
 
@@ -125,6 +127,7 @@ class EthernetClient : public Client,
   // sends a RST segment to the remote host.
   void abort();
 
+  // Functions defned by the Arduino API
   uint16_t localPort();
   IPAddress remoteIP();
   uint16_t remotePort();
