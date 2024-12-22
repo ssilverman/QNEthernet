@@ -288,7 +288,7 @@
 #define MBEDTLS_VERSION_C
 #define MBEDTLS_X509_USE_C
 #define MBEDTLS_X509_CRT_PARSE_C
-// #define MBEDTLS_X509_CRL_PARSE_C  /* Default: defined */
+#define MBEDTLS_X509_CRL_PARSE_C
 // #define MBEDTLS_X509_CSR_PARSE_C  /* Default: defined */
 // #define MBEDTLS_X509_CREATE_C  /* Default: defined */
 // #define MBEDTLS_X509_CRT_WRITE_C  /* Default: defined */
