@@ -17,6 +17,12 @@ template <typename T>
 struct Span {
   T *v = nullptr;
   size_t size = 0;
+
+  // Returns whether the span is empty. A span is considered empty when the
+  // pointer is NULL or the size is zero.
+  bool empty() const {
+    return (v == nullptr) || (size == 0);
+  }
 };
 
 // A Span of unchanging uint8_t's.
