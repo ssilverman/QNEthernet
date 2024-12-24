@@ -47,6 +47,14 @@ class MbedTLSClient : public Client {
                      const uint8_t *clientKey, size_t clientKeyLen,
                      const uint8_t *pwd, size_t pwdLen);
 
+  // Sets the hostname for the ServerName extension. If the given string is NULL
+  // or empty then the hostname is cleared.
+  void setHostname(const char *s);
+
+  const char *hostname() const {
+    return hostname_;
+  }
+
   // Sets the handshake timeout, in milliseconds. The default is zero, meaning
   // "wait forever". If the handshake timeout is disabled, then the operation
   // will be non-blocking.
@@ -143,6 +151,8 @@ class MbedTLSClient : public Client {
   bool handshakeTimeoutEnabled_;
 
   States state_;
+
+  char hostname_[MBEDTLS_SSL_MAX_HOST_NAME_LEN + 1];
 
   int peeked_;  // < 0 for not there
 

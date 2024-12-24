@@ -24,6 +24,7 @@ MbedTLSClient::MbedTLSClient(Client &client)
       handshakeTimeout_(0),
       handshakeTimeoutEnabled_(true),
       state_(States::kStart),
+      hostname_{0},
       peeked_(-1),
       ssl_{},
       conf_{},
@@ -90,6 +91,14 @@ void MbedTLSClient::setClientCert(const uint8_t *const clientCert,
   clientKeyLen_ = clientKeyLen;
   clientKeyPwd_ = pwd;
   clientKeyPwdLen_ = pwdLen;
+}
+
+void MbedTLSClient::setHostname(const char *const s) {
+  if (s == nullptr) {
+    hostname_[0] = '\0';
+  } else {
+    std::strncpy(hostname_, s, sizeof(hostname_) - 1);
+  }
 }
 
 void MbedTLSClient::setHandshakeTimeout(const uint32_t timeout) {
@@ -197,8 +206,14 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
     return false;
   }
 
-  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return handshake(ipaddr_ntoa(&ipaddr), handshakeTimeoutEnabled_);
+  const char *hostname;
+  if (std::strlen(hostname_) != 0) {
+    hostname = hostname_;
+  } else {
+    const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+    hostname = ipaddr_ntoa(&ipaddr);
+  }
+  return handshake(hostname, handshakeTimeoutEnabled_);
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
@@ -213,7 +228,14 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
     deinit();
     return false;
   }
-  return handshake(host, handshakeTimeoutEnabled_);
+
+  const char *hostname;
+  if (std::strlen(hostname_) != 0) {
+    hostname = hostname_;
+  } else {
+    hostname = host;
+  }
+  return handshake(hostname, handshakeTimeoutEnabled_);
 }
 
 static int sendf(void *const ctx,
