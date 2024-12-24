@@ -18,6 +18,12 @@ struct Span {
   T *v = nullptr;
   size_t size = 0;
 
+  // Sets the values.
+  void set(T *v, size_t size) {
+    this->v = v;
+    this->size = size;
+  }
+
   // Returns whether the span is empty. A span is considered empty when the
   // pointer is NULL or the size is zero.
   bool empty() const {
