@@ -198,7 +198,7 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
   }
 
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  return connect(ipaddr_ntoa(&ipaddr), handshakeTimeoutEnabled_);
+  return handshake(ipaddr_ntoa(&ipaddr), handshakeTimeoutEnabled_);
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
@@ -213,7 +213,7 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
     deinit();
     return false;
   }
-  return connect(host, handshakeTimeoutEnabled_);
+  return handshake(host, handshakeTimeoutEnabled_);
 }
 
 static int sendf(void *const ctx,
@@ -262,7 +262,7 @@ bool MbedTLSClient::watchHandshake() {
   }
 }
 
-bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
+bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
     return false;
   }

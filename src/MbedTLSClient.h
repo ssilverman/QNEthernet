@@ -114,9 +114,8 @@ class MbedTLSClient : public Client {
   // Uninitializes the client.
   void deinit();
 
-  // Connects to the given host and optionally waits. This performs the
-  // handshake step.
-  bool connect(const char *hostname, bool wait);
+  // Performs a handshake with the given host and optionally waits.
+  bool handshake(const char *hostname, bool wait);
 
   // If we're in the middle of a handshake then this moves the handshake along.
   // If the handshake is complete then this sets the state to Connected.
