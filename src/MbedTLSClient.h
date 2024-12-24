@@ -7,6 +7,10 @@
 
 #pragma once
 
+// C++ includes
+#include <utility>
+#include <vector>
+
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
@@ -28,13 +32,13 @@ class MbedTLSClient : public Client {
   // length is positive. The pointer and length are stored.
   //
   // If it is in PEM format then it must be NUL-terminated.
-  void setCACert(const uint8_t *caCert, size_t caCertLen);
+  void setCACert(const uint8_t *buf, size_t len);
 
   // Sets the pre-shared key. This only uses the value if both buffers are
   // non-NULL and the lengths are both positive. The pointers and lengths
   // are stored.
-  void setPSK(const uint8_t *psk, size_t pskLen,
-               const uint8_t *pskId, size_t pskIdLen);
+  void setPSK(const uint8_t *buf, size_t len,
+              const uint8_t *id, size_t idLen);
 
   // Sets the client certificate, key, and key password. This only uses the
   // value if the first two buffers are non-NULL and the lengths are both
@@ -43,9 +47,9 @@ class MbedTLSClient : public Client {
   //
   // If the cert or key is in PEM format, then it must be NUL-terminated. The
   // password can be NULL or its length zero if the key is not encrypted.
-  void setClientCert(const uint8_t *clientCert, size_t clientCertLen,
-                     const uint8_t *clientKey, size_t clientKeyLen,
-                     const uint8_t *pwd, size_t pwdLen);
+  void setClientCert(const uint8_t *cert, size_t certLen,
+                     const uint8_t *key, size_t keyLen,
+                     const uint8_t *keyPwd, size_t keyPwdLen);
 
   // Sets the hostname for the ServerName extension. If the given string is NULL
   // or empty then the hostname is cleared.
@@ -109,6 +113,10 @@ class MbedTLSClient : public Client {
   explicit operator bool() final;
 
  private:
+  // PSK callback function type.
+  using pskf = int (*)(void *p_psk, mbedtls_ssl_context *ssl,
+                       const unsigned char *id, size_t idLen);
+
   enum class States {
     kStart,
     kInitialized,
@@ -116,13 +124,83 @@ class MbedTLSClient : public Client {
     kConnected,
   };
 
-  // Initializes the client.
-  bool init();
+  // Cert holds a cert and its key.
+  struct Cert {
+    bool initted = false;
+    mbedtls_x509_crt cert;
+    mbedtls_pk_context key;
 
-  // Uninitializes the client.
+    const uint8_t *certBuf = nullptr;
+    size_t certLen = 0;
+    const uint8_t *keyBuf = nullptr;
+    size_t keyLen = 0;
+    const uint8_t *keyPwd = nullptr;
+    size_t keyPwdLen = 0;
+
+    // Returns whether there's valid cert and key buffers.
+    bool valid() const;
+
+    // Clears the internal values.
+    void clear();
+
+    // Initialization
+    void init();
+    void deinit();
+  };
+
+  // CACert holds a CA cert.
+  struct CACert {
+    bool initted = false;
+    mbedtls_x509_crt cert;
+
+    const uint8_t *buf = nullptr;
+    size_t len = 0;
+
+    // Returns whether there's a valid cert buffer.
+    bool valid() const;
+
+    // Clears the internal values.
+    void clear();
+
+    // Initialization
+    void init();
+    void deinit();
+  };
+
+  // PSK holds pre-shared key data.
+  struct PSK {
+    const uint8_t *psk = nullptr;
+    size_t len = 0;
+    const uint8_t *id = nullptr;
+    size_t idLen = 0;
+
+    // Returns whether there's a valid key.
+    bool valid() const;
+
+    // Clears the internal values.
+    void clear();
+  };
+
+  // Creates an empty client.
+  MbedTLSClient(Client *client);
+
+  // Initializes the client or server.
+  bool init(bool server);
+
+  // Uninitializes the client or server.
   void deinit();
 
-  // Performs a handshake with the given host and optionally waits.
+  // Adds a server certificate. This does not add it if the cert or key don't
+  // have content. The password is optional.
+  //
+  // If the certificate or key is in PEM format, then it must be NUL-terminated.
+  void addServerCert(Cert &&c);
+
+  // Sets the PSK callback for a server-side connection.
+  void setPSKCallback(pskf f_psk, void *p_psk);
+
+  // Performs a handshake with the given host and optionally waits. The hostname
+  // may be NULL.
   bool handshake(const char *hostname, bool wait);
 
   // If we're in the middle of a handshake then this moves the handshake along.
@@ -146,7 +224,9 @@ class MbedTLSClient : public Client {
   // there's data available.
   bool isConnected();
 
-  Client &client_;
+  bool isServer_;
+
+  Client *client_;
   uint32_t handshakeTimeout_;
   bool handshakeTimeoutEnabled_;
 
@@ -159,25 +239,18 @@ class MbedTLSClient : public Client {
   // State
   mbedtls_ssl_context ssl_;
   mbedtls_ssl_config conf_;
-  mbedtls_x509_crt caCert_;
-  mbedtls_x509_crt clientCert_;
-  mbedtls_pk_context clientKey_;
 
   // Certificates
-  const uint8_t *caCertBuf_;
-  size_t caCertLen_;
-  const uint8_t *clientCertBuf_;
-  size_t clientCertLen_;
+  CACert caCert_;
+  Cert clientCert_;
+  std::vector<Cert> serverCerts_;
 
-  // Keys
-  const uint8_t *psk_;
-  size_t pskLen_;
-  const uint8_t *pskId_;
-  size_t pskIdLen_;
-  const uint8_t *clientKeyBuf_;
-  size_t clientKeyLen_ = 0;
-  const uint8_t *clientKeyPwd_;
-  size_t clientKeyPwdLen_;
+  // Key
+  PSK psk_;
+  pskf f_psk_;
+  void *p_psk_;
+
+  friend class MbedTLSServer;
 };
 
 }  // namespace network
