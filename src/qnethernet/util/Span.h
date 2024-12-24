@@ -23,6 +23,12 @@ struct Span {
   bool empty() const {
     return (v == nullptr) || (size == 0);
   }
+
+  // Sets the pointer to NULL and the size to zero.
+  void clear() {
+    v = nullptr;
+    size = 0;
+  }
 };
 
 // A Span of unchanging uint8_t's.
