@@ -277,32 +277,17 @@ bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
   }
 
   uint32_t startTime = qnethernet_hal_millis();
-  while (true) {
-    int ret = mbedtls_ssl_handshake(&ssl_);
-    if (ret == 0) {
-      state_ = States::kConnected;
-      return true;
+  while (!isConnected()) {
+    if (state_ < States::kInitialized) {
+      return false;
     }
 
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
       return false;
     }
-
-    switch (ret) {
-      case MBEDTLS_ERR_SSL_WANT_READ:
-      case MBEDTLS_ERR_SSL_WANT_WRITE:
-      case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
-      case MBEDTLS_ERR_SSL_CRYPTO_IN_PROGRESS:
-      case MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET:
-      case MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA:
-        continue;
-
-      default:
-        deinit();
-        return false;
-    }
   }
+  return true;
 }
 
 bool MbedTLSClient::checkWrite(int ret) {
