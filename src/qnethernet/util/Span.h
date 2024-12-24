@@ -12,10 +12,11 @@ namespace qindesign {
 namespace network {
 namespace util {
 
+// Span holds a pointer to T and a size. This initialized with NULL and 0.
 template <typename T>
 struct Span {
-  T *v;
-  size_t size;
+  T *v = nullptr;
+  size_t size = 0;
 };
 
 // A Span of unchanging uint8_t's.
