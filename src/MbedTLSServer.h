@@ -17,6 +17,7 @@
 
 #include "MbedTLSClient.h"
 #include "QNEthernetServer.h"
+#include "util/Span.h"
 
 namespace qindesign {
 namespace network {
@@ -76,12 +77,9 @@ class MbedTLSServer : public Server {
 
   // Cert holds pointers to certificate data.
   struct Cert {
-    const uint8_t *cert = nullptr;
-    size_t certLen = 0;
-    const uint8_t *key = nullptr;
-    size_t keyLen = 0;
-    const uint8_t *keyPwd = nullptr;
-    size_t keyPwdLen = 0;
+    util::ByteSpan cert;
+    util::ByteSpan key;
+    util::ByteSpan keyPwd;
 
     // Returns whether there is valid cert and key data.
     bool valid() const;
@@ -92,8 +90,7 @@ class MbedTLSServer : public Server {
 
   // Cert holds a pointer to CA certificate data.
   struct CACert {
-    const uint8_t *buf = nullptr;
-    size_t len = 0;
+    util::ByteSpan cert;
 
     // Returns whether the data is valid.
     bool valid() const;

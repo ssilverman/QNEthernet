@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <cstring>
 #include <utility>
 
 #include "QNEthernetClient.h"
@@ -64,26 +63,26 @@ void MbedTLSServer::end() {
 }
 
 bool MbedTLSServer::Cert::valid() const {
-  return (cert != nullptr) && (certLen != 0) &&
-         (key != nullptr) && (keyLen != 0);
+  return !cert.empty() && !key.empty();
 }
 
 void MbedTLSServer::Cert::clear() {
-  std::memset(this, 0, sizeof(*this));
+  cert.clear();
+  key.clear();
+  keyPwd.clear();
 }
 
 bool MbedTLSServer::CACert::valid() const {
-  return (buf != nullptr) && (len != 0);
+  return !cert.empty();
 }
 
 void MbedTLSServer::CACert::clear() {
-  std::memset(this, 0, sizeof(*this));
+  cert.clear();
 }
 
 void MbedTLSServer::setCACert(const uint8_t *const buf, const size_t len) {
   CACert c;
-  c.buf = buf;
-  c.len = len;
+  c.cert.set(buf, len);
   if (c.valid()) {
     caCert_ = std::move(c);
   }
@@ -95,12 +94,9 @@ void MbedTLSServer::addServerCert(const uint8_t *const cert,
                                   const uint8_t *const keyPwd,
                                   const size_t keyPwdLen) {
   Cert c;
-  c.cert = cert;
-  c.certLen = certLen;
-  c.key = key;
-  c.keyLen = keyLen;
-  c.keyPwd = keyPwd;
-  c.keyPwdLen = keyPwdLen;
+  c.cert.set(cert, certLen);
+  c.key.set(key, keyLen);
+  c.keyPwd.set(keyPwd, keyPwdLen);
   if (c.valid()) {
     certs_.push_back(std::move(c));
   }
@@ -116,16 +112,13 @@ MbedTLSClient MbedTLSServer::accept() {
     if (c) {
       MbedTLSClient tlsClient{c};
       if (caCert_.valid()) {
-        tlsClient.setCACert(caCert_.buf, caCert_.len);
+        tlsClient.setCACert(caCert_.cert.v, caCert_.cert.size);
       }
       for (const Cert &c : certs_) {
         MbedTLSClient::Cert sc;
         sc.certBuf = c.cert;
-        sc.certLen = c.certLen;
         sc.keyBuf = c.key;
-        sc.keyLen = c.keyLen;
         sc.keyPwd = c.keyPwd;
-        sc.keyPwdLen = c.keyPwdLen;
         tlsClient.addServerCert(std::move(sc));
       }
       if (pskCB_) {
