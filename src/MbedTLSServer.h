@@ -61,7 +61,8 @@ class MbedTLSServer : public Server {
   MbedTLSClient accept();
   // MbedTLSClient available() const;
 
-  // Defined by Print; these do nothing or return 0
+  // Defined by Print; these do nothing or return 0. flush() flushes the
+  // underlying Server.
   size_t write(uint8_t b) override;
   size_t write(const uint8_t *buffer, size_t size) override;
   int availableForWrite()	override;
