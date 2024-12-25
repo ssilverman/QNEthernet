@@ -19,6 +19,8 @@
 namespace qindesign {
 namespace network {
 
+// Any data pointers are no longer needed after the handshake completes, unless
+// a new connection needs the same data.
 class MbedTLSClient : public Client {
  public:
   MbedTLSClient(Client &client);
