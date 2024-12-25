@@ -14,6 +14,8 @@
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
+#include "util/Span.h"
+
 namespace qindesign {
 namespace network {
 
@@ -130,12 +132,9 @@ class MbedTLSClient : public Client {
     mbedtls_x509_crt cert;
     mbedtls_pk_context key;
 
-    const uint8_t *certBuf = nullptr;
-    size_t certLen = 0;
-    const uint8_t *keyBuf = nullptr;
-    size_t keyLen = 0;
-    const uint8_t *keyPwd = nullptr;
-    size_t keyPwdLen = 0;
+    util::ByteSpan certBuf;
+    util::ByteSpan keyBuf;
+    util::ByteSpan keyPwd;
 
     // Returns whether there's valid cert and key buffers.
     bool valid() const;
@@ -153,8 +152,7 @@ class MbedTLSClient : public Client {
     bool initted = false;
     mbedtls_x509_crt cert;
 
-    const uint8_t *buf = nullptr;
-    size_t len = 0;
+    util::ByteSpan certBuf;
 
     // Returns whether there's a valid cert buffer.
     bool valid() const;
@@ -169,10 +167,8 @@ class MbedTLSClient : public Client {
 
   // PSK holds pre-shared key data.
   struct PSK {
-    const uint8_t *psk = nullptr;
-    size_t len = 0;
-    const uint8_t *id = nullptr;
-    size_t idLen = 0;
+    util::ByteSpan psk;
+    util::ByteSpan id;
 
     // Returns whether there's a valid key.
     bool valid() const;

@@ -59,8 +59,7 @@ MbedTLSClient::~MbedTLSClient() {
 
 void MbedTLSClient::setCACert(const uint8_t *const buf, const size_t len) {
   CACert c;
-  c.buf = buf;
-  c.len = len;
+  c.certBuf.set(buf, len);
   if (c.valid()) {
     caCert_ = c;
   }
@@ -69,10 +68,8 @@ void MbedTLSClient::setCACert(const uint8_t *const buf, const size_t len) {
 void MbedTLSClient::setPSK(const uint8_t *const buf, const size_t len,
                            const uint8_t *const id, const size_t idLen) {
   PSK psk;
-  psk.psk = buf;
-  psk.len = len;
-  psk.id = id;
-  psk.idLen = idLen;
+  psk.psk.set(buf, len);
+  psk.id.set(id, idLen);
   if (psk.valid()) {
     psk_ = psk;
   }
@@ -85,12 +82,9 @@ void MbedTLSClient::setClientCert(const uint8_t *const cert,
                                   const size_t keyPwdLen) {
   if ((cert != nullptr) && (certLen != 0) &&
       (key != nullptr) && (keyLen != 0)) {
-    clientCert_.certBuf = cert;
-    clientCert_.certLen = certLen;
-    clientCert_.keyBuf = key;
-    clientCert_.keyLen = keyLen;
-    clientCert_.keyPwd = keyPwd;
-    clientCert_.keyPwdLen = keyPwdLen;
+    clientCert_.certBuf.set(cert, certLen);
+    clientCert_.keyBuf.set(key, keyLen);
+    clientCert_.keyPwd.set(keyPwd, keyPwdLen);
   }
 }
 
@@ -122,8 +116,7 @@ void MbedTLSClient::setHandshakeTimeoutEnabled(const bool flag) {
 }
 
 bool MbedTLSClient::Cert::valid() const {
-  return (certBuf != nullptr) && (certLen != 0) &&
-         (keyBuf != nullptr) && (keyLen != 0);
+  return !certBuf.empty() && !keyBuf.empty();
 }
 
 void MbedTLSClient::Cert::init() {
@@ -143,14 +136,12 @@ void MbedTLSClient::Cert::deinit() {
 }
 
 void MbedTLSClient::Cert::clear() {
-  certBuf = nullptr;
-  certLen = 0;
-  keyBuf = nullptr;
-  keyLen = 0;
+  certBuf.clear();
+  keyBuf.clear();
 }
 
 bool MbedTLSClient::CACert::valid() const {
-  return (buf != nullptr) && (len != 0);
+  return !certBuf.empty();
 }
 
 void MbedTLSClient::CACert::init() {
@@ -167,20 +158,16 @@ void MbedTLSClient::CACert::deinit() {
 }
 
 void MbedTLSClient::CACert::clear() {
-  buf = nullptr;
-  len = 0;
+  certBuf.clear();
 }
 
 bool MbedTLSClient::PSK::valid() const {
-  return (psk != nullptr) && (len != 0) &&
-         (id != nullptr) && (idLen != 0);
+  return !psk.empty() && !id.empty();
 }
 
 void MbedTLSClient::PSK::clear() {
-  psk = nullptr;
-  len = 0;
-  id = nullptr;
-  idLen = 0;
+  psk.clear();
+  id.clear();
 }
 
 bool MbedTLSClient::init(bool server) {
@@ -205,9 +192,12 @@ bool MbedTLSClient::init(bool server) {
   // Function that parses a certificate and its key, and marks it as ours
   auto parsef = [&](Cert &c) -> bool {
     // Also disallow partially-parsed certificates
-    return (mbedtls_x509_crt_parse(&c.cert, c.certBuf, c.certLen) != 0) &&
-           (mbedtls_pk_parse_key(&c.key, c.keyBuf, c.keyLen, c.keyPwd,
-                                 c.keyPwdLen, qnethernet_mbedtls_rand_f_rng,
+    return (mbedtls_x509_crt_parse(&c.cert, c.certBuf.v, c.certBuf.size) !=
+            0) &&
+           (mbedtls_pk_parse_key(&c.key,
+                                 c.keyBuf.v, c.keyBuf.size,
+                                 c.keyPwd.v, c.keyPwd.size,
+                                 qnethernet_mbedtls_rand_f_rng,
                                  qnethernet_mbedtls_rand_p_rng) != 0) &&
            (mbedtls_ssl_conf_own_cert(&conf_, &c.cert, &c.key) != 0);
 
@@ -226,7 +216,8 @@ bool MbedTLSClient::init(bool server) {
 
   // Certificate chain
   if (caCert_.valid()) {
-    if (mbedtls_x509_crt_parse(&caCert_.cert, caCert_.buf, caCert_.len) < 0) {
+    if (mbedtls_x509_crt_parse(&caCert_.cert, caCert_.certBuf.v,
+                               caCert_.certBuf.size) < 0) {
       goto init_error;
     }
     mbedtls_ssl_conf_ca_chain(&conf_, &caCert_.cert, nullptr);
@@ -256,8 +247,9 @@ bool MbedTLSClient::init(bool server) {
   // Pre-shared key
   if (!server) {
     if (psk_.valid()) {
-      if (mbedtls_ssl_conf_psk(&conf_, psk_.psk, psk_.len, psk_.id, psk_.idLen) !=
-          0) {
+      if (mbedtls_ssl_conf_psk(&conf_,
+                               psk_.psk.v, psk_.psk.size,
+                               psk_.id.v, psk_.id.size) != 0) {
         goto init_error;
       }
     }
