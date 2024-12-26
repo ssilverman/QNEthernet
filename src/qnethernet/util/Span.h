@@ -9,7 +9,6 @@
 #include <cstdint>
 
 namespace qindesign {
-namespace network {
 namespace util {
 
 // Span holds a pointer to T and a size. This initialized with NULL and 0.
@@ -41,5 +40,4 @@ struct Span {
 using ByteSpan = Span<const uint8_t>;
 
 }  // namespace util
-}  // namespace network
 }  // namespace qindesign
