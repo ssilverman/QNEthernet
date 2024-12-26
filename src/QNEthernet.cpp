@@ -133,7 +133,9 @@ FLASHMEM EthernetClass::EthernetClass()
       dhcpActive_(false),
 #endif  // LWIP_DHCP
       linkStateCB_{},
+#if LWIP_IPV4 || LWIP_IPV6
       addressChangedCB_{},
+#endif  // LWIP_IPV4 || LWIP_IPV6
       interfaceStatusCB_{} {
 }
 

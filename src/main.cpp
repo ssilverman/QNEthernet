@@ -155,6 +155,7 @@ static constexpr char kRequest[]{
 static constexpr uint16_t kPort = 80;
 
 static void clientConnect() {
+#if LWIP_TCP
   EthernetClient client;
   printf("[Main] Connecting to %s...\r\n", kHost);
   if (!client.connect(kHost, 80)) {
@@ -191,6 +192,7 @@ static void clientConnect() {
     }
   }
   printf("\r\n");
+#endif  // LWIP_TCP
 }
 
 #endif  // MAIN_TEST_PROGRAM
