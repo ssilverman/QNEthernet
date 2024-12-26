@@ -429,8 +429,8 @@ int EthernetClass::begin(const uint8_t mac[kMACAddrSize],
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 bool EthernetClass::begin(const uint8_t mac[kMACAddrSize],
                           const IPAddress &ip) {
-  return begin(mac, ip, IPAddress{ip[0], ip[1], ip[2], 1},
-               IPAddress{ip[0], ip[1], ip[2], 1}, IPAddress{255, 255, 255, 0});
+  IPAddress gateway{ip[0], ip[1], ip[2], 1};
+  return begin(mac, ip, gateway, gateway, IPAddress{255, 255, 255, 0});
 }
 
 bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
