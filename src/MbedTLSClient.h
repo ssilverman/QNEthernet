@@ -59,6 +59,7 @@ class MbedTLSClient : public Client {
   // or empty then the hostname is cleared.
   void setHostname(const char *s);
 
+  // Gets the hostname for the ServerName extension.
   const char *hostname() const {
     return hostname_;
   }
