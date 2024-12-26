@@ -148,7 +148,7 @@ const uint8_t *EthernetClass::macAddress() {
     hasMAC_ = true;
   }
   return mac_;
-};
+}
 
 void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {

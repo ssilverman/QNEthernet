@@ -6,6 +6,7 @@
 
 #include "RandomDevice.h"
 
+// C++ includes
 #include <cstdint>
 
 #include <avr/pgmspace.h>

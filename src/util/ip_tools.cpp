@@ -28,5 +28,5 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *const ip) {
 
 #endif  // LWIP_IPV4
 
-}  // network
-}  // qindesign
+}  // namespace network
+}  // namespace qindesign
