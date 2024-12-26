@@ -12,6 +12,7 @@
 
 // C++ includes
 #include <memory>
+#include <vector>
 
 #include "ConnectionState.h"
 #include "lwip/err.h"
