@@ -25,7 +25,7 @@ static mbedtls_entropy_context s_entropy;
 
 int (*const qnethernet_mbedtls_rand_f_rng)(void *, unsigned char *,
                                            size_t) = mbedtls_ctr_drbg_random;
- void *const qnethernet_mbedtls_rand_p_rng = &s_ctr_drbg;
+void *const qnethernet_mbedtls_rand_p_rng = &s_ctr_drbg;
 
 bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
   if (!s_randInit) {
