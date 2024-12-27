@@ -129,11 +129,10 @@ bool MbedTLSClient::init(bool server) {
     }
   } else {
     for (security::MbedTLSCert *c : serverCerts_) {
-      if (c->empty()) {
-        continue;
-      }
-      if (mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key()) != 0) {
-        goto init_error;
+      if (!c->empty() && c->hasKey()) {
+        if (mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key()) != 0) {
+          goto init_error;
+        }
       }
     }
   }
