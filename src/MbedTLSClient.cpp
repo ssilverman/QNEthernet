@@ -19,6 +19,9 @@ uint32_t qnethernet_hal_millis(void);
 namespace qindesign {
 namespace network {
 
+MbedTLSClient::MbedTLSClient()
+    : MbedTLSClient(static_cast<Client *>(nullptr)) {}
+
 MbedTLSClient::MbedTLSClient(Client *client)
     : isServer_(false),
       client_(client),
