@@ -56,8 +56,8 @@ class MbedTLSServer : public Server {
   void onPSK(pskf f);
 
   // Returns either a connected client or a disconnected client. If the client
-  // is connected then the handshake has yet to be completed. The caller must
-  // keep checking that this is so.
+  // is connected then the handshake has started but has yet to be completed.
+  // The caller must keep checking that this is so.
   MbedTLSClient accept();
   // MbedTLSClient available() const;
 
