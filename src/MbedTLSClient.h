@@ -24,6 +24,9 @@ namespace network {
 // a new connection needs the same data.
 class MbedTLSClient : public Client {
  public:
+  // Creates an unconnectable client.
+  MbedTLSClient();
+
   MbedTLSClient(Client &client);
   virtual ~MbedTLSClient();
 
