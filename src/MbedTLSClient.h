@@ -14,7 +14,6 @@
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
-#include "QNEthernetClient.h"
 #include "security/MbedTLSCert.h"
 #include "security/MbedTLSPSK.h"
 
@@ -25,7 +24,9 @@ namespace network {
 // a new connection needs the same data.
 class MbedTLSClient : public Client {
  public:
+  // Creates an unconnectable client.
   MbedTLSClient();
+
   MbedTLSClient(Client &client);
   virtual ~MbedTLSClient();
 
@@ -168,7 +169,6 @@ class MbedTLSClient : public Client {
 
   bool isServer_;
 
-  EthernetClient qnClient;  // For use in the empty constructor, may be unused
   Client *client_;
   uint32_t handshakeTimeout_;
   bool handshakeTimeoutEnabled_;
