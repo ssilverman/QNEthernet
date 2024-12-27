@@ -135,8 +135,9 @@ class MbedTLSClient : public Client {
   void setPSKCallback(pskf f_psk, void *p_psk);
 
   // Performs a handshake with the given host and optionally waits. The hostname
-  // may be NULL. This expects the client to be initialized. If this returns
-  // false then the client will be deinitialized.
+  // may be NULL. This expects the client to be initialized and the underlying
+  // client to be connected. If this returns false then the client will be
+  // deinitialized and the underlying client stopped.
   bool handshake(const char *hostname, bool wait);
 
   // If we're in the middle of a handshake then this moves the handshake along.
