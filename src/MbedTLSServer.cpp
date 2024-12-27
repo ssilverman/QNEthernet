@@ -61,7 +61,7 @@ void MbedTLSServer::setCACert(security::MbedTLSCert *ca) {
 }
 
 void MbedTLSServer::addServerCert(security::MbedTLSCert *cert) {
-  if (cert != nullptr) {
+  if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     certs_.push_back(cert);
   }
 }
