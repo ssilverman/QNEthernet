@@ -17,7 +17,6 @@
 
 #include "MbedTLSClient.h"
 #include "QNEthernetServer.h"
-#include "util/Span.h"
 
 namespace qindesign {
 namespace network {
@@ -45,15 +44,13 @@ class MbedTLSServer : public Server {
   // length is positive. The pointer and length are stored.
   //
   // If it is in PEM format then it must be NUL-terminated.
-  void setCACert(const uint8_t *buf, size_t len);
+  void setCACert(security::MbedTLSCert *ca);
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The password is optional.
   //
   // If the certificate or key is in PEM format, then it must be NUL-terminated.
-  void addServerCert(const uint8_t *cert, size_t certLen,
-                     const uint8_t *key, size_t keyLen,
-                     const uint8_t *keyPwd, size_t keyPwdLen);
+  void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the callback for processing a PSK request from the client.
   void onPSK(pskf f);
@@ -76,35 +73,11 @@ class MbedTLSServer : public Server {
     kStarted,
   };
 
-  // Cert holds pointers to certificate data.
-  struct Cert {
-    util::ByteSpan cert;
-    util::ByteSpan key;
-    util::ByteSpan keyPwd;
-
-    // Returns whether there is valid cert and key data.
-    bool valid() const;
-
-    // Clears the internal values.
-    void clear();
-  };
-
-  // Cert holds a pointer to CA certificate data.
-  struct CACert {
-    util::ByteSpan cert;
-
-    // Returns whether the data is valid.
-    bool valid() const;
-
-    // Clears the internal values.
-    void clear();
-  };
-
   EthernetServer &server_;
   States state_;
 
-  CACert caCert_;
-  std::vector<Cert> certs_;
+  security::MbedTLSCert *ca_;
+  std::vector<security::MbedTLSCert *> certs_;  // Won't contain NULLs
   pskf pskCB_;
 };
 

@@ -14,7 +14,8 @@
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
-#include "util/Span.h"
+#include "security/MbedTLSCert.h"
+#include "security/MbedTLSPSK.h"
 
 namespace qindesign {
 namespace network {
@@ -32,28 +33,14 @@ class MbedTLSClient : public Client {
   MbedTLSClient(MbedTLSClient &&other) = default;
   MbedTLSClient &operator=(MbedTLSClient &&other) = default;
 
-  // Sets the CA cert(s). This only uses the value if it is non-NULL and the
-  // length is positive. The pointer and length are stored.
-  //
-  // If it is in PEM format then it must be NUL-terminated.
-  void setCACert(const uint8_t *buf, size_t len);
+  // Sets the CA certificate(s).
+  void setCACert(security::MbedTLSCert *ca);
 
-  // Sets the pre-shared key. This only uses the value if both buffers are
-  // non-NULL and the lengths are both positive. The pointers and lengths
-  // are stored.
-  void setPSK(const uint8_t *buf, size_t len,
-              const uint8_t *id, size_t idLen);
+  // Sets the client certificate.
+  void setClientCert(security::MbedTLSCert *cert);
 
-  // Sets the client certificate, key, and key password. This only uses the
-  // value if the first two buffers are non-NULL and the lengths are both
-  // positive. The password can be NULL or have a length of zero. The pointers
-  // and lengths are stored.
-  //
-  // If the cert or key is in PEM format, then it must be NUL-terminated. The
-  // password can be NULL or its length zero if the key is not encrypted.
-  void setClientCert(const uint8_t *cert, size_t certLen,
-                     const uint8_t *key, size_t keyLen,
-                     const uint8_t *keyPwd, size_t keyPwdLen);
+  // Sets the pre-shared key.
+  void setPSK(const security::MbedTLSPSK *psk);
 
   // Sets the hostname for the ServerName extension. If the given string is NULL
   // or empty then the hostname is cleared.
@@ -129,57 +116,6 @@ class MbedTLSClient : public Client {
     kConnected,
   };
 
-  // Cert holds a cert and its key.
-  struct Cert {
-    bool initted = false;
-    mbedtls_x509_crt cert;
-    mbedtls_pk_context key;
-
-    util::ByteSpan certBuf;
-    util::ByteSpan keyBuf;
-    util::ByteSpan keyPwd;
-
-    // Returns whether there's valid cert and key buffers.
-    bool valid() const;
-
-    // Clears the internal values.
-    void clear();
-
-    // Initialization
-    void init();
-    void deinit();
-  };
-
-  // CACert holds a CA cert.
-  struct CACert {
-    bool initted = false;
-    mbedtls_x509_crt cert;
-
-    util::ByteSpan certBuf;
-
-    // Returns whether there's a valid cert buffer.
-    bool valid() const;
-
-    // Clears the internal values.
-    void clear();
-
-    // Initialization
-    void init();
-    void deinit();
-  };
-
-  // PSK holds pre-shared key data.
-  struct PSK {
-    util::ByteSpan psk;
-    util::ByteSpan id;
-
-    // Returns whether there's a valid key.
-    bool valid() const;
-
-    // Clears the internal values.
-    void clear();
-  };
-
   // Creates an empty client.
   MbedTLSClient(Client *client);
 
@@ -193,7 +129,7 @@ class MbedTLSClient : public Client {
   // have content. The password is optional.
   //
   // If the certificate or key is in PEM format, then it must be NUL-terminated.
-  void addServerCert(Cert &&c);
+  void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the PSK callback for a server-side connection.
   void setPSKCallback(pskf f_psk, void *p_psk);
@@ -240,12 +176,12 @@ class MbedTLSClient : public Client {
   mbedtls_ssl_config conf_;
 
   // Certificates
-  CACert caCert_;
-  Cert clientCert_;
-  std::vector<Cert> serverCerts_;
+  security::MbedTLSCert *ca_;
+  security::MbedTLSCert *clientCert_;
+  std::vector<security::MbedTLSCert *> serverCerts_;  // Guaranteed no NULLs
 
   // Key
-  PSK psk_;
+  const security::MbedTLSPSK *psk_;
   pskf f_psk_;
   void *p_psk_;
 
