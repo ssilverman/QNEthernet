@@ -36,6 +36,9 @@ class MbedTLSClient : public Client {
   MbedTLSClient(MbedTLSClient &&other) = default;
   MbedTLSClient &operator=(MbedTLSClient &&other) = default;
 
+  // Sets a new client. This calls stop() first.
+  void setClient(Client &client);
+
   // Sets the CA certificate(s).
   void setCACert(security::MbedTLSCert *ca);
 
