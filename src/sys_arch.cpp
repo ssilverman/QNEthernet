@@ -6,6 +6,8 @@
 
 #include "arch/sys_arch.h"
 
+#include "lwip/sys.h"
+
 // --------------------------------------------------------------------------
 //  Time
 // --------------------------------------------------------------------------
@@ -15,7 +17,11 @@ extern "C" {
 uint32_t qnethernet_hal_millis(void);
 
 u32_t sys_now(void) {
+#ifndef LWIP_FUZZ_SYS_NOW
   return qnethernet_hal_millis();
+#else
+  return qnethernet_hal_millis() + sys_now_offset;
+#endif  // !LWIP_FUZZ_SYS_NOW
 }
 
 }  // extern "C"
