@@ -162,7 +162,7 @@ static void clientConnect() {
   EthernetClient client;
   MbedTLSClient tlsclient{client};
   printf("[Main] Connecting to %s...\r\n", kHost);
-  if (!tlsclient.connect(kHost, uint16_t{80})) {
+  if (!tlsclient.connect(kHost, uint16_t{443})) {
     printf("[Main] Error connecting\r\n");
     return;
   }
