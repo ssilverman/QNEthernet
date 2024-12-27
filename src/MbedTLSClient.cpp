@@ -49,6 +49,11 @@ MbedTLSClient::~MbedTLSClient() {
   p_psk_ = nullptr;
 }
 
+void MbedTLSClient::setClient(Client &client) {
+  stop();
+  client_ = &client;
+}
+
 void MbedTLSClient::setCACert(security::MbedTLSCert *ca) {
   ca_ = ca;
 }
