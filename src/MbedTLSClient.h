@@ -75,6 +75,7 @@ class MbedTLSClient : public Client {
     return handshakeTimeoutEnabled_;
   }
 
+  // Two forms of the connect() function
   int connect(IPAddress ip, uint16_t port) final;
   int connect(const char *host, uint16_t port) final;
 
