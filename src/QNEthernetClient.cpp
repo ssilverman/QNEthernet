@@ -148,6 +148,13 @@ bool EthernetClient::connect(const ip_addr_t *const ipaddr, const uint16_t port,
   return true;
 }
 
+bool EthernetClient::connecting() {
+  if (conn_ == nullptr || !pendingConnect_) {
+    return false;
+  }
+  return watchPendingConnect() && !conn_->connected;
+}
+
 bool EthernetClient::watchPendingConnect() {
   if (conn_->state == nullptr) {
     conn_ = nullptr;

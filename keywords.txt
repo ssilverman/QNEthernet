@@ -77,6 +77,7 @@ maxSockets	KEYWORD2
 connect	KEYWORD2	client.connect
 connectNoWait	KEYWORD2
 connected	KEYWORD2	client.connected
+connecting	KEYWORD2
 setConnectionTimeout	KEYWORD2	client.setConnectionTimeout
 connectionTimeout	KEYWORD2
 setConnectionTimeoutEnabled	KEYWORD2

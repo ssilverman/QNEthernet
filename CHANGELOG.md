@@ -16,6 +16,8 @@ and this project adheres to
   `connectNoWait(...)` and `close()`. Also added `isConnectionTimeoutEnabled()`.
 * Added templated versions of `util::writeFully()` and `util::writeMagic()` that
   use a break function that static_casts a given object to a `bool`.
+* Added `EthernetClient::connecting()` for determining if the client is still in
+  the process of connecting during a non-blocking connect.
 
 ### Changed
 * Remove internal uses of `String` from `MDNSClass` and replace them with

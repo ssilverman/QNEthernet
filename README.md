@@ -48,7 +48,7 @@ lwIP release.
 6. [A survey of how connections (aka `EthernetClient`) work](#a-survey-of-how-connections-aka-ethernetclient-work)
    1. [Connections and link/interface detection](#connections-and-linkinterface-detection)
    2. [`connect()` behaviour and its return values](#connect-behaviour-and-its-return-values)
-   3. [Non-blocking connection functions, `connectNoWait()`](#non-blocking-connection-functions-connectnowait)
+   3. [Non-blocking connection functions](#non-blocking-connection-functions)
    4. [Getting the TCP state](#getting-the-tcp-state)
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
@@ -330,6 +330,8 @@ The `Ethernet` object is the main Ethernet interface.
   wait for a connection.
 * `connectNoWait(host, port)`: Similar to `connect(host, port)`, but it doesn't
   wait for a connection. Note that the DNS lookup will still wait.
+* `connecting()`: Returns whether the client is in the middle of connecting.
+  This is used when doing a non-blocking connect.
 * `connectionId()`: Returns an ID for the connection to which the client refers.
   It will return non-zero if connected and zero if not connected. Note that it's
   possible for new connections to reuse previously-used IDs.
@@ -1059,15 +1061,16 @@ The Arduino-style API,
 this function, but now it returns a Boolean value indicating success. Note that
 the function signatures still return an `int`.
 
-### Non-blocking connection functions, `connectNoWait()`
+### Non-blocking connection functions
 
 The `connectNoWait()` functions implement non-blocking TCP connections. These
 functions behave similarly to `connect()`, however they do not wait for the
 connection to be established.
 
-To check for connection establishment, simply call either `connected()` or the
-Boolean operator. If a connection can't be established then `close()` must be
-called on the object.
+To check for connection establishment, simply call `connecting()` to determine
+if the client is still in the process of connecting, and then either
+`connected()` or the Boolean operator. If a connection can't be established then
+`close()` must be called on the object.
 
 Note that DNS lookups for hostnames will still wait.
 

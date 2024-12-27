@@ -81,6 +81,10 @@ class EthernetClient : public Client,
   // with connect().
   bool connectNoWait(const char *host, uint16_t port);
 
+  // Returns whether the client is in the process of connecting. This is used
+  // when doing a non-blocking connect.
+  bool connecting();
+
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
 
