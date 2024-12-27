@@ -37,7 +37,10 @@ class MbedTLSServer : public Server {
   MbedTLSServer(MbedTLSServer &&other) = default;
   MbedTLSServer &operator=(MbedTLSServer &&other) = default;
 
+  // Starts the server.
   void begin() final;
+
+  // Stops the server.
   void end();
 
   // Sets the CA certificate(s).
