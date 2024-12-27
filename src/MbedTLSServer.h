@@ -56,6 +56,8 @@ class MbedTLSServer : public Server {
   // Returns either a connected client or a disconnected client. If the client
   // is connected then the handshake has started but has yet to be completed.
   // The caller must keep checking that this is so.
+  //
+  // See: MbedTLSClient::connecting()
   MbedTLSClient accept();
   // MbedTLSClient available() const;
 
