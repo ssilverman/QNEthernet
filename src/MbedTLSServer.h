@@ -55,6 +55,9 @@ class MbedTLSServer : public Server {
   // Sets the callback for processing a PSK request from the client.
   void onPSK(pskf f);
 
+  // Returns either a connected client or a disconnected client. If the client
+  // is connected then the handshake has yet to be completed. The caller must
+  // keep checking that this is so.
   MbedTLSClient accept();
   // MbedTLSClient available() const;
 
