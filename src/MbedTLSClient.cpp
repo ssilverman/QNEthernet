@@ -258,6 +258,9 @@ bool MbedTLSClient::watchHandshake() {
   }
   int ret = mbedtls_ssl_handshake_step(&ssl_);
   switch (ret) {
+    case 0:
+      state_ = States::kConnected;
+      return true;
     case MBEDTLS_ERR_SSL_WANT_READ:
     case MBEDTLS_ERR_SSL_WANT_WRITE:
     case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
@@ -290,24 +293,21 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
   }
   mbedtls_ssl_set_bio(&ssl_, client_, &sendf, &recvf, nullptr);
 
+  state_ = States::kHandshake;
+
   if (!wait) {
-    state_ = States::kHandshake;
     return watchHandshake();
   }
 
   uint32_t startTime = qnethernet_hal_millis();
-  while (!isConnected()) {
-    if (state_ < States::kInitialized) {
-      return false;
-    }
-
+  while (connecting()) {
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
       stop();
       return false;
     }
   }
-  return true;
+  return state_ >= States::kConnected;
 }
 
 bool MbedTLSClient::checkWrite(int ret) {
