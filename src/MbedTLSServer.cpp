@@ -38,12 +38,6 @@ MbedTLSServer::MbedTLSServer(EthernetServer &server)
 
 MbedTLSServer::~MbedTLSServer() {
   end();
-
-  for (Cert &c : certs_) {
-    c.clear();
-  }
-  certs_.clear();
-  caCert_.clear();
 }
 
 void MbedTLSServer::begin() {
@@ -62,43 +56,13 @@ void MbedTLSServer::end() {
   state_ = States::kStart;
 }
 
-bool MbedTLSServer::Cert::valid() const {
-  return !cert.empty() && !key.empty();
+void MbedTLSServer::setCACert(security::MbedTLSCert *ca) {
+  ca_ = ca;
 }
 
-void MbedTLSServer::Cert::clear() {
-  cert.clear();
-  key.clear();
-  keyPwd.clear();
-}
-
-bool MbedTLSServer::CACert::valid() const {
-  return !cert.empty();
-}
-
-void MbedTLSServer::CACert::clear() {
-  cert.clear();
-}
-
-void MbedTLSServer::setCACert(const uint8_t *const buf, const size_t len) {
-  CACert c;
-  c.cert.set(buf, len);
-  if (c.valid()) {
-    caCert_ = std::move(c);
-  }
-}
-
-void MbedTLSServer::addServerCert(const uint8_t *const cert,
-                                  const size_t certLen,
-                                  const uint8_t *const key, const size_t keyLen,
-                                  const uint8_t *const keyPwd,
-                                  const size_t keyPwdLen) {
-  Cert c;
-  c.cert.set(cert, certLen);
-  c.key.set(key, keyLen);
-  c.keyPwd.set(keyPwd, keyPwdLen);
-  if (c.valid()) {
-    certs_.push_back(std::move(c));
+void MbedTLSServer::addServerCert(security::MbedTLSCert *cert) {
+  if (cert != nullptr) {
+    certs_.push_back(cert);
   }
 }
 
@@ -111,15 +75,11 @@ MbedTLSClient MbedTLSServer::accept() {
     EthernetClient c = server_.accept();
     if (c) {
       MbedTLSClient tlsClient{c};
-      if (caCert_.valid()) {
-        tlsClient.setCACert(caCert_.cert.v, caCert_.cert.size);
+      if (ca_ != nullptr && !ca_->empty()) {
+        tlsClient.setCACert(ca_);
       }
-      for (const Cert &c : certs_) {
-        MbedTLSClient::Cert sc;
-        sc.certBuf = c.cert;
-        sc.keyBuf = c.key;
-        sc.keyPwd = c.keyPwd;
-        tlsClient.addServerCert(std::move(sc));
+      for (security::MbedTLSCert *c : certs_) {
+        tlsClient.addServerCert(c);
       }
       if (pskCB_) {
         tlsClient.setPSKCallback(&pskCallback, &pskCB_);
