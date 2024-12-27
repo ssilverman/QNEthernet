@@ -40,16 +40,11 @@ class MbedTLSServer : public Server {
   void begin() final;
   void end();
 
-  // Sets the CA cert(s). This only uses the value if it is non-NULL and the
-  // length is positive. The pointer and length are stored.
-  //
-  // If it is in PEM format then it must be NUL-terminated.
+  // Sets the CA certificate(s).
   void setCACert(security::MbedTLSCert *ca);
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The password is optional.
-  //
-  // If the certificate or key is in PEM format, then it must be NUL-terminated.
   void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the callback for processing a PSK request from the client.

@@ -59,7 +59,7 @@ void MbedTLSClient::setPSK(const security::MbedTLSPSK *psk) {
 }
 
 void MbedTLSClient::addServerCert(security::MbedTLSCert *cert) {
-  if (cert != nullptr) {
+  if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     serverCerts_.push_back(cert);
   }
 }
@@ -120,7 +120,8 @@ bool MbedTLSClient::init(bool server) {
       mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_NONE);
     }
 
-    if (clientCert_ != nullptr && !clientCert_->empty()) {
+    if (clientCert_ != nullptr && !clientCert_->empty() &&
+        clientCert_->hasKey()) {
       if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_->cert(),
                                     &clientCert_->key()) != 0) {
         goto init_error;
