@@ -29,8 +29,8 @@ MbedTLSClient::MbedTLSClient(Client *client)
       peeked_(-1),
       ssl_{},
       conf_{},
-      caCert_{},
-      clientCert_{},
+      ca_(nullptr),
+      clientCert_(nullptr),
       serverCerts_(),
       psk_{},
       f_psk_(nullptr),
@@ -42,55 +42,25 @@ MbedTLSClient::~MbedTLSClient() {
   // Clear everything
   deinit();
 
-  // Certificates
-  caCert_.clear();
-  clientCert_.clear();
-  for (Cert &c: serverCerts_) {
-    c.clear();
-  }
-  serverCerts_.clear();
-
-  // Keys
-  psk_.clear();
-
   f_psk_ = nullptr;
   p_psk_ = nullptr;
 }
 
-void MbedTLSClient::setCACert(const uint8_t *const buf, const size_t len) {
-  CACert c;
-  c.certBuf.set(buf, len);
-  if (c.valid()) {
-    caCert_ = c;
-  }
+void MbedTLSClient::setCACert(security::MbedTLSCert *ca) {
+  ca_ = ca;
 }
 
-void MbedTLSClient::setPSK(const uint8_t *const buf, const size_t len,
-                           const uint8_t *const id, const size_t idLen) {
-  PSK psk;
-  psk.psk.set(buf, len);
-  psk.id.set(id, idLen);
-  if (psk.valid()) {
-    psk_ = psk;
-  }
+void MbedTLSClient::setClientCert(security::MbedTLSCert *cert) {
+  clientCert_ = cert;
 }
 
-void MbedTLSClient::setClientCert(const uint8_t *const cert,
-                                  const size_t certLen,
-                                  const uint8_t *const key, const size_t keyLen,
-                                  const uint8_t *const keyPwd,
-                                  const size_t keyPwdLen) {
-  if ((cert != nullptr) && (certLen != 0) &&
-      (key != nullptr) && (keyLen != 0)) {
-    clientCert_.certBuf.set(cert, certLen);
-    clientCert_.keyBuf.set(key, keyLen);
-    clientCert_.keyPwd.set(keyPwd, keyPwdLen);
-  }
+void MbedTLSClient::setPSK(const security::MbedTLSPSK *psk) {
+  psk_ = psk;
 }
 
-void MbedTLSClient::addServerCert(Cert &&c) {
-  if (c.valid()) {
-    serverCerts_.push_back(std::move(c));
+void MbedTLSClient::addServerCert(security::MbedTLSCert *cert) {
+  if (cert != nullptr) {
+    serverCerts_.push_back(cert);
   }
 }
 
@@ -115,61 +85,6 @@ void MbedTLSClient::setHandshakeTimeoutEnabled(const bool flag) {
   handshakeTimeoutEnabled_ = flag;
 }
 
-bool MbedTLSClient::Cert::valid() const {
-  return !certBuf.empty() && !keyBuf.empty();
-}
-
-void MbedTLSClient::Cert::init() {
-  if (valid() && !initted) {
-    mbedtls_x509_crt_init(&cert);
-    mbedtls_pk_init(&key);
-    initted = true;
-  }
-}
-
-void MbedTLSClient::Cert::deinit() {
-  if (initted) {
-    initted = false;
-    mbedtls_pk_free(&key);
-    mbedtls_x509_crt_free(&cert);
-  }
-}
-
-void MbedTLSClient::Cert::clear() {
-  certBuf.clear();
-  keyBuf.clear();
-}
-
-bool MbedTLSClient::CACert::valid() const {
-  return !certBuf.empty();
-}
-
-void MbedTLSClient::CACert::init() {
-  if (valid() && !initted) {
-    mbedtls_x509_crt_init(&cert);
-  }
-}
-
-void MbedTLSClient::CACert::deinit() {
-  if (initted) {
-    initted = false;
-    mbedtls_x509_crt_free(&cert);
-  }
-}
-
-void MbedTLSClient::CACert::clear() {
-  certBuf.clear();
-}
-
-bool MbedTLSClient::PSK::valid() const {
-  return !psk.empty() && !id.empty();
-}
-
-void MbedTLSClient::PSK::clear() {
-  psk.clear();
-  id.clear();
-}
-
 bool MbedTLSClient::init(bool server) {
   if (state_ >= States::kInitialized) {
     return true;
@@ -180,28 +95,6 @@ bool MbedTLSClient::init(bool server) {
   // Initialize state
   mbedtls_ssl_init(&ssl_);
   mbedtls_ssl_config_init(&conf_);
-  caCert_.init();
-  if (!server) {
-    clientCert_.init();
-  } else {
-    for (Cert &c : serverCerts_) {
-      c.init();
-    }
-  }
-
-  // Function that parses a certificate and its key, and marks it as ours
-  auto parsef = [&](Cert &c) -> bool {
-    // Also disallow partially-parsed certificates
-    return (mbedtls_x509_crt_parse(&c.cert, c.certBuf.v, c.certBuf.size) !=
-            0) &&
-           (mbedtls_pk_parse_key(&c.key,
-                                 c.keyBuf.v, c.keyBuf.size,
-                                 c.keyPwd.v, c.keyPwd.size,
-                                 qnethernet_mbedtls_rand_f_rng,
-                                 qnethernet_mbedtls_rand_p_rng) != 0) &&
-           (mbedtls_ssl_conf_own_cert(&conf_, &c.cert, &c.key) != 0);
-
-  };
 
   if (mbedtls_ssl_config_defaults(
           &conf_, !server ? MBEDTLS_SSL_IS_CLIENT : MBEDTLS_SSL_IS_SERVER,
@@ -215,30 +108,30 @@ bool MbedTLSClient::init(bool server) {
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
 
   // Certificate chain
-  if (caCert_.valid()) {
-    if (mbedtls_x509_crt_parse(&caCert_.cert, caCert_.certBuf.v,
-                               caCert_.certBuf.size) < 0) {
-      goto init_error;
-    }
-    mbedtls_ssl_conf_ca_chain(&conf_, &caCert_.cert, nullptr);
+  if (ca_ != nullptr && !ca_->empty()) {
+    mbedtls_ssl_conf_ca_chain(&conf_, &ca_->cert(), nullptr);
   }
 
   // Certificate(s)
   if (!server) {
-    if (caCert_.valid()) {
+    if (ca_ != nullptr && !ca_->empty()) {
       mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_REQUIRED);
     } else {
       mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_NONE);
     }
 
-    if (clientCert_.valid()) {
-      if (!parsef(clientCert_)) {
+    if (clientCert_ != nullptr && !clientCert_->empty()) {
+      if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_->cert(),
+                                    &clientCert_->key()) != 0) {
         goto init_error;
       }
     }
   } else {
-    for (Cert &c : serverCerts_) {
-      if (!parsef(c)) {
+    for (security::MbedTLSCert *c : serverCerts_) {
+      if (c->empty()) {
+        continue;
+      }
+      if (mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key()) != 0) {
         goto init_error;
       }
     }
@@ -246,10 +139,10 @@ bool MbedTLSClient::init(bool server) {
 
   // Pre-shared key
   if (!server) {
-    if (psk_.valid()) {
+    if (psk_ != nullptr && !psk_->empty()) {
       if (mbedtls_ssl_conf_psk(&conf_,
-                               psk_.psk.v, psk_.psk.size,
-                               psk_.id.v, psk_.id.size) != 0) {
+                               psk_->psk().data(), psk_->psk().size(),
+                               psk_->id().data(), psk_->id().size()) != 0) {
         goto init_error;
       }
     }
@@ -270,12 +163,6 @@ void MbedTLSClient::deinit() {
     return;
   }
   state_ = States::kStart;
-
-  clientCert_.deinit();
-  for (Cert &c : serverCerts_) {
-    c.deinit();
-  }
-  caCert_.deinit();
 
   mbedtls_ssl_config_free(&conf_);
   mbedtls_ssl_free(&ssl_);
