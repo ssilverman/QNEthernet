@@ -84,7 +84,7 @@ MbedTLSClient MbedTLSServer::accept() {
       if (pskCB_) {
         tlsClient.setPSKCallback(&pskCallback, &pskCB_);
       }
-      if (tlsClient.init(true)) {
+      if (tlsClient.init(true) && tlsClient.handshake(nullptr, false)) {
         return tlsClient;
       } else {
         c.stop();
