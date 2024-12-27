@@ -169,9 +169,7 @@ void MbedTLSClient::deinit() {
 }
 
 int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
-  if (state_ >= States::kConnected) {
-    stop();
-  }
+  stop();
   if (client_ == nullptr || !init(false)) {
     return false;
   }
@@ -192,9 +190,7 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
-  if (state_ >= States::kConnected) {
-    stop();
-  }
+  stop();
   if (client_ == nullptr || !init(false)) {
     return false;
   }
@@ -263,15 +259,15 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
   if (client_ == nullptr) {
     return false;
   }
+  state_ = States::kHandshake;
+
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
-    client_->stop();
-    deinit();
+    stop();
     return false;
   }
   if (!isServer_) {
     if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
-      client_->stop();
-      deinit();
+      stop();
       return false;
     }
   }
@@ -290,8 +286,7 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
 
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
-      client_->stop();
-      deinit();
+      stop();
       return false;
     }
   }
@@ -466,10 +461,12 @@ void MbedTLSClient::flush() {
 }
 
 void MbedTLSClient::stop() {
-  if (state_ >= States::kConnected) {
+  if (state_ >= States::kHandshake) {
     // TODO: Should we process the return value?
-    mbedtls_ssl_close_notify(&ssl_);
-    client_->flush();
+    if (state_ >= States::kConnected) {
+      mbedtls_ssl_close_notify(&ssl_);
+      client_->flush();
+    }
     client_->stop();  // TODO: Should we stop the underlying Client?
     state_ = States::kInitialized;
   }
