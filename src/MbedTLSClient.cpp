@@ -264,11 +264,13 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
     return false;
   }
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
+    client_->stop();
     deinit();
     return false;
   }
   if (!isServer_) {
     if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
+      client_->stop();
       deinit();
       return false;
     }
@@ -288,6 +290,7 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
 
     if (handshakeTimeout_ != 0 &&
         qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
+      client_->stop();
       deinit();
       return false;
     }
