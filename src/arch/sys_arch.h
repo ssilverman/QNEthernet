@@ -4,6 +4,8 @@
 // sys_arch.h supports the system functions for lwIP.
 // This file is part of the QNEthernet library.
 
+#pragma once
+
 // C++ includes
 #include <cstdint>
 
