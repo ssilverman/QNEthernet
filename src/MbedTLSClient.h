@@ -127,8 +127,6 @@ class MbedTLSClient : public Client {
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The password is optional.
-  //
-  // If the certificate or key is in PEM format, then it must be NUL-terminated.
   void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the PSK callback for a server-side connection.
