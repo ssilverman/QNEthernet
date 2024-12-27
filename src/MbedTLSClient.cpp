@@ -210,6 +210,15 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
   return handshake(hostname, handshakeTimeoutEnabled_);
 }
 
+bool MbedTLSClient::connecting() {
+  if (state_ == States::kHandshake) {
+    if (!watchHandshake()) {
+      return false;
+    }
+  }
+  return (state_ == States::kHandshake);
+}
+
 static int sendf(void *const ctx,
                  const unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
