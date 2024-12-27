@@ -12,7 +12,8 @@ namespace qindesign {
 namespace security {
 
 MbedTLSCert::MbedTLSCert()
-    : hasData_(false),
+    : hasCerts_(false),
+      hasKey_(false),
       cert_{} {
   mbedtls_x509_crt_init(&cert_);
   mbedtls_pk_init(&key_);
@@ -29,7 +30,7 @@ bool MbedTLSCert::parse(const uint8_t *const buf, const size_t len) {
   }
   int err = mbedtls_x509_crt_parse(&cert_, buf, len);
   if (err >= 0) {
-    hasData_ = true;
+    hasCerts_ = true;
     return (err == 0);
   }
   return false;
@@ -37,13 +38,14 @@ bool MbedTLSCert::parse(const uint8_t *const buf, const size_t len) {
 
 bool MbedTLSCert::parseKey(const uint8_t *const buf, const size_t len,
                            const uint8_t *const pwd, const size_t pwdLen) {
-  return (mbedtls_pk_parse_key(&key_, buf, len, pwd, pwdLen,
+  hasKey_ = (mbedtls_pk_parse_key(&key_, buf, len, pwd, pwdLen,
                                qnethernet_mbedtls_rand_f_rng,
-                               qnethernet_mbedtls_rand_p_rng) != 0);
+                               qnethernet_mbedtls_rand_p_rng) == 0);
+  return hasKey_;
 }
 
 size_t MbedTLSCert::size() const {
-  if (!hasData_) {
+  if (!hasCerts_) {
     return 0;
   }
 
