@@ -79,6 +79,10 @@ class MbedTLSClient : public Client {
   int connect(IPAddress ip, uint16_t port) final;
   int connect(const char *host, uint16_t port) final;
 
+  // Returns whether the client is still in the process of doing the handshake.
+  // This is useful when doing a non-blocking connect.
+  bool connecting();
+
   // Write functions
   // The connection may be closed if there was an error.
   size_t write(uint8_t b) final;
