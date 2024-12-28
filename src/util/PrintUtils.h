@@ -99,12 +99,12 @@ class NullPrint final : public Print {
   NullPrint() = default;
   virtual ~NullPrint() = default;
 
-  size_t write(uint8_t b) override {
+  size_t write(const uint8_t b) override {
     LWIP_UNUSED_ARG(b);
     return 1;
   }
 
-  size_t write(const uint8_t *buffer, size_t size) override {
+  size_t write(const uint8_t *const buffer, const size_t size) override {
     LWIP_UNUSED_ARG(buffer);
     return size;
   }
@@ -124,11 +124,11 @@ class PrintDecorator : public Print {
   PrintDecorator(Print &p) : p_(p) {}
   virtual ~PrintDecorator() = default;
 
-  size_t write(uint8_t b) override {
+  size_t write(const uint8_t b) override {
     return p_.write(b);
   }
 
-  size_t write(const uint8_t *buffer, size_t size) override {
+  size_t write(const uint8_t *const buffer, const size_t size) override {
     return p_.write(buffer, size);
   }
 
