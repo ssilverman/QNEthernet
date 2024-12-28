@@ -10,8 +10,6 @@
 
 #include <mbedtls/ssl.h>
 
-#include "util/Span.h"
-
 namespace qindesign {
 namespace security {
 
@@ -28,6 +26,12 @@ class MbedTLSPSK {
 
   // Returns whether both the PSK and ID are empty.
   bool empty() const;
+
+  // Sets the PSK data.
+  void setPSK(const uint8_t *buf, size_t len);
+
+  // Sets the ID data.
+  void setId(const uint8_t *buf, size_t len);
 
   // Returns a reference to the internal PSK vector.
   const std::vector<uint8_t> &psk() const {
