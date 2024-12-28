@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <lwip/arch.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
 
@@ -63,7 +62,7 @@ bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
 int mbedtls_hardware_poll(void *const data,
                           unsigned char *const output, const size_t len,
                           size_t *const olen) {
-  LWIP_UNUSED_ARG(data);
+  (void)data;
 
   size_t filled = qnethernet_hal_fill_rand(output, len);
   if (olen != NULL) {
