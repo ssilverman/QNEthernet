@@ -125,7 +125,7 @@
 #define MBEDTLS_ECP_NIST_OPTIM
 //#define MBEDTLS_ECP_RESTARTABLE
 //#define MBEDTLS_ECP_WITH_MPI_UINT
-#define MBEDTLS_ECDSA_DETERMINISTIC
+// #define MBEDTLS_ECDSA_DETERMINISTIC  /* Default: defined */
 // #define MBEDTLS_KEY_EXCHANGE_PSK_ENABLED  /* Default: defined */
 // #define MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED  /* Default: defined */
 // #define MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED  /* Default: defined */
@@ -230,7 +230,7 @@
 // #define MBEDTLS_DES_C  /* Default: defined */
 // #define MBEDTLS_DHM_C  /* Default: defined */
 #define MBEDTLS_ECDH_C
-#define MBEDTLS_ECDSA_C
+// #define MBEDTLS_ECDSA_C  /* Default: defined */
 // #define MBEDTLS_ECJPAKE_C  /* Default: defined */
 #define MBEDTLS_ECP_C
 #define MBEDTLS_ENTROPY_C
