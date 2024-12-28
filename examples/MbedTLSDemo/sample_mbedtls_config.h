@@ -103,7 +103,7 @@
 // #define MBEDTLS_CIPHER_MODE_OFB  /* Default: defined */
 // #define MBEDTLS_CIPHER_MODE_XTS  /* Default: defined */
 //#define MBEDTLS_CIPHER_NULL_CIPHER
-#define MBEDTLS_CIPHER_PADDING_PKCS7
+// #define MBEDTLS_CIPHER_PADDING_PKCS7  /* Default: defined */
 // #define MBEDTLS_CIPHER_PADDING_ONE_AND_ZEROS  /* Default: defined */
 // #define MBEDTLS_CIPHER_PADDING_ZEROS_AND_LEN  /* Default: defined */
 // #define MBEDTLS_CIPHER_PADDING_ZEROS  /* Default: defined */
@@ -150,7 +150,7 @@
 //#define MBEDTLS_MEMORY_DEBUG
 //#define MBEDTLS_MEMORY_BACKTRACE
 // #define MBEDTLS_PK_RSA_ALT_SUPPORT  /* Default: defined */
-#define MBEDTLS_PKCS1_V15
+// #define MBEDTLS_PKCS1_V15  /* Default: defined */
 #define MBEDTLS_PKCS1_V21
 //#define MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS
 //#define MBEDTLS_PSA_CRYPTO_CLIENT
