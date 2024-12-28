@@ -238,7 +238,7 @@
 #define MBEDTLS_GCM_C
 //#define MBEDTLS_GCM_LARGE_TABLE
 #define MBEDTLS_HKDF_C
-#define MBEDTLS_HMAC_DRBG_C
+// #define MBEDTLS_HMAC_DRBG_C  /* Default: defined */
 // #define MBEDTLS_LMS_C  /* Default: defined */
 //#define MBEDTLS_LMS_PRIVATE
 #define MBEDTLS_NIST_KW_C
