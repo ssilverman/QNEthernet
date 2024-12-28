@@ -6,8 +6,8 @@
 
 #pragma once
 
-// C++ includes
-#include <cstdint>
+// C includes
+#include <stdint.h>
 
 #include "lwip/opt.h"
 

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// sys_arch.cpp provides system function implementations for lwIP.
+// sys_arch.c provides system function implementations for lwIP.
 // This file is part of the QNEthernet library.
 
 #include "arch/sys_arch.h"
@@ -11,8 +11,6 @@
 // --------------------------------------------------------------------------
 //  Time
 // --------------------------------------------------------------------------
-
-extern "C" {
 
 uint32_t qnethernet_hal_millis(void);
 
@@ -24,13 +22,9 @@ u32_t sys_now(void) {
 #endif  // !LWIP_FUZZ_SYS_NOW
 }
 
-}  // extern "C"
-
 // --------------------------------------------------------------------------
 //  Core Locking
 // --------------------------------------------------------------------------
-
-extern "C" {
 
 #if SYS_LIGHTWEIGHT_PROT
 sys_prot_t sys_arch_protect(void) {
@@ -40,5 +34,3 @@ sys_prot_t sys_arch_protect(void) {
 void sys_arch_unprotect(const sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
-
-}  // extern "C"
