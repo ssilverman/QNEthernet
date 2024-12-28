@@ -253,7 +253,7 @@
 #define MBEDTLS_PK_C
 #define MBEDTLS_PK_PARSE_C
 // #define MBEDTLS_PK_WRITE_C  /* Default: defined */
-#define MBEDTLS_PKCS5_C
+// #define MBEDTLS_PKCS5_C  /* Default: defined */
 // #define MBEDTLS_PKCS7_C  /* Default: defined */
 #define MBEDTLS_PKCS12_C
 #define MBEDTLS_PLATFORM_C
