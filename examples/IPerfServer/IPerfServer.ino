@@ -14,7 +14,7 @@
 //
 // With this command: `iperf -c <IP address> -i 1 -l 1460 -r`
 // it appears that the QNEthernet stack can achieve about 94.9 Mbps in
-// both directions.
+// both directions. (Note: The `iperf3` command won't work.)
 //
 // Multiple connections are supported.
 //
