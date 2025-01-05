@@ -14,9 +14,9 @@
 #include <memory>
 #include <vector>
 
-#include "ConnectionHolder.h"
 #include "lwip/altcp.h"
 #include "lwip/ip_addr.h"
+#include "qnethernet/internal/ConnectionHolder.h"
 
 namespace qindesign {
 namespace network {

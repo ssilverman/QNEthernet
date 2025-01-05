@@ -4,11 +4,11 @@
 // driver_w5500.cpp contains the W5500 Ethernet interface implementation.
 // This file is part of the QNEthernet library.
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
 
-#include "driver_w5500_config.h"
+#include "qnethernet/drivers/driver_w5500_config.h"
 
 // C++ includes
 #include <cstdint>

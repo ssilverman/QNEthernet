@@ -13,12 +13,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "driver_select.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
+#include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
 // Requirements for driver-specific headers:

@@ -17,13 +17,13 @@
 
 #include <Stream.h>
 
-#include "StaticInit.h"
-#include "internal/PrintfChecked.h"
 #include "lwip/err.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
 #include "lwip_driver.h"
+#include "qnethernet/StaticInit.h"
+#include "qnethernet/internal/PrintfChecked.h"
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);

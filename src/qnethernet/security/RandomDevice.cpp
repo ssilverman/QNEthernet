@@ -4,7 +4,7 @@
 // RandomDevice.cpp implements RandomDevice.
 // This file is part of the QNEthernet library.
 
-#include "RandomDevice.h"
+#include "qnethernet/security/RandomDevice.h"
 
 // C++ includes
 #include <cstdint>

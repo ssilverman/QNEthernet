@@ -4,7 +4,7 @@
 // ConnectionManager.cpp implements the connection manager.
 // This file is part of the QNEthernet library.
 
-#include "ConnectionManager.h"
+#include "qnethernet/internal/ConnectionManager.h"
 
 #if LWIP_TCP
 

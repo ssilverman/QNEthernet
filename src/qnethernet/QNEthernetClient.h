@@ -19,11 +19,11 @@
 #include <IPAddress.h>
 #include <Print.h>
 
-#include "internal/ConnectionHolder.h"
-#include "internal/IPOpts.h"
-#include "internal/PrintfChecked.h"
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
+#include "qnethernet/internal/ConnectionHolder.h"
+#include "qnethernet/internal/IPOpts.h"
+#include "qnethernet/internal/PrintfChecked.h"
 
 namespace qindesign {
 namespace network {

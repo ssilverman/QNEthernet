@@ -19,7 +19,7 @@
 #if (defined(TEENSYDUINO) && defined(__IMXRT1062__)) && \
     !QNETHERNET_USE_ENTROPY_LIB
 
-#include <security/entropy.h>
+#include <qnethernet/security/entropy.h>
 
 int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {

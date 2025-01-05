@@ -4,7 +4,7 @@
 // QNEthernetClient.cpp contains the EthernetClient implementation.
 // This file is part of the QNEthernet library.
 
-#include "QNEthernetClient.h"
+#include "qnethernet/QNEthernetClient.h"
 
 #if LWIP_TCP
 
@@ -13,9 +13,7 @@
 #include <cerrno>
 #include <cstring>
 
-#include "QNDNSClient.h"
 #include "QNEthernet.h"
-#include "internal/ConnectionManager.h"
 #include "lwip/altcp.h"
 #include "lwip/arch.h"
 #include "lwip/priv/altcp_priv.h"
@@ -26,9 +24,11 @@
 #if LWIP_ALTCP
 #include "lwip/tcp.h"
 #endif  // LWIP_ALTCP
+#include "qnethernet/QNDNSClient.h"
+#include "qnethernet/internal/ConnectionManager.h"
+#include "qnethernet/util/PrintUtils.h"
+#include "qnethernet/util/ip_tools.h"
 #include "qnethernet_opts.h"
-#include "util/PrintUtils.h"
-#include "util/ip_tools.h"
 
 extern "C" void yield();
 

@@ -4,7 +4,7 @@
 // lwip_driver.c implements Ethernet interface functions.
 // This file is part of the QNEthernet library.
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 // C includes
 #include <string.h>

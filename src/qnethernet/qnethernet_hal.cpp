@@ -158,7 +158,7 @@ void qnethernet_hal_check_core_locking(const char *const file, const int line,
     !QNETHERNET_USE_ENTROPY_LIB
 
 #define WHICH_ENTROPY_TYPE 1  // Teensy 4
-#include "security/entropy.h"
+#include "qnethernet/security/entropy.h"
 
 #elif defined(__has_include)
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html

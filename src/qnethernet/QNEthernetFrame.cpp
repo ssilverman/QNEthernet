@@ -4,7 +4,7 @@
 // QNEthernetFrame.cpp contains an EthernetFrame implementation.
 // This file is part of the QNEthernet library.
 
-#include "QNEthernetFrame.h"
+#include "qnethernet/QNEthernetFrame.h"
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 

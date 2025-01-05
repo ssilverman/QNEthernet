@@ -14,8 +14,8 @@
 #include <memory>
 #include <vector>
 
-#include "ConnectionState.h"
 #include "lwip/err.h"
+#include "qnethernet/internal/ConnectionState.h"
 
 namespace qindesign {
 namespace network {

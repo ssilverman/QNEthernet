@@ -6,7 +6,7 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
 

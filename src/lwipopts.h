@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "driver_select.h"
+#include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
 #ifdef __cplusplus
@@ -429,7 +429,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define LWIP_DHCP6_MAX_DNS_SERVERS      DNS_MAX_SERVERS
 
 // Hook options
-#define LWIP_HOOK_FILENAME "lwip_hooks.h"
+#define LWIP_HOOK_FILENAME "qnethernet/lwip_hooks.h"
 // #define LWIP_HOOK_TCP_ISN(local_ip, local_port, remote_ip, remote_port)
 // #define LWIP_HOOK_TCP_INPACKET_PCB(pcb, hdr, optlen, opt1len, opt2, p)
 // #define LWIP_HOOK_TCP_OUT_TCPOPT_LENGTH(pcb, internal_len)

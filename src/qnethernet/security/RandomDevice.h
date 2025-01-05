@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "StaticInit.h"
+#include "qnethernet/StaticInit.h"
 
 namespace qindesign {
 namespace security {

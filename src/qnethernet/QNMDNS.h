@@ -16,9 +16,9 @@
 
 #include <WString.h>
 
-#include "StaticInit.h"
 #include "lwip/apps/mdns.h"
 #include "lwip/netif.h"
+#include "qnethernet/StaticInit.h"
 
 namespace qindesign {
 namespace network {

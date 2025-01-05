@@ -28,6 +28,7 @@ and this project adheres to
   casting a `const IPAddress` to a `uint32_t`.
 * Replaced `EthernetClient::writeFully(const char *, size_t)` and
   `writeFully(const uint8_t *, size_t)` with `writeFully(const void *, size_t)`.
+* Updated the file structure to put most sources underneath _src/qnethernet/_.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because

@@ -4,7 +4,7 @@
 // driver_unsupported.c contains the unsupported Ethernet interface implementation.
 // This file is part of the QNEthernet library.
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 #include <avr/pgmspace.h>
 

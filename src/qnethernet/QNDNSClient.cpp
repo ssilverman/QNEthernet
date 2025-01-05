@@ -4,7 +4,7 @@
 // QNDNSClient.cpp implements DNSClient.
 // This file is part of the QNEthernet library.
 
-#include "QNDNSClient.h"
+#include "qnethernet/QNDNSClient.h"
 
 #if LWIP_DNS
 

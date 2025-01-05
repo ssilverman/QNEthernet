@@ -13,10 +13,10 @@
 
 #include <Arduino.h>
 #include <QNEthernet.h>
-#include <QNDNSClient.h>
-#include <lwip_driver.h>
 #include <lwip/dns.h>
 #include <lwip/opt.h>
+#include <qnethernet/QNDNSClient.h>
+#include <qnethernet/lwip_driver.h>
 #include <qnethernet_opts.h>
 #include <unity.h>
 

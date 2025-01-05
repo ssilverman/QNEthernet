@@ -575,9 +575,9 @@ The `DNSClient` class provides an interface to the DNS client.
 
 ### Print utilities
 
-The `util/PrintUtils.h` file declares some useful output functions and classes.
-Note that this file is included when `QNEthernet.h` is included; there's no need
-to include it separately.
+The `qnethernet/util/PrintUtils.h` file declares some useful output functions
+and classes. Note that this file is included when `QNEthernet.h` is included;
+there's no need to include it separately.
 
 The functions and classes are in the `qindesign::network::util` namespace, so if
 you've already added `using namespace qindesign::network;` to your code, they
@@ -1100,8 +1100,8 @@ The states, as defined by lwIP's `tcp_state` enum:
 11. TIME_WAIT
 
 This enum isn't a C++ "enum class", so its values can be used directly. The
-definition is already included by _QNEthernetClient.h_, which is, in turn,
-included by _QNEthernet.h_.
+definition is already included by _qnethernet/QNEthernetClient.h_, which is, in
+turn, included by _QNEthernet.h_.
 
 References:
 1. [TCP states](https://www.rfc-editor.org/rfc/rfc9293#name-state-machine-overview)
@@ -1284,7 +1284,7 @@ the system default, then leave the `QNETHERNET_CUSTOM_WRITE` macro undefined.
 ### Adapt stdio files to the Print interface
 
 There is a utility class for decorating stdio `FILE*` objects with the `Print`
-interface. See the `StdioPrint` class in _src/util/PrintUtils.h_.
+interface. See the `StdioPrint` class in _src/qnethernet/util/PrintUtils.h_.
 
 This is useful when:
 1. A `FILE*` object does its own buffering and you also need to write to the
@@ -1699,8 +1699,8 @@ The _Entropy_ library does the essentially same things as the internal TRNG
 functions, it just requires an additional dependency. This is the reason these
 functions are provided: to remove that dependency.
 
-See the function declarations in _src/security/entropy.h_ if you want to use
-them yourself.
+See the function declarations in _src/qnethernet/security/entropy.h_ if you want
+to use them yourself.
 
 If the target device isn't a Teensy 4 then the _Entropy_ library will be used,
 unless it's not accessible or doesn't exist for the device, in which case

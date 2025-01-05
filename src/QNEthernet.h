@@ -13,23 +13,23 @@
 
 #include <IPAddress.h>
 
-#include "QNEthernetClient.h"
-#include "QNEthernetFrame.h"
-#include "QNEthernetServer.h"
-#include "QNEthernetUDP.h"
-#include "QNMDNS.h"
-#include "StaticInit.h"
 #include "lwip/apps/mdns_opts.h"
 #include "lwip/dns.h"
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
-#include "lwip_driver.h"
+#include "qnethernet/QNEthernetClient.h"
+#include "qnethernet/QNEthernetFrame.h"
+#include "qnethernet/QNEthernetServer.h"
+#include "qnethernet/QNEthernetUDP.h"
+#include "qnethernet/QNMDNS.h"
+#include "qnethernet/StaticInit.h"
+#include "qnethernet/lwip_driver.h"
+#include "qnethernet/security/RandomDevice.h"
+#include "qnethernet/util/PrintUtils.h"
+#include "qnethernet/util/ip_tools.h"
 #include "qnethernet_opts.h"
-#include "security/RandomDevice.h"
-#include "util/PrintUtils.h"
-#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {

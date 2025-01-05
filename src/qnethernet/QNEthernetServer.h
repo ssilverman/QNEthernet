@@ -17,8 +17,8 @@
 #include <Print.h>
 #include <Server.h>
 
-#include "QNEthernetClient.h"
-#include "internal/PrintfChecked.h"
+#include "qnethernet/QNEthernetClient.h"
+#include "qnethernet/internal/PrintfChecked.h"
 
 namespace qindesign {
 namespace network {

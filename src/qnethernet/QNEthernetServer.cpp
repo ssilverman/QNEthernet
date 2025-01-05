@@ -4,7 +4,7 @@
 // QNEthernetServer.cpp contains the EthernetServer implementation.
 // This file is part of the QNEthernet library.
 
-#include "QNEthernetServer.h"
+#include "qnethernet/QNEthernetServer.h"
 
 #if LWIP_TCP
 
@@ -12,7 +12,7 @@
 #include <memory>
 
 #include "QNEthernet.h"
-#include "internal/ConnectionManager.h"
+#include "qnethernet/internal/ConnectionManager.h"
 
 namespace qindesign {
 namespace network {

@@ -4,7 +4,7 @@
 // ip_tools.c implements the functions defined in ip_tools.h.
 // This file is part of the QNEthernet library.
 
-#include "ip_tools.h"
+#include "qnethernet/util/ip_tools.h"
 
 #include "lwip/opt.h"
 

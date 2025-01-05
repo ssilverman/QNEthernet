@@ -4,7 +4,7 @@
 // QNEthernetUDP.cpp contains the EthernetUDP implementation.
 // This file is part of the QNEthernet library.
 
-#include "QNEthernetUDP.h"
+#include "qnethernet/QNEthernetUDP.h"
 
 #if LWIP_UDP
 
@@ -12,15 +12,15 @@
 #include <algorithm>
 #include <cerrno>
 
-#include "QNDNSClient.h"
 #include "QNEthernet.h"
 #include "lwip/arch.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip.h"
 #include "lwip/sys.h"
+#include "qnethernet/QNDNSClient.h"
+#include "qnethernet/util/ip_tools.h"
 #include "qnethernet_opts.h"
-#include "util/ip_tools.h"
 
 namespace qindesign {
 namespace network {

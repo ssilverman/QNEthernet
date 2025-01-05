@@ -10,8 +10,8 @@
 #include <Arduino.h>
 
 #include "QNEthernet.h"
-#include "QNDNSClient.h"
 #include "lwip/dns.h"
+#include "qnethernet/QNDNSClient.h"
 
 using namespace qindesign::network;
 

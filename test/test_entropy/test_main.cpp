@@ -7,8 +7,8 @@
 #include <cerrno>
 
 #include <Arduino.h>
-#include <security/RandomDevice.h>
-#include <security/entropy.h>
+#include <qnethernet/security/RandomDevice.h>
+#include <qnethernet/security/entropy.h>
 #include <unity.h>
 
 // --------------------------------------------------------------------------

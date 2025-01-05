@@ -4,7 +4,7 @@
 // QMMDNS.cpp implements MDNS.
 // This file is part of the QNEthernet library.
 
-#include "QNMDNS.h"
+#include "qnethernet/QNMDNS.h"
 
 #if LWIP_MDNS_RESPONDER
 

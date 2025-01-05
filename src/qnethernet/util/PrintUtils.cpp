@@ -4,7 +4,7 @@
 // PrintUtils.cpp implements the Print utility functions.
 // This file is part of the QNEthernet library.
 
-#include "PrintUtils.h"
+#include "qnethernet/util/PrintUtils.h"
 
 namespace qindesign {
 namespace network {
