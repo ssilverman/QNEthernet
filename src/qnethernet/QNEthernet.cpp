@@ -12,6 +12,10 @@
 #include <cstdio>
 #include <cstring>
 
+#include "lwip/dns.h"
+#include "lwip/err.h"
+#include "lwip/ip_addr.h"
+
 #if defined(TEENSYDUINO)
 // Teensyduino < 1.59 doesn't support casting a `const IPAddress` to uint32_t
 static_assert(TEENSYDUINO >= 159, "Must be built with Teensydino >= 1.59");

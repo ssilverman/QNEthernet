@@ -14,8 +14,7 @@
 #include <IPAddress.h>
 
 #include "lwip/apps/mdns_opts.h"
-#include "lwip/dns.h"
-#include "lwip/ip_addr.h"
+#include "lwip/arch.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
@@ -28,7 +27,6 @@
 #include "qnethernet/lwip_driver.h"
 #include "qnethernet/security/RandomDevice.h"
 #include "qnethernet/util/PrintUtils.h"
-#include "qnethernet/util/ip_tools.h"
 #include "qnethernet_opts.h"
 
 namespace qindesign {

@@ -8,6 +8,9 @@
 
 #include <avr/pgmspace.h>
 
+#include "lwip/arch.h"
+#include "lwip/err.h"
+
 #ifndef FLASHMEM
 #define FLASHMEM
 #endif  // !FLASHMEM

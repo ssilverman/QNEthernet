@@ -12,6 +12,7 @@
 #include <cerrno>
 
 #include "QNEthernet.h"
+#include "lwip/arch.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"

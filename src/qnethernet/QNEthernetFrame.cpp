@@ -14,6 +14,7 @@
 #include <avr/pgmspace.h>
 
 #include "QNEthernet.h"
+#include "lwip/arch.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
 

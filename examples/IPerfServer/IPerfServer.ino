@@ -36,6 +36,7 @@
 #include <vector>
 
 #include <QNEthernet.h>
+#include <lwip/def.h>
 #include <lwip/opt.h>
 
 using namespace qindesign::network;

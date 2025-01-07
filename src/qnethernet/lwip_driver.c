@@ -11,6 +11,7 @@
 
 #include <avr/pgmspace.h>
 
+#include "lwip/arch.h"
 #include "lwip/autoip.h"
 #include "lwip/dhcp.h"
 #include "lwip/etharp.h"

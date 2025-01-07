@@ -14,6 +14,7 @@
 
 #include <Print.h>
 
+#include "lwip/arch.h"
 #include "lwip/prot/ethernet.h"
 
 namespace qindesign {

@@ -16,6 +16,7 @@
 
 #include "lwip/altcp.h"
 #include "lwip/altcp_tcp.h"
+#include "lwip/arch.h"
 #include "lwip/ip_addr.h"
 
 // This implementation uses the TCP allocator and returns true.

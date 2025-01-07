@@ -22,6 +22,7 @@
 #include <imxrt.h>
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
+#include "lwip/arch.h"
 #include "lwip/def.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"

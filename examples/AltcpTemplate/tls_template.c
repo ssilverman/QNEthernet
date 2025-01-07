@@ -14,6 +14,7 @@
 #include <stddef.h>
 
 #include <lwip/altcp.h>
+#include <lwip/arch.h>
 #include <lwip/err.h>
 #include <lwip/opt.h>
 #include <qnethernet_opts.h>

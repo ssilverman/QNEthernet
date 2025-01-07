@@ -10,6 +10,7 @@
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
 
 #include <lwip/apps/altcp_tls_mbedtls_opts.h>
+#include <lwip/arch.h>
 
 #if LWIP_ALTCP_TLS_MBEDTLS
 
