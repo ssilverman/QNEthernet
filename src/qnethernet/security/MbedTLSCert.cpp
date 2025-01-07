@@ -4,9 +4,9 @@
 // MbedTLSCert.cpp implements MbedTLSCert.
 // This file is part of the QNEthernet library.
 
-#include "MbedTLSCert.h"
+#include "qnethernet/security/MbedTLSCert.h"
 
-#include "security/mbedtls_funcs.h"
+#include "qnethernet/security/mbedtls_funcs.h"
 
 namespace qindesign {
 namespace security {
