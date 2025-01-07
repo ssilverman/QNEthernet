@@ -4,7 +4,7 @@
 // QNEthernetIEEE1588.cpp contains the EthernetIEEE1588 implementation.
 // This file is part of the QNEthernet library.
 
-#include "QNEthernetIEEE1588.h"
+#include "qnethernet/QNEthernetIEEE1588.h"
 
 #include "lwip_driver.h"
 
