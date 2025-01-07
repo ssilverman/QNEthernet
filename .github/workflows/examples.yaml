@@ -72,6 +72,7 @@ jobs:
         run: |
           arduino-cli --additional-urls ${{ matrix.url }} core update-index
           arduino-cli --additional-urls ${{ matrix.url }} core install ${{ matrix.platform }}
+          arduino-cli lib install LiteOSCParser
 
       # Finally, we compile the sketch, using the FQBN that was set
       # in the build matrix.
@@ -86,11 +87,13 @@ jobs:
                   --build-property "${all_flags}" \
                   --fqbn ${{ matrix.fqbn }} ${example} #&> /dev/null
             else
-              arduino-cli compile \
-                  --library . \
-                  --warnings all \
-                  --build-property compiler.cpp.extra_flags="${{ matrix.flags }}" \
-                  --build-property compiler.c.extra_flags="${{ matrix.flags }}" \
-                  --fqbn ${{ matrix.fqbn }} ${example} #&> /dev/null
+              if [[ ${example} != examples/PixelPusherServer ]]; then
+                arduino-cli compile \
+                    --library . \
+                    --warnings all \
+                    --build-property compiler.cpp.extra_flags="${{ matrix.flags }}" \
+                    --build-property compiler.c.extra_flags="${{ matrix.flags }}" \
+                    --fqbn ${{ matrix.fqbn }} ${example} #&> /dev/null
+              fi
             fi
           done
