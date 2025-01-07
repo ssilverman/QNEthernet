@@ -99,6 +99,8 @@ jobs:
                     --build-property compiler.cpp.extra_flags="${{ matrix.flags }}" \
                     --build-property compiler.c.extra_flags="${{ matrix.flags }}" \
                     --fqbn ${{ matrix.fqbn }} ${example} #&> /dev/null
+              else
+                echo Skipping.
               fi
             fi
           done
