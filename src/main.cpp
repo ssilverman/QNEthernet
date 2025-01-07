@@ -11,9 +11,9 @@
 
 #include <Arduino.h>
 
-#include "MbedTLSClient.h"
 #include "QNEthernet.h"
 #include "lwip/dns.h"
+#include "qnethernet/MbedTLSClient.h"
 #include "qnethernet/QNDNSClient.h"
 
 using namespace qindesign::network;
