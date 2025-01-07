@@ -17,13 +17,13 @@
 #endif  // ARDUINO_ARCH_STM32
 #include <IPAddress.h>
 
-#include "QNEthernetIEEE1588.h"
 #include "lwip/apps/mdns_opts.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
 #include "qnethernet/QNEthernetClient.h"
 #include "qnethernet/QNEthernetFrame.h"
+#include "qnethernet/QNEthernetIEEE1588.h"
 #include "qnethernet/QNEthernetServer.h"
 #include "qnethernet/QNEthernetUDP.h"
 #include "qnethernet/QNMDNS.h"
