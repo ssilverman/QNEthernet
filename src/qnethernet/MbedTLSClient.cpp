@@ -4,13 +4,13 @@
 // MbedTLSClient.cpp implements the MbedTLS client wrapper.
 // This file is part of the QNEthernet library.
 
-#include "MbedTLSClient.h"
+#include "qnethernet/MbedTLSClient.h"
 
 #include <cstring>
 
 #include "lwip/ip_addr.h"
-#include "security/mbedtls_funcs.h"
-#include "util/PrintUtils.h"
+#include "qnethernet/security/mbedtls_funcs.h"
+#include "qnethernet/util/PrintUtils.h"
 
 extern "C" {
 uint32_t qnethernet_hal_millis(void);

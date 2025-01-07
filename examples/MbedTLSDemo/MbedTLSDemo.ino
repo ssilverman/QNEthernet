@@ -17,9 +17,9 @@
 
 #include <cstring>
 
-#include <mbedtls.h>  // Must be included before referencing other mbedtls headers
-#include <MbedTLSClient.h>
 #include <QNEthernet.h>
+#include <mbedtls.h>  // Must be included before referencing other mbedtls headers
+#include <qnethernet/MbedTLSClient.h>
 
 using namespace qindesign::network;
 
