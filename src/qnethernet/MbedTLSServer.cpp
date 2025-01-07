@@ -99,10 +99,15 @@ MbedTLSClient MbedTLSServer::accept() {
 }
 
 size_t MbedTLSServer::write(const uint8_t b) {
+  (void)b;
+
   return 0;
 }
 
 size_t MbedTLSServer::write(const uint8_t *const buffer, const size_t size) {
+  (void)buffer;
+  (void)size;
+
   return 0;
 }
 
