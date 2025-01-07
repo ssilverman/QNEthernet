@@ -14,8 +14,8 @@
 #include <Client.h>
 #include <mbedtls/ssl.h>
 
-#include "security/MbedTLSCert.h"
-#include "security/MbedTLSPSK.h"
+#include "qnethernet/security/MbedTLSCert.h"
+#include "qnethernet/security/MbedTLSPSK.h"
 
 namespace qindesign {
 namespace network {

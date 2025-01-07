@@ -16,8 +16,8 @@
 
 #include <Arduino.h>
 
-#include "MbedTLSClient.h"
 #include "QNEthernet.h"
+#include "qnethernet/MbedTLSClient.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/chrono_clocks.h"
 

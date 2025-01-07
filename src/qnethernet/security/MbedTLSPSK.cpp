@@ -4,7 +4,7 @@
 // MbedTLSPSK.cpp implements MbedTLSPSK.
 // This file is part of the QNEthernet library.
 
-#include "MbedTLSPSK.h"
+#include "qnethernet/security/MbedTLSPSK.h"
 
 namespace qindesign {
 namespace security {
