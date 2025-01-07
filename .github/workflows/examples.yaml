@@ -79,6 +79,11 @@ jobs:
       - name: Compile Examples
         run: |
           for example in examples/*; do
+            echo
+            echo    "Building ${example}..."
+            echo -n "========="
+            for i in $(seq 1 ${#example}); do echo -n "="; done
+            echo "===="
             if [[ "${{ matrix.fqbn }}" =~ ^teensy: ]]; then
               all_flags="$(arduino-cli compile --fqbn ${{ matrix.fqbn }} ${example} --show-properties |grep build.flags.defs) ${{ matrix.flags }}"
               arduino-cli compile \
