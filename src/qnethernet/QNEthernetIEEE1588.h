@@ -4,8 +4,7 @@
 // QNEthernetIEEE1588.h defines an interface to IEEE 1588 functions.
 // This file is part of the QNEthernet library.
 
-#ifndef QNE_ETHERNETIEEE1588_H_
-#define QNE_ETHERNETIEEE1588_H_
+#pragma once
 
 // C++ includes
 #include <cstdint>
@@ -110,5 +109,3 @@ STATIC_INIT_DECL(EthernetIEEE1588Class, EthernetIEEE1588);
 
 }  // namespace network
 }  // namespace qindesign
-
-#endif  // #ifndef QNE_ETHERNETIEEE1588_H_
