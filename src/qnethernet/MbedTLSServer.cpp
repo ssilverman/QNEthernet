@@ -4,14 +4,14 @@
 // MbedTLSServer.cpp implements the MbedTLS server wrapper.
 // This file is part of the QNEthernet library.
 
-#include "MbedTLSServer.h"
+#include "qnethernet/MbedTLSServer.h"
 
 // C++ includes
 #include <algorithm>
 #include <utility>
 
-#include "QNEthernetClient.h"
-#include "security/mbedtls_funcs.h"
+#include "qnethernet/QNEthernetClient.h"
+#include "qnethernet/security/mbedtls_funcs.h"
 
 namespace qindesign {
 namespace network {
