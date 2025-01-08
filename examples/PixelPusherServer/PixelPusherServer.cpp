@@ -205,7 +205,7 @@ void PixelPusherServer::loop() {
         if (frameStrips_[stripNum]) {
           // Check for incrementing sequence, in case we're seeing an
           // old or duplicate packet
-          if (seq - lastSeq_ > 0) {
+          if (static_cast<int32_t>(seq - lastSeq_) > 0) {
             // We've already seen the strip so trigger an end-of-frame
             // and restart
             recv_->endPixels();

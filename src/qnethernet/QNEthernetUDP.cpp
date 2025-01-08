@@ -29,10 +29,13 @@ namespace network {
 static constexpr size_t kHeaderSize = 20 + 8;
 
 // Maximum UDP payload size without fragmentation.
-static constexpr size_t kMaxPayloadSize = EthernetClass::mtu() - kHeaderSize;
+static constexpr size_t kMaxPayloadSize =
+    (EthernetClass::mtu() >= kHeaderSize) ? (EthernetClass::mtu() - kHeaderSize)
+                                          : 0;
 
 // Maximum possible payload size.
-static constexpr size_t kMaxPossiblePayloadSize = UINT16_MAX - kHeaderSize;
+static constexpr size_t kMaxPossiblePayloadSize =
+    (UINT16_MAX >= kHeaderSize) ? (UINT16_MAX - kHeaderSize) : 0;
 
 void EthernetUDP::recvFunc(void *const arg, struct udp_pcb *const pcb,
                            struct pbuf *const p,

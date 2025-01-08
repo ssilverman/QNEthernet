@@ -149,6 +149,11 @@
 #define TX_SIZE 5
 #define IRQ_PRIORITY 64
 
+// Size checks
+#if (RX_SIZE < 1) || (TX_SIZE < 1)
+#error "Rx and Tx sizes mist be >= 1"
+#endif  // (RX_SIZE < 1) || (TX_SIZE < 1)
+
 // Buffer size for transferring to and from the Ethernet MAC. The frame size is
 // either 1518 or 1522, assuming a 1500-byte payload, depending on whether VLAN
 // support is desired. VLAN support requires an extra 4 bytes. The ARM cache

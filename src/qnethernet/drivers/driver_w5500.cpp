@@ -166,6 +166,8 @@ namespace socketinterrupts {
 static constexpr size_t kMTU         = MTU;
 static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Includes the 4-byte FCS (frame check sequence)
 
+static_assert(kMaxFrameLen >= 4, "Max. frame len must be >= 4");
+
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
 #if !QNETHERNET_BUFFERS_IN_RAM1 && \

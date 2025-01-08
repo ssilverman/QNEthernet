@@ -21,6 +21,11 @@
 #include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
+// Check things that are supposed to be set properly by the driver headers
+#if !defined(MTU) || !defined(MAX_FRAME_LEN) || (MAX_FRAME_LEN < 4)
+#error "MTU and MAX_FRAME_LEN must be defined, and MAX_FRAME_LEN must be >= 4"
+#endif  // Constant checks
+
 // Requirements for driver-specific headers:
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN (including the 4-byte FCS (frame check sequence))

@@ -275,7 +275,8 @@ bool enet_output_frame(const uint8_t *const frame, const size_t len) {
       return false;
     }
   } else {
-    if (len > MAX_FRAME_LEN - 4 - 4) {  // Don't include 4-byte FCS and VLAN
+    // Don't include 4-byte FCS and VLAN
+    if ((MAX_FRAME_LEN < (4 + 4)) || (len > MAX_FRAME_LEN - (4 + 4))) {
       return false;
     }
   }
