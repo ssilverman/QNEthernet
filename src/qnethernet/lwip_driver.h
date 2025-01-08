@@ -151,12 +151,12 @@ struct LinkSettings {
 // is called.
 void driver_get_capabilities(struct DriverCapabilities* dc);
 
-// Returns the MTU.
+// Returns the MTU. This may change over time.
 ATTRIBUTE_NODISCARD
 size_t driver_get_mtu(void);
 
 // Returns the maximum frame length. This does not include the 4-byte FCS (frame
-// check sequence).
+// check sequence). This may change over time.
 ATTRIBUTE_NODISCARD
 size_t driver_get_max_frame_len(void);
 
