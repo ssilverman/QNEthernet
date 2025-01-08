@@ -1538,11 +1538,14 @@ static void test_other_state() {
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_IGMP_GROUP > 0 ? MEMP_NUM_IGMP_GROUP - 1 : 0,
                             Ethernet.maxMulticastGroups(),
                             "Expected default max. multicast groups");
+  TEST_ASSERT_EQUAL_MESSAGE(60, EthernetFrame.minFrameLen(), "Expected default min. frame len");
+  TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");
+
+  // Initialize the driver before accessing the MTU or max. frame length
+  driver_init();
   TEST_ASSERT_EQUAL_MESSAGE(driver_get_mtu(), Ethernet.mtu(), "Expected default MTU");
   TEST_ASSERT_EQUAL_MESSAGE(driver_get_max_frame_len(), EthernetFrame.maxFrameLen(),
                             "Expected default max. frame len");
-  TEST_ASSERT_EQUAL_MESSAGE(60, EthernetFrame.minFrameLen(), "Expected default min. frame len");
-  TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");
 }
 
 // Tests EthernetFrame.
