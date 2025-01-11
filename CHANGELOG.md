@@ -1179,4 +1179,4 @@ and this project adheres to
 
 ---
 
-Copyright (c) 2021-2024 Shawn Silverman
+Copyright (c) 2021-2025 Shawn Silverman

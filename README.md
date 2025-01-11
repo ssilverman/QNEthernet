@@ -2048,4 +2048,4 @@ Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
 
 ---
 
-Copyright (c) 2021-2024 Shawn Silverman
+Copyright (c) 2021-2025 Shawn Silverman
