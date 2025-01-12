@@ -20,11 +20,12 @@ namespace qindesign {
 namespace network {
 
 MbedTLSClient::MbedTLSClient()
-    : MbedTLSClient(static_cast<Client *>(nullptr)) {}
+    : MbedTLSClient(static_cast<Client *>(nullptr), false) {}
 
-MbedTLSClient::MbedTLSClient(Client *client)
+MbedTLSClient::MbedTLSClient(Client *client, bool isClientEx)
     : isServer_(false),
       client_(client),
+      isClientEx_(isClientEx),
       handshakeTimeout_(0),
       handshakeTimeoutEnabled_(true),
       state_(States::kStart),
@@ -39,7 +40,10 @@ MbedTLSClient::MbedTLSClient(Client *client)
       f_psk_(nullptr),
       p_psk_(nullptr) {}
 
-MbedTLSClient::MbedTLSClient(Client &client) : MbedTLSClient(&client) {}
+MbedTLSClient::MbedTLSClient(Client &client) : MbedTLSClient(&client, false) {}
+
+MbedTLSClient::MbedTLSClient(internal::ClientEx &client)
+    : MbedTLSClient(&client, true) {}
 
 MbedTLSClient::~MbedTLSClient() {
   // Clear everything
@@ -52,6 +56,13 @@ MbedTLSClient::~MbedTLSClient() {
 void MbedTLSClient::setClient(Client &client) {
   stop();
   client_ = &client;
+  isClientEx_ = false;
+}
+
+void MbedTLSClient::setClient(internal::ClientEx &client) {
+  stop();
+  client_ = &client;
+  isClientEx_ = true;
 }
 
 void MbedTLSClient::addServerCert(security::MbedTLSCert *cert) {
@@ -490,6 +501,34 @@ uint8_t MbedTLSClient::connected() {
 // This also moves any pending handshake along.
 MbedTLSClient::operator bool() {
   return isConnected() && static_cast<bool>(*client_);
+}
+
+IPAddress MbedTLSClient::localIP() {
+  if (isClientEx_) {
+    return reinterpret_cast<internal::ClientEx *>(client_)->localIP();
+  }
+  return INADDR_NONE;
+}
+
+uint16_t MbedTLSClient::localPort() {
+  if (isClientEx_) {
+    return reinterpret_cast<internal::ClientEx *>(client_)->localPort();
+  }
+  return 0;
+}
+
+IPAddress MbedTLSClient::remoteIP() {
+  if (isClientEx_) {
+    return reinterpret_cast<internal::ClientEx *>(client_)->remoteIP();
+  }
+  return INADDR_NONE;
+}
+
+uint16_t MbedTLSClient::remotePort() {
+  if (isClientEx_) {
+    return reinterpret_cast<internal::ClientEx *>(client_)->remotePort();
+  }
+  return 0;
 }
 
 }  // namespace network
