@@ -54,18 +54,6 @@ void MbedTLSClient::setClient(Client &client) {
   client_ = &client;
 }
 
-void MbedTLSClient::setCACert(security::MbedTLSCert *ca) {
-  ca_ = ca;
-}
-
-void MbedTLSClient::setClientCert(security::MbedTLSCert *cert) {
-  clientCert_ = cert;
-}
-
-void MbedTLSClient::setPSK(const security::MbedTLSPSK *psk) {
-  psk_ = psk;
-}
-
 void MbedTLSClient::addServerCert(security::MbedTLSCert *cert) {
   if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     serverCerts_.push_back(cert);
@@ -83,14 +71,6 @@ void MbedTLSClient::setHostname(const char *const s) {
   } else {
     std::strncpy(hostname_, s, sizeof(hostname_) - 1);
   }
-}
-
-void MbedTLSClient::setHandshakeTimeout(const uint32_t timeout) {
-  handshakeTimeout_ = timeout;
-}
-
-void MbedTLSClient::setHandshakeTimeoutEnabled(const bool flag) {
-  handshakeTimeoutEnabled_ = flag;
 }
 
 bool MbedTLSClient::init(bool server) {
