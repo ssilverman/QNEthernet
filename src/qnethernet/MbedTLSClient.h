@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSClient.h defines a Client wrapper for TLS connections that uses the
