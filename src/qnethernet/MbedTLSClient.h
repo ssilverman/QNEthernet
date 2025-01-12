@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include <Client.h>
 #include <mbedtls/ssl.h>
 
+#include "qnethernet/internal/ClientEx.h"
 #include "qnethernet/security/MbedTLSCert.h"
 #include "qnethernet/security/MbedTLSPSK.h"
 
@@ -22,12 +22,13 @@ namespace network {
 
 // Any data pointers are no longer needed after the handshake completes, unless
 // a new connection needs the same data.
-class MbedTLSClient : public Client {
+class MbedTLSClient : public internal::ClientEx {
  public:
   // Creates an unconnectable client.
   MbedTLSClient();
 
   MbedTLSClient(Client &client);
+  MbedTLSClient(ClientEx &client);
   virtual ~MbedTLSClient();
 
   // Allow moving but not copying
@@ -38,6 +39,9 @@ class MbedTLSClient : public Client {
 
   // Sets a new client. This calls stop() first.
   void setClient(Client &client);
+
+  // Sets a new client. This calls stop() first.
+  void setClient(internal::ClientEx &client);
 
   // Sets the CA certificate(s).
   void setCACert(security::MbedTLSCert *ca) {
@@ -68,7 +72,7 @@ class MbedTLSClient : public Client {
   // will be non-blocking.
   //
   // See: setHandshakeTimeoutEnabled(flag)
-  void setHandshakeTimeout(uint32_t timeout) {
+  void setConnectionTimeout(uint32_t timeout) final {
     handshakeTimeout_ = timeout;
   }
 
@@ -76,18 +80,18 @@ class MbedTLSClient : public Client {
   // This is only used if the property is enabled.
   //
   // See: isHandshakeTimeoutEnabled()
-  uint32_t handshakeTimeout() const {
+  uint32_t connectionTimeout() const final {
     return handshakeTimeout_;
   }
 
   // Sets whether to use the handshake-timeout property for connect(). If
   // disabled, the operation will be non-blocking. The default is enabled.
-  void setHandshakeTimeoutEnabled(bool flag) {
+  void setConnectionTimeoutEnabled(bool flag) final {
     handshakeTimeoutEnabled_ = flag;
   }
 
   // Returns whether handshake timeout is enabled. The default is enabled.
-  bool isHandshakeTimeoutEnabled() const {
+  bool isConnectionTimeoutEnabled() const final {
     return handshakeTimeoutEnabled_;
   }
 
@@ -97,7 +101,12 @@ class MbedTLSClient : public Client {
 
   // Returns whether the client is still in the process of doing the handshake.
   // This is useful when doing a non-blocking connect.
-  bool connecting();
+  bool connecting() final;
+
+  IPAddress localIP() final;
+  uint16_t localPort() final;
+  IPAddress remoteIP() final;
+  uint16_t remotePort() final;
 
   // Write functions
   // The connection may be closed if there was an error.
@@ -137,8 +146,7 @@ class MbedTLSClient : public Client {
     kConnected,
   };
 
-  // Creates an empty client.
-  MbedTLSClient(Client *client);
+  MbedTLSClient(Client *client, bool isClientEx);
 
   // Initializes the client or server.
   bool init(bool server);
@@ -183,6 +191,8 @@ class MbedTLSClient : public Client {
   bool isServer_;
 
   Client *client_;
+  bool isClientEx_;
+
   uint32_t handshakeTimeout_;
   bool handshakeTimeoutEnabled_;
 
