@@ -134,12 +134,16 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
   // Returns the total size of the received packet data. This is only valid if a
   // frame has been received with parseFrame() or has been created.
-  size_t size() const;
+  size_t size() const {
+    return frame_.data.size();
+  }
 
   // Returns a pointer to the received frame data. This is only valid if a frame
   // has been received with parseFrame() or has been created. This may return
   // NULL if the size is zero.
-  const uint8_t *data() const;
+  const uint8_t *data() const {
+    return frame_.data.data();
+  }
 
   // Returns the approximate frame arrival time, measured with sys_now(). This
   // is only valid if a frame has been received with parseFrame().
@@ -147,7 +151,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // This is useful in the case where frames have been queued and the caller
   // needs the approximate arrival time. Frames are timestamped when the unknown
   // ethernet protocol receive callback is called.
-  uint32_t receivedTimestamp() const;
+  uint32_t receivedTimestamp() const {
+    return frame_.receivedTimestamp;
+  }
 
   // Returns a pointer to the destination MAC. This is only valid if a frame has
   // been received with parseFrame() or has had this value written.

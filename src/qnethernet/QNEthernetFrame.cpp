@@ -184,18 +184,6 @@ int EthernetFrameClass::peek() {
   return frame_.data[framePos_];
 }
 
-size_t EthernetFrameClass::size() const {
-  return frame_.data.size();
-}
-
-const uint8_t *EthernetFrameClass::data() const {
-  return frame_.data.data();
-}
-
-uint32_t EthernetFrameClass::receivedTimestamp() const {
-  return frame_.receivedTimestamp;
-}
-
 const uint8_t *EthernetFrameClass::destinationMAC() const {
   return data();
 }

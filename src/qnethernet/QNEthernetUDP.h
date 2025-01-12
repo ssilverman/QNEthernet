@@ -163,15 +163,21 @@ class EthernetUDP : public UDP,
 
   // Returns the total size of the received packet data. This is only valid if a
   // packet has been received with parsePacket().
-  size_t size() const;
+  size_t size() const {
+    return packet_.data.size();
+  }
 
   // Returns a pointer to the received packet data. This is only valid if a
   // packet has been received with parsePacket(). This may return NULL if the
   // size is zero.
-  const uint8_t *data() const;
+  const uint8_t *data() const {
+    return packet_.data.data();
+  }
 
   IPAddress remoteIP() final;
-  uint16_t remotePort() final;
+  uint16_t remotePort() final {
+    return packet_.port;
+  }
 
   // Returns the approximate packet arrival time, measured with sys_now(). This
   // is only valid if a packet has been received with parsePacket().
@@ -179,10 +185,14 @@ class EthernetUDP : public UDP,
   // This is useful in the case where packets have been queued and the caller
   // needs the approximate arrival time. Packets are timestamped when the UDP
   // receive callback is called.
-  uint32_t receivedTimestamp() const;
+  uint32_t receivedTimestamp() const {
+    return packet_.receivedTimestamp;
+  }
 
   // Returns whether the socket is listening.
-  explicit operator bool() const;
+  explicit operator bool() const {
+    return listening_;
+  }
 
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)
@@ -208,7 +218,9 @@ class EthernetUDP : public UDP,
 
   // Returns the received packet's DiffServ value. This is only valid if a
   // packet has been received with parsePacket().
-  uint8_t receivedDiffServ() const;
+  uint8_t receivedDiffServ() const {
+    return packet_.diffServ;
+  }
 
   // Sets the TTL field in the outgoing IP header.
   //
@@ -230,7 +242,9 @@ class EthernetUDP : public UDP,
 
   // Returns the received packet's TTL value. This is only valid if a packet has
   // been received with parsePacket().
-  uint8_t receivedTTL() const;
+  uint8_t receivedTTL() const {
+    return packet_.ttl;
+  }
 
  private:
   struct Packet final {

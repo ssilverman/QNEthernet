@@ -94,7 +94,9 @@ class EthernetClient : public internal::ClientEx,
   // This function is defined by the Arduino API.
   //
   // See: setConnectionTimeoutEnabled(flag)
-  void setConnectionTimeout(uint32_t timeout) final;
+  void setConnectionTimeout(uint32_t timeout) final {
+    connTimeout_ = timeout;
+  }
 
   // Returns the connection timeout. The default is 1000. This is only used if
   // the property is enabled.
@@ -107,7 +109,9 @@ class EthernetClient : public internal::ClientEx,
   // Sets whether to use the connection-timeout property for connect() and
   // stop(). If disabled, these operations will be non-blocking. The default
   // is enabled.
-  void setConnectionTimeoutEnabled(bool flag) final;
+  void setConnectionTimeoutEnabled(bool flag) final {
+    connTimeoutEnabled_ = flag;
+  }
 
   // Returns whether connection timeout is enabled. The default is enabled.
   bool isConnectionTimeoutEnabled() const final {
