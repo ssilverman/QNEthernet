@@ -94,13 +94,13 @@ class EthernetClient : public Client,
   // This function is defined by the Arduino API.
   //
   // See: setConnectionTimeoutEnabled(flag)
-  void setConnectionTimeout(uint16_t timeout);
+  void setConnectionTimeout(uint32_t timeout);
 
   // Returns the connection timeout. The default is 1000. This is only used if
   // the property is enabled.
   //
   // See: isConnectionTimeoutEnabled()
-  uint16_t connectionTimeout() const {
+  uint32_t connectionTimeout() const {
     return connTimeout_;
   }
 
@@ -260,7 +260,7 @@ class EthernetClient : public Client,
   bool getAddrInfo(bool local, ip_addr_t *addr, u16_t *port);
 
   // Connection state
-  uint16_t connTimeout_;
+  uint32_t connTimeout_;
   bool pendingConnect_;
   bool connTimeoutEnabled_;
 

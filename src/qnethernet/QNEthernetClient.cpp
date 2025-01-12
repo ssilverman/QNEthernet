@@ -203,7 +203,7 @@ EthernetClient::operator bool() {
   return true;
 }
 
-void EthernetClient::setConnectionTimeout(const uint16_t timeout) {
+void EthernetClient::setConnectionTimeout(const uint32_t timeout) {
   connTimeout_ = timeout;
 }
 
