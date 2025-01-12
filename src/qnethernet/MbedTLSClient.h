@@ -40,13 +40,19 @@ class MbedTLSClient : public Client {
   void setClient(Client &client);
 
   // Sets the CA certificate(s).
-  void setCACert(security::MbedTLSCert *ca);
+  void setCACert(security::MbedTLSCert *ca) {
+    ca_ = ca;
+  }
 
   // Sets the client certificate.
-  void setClientCert(security::MbedTLSCert *cert);
+  void setClientCert(security::MbedTLSCert *cert) {
+    clientCert_ = cert;
+  }
 
   // Sets the pre-shared key.
-  void setPSK(const security::MbedTLSPSK *psk);
+  void setPSK(const security::MbedTLSPSK *psk) {
+    psk_ = psk;
+  }
 
   // Sets the hostname for the ServerName extension. If the given string is NULL
   // or empty then the hostname is cleared.
@@ -62,7 +68,9 @@ class MbedTLSClient : public Client {
   // will be non-blocking.
   //
   // See: setHandshakeTimeoutEnabled(flag)
-  void setHandshakeTimeout(uint32_t timeout);
+  void setHandshakeTimeout(uint32_t timeout) {
+    handshakeTimeout_ = timeout;
+  }
 
   // Returns the handshake timeout. The default is zero, meaning "wait forever".
   // This is only used if the property is enabled.
@@ -74,7 +82,9 @@ class MbedTLSClient : public Client {
 
   // Sets whether to use the handshake-timeout property for connect(). If
   // disabled, the operation will be non-blocking. The default is enabled.
-  void setHandshakeTimeoutEnabled(bool flag);
+  void setHandshakeTimeoutEnabled(bool flag) {
+    handshakeTimeoutEnabled_ = flag;
+  }
 
   // Returns whether handshake timeout is enabled. The default is enabled.
   bool isHandshakeTimeoutEnabled() const {
