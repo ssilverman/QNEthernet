@@ -23,12 +23,41 @@ class ClientEx : public Client {
   virtual ~ClientEx() = default;
 
   // Local and remote IP address and port
-  virtual IPAddress localIP() = 0;
-  virtual uint16_t localPort() = 0;   // Arduino API
-  virtual IPAddress remoteIP() = 0;   // Arduino API
-  virtual uint16_t remotePort() = 0;  // Arduino API
 
-  virtual void setConnectionTimeout(uint32_t timeout) = 0;  // Arduino API
+  // Returns the local IP address for this connection or INADDR_NONE if this
+  // client is not connected.
+  virtual IPAddress localIP() = 0;
+
+  // Returns the local port for this connection or zero if this client is
+  // not connected.
+  //
+  // This function is defined by the Arduino API.
+  virtual uint16_t localPort() = 0;
+
+  // Returns the remote IP address for this connection or INADDR_NONE if this
+  // client is not connected.
+  //
+  // This function is defined by the Arduino API.
+  virtual IPAddress remoteIP() = 0;
+
+  // Returns the remote port for this connection or zero if this client is
+  // not connected.
+  //
+  // This function is defined by the Arduino API.
+  virtual uint16_t remotePort() = 0;
+
+  // Sets the connection timeout, in milliseconds. If the connection timeout is
+  // disabled, then the operation will be non-blocking.
+  //
+  // This function is defined by the Arduino API.
+  //
+  // See: setConnectionTimeoutEnabled(flag)
+  virtual void setConnectionTimeout(uint32_t timeout) = 0;
+
+  // Returns the connection timeout. This is only used if the property
+  // is enabled.
+  //
+  // See: isConnectionTimeoutEnabled()
   virtual uint32_t connectionTimeout() const = 0;
 
   // Returns whether the client is in the process of connecting. This is used
