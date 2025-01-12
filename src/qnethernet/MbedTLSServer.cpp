@@ -56,18 +56,10 @@ void MbedTLSServer::end() {
   state_ = States::kStart;
 }
 
-void MbedTLSServer::setCACert(security::MbedTLSCert *ca) {
-  ca_ = ca;
-}
-
 void MbedTLSServer::addServerCert(security::MbedTLSCert *cert) {
   if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     certs_.push_back(cert);
   }
-}
-
-void MbedTLSServer::onPSK(pskf f) {
-  pskCB_ = f;
 }
 
 MbedTLSClient MbedTLSServer::accept() {
