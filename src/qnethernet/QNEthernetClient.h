@@ -15,12 +15,12 @@
 #include <cstdint>
 #include <memory>
 
-#include <Client.h>
 #include <IPAddress.h>
 #include <Print.h>
 
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
+#include "qnethernet/internal/ClientEx.h"
 #include "qnethernet/internal/ConnectionHolder.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
@@ -30,7 +30,7 @@ namespace network {
 
 class EthernetServer;
 
-class EthernetClient : public Client,
+class EthernetClient : public internal::ClientEx,
                        public internal::IPOpts,
                        public internal::PrintfChecked {
  public:
@@ -83,7 +83,7 @@ class EthernetClient : public Client,
 
   // Returns whether the client is in the process of connecting. This is used
   // when doing a non-blocking connect.
-  bool connecting();
+  bool connecting() final;
 
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
@@ -94,23 +94,23 @@ class EthernetClient : public Client,
   // This function is defined by the Arduino API.
   //
   // See: setConnectionTimeoutEnabled(flag)
-  void setConnectionTimeout(uint32_t timeout);
+  void setConnectionTimeout(uint32_t timeout) final;
 
   // Returns the connection timeout. The default is 1000. This is only used if
   // the property is enabled.
   //
   // See: isConnectionTimeoutEnabled()
-  uint32_t connectionTimeout() const {
+  uint32_t connectionTimeout() const final {
     return connTimeout_;
   }
 
   // Sets whether to use the connection-timeout property for connect() and
   // stop(). If disabled, these operations will be non-blocking. The default
   // is enabled.
-  void setConnectionTimeoutEnabled(bool flag);
+  void setConnectionTimeoutEnabled(bool flag) final;
 
   // Returns whether connection timeout is enabled. The default is enabled.
-  bool isConnectionTimeoutEnabled() const {
+  bool isConnectionTimeoutEnabled() const final {
     return connTimeoutEnabled_;
   }
 
@@ -132,13 +132,13 @@ class EthernetClient : public Client,
   void abort();
 
   // Functions defned by the Arduino API
-  uint16_t localPort();
-  IPAddress remoteIP();
-  uint16_t remotePort();
+  uint16_t localPort() final;
+  IPAddress remoteIP() final;
+  uint16_t remotePort() final;
 
   // Returns the local IP address for this connection, or INADDR_NONE if this
   // client is not connected.
-  IPAddress localIP();
+  IPAddress localIP() final;
 
   // Returns an ID for the connection to which this client refers. It will
   // return non-zero if connected and zero if not connected.
