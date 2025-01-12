@@ -105,7 +105,7 @@ class EthernetClient : public Client,
   }
 
   // Sets whether to use the connection-timeout property for connect() and
-  // stop(). If disabled, these opertions will be non-blocking. The default
+  // stop(). If disabled, these operations will be non-blocking. The default
   // is enabled.
   void setConnectionTimeoutEnabled(bool flag);
 
