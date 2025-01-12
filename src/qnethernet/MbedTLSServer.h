@@ -44,14 +44,18 @@ class MbedTLSServer : public Server {
   void end();
 
   // Sets the CA certificate(s).
-  void setCACert(security::MbedTLSCert *ca);
+  void setCACert(security::MbedTLSCert *ca) {
+    ca_ = ca;
+  }
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The password is optional.
   void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the callback for processing a PSK request from the client.
-  void onPSK(pskf f);
+  void onPSK(pskf f) {
+    pskCB_ = f;
+  }
 
   // Returns either a connected client or a disconnected client. If the client
   // is connected then the handshake has started but has yet to be completed.
