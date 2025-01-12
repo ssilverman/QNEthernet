@@ -87,7 +87,7 @@ MbedTLSClient MbedTLSServer::accept() {
     }
   }
 
-  return MbedTLSClient{static_cast<Client *>(nullptr)};
+  return MbedTLSClient{static_cast<Client *>(nullptr), false};
 }
 
 size_t MbedTLSServer::write(const uint8_t b) {
