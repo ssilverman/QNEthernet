@@ -53,6 +53,7 @@ namespace network {
 STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
 #if QNETHERNET_DO_LOOP_IN_YIELD
+
 #if defined(HAS_EVENT_RESPONDER)
 // Global definitions for Arduino
 static EventResponder ethLoop;
@@ -87,6 +88,7 @@ extern "C" void yield() {
   }
 }
 #endif  // defined(HAS_EVENT_RESPONDER)
+
 #endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
 void EthernetClass::netifEventFunc(
