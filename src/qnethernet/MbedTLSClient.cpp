@@ -6,8 +6,6 @@
 
 #include "qnethernet/MbedTLSClient.h"
 
-#include <cstring>
-
 #include "lwip/ip_addr.h"
 #include "qnethernet/security/mbedtls_funcs.h"
 #include "qnethernet/util/PrintUtils.h"
@@ -168,44 +166,12 @@ void MbedTLSClient::deinit() {
 }
 
 int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
-  stop();
-  if (client_ == nullptr || !init(false)) {
-    return false;
-  }
-
-  if (client_->connect(ip, port) == 0) {
-    deinit();
-    return false;
-  }
-
-  const char *hostname;
-  if (std::strlen(hostname_) != 0) {
-    hostname = hostname_;
-  } else {
-    const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
-    hostname = ipaddr_ntoa(&ipaddr);
-  }
-  return handshake(hostname, handshakeTimeoutEnabled_);
+  const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
+  return connect(ipaddr_ntoa(&ipaddr), ip, port);
 }
 
 int MbedTLSClient::connect(const char *const host, const uint16_t port) {
-  stop();
-  if (client_ == nullptr || !init(false)) {
-    return false;
-  }
-
-  if (client_->connect(host, port) == 0) {
-    deinit();
-    return false;
-  }
-
-  const char *hostname;
-  if (std::strlen(hostname_) != 0) {
-    hostname = hostname_;
-  } else {
-    hostname = host;
-  }
-  return handshake(hostname, handshakeTimeoutEnabled_);
+  return connect(host, host, port);
 }
 
 bool MbedTLSClient::connecting() {
