@@ -8,6 +8,7 @@
 #pragma once
 
 // C++ includes
+#include <cstring>
 #include <utility>
 #include <vector>
 
@@ -161,6 +162,11 @@ class MbedTLSClient : public internal::ClientEx {
   // Sets the PSK callback for a server-side connection.
   void setPSKCallback(pskf f_psk, void *p_psk);
 
+  // Connects to either an IP address or hostname. This is a template because
+  // there are two Client connect() functions.
+  template <typename T>
+  int connect(const char *const host, const T hostOrIp, const uint16_t port);
+
   // Performs a handshake with the given host and optionally waits. The hostname
   // may be NULL. This expects the client to be initialized and the underlying
   // client to be connected. If this returns false then the client will be
@@ -218,6 +224,30 @@ class MbedTLSClient : public internal::ClientEx {
 
   friend class MbedTLSServer;
 };
+
+// Connects to either an IP address or hostname. This is a template because
+// there are two Client connect() functions.
+template <typename T>
+inline int MbedTLSClient::connect(const char *const host, const T hostOrIp,
+                                  const uint16_t port) {
+  stop();
+  if (client_ == nullptr || !init(false)) {
+    return false;
+  }
+
+  if (client_->connect(hostOrIp, port) == 0) {
+    deinit();
+    return false;
+  }
+
+  const char *hostname;
+  if (std::strlen(hostname_) != 0) {
+    hostname = hostname_;
+  } else {
+    hostname = host;
+  }
+  return handshake(hostname, handshakeTimeoutEnabled_);
+}
 
 }  // namespace network
 }  // namespace qindesign
