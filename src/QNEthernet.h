@@ -404,10 +404,18 @@ class EthernetClass final {
   // hostname is set. The default is "qnethernet-lwip".
   //
   // This returns the empty string if 'LWIP_NETIF_HOSTNAME' is not enabled.
-  const char *hostname() const;
+  const char *hostname() const {
+#if LWIP_NETIF_HOSTNAME
+    return hostname_;
+#else
+    return "";
+#endif  // LWIP_NETIF_HOSTNAME
+  }
 
   // Tests if Ethernet is initialized.
-  explicit operator bool() const;
+  explicit operator bool() const {
+    return (netif_ != nullptr);
+  }
 
   // Convenience function that tries to resolve the given hostname into an IP
   // address. This returns whether successful.
