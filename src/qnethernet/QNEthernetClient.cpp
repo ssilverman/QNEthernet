@@ -117,7 +117,7 @@ bool EthernetClient::connectNoWait(const char *const host,
 bool EthernetClient::connect(const ip_addr_t *const ipaddr, const uint16_t port,
                              const bool wait) {
   // First close any existing connection (without waiting)
-  close();
+  close(false);
 
   conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
@@ -138,7 +138,7 @@ bool EthernetClient::connect(const ip_addr_t *const ipaddr, const uint16_t port,
 #endif  // !QNETHERNET_DO_LOOP_IN_YIELD
     }
     if (conn_ == nullptr || !conn_->connected) {
-      close();
+      close(false);
       // TIMED_OUT (-1)
       return false;
     }
