@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // sys_arch.c provides system function implementations for lwIP.
@@ -27,10 +27,12 @@ u32_t sys_now(void) {
 // --------------------------------------------------------------------------
 
 #if SYS_LIGHTWEIGHT_PROT
+__attribute__((weak))
 sys_prot_t sys_arch_protect(void) {
   return 0;
 }
 
+__attribute__((weak))
 void sys_arch_unprotect(const sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
