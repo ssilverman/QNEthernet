@@ -223,6 +223,8 @@ class EthernetClass final {
   // Returns the link status, one of the EthernetLinkStatus enumerators. This
   // will return Unknown if the hardware hasn't yet been probed, LinkON if
   // linkState() returns true, and LinkOFF if linkState() returns false.
+  //
+  // This function is defined by the Arduino API.
   EthernetLinkStatus linkStatus() const;
 
   // Returns the interface-level link state. It may be managed manually with
@@ -281,12 +283,16 @@ class EthernetClass final {
   // Returns the interface status, true for UP and false for DOWN.
   bool interfaceStatus() const;
 
+  // These functions are defined by the Arduino API:
+
   IPAddress localIP() const;
   IPAddress subnetMask() const;
   IPAddress gatewayIP() const;
 
   // Returns the DNS server address at index zero. This returns INADDR_NONE if
   // DNS is disabled.
+  //
+  // This function is defined by the Arduino API.
   IPAddress dnsServerIP() const;
 
   // Returns the DNS server IP at the specified index. This returns INADDR_NONE
@@ -299,8 +305,11 @@ class EthernetClass final {
   // This will return 255.255.255.255 if Ethernet is not initialized.
   IPAddress broadcastIP() const;
 
-  // None of the following address setting functions do anything unless the
+  // None of the following address-setting functions do anything unless the
   // system is initialized after a `begin` call
+  //
+  // These functions are defined by the Arduino API
+
   void setLocalIP(const IPAddress &ip) const;
   void setSubnetMask(const IPAddress &subnetMask) const;
   void setGatewayIP(const IPAddress &ip) const;
@@ -319,7 +328,10 @@ class EthernetClass final {
   //
   // Wish: Boolean returns
   // Technically, the non-DHCP begin() functions aren't supposed to
-  // return anything
+  // return anything.
+  //
+  // These functions are defined by the Arduino API.
+
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
@@ -334,13 +346,18 @@ class EthernetClass final {
              const IPAddress &dns, const IPAddress &gateway,
              const IPAddress &subnet);
 
+  // This function is defined by the Arduino API.
   EthernetHardwareStatus hardwareStatus() const;
 
+  // This function is defined by the Arduino API.
   void init(const int sspin) {
     chipSelectPin_ = sspin;
   }
 
   // Deprecated and unused functions
+  //
+  // These functions are defined by the Arduino API
+
   [[deprecated("DHCP maintained internally")]]
   uint8_t maintain() const { return 0; }
   [[deprecated("See TCP_MAXRTX")]]
@@ -353,6 +370,9 @@ class EthernetClass final {
   }
 
   // These call something equivalent
+  //
+  // These functions are defined by the Arduino API
+
   void MACAddress(uint8_t mac[kMACAddrSize]) { macAddress(mac); }
   void setDnsServerIP(const IPAddress &dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
