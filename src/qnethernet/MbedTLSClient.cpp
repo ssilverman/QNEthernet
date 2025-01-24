@@ -183,6 +183,7 @@ bool MbedTLSClient::connecting() {
   return (state_ == States::kHandshake);
 }
 
+// Low-level send function.
 static int sendf(void *const ctx,
                  const unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
@@ -196,6 +197,7 @@ static int sendf(void *const ctx,
   return written;
 }
 
+// Low-level receive function.
 static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   Client *const c = static_cast<Client *>(ctx);
   if (c == nullptr || !c->connected()) {
