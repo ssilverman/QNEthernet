@@ -165,7 +165,7 @@ class MbedTLSClient : public internal::ClientEx {
   // Connects to either an IP address or hostname. This is a template because
   // there are two Client connect() functions.
   template <typename T>
-  int connect(const char *const host, const T hostOrIp, const uint16_t port);
+  bool connect(const char *const host, const T hostOrIp, const uint16_t port);
 
   // Performs a handshake with the given host and optionally waits. The hostname
   // may be NULL. This expects the client to be initialized and the underlying
@@ -228,8 +228,8 @@ class MbedTLSClient : public internal::ClientEx {
 // Connects to either an IP address or hostname. This is a template because
 // there are two Client connect() functions.
 template <typename T>
-inline int MbedTLSClient::connect(const char *const host, const T hostOrIp,
-                                  const uint16_t port) {
+inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
+                                   const uint16_t port) {
   stop();
   if (client_ == nullptr || !init(false)) {
     return false;
