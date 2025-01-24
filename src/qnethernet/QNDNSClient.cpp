@@ -16,7 +16,7 @@
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
-#include "util/ip_tools.h"
+#include "qnethernet/util/ip_tools.h"
 
 extern "C" void yield();
 
