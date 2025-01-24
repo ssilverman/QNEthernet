@@ -173,8 +173,8 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
 // This only uses the callback if the interface has not been added.
 FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               const netif_ext_callback_fn callback,
-               struct DriverCapabilities *const dc) {
+                        const netif_ext_callback_fn callback,
+                        struct DriverCapabilities *const dc) {
   if (!driver_init()) {
     return false;
   }
