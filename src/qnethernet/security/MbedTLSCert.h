@@ -38,7 +38,7 @@ class MbedTLSCert {
   // Parses a key. If the key is PEM-encoded, then it must be NUL-terminated and
   // the NUL terminator must be included in the count. The password may be NULL.
   //
-  // Client and server certificates shoule have a key.
+  // Client and server certificates should have a key.
   bool parseKey(const uint8_t *buf, size_t len,
                 const uint8_t *pwd, size_t pwdLen);
 
