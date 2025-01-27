@@ -156,7 +156,7 @@ class MbedTLSClient : public internal::ClientEx {
   void deinit();
 
   // Adds a server certificate. This does not add it if the cert or key don't
-  // have content. The password is optional.
+  // have content. The key password is optional.
   void addServerCert(security::MbedTLSCert *cert);
 
   // Sets the PSK callback for a server-side connection.
