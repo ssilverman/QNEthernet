@@ -12,12 +12,16 @@ namespace security {
 void MbedTLSPSK::setPSK(const uint8_t *const buf, const size_t len) {
   if (buf != nullptr) {
     psk_.assign(&buf[0], &buf[len]);
+  } else {
+    psk_.clear();
   }
 }
 
 void MbedTLSPSK::setId(const uint8_t *const buf, const size_t len) {
   if (buf != nullptr) {
     id_.assign(&buf[0], &buf[len]);
+  } else {
+    id_.clear();
   }
 }
 
