@@ -27,10 +27,10 @@ class MbedTLSPSK {
   // Returns whether both the PSK and ID are empty.
   bool empty() const;
 
-  // Sets the PSK data.
+  // Sets the PSK data. If the buffer is NULL then the PSK will be cleared.
   void setPSK(const uint8_t *buf, size_t len);
 
-  // Sets the ID data.
+  // Sets the ID data. If the buffer is NULL then the ID will be cleared.
   void setId(const uint8_t *buf, size_t len);
 
   // Returns a reference to the internal PSK vector.
