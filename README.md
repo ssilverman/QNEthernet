@@ -35,6 +35,7 @@ lwIP release.
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
    9. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
+   10. [Use of `errno`](#use-of-errno)
 3. [How to run](#how-to-run)
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
    2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
@@ -663,6 +664,12 @@ bool isConnected() {
 See also:
 1. [The safe bool problem](https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem)
 2. [`explicit` specifier](https://en.cppreference.com/w/cpp/language/explicit)
+
+### Use of `errno`
+
+When a function call fails, it is often the case that `errno` will be set to
+something appropriate. See the function documentation of interest in the
+relevant header for more information.
 
 ## How to run
 
