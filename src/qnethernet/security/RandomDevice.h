@@ -45,7 +45,5 @@ class RandomDevice {
   friend class StaticInit<RandomDevice>;
 };
 
-STATIC_INIT_DECL(RandomDevice, randomDevice);
-
 }  // namespace security
 }  // namespace qindesign

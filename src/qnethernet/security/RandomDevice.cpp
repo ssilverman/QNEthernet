@@ -23,6 +23,7 @@ void qnethernet_hal_init_rand(void);
 uint32_t qnethernet_hal_rand(void);
 }  // extern "C"
 
+STATIC_INIT_DECL(RandomDevice, randomDevice);
 STATIC_INIT_DEFN(RandomDevice, randomDevice);
 
 RandomDevice &RandomDevice::instance() {
