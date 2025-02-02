@@ -34,8 +34,7 @@ lwIP release.
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
    8. [Print utilities](#print-utilities)
-   9. [`IPAddress` operators](#ipaddress-operators)
-   10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
+   9. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
 3. [How to run](#how-to-run)
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
    2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
@@ -611,15 +610,6 @@ Classes:
    `Print` interface so that it is easy to print `Printable` objects to `stdout`
    or `stderr` without having to worry about buffering and the need to flush any
    output before printing a `Printable` directly to, say, `Serial`.
-
-### `IPAddress` operators
-
-The core library version of `IPAddress` is missing `==` and `!=` operators that
-can compare `const IPAddress` values. Provided in this library are these two
-operators. They are declared as follows in the usual namespace:
-
-1. `bool operator==(const IPAddress &a, const IPAddress &b);`
-2. `bool operator!=(const IPAddress &a, const IPAddress &b);`
 
 ### `operator bool()` and `explicit`
 

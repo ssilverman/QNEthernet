@@ -101,6 +101,8 @@ and this project adheres to
   driver capabilities.
 * Removed `get_uint32(ip)` utility function because a `static_cast<uint32_t>()`
   is sufficient.
+* Removed `const IPAddress` equality comparison operators because these exist in
+  Teensyduino 1.59.
 
 ### Fixed
 * Fixed iperf v2 tests by commenting out per-block settings compare.
