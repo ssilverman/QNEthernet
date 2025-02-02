@@ -62,9 +62,8 @@ size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
 // FILE*. This ensures that a Printable object gets printed using the same
 // settings and buffering that the file uses.
 //
-// On errors, the "write error" gets set to 'errno'. Also, calling
-// 'clearWriteError()' will cause future calls to clear any error via
-// 'std::clearerr()'.
+// On errors, the "write error" gets set to 1. Also, calling 'clearWriteError()'
+// will cause future calls to clear any error via 'std::clearerr()'.
 //
 // See: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html
 class StdioPrint : public Print {
