@@ -323,12 +323,15 @@ The `Ethernet` object is the main Ethernet interface.
 
 * `abort()`: Aborts a connection without going through the TCP close process.
 * `close()`: Closes a connection, but without waiting. It's similar to `stop()`.
+  This is superseded by `setConnectionTimeoutEnabled(flag)` with `stop()`.
 * `closeOutput()`: Shuts down the transmit side of the socket. This is a
   half-close operation.
 * `connectNoWait(ip, port)`: Similar to `connect(ip, port)`, but it doesn't
-  wait for a connection.
+  wait for a connection. This is superseded by
+  `setConnectionTimeoutEnabled(flag)` with `connect(ip, port)`.
 * `connectNoWait(host, port)`: Similar to `connect(host, port)`, but it doesn't
-  wait for a connection. Note that the DNS lookup will still wait.
+  wait for a connection. Note that the DNS lookup will still wait. This is
+  superseded by `setConnectionTimeoutEnabled(flag)` with `connect(host, port)`.
 * `connecting()`: Returns whether the client is in the middle of connecting.
   This is used when doing a non-blocking connect.
 * `connectionId()`: Returns an ID for the connection to which the client refers.
@@ -338,6 +341,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `isConnectionTimeoutEnabled()`: Returns whether connection timeout is enabled.
 * `localIP()`: Returns the local IP of the network interface used for the
   client. Currently, This returns the same value as `Ethernet.localIP()`.
+* `setConnectionTimeout(timeout)`: The parameter is a `uint32_t` and not a
+  `uint16_t`. The spec, as of this writing, specifies a `uint16_t` parameter.
 * `setConnectionTimeoutEnabled(flag)`: Enables or disables use of a connection
   timeout. If disabled, then calls to `connect(...)` and `stop()` won't block.
   This supersedes the `connectNoWait(...)` and `close()` calls.
