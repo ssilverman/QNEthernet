@@ -602,7 +602,7 @@ Functions:
    pass the "am I disconnected" condition as the `breakf` function.
 
 2. `writeMagic(Print &, mac, breakf = nullptr)`: Writes the payload for a
-   [Magic packet](#https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet) to
+   [Magic packet](https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet) to
    the given `Print` object. This uses `writeFully(...)` under the covers and
    passes along the `breakf` function as the stopping condition.
 
@@ -921,7 +921,7 @@ sending network data, checking the return values and acting on them. Or you can
 use the library's `writeFully(...)` functions.
 
 See the discussion at:
-https://forum.pjrc.com/threads/68389-NativeEthernet-stalling-with-dropped-packets
+https://forum.pjrc.com/index.php?threads/nativeethernet-stalling-with-dropped-packets.68389/
 
 ### `writeFully()` with more break conditions
 
@@ -1625,7 +1625,9 @@ could be called on connections when the link has been disconnected. (See also
 `Ethernet.onLinkState(cb)` or `Ethernet.linkState()`.)
 
 Fun links:
-* [Removing Exponential Backoff from TCP | acm sigcomm](http://www.sigcomm.org/node/2736)
+* [Removing Exponential Backoff from TCP](http://ccr.sigcomm.org/online/files/p19-mondal.pdf)
+  * Ref: [[PDF] Removing exponential backoff from TCP](https://www.semanticscholar.org/paper/Removing-exponential-backoff-from-TCP-Mondal-Kuzmanovic/2ab0df78bb0aa95c0ed8f3dc687937ccc64f6785)
+  * Older link: [Removing Exponential Backoff from TCP | acm sigcomm](http://www.sigcomm.org/node/2736)
 * [Exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
 ## Notes on ordering and timing
@@ -1835,12 +1837,12 @@ will be different, but should be similar, for other platforms):
 * Windows: _%userprofile%\\AppData\\Local\\Arduino15\\packages\\teensy\\hardware\\avr\\{version}_
 
 References:
-1. [Additional compiler options - Programming Questions - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
+1. [Additional compiler options - Programming - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
 2. [Arduino IDE: Where can I pass defines to the compiler? - IDE 1.x - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
-3. [Request for Arduino IDE "extra_flags" support - Teensy Forum](https://forum.pjrc.com/threads/72556-Request-for-Arduino-IDE-quot-extra_flags-quot-support)
+3. [Request for Arduino IDE &quot;extra_flags&quot; support | Teensy Forum](https://forum.pjrc.com/index.php?threads/request-for-arduino-ide-extra_flags-support.72556/)
 4. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
 5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
-6. [Open the Arduino15 folder - Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
+6. [Open the Arduino15 folder &ndash; Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
 7. [Enabling Raw Frame Support and Promiscuous · Issue #54 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/54)
 
 ### Configuring macros using PlatformIO
@@ -2018,7 +2020,7 @@ Input is welcome.
   `Assertion "tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT" failed at line 1442 in src/lwip/tcp.c`
   when sending a large amount of data. Either it's an lwIP bug or I'm doing
   something wrong.
-  See: https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html
+  See: [Re: [lwip-users] Assert "tcp_slowtmr" in tcp.c reached](https://lists.gnu.org/archive/html/lwip-users/2010-02/msg00013.html)
 * More examples.
 * Fix reduced frame reception when Ethernet is restarted via
   `end()`/`begin(...)`. This is a vexing one.
@@ -2034,19 +2036,20 @@ Code style for this project mostly follows the
 [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 Other conventions are adopted from Bjarne Stroustrup's and Herb Sutter's
-[C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
+[C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/).
+([C++ Core Guidelines repo](https://github.com/isocpp/CppCoreGuidelines))
 
 ## References
 
 * [manitou48's original Teensy 4.1 Ethernet code](https://github.com/PaulStoffregen/teensy41_ethernet)
 * [Arduino Ethernet Reference](https://docs.arduino.cc/libraries/ethernet/)
 * [lwIP Home](https://savannah.nongnu.org/projects/lwip/)
-* [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/threads/68066-New-lwIP-based-Ethernet-library-for-Teensy-4-1/page7)
-* [lwIP testing by manitou](https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096)
-* [Dan Drown's NTP server and 1588 timestamps](https://forum.pjrc.com/threads/61581-Teensy-4-1-NTP-server)
+* [Forum _QNEthernet_ announcement thread](https://forum.pjrc.com/index.php?threads/new-lwip-based-ethernet-library-for-teensy-4-1.68066/)
+* [lwIP testing by manitou](https://forum.pjrc.com/index.php?threads/teensy-4-1-beta-test.60532/page-5#post-237096)
+* [Dan Drown's NTP server and 1588 timestamps](https://forum.pjrc.com/index.php?threads/teensy-4-1-ntp-server.61581/)
 * [Dan Drown's modifications to Paul's code](https://github.com/ddrown/teensy41_ethernet)
-* [Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library](https://forum.pjrc.com/threads/60857-T4-1-Ethernet-Library)
-* [Juraj Andrássy's Arduino Networking API documentation](https://github.com/JAndrassy/Arduino-Networking-API)
+* [Tino Hernandez's (vjmuzik) FNET-based NativeEthernet library](https://forum.pjrc.com/index.php?threads/t4-1-ethernet-library.60857/)
+* [Juraj Andrássy's Arduino Networking API documentation](https://github.com/Networking-for-Arduino/Arduino-Networking-API)
 
 ---
 
