@@ -25,7 +25,7 @@ and this project adheres to
 * Updated Mbed TLS version mentions to 2.28.9 from 2.28.8.
 * Made `EthernetClient::isNoDelay()` `const`.
 * Disallow compilation for Teensyduino < 1.59 because there's no support for
-  casting a `const IPAddress` to a `uint32_t`.
+  casting a `const IPAddress` to a `uint32_t` or for equality-comparing them.
 * Replaced `EthernetClient::writeFully(const char *, size_t)` and
   `writeFully(const uint8_t *, size_t)` with `writeFully(const void *, size_t)`.
 * Updated the file structure to put most sources underneath _src/qnethernet/_.
