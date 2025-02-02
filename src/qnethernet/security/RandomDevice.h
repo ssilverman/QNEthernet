@@ -11,8 +11,6 @@
 #include <cstdint>
 #include <limits>
 
-#include "qnethernet/StaticInit.h"
-
 namespace qindesign {
 namespace security {
 
@@ -41,8 +39,6 @@ class RandomDevice {
  private:
   RandomDevice();
   ~RandomDevice() = default;
-
-  friend class StaticInit<RandomDevice>;
 };
 
 }  // namespace security
