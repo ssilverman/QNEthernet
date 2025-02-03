@@ -54,6 +54,8 @@ class EthernetClient : public internal::ClientEx,
   // Returns a Boolean value.
   //
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
+  //
+  // This function is defined by the Arduino API.
   int connect(IPAddress ip, uint16_t port) final;
 
   // Returns false if DNS is disabled.
@@ -61,6 +63,8 @@ class EthernetClient : public internal::ClientEx,
   // If this returns false and there was an error then errno will be set.
   //
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
+  //
+  // This function is defined by the Arduino API.
   int connect(const char *host, uint16_t port) final;
 
   // Starts the connection process but doesn't wait for the connection to
@@ -84,6 +88,8 @@ class EthernetClient : public internal::ClientEx,
   // Returns whether the client is in the process of connecting. This is used
   // when doing a non-blocking connect.
   bool connecting() final;
+
+  // These functions are defined by the Arduino API:
 
   uint8_t connected() final;  // Wish: Boolean return
   explicit operator bool() final;
@@ -119,6 +125,8 @@ class EthernetClient : public internal::ClientEx,
   }
 
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
+  //
+  // This function is defined by the Arduino API.
   void stop() final;
 
   // Closes the connection. This works the same as stop(), but without waiting

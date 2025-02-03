@@ -52,6 +52,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // SO_REUSEADDR socket option.
   //
   // This first calls end() if the _reuse_ socket option differs.
+  //
+  // This function is defined by the Arduino API.
   void begin() final;  // Wish: Boolean return
 
   // Starts listening on the server port, if set, and sets the SO_REUSEADDR
@@ -81,10 +83,14 @@ class EthernetServer : public Server, public internal::PrintfChecked {
 
   // Accepts a connection and returns a client, possibly unconnected. This
   // returns an unconnected client if the port is not set.
+  //
+  // This function is defined by the Arduino API.
   EthernetClient accept() const;
 
   // Finds a connection with available data. This returns an unconnected client
   // if there is no client with available data or if the port is not set.
+  //
+  // This function is defined by the Arduino API.
   EthernetClient available() const;
 
   // Use the one from here instead of the one from Print
@@ -109,6 +115,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   void flush() final;
 
   // Returns whether the server is listening on a port.
+  //
+  // This function is defined by the Arduino API.
   explicit operator bool() const;
 
  private:
