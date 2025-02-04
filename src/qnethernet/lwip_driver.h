@@ -248,8 +248,8 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
-// It is suggested to initialize the random number generator with
-// qnethernet_hal_init_rand() before calling this.
+// It is suggested to initialize the entropy generator with
+// qnethernet_hal_init_entropy() before calling this.
 //
 // See also: driver_get_capabilities(dc)
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],

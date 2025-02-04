@@ -1699,7 +1699,7 @@ project needs to use the _Entropy_ library instead, set the
 `QNETHERNET_USE_ENTROPY_LIB` macro to `1` so that any internal entropy
 collection doesn't interfere with your project's entropy collection.
 
-The _Entropy_ library does the essentially same things as the internal TRNG
+The _Entropy_ library does essentially the same things as the internal TRNG
 functions, it just requires an additional dependency. This is the reason these
 functions are provided: to remove that dependency.
 
@@ -1707,9 +1707,8 @@ See the function declarations in _src/qnethernet/security/entropy.h_ if you want
 to use them yourself.
 
 If the target device isn't a Teensy 4 then the _Entropy_ library will be used,
-unless it's not accessible or doesn't exist for the device, in which case
-`std::rand()` and `std::srand()` will be used for random number generation and
-initialization, respectively.
+unless it's not accessible or doesn't exist for the device, in which case an
+instance of `std::minstd_rand` will be used.
 
 ### The `RandomDevice` _UniformRandomBitGenerator_
 
@@ -1720,6 +1719,9 @@ can be accessed by calling its `instance()` static function.
 
 This object works with both the internal entropy functions and with the
 _Entropy_ library.
+
+This is the preferred way to acquire entropy. It is meant to be used with a
+[Random number distribution](https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions).
 
 ## Configuration macros
 

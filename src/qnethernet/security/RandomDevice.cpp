@@ -19,8 +19,8 @@ namespace qindesign {
 namespace security {
 
 extern "C" {
-void qnethernet_hal_init_rand(void);
-uint32_t qnethernet_hal_rand(void);
+void qnethernet_hal_init_entropy(void);
+uint32_t qnethernet_hal_entropy(void);
 }  // extern "C"
 
 RandomDevice &RandomDevice::instance() {
@@ -29,11 +29,11 @@ RandomDevice &RandomDevice::instance() {
 }
 
 FLASHMEM RandomDevice::RandomDevice() {
-  qnethernet_hal_init_rand();
+  qnethernet_hal_init_entropy();
 }
 
 RandomDevice::result_type RandomDevice::operator()() {
-  return qnethernet_hal_rand();
+  return qnethernet_hal_entropy();
 }
 
 }  // namespace security

@@ -9,7 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Added
-* Added `qnethernet_hal_rand(buf, size)` for filling a buffer with
+* Added `qnethernet_hal_fill_entropy(buf, size)` for filling a buffer with
   random values.
 * Added `EthernetClient::setConnectionTimeoutEnabled(flag)` to enable or disable
   blocking with calls to `connect(...)` and `stop()`. This supersedes calls to
@@ -31,6 +31,10 @@ and this project adheres to
 * Updated the file structure to put most sources underneath _src/qnethernet/_.
 * Changed `EthernetClient::setConnectionTimeout(timeout)` and
   `connectionTimeout()` to use 32-bit values.
+* Renamed `qnethernet_hal_rand()` and `qnethernet_hal_init_rand()` to
+  `qnethernet_hal_entropy()` and `qnethernet_hal_init_entropy()`, respectively.
+* Changed the non-entropy version of the entropy functions in the HAL to use
+  `std::minstd_rand` instead of `std::rand()` and `std::srand()`.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because

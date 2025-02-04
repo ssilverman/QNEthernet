@@ -14,8 +14,8 @@
 #include <cerrno>
 #endif  // QNETHERNET_CUSTOM_WRITE
 #include <cstdint>
-#include <cstdlib>
 #include <cstring>
+#include <random>
 
 #include <Arduino.h>  // For Serial, noInterrupts(), interrupts(), millis()
 #include <Print.h>
@@ -173,34 +173,34 @@ void qnethernet_hal_check_core_locking(const char *const file, const int line,
 extern "C" {
 
 // Initializes randomness.
-[[gnu::weak]] void qnethernet_hal_init_rand(void);
+[[gnu::weak]] void qnethernet_hal_init_entropy(void);
 
-// Gets a 32-bit random number for LWIP_RAND() and RandomDevice.
-[[gnu::weak]] uint32_t qnethernet_hal_rand(void);
+// Gets 32-bits of entropy for LWIP_RAND() and RandomDevice.
+[[gnu::weak]] uint32_t qnethernet_hal_entropy(void);
 
 // Fills a buffer with random values. This will return the number of bytes
 // actually filled.
-[[gnu::weak]] size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t size);
+[[gnu::weak]] size_t qnethernet_hal_fill_entropy(uint8_t *buf, size_t size);
 
 #if WHICH_ENTROPY_TYPE == 1
 
-void qnethernet_hal_init_rand(void) {
+void qnethernet_hal_init_entropy(void) {
   if (!trng_is_started()) {
     trng_init();
   }
 }
 
-uint32_t qnethernet_hal_rand(void) {
+uint32_t qnethernet_hal_entropy(void) {
   return entropy_random();
 }
 
-size_t qnethernet_hal_fill_rand(uint8_t *const buf, const size_t size) {
+size_t qnethernet_hal_fill_entropy(uint8_t *const buf, const size_t size) {
   return trng_data(buf, size);
 }
 
 #elif WHICH_ENTROPY_TYPE == 2
 
-void qnethernet_hal_init_rand(void) {
+void qnethernet_hal_init_entropy(void) {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   // Don't reinitialize
   const bool doEntropyInit =
@@ -215,18 +215,24 @@ void qnethernet_hal_init_rand(void) {
   }
 }
 
-uint32_t qnethernet_hal_rand(void) {
+uint32_t qnethernet_hal_entropy(void) {
   return Entropy.random();
 }
 
 #else
 
-void qnethernet_hal_init_rand(void) {
-  std::srand(qnethernet_hal_millis());
+// Returns a UniformRandomBitGenerator instance.
+static std::minstd_rand &urbg_instance() {
+  static std::minstd_rand gen;
+  return gen;
 }
 
-uint32_t qnethernet_hal_rand(void) {
-  return std::rand();
+void qnethernet_hal_init_entropy(void) {
+  urbg_instance().seed(qnethernet_hal_millis());
+}
+
+uint32_t qnethernet_hal_entropy(void) {
+  return urbg_instance()();
 }
 
 #endif  // Which entropy type
@@ -234,19 +240,19 @@ uint32_t qnethernet_hal_rand(void) {
 // Multi-byte fill
 #if WHICH_ENTROPY_TYPE != 1
 
-size_t qnethernet_hal_fill_rand(uint8_t *const buf, const size_t size) {
+size_t qnethernet_hal_fill_entropy(uint8_t *const buf, const size_t size) {
   uint8_t *pBuf = buf;
 
   size_t count = size / 4;
   for (size_t i = 0; i < count; i++) {
-    uint32_t r = qnethernet_hal_rand();
+    uint32_t r = qnethernet_hal_entropy();
     std::memcpy(pBuf, &r, 4);
     pBuf += 4;
   }
 
   size_t rem = size % 4;
   if (rem != 0) {
-    uint32_t r = qnethernet_hal_rand();
+    uint32_t r = qnethernet_hal_entropy();
     std::memcpy(pBuf, &r, rem);
   }
 

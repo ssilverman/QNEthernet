@@ -23,8 +23,8 @@
 extern "C" {
 #endif  // __cplusplus
 
-#define LWIP_RAND() qnethernet_hal_rand()
-uint32_t qnethernet_hal_rand(void);
+#define LWIP_RAND() qnethernet_hal_entropy()
+uint32_t qnethernet_hal_entropy(void);
 
 #define LWIP_PLATFORM_ASSERT(x)                          \
   do {                                                   \
