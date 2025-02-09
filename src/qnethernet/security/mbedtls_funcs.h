@@ -20,7 +20,7 @@ extern "C" {
 // succeeded.
 //
 // This uses a single global context.
-bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf);
+bool qnethernet_mbedtls_init_entropy(mbedtls_ssl_config *conf);
 
 extern int (*const qnethernet_mbedtls_rand_f_rng)(void *, unsigned char *,
                                                   size_t);
