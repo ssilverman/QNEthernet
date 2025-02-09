@@ -10,6 +10,7 @@
 #include <cstring>
 #include <ctime>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <Arduino.h>
@@ -44,12 +45,12 @@ std::vector<char> format(const char* format, Args... args) {
   return out;
 }
 
-template <typename T>
-inline std::unique_ptr<T> make_unique() {
+template <typename T, typename... Args>
+inline std::unique_ptr<T> make_unique(Args&&... args) {
 #if __cplusplus < 201402L
-  return std::unique_ptr<T>(new T());
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 #else
-  return std::make_unique<T>();
+  return std::make_unique<T>(std::forward<Args>(args)...);
 #endif  // __cplusplus < 201402L
 }
 
