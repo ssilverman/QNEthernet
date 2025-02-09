@@ -45,7 +45,7 @@ std::vector<char> format(const char* format, Args... args) {
 }
 
 template <typename T>
-std::unique_ptr<T> make_unique() {
+inline std::unique_ptr<T> make_unique() {
 #if __cplusplus < 201402L
   return std::unique_ptr<T>(new T());
 #else
