@@ -14,7 +14,7 @@
 #include <mbedtls/entropy.h>
 
 // Forward declarations
-size_t qnethernet_hal_fill_rand(uint8_t *buf, size_t len);
+size_t qnethernet_hal_fill_entropy(uint8_t *buf, size_t len);
 uint32_t qnethernet_hal_millis(void);
 
 // Global random state
@@ -26,7 +26,7 @@ int (*const qnethernet_mbedtls_rand_f_rng)(void *, unsigned char *,
                                            size_t) = mbedtls_ctr_drbg_random;
 void *const qnethernet_mbedtls_rand_p_rng = &s_ctr_drbg;
 
-bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
+bool qnethernet_mbedtls_init_entropy(mbedtls_ssl_config *conf) {
   if (!s_randInit) {
     mbedtls_ctr_drbg_init(&s_ctr_drbg);
     mbedtls_entropy_init(&s_entropy);
@@ -36,7 +36,7 @@ bool qnethernet_mbedtls_init_rand(mbedtls_ssl_config *conf) {
     uint8_t *pNonce = nonce;
     size_t sizeRem = sizeof(nonce);
     while (sizeRem != 0) {  // TODO: What to do on failure?
-      size_t size = qnethernet_hal_fill_rand(pNonce, sizeRem);
+      size_t size = qnethernet_hal_fill_entropy(pNonce, sizeRem);
       sizeRem -= size;
       pNonce += size;
     }
@@ -64,7 +64,7 @@ int mbedtls_hardware_poll(void *const data,
                           size_t *const olen) {
   (void)data;
 
-  size_t filled = qnethernet_hal_fill_rand(output, len);
+  size_t filled = qnethernet_hal_fill_entropy(output, len);
   if (olen != NULL) {
     *olen = filled;
   }
