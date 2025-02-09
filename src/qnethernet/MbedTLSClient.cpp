@@ -99,7 +99,7 @@ bool MbedTLSClient::init(bool server) {
     goto init_error;
   }
 
-  if (!qnethernet_mbedtls_init_rand(&conf_)) {
+  if (!qnethernet_mbedtls_init_entropy(&conf_)) {
     goto init_error;
   }
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
