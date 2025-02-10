@@ -24,8 +24,8 @@ MbedTLSClient::MbedTLSClient(Client *client, bool isClientEx)
     : isServer_(false),
       client_(client),
       isClientEx_(isClientEx),
-      handshakeTimeout_(0),
-      handshakeTimeoutEnabled_(true),
+      connTimeout_(0),
+      connTimeoutEnabled_(true),
       state_(States::kStart),
       hostname_{0},
       peeked_(-1),
@@ -175,12 +175,13 @@ int MbedTLSClient::connect(const char *const host, const uint16_t port) {
 }
 
 bool MbedTLSClient::connecting() {
-  if (state_ == States::kHandshake) {
-    if (!watchHandshake()) {
+  if (state_ == States::kConnecting || state_ == States::kHandshake) {
+    if (!watchConnecting()) {
       return false;
     }
+    return (state_ == States::kConnecting) || (state_ == States::kHandshake);
   }
-  return (state_ == States::kHandshake);
+  return false;
 }
 
 // Low-level send function.
@@ -210,7 +211,24 @@ static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
   return read;
 }
 
-bool MbedTLSClient::watchHandshake() {
+bool MbedTLSClient::watchConnecting() {
+  if (state_ == States::kConnecting) {
+    bool connecting;
+    if (isClientEx_) {
+      connecting = reinterpret_cast<ClientEx *>(client_)->connecting();
+    } else {
+      connecting = !client_->connected();
+    }
+    if (connecting) {
+      return true;
+    }
+    if (!client_->connected()) {
+      deinit();
+      return false;
+    }
+    state_ = States::kHandshake;
+  }
+
   if (mbedtls_ssl_is_handshake_over(&ssl_)) {
     state_ = States::kConnected;
     return true;
@@ -234,12 +252,8 @@ bool MbedTLSClient::watchHandshake() {
   }
 }
 
-bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
-  if (client_ == nullptr) {
-    return false;
-  }
-  state_ = States::kHandshake;
-
+bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
+  // Set up the TLS state
   if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
     stop();
     return false;
@@ -252,16 +266,14 @@ bool MbedTLSClient::handshake(const char *const hostname, const bool wait) {
   }
   mbedtls_ssl_set_bio(&ssl_, client_, &sendf, &recvf, nullptr);
 
-  state_ = States::kHandshake;
-
   if (!wait) {
-    return watchHandshake();
+    return watchConnecting();
   }
 
   uint32_t startTime = qnethernet_hal_millis();
   while (connecting()) {
-    if (handshakeTimeout_ != 0 &&
-        qnethernet_hal_millis() - startTime >= handshakeTimeout_) {
+    if (connTimeout_ != 0 &&
+        qnethernet_hal_millis() - startTime >= connTimeout_) {
       stop();
       return false;
     }
@@ -437,9 +449,9 @@ void MbedTLSClient::flush() {
 }
 
 void MbedTLSClient::stop() {
-  if (state_ >= States::kHandshake) {
+  if (state_ >= States::kConnecting) {
     // TODO: Should we process the return value?
-    if (state_ >= States::kConnected) {
+    if (state_ > States::kHandshake) {
       mbedtls_ssl_close_notify(&ssl_);
       client_->flush();
     }
@@ -452,8 +464,8 @@ void MbedTLSClient::stop() {
 }
 
 bool MbedTLSClient::isConnected() {
-  if (state_ == States::kHandshake) {
-    if (!watchHandshake()) {
+  if (state_ == States::kConnecting || state_ == States::kHandshake) {
+    if (!watchConnecting()) {
       return false;
     }
   }
