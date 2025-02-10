@@ -35,6 +35,8 @@ and this project adheres to
   `qnethernet_hal_entropy()` and `qnethernet_hal_init_entropy()`, respectively.
 * Changed the non-entropy version of the entropy functions in the HAL to use
   `std::minstd_rand` instead of `std::rand()` and `std::srand()`.
+* Changed uses of "www.example.com" to "www.google.com" in the examples
+  and tests.
 
 ### Fixed
 * Now using `(void)` instead of `()` for all C function declarations because

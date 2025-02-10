@@ -14,7 +14,7 @@ using namespace qindesign::network;
 //  Configuration
 // -------------------------------------------------------------------
 
-constexpr char kHost[]{"www.example.com"};
+constexpr char kHost[]{"www.google.com"};
 constexpr uint16_t kPort = 80;
 
 // -------------------------------------------------------------------

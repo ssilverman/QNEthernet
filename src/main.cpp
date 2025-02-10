@@ -143,7 +143,7 @@ static void dnsLookup() {
 #endif  // LWIP_DNS
 }
 
-#define HOST "www.example.com"
+#define HOST "www.google.com"
 static constexpr char kHost[]{HOST};
 static constexpr char kRequest[]{
     "HEAD / HTTP/1.1\r\n"

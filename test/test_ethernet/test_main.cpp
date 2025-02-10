@@ -1075,7 +1075,7 @@ static void test_udp_ttl() {
 
 // Tests a TCP client.
 static void test_client() {
-#define HOST "www.example.com"
+#define HOST "www.google.com"
   constexpr char kHost[]{HOST};
   constexpr char kRequest[]{
       "HEAD / HTTP/1.1\r\n"
@@ -1131,7 +1131,7 @@ static void test_client() {
 
 // Tests writing single bytes to a TCP client.
 static void test_client_write_single_bytes() {
-#define HOST "www.example.com"
+#define HOST "www.google.com"
   constexpr char kHost[]{HOST};
   constexpr char kRequest[]{
       "HEAD / HTTP/1.1\r\n"
@@ -1243,7 +1243,7 @@ static void test_client_state() {
 
 // Tests remote address info.
 static void test_client_addr_info() {
-  constexpr char kHost[]{"www.example.com"};
+  constexpr char kHost[]{"www.google.com"};
   constexpr uint16_t kPort = 80;
 
   if (!waitForLocalIP()) {
@@ -1286,7 +1286,7 @@ static void test_client_addr_info() {
 
 // Tests waiting for client disconnect.
 static void test_client_wait_for_disconnect() {
-  constexpr char kHost[]{"www.example.com"};
+  constexpr char kHost[]{"www.google.com"};
   constexpr uint16_t kPort = 80;
 
   if (!waitForLocalIP()) {
@@ -1352,7 +1352,7 @@ static void test_client_options() {
 static void test_client_diffserv() {
   constexpr uint16_t kPort = 80;
   constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
-  constexpr char kHost[]{"www.example.com"};
+  constexpr char kHost[]{"www.google.com"};
 
   if (!waitForLocalIP()) {
     return;
@@ -1380,7 +1380,7 @@ static void test_client_diffserv() {
 // Tests the TTL field for TCP.
 static void test_client_ttl() {
   constexpr uint16_t kPort = 80;
-  constexpr char kHost[]{"www.example.com"};
+  constexpr char kHost[]{"www.google.com"};
 
   if (!waitForLocalIP()) {
     return;
