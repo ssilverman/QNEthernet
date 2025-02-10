@@ -1105,7 +1105,8 @@ static void test_client() {
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
-  client->writeFully(kRequest);
+  TEST_ASSERT_EQUAL_MESSAGE(std::strlen(kRequest), client->writeFully(kRequest),
+                            "Expected written fully");
   client->flush();
 
   // Read the response
