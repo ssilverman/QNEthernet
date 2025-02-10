@@ -21,8 +21,6 @@
 namespace qindesign {
 namespace network {
 
-// Any data pointers are no longer needed after the handshake completes, unless
-// a new connection needs the same data.
 class MbedTLSClient : public internal::ClientEx {
  public:
   // Creates an unconnectable client.
@@ -68,32 +66,32 @@ class MbedTLSClient : public internal::ClientEx {
     return hostname_;
   }
 
-  // Sets the handshake timeout, in milliseconds. The default is zero, meaning
-  // "wait forever". If the handshake timeout is disabled, then the operation
-  // will be non-blocking.
+  // Sets the connection plus handshake timeout, in milliseconds. The default is
+  // zero, meaning "wait forever". If the timeout is disabled, then the
+  // operation will be non-blocking.
   //
-  // See: setHandshakeTimeoutEnabled(flag)
+  // See: setConnectionTimeoutEnabled(flag)
   void setConnectionTimeout(uint32_t timeout) final {
-    handshakeTimeout_ = timeout;
+    connTimeout_ = timeout;
   }
 
-  // Returns the handshake timeout. The default is zero, meaning "wait forever".
-  // This is only used if the property is enabled.
+  // Returns the connection plus handshake timeout. The default is zero, meaning
+  // "wait forever". This is only used if the property is enabled.
   //
   // See: isHandshakeTimeoutEnabled()
   uint32_t connectionTimeout() const final {
-    return handshakeTimeout_;
+    return connTimeout_;
   }
 
-  // Sets whether to use the handshake-timeout property for connect(). If
+  // Sets whether to use the connection-timeout property for connect(). If
   // disabled, the operation will be non-blocking. The default is enabled.
   void setConnectionTimeoutEnabled(bool flag) final {
-    handshakeTimeoutEnabled_ = flag;
+    connTimeoutEnabled_ = flag;
   }
 
-  // Returns whether handshake timeout is enabled. The default is enabled.
+  // Returns whether connection timeout is enabled. The default is enabled.
   bool isConnectionTimeoutEnabled() const final {
-    return handshakeTimeoutEnabled_;
+    return connTimeoutEnabled_;
   }
 
   // Two forms of the connect() function
@@ -143,6 +141,7 @@ class MbedTLSClient : public internal::ClientEx {
   enum class States {
     kStart,
     kInitialized,
+    kConnecting,
     kHandshake,
     kConnected,
   };
@@ -167,20 +166,25 @@ class MbedTLSClient : public internal::ClientEx {
   template <typename T>
   bool connect(const char *const host, const T hostOrIp, const uint16_t port);
 
-  // Performs a handshake with the given host and optionally waits. The hostname
-  // may be NULL. This expects the client to be initialized and the underlying
-  // client to be connected. If this returns false then the client will be
-  // deinitialized and the underlying client stopped.
-  bool handshake(const char *hostname, bool wait);
+  // Starts the connection by first ensuring the underlying client is connected
+  // and then performing the handshake. The handshake is performed with the
+  // given host which may be NULL. This expects the client to be initialized and
+  // the underlying connection to be started. If this returns false then the
+  // client will be deinitialized and the underlying client stopped.
+  //
+  // This optionally waits for the connection/handshake to be complete.
+  bool connect(const char *hostname, bool wait);
 
-  // If we're in the middle of a handshake then this moves the handshake along.
-  // If the handshake is complete then this sets the state to Connected.
+  // If we're in the middle of connecting or a handshake then this moves the
+  // connection or handshake along. If the handshake is complete then this sets
+  // the state to Connected.
   //
-  // This returns true if the handshake is still in flight or complete, and
-  // false on error. If there was an error then deinit() will be called.
+  // This returns true if the connection or handshake is still in flight or
+  // complete, and false on error. If there was an error then deinit() will
+  // be called.
   //
-  // This assumes that we're in the Handshake state.
-  bool watchHandshake();
+  // This assumes that we're in the Conneting or Handshake state.
+  bool watchConnecting();
 
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
   // then stop() will have been called.
@@ -199,8 +203,8 @@ class MbedTLSClient : public internal::ClientEx {
   Client *client_;
   bool isClientEx_;
 
-  uint32_t handshakeTimeout_;
-  bool handshakeTimeoutEnabled_;
+  uint32_t connTimeout_;
+  bool connTimeoutEnabled_;
 
   States state_;
 
@@ -231,14 +235,16 @@ template <typename T>
 inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
                                    const uint16_t port) {
   stop();
+
   if (client_ == nullptr || !init(false)) {
     return false;
   }
 
-  if (client_->connect(hostOrIp, port) == 0) {
+  if (!client_->connect(hostOrIp, port)) {
     deinit();
     return false;
   }
+  state_ = States::kConnecting;
 
   const char *hostname;
   if (std::strlen(hostname_) != 0) {
@@ -246,7 +252,7 @@ inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
   } else {
     hostname = host;
   }
-  return handshake(hostname, handshakeTimeoutEnabled_);
+  return connect(hostname, connTimeoutEnabled_);
 }
 
 }  // namespace network

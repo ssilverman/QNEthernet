@@ -78,7 +78,7 @@ MbedTLSClient MbedTLSServer::accept() {
       }
       if (tlsClient.init(true)) {
         // A false return from handshake() also stops the client
-        if (tlsClient.handshake(nullptr, false)) {
+        if (tlsClient.connect(nullptr, false)) {
           return tlsClient;
         }
       } else {
