@@ -70,6 +70,9 @@ class MbedTLSClient : public internal::ClientEx {
   // zero, meaning "wait forever". If the timeout is disabled, then the
   // operation will be non-blocking.
   //
+  // The socket connection part is only included in the timeout if it is
+  // non-blocking.
+  //
   // See: setConnectionTimeoutEnabled(flag)
   void setConnectionTimeout(uint32_t timeout) final {
     connTimeout_ = timeout;
