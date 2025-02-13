@@ -20,7 +20,7 @@ namespace network {
 MbedTLSClient::MbedTLSClient()
     : MbedTLSClient(static_cast<Client *>(nullptr), false) {}
 
-MbedTLSClient::MbedTLSClient(Client *client, bool isClientEx)
+MbedTLSClient::MbedTLSClient(Client *const client, const bool isClientEx)
     : isServer_(false),
       client_(client),
       isClientEx_(isClientEx),
@@ -63,13 +63,13 @@ void MbedTLSClient::setClient(internal::ClientEx &client) {
   isClientEx_ = true;
 }
 
-void MbedTLSClient::addServerCert(security::MbedTLSCert *cert) {
+void MbedTLSClient::addServerCert(security::MbedTLSCert *const cert) {
   if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     serverCerts_.push_back(cert);
   }
 }
 
-void MbedTLSClient::setPSKCallback(pskf f_psk, void *const p_psk) {
+void MbedTLSClient::setPSKCallback(const pskf f_psk, void *const p_psk) {
   f_psk_ = f_psk;
   p_psk_ = p_psk;
 }
@@ -82,7 +82,7 @@ void MbedTLSClient::setHostname(const char *const s) {
   }
 }
 
-bool MbedTLSClient::init(bool server) {
+bool MbedTLSClient::init(const bool server) {
   if (state_ >= States::kInitialized) {
     return true;
   }
@@ -281,7 +281,7 @@ bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
   return state_ >= States::kConnected;
 }
 
-bool MbedTLSClient::checkWrite(int ret) {
+bool MbedTLSClient::checkWrite(const int ret) {
   switch (ret) {
     case MBEDTLS_ERR_SSL_WANT_READ:
     case MBEDTLS_ERR_SSL_WANT_WRITE:
@@ -330,7 +330,7 @@ size_t MbedTLSClient::writeFully(const void *const buf, const size_t size) {
   return util::writeFully(*this, static_cast<const uint8_t *>(buf), size, this);
 }
 
-bool MbedTLSClient::checkRead(int ret) {
+bool MbedTLSClient::checkRead(const int ret) {
   switch (ret) {
     case MBEDTLS_ERR_SSL_WANT_READ:
     case MBEDTLS_ERR_SSL_WANT_WRITE:
