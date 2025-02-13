@@ -63,7 +63,7 @@ class EthernetClass final {
 
   // Returns a string containing the library version number.
   static const char *libraryVersion() {
-    return "0.31.0";
+    return "0.32.0-snapshot";
   }
 
   // Returns the maximum number of multicast groups. Note that mDNS will use
