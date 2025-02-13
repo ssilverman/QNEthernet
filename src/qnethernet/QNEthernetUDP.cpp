@@ -123,7 +123,8 @@ void EthernetUDP::setReceiveQueueCapacity(const size_t capacity) {
     if (actualCap <= inBufSize_) {
       // Keep all the newest packets
       if (inBufTail_ != 0) {
-        size_t n = (inBufTail_ + (inBufSize_ - actualCap)) % inBuf_.size();
+        const size_t n =
+            (inBufTail_ + (inBufSize_ - actualCap)) % inBuf_.size();
         std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
       }
       inBuf_.resize(actualCap);

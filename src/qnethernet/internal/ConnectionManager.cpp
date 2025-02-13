@@ -182,7 +182,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
     auto &v = state->buf;
 
     // Check that we can store all the data
-    size_t rem = v.capacity() - v.size() + state->bufPos;
+    const size_t rem = v.capacity() - v.size() + state->bufPos;
     if (rem < p->tot_len) {
       altcp_recved(tpcb, rem);
       return ERR_INPROGRESS;  // ERR_MEM? Other?
@@ -191,7 +191,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
     // If there isn't enough space at the end, move all the data in the buffer
     // to the top
     if (v.capacity() - v.size() < p->tot_len) {
-      size_t n = v.size() - state->bufPos;
+      const size_t n = v.size() - state->bufPos;
       if (n > 0) {
         std::copy_n(v.begin() + state->bufPos, n, v.begin());
         v.resize(n);
@@ -203,7 +203,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
 
     // Copy all the data from the pbuf
     while (pNext != nullptr) {
-      uint8_t *data = static_cast<uint8_t *>(pNext->payload);
+      uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
       v.insert(v.end(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }

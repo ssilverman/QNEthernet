@@ -295,8 +295,8 @@ static inline void write_reg(const uint16_t addr, const uint8_t block,
 // Reads a 16-bit value. If the value isn't stable, then this will return false.
 // Otherwise, this will return true and 'v' will be set to the word.
 static bool read_reg_word(const Reg<uint16_t> &reg, uint16_t &v) {
-  uint16_t v1 = *reg;
-  uint16_t v2 = *reg;
+  const uint16_t v1 = *reg;
+  const uint16_t v2 = *reg;
   if (v1 != v2) {
     return false;
   }

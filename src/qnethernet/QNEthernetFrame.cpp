@@ -47,7 +47,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *const p,
                                    struct netif *const netif) {
   LWIP_UNUSED_ARG(netif);
 
-  uint32_t timestamp = sys_now();
+  const uint32_t timestamp = sys_now();
 
   struct pbuf *pNext = p;
 
@@ -57,7 +57,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *const p,
   frame.data.reserve(p->tot_len);
   // TODO: Limit vector size
   while (pNext != nullptr) {
-    uint8_t *data = static_cast<uint8_t *>(pNext->payload);
+    uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
     frame.data.insert(frame.data.end(), &data[0], &data[pNext->len]);
     pNext = pNext->next;
   }

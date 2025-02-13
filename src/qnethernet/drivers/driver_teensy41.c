@@ -644,7 +644,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This returns NULL if there is no TX buffer available.
 static inline volatile enetbufferdesc_t *get_bufdesc(void) {
-  volatile enetbufferdesc_t *pBD = s_pTxBD;
+  volatile enetbufferdesc_t *const pBD = s_pTxBD;
 
   if ((pBD->status & kEnetTxBdReady) != 0) {
     return NULL;
@@ -1066,7 +1066,7 @@ err_t driver_output(struct pbuf *const p) {
     return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
                             // UDP senders know to retry
   }
-  uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
+  const uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
     LINK_STATS_INC(link.err);
     LINK_STATS_INC(link.drop);

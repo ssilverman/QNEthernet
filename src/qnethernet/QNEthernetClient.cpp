@@ -605,7 +605,7 @@ int EthernetClient::read() {
   CHECK_STATE(-1)
 
   if (!conn_->remaining.empty()) {
-    int c = conn_->remaining[conn_->remainingPos++];
+    const int c = conn_->remaining[conn_->remainingPos++];
     if (conn_->remainingPos >= conn_->remaining.size()) {
       conn_->remaining.clear();
       conn_->remainingPos = 0;
