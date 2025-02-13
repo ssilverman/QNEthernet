@@ -243,11 +243,16 @@ inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
     return false;
   }
 
-  if (!client_->connect(hostOrIp, port)) {
-    deinit();
-    return false;
+  // If the client is already connected then go straight to the handshake
+  if (static_cast<bool>(*client_)) {
+    state_ = States::kHandshake;
+  } else {
+    if (!client_->connect(hostOrIp, port)) {
+      deinit();
+      return false;
+    }
+    state_ = States::kConnecting;
   }
-  state_ = States::kConnecting;
 
   const char *hostname;
   if (std::strlen(hostname_) != 0) {
