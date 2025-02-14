@@ -255,9 +255,7 @@ void ConnectionManager::addConnection(
     LWIP_UNUSED_ARG(state);
 
     // Remove the connection from the list
-    const auto it =
-        std::find_if(connections_.begin(), connections_.end(),
-                     [holder](const auto &elem) { return elem == holder; });
+    const auto it = std::find(connections_.begin(), connections_.end(), holder);
     if (it != connections_.end()) {
       connections_.erase(it);
     }
@@ -429,9 +427,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
 
 bool ConnectionManager::remove(
     const std::shared_ptr<ConnectionHolder> &holder) {
-  const auto it =
-      std::find_if(connections_.begin(), connections_.end(),
-                   [holder](const auto &elem) { return (elem == holder); });
+  const auto it = std::find(connections_.begin(), connections_.end(), holder);
   if (it != connections_.end()) {
     const auto &state = (*it)->state;
     if (state != nullptr) {
