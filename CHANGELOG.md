@@ -12,6 +12,12 @@ and this project adheres to
 * Changed some send and write functions to take a `void*` instead of
   a `uint8_t*`.
 
+### Fixed
+* Restored automatic entropy initialization. Calling `qnethernet_hal_entropy()`
+  or `qnethernet_hal_fill_entropy()` will generate random values again without a
+  prior call to `qnethernet_hal_init_entropy()` or `RandomDevice::instance()`.
+  This also affects lwIP's internal `LWIP_RAND()`.
+
 ## [0.31.0]
 
 ### Added
