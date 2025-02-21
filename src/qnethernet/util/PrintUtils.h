@@ -29,13 +29,13 @@ namespace util {
 //
 // This returns the number of bytes actually written. If `breakf` never returns
 // true then this will have written all the bytes upon return.
-size_t writeFully(Print &p, const uint8_t *buf, size_t size,
+size_t writeFully(Print &p, const void *buf, size_t size,
                   std::function<bool()> breakf = nullptr);
 
 // Calls writeFully() with a break function that static_casts the given object
 // to a bool.
 template <typename T>
-size_t writeFully(Print &p, const uint8_t *const buf, const size_t size,
+size_t writeFully(Print &p, const void *const buf, const size_t size,
                   T *const breakobj) {
   return writeFully(p, buf, size,
                     [&]() { return !static_cast<bool>(*breakobj); });

@@ -15,9 +15,9 @@ static constexpr uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 };
 
-size_t writeFully(Print &p, const uint8_t *const buf, const size_t size,
+size_t writeFully(Print &p, const void *const buf, const size_t size,
                   const std::function<bool()> breakf) {
-  const uint8_t *pBuf = buf;
+  const uint8_t *pBuf = static_cast<const uint8_t *>(buf);
   size_t sizeRem = size;
 
   if (breakf == nullptr) {

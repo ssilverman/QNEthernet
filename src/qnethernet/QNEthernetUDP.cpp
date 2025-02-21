@@ -477,7 +477,7 @@ int EthernetUDP::endPacket() {
 }
 
 bool EthernetUDP::send(const IPAddress &ip, const uint16_t port,
-                       const uint8_t *const data, const size_t len) {
+                       const void *const data, const size_t len) {
 #if LWIP_IPV4
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return send(&ipaddr, port, data, len);
@@ -487,7 +487,7 @@ bool EthernetUDP::send(const IPAddress &ip, const uint16_t port,
 }
 
 bool EthernetUDP::send(const char *const host, const uint16_t port,
-                       const uint8_t *const data, const size_t len) {
+                       const void *const data, const size_t len) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -505,7 +505,7 @@ bool EthernetUDP::send(const char *const host, const uint16_t port,
 }
 
 bool EthernetUDP::send(const ip_addr_t *const ipaddr, const uint16_t port,
-                       const uint8_t *const data, const size_t len) {
+                       const void *const data, const size_t len) {
   if (len > kMaxPossiblePayloadSize) {
     errno = ENOBUFS;
     return false;

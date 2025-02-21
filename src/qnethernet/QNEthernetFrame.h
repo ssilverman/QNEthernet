@@ -104,7 +104,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
   //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
-  bool send(const uint8_t *frame, size_t len) const;
+  bool send(const void *frame, size_t len) const;
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;

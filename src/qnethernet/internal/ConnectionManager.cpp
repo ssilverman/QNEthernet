@@ -461,7 +461,7 @@ size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
 }
 
 size_t ConnectionManager::write(const uint16_t port,
-                                const uint8_t *const b, const size_t len) {
+                                const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
   std::for_each(connections_.begin(), connections_.end(),

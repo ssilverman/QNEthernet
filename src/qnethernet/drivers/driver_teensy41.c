@@ -1108,7 +1108,7 @@ bool driver_output_frame(const uint8_t *const frame, const size_t len) {
 
 // CRC-32 routine for computing the 4-byte FCS for multicast lookup. The initial
 // value will be zero.
-static uint32_t crc32(const uint8_t *const data, const size_t len) {
+static uint32_t crc32(const void *const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
 
   uint32_t crc = 0;  // Initial value

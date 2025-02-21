@@ -127,13 +127,12 @@ class EthernetUDP : public UDP,
   // causes less overhead.
   //
   // If this returns false and there was an error then errno will be set.
-  bool send(const IPAddress &ip, uint16_t port,
-            const uint8_t *data, size_t len);
+  bool send(const IPAddress &ip, uint16_t port, const void *data, size_t len);
 
   // Calls the other send() function after performing a DNS lookup.
   //
   // If this returns false and there was an error then errno will be set.
-  bool send(const char *host, uint16_t port, const uint8_t *data, size_t len);
+  bool send(const char *host, uint16_t port, const void *data, size_t len);
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -282,7 +281,7 @@ class EthernetUDP : public UDP,
 
   // If this returns false and there was an error then errno will be set.
   bool send(const ip_addr_t *ipaddr, uint16_t port,
-            const uint8_t *data, size_t len);
+            const void *data, size_t len);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
