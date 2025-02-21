@@ -167,9 +167,7 @@ static void sendLine() {
 
   // Read from the console and send lines
   if (readLine(line)) {
-    if (!udp.send(Ethernet.broadcastIP(), kPort,
-                  reinterpret_cast<const uint8_t *>(line.c_str()),
-                  line.length())) {
+    if (!udp.send(Ethernet.broadcastIP(), kPort, line.c_str(), line.length())) {
       printf("[Error sending]\r\n");
     }
     line = "";
