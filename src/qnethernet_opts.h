@@ -82,6 +82,11 @@
 #define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 0
 #endif
 
+// Enables use of secure TCP initial sequence numbers (ISNs).
+#ifndef QNETHERNET_ENABLE_SECURE_TCP_ISN
+#define QNETHERNET_ENABLE_SECURE_TCP_ISN 1
+#endif
+
 // Follows every call to 'EthernetClient::write()` with a flush. This may reduce
 // TCP efficency. This option is for use with hard-to-modify code or libraries
 // that assume data will get sent immediately. The preferred approach is to call
