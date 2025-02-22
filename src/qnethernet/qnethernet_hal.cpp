@@ -48,6 +48,12 @@ uint32_t qnethernet_hal_millis(void) {
   return millis();
 }
 
+// Returns the current time in microseconds.
+[[gnu::weak]]
+uint32_t qnethernet_hal_micros(void) {
+  return micros();
+}
+
 }  // extern "C"
 
 // --------------------------------------------------------------------------

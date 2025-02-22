@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `qnethernet_hal_micros()`.
+
 ### Changed
 * Changed some send and write functions to take a `void*` instead of
   a `uint8_t*`.
