@@ -234,7 +234,7 @@ static std::minstd_rand &urbg_instance() {
 }
 
 void qnethernet_hal_init_entropy(void) {
-  urbg_instance().seed(qnethernet_hal_millis());
+  urbg_instance().seed(qnethernet_hal_micros());
 }
 
 uint32_t qnethernet_hal_entropy(void) {
