@@ -78,16 +78,18 @@ lwIP release.
 20. [Heap memory use](#heap-memory-use)
 21. [Entropy generation](#entropy-generation)
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
-22. [Configuration macros](#configuration-macros)
+22. [Security features](#security-features)
+    1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
+23. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
-23. [Complete list of features](#complete-list-of-features)
-24. [Compatibility with other APIs](#compatibility-with-other-apis)
-25. [Other notes](#other-notes)
-26. [To do](#to-do)
-27. [Code style](#code-style)
-28. [References](#references)
+24. [Complete list of features](#complete-list-of-features)
+25. [Compatibility with other APIs](#compatibility-with-other-apis)
+26. [Other notes](#other-notes)
+27. [To do](#to-do)
+28. [Code style](#code-style)
+29. [References](#references)
 
 ## Introduction
 
@@ -1723,6 +1725,28 @@ _Entropy_ library.
 This is the preferred way to acquire entropy. It is meant to be used with a
 [Random number distribution](https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions).
 
+## Security features
+
+This section discusses the security features of this library.
+(Caveat: This library was not written by a security expert, so there are no
+security guarantees.)
+
+### Secure TCP initial sequence numbers (ISNs)
+
+Secure TCP ISNs are generated using the suggested algorithm from
+[RFC 6528 Defending against Sequence Number Attacks](https://datatracker.ietf.org/doc/html/rfc6528).
+The SipHash-2-4-64 algorithm is used as the pseudorandom function (PRF), and the
+microsecond clock is used as the timer.
+
+The 128-bit key is generated on first use with a call to
+`qnethernet_hal_fill_entropy()`.
+
+The ISN is calculated as follows:
+> micros() + SipHash-2-4-64(local_port, remote_port, remote_ip, local_ip)
+
+This feature can be enabled or disabled with the
+[`QNETHERNET_ENABLE_SECURE_TCP_ISN` macro](#configuration-macros).
+
 ## Configuration macros
 
 There are two sets of configuration macros:
@@ -1746,6 +1770,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
+| `QNETHERNET_ENABLE_SECURE_TCP_ISN`          | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns) |
 | `QNETHERNET_FLUSH_AFTER_WRITE`              | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                     |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
 | `QNETHERNET_USE_ENTROPY_LIB`                | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                               |
@@ -1951,6 +1976,7 @@ _QNEthernet_ library.
 25. Ability to toggle Nagle's algorithm for TCP
 26. Ability to set some IP header fields: differentiated services (DiffServ)
     and TTL
+27. Secure TCP initial sequence numbers (ISNs)
 
 ## Compatibility with other APIs
 
