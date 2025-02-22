@@ -117,6 +117,16 @@ static void test_version() {
   TEST_ASSERT_NOT_NULL_MESSAGE(Ethernet.libraryVersion(), "Expected non-null version");
 }
 
+// Tests that there's entropy.
+static void test_entropy() {
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__) && \
+    !QNETHERNET_USE_ENTROPY_LIB
+  uint32_t r1 = LWIP_RAND();
+  uint32_t r2 = LWIP_RAND();
+  TEST_ASSERT_FALSE_MESSAGE(r1 == 568509518 && r2 == 2577880531, "No entropy");
+#endif  // TEENSYDUINO && __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
+}
+
 // Tests using the built-in MAC address.
 static void test_builtin_mac() {
   static constexpr uint8_t zeros[6]{0, 0, 0, 0, 0, 0};
@@ -1703,6 +1713,7 @@ void setup() {
 
   UNITY_BEGIN();
   RUN_TEST(test_version);
+  RUN_TEST(test_entropy);
   RUN_TEST(test_builtin_mac);
   RUN_TEST(test_set_mac);
   RUN_TEST(test_get_mac);
