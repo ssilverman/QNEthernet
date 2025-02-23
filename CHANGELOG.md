@@ -18,8 +18,9 @@ and this project adheres to
   a `uint8_t*`.
 
 ### Fixed
-* Restored automatic entropy initialization. Calling `qnethernet_hal_entropy()`
-  or `qnethernet_hal_fill_entropy()` will generate random values again without a
+* Restored automatic entropy initialization when including
+  `qnethernet/security/RandomDevice.h`. Calling `qnethernet_hal_entropy()` or
+  `qnethernet_hal_fill_entropy()` will generate random values again without a
   prior call to `qnethernet_hal_init_entropy()` or `RandomDevice::instance()`.
   This also affects lwIP's internal `LWIP_RAND()`.
 
