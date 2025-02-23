@@ -39,8 +39,6 @@
 
 #include "lwip/opt.h"
 
-#if LWIP_IPV4 || LWIP_IPV6
-
 #include "lwip/def.h"
 #include "lwip/pbuf.h"
 #include "lwip/ip_addr.h"
@@ -337,7 +335,5 @@ err_t ip_input(struct pbuf *p, struct netif *inp);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 #endif /* LWIP_HDR_IP_H */

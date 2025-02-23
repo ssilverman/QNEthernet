@@ -116,11 +116,7 @@ void
 stats_display_memp(struct stats_mem *mem, int idx)
 {
   if (idx < MEMP_MAX) {
-    if (mem == NULL) {
-      LWIP_PLATFORM_DIAG(("\nMEMP[%d]: NULL\n", idx));
-    } else {
-      stats_display_mem(mem, mem->name);
-    }
+    stats_display_mem(mem, mem->name);
   }
 }
 #endif /* MEMP_STATS */

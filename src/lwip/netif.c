@@ -237,11 +237,7 @@ netif_input(struct pbuf *p, struct netif *inp)
     return ethernet_input(p, inp);
   } else
 #endif /* LWIP_ETHERNET */
-#if LWIP_IPV4 || LWIP_IPV6
     return ip_input(p, inp);
-#else
-    return ERR_OK; /* Black hole */
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 }
 
 /**
@@ -459,7 +455,6 @@ netif_add(struct netif *netif,
   return netif;
 }
 
-#if LWIP_IPV4 || LWIP_IPV6
 static void
 netif_do_ip_addr_changed(const ip_addr_t *old_addr, const ip_addr_t *new_addr)
 {
@@ -473,7 +468,6 @@ netif_do_ip_addr_changed(const ip_addr_t *old_addr, const ip_addr_t *new_addr)
   raw_netif_ip_addr_changed(old_addr, new_addr);
 #endif /* LWIP_RAW */
 }
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 #if LWIP_IPV4
 static int
