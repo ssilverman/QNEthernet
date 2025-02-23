@@ -23,7 +23,6 @@ void qnethernet_hal_init_entropy(void);
 uint32_t qnethernet_hal_entropy(void);
 }  // extern "C"
 
-STATIC_INIT_DECL(RandomDevice, randomDevice);
 STATIC_INIT_DEFN(RandomDevice, randomDevice);
 
 RandomDevice &RandomDevice::instance() {
