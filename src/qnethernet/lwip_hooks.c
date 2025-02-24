@@ -6,7 +6,7 @@
 
 #include "lwip_hooks.h"
 
-#if QNETHERNET_ENABLE_SECURE_TCP_ISN
+#if LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -53,4 +53,4 @@ u32_t calc_tcp_isn(const ip_addr_t *const local_ip, const u16_t local_port,
   return hash + qnethernet_hal_micros();
 }
 
-#endif  // QNETHERNET_ENABLE_SECURE_TCP_ISN
+#endif  // LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
