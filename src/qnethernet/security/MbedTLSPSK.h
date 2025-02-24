@@ -4,6 +4,8 @@
 // MbedTLSPSK.h defines an object that holds an MbedTLS pre-shared key.
 // This file is part of the QNEthernet library.
 
+#pragma once
+
 // C++ includes
 #include <cstdint>
 #include <vector>
