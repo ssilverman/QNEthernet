@@ -26,8 +26,8 @@ class MbedTLSClient : public internal::ClientEx {
   // Creates an unconnectable client.
   MbedTLSClient();
 
-  MbedTLSClient(Client &client);
-  MbedTLSClient(ClientEx &client);
+  explicit MbedTLSClient(Client &client);
+  explicit MbedTLSClient(ClientEx &client);
   virtual ~MbedTLSClient();
 
   // Allow moving but not copying
