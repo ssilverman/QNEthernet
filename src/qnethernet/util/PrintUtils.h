@@ -121,7 +121,7 @@ class NullPrint final : public Print {
 // a base class.
 class PrintDecorator : public Print {
  public:
-  PrintDecorator(Print &p) : p_(p) {}
+  explicit PrintDecorator(Print &p) : p_(p) {}
   virtual ~PrintDecorator() = default;
 
   size_t write(const uint8_t b) override {
