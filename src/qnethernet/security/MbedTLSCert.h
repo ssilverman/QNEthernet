@@ -35,14 +35,14 @@ class MbedTLSCert {
   // some of the certificates may have been loaded. See size().
   //
   // This does nothing and returns false if the buffer is NULL.
-  bool parse(const uint8_t *buf, size_t len);
+  bool parse(const void *buf, size_t len);
 
   // Parses a key. If the key is PEM-encoded, then it must be NUL-terminated and
   // the NUL terminator must be included in the count. The password may be NULL.
   //
   // Client and server certificates should have a key.
-  bool parseKey(const uint8_t *buf, size_t len,
-                const uint8_t *pwd, size_t pwdLen);
+  bool parseKey(const void *buf, size_t len,
+                const void *pwd, size_t pwdLen);
 
   // Returns a reference to the internal certificate object.
   mbedtls_x509_crt &cert() {
