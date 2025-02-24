@@ -23,7 +23,7 @@ class MbedTLSCert {
   MbedTLSCert(MbedTLSCert &&other) = default;
   MbedTLSCert &operator=(MbedTLSCert &&other) = default;
 
-  // Parses a one DER-encoded certificate or a list of PEM-encoded certificates.
+  // Parses one DER-encoded certificate or a list of PEM-encoded certificates.
   // PEM-encoded data must be NUL-terminated.
   //
   // The certificates are added to the chain.
