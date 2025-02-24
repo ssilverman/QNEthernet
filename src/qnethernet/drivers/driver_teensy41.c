@@ -1080,7 +1080,7 @@ err_t driver_output(struct pbuf *const p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const uint8_t *const frame, const size_t len) {
+bool driver_output_frame(const void *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }

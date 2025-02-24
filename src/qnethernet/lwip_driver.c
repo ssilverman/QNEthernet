@@ -260,14 +260,14 @@ void enet_poll(void) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool enet_output_frame(const uint8_t *const frame, const size_t len) {
+bool enet_output_frame(const void *const frame, const size_t len) {
   if (frame == NULL || len < (6 + 6 + 2)) {  // dst + src + len/type
     return false;
   }
 
   // Check length depending on VLAN
-  if (frame[12] == (uint8_t)(ETHTYPE_VLAN >> 8) &&
-      frame[13] == (uint8_t)(ETHTYPE_VLAN)) {
+  if (((const uint8_t *)frame)[12] == (uint8_t)(ETHTYPE_VLAN >> 8) &&
+      ((const uint8_t *)frame)[13] == (uint8_t)(ETHTYPE_VLAN)) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }

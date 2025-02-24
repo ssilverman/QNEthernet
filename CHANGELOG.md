@@ -14,8 +14,7 @@ and this project adheres to
   `QNETHERNET_ENABLE_SECURE_TCP_ISN` macro.
 
 ### Changed
-* Changed some send and write functions to take a `void*` instead of
-  a `uint8_t*`.
+* Changed some functions to take a `void*` instead of a `uint8_t*`.
 
 ### Fixed
 * Restored automatic entropy initialization when including

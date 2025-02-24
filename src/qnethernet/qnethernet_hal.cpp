@@ -186,7 +186,7 @@ extern "C" {
 
 // Fills a buffer with random values. This will return the number of bytes
 // actually filled.
-[[gnu::weak]] size_t qnethernet_hal_fill_entropy(uint8_t *buf, size_t size);
+[[gnu::weak]] size_t qnethernet_hal_fill_entropy(void *buf, size_t size);
 
 #if WHICH_ENTROPY_TYPE == 1
 
@@ -200,7 +200,7 @@ uint32_t qnethernet_hal_entropy(void) {
   return entropy_random();
 }
 
-size_t qnethernet_hal_fill_entropy(uint8_t *const buf, const size_t size) {
+size_t qnethernet_hal_fill_entropy(void *const buf, const size_t size) {
   return trng_data(buf, size);
 }
 
@@ -246,7 +246,7 @@ uint32_t qnethernet_hal_entropy(void) {
 // Multi-byte fill
 #if WHICH_ENTROPY_TYPE != 1
 
-size_t qnethernet_hal_fill_entropy(uint8_t *const buf, const size_t size) {
+size_t qnethernet_hal_fill_entropy(void *const buf, const size_t size) {
   uint8_t *pBuf = buf;
 
   size_t count = size / 4;

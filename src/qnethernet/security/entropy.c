@@ -220,7 +220,7 @@ size_t trng_available(void) {
   (_a < _b) ? _a : _b; \
 })
 
-size_t trng_data(uint8_t *const data, const size_t size) {
+size_t trng_data(void *const data, const size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
@@ -254,7 +254,7 @@ size_t trng_data(uint8_t *const data, const size_t size) {
 
 uint32_t entropy_random(void) {
   uint32_t r;
-  if (trng_data((uint8_t *)&r, sizeof(r)) < sizeof(r)) {
+  if (trng_data(&r, sizeof(r)) < sizeof(r)) {
     errno = EAGAIN;
   }
   return r;

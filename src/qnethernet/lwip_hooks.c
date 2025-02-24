@@ -21,7 +21,7 @@ static uint8_t s_key[16];  // Filled with entropy on first use
 static uint8_t s_msg[2*sizeof(u16_t) + 2*sizeof(ip_addr_t)];
 
 // Forward declarations
-size_t qnethernet_hal_fill_entropy(uint8_t *buf, size_t size);
+size_t qnethernet_hal_fill_entropy(void *buf, size_t size);
 uint32_t qnethernet_hal_micros();
 
 // The algorithm used here follows the suggestions of RFC 6528.

@@ -120,11 +120,10 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   int parseFrame();
   int available() override;
   int read() override;
-  int read(uint8_t *buffer, size_t len);
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(char *buffer, size_t len);
+  int read(void *buffer, size_t len);
 
   int peek() override;
   void flush() override {}

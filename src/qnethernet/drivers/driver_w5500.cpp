@@ -217,7 +217,7 @@ static void read(const uint16_t addr, const uint8_t block,
 
 // // Writes to the specified register.
 // [[maybe_unused]]
-// static void write(const Reg &reg, uint8_t *const buf, const size_t len) {
+// static void write(const Reg &reg, void *const buf, const size_t len) {
 //   s_spiBuf[0] = reg.addr >> 8;
 //   s_spiBuf[1] = reg.addr;
 //   s_spiBuf[2] = (reg.block << 3) | kControlRWBit;
@@ -225,7 +225,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //   spi.beginTransaction(kSPISettings);
 //   digitalWrite(s_chipSelectPin, LOW);
 
-//   uint8_t *pBuf = buf;
+//   uint8_t *pBuf = static_cast<uint8_t *>(buf);
 //   size_t lenRem = len;
 
 //   size_t index = 3;
@@ -712,7 +712,7 @@ err_t driver_output(struct pbuf *const p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const uint8_t *const frame, const size_t len) {
+bool driver_output_frame(const void *const frame, const size_t len) {
   if (s_initState != EnetInitStates::kInitialized) {
     return false;
   }

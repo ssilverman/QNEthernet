@@ -38,7 +38,7 @@ size_t trng_available(void);
 // requested size has been reached or a failure was encountered. This returns
 // the number of bytes filled. If there was an entropy generation error then
 // this will return a value less than 'size'.
-size_t trng_data(uint8_t *data, size_t size);
+size_t trng_data(void *data, size_t size);
 
 // Returns a random 4-byte number from the entropy generator. If there was any
 // entropy generation error then errno will be set to EAGAIN.

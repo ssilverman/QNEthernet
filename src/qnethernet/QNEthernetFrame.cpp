@@ -161,20 +161,17 @@ int EthernetFrameClass::read() {
   return frame_.data[framePos_++];
 }
 
-int EthernetFrameClass::read(uint8_t *const buffer, const size_t len) {
+int EthernetFrameClass::read(void *const buffer, const size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
   const size_t actualLen = std::min(len, frame_.data.size() - framePos_);
   if (buffer != nullptr) {
-    std::copy_n(&frame_.data.data()[framePos_], actualLen, buffer);
+    std::copy_n(&frame_.data.data()[framePos_], actualLen,
+                static_cast<uint8_t *>(buffer));
   }
   framePos_ += actualLen;
   return actualLen;
-}
-
-int EthernetFrameClass::read(char *const buffer, const size_t len) {
-  return read(reinterpret_cast<uint8_t *>(buffer), len);
 }
 
 int EthernetFrameClass::peek() {
@@ -288,7 +285,7 @@ bool EthernetFrameClass::endFrame() {
 }
 
 bool EthernetFrameClass::send(const void *const frame, const size_t len) const {
-  return enet_output_frame(static_cast<const uint8_t *>(frame), len);
+  return enet_output_frame(frame, len);
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {
