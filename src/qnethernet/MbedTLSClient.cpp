@@ -21,7 +21,8 @@ MbedTLSClient::MbedTLSClient()
     : MbedTLSClient(static_cast<Client *>(nullptr), false) {}
 
 MbedTLSClient::MbedTLSClient(Client *const client, const bool isClientEx)
-    : isServer_(false),
+    : lastError_(0),
+      isServer_(false),
       client_(client),
       isClientEx_(isClientEx),
       connTimeout_(0),
@@ -246,6 +247,7 @@ bool MbedTLSClient::watchConnecting() {
 
     default:
       deinit();
+      lastError_ = ret;
       return false;
   }
 }
@@ -291,6 +293,7 @@ bool MbedTLSClient::checkWrite(const int ret) {
 
     default:
       stop();
+      lastError_ = ret;
       return false;
   }
 }
@@ -341,6 +344,7 @@ bool MbedTLSClient::checkRead(const int ret) {
 
     default:
       stop();
+      lastError_ = ret;
       return false;
   }
 }
