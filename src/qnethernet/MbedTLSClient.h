@@ -136,6 +136,11 @@ class MbedTLSClient : public internal::ClientEx {
   uint8_t connected() final;
   explicit operator bool() final;
 
+  // Returns the last error.
+  int lastError() const {
+    return lastError_;
+  }
+
  private:
   // PSK callback function type.
   using pskf = int (*)(void *p_psk, mbedtls_ssl_context *ssl,
@@ -200,6 +205,8 @@ class MbedTLSClient : public internal::ClientEx {
   // Returns whether the TLS client is connected. This doesn't check whether
   // there's data available.
   bool isConnected();
+
+  int lastError_;
 
   bool isServer_;
 
