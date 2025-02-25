@@ -136,7 +136,7 @@ class MbedTLSClient : public internal::ClientEx {
   uint8_t connected() final;
   explicit operator bool() final;
 
-  // Returns the last error.
+  // Returns the last MbedTLS error.
   int lastError() const {
     return lastError_;
   }

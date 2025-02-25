@@ -96,9 +96,13 @@ bool MbedTLSClient::init(const bool server) {
   mbedtls_ssl_init(&ssl_);
   mbedtls_ssl_config_init(&conf_);
 
-  if (mbedtls_ssl_config_defaults(
-          &conf_, !server ? MBEDTLS_SSL_IS_CLIENT : MBEDTLS_SSL_IS_SERVER,
-          MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
+  int ret;
+  lastError_ = 0;
+
+  if ((ret = mbedtls_ssl_config_defaults(
+           &conf_, !server ? MBEDTLS_SSL_IS_CLIENT : MBEDTLS_SSL_IS_SERVER,
+           MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT)) != 0) {
+    lastError_ = ret;
     goto init_error;
   }
 
@@ -131,15 +135,18 @@ bool MbedTLSClient::init(const bool server) {
 
     if (clientCert_ != nullptr && !clientCert_->empty() &&
         clientCert_->hasKey()) {
-      if (mbedtls_ssl_conf_own_cert(&conf_, &clientCert_->cert(),
-                                    &clientCert_->key()) != 0) {
+      if ((ret = mbedtls_ssl_conf_own_cert(&conf_, &clientCert_->cert(),
+                                           &clientCert_->key())) != 0) {
+        lastError_ = ret;
         goto init_error;
       }
     }
   } else {
     for (security::MbedTLSCert *c : serverCerts_) {
       if (!c->empty() && c->hasKey()) {
-        if (mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key()) != 0) {
+        if ((ret = mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key())) !=
+            0) {
+          lastError_ = ret;
           goto init_error;
         }
       }
@@ -149,9 +156,11 @@ bool MbedTLSClient::init(const bool server) {
   // Pre-shared key
   if (!server) {
     if (psk_ != nullptr && !psk_->empty()) {
-      if (mbedtls_ssl_conf_psk(&conf_,
-                               psk_->psk().data(), psk_->psk().size(),
-                               psk_->id().data(), psk_->id().size()) != 0) {
+      if ((ret = mbedtls_ssl_conf_psk(
+               &conf_,
+               psk_->psk().data(), psk_->psk().size(),
+               psk_->id().data(), psk_->id().size())) != 0) {
+        lastError_ = ret;
         goto init_error;
       }
     }
@@ -159,6 +168,7 @@ bool MbedTLSClient::init(const bool server) {
     mbedtls_ssl_conf_psk_cb(&conf_, f_psk_, p_psk_);
   }
 
+  lastError_ = 0;
   state_ = States::kInitialized;
   return true;
 
@@ -264,14 +274,19 @@ bool MbedTLSClient::watchConnecting() {
 }
 
 bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
+  int ret;
+  lastError_ = 0;
+
   // Set up the TLS state
-  if (mbedtls_ssl_setup(&ssl_, &conf_) != 0) {
+  if ((ret = mbedtls_ssl_setup(&ssl_, &conf_)) != 0) {
     stop();
+    lastError_ = ret;
     return false;
   }
   if (!isServer_) {
-    if (mbedtls_ssl_set_hostname(&ssl_, hostname) != 0) {
+    if ((ret = mbedtls_ssl_set_hostname(&ssl_, hostname)) != 0) {
       stop();
+      lastError_ = ret;
       return false;
     }
   }
@@ -449,6 +464,9 @@ int MbedTLSClient::availableForWrite() {
   }
   avail -= expan;
   int payload = mbedtls_ssl_get_max_out_record_payload(&ssl_);
+  if (payload < 0) {
+    lastError_ = payload;
+  }
   if (payload < 0 || avail <= payload) {
     return avail;
   }
@@ -465,7 +483,7 @@ void MbedTLSClient::stop() {
   if (state_ >= States::kConnecting) {
     // TODO: Should we process the return value?
     if (state_ > States::kHandshake) {
-      mbedtls_ssl_close_notify(&ssl_);
+      lastError_ = mbedtls_ssl_close_notify(&ssl_);
       client_->flush();
     }
     client_->stop();  // TODO: Should we stop the underlying Client?
