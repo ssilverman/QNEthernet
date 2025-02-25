@@ -6,6 +6,8 @@
 
 #include "qnethernet/MbedTLSClient.h"
 
+#include <cstdio>
+
 #include "lwip/ip_addr.h"
 #include "qnethernet/security/mbedtls_funcs.h"
 #include "qnethernet/util/PrintUtils.h"
@@ -99,6 +101,15 @@ bool MbedTLSClient::init(const bool server) {
           MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0) {
     goto init_error;
   }
+
+  // Configure debug output
+  mbedtls_ssl_conf_dbg(
+      &conf_,
+      [](void *const ctx, const int level, const char *const file,
+         const int line, const char *const msg) {
+        std::printf("[%d] %s:%d: %s\r\n", level, file, line, msg);
+      },
+      nullptr);
 
   if (!qnethernet_mbedtls_init_entropy(&conf_)) {
     goto init_error;
