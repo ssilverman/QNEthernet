@@ -236,8 +236,6 @@ bool MbedTLSClient::watchConnecting() {
   int ret = mbedtls_ssl_handshake_step(&ssl_);
   switch (ret) {
     case 0:
-      state_ = States::kConnected;
-      return true;
     case MBEDTLS_ERR_SSL_WANT_READ:
     case MBEDTLS_ERR_SSL_WANT_WRITE:
     case MBEDTLS_ERR_SSL_ASYNC_IN_PROGRESS:
