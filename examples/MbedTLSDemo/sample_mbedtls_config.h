@@ -230,7 +230,7 @@
 // #define MBEDTLS_DES_C  /* Default: defined */
 // #define MBEDTLS_DHM_C  /* Default: defined */
 #define MBEDTLS_ECDH_C
-// #define MBEDTLS_ECDSA_C  /* Default: defined */
+#define MBEDTLS_ECDSA_C
 // #define MBEDTLS_ECJPAKE_C  /* Default: defined */
 #define MBEDTLS_ECP_C
 #define MBEDTLS_ENTROPY_C
@@ -265,7 +265,7 @@
 //#define MBEDTLS_PSA_STATIC_KEY_SLOTS
 // #define MBEDTLS_RIPEMD160_C  /* Default: defined */
 #define MBEDTLS_RSA_C
-// #define MBEDTLS_SHA1_C  /* Default: defined */
+#define MBEDTLS_SHA1_C
 // #define MBEDTLS_SHA224_C  /* Default: defined */
 #define MBEDTLS_SHA256_C
 //#define MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT
