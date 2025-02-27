@@ -265,7 +265,7 @@
 //#define MBEDTLS_PSA_STATIC_KEY_SLOTS
 // #define MBEDTLS_RIPEMD160_C  /* Default: defined */
 #define MBEDTLS_RSA_C
-#define MBEDTLS_SHA1_C
+// #define MBEDTLS_SHA1_C  /* Default: defined */
 // #define MBEDTLS_SHA224_C  /* Default: defined */
 #define MBEDTLS_SHA256_C
 //#define MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT
