@@ -37,17 +37,14 @@ bool MbedTLSCert::parse(const void *const buf, const size_t len) {
   return false;
 }
 
-bool MbedTLSCert::parseDER(const void *const buf, const size_t len,
-                           const bool nocopy) {
-  int err;
-  if (nocopy) {
-    err = mbedtls_x509_crt_parse_der_nocopy(
-        &cert_, static_cast<const uint8_t *>(buf), len);
-  } else {
-    err = mbedtls_x509_crt_parse_der(&cert_, static_cast<const uint8_t *>(buf),
-                                     len);
+bool MbedTLSCert::parseDERNoCopy(const void *const buf, const size_t len) {
+  int err = mbedtls_x509_crt_parse_der_nocopy(
+      &cert_, static_cast<const uint8_t *>(buf), len);
+  if (err == 0) {
+    hasCerts_ = true;
+    return true;
   }
-  hasCerts_ = true;
+  return false;
 }
 
 bool MbedTLSCert::parseKey(const void *const buf, const size_t len,
