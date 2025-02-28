@@ -37,10 +37,11 @@ class MbedTLSCert {
   // This does nothing and returns false if the buffer is NULL.
   bool parse(const void *buf, size_t len);
 
-  // Parses one DER-encoded certificate and adds it to the chain. The 'nocopy'
-  // parameter determines whether to use mbedtls_x509_crt_parse_der_nocopy()
-  // or mbedtls_x509_crt_parse_der_nocopy().
-  bool parseDER(const void *buf, size_t len, bool nocopy = false);
+  // Parses one DER-encoded certificate and adds it to the chain. This calls
+  // mbedtls_x509_crt_parse_der_nocopy() under the hood.
+  //
+  // The buffer pointer is held internally until the cert is destroyed.
+  bool parseDERNoCopy(const void *buf, size_t len);
 
   // Parses a key. If the key is PEM-encoded, then it must be NUL-terminated and
   // the NUL terminator must be included in the count. The password may be NULL.
