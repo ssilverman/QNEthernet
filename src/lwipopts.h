@@ -105,7 +105,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // ARP options
 #ifndef LWIP_ARP
-#define LWIP_ARP                      LWIP_IPV4  /* 1 */
+#define LWIP_ARP                      (LWIP_IPV4)  /* 1 */
 #endif  // LWIP_ARP
 // #define ARP_TABLE_SIZE                10
 // #define ARP_MAXAGE                    300
@@ -135,7 +135,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // ICMP options
 #ifndef LWIP_ICMP
-#define LWIP_ICMP           LWIP_IPV4  /* 1 */
+#define LWIP_ICMP           (LWIP_IPV4)  /* 1 */
 #endif  // LWIP_ICMP
 // #define ICMP_TTL            IP_DEFAULT_TTL
 // #define LWIP_BROADCAST_PING 0
@@ -147,7 +147,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // DHCP options
 #ifndef LWIP_DHCP
-#define LWIP_DHCP                       (LWIP_IPV4 && LWIP_UDP)  /* 0 */
+#define LWIP_DHCP                       ((LWIP_IPV4) && (LWIP_UDP))  /* 0 */
 #endif  // !LWIP_DHCP
 #ifndef LWIP_DHCP_DOES_ACD_CHECK
 #define LWIP_DHCP_DOES_ACD_CHECK        0  /* LWIP_DHCP */
@@ -162,9 +162,9 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 #if !defined(LWIP_MDNS_RESPONDER) || LWIP_MDNS_RESPONDER
 // Add both for mDNS:
 #ifndef LWIP_AUTOIP
-#define LWIP_AUTOIP                 LWIP_IPV4  /* 0 */
+#define LWIP_AUTOIP                 (LWIP_IPV4)  /* 0 */
 #endif  // LWIP_AUTOIP
-#define LWIP_DHCP_AUTOIP_COOP       (LWIP_DHCP && LWIP_AUTOIP)  /* 0 */
+#define LWIP_DHCP_AUTOIP_COOP       ((LWIP_DHCP) && (LWIP_AUTOIP))  /* 0 */
 #else
 // #define LWIP_AUTOIP                 0
 // #define LWIP_DHCP_AUTOIP_COOP       0
@@ -188,7 +188,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // DNS options
 #ifndef LWIP_DNS
-#define LWIP_DNS                                LWIP_UDP  /* 0 */
+#define LWIP_DNS                                (LWIP_UDP)  /* 0 */
 #endif  // !LWIP_DNS
 // #define DNS_TABLE_SIZE                          4
 // #define DNS_MAX_NAME_LENGTH                     256
@@ -209,7 +209,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // UDP options
 #ifndef LWIP_UDP
-#define LWIP_UDP             (LWIP_IPV4 || LWIP_IPV6)  /* 1 */
+#define LWIP_UDP             ((LWIP_IPV4) || (LWIP_IPV6))  /* 1 */
 #endif  // !LWIP_UDP
 // #define LWIP_UDPLITE         0
 // #define UDP_TTL              IP_DEFAULT_TTL
@@ -218,7 +218,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // TCP options
 
 #ifndef LWIP_TCP
-#define LWIP_TCP                   (LWIP_IPV4 || LWIP_IPV6)  /* 1 */
+#define LWIP_TCP                   ((LWIP_IPV4) || (LWIP_IPV6))  /* 1 */
 #endif  // !LWIP_TCP
 // #define TCP_TTL                    IP_DEFAULT_TTL
 // #define TCP_MAXRTX                 12
@@ -547,7 +547,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // MDNS options (mdns_opts.h)
 #ifndef LWIP_MDNS_RESPONDER
-#define LWIP_MDNS_RESPONDER LWIP_UDP && LWIP_IGMP  /* 0 */
+#define LWIP_MDNS_RESPONDER (LWIP_UDP) && (LWIP_IGMP)  /* 0 */
 // If you change LWIP_MDNS_RESPONDER to zero here then:
 // 1. Reduce MEMP_NUM_SYS_TIMEOUT by 8
 // 2. Change LWIP_AUTOIP and LWIP_DHCP_AUTOIP_COOP to 0
