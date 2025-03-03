@@ -149,7 +149,9 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 #ifndef LWIP_DHCP
 #define LWIP_DHCP                       (LWIP_IPV4 && LWIP_UDP)  /* 0 */
 #endif  // !LWIP_DHCP
+#ifndef LWIP_DHCP_DOES_ACD_CHECK
 #define LWIP_DHCP_DOES_ACD_CHECK        0  /* LWIP_DHCP */
+#endif  // !LWIP_DHCP_DOES_ACD_CHECK
 // #define LWIP_DHCP_BOOTP_FILE            0
 // #define LWIP_DHCP_GET_NTP_SRV           0
 // #define LWIP_DHCP_MAX_NTP_SERVERS       1
