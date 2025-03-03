@@ -11,7 +11,7 @@ and this project adheres to
 ### Added
 * Added `qnethernet_hal_micros()`.
 * Added secure TCP initial seqence numbers (ISNs), enabled with the new
-  `QNETHERNET_ENABLE_SECURE_TCP_ISN` macro.
+  `QNETHERNET_ENABLE_SECURE_TCP_ISN` macro. The default is enabled.
 
 ### Changed
 * Changed some functions to take a `void*` instead of a `uint8_t*`.
