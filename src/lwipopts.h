@@ -226,7 +226,7 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define TCP_QUEUE_OOSEQ            LWIP_TCP
 // #define LWIP_TCP_SACK_OUT          0
 // #define LWIP_TCP_MAX_SACK_NUM      4
-#define TCP_MSS                    1460  /* 536 */
+#define TCP_MSS                    ((MTU) - 40)  /* 536 */
 // #define TCP_CALCULATE_EFF_SEND_MSS 1
 // #define LWIP_TCP_RTO_TIME          3000
 #define TCP_SND_BUF                (4 * TCP_MSS)  /* (2 * TCP_MSS) */

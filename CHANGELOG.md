@@ -15,6 +15,8 @@ and this project adheres to
 
 ### Changed
 * Changed some functions to take a `void*` instead of a `uint8_t*`.
+* Changed definition of `TCP_MSS` to be based on `MTU` instead of being
+  a constant.
 
 ### Fixed
 * Restored automatic entropy initialization when including
