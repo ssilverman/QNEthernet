@@ -99,7 +99,7 @@ static void maybeCopyRemaining(ConnectionHolder *const holder) {
   holder->remainingPos = 0;
 
   if (isAvailable(state)) {
-    v.insert(v.end(), state->buf.cbegin() + state->bufPos, state->buf.cend());
+    v.insert(v.cend(), state->buf.cbegin() + state->bufPos, state->buf.cend());
   }
 }
 
@@ -149,7 +149,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
         // Copy pbuf contents
         while (pNext != nullptr) {
           uint8_t *data = static_cast<uint8_t *>(pNext->payload);
-          holder->remaining.insert(holder->remaining.end(), &data[0],
+          holder->remaining.insert(holder->remaining.cend(), &data[0],
                                    &data[pNext->len]);
           pNext = pNext->next;
         }
@@ -193,7 +193,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
     if (v.capacity() - v.size() < p->tot_len) {
       const size_t n = v.size() - state->bufPos;
       if (n > 0) {
-        std::copy_n(v.begin() + state->bufPos, n, v.begin());
+        std::copy_n(v.cbegin() + state->bufPos, n, v.begin());
         v.resize(n);
       } else {
         v.clear();
@@ -204,7 +204,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
     // Copy all the data from the pbuf
     while (pNext != nullptr) {
       uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
-      v.insert(v.end(), &data[0], &data[pNext->len]);
+      v.insert(v.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
   }
@@ -255,8 +255,9 @@ void ConnectionManager::addConnection(
     LWIP_UNUSED_ARG(state);
 
     // Remove the connection from the list
-    const auto it = std::find(connections_.begin(), connections_.end(), holder);
-    if (it != connections_.end()) {
+    const auto it =
+        std::find(connections_.cbegin(), connections_.cend(), holder);
+    if (it != connections_.cend()) {
       connections_.erase(it);
     }
   };
@@ -374,18 +375,18 @@ static uint16_t getLocalPort(altcp_pcb *pcb) {
 
 bool ConnectionManager::isListening(const uint16_t port) const {
   const auto it = std::find_if(
-      listeners_.begin(), listeners_.end(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
-  return (it != listeners_.end());
+  return (it != listeners_.cend());
 }
 
 bool ConnectionManager::stopListening(const uint16_t port) {
   const auto it = std::find_if(
-      listeners_.begin(), listeners_.end(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
-  if (it == listeners_.end()) {
+  if (it == listeners_.cend()) {
     return false;
   }
   altcp_pcb *const pcb = *it;
@@ -399,11 +400,11 @@ bool ConnectionManager::stopListening(const uint16_t port) {
 std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
     const uint16_t port) const {
   const auto it = std::find_if(
-      connections_.begin(), connections_.end(), [port](const auto &elem) {
+      connections_.cbegin(), connections_.cend(), [port](const auto &elem) {
         const auto &state = elem->state;
         return (state != nullptr) && (getLocalPort(state->pcb) == port);
       });
-  if (it != connections_.end()) {
+  if (it != connections_.cend()) {
     return *it;
   }
   return nullptr;
@@ -413,13 +414,13 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
 std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
     const uint16_t port) const {
   const auto it = std::find_if(
-      connections_.begin(), connections_.end(), [port](const auto &elem) {
+      connections_.cbegin(), connections_.cend(), [port](const auto &elem) {
         const auto &state = elem->state;
         return (state != nullptr) &&
                (getLocalPort(state->pcb) == port) &&
                isAvailable(state);
       });
-  if (it != connections_.end()) {
+  if (it != connections_.cend()) {
     return *it;
   }
   return nullptr;
@@ -427,8 +428,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::findAvailable(
 
 bool ConnectionManager::remove(
     const std::shared_ptr<ConnectionHolder> &holder) {
-  const auto it = std::find(connections_.begin(), connections_.end(), holder);
-  if (it != connections_.end()) {
+  const auto it = std::find(connections_.cbegin(), connections_.cend(), holder);
+  if (it != connections_.cend()) {
     const auto &state = (*it)->state;
     if (state != nullptr) {
       state->removeFunc = nullptr;
@@ -440,7 +441,7 @@ bool ConnectionManager::remove(
 }
 
 size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
-  std::for_each(connections_.begin(), connections_.end(),
+  std::for_each(connections_.cbegin(), connections_.cend(),
                 [port, b](const auto &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
@@ -464,7 +465,7 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
-  std::for_each(connections_.begin(), connections_.end(),
+  std::for_each(connections_.cbegin(), connections_.cend(),
                 [port, b, size16](const auto &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
@@ -487,7 +488,7 @@ size_t ConnectionManager::write(const uint16_t port,
 }
 
 void ConnectionManager::flush(const uint16_t port) {
-  std::for_each(connections_.begin(), connections_.end(),
+  std::for_each(connections_.cbegin(), connections_.cend(),
                 [port](const auto &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {
@@ -502,7 +503,7 @@ void ConnectionManager::flush(const uint16_t port) {
 int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
-  std::for_each(connections_.begin(), connections_.end(),
+  std::for_each(connections_.cbegin(), connections_.cend(),
                 [port, &min, &found](const auto &elem) {
                   const auto &state = elem->state;
                   if (state == nullptr || getLocalPort(state->pcb) != port) {

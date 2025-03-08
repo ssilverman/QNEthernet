@@ -58,7 +58,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *const p,
   // TODO: Limit vector size
   while (pNext != nullptr) {
     uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
-    frame.data.insert(frame.data.end(), &data[0], &data[pNext->len]);
+    frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
     pNext = pNext->next;
   }
   frame.receivedTimestamp = timestamp;
