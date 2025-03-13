@@ -30,7 +30,11 @@ struct ConnectionState final {
         bufPos(0),
         removeFunc{} {
     altcp_arg(tpcb, arg);
+#if LWIP_WND_SCALE
+    buf.reserve(TCP_WND >> TCP_RCV_SCALE);
+#else
     buf.reserve(TCP_WND);
+#endif  // LWIP_WND_SCALE
   }
 
   // Sets the callback arg to nullptr and then calls the 'remove' function. The
