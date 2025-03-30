@@ -35,6 +35,9 @@
 #elif defined(ARDUINO_TEENSY41)
 #include "qnethernet/drivers/driver_teensy41.h"
 #define QNETHERNET_INTERNAL_DRIVER_TEENSY41
+#elif defined(ARDUINO_TEENSY_MICROMOD)
+#include "qnethernet/drivers/driver_teensymm.h"
+#define QNETHERNET_INTERNAL_DRIVER_TEENSYMM
 #else
 #include "qnethernet/drivers/driver_unsupported.h"
 #define QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
