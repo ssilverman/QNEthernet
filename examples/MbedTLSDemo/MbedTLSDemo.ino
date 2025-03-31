@@ -5,7 +5,7 @@
 //
 // Prerequisites:
 // 1. Install the latest 3.6.x version of Mbed TLS. As of this
-//    writing, the current version is 3.6.2. In order to use this
+//    writing, the current version is 3.6.3. In order to use this
 //    example program in the Arduino IDE, Mbed TLS needs to be
 //    installed as a library. Please see the README for more
 //    information.
