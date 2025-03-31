@@ -15,7 +15,7 @@
 //
 // This file is part of the QNEthernet library.
 
-#include <cstring>
+#include <cstdio>
 
 #include <QNEthernet.h>
 #include <mbedtls.h>  // Must be included before referencing other mbedtls headers
