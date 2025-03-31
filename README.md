@@ -1545,13 +1545,10 @@ of how to use this feature:
 #### Installing the Mbed TLS library
 
 Currently, there doesn't seem to be an Arduino-friendly version of this library.
-So, first download or clone a snapshot of the latest 2.x.x version (current as
-of this writing is 2.28.9):
-[https://github.com/Mbed-TLS/mbedtls](http://github.com/Mbed-TLS/mbedtls)
+So, first download or clone a snapshot of the latest 3.6.x version (current as
+of this writing is 3.6.3): http://github.com/Mbed-TLS/mbedtls
 
-See the `v2.28.9` or `mbedtls-2.28.9` tags for the 2.28.9 version, or the
-`mbedtls-2.28` branch for the latest 2.28.x version. The `development` and
-`master` branches currently point to version 3.6.x.
+See the `v3.6.3` or `mbedtls-3.6.3` tags for the 3.6.3 version.
 
 ##### Mbed TLS library install for Arduino IDE
 
@@ -1570,7 +1567,7 @@ Next, create an empty _mbedtls.h_ file inside _"Libraries"/mbedtls/src/_.
 Next, create a _library.properties_ file inside _"Libraries"/mbedtls/_:
 ```properties
 name=Mbed TLS
-version=2.28.9
+version=3.6.3
 sentence=Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols.
 paragraph=Its small code footprint makes it suitable for embedded systems.
 category=Communication
@@ -1580,16 +1577,17 @@ includes=mbedtls.h
 (Ref:
 [Library specification](https://arduino.github.io/arduino-cli/latest/library-specification/))
 
-Last, modify the _mbedtls/src/mbedtls/config.h_ file by replacing it with the
-contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that Mbed TLS
-uses a slightly different configuration mechanism than lwIP: it uses macro
-presence rather than macro values.
+Last, modify the _mbedtls/src/mbedtls/mbedtls_config.h_ file by replacing it
+with the contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that
+Mbed TLS uses a slightly different configuration mechanism than lwIP: it uses
+macro presence rather than macro values.
 
 For posterity, the following changes are the minimum possible set just to be
 able to get the library to compile:
 1. Define:
    1. `MBEDTLS_NO_PLATFORM_ENTROPY`
-   2. `MBEDTLS_ENTROPY_HARDWARE_ALT` &mdash; Requires `mbedtls_hardware_poll()`
+   2. `MBEDTLS_PLATFORM_MS_TIME_ALT`
+   3. `MBEDTLS_ENTROPY_HARDWARE_ALT` &mdash; Requires `mbedtls_hardware_poll()`
       function implementation
 2. Undefine:
    1. `MBEDTLS_NET_C`
@@ -1615,7 +1613,7 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
 ```json
 {
   "name": "Mbed TLS",
-  "version": "2.28.9",
+  "version": "3.6.3",
   "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
   "keywords": [
     "tls",
