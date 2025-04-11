@@ -21,10 +21,21 @@ void setup() {
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
     if (state) {
-      printf("[Ethernet] Link ON: %d Mbps, %s duplex, %s crossover\r\n",
-             Ethernet.linkSpeed(),
-             Ethernet.linkIsFullDuplex() ? "full" : "half",
-             Ethernet.linkIsCrossover() ? "is" : "not");
+      printf("[Ethernet] Link ON");
+
+      // We can use driver capabilities to determine what to print
+      const auto &dc = Ethernet.driverCapabilities();
+      if (dc.isLinkSpeedDetectable) {
+        printf(", %d Mbps", Ethernet.linkSpeed());
+      }
+      if (dc.isLinkFullDuplexDetectable) {
+        printf(", %s duplex", Ethernet.linkIsFullDuplex() ? "full" : "half");
+      }
+      if (dc.isLinkCrossoverDetectable) {
+        printf(", %s crossover", Ethernet.linkIsCrossover() ? "is" : "not");
+      }
+
+      printf("\r\n");
     } else {
       printf("[Ethernet] Link OFF\r\n");
     }

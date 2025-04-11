@@ -17,6 +17,7 @@ and this project adheres to
 * Changed some functions to take a `void*` instead of a `uint8_t*`.
 * Changed definition of `TCP_MSS` to be based on `MTU` instead of being
   a constant.
+* Updated _LinkWatcher_ example to only print detectable details.
 
 ### Fixed
 * Restored automatic entropy initialization when including
