@@ -512,6 +512,9 @@ FLASHMEM static void init_phy(void) {
     return;
   }
 
+  // Ensure the device is out of reset
+  delay(1);
+
   enable_enet_clocks();
 
   configure_phy_pins();
