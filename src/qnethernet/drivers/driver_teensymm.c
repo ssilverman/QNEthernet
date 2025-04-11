@@ -44,15 +44,28 @@
     | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     /* ODE_0_Open_Drain_Disabled */                        \
     | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
     /* SRE_0_Slow_Slew_Rate */                             \
     )
-    // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
-    // 0xF028
+    // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
+    // 0xF038
+
+#define STRAP_PAD_PULLDOWN (0                              \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */  \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
+    /* SRE_0_Slow_Slew_Rate */                             \
+    )
+    // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
+    // 0x3038
 
 #define MDIO_PAD_PULLUP (0                                 \
     /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */     \
+    | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */    \
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
     | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     | IOMUXC_PAD_ODE       /* ODE_1_Open_Drain_Enabled */  \
@@ -60,8 +73,8 @@
     | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
     | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
     )
-    // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
-    // 0xF829
+    // HYS:0 PUS:10 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
+    // 0xB829
     // Reference schematic suggests 1.5kohms, but this is what we got. It has
     // some internal resistor. Hopefully these cover what we need.
 
@@ -116,18 +129,8 @@
     // SION:0 MUX_MODE:1000
     // ALT8
 
-#define RMII_PAD_NOPULL (0                                \
-    /* HYS_0_Hysteresis_Disabled */                       \
-    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */ \
-    /* PUE_0_Keeper  */                                   \
-    /* PKE_0_Pull_Keeper_Disabled  */                     \
-    /* ODE_0_Open_Drain_Disabled */                       \
-    | IOMUXC_PAD_SPEED(2)  /* SPEED_2_fast_150MHz */      \
-    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */               \
-    /* SRE_0_Slow_Slew_Rate */                            \
-    )
-    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:10 DSE:110 00 SRE:0
-    // 0xB0E9
+#define MDC_PIN  33
+#define MDIO_PIN 35
 
 #define RX_SIZE 10
 #define TX_SIZE 10
@@ -293,69 +296,103 @@ static void enet_isr(void);
 
 #define PHY_BSR_LINK_STATUS (1 << 2)  /* 0: No link, 1: Valid link */
 
-// Reads a PHY register (using MDIO & MDC signals) and returns whether
-// continuation is needed (not complete). If continuation is needed, then this
-// should be called again with 'cont' set to true. If this is the first call,
-// then 'cont' should be set to false.
-static bool mdio_read_nonblocking(const uint16_t regaddr,
-                                  uint16_t data[static 1],
-                                  const bool cont) {
-  if (!cont) {
-    ENET2_EIR = ENET_EIR_MII;  // Clear status
+#define WRITE_MDIO_BIT(n)                              \
+  digitalWriteFast(MDC_PIN, LOW);                      \
+  digitalWriteFast(MDIO_PIN, ((n) == 0) ? LOW : HIGH); \
+  delayNanoseconds(200);                               \
+  digitalWriteFast(MDC_PIN, HIGH);                     \
+  delayNanoseconds(200)
 
-    ENET2_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
-                 ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
-  }
-
-  if ((ENET2_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
-    return true;
-  }
-
-  *data = ENET_MMFR_DATA(ENET2_MMFR);
-  ENET2_EIR = ENET_EIR_MII;
-  // printf("mdio read (%04xh): %04xh\r\n", regaddr, data);
-  return false;
-}
+#define READ_MDIO_BIT(r)                                        \
+  digitalWriteFast(MDC_PIN, LOW);                               \
+  delayNanoseconds(200);                                        \
+  r = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0); \
+  digitalWriteFast(MDC_PIN, HIGH);                              \
+  delayNanoseconds(200)
 
 // Blocking MDIO read.
 uint16_t mdio_read(const uint16_t regaddr) {
-  uint16_t data;
-  bool doCont = false;
-  do {
-    doCont = mdio_read_nonblocking(regaddr, &data, doCont);
-  } while (doCont);
-  return data;
-}
-
-// Writes a PHY register (using MDIO & MDC signals) and returns whether
-// continuation is needed (not complete). If continuation is needed, then this
-// should be called again with 'cont' set to true. If this is the first call,
-// then 'cont' should be set to false.
-static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
-                                   const bool cont) {
-  if (!cont) {
-    ENET2_EIR = ENET_EIR_MII;  // Clear status
-
-    ENET2_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
-                 ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2) |
-                 ENET_MMFR_DATA(data);
+  // 32 1's
+  for (int i = 0; i < 32; i++) {
+    WRITE_MDIO_BIT(1);
   }
 
-  if ((ENET2_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
-    return true;
+  // Start of Frame (0 1)
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(1);
+
+  // Read opcode (1 0)
+  WRITE_MDIO_BIT(1);
+  WRITE_MDIO_BIT(0);
+
+  // PHY Address (0 0 0 0 0)
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+
+  // Register Address
+  for (int i = 5; i-- > 0; ){
+    WRITE_MDIO_BIT((regaddr >> i) & 0x01);
   }
 
-  ENET2_EIR = ENET_EIR_MII;
-  // printhex("mdio write (%04xh): %04xh\r\n", regaddr, data);
-  return false;
+  // Turnaround (Z 0)
+  digitalWriteFast(MDC_PIN, LOW);
+  delayNanoseconds(200);
+  digitalWriteFast(MDC_PIN, HIGH);
+  delayNanoseconds(200);
+  WRITE_MDIO_BIT(0);
+
+  // Data
+  pinMode(MDIO_PIN, INPUT_PULLUP);
+  uint16_t r = 0;
+  for (int i = 0; i < 16; i++) {
+    READ_MDIO_BIT(r);
+  }
+  pinMode(MDIO_PIN, OUTPUT);
+
+  digitalWriteFast(MDC_PIN, LOW);
+  return r;
 }
 
 // Blocking MDIO write.
 void mdio_write(const uint16_t regaddr, const uint16_t data) {
-  bool doCont = false;
-  do {
-    doCont = mdio_write_nonblocking(regaddr, data, doCont);
-  } while (doCont);
+  // 32 1's
+  for (int i = 0; i < 32; i++) {
+    WRITE_MDIO_BIT(1);
+  }
+
+  // Start of Frame (0 1)
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(1);
+
+  // Read opcode (0 1)
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(1);
+
+  // PHY Address (0 0 0 0 0)
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+  WRITE_MDIO_BIT(0);
+
+  // Register Address
+  for (int i = 5; i-- > 0; ){
+    WRITE_MDIO_BIT((regaddr >> i) & 0x01);
+  }
+
+  // Turnaround (1 0)
+  WRITE_MDIO_BIT(1);
+  WRITE_MDIO_BIT(0);
+
+  // Data
+  for (int i = 16; i-- > 0; ) {
+    WRITE_MDIO_BIT((data >> i) & 0x01);
+  }
+
+  digitalWriteFast(MDC_PIN, LOW);
 }
 
 // --------------------------------------------------------------------------
@@ -391,8 +428,8 @@ FLASHMEM static void enable_enet_clocks(void) {
 
   // Configure REFCLK to be driven as output by PLL6 (page 325)
   CLRSET(IOMUXC_GPR_GPR1,
-         IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET2_CLK_SEL,
-         IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR);
+         IOMUXC_GPR_GPR1_ENET2_CLK_SEL,
+         IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR);
 }
 
 // Disables everything enabled with enable_enet_clocks().
@@ -415,38 +452,37 @@ FLASHMEM static void disable_enet_clocks(void) {
 
 // Configures all the pins necessary for communicating with the PHY.
 FLASHMEM static void configure_phy_pins(void) {
-  // Configure strap pins
-  // Note: The pulls may not be strong enough
-  // Note: All the strap pins have internal resistors
-  // 3.7.1 PHYAD[0]: PHY Address Configuration (page 26)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00 = RMII_PAD_PULLDOWN;  // PHYAD0 = 0 (RXER, pin 10) (page 716)
-  // 3.7.2 MODE[2:0]: Mode Configuration (all capabilities) (page 27)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = STRAP_PAD_PULLUP;  // RXD0/MODE0 pin 8 (page 749)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = STRAP_PAD_PULLUP;  // RXD1/MODE1 pin 7 (page 751)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = STRAP_PAD_PULLUP;  // CRS_DV/MODE2 pin 11 (page 753)
+  // // Configure strap pins
+  // // Note: The pulls may not be strong enough
+  // // Note: All the strap pins have internal resistors
+  // // 3.7.1 PHYAD[0]: PHY Address Configuration (page 26)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00 = STRAP_PAD_PULLDOWN;   // PHYAD0 = 0 (RXER, pin 10) (page 716)
+  // // 3.7.2 MODE[2:0]: Mode Configuration (all capabilities) (page 27)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = STRAP_PAD_PULLUP;  // RXD0/MODE0 pin 8 (page 749)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = STRAP_PAD_PULLUP;  // RXD1/MODE1 pin 7 (page 751)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = STRAP_PAD_PULLUP;  // CRS_DV/MODE2 pin 11 (page 753)
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD_PULLUP;  // MDIO
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;  // MDC
+  pinMode(MDC_PIN, OUTPUT);
+  pinMode(MDIO_PIN, OUTPUT);
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_07   = MDIO_PAD_PULLUP;  // MDIO, Teensy pin 33
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_02 = RMII_PAD_PULLUP;  // MDC, Teensy pin 35
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_01 = MDIO_MUX;  // MDIO pin 12 (ENET2_MDIO of enet, page 505), Teensy pin 12
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_00 = MDIO_MUX;  // MDC pin 13 (ENET2_MDC of enet, page 504), Teensy pin 10
-
-  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0 (page 791)
-      // DAISY:10
+  // IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_07   = MDIO_MUX;  // MDIO pin 12 (ENET2_MDIO of enet, page 505), Teensy pin 33
+  // IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_02 = MDIO_MUX;  // MDC pin 13 (ENET2_MDC of enet, page 504), Teensy pin 35
 }
 
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
 FLASHMEM static void configure_rmii_pins(void) {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = RMII_PAD_PULLUP;  // Reset this (RXD0)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = RMII_PAD_PULLUP;  // Reset this (RXD1)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = RMII_PAD_PULLUP;  // Reset this (RXEN)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00 = RMII_PAD_PULLUP;     // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_PULLUP;  // TXD0 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_PULLUP;  // TXD1 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_PULLUP;  // TXEN (PHY has internal pull-down)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = RMII_PAD_PULLUP;  // Reset this (RXD0)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = RMII_PAD_PULLUP;  // Reset this (RXD1)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = RMII_PAD_PULLUP;  // Reset this (CRS_DV)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00    = RMII_PAD_PULLUP;  // Reset this (RXER)
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07    = RMII_PAD_PULLUP;  // TXD0
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08    = RMII_PAD_PULLUP;  // TXD1
+  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09    = RMII_PAD_PULLUP;  // TXEN (PHY has internal pull-down)
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_03 = RMII_MUX;  // RXD0 pin 8 (ENET2_RDATA00 of enet, page 539), Teensy pin 34
   IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_04 = RMII_MUX;  // RXD1 pin 7 (ENET2_RDATA01 of enet, page 540), Teensy pin 38
@@ -459,7 +495,7 @@ FLASHMEM static void configure_rmii_pins(void) {
   IOMUXC_ENET2_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_SD_B0_01_ALT9 (page 914)
       // DAISY:1
 
-  IOMUXC_ENET2_IPP_IND_MAC0_MDIO_SELECT_INPUT     = 1;  // GPIO_B0_01_ALT8 (page 915)
+  // IOMUXC_ENET2_IPP_IND_MAC0_MDIO_SELECT_INPUT     = 1;  // GPIO_B0_01_ALT8 (page 915)
   IOMUXC_ENET2_IPP_IND_MAC0_RXDATA_SELECT_INPUT_0 = 1;  // GPIO_SD_B0_03_ALT8 (page 916)
   IOMUXC_ENET2_IPP_IND_MAC0_RXDATA_SELECT_INPUT_1 = 1;  // GPIO_SD_B0_04_ALT8 (page 916)
   IOMUXC_ENET2_IPP_IND_MAC0_RXEN_SELECT_INPUT     = 1;  // GPIO_SD_B0_05_ALT8 (page 917)
@@ -486,8 +522,13 @@ FLASHMEM static void init_phy(void) {
   ENET2_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
   // Check for PHY presence
-  if ((mdio_read(PHY_PHYID1) != 0x0007) ||
-      ((mdio_read(PHY_PHYID2) & 0xfff0) != 0xC0F0)) {
+  // PHYID1: PHY ID Number: OUI bits 18-3: 0x0007
+  // PHYID2: PHY ID Number: OUI bits 24-19: 110000b
+  //         Model Number:                  001111b
+  //         Revision Number: 4 bits
+  uint16_t id1 = mdio_read(PHY_PHYID1);
+  uint16_t id2 = mdio_read(PHY_PHYID2);
+  if ((id1 != 0x0007) || ((id2 & 0xfff0) != 0xC0F0)) {
     disable_enet_clocks();
 
     s_initState = kInitStateNoHardware;
@@ -495,9 +536,8 @@ FLASHMEM static void init_phy(void) {
   }
 
   // Configure the PHY registers
-  // The strap pull-ups may not have been strong enough, so ensure those values
-  // are set properly too
-  // Right now, it's just the 50MHz clock select for RMII slave mode
+  // The strap pulls may not have been strong enough, or they can't be set, so
+  // ensure those values are set properly too
 
   // mdio_write(PHY_BCR, 0x3100);   // 13: Speed_Select: 1=100Mbps
   //                                // 12: Auto-Negotiation Enable: 1=enabled
@@ -648,9 +688,7 @@ static inline int check_link_status(struct netif *const netif,
     case 0:
       // Fallthrough
     case 1:
-      if (mdio_read_nonblocking(PHY_BSR, &bsr, state == 1)) {
-        return 1;
-      }
+      bsr = mdio_read(PHY_BSR);
       is_link_up = ((bsr & PHY_BSR_LINK_STATUS) != 0);
       if (!is_link_up) {
         break;
@@ -658,9 +696,7 @@ static inline int check_link_status(struct netif *const netif,
       // Fallthrough
 
     case 2:
-      if (mdio_read_nonblocking(PHY_PHYSCSR, &physcsr, state == 2)) {
-        return 2;
-      }
+      physcsr = mdio_read(PHY_PHYSCSR);
       break;
 
     default:
