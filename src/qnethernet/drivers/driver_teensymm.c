@@ -306,8 +306,8 @@ static void enet_isr(void);
 #define READ_MDIO_BIT(r)                                        \
   digitalWriteFast(MDC_PIN, LOW);                               \
   delayNanoseconds(200);                                        \
-  r = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0); \
   digitalWriteFast(MDC_PIN, HIGH);                              \
+  r = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0); \
   delayNanoseconds(200)
 
 // Blocking MDIO read.
