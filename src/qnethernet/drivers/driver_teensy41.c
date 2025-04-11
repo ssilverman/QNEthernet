@@ -59,11 +59,24 @@
     | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
     /* ODE_0_Open_Drain_Disabled */                        \
     | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
     /* SRE_0_Slow_Slew_Rate */                             \
     )
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
+
+#define STRAP_PAD_PULLDOWN (0                              \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */  \
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
+    /* SRE_0_Slow_Slew_Rate */                             \
+    )
+    // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
+    // 0x3038
 
 #define MDIO_PAD_PULLUP (0                                 \
     /* HYS_0_Hysteresis_Disabled */                        \
@@ -80,6 +93,7 @@
     // PHY docs suggest up to 2.2kohms, but this is what we got. It has an
     // internal 10k. It should cover what we need, including 20% error.
     // MDIO requires a 1.5k to 10k pull-up.
+    // TODO: Why does the Teensy 4.1 board not have an MDIO pull-up?
 
 #define MDIO_MUX 0
     // SION:0 MUX_MODE:0000
@@ -300,15 +314,17 @@ static void enet_isr(void);
 // --------------------------------------------------------------------------
 
 // PHY register definitions
-#define PHY_REGCR  0x0D
-#define PHY_ADDAR  0x0E
-#define PHY_LEDCR  0x18
-#define PHY_RCSR   0x17
-#define PHY_BMSR   0x01
-#define PHY_PHYSTS 0x10
-#define PHY_BMCR   0x00
-#define PHY_ANAR   0x04
-#define PHY_PHYCR  0x19
+#define PHY_REGCR   0x0D
+#define PHY_ADDAR   0x0E
+#define PHY_LEDCR   0x18
+#define PHY_RCSR    0x17
+#define PHY_BMSR    0x01
+#define PHY_PHYSTS  0x10
+#define PHY_BMCR    0x00
+#define PHY_ANAR    0x04
+#define PHY_PHYCR   0x19
+#define PHY_PHYIDR1 0x02
+#define PHY_PHYIDR2 0x03
 
 #define PHY_LEDCR_BLINK_RATE_20Hz (0 << 9)
 #define PHY_LEDCR_BLINK_RATE_10Hz (1 << 9)
@@ -432,8 +448,8 @@ FLASHMEM static void enable_enet_clocks(void) {
 
   // Configure REFCLK to be driven as output by PLL6 (page 325)
   CLRSET(IOMUXC_GPR_GPR1,
-         IOMUXC_GPR_GPR1_ENET1_CLK_SEL | IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN,
-         IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
+         IOMUXC_GPR_GPR1_ENET1_CLK_SEL,
+         IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
 }
 
 // Disables everything enabled with enable_enet_clocks().
@@ -459,13 +475,13 @@ FLASHMEM static void configure_phy_pins(void) {
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
   // Table 8. PHY Address Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = STRAP_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = STRAP_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
   // Table 9. RMII MAC Mode Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = STRAP_PAD_PULLUP;   // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = STRAP_PAD_PULLUP;    // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
   // Not connected: 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
   // Table 10. Auto_Neg Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = STRAP_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
   // Not connected to a processor pin: LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
   // Configure PHY-connected Reset and Power pins as outputs
@@ -551,8 +567,13 @@ FLASHMEM static void init_phy(void) {
   // LED shows link status, active high, 10Hz
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
+  // PHYIDR1: OUI bits 21-6: 0x2000
+  // PHYIDR2: OUI bits 5-0:  0x28: 101000b
+  //         Model Number:   0x14: 010100b
+  //         Revision Number: 4 bits
   // Check for PHY presence
-  if (mdio_read(PHY_LEDCR) != PHY_LEDCR_VALUE) {
+  if ((mdio_read(PHY_PHYIDR1) != 0x2000) ||
+      ((mdio_read(PHY_PHYIDR2) & 0xfff0) != 0xA140)) {
     // Undo some pin configuration, for posterity
     GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
 
