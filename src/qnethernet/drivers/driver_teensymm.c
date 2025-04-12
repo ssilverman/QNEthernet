@@ -452,6 +452,16 @@ FLASHMEM static void disable_enet_clocks(void) {
 
 // Configures all the pins necessary for communicating with the PHY.
 FLASHMEM static void configure_phy_pins(void) {
+  // PHY strap pins:
+  // 3.7.1 PHYAD[0]: PHY Address Configuration (page 26) (default 0)
+  //     RXER, Pin 10, Teensy pin 8
+  // 3.7.2 MODE[2:0]: Mode Configuration (page 27) (default 111, all-capable)
+  //     RXD0, Pin 8, Teensy pin 34
+  //     RXD1, Pin 7, Teensy pin 38
+  //     CRS_DV, Pin 11, Teensy pin 39
+  // 3.7.3 REGOFF: Internal +1.2V Regulator Configuration (page 28) (default 0)
+  // 3.7.4 nINTSEL: nINT/REFCLKO Configuration (page 28) (default 1)
+
   // Configure the MDIO and MDC pins for bit-bang
   pinMode(MDC_PIN, OUTPUT);
   pinMode(MDIO_PIN, OUTPUT);
