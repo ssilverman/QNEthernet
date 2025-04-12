@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// driver_teensymm.c contains the Teensy MicroMod Ethernet
-// interface implementation.
-// Based on the Teensy 4.1 driver and here:
-// https://forum.pjrc.com/index.php?threads/add-ethernet-to-a-micromod-format-teensy.67643/post-356447
+// driver_teensymm.c contains the Teensy MicroMod Ethernet interface
+// implementation for the LAN8720A PHY.
+// Based on the Teensy 4.1 driver.
 // This file is part of the QNEthernet library.
 
 #include "qnethernet/lwip_driver.h"
@@ -24,10 +23,11 @@
 #include "lwip/err.h"
 #include "lwip/stats.h"
 
-// https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
-// https://github.com/PaulStoffregen/teensy41_ethernet/blob/master/teensy41_ethernet.ino
+// Some test code from the forum:
+// https://forum.pjrc.com/index.php?threads/add-ethernet-to-a-micromod-format-teensy.67643/post-356447
 
-// [PHY Datasheet](https://www.pjrc.com/teensy/dp83825i.pdf)
+// [LAN8720A](https://www.microchip.com/en-us/product/lan8720a)
+// [LAN8720A Datasheet](https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/LAN8720A-LAN8720Ai-Data-Sheet-DS00002165.pdf)
 // [i.MX RT1062 Manual](https://www.pjrc.com/teensy/IMXRT1060RM_rev3.pdf)
 
 // --------------------------------------------------------------------------
