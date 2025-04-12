@@ -230,10 +230,6 @@ FLASHMEM void enet_deinit(void) {
   // Restore state
   memset(s_mac, 0, sizeof(s_mac));
 
-  // Something about stopping Ethernet and the PHY kills performance if Ethernet
-  // is restarted after calling end(), so gate the following two blocks with a
-  // macro for now
-
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
 
   driver_deinit();
