@@ -563,10 +563,6 @@ FLASHMEM static void init_phy(void) {
   GPIO7_DR_SET   = (1 << 14);  // Take out of reset
   delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
-  // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
-  // LED shows link status, active high, 10Hz
-  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
-
   // PHYIDR1: OUI bits 21-6: 0x2000
   // PHYIDR2: OUI bits 5-0:  0x28: 101000b
   //         Model Number:   0x14: 010100b
@@ -582,6 +578,10 @@ FLASHMEM static void init_phy(void) {
     s_initState = kInitStateNoHardware;
     return;
   }
+
+  // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
+  // LED shows link status, active high, 10Hz
+  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
 
   // Configure the PHY registers
   // The strap pull-ups may not have been strong enough, so ensure those values
