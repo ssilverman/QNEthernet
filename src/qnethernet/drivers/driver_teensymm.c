@@ -452,29 +452,15 @@ FLASHMEM static void disable_enet_clocks(void) {
 
 // Configures all the pins necessary for communicating with the PHY.
 FLASHMEM static void configure_phy_pins(void) {
-  // // Configure strap pins
-  // // Note: The pulls may not be strong enough
-  // // Note: All the strap pins have internal resistors
-  // // 3.7.1 PHYAD[0]: PHY Address Configuration (page 26)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00 = STRAP_PAD_PULLDOWN;   // PHYAD0 = 0 (RXER, pin 10) (page 716)
-  // // 3.7.2 MODE[2:0]: Mode Configuration (all capabilities) (page 27)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = STRAP_PAD_PULLUP;  // RXD0/MODE0 pin 8 (page 749)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = STRAP_PAD_PULLUP;  // RXD1/MODE1 pin 7 (page 751)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = STRAP_PAD_PULLUP;  // CRS_DV/MODE2 pin 11 (page 753)
-
-  // Configure the MDIO and MDC pins
+  // Configure the MDIO and MDC pins for bit-bang
   pinMode(MDC_PIN, OUTPUT);
   pinMode(MDIO_PIN, OUTPUT);
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_EMC_07   = MDIO_PAD_PULLUP;  // MDIO, Teensy pin 33
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_02 = RMII_PAD_PULLUP;  // MDC, Teensy pin 35
-
-  // IOMUXC_SW_MUX_CTL_PAD_GPIO_EMC_07   = MDIO_MUX;  // MDIO pin 12 (ENET2_MDIO of enet, page 505), Teensy pin 33
-  // IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_02 = MDIO_MUX;  // MDC pin 13 (ENET2_MDC of enet, page 504), Teensy pin 35
 }
 
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
 FLASHMEM static void configure_rmii_pins(void) {
+  // TODO: Figure out what these should be
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
   // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = RMII_PAD_PULLUP;  // Reset this (RXD0)
   // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = RMII_PAD_PULLUP;  // Reset this (RXD1)
