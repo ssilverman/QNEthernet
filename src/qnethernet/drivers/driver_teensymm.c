@@ -108,6 +108,20 @@
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
+#define RMII_PAD (0                                        \
+    /* HYS_0_Hysteresis_Disabled */                        \
+    /* PUS_0_100K_Ohm_Pull_Down */                         \
+    /* PUE_0_Keeper */                                     \
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
+    /* ODE_0_Open_Drain_Disabled */                        \
+    | IOMUXC_PAD_SPEED(2)  /* SPEED_2_fast_150MHz */       \
+    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */                \
+    /* SRE_0_Slow_Slew_Rate */                             \
+    )
+    // HYS:0 PUS:00 PUE:0 PKE:1 ODE:0 000 SPEED:10 DSE:110 00 SRE:0
+    // 0x10B0  <-- This is the default
+
+
 #define RMII_PAD_CLOCK (0                             \
     /* HYS_0_Hysteresis_Disabled */                   \
     /* PUS_0_100K_Ohm_Pull_Down */                    \
@@ -472,13 +486,13 @@ FLASHMEM static void configure_phy_pins(void) {
 FLASHMEM static void configure_rmii_pins(void) {
   // TODO: Figure out what these should be
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = RMII_PAD_PULLUP;  // Reset this (RXD0)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = RMII_PAD_PULLUP;  // Reset this (RXD1)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = RMII_PAD_PULLUP;  // Reset this (CRS_DV)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00    = RMII_PAD_PULLUP;  // Reset this (RXER)
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07    = RMII_PAD_PULLUP;  // TXD0
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08    = RMII_PAD_PULLUP;  // TXD1
-  // IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09    = RMII_PAD_PULLUP;  // TXEN (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_03 = RMII_PAD;  // RXD0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_04 = RMII_PAD;  // RXD1
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_05 = RMII_PAD;  // CRS_DV
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_00    = RMII_PAD;  // RXER
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07    = RMII_PAD;  // TXD0
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08    = RMII_PAD;  // TXD1
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09    = RMII_PAD;  // TXEN (PHY has internal pull-down)
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_03 = RMII_MUX;  // RXD0 pin 8 (ENET2_RDATA00 of enet, page 539), Teensy pin 34
   IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_04 = RMII_MUX;  // RXD1 pin 7 (ENET2_RDATA01 of enet, page 540), Teensy pin 38
