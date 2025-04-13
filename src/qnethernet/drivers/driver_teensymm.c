@@ -324,11 +324,18 @@ static void enet_isr(void);
   r = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0); \
   delayNanoseconds(200)
 
+#define DO_CLOCK_CYCLE             \
+  digitalWriteFast(MDC_PIN, LOW);  \
+  delayNanoseconds(200);           \
+  digitalWriteFast(MDC_PIN, HIGH); \
+  delayNanoseconds(200)
+
 // Blocking MDIO read.
 uint16_t mdio_read(const uint16_t regaddr) {
   // 32 1's
+  digitalWriteFast(MDIO_PIN, HIGH);
   for (int i = 0; i < 32; i++) {
-    WRITE_MDIO_BIT(1);
+    DO_CLOCK_CYCLE;
   }
 
   // Start of Frame (0 1)
@@ -340,11 +347,12 @@ uint16_t mdio_read(const uint16_t regaddr) {
   WRITE_MDIO_BIT(0);
 
   // PHY Address (0 0 0 0 0)
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
+  digitalWriteFast(MDIO_PIN, LOW);
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
 
   // Register Address
   for (int i = 5; i-- > 0; ){
@@ -352,10 +360,7 @@ uint16_t mdio_read(const uint16_t regaddr) {
   }
 
   // Turnaround (Z 0)
-  digitalWriteFast(MDC_PIN, LOW);
-  delayNanoseconds(200);
-  digitalWriteFast(MDC_PIN, HIGH);
-  delayNanoseconds(200);
+  DO_CLOCK_CYCLE;
   WRITE_MDIO_BIT(0);
 
   // Data
@@ -373,8 +378,9 @@ uint16_t mdio_read(const uint16_t regaddr) {
 // Blocking MDIO write.
 void mdio_write(const uint16_t regaddr, const uint16_t data) {
   // 32 1's
+  digitalWriteFast(MDIO_PIN, HIGH);
   for (int i = 0; i < 32; i++) {
-    WRITE_MDIO_BIT(1);
+    DO_CLOCK_CYCLE;
   }
 
   // Start of Frame (0 1)
@@ -386,11 +392,12 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
   WRITE_MDIO_BIT(1);
 
   // PHY Address (0 0 0 0 0)
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(0);
+  digitalWriteFast(MDIO_PIN, LOW);
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
+  DO_CLOCK_CYCLE;
 
   // Register Address
   for (int i = 5; i-- > 0; ){
