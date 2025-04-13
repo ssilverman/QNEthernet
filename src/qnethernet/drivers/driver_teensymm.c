@@ -508,9 +508,6 @@ FLASHMEM static void init_phy(void) {
     return;
   }
 
-  // Ensure the device is out of reset
-  delay(1);
-
   enable_enet_clocks();
 
   configure_phy_pins();
@@ -518,6 +515,9 @@ FLASHMEM static void init_phy(void) {
   // Note: Ensure the clock is present at the CLKIN at power up
   IOMUXC_SW_PAD_CTL_PAD_GPIO_SD_B0_01 = RMII_PAD_CLOCK;
   IOMUXC_SW_MUX_CTL_PAD_GPIO_SD_B0_01 = RMII_MUX_CLOCK;  // CLKIN pin 5 (ENET2_REF_CLK2 of enet, page 537), Teensy pin 36
+
+  // Ensure the device is out of reset
+  delay(1);
 
   // Check for PHY presence
   // PHYID1: PHY ID Number: OUI bits 18-3: 0x0007
