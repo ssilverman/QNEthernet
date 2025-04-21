@@ -1566,8 +1566,8 @@ The _MbedTLSDemo_ example illustrates how to implement these.
 
 See how the _MbedTLSDemo_ example does it. Look for the
 `mbedtls_hardware_poll()` function. The example uses _QNEthernet_'s internal
-entropy function, `trng_data()`. You can, of course, use your own entropy source
-if you like.
+entropy function, `qnethernet_hal_fill_entropy()`. You can, of course, use your
+own entropy source if you like.
 
 If you add the function to a C++ file, then it must be declared `extern "C"`.
 
@@ -2014,19 +2014,20 @@ imbalance between only allowing two to be set but any number to be retrieved. So
 as not to add more variants, it was chosen to keep the original names.
 
 `EthernetClient::stop()`:-\
-The Arduino version, while it doesn't explicitly say that the function waits for
-disconnect, implies that it does in the description for
-`setConnectionTimeout(ms)`. The _QNEthernet_ library version waits for a timeout
-and provides a `close()` function that does not wait. There is also an `abort()`
-function that aborts the connection with a RST segment.
+The Arduino version states that this function has a disconnect timeout in the
+`setConnectionTimeout(ms)` description. The _QNEthernet_ library version waits
+for a timeout and provides a `close()` function that does not wait. There is
+also an `abort()` function that aborts the connection with a RST segment.
 
 `EthernetClient::status()`:-\
 Returns a value of type `enum tcp_state`, an lwIP type.
 
 `EthernetUDP::parsePacket()`:-\
-The _QNEthernet_ library version returns -1 for no packet available and not zero
-because empty UDP packets exist. If zero is returned when no packet is
-available then empty packets could not be detected.
+The _QNEthernet_ library version returns -1 for no packet available and not
+zero, because empty UDP packets exist. If zero is returned when no packet is
+available then empty packets could not be detected. (A `std::optional` might be
+a better choice for the return value here, or even a `hasPacket()` function that
+splits out presence from size.)
 
 ## Other notes
 
