@@ -69,28 +69,31 @@ lwIP release.
 16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
     1. [About the allocator functions](#about-the-allocator-functions)
     2. [About the TLS adapter functions](#about-the-tls-adapter-functions)
-    3. [How to enable Mbed TLS](#how-to-enable-mbed-tls)
-       1. [Installing the Mbed TLS library](#installing-the-mbed-tls-library)
-          1. [Mbed TLS library install for Arduino IDE](#mbed-tls-library-install-for-arduino-ide)
-          2. [Mbed TLS library install for PlatformIO](#mbed-tls-library-install-for-platformio)
+    3. [How to enable Mbed TLS (v2.x.x)](#how-to-enable-mbed-tls-v2xx)
+       1. [Installing the Mbed TLS library (v2.x.x)](#installing-the-mbed-tls-library-v2xx)
+          1. [Mbed TLS library install for Arduino IDE (v2.x.x)](#mbed-tls-library-install-for-arduino-ide-v2xx)
+          2. [Mbed TLS library install for PlatformIO (v2.x.x)](#mbed-tls-library-install-for-platformio-v2xx)
        2. [Implementing the _altcp_tls_adapter_ functions](#implementing-the-altcp_tls_adapter-functions)
-       3. [Implementing the Mbed TLS entropy function](#implementing-the-mbed-tls-entropy-function)
-17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-    1. [Mitigations](#mitigations)
-18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
-19. [Notes on RAM1 usage](#notes-on-ram1-usage)
-20. [Heap memory use](#heap-memory-use)
-21. [Entropy generation](#entropy-generation)
+       3. [Implementing the Mbed TLS entropy function (v2.x.x)](#implementing-the-mbed-tls-entropy-function-v2xx)
+17. [How to enable Mbed TLS (v3.6.x)](#how-to-enable-mbed-tls-v36x)
+    1. [Installing the Mbed TLS library (v3.6.x)](#installing-the-mbed-tls-library-v36x)
+       1. [Mbed TLS library install for Arduino IDE (v3.6.x)](#mbed-tls-library-install-for-arduino-ide-v36x)
+       2. [Mbed TLS library install for PlatformIO (v3.6.x)](#mbed-tls-library-install-for-platformio-v36x)
+18. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+19. [Notes on ordering and timing](#notes-on-ordering-and-timing)
+20. [Notes on RAM1 usage](#notes-on-ram1-usage)
+21. [Heap memory use](#heap-memory-use)
+22. [Entropy generation](#entropy-generation)
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
-22. [EMF interference mitigation](#emf-interference-mitigation)
-23. [Security features](#security-features)
+23. [EMF interference mitigation](#emf-interference-mitigation)
+24. [Security features](#security-features)
     1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
     2. [Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
-24. [Configuration macros](#configuration-macros)
+25. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
-25. [Auxiliary tools](#auxiliary-tools)
+26. [Auxiliary tools](#auxiliary-tools)
     1. [Print and Stream tools](#print-and-stream-tools)
     2. [`std::random_device`-compatible uniform random bit generator](#stdrandom_device-compatible-uniform-random-bit-generator)
     3. [Space-savings on some platforms](#space-savings-on-some-platforms)
@@ -98,12 +101,12 @@ lwIP release.
        1. [`steady_clock_ms`](#steady_clock_ms)
        2. [`arm_high_resolution_clock`](#arm_high_resolution_clock)
        3. [`elapsedTime<Clock>`](#elapsedtimeclock)
-26. [Complete list of features](#complete-list-of-features)
-27. [Compatibility with other APIs](#compatibility-with-other-apis)
-28. [Other notes](#other-notes)
-29. [To do](#to-do)
-30. [Code style](#code-style)
-31. [References](#references)
+27. [Complete list of features](#complete-list-of-features)
+28. [Compatibility with other APIs](#compatibility-with-other-apis)
+29. [Other notes](#other-notes)
+30. [To do](#to-do)
+31. [Code style](#code-style)
+32. [References](#references)
 
 ## Introduction
 
@@ -1523,7 +1526,7 @@ to integrate a library. These are as follows:
 Currently, this file is only built if the `LWIP_ALTCP`, `LWIP_ALTCP_TLS`, and
 `QNETHERNET_ALTCP_TLS_ADAPTER` macros are enabled by setting them to `1`.
 
-### How to enable Mbed TLS
+### How to enable Mbed TLS (v2.x.x)
 
 The lwIP distribution comes with a way to use the Mbed TLS library as an ALTCP
 TLS layer. It currently only supports the 2.x.x versions; as of this writing,
@@ -1542,7 +1545,7 @@ of how to use this feature:
    implements the above allocator functions and simplifies the integration.
 5. Implement an entropy function for internal Mbed TLS use.
 
-#### Installing the Mbed TLS library
+#### Installing the Mbed TLS library (v2.x.x)
 
 Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest 2.x.x version (current as
@@ -1552,7 +1555,7 @@ See the `v2.28.9` or `mbedtls-2.28.9` tags for the 2.28.9 version, or the
 `mbedtls-2.28` branch for the latest 2.28.x version. The `development` and
 `master` branches currently point to version 3.6.x.
 
-##### Mbed TLS library install for Arduino IDE
+##### Mbed TLS library install for Arduino IDE (v2.x.x)
 
 In your preferred "Libraries" folder, create a folder named _mbedtls_.
 Underneath that, create a _src_ folder. Copy, recursively, all files and folders
@@ -1602,7 +1605,7 @@ There are also example configuration headers in Mbed TLS under _configs/_.
 It's likely that, if you're using the Arduino IDE, you'll need to restart it
 after installing the library.
 
-##### Mbed TLS library install for PlatformIO
+##### Mbed TLS library install for PlatformIO (v2.x.x)
 
 In your preferred "Libraries" folder, create a folder named _mbedtls_. Copy all
 files and folders, recursively, from the Mbed TLS distribution into that folder.
@@ -1642,7 +1645,7 @@ the previous, Arduino IDE install, section.
 
 The _MbedTLSDemo_ example illustrates how to implement these.
 
-#### Implementing the Mbed TLS entropy function
+#### Implementing the Mbed TLS entropy function (v2.x.x)
 
 See how the _MbedTLSDemo_ example does it. Look for the
 `mbedtls_hardware_poll()` function. The example uses _QNEthernet_'s internal
@@ -1650,6 +1653,111 @@ entropy function, `qnethernet_hal_fill_entropy()`. You can, of course, use your
 own entropy source if you like.
 
 If you add the function to a C++ file, then it must be declared `extern "C"`.
+
+## How to enable Mbed TLS (v3.6.x)
+
+TLS connections via the Mbed TLS library are available.
+
+Relevant classes:
+* `qindesign::network` namespace
+  * MbedTLSClient
+  * MbedTLSServer
+* `qindesign::security` namespace
+  * `MbedTLSCert`
+  * `MbedTLSPSK`
+
+### Installing the Mbed TLS library (v3.6.x)
+
+Currently, there doesn't seem to be an Arduino-friendly version of this library.
+So, first download or clone a snapshot of the latest 3.6.x version (current as
+of this writing is 3.6.3): http://github.com/Mbed-TLS/mbedtls
+
+See the `v3.6.3` or `mbedtls-3.6.3` tags for the 3.6.3 version.
+
+#### Mbed TLS library install for Arduino IDE (v3.6.x)
+
+In your preferred "Libraries" folder, create a folder named _mbedtls_.
+Underneath that, create a _src_ folder. Copy, recursively, all files and folders
+from the distribution as follows:
+1. _distro_/library/* -> "Libraries"/mbedtls/src
+2. _distro_/include/* -> "Libraries"/mbedtls/src
+
+The "Libraries" folder can is the same thing as "Sketchbook location" in the
+application's Preferences. There should be a _libraries/_ folder inside
+that location.
+
+Next, create an empty _mbedtls.h_ file inside _"Libraries"/mbedtls/src/_.
+
+Next, create a _library.properties_ file inside _"Libraries"/mbedtls/_:
+```properties
+name=Mbed TLS
+version=3.6.3
+sentence=Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols.
+paragraph=Its small code footprint makes it suitable for embedded systems.
+category=Communication
+url=https://github.com/Mbed-TLS/mbedtls
+includes=mbedtls.h
+```
+(Ref: https://arduino.github.io/arduino-cli/latest/library-specification/)
+
+Last, modify the _mbedtls/src/mbedtls/mbedtls_config.h_ file by replacing it
+with the contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that
+Mbed TLS uses a slightly different configuration mechanism than lwIP: it uses
+macro presence rather than macro values.
+
+For posterity, the following changes are the minimum possible set just to be
+able to get the library to compile:
+1. Define:
+   1. `MBEDTLS_NO_PLATFORM_ENTROPY`
+   2. `MBEDTLS_PLATFORM_MS_TIME_ALT`
+   3. `MBEDTLS_ENTROPY_HARDWARE_ALT` &mdash; Requires `mbedtls_hardware_poll()`
+      function implementation
+2. Undefine:
+   1. `MBEDTLS_NET_C`
+   2. `MBEDTLS_TIMING_C`
+   3. `MBEDTLS_FS_IO`
+   4. `MBEDTLS_PSA_ITS_FILE_C`
+   5. `MBEDTLS_PSA_CRYPTO_STORAGE_C`
+
+There are also example configuration headers in Mbed TLS under _configs/_.
+
+It's likely that, if you're using the Arduino IDE, you'll need to restart it
+after installing the library.
+
+#### Mbed TLS library install for PlatformIO (v3.6.x)
+
+In your preferred "Libraries" folder, create a folder named _mbedtls_. Copy all
+files and folders, recursively, from the Mbed TLS distribution into that folder.
+
+The "Libraries" folder is either PlatformIO's global libraries location or the
+application's local _lib/_ folder.
+
+Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
+```json
+{
+  "name": "Mbed TLS",
+  "version": "3.6.3",
+  "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
+  "keywords": [
+    "tls",
+    "networking"
+  ],
+  "homepage": "https://www.trustedfirmware.org/projects/mbed-tls",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mbed-TLS/mbedtls.git"
+  },
+  "license": "Apache-2.0 OR GPL-2.0-or-later",
+  "build": {
+    "srcDir": "library",
+    "includeDir": "include"
+  }
+}
+```
+(Ref: https://docs.platformio.org/en/latest/manifests/library-json/index.html)
+
+Last, modify the _mbedtls/include/mbedtls/config.h_ file per the instructions in
+the previous, Arduino IDE install, section.
 
 ## On connections that hang around after cable disconnect
 
