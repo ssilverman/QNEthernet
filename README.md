@@ -1479,8 +1479,8 @@ See the `v2.28.9` or `mbedtls-2.28.9` tags for the 2.28.9 version, or the
 In your preferred "Libraries" folder, create a folder named _mbedtls_.
 Underneath that, create a _src_ folder. Copy, recursively, all files and folders
 from the distribution as follows:
-1. distro/library/* -> "Libraries"/mbedtls/src
-2. distro/include/* -> "Libraries"/mbedtls/src
+1. _distro_/library/* -> "Libraries"/mbedtls/src
+2. _distro_/include/* -> "Libraries"/mbedtls/src
 
 The "Libraries" folder can is the same thing as "Sketchbook location" in the
 application's Preferences. There should be a _libraries/_ folder inside
@@ -1502,7 +1502,7 @@ includes=mbedtls.h
 
 Last, modify the _mbedtls/src/mbedtls/config.h_ file by replacing it with the
 contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that Mbed TLS
-uses a slightly different configuration mechanism than lwIP; it uses macro
+uses a slightly different configuration mechanism than lwIP: it uses macro
 presence rather than macro values.
 
 For posterity, the following changes are the minimum possible set just to be
@@ -1538,7 +1538,8 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
   "version": "2.28.9",
   "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
   "keywords": [
-    "tls", "networking"
+    "tls",
+    "networking"
   ],
   "homepage": "https://www.trustedfirmware.org/projects/mbed-tls",
   "repository": {
