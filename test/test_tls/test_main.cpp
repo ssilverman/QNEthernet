@@ -10,9 +10,13 @@
 
 #include <Arduino.h>
 #include <QNEthernet.h>
+// #include <mbedtls/debug.h>
 #include <qnethernet/QNDNSClient.h>
 #include <qnethernet/MbedTLSClient.h>
+// #include <qnethernet/security/MbedTLSCert.h>
 #include <unity.h>
+
+// #include "root_ca_der.h"
 
 using namespace ::qindesign::network;
 
@@ -156,6 +160,17 @@ static void test_client() {
                             "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, tlsClient->connected(),
                             "Expected not connected (no data)");
+
+  // // Certificates
+  // // mbedtls_debug_set_threshold(3);
+  // qindesign::security::MbedTLSCert ca;
+  // if (!kRootCAIndexes.empty()) {
+  //   for (size_t i = 0; i < kRootCAIndexes.size() - 1; i++) {
+  //     ca.parseDERNoCopy(&kRootCAs[i],
+  //                       kRootCAIndexes[i + 1] - kRootCAIndexes[i]);
+  //   }
+  // }
+  // tlsClient->setCACert(&ca);
 
   // Connect and send the request
   TEST_MESSAGE("Connecting and sending HTTP HEAD request...");
