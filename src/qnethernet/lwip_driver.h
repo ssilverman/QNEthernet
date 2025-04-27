@@ -285,6 +285,8 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 //
 // If this returns false then errno will be set to something appropriate.
 //
+// The driver's MTU must be fixed before calling this.
+//
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //
