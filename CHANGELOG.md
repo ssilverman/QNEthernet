@@ -10,7 +10,7 @@ and this project adheres to
 
 ### Added
 * Added `qnethernet_hal_micros()`.
-* Added secure TCP initial seqence numbers (ISNs), enabled with the new
+* Added secure TCP initial sequence numbers (ISNs), enabled with the new
   `QNETHERNET_ENABLE_SECURE_TCP_ISN` macro. The default is enabled.
 
 ### Changed
