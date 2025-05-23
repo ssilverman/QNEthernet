@@ -17,7 +17,7 @@
 #include <cstring>
 #include <random>
 
-#include <Arduino.h>  // For Serial, noInterrupts(), interrupts(), millis()
+#include <Arduino.h>
 #include <Print.h>
 
 // Processor-specific include
