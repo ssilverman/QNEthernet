@@ -220,7 +220,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
  private:
   struct Frame final {
-    std::vector<uint8_t> data{};
+    std::vector<uint8_t> data;
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
 
     // Clears all the data.
