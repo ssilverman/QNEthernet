@@ -87,10 +87,8 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
       inBufTail_(0),
       inBufHead_(0),
       inBufSize_(0),
-      frame_{},
       framePos_(-1),
       hasOutFrame_(false),
-      outFrame_{},
       droppedReceiveCount_(0),
       totalReceiveCount_(0) {
   setReceiveQueueCapacity(1);

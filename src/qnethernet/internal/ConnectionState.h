@@ -26,9 +26,7 @@ struct ConnectionState final {
   // TCP_WND bytes as buffer space.
   ConnectionState(altcp_pcb *const tpcb, void *const arg)
       : pcb(tpcb),
-        buf{},
-        bufPos(0),
-        removeFunc{} {
+        bufPos(0) {
     altcp_arg(tpcb, arg);
 #if LWIP_WND_SCALE
     buf.reserve(TCP_WND >> TCP_RCV_SCALE);

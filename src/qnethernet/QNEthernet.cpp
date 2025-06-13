@@ -124,25 +124,21 @@ void EthernetClass::netifEventFunc(
 }
 
 FLASHMEM EthernetClass::EthernetClass()
-    : driverCapabilities_{},
-      chipSelectPin_(-1),
+    : chipSelectPin_(-1),
       lastPollTime_(0),
       hasMAC_(false),
 #if LWIP_NETIF_HOSTNAME
       hostname_{QNETHERNET_DEFAULT_HOSTNAME},
 #endif  // LWIP_NETIF_HOSTNAME
       netif_(nullptr),
-      ifName_{0},
+      ifName_{0}
 #if LWIP_DHCP
+      ,
       dhcpEnabled_(true),
       dhcpDesired_(false),
-      dhcpActive_(false),
+      dhcpActive_(false)
 #endif  // LWIP_DHCP
-      linkStateCB_{},
-#if LWIP_IPV4 || LWIP_IPV6
-      addressChangedCB_{},
-#endif  // LWIP_IPV4 || LWIP_IPV6
-      interfaceStatusCB_{} {
+{
 }
 
 FLASHMEM EthernetClass::~EthernetClass() {

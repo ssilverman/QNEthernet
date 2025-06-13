@@ -66,7 +66,7 @@ void demo(G &g) {
   printf("\r\n");
 
   // Fill dice buckets with zero
-  int buckets[6]{};
+  int buckets[6]{0};
 
   printf("Dice rolls:");
   for (int i = 0; i < 100; i++) {
