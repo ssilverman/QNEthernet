@@ -448,19 +448,19 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
-  iterate([port, b, size16](const auto &state) {
-    if (getLocalPort(state.pcb) != port) {
+  iterate([port, b, size16](auto pcb) {
+    if (getLocalPort(pcb) != port) {
       return;
     }
-    if (altcp_sndbuf(state.pcb) < size16) {
-      if (altcp_output(state.pcb) != ERR_OK) {
+    if (altcp_sndbuf(pcb) < size16) {
+      if (altcp_output(pcb) != ERR_OK) {
         return;
       }
       Ethernet.loop();
     }
-    const uint16_t len = std::min(size16, altcp_sndbuf(state.pcb));
+    const uint16_t len = std::min(size16, altcp_sndbuf(pcb));
     if (len > 0) {
-      altcp_write(state.pcb, b, len, TCP_WRITE_FLAG_COPY);
+      altcp_write(pcb, b, len, TCP_WRITE_FLAG_COPY);
     }
   });
   Ethernet.loop();
@@ -468,11 +468,11 @@ size_t ConnectionManager::write(const uint16_t port,
 }
 
 void ConnectionManager::flush(const uint16_t port) {
-  iterate([port](const auto &state) {
-    if (getLocalPort(state.pcb) != port) {
+  iterate([port](auto pcb) {
+    if (getLocalPort(pcb) != port) {
       return;
     }
-    altcp_output(state.pcb);
+    altcp_output(pcb);
     Ethernet.loop();
   });
   Ethernet.loop();
@@ -481,11 +481,11 @@ void ConnectionManager::flush(const uint16_t port) {
 int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
-  iterate([port, &min, &found](const auto &state) {
-    if (getLocalPort(state.pcb) != port) {
+  iterate([port, &min, &found](auto pcb) {
+    if (getLocalPort(pcb) != port) {
       return;
     }
-    min = std::min(min, altcp_sndbuf(state.pcb));
+    min = std::min(min, altcp_sndbuf(pcb));
     found = true;
   });
   if (!found) {
@@ -495,16 +495,16 @@ int ConnectionManager::availableForWrite(const uint16_t port) {
 }
 
 void ConnectionManager::abortAll() {
-  iterate([](const auto &state) { altcp_abort(state.pcb); });
+  iterate([](auto pcb) { altcp_abort(pcb); });
 }
 
 void ConnectionManager::iterate(
-    std::function<void(const ConnectionState &state)> f) {
+    std::function<void(struct altcp_pcb *pcb)> f) {
   std::for_each(connections_.cbegin(), connections_.cend(),
                 [&f](const auto &elem) {
                   const auto &state = elem->state;
                   if (state != nullptr) {
-                    f(*state);
+                    f(state->pcb);
                   }
                 });
 }

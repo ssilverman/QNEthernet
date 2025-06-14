@@ -67,7 +67,7 @@ class ConnectionManager final {
 
   // Iterates over all the valid connections and calls the specified function
   // for each.
-  void iterate(std::function<void(const ConnectionState &state)> f);
+  void iterate(std::function<void(struct altcp_pcb *pcb)> f);
 
  private:
   ConnectionManager() = default;
