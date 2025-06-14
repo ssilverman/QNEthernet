@@ -491,6 +491,10 @@ int ConnectionManager::availableForWrite(const uint16_t port) {
   return min;
 }
 
+void ConnectionManager::abortAll() {
+  iterate([](const auto &state) { altcp_abort(state.pcb); });
+}
+
 void ConnectionManager::iterate(
     std::function<void(const ConnectionState &state)> f) {
   std::for_each(connections_.cbegin(), connections_.cend(),

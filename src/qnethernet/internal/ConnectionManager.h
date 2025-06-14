@@ -60,6 +60,10 @@ class ConnectionManager final {
   void flush(uint16_t port);
   int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
+  // Aborts all connections. The motivation is outlined in the "On connections
+  // that hang around after cable disconnect" section of the Readme.
+  void abortAll();
+
  private:
   ConnectionManager() = default;
   ~ConnectionManager() = default;
