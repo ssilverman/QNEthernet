@@ -64,6 +64,10 @@ class ConnectionManager final {
   // that hang around after cable disconnect" section of the Readme.
   void abortAll();
 
+  // Iterates over all the valid connections and calls the specified function
+  // for each.
+  void iterate(std::function<void(const ConnectionState &state)> f);
+
  private:
   ConnectionManager() = default;
   ~ConnectionManager() = default;
@@ -77,10 +81,6 @@ class ConnectionManager final {
   // Adds a created connection to the list. It is expected that the object is
   // already set up.
   void addConnection(const std::shared_ptr<ConnectionHolder> &holder);
-
-  // Iterates over all the valid connections and calls the specified function
-  // for each.
-  void iterate(std::function<void(const ConnectionState &state)> f);
 
   std::vector<std::shared_ptr<ConnectionHolder>> connections_;
   std::vector<struct altcp_pcb *> listeners_;
