@@ -67,7 +67,10 @@ class ConnectionManager final {
 
   // Iterates over all the valid connections and calls the specified function
   // for each.
-  void iterate(std::function<void(struct altcp_pcb *pcb)> f);
+  void iterateConnections(std::function<void(struct altcp_pcb *pcb)> f);
+
+  // Iterates over all the listeners and calls the specified function for each.
+  void iterateListeners(std::function<void(struct altcp_pcb *pcb)> f);
 
  private:
   ConnectionManager() = default;

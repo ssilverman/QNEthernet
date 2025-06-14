@@ -448,7 +448,7 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
-  iterate([port, b, size16](auto pcb) {
+  iterateConnections([port, b, size16](auto pcb) {
     if (getLocalPort(pcb) != port) {
       return;
     }
@@ -468,7 +468,7 @@ size_t ConnectionManager::write(const uint16_t port,
 }
 
 void ConnectionManager::flush(const uint16_t port) {
-  iterate([port](auto pcb) {
+  iterateConnections([port](auto pcb) {
     if (getLocalPort(pcb) != port) {
       return;
     }
@@ -481,7 +481,7 @@ void ConnectionManager::flush(const uint16_t port) {
 int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
-  iterate([port, &min, &found](auto pcb) {
+  iterateConnections([port, &min, &found](auto pcb) {
     if (getLocalPort(pcb) != port) {
       return;
     }
@@ -495,10 +495,10 @@ int ConnectionManager::availableForWrite(const uint16_t port) {
 }
 
 void ConnectionManager::abortAll() {
-  iterate([](auto pcb) { altcp_abort(pcb); });
+  iterateConnections([](auto pcb) { altcp_abort(pcb); });
 }
 
-void ConnectionManager::iterate(
+void ConnectionManager::iterateConnections(
     std::function<void(struct altcp_pcb *pcb)> f) {
   std::for_each(connections_.cbegin(), connections_.cend(),
                 [&f](const auto &elem) {
@@ -507,6 +507,11 @@ void ConnectionManager::iterate(
                     f(state->pcb);
                   }
                 });
+}
+
+void ConnectionManager::iterateListeners(
+    std::function<void(struct altcp_pcb *pcb)> f) {
+  std::for_each(listeners_.cbegin(), listeners_.cend(), f);
 }
 
 }  // namespace internal
