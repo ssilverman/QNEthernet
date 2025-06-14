@@ -29,6 +29,10 @@ struct ConnectionHolder final {
   /*volatile*/ bool connected = false;
   std::unique_ptr<ConnectionState> state;
 
+  // Tracks acknowledged accepted connections. This will always be true for
+  // connections that were initiated locally.
+  /*volatile*/ bool accepted = false;
+
   // Remaining data after a connection is closed
   // Will only be non-empty after the connection is closed
   /*volatile*/ size_t remainingPos = 0;

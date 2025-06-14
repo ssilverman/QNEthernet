@@ -44,8 +44,9 @@ class ConnectionManager final {
   // not found or was found and not successfully stopped.
   bool stopListening(uint16_t port);
 
-  // Finds a connection whose local port is the specified port.
-  std::shared_ptr<ConnectionHolder> findConnected(uint16_t port) const;
+  // Finds a connection whose local port is the specified port, and which has
+  // not yet been acknowledged by accept().
+  std::shared_ptr<ConnectionHolder> findUnacknowledged(uint16_t port) const;
 
   // Finds a connection on the given port that has data available.
   std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port) const;

@@ -92,10 +92,11 @@ void EthernetServer::end() {
 EthernetClient EthernetServer::accept() const {
   if (listeningPort_ > 0) {
     const auto conn =
-        internal::ConnectionManager::instance().findConnected(listeningPort_);
+        internal::ConnectionManager::instance().findUnacknowledged(
+            listeningPort_);
     Ethernet.loop();
     if (conn != nullptr) {
-      internal::ConnectionManager::instance().remove(conn);
+      conn->accepted = true;
       return EthernetClient{conn};
     }
   }

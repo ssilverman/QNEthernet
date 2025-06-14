@@ -238,6 +238,7 @@ err_t ConnectionManager::acceptFunc(void *const arg,
   holder->lastError = err;
   holder->connected = true;
   holder->state = std::make_unique<ConnectionState>(newpcb, holder.get());
+  holder->accepted = false;
   altcp_err(newpcb, &errFunc);
   altcp_recv(newpcb, &recvFunc);
   m->addConnection(holder);
@@ -300,6 +301,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   // Connect listeners
   auto holder = std::make_shared<ConnectionHolder>();
   holder->state = std::make_unique<ConnectionState>(pcb, holder.get());
+  holder->accepted = true;
   altcp_err(pcb, &errFunc);
   altcp_recv(pcb, &recvFunc);
 
@@ -394,12 +396,13 @@ bool ConnectionManager::stopListening(const uint16_t port) {
   return true;
 }
 
-std::shared_ptr<ConnectionHolder> ConnectionManager::findConnected(
+std::shared_ptr<ConnectionHolder> ConnectionManager::findUnacknowledged(
     const uint16_t port) const {
   const auto it = std::find_if(
       connections_.cbegin(), connections_.cend(), [port](const auto &elem) {
         const auto &state = elem->state;
-        return (state != nullptr) && (getLocalPort(state->pcb) == port);
+        return (state != nullptr) && !elem->accepted &&
+               (getLocalPort(state->pcb) == port);
       });
   if (it != connections_.cend()) {
     return *it;
