@@ -441,24 +441,7 @@ bool ConnectionManager::remove(
 }
 
 size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, b](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  if (altcp_sndbuf(state->pcb) < 1) {
-                    if (altcp_output(state->pcb) != ERR_OK) {
-                      return;
-                    }
-                    Ethernet.loop();
-                  }
-                  if (altcp_sndbuf(state->pcb) >= 1) {
-                    altcp_write(state->pcb, &b, 1, TCP_WRITE_FLAG_COPY);
-                  }
-                });
-  Ethernet.loop();
-  return 1;
+  return write(port, &b, 1);
 }
 
 size_t ConnectionManager::write(const uint16_t port,
