@@ -10,9 +10,6 @@
 
 // C++ includes
 #include <algorithm>
-#if LWIP_ALTCP
-#include <functional>
-#endif  // LWIP_ALTCP
 #include <limits>
 
 #include "QNEthernet.h"
@@ -448,57 +445,61 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void *const b, const size_t len) {
   const size_t actualLen = std::min(len, size_t{UINT16_MAX});
   const uint16_t size16 = actualLen;
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, b, size16](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  if (altcp_sndbuf(state->pcb) < size16) {
-                    if (altcp_output(state->pcb) != ERR_OK) {
-                      return;
-                    }
-                    Ethernet.loop();
-                  }
-                  const uint16_t len =
-                      std::min(size16, altcp_sndbuf(state->pcb));
-                  if (len > 0) {
-                    altcp_write(state->pcb, b, len, TCP_WRITE_FLAG_COPY);
-                  }
-                });
+  iterate([port, b, size16](const auto &state) {
+    if (getLocalPort(state.pcb) != port) {
+      return;
+    }
+    if (altcp_sndbuf(state.pcb) < size16) {
+      if (altcp_output(state.pcb) != ERR_OK) {
+        return;
+      }
+      Ethernet.loop();
+    }
+    const uint16_t len = std::min(size16, altcp_sndbuf(state.pcb));
+    if (len > 0) {
+      altcp_write(state.pcb, b, len, TCP_WRITE_FLAG_COPY);
+    }
+  });
   Ethernet.loop();
   return actualLen;
 }
 
 void ConnectionManager::flush(const uint16_t port) {
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  altcp_output(state->pcb);
-                  Ethernet.loop();
-                });
+  iterate([port](const auto &state) {
+    if (getLocalPort(state.pcb) != port) {
+      return;
+    }
+    altcp_output(state.pcb);
+    Ethernet.loop();
+  });
   Ethernet.loop();
 }
 
 int ConnectionManager::availableForWrite(const uint16_t port) {
   uint16_t min = std::numeric_limits<uint16_t>::max();
   bool found = false;
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                [port, &min, &found](const auto &elem) {
-                  const auto &state = elem->state;
-                  if (state == nullptr || getLocalPort(state->pcb) != port) {
-                    return;
-                  }
-                  min = std::min(min, altcp_sndbuf(state->pcb));
-                  found = true;
-                });
+  iterate([port, &min, &found](const auto &state) {
+    if (getLocalPort(state.pcb) != port) {
+      return;
+    }
+    min = std::min(min, altcp_sndbuf(state.pcb));
+    found = true;
+  });
   if (!found) {
     return 0;
   }
   return min;
+}
+
+void ConnectionManager::iterate(
+    std::function<void(const ConnectionState &state)> f) {
+  std::for_each(connections_.cbegin(), connections_.cend(),
+                [&f](const auto &elem) {
+                  const auto &state = elem->state;
+                  if (state != nullptr) {
+                    f(*state);
+                  }
+                });
 }
 
 }  // namespace internal
