@@ -59,7 +59,7 @@ IPAddress DNSClient::getServer(const int index) {
   if (index < 0 || maxServers() <= index) {
     return INADDR_NONE;
   }
-  return ip_addr_get_ip4_uint32(dns_getserver(index));
+  return util::ip_addr_get_ip4_uint32(dns_getserver(index));
 #else
   LWIP_UNUSED_ARG(index);
   return INADDR_NONE;
@@ -109,7 +109,7 @@ bool DNSClient::getHostByName(const char *const hostname, IPAddress &ip,
           [&lookupDone, &found, &ip](const ip_addr_t *foundIP) {
             if (foundIP != nullptr) {
               found = true;
-              ip = ip_addr_get_ip4_uint32(foundIP);
+              ip = util::ip_addr_get_ip4_uint32(foundIP);
             }
             lookupDone = true;
           },

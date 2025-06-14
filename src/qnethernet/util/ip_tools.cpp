@@ -10,6 +10,7 @@
 
 namespace qindesign {
 namespace network {
+namespace util {
 
 #if LWIP_IPV4
 
@@ -28,5 +29,6 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *const ip) {
 
 #endif  // LWIP_IPV4
 
+}  // namespace util
 }  // namespace network
 }  // namespace qindesign

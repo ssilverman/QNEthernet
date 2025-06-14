@@ -401,7 +401,7 @@ IPAddress EthernetClient::remoteIP() {
   if (!getAddrInfo(false, &ip, nullptr)) {
     return INADDR_NONE;
   }
-  return ip_addr_get_ip4_uint32(&ip);
+  return util::ip_addr_get_ip4_uint32(&ip);
 #else
   return INADDR_NONE;
 #endif  // LWIP_IPV4
@@ -421,7 +421,7 @@ IPAddress EthernetClient::localIP() {
   if (!getAddrInfo(true, &ip, nullptr)) {
     return INADDR_NONE;
   }
-  return ip_addr_get_ip4_uint32(&ip);
+  return util::ip_addr_get_ip4_uint32(&ip);
 #else
   return INADDR_NONE;
 #endif  // LWIP_IPV4

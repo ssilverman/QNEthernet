@@ -372,7 +372,7 @@ void EthernetUDP::flush() {
 
 IPAddress EthernetUDP::remoteIP() {
 #if LWIP_IPV4
-  return ip_addr_get_ip4_uint32(&packet_.addr);
+  return util::ip_addr_get_ip4_uint32(&packet_.addr);
 #else
   return INADDR_NONE;
 #endif  // LWIP_IPV4
