@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added a way to iterate over the internal TCP connection PCBs.
+
 ## [0.32.0]
 
 ### Added
