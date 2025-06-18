@@ -60,7 +60,7 @@ err_t ConnectionManager::connectedFunc(void *const arg,
     return ERR_ARG;
   }
 
-  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
+  const auto holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -106,7 +106,7 @@ void ConnectionManager::errFunc(void *const arg, const err_t err) {
     return;
   }
 
-  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
+  const auto holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
   holder->connected = (err == ERR_OK);
@@ -126,7 +126,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
     return ERR_ARG;
   }
 
-  ConnectionHolder *const holder = static_cast<ConnectionHolder *>(arg);
+  const auto holder = static_cast<ConnectionHolder *>(arg);
 
   holder->lastError = err;
 
@@ -145,7 +145,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
       if (p != nullptr) {
         // Copy pbuf contents
         while (pNext != nullptr) {
-          uint8_t *data = static_cast<uint8_t *>(pNext->payload);
+          const auto data = static_cast<const uint8_t *>(pNext->payload);
           holder->remaining.insert(holder->remaining.cend(), &data[0],
                                    &data[pNext->len]);
           pNext = pNext->next;
@@ -200,7 +200,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
 
     // Copy all the data from the pbuf
     while (pNext != nullptr) {
-      uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
+      const auto data = static_cast<const uint8_t *>(pNext->payload);
       v.insert(v.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
@@ -220,7 +220,7 @@ err_t ConnectionManager::acceptFunc(void *const arg,
     return ERR_ARG;
   }
 
-  ConnectionManager *const m = static_cast<ConnectionManager *>(arg);
+  const auto m = static_cast<ConnectionManager *>(arg);
 
   if (err != ERR_OK) {
     if (err != ERR_CLSD && err != ERR_ABRT) {

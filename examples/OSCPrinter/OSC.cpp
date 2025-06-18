@@ -84,10 +84,10 @@ static void printBundle(Print &out, const uint8_t *b, int len) {
   osc::LiteOSCParser osc;
   int index = 16;
   while (index + 4 <= len) {
-    int32_t size = static_cast<int32_t>(uint32_t{b[index]} << 24 |
-                                        uint32_t{b[index + 1]} << 16 |
-                                        uint32_t{b[index + 2]} << 8 |
-                                        uint32_t{b[index + 3]});
+    const auto size = static_cast<int32_t>(uint32_t{b[index]} << 24 |
+                                           uint32_t{b[index + 1]} << 16 |
+                                           uint32_t{b[index + 2]} << 8 |
+                                           uint32_t{b[index + 3]});
     index += 4;
     if (index + size > len) {
       break;

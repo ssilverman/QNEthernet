@@ -57,7 +57,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf *const p,
   frame.data.reserve(p->tot_len);
   // TODO: Limit vector size
   while (pNext != nullptr) {
-    uint8_t *const data = static_cast<uint8_t *>(pNext->payload);
+    const auto data = static_cast<const uint8_t *>(pNext->payload);
     frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
     pNext = pNext->next;
   }
