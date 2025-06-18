@@ -51,9 +51,8 @@ EthernetClient::EthernetClient(
       connTimeoutEnabled_(true),
       conn_(conn) {}
 
-EthernetClient::~EthernetClient() {
-  // Questionable not to call close(), but copy semantics demand that we don't
-}
+EthernetClient::~EthernetClient() = default;
+    // Questionable not to call close(), but copy semantics demand that we don't
 
 // --------------------------------------------------------------------------
 //  Connection
