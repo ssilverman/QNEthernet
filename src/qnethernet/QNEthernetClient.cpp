@@ -639,7 +639,7 @@ int EthernetClient::read(uint8_t *const buf, const size_t size) {
       conn_->remaining.clear();
       conn_->remainingPos = 0;
     }
-    return actualSize;
+    return static_cast<int>(actualSize);
   }
 
   GET_STATE_AND_LOOP_OR_CLOSE(0)

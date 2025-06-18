@@ -319,7 +319,7 @@ int EthernetUDP::parsePacket() {
   inBufSize_--;
 
   packetPos_ = 0;
-  return packet_.data.size();
+  return static_cast<int>(packet_.data.size());
 }
 
 inline bool EthernetUDP::isAvailable() const {
@@ -331,7 +331,7 @@ int EthernetUDP::available() {
   if (!isAvailable()) {
     return 0;
   }
-  return packet_.data.size() - packetPos_;
+  return static_cast<int>(packet_.data.size() - packetPos_);
 }
 
 int EthernetUDP::read() {
@@ -579,7 +579,7 @@ int EthernetUDP::availableForWrite() {
   if (outPacket_.data.size() > kMaxPossiblePayloadSize) {
     return 0;
   }
-  return kMaxPossiblePayloadSize - outPacket_.data.size();
+  return static_cast<int>(kMaxPossiblePayloadSize - outPacket_.data.size());
 }
 
 }  // namespace network

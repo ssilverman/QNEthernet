@@ -133,7 +133,7 @@ int EthernetFrameClass::parseFrame() {
 
   if (frame_.data.size() > 0) {
     framePos_ = 0;
-    return frame_.data.size();
+    return static_cast<int>(frame_.data.size());
   } else {
     framePos_ = -1;
     return 0;
@@ -149,7 +149,7 @@ int EthernetFrameClass::available() {
   if (!isAvailable()) {
     return 0;
   }
-  return frame_.data.size() - framePos_;
+  return static_cast<int>(frame_.data.size() - framePos_);
 }
 
 int EthernetFrameClass::read() {
@@ -313,7 +313,7 @@ int EthernetFrameClass::availableForWrite() {
   if (outFrame_.data.size() > (maxFrameLen() - 4)) {
     return 0;
   }
-  return (maxFrameLen() - 4) - outFrame_.data.size();
+  return static_cast<int>((maxFrameLen() - 4) - outFrame_.data.size());
 }
 
 }  // namespace network
