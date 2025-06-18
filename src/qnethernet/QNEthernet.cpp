@@ -219,7 +219,7 @@ bool EthernetClass::begin() {
 bool EthernetClass::begin(const IPAddress &ip,
                           const IPAddress &mask,
                           const IPAddress &gateway) {
-  return begin(ip, mask, gateway, (const IPAddress *)(nullptr));
+  return begin(ip, mask, gateway, static_cast<const IPAddress *>(nullptr));
 }
 
 bool EthernetClass::begin(const IPAddress &ip,
