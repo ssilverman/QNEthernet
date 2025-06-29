@@ -1449,6 +1449,7 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode) {
   CLRSET(r, ENET_TCSR_TMODE_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
          ENET_TCSR_TMODE(mode));
   *tcsr = r;
+  // TODO: Should we wait until change here?
 
   return true;
 }
@@ -1472,6 +1473,7 @@ bool driver_ieee1588_set_channel_output_pulse_width(int channel,
   CLRSET(r, ENET_TCSR_TPWC_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
          ENET_TCSR_TPWC(pulseWidth - 1));
   *tcsr = r;
+  // TODO: Should we wait until change here?
 
   return true;
 }
