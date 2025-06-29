@@ -1581,6 +1581,7 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
              ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
       ENET::CHANNEL::TCSR::vals::TMODE(mode);
   *tcsr = r;
+  // TODO: Should we wait until change here?
 
   return true;
 }
@@ -1606,6 +1607,7 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
              ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
       ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth - 1);
   *tcsr = r;
+  // TODO: Should we wait until change here?
 
   return true;
 }
