@@ -303,6 +303,7 @@ static const uint8_t kDefaultMACAddress[ETH_HWADDR_LEN] = {
 
 // Gets the system MAC address. This will either be some platform-specific value
 // or a predefined value.
+[[gnu::weak]]
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == nullptr) {
     return;

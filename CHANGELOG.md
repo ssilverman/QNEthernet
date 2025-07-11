@@ -11,6 +11,9 @@ and this project adheres to
 ### Added
 * Added a way to iterate over the internal TCP connection PCBs.
 
+### Changed
+* Made `qnethernet_hal_get_system_mac_address(mac)` weak.
+
 ## [0.32.0]
 
 ### Added
