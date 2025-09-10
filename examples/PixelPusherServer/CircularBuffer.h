@@ -71,7 +71,7 @@ class CircularBuffer {
  private:
   // Handles both const and non-const cases
   template <typename U>
-  static inline auto &get(U &t, size_t n, size_t capacity) {
+  static T &get(U &t, size_t n, size_t capacity) {
     return t.buf_[(t.tail_ + n) % capacity];
   }
 
