@@ -77,7 +77,7 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
       if (len >= 32) {
         // Colour order
         for (size_t i = 0; i < 8; i++) {
-          auto &config = stripConfigs_[i];
+          StripConfig &config = stripConfigs_[i];
           switch (data[16 + i]) {
             case PixelPusherServer::ColourOrders::RGB:
               config.rgbOrder[0] = 0;
@@ -153,7 +153,7 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
   size_t it = stripNum * pixelsPerStrip;
   size_t end = it + pixelsPerStrip;
 
-  const auto &config = getStripConfig(stripNum);
+  const StripConfig &config = getStripConfig(stripNum);
   const uint8_t bri = scale16(config.brightness, globalBri_) >> 8;
   const auto &rgbOrder = config.rgbOrder;
 

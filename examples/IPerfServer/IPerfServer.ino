@@ -334,9 +334,10 @@ void loop() {
 
   // Clean up all the closed clients
   size_t size = conns.size();
-  conns.erase(std::remove_if(conns.begin(), conns.end(),
-                             [](const auto &state) { return state.closed; }),
-              conns.end());
+  conns.erase(
+      std::remove_if(conns.begin(), conns.end(),
+                     [](const ConnectionState &state) { return state.closed; }),
+      conns.end());
   if (conns.size() != size) {
     printf("Connection count: %zu\r\n", conns.size());
   }

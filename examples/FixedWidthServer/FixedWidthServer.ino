@@ -134,9 +134,10 @@ void loop() {
 
   // Clean up all the closed clients
   size_t size = clients.size();
-  clients.erase(std::remove_if(clients.begin(), clients.end(),
-                               [](const auto &state) { return state.closed; }),
-                clients.end());
+  clients.erase(
+      std::remove_if(clients.begin(), clients.end(),
+                     [](const ClientState &state) { return state.closed; }),
+      clients.end());
   if (clients.size() != size) {
     printf("Client count: %zu\r\n", clients.size());
   }
