@@ -88,7 +88,7 @@ static inline bool isAvailable(const std::unique_ptr<ConnectionState> &state) {
 //
 // This assumes holder->state != NULL.
 static void maybeCopyRemaining(ConnectionHolder *const holder) {
-  auto &v = holder->remaining;
+  std::vector<uint8_t> &v = holder->remaining;
   const auto &state = holder->state;
 
   // Reset the 'remaining' buffer
@@ -176,7 +176,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
   holder->connected = true;
 
   if (state != nullptr) {
-    auto &v = state->buf;
+    std::vector<uint8_t> &v = state->buf;
 
     // Check that we can store all the data
     const size_t rem = v.capacity() - v.size() + state->bufPos;
@@ -374,7 +374,7 @@ static uint16_t getLocalPort(altcp_pcb *pcb) {
 
 bool ConnectionManager::isListening(const uint16_t port) const {
   const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb *const elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   return (it != listeners_.cend());
@@ -382,7 +382,7 @@ bool ConnectionManager::isListening(const uint16_t port) const {
 
 bool ConnectionManager::stopListening(const uint16_t port) {
   const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](const auto &elem) {
+      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb *const elem) {
         return (elem != nullptr) && (getLocalPort(elem) == port);
       });
   if (it == listeners_.cend()) {

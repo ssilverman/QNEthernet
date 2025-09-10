@@ -44,7 +44,7 @@ static void srv_txt(struct mdns_service *const service,
     return;
   }
 
-  for (const auto &item : list) {
+  for (const String &item : list) {
     const char *const txt = item.c_str();
     const uint8_t len =
         std::min(item.length(), (unsigned int)(MDNS_LABEL_MAXLEN));
