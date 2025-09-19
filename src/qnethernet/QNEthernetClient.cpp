@@ -626,6 +626,20 @@ tcp_state EthernetClient::status() const {
     return (R);                     \
   }
 
+// Gets the innermost PCB from the state. For altcp, the PCB's are nested.
+static inline tcp_pcb *innermost(
+    const std::unique_ptr<internal::ConnectionState> &state) {
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  return static_cast<tcp_pcb *>(innermost->state);
+#else
+  return state->pcb;
+#endif  // LWIP_ALTCP
+}
+
 bool EthernetClient::setNoDelay(const bool flag) {
   GET_STATE(false)
 
@@ -645,60 +659,24 @@ bool EthernetClient::isNoDelay() const {
 
 bool EthernetClient::setOutgoingDiffServ(const uint8_t ds) {
   GET_STATE(false)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  static_cast<tcp_pcb *>(innermost->state)->tos = ds;
-#else
-  state->pcb->tos = ds;
-#endif  // LWIP_ALTCP
+  innermost(state)->tos = ds;
   return true;
 }
 
 uint8_t EthernetClient::outgoingDiffServ() const {
   GET_STATE(0)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  return static_cast<tcp_pcb *>(innermost->state)->tos;
-#else
-  return state->pcb->tos;
-#endif  // LWIP_ALTCP
+  return innermost(state)->tos;
 }
 
 bool EthernetClient::setOutgoingTTL(const uint8_t ttl) {
   GET_STATE(false)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  static_cast<tcp_pcb *>(innermost->state)->ttl = ttl;
-#else
-  state->pcb->ttl = ttl;
-#endif  // LWIP_ALTCP
+  innermost(state)->ttl = ttl;
   return true;
 }
 
 uint8_t EthernetClient::outgoingTTL() const {
   GET_STATE(0)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  return static_cast<tcp_pcb *>(innermost->state)->ttl;
-#else
-  return state->pcb->ttl;
-#endif  // LWIP_ALTCP
+  return innermost(state)->ttl;
 }
 
 #undef GET_STATE
