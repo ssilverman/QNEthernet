@@ -617,6 +617,7 @@ tcp_state EthernetClient::status() const {
 }
 #endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
 
+// Gets the connection state and returns the given result if it doesn't exist.
 #define GET_STATE(R)                \
   if (conn_ == nullptr) {           \
     return (R);                     \
