@@ -202,92 +202,6 @@ EthernetClient::operator bool() {
   return true;
 }
 
-#define GET_STATE(R)                \
-  if (conn_ == nullptr) {           \
-    return (R);                     \
-  }                                 \
-  const auto &state = conn_->state; \
-  if (state == nullptr) {           \
-    return (R);                     \
-  }
-
-bool EthernetClient::setNoDelay(const bool flag) {
-  GET_STATE(false)
-
-  if (flag) {
-    altcp_nagle_disable(state->pcb);
-  } else {
-    altcp_nagle_enable(state->pcb);
-  }
-  return true;
-}
-
-bool EthernetClient::isNoDelay() const {
-  GET_STATE(false)
-
-  return altcp_nagle_disabled(state->pcb);
-}
-
-bool EthernetClient::setOutgoingDiffServ(const uint8_t ds) {
-  GET_STATE(false)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  static_cast<tcp_pcb *>(innermost->state)->tos = ds;
-#else
-  state->pcb->tos = ds;
-#endif  // LWIP_ALTCP
-  return true;
-}
-
-uint8_t EthernetClient::outgoingDiffServ() const {
-  GET_STATE(0)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  return static_cast<tcp_pcb *>(innermost->state)->tos;
-#else
-  return state->pcb->tos;
-#endif  // LWIP_ALTCP
-}
-
-bool EthernetClient::setOutgoingTTL(const uint8_t ttl) {
-  GET_STATE(false)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  static_cast<tcp_pcb *>(innermost->state)->ttl = ttl;
-#else
-  state->pcb->ttl = ttl;
-#endif  // LWIP_ALTCP
-  return true;
-}
-
-uint8_t EthernetClient::outgoingTTL() const {
-  GET_STATE(0)
-
-#if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
-  while (innermost->inner_conn != nullptr) {
-    innermost = innermost->inner_conn;
-  }
-  return static_cast<tcp_pcb *>(innermost->state)->ttl;
-#else
-  return state->pcb->ttl;
-#endif  // LWIP_ALTCP
-}
-
-#undef GET_STATE
-
 void EthernetClient::stop() {
   close(connTimeoutEnabled_);
 }
@@ -678,6 +592,10 @@ int EthernetClient::peek() {
 #undef CHECK_STATE
 #undef GET_STATE_AND_LOOP_OR_CLOSE
 
+// --------------------------------------------------------------------------
+//  State and Socket Options
+// --------------------------------------------------------------------------
+
 #if !LWIP_ALTCP || defined(LWIP_DEBUG)
 // LWIP_DEBUG is required for altcp_dbg_get_tcp_state(), but not for
 // tcp_dbg_get_tcp_state(), for some reason
@@ -698,6 +616,92 @@ tcp_state EthernetClient::status() const {
 #endif  // !LWIP_ALTCP
 }
 #endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
+
+#define GET_STATE(R)                \
+  if (conn_ == nullptr) {           \
+    return (R);                     \
+  }                                 \
+  const auto &state = conn_->state; \
+  if (state == nullptr) {           \
+    return (R);                     \
+  }
+
+bool EthernetClient::setNoDelay(const bool flag) {
+  GET_STATE(false)
+
+  if (flag) {
+    altcp_nagle_disable(state->pcb);
+  } else {
+    altcp_nagle_enable(state->pcb);
+  }
+  return true;
+}
+
+bool EthernetClient::isNoDelay() const {
+  GET_STATE(false)
+
+  return altcp_nagle_disabled(state->pcb);
+}
+
+bool EthernetClient::setOutgoingDiffServ(const uint8_t ds) {
+  GET_STATE(false)
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  static_cast<tcp_pcb *>(innermost->state)->tos = ds;
+#else
+  state->pcb->tos = ds;
+#endif  // LWIP_ALTCP
+  return true;
+}
+
+uint8_t EthernetClient::outgoingDiffServ() const {
+  GET_STATE(0)
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  return static_cast<tcp_pcb *>(innermost->state)->tos;
+#else
+  return state->pcb->tos;
+#endif  // LWIP_ALTCP
+}
+
+bool EthernetClient::setOutgoingTTL(const uint8_t ttl) {
+  GET_STATE(false)
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  static_cast<tcp_pcb *>(innermost->state)->ttl = ttl;
+#else
+  state->pcb->ttl = ttl;
+#endif  // LWIP_ALTCP
+  return true;
+}
+
+uint8_t EthernetClient::outgoingTTL() const {
+  GET_STATE(0)
+
+#if LWIP_ALTCP
+  altcp_pcb *innermost = state->pcb;
+  while (innermost->inner_conn != nullptr) {
+    innermost = innermost->inner_conn;
+  }
+  return static_cast<tcp_pcb *>(innermost->state)->ttl;
+#else
+  return state->pcb->ttl;
+#endif  // LWIP_ALTCP
+}
+
+#undef GET_STATE
 
 }  // namespace network
 }  // namespace qindesign
