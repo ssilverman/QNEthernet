@@ -441,7 +441,7 @@ class EthernetClass final {
   // address. This returns whether successful.
   //
   // If this returns false and there was an error then errno will be set.
-  bool hostByName(const char *hostname, IPAddress &ip);
+  bool hostByName(const char *hostname, IPAddress &ip) const;
 
  private:
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second

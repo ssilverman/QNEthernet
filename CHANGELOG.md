@@ -13,6 +13,7 @@ and this project adheres to
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
+* Made `EthernetClass::hostByName(hostname, result)` `const`.
 
 ## [0.32.0]
 

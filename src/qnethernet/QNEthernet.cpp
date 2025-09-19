@@ -751,7 +751,8 @@ void EthernetClass::setHostname(const char *const hostname) {
 #endif  // LWIP_NETIF_HOSTNAME
 }
 
-bool EthernetClass::hostByName(const char *const hostname, IPAddress &ip) {
+bool EthernetClass::hostByName(const char *const hostname,
+                               IPAddress &ip) const {
 #if LWIP_DNS
   if (netif_ == nullptr) {
     return false;
