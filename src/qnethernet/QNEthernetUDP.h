@@ -18,7 +18,9 @@
 #include <IPAddress.h>
 #include <Udp.h>
 
+#include "lwip/arch.h"
 #include "lwip/ip_addr.h"
+#include "lwip/pbuf.h"
 #include "lwip/udp.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
