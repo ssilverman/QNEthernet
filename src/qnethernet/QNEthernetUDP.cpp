@@ -16,6 +16,7 @@
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip.h"
+#include "lwip/ip4.h"
 #include "lwip/sys.h"
 #include "qnethernet/QNDNSClient.h"
 #include "qnethernet/util/ip_tools.h"
@@ -25,7 +26,7 @@ namespace qindesign {
 namespace network {
 
 // Total header size: Minimum IPv4 header size + UDP header size.
-static constexpr size_t kHeaderSize = 20 + 8;
+static constexpr size_t kHeaderSize = IP_HLEN + 8;
 
 // Maximum UDP payload size without fragmentation.
 static constexpr size_t kMaxPayloadSize =
