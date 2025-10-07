@@ -56,7 +56,7 @@ ConnectionManager &ConnectionManager::instance() {
 err_t ConnectionManager::connectedFunc(void *const arg,
                                        struct altcp_pcb *const tpcb,
                                        const err_t err) {
-  if (arg == nullptr || tpcb == nullptr) {
+  if (tpcb == nullptr) {
     return ERR_ARG;
   }
 
@@ -122,7 +122,7 @@ void ConnectionManager::errFunc(void *const arg, const err_t err) {
 // Data reception callback.
 err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
                                   struct pbuf *const p, const err_t err) {
-  if (arg == nullptr || tpcb == nullptr) {
+  if (tpcb == nullptr) {
     return ERR_ARG;
   }
 
@@ -216,7 +216,7 @@ err_t ConnectionManager::recvFunc(void *const arg, struct altcp_pcb *const tpcb,
 err_t ConnectionManager::acceptFunc(void *const arg,
                                     struct altcp_pcb *const newpcb,
                                     const err_t err) {
-  if (newpcb == nullptr || arg == nullptr) {
+  if (newpcb == nullptr) {
     return ERR_ARG;
   }
 
@@ -237,6 +237,7 @@ err_t ConnectionManager::acceptFunc(void *const arg,
   auto holder = std::make_shared<ConnectionHolder>();
   holder->lastError = err;
   holder->connected = true;
+  // The following sets the ConnectionHolder* as the PCB's arg
   holder->state = std::make_unique<ConnectionState>(newpcb, holder.get());
   holder->accepted = false;
   altcp_err(newpcb, &errFunc);
@@ -302,6 +303,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
 
   // Connect listeners
   auto holder = std::make_shared<ConnectionHolder>();
+  // The following sets the ConnectionHolder* as the PCB's arg
   holder->state = std::make_unique<ConnectionState>(pcb, holder.get());
   holder->accepted = true;
   altcp_err(pcb, &errFunc);

@@ -40,7 +40,7 @@ static constexpr size_t kMaxPossiblePayloadSize =
 void EthernetUDP::recvFunc(void *const arg, struct udp_pcb *const pcb,
                            struct pbuf *const p,
                            const ip_addr_t *const addr, const u16_t port) {
-  if (arg == nullptr || pcb == nullptr) {
+  if (pcb == nullptr) {
     return;
   }
 
