@@ -70,7 +70,6 @@ class DNSClient final {
  private:
   // DNS request state.
   struct Request final {
-    bool found = false;
     std::function<void(const ip_addr_t *)> callback;
     uint32_t startTime = 0;
     uint32_t timeout = 0;
