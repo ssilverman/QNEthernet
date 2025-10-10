@@ -46,10 +46,7 @@ EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
 
 EthernetClient::EthernetClient(
     const std::shared_ptr<internal::ConnectionHolder> conn)
-    : connTimeout_(1000),
-      pendingConnect_(false),
-      connTimeoutEnabled_(true),
-      conn_(conn) {}
+    : conn_(conn) {}
 
 EthernetClient::~EthernetClient() = default;
     // Questionable not to call close(), but copy semantics demand that we don't

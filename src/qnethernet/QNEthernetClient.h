@@ -272,9 +272,9 @@ class EthernetClient : public internal::ClientEx,
   bool getAddrInfo(bool local, ip_addr_t *addr, u16_t *port);
 
   // Connection state
-  uint32_t connTimeout_;
-  bool pendingConnect_;
-  bool connTimeoutEnabled_;
+  uint32_t connTimeout_    = 1000;
+  bool pendingConnect_     = false;
+  bool connTimeoutEnabled_ = true;
 
   std::shared_ptr<internal::ConnectionHolder> conn_;
       // If this has not been stopped then conn_ might still be non-NULL, so we

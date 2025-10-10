@@ -236,22 +236,22 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   bool isAvailable() const;
 
   // Received frame; updated every time one is received
-  std::vector<Frame> inBuf_;  // Holds received frames
-  size_t inBufTail_;
-  size_t inBufHead_;
-  size_t inBufSize_;
+  std::vector<Frame> inBuf_(1);  // Holds received frames
+  size_t inBufTail_ = 0;
+  size_t inBufHead_ = 0;
+  size_t inBufSize_ = 0;
 
   // Frame being processed by the caller
   Frame frame_;   // Holds the frame being read
-  int framePos_;  // -1 if not currently reading a frame
+  int framePos_ = -1;  // -1 if not currently reading a frame
 
   // Outgoing frames
-  bool hasOutFrame_;
+  bool hasOutFrame_ = false;
   Frame outFrame_;
 
   // Stats
-  uint32_t droppedReceiveCount_;
-  uint32_t totalReceiveCount_;
+  uint32_t droppedReceiveCount_ = 0;
+  uint32_t totalReceiveCount_   = 0;
 
   friend class StaticInit<EthernetFrameClass>;
   friend err_t ::unknown_eth_protocol(struct pbuf *p, struct netif *netif);

@@ -16,10 +16,7 @@ class CircularBuffer {
  public:
   explicit CircularBuffer(size_t capacity)
       : capacity_(capacity),
-        buf_{std::make_unique<T[]>(capacity)},
-        size_(0),
-        head_(0),
-        tail_(0) {}
+        buf_{std::make_unique<T[]>(capacity)} {}
 
   bool empty() const {
     return size_ == 0;
@@ -79,7 +76,7 @@ class CircularBuffer {
 
   std::unique_ptr<T[]> buf_;
 
-  size_t size_;
-  size_t head_;
-  size_t tail_;
+  size_t size_ = 0;
+  size_t head_ = 0;
+  size_t tail_ = 0;
 };

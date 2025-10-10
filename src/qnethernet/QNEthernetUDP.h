@@ -288,31 +288,31 @@ class EthernetUDP : public UDP,
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
 
-  udp_pcb *pcb_;
+  udp_pcb *pcb_ = nullptr;
 
   // Listening parameters
-  bool listening_;
-  bool listenReuse_;
-  bool listeningMulticast_;
+  bool listening_          = false;
+  bool listenReuse_        = false;
+  bool listeningMulticast_ = false;
   IPAddress multicastIP_;
 
   // Received packet; updated every time one is received
   std::vector<Packet> inBuf_;  // Holds received packets
-  size_t inBufTail_;
-  size_t inBufHead_;
-  size_t inBufSize_;
+  size_t inBufTail_ = 0;
+  size_t inBufHead_ = 0;
+  size_t inBufSize_ = 0;
 
   // Packet being processed by the caller
-  Packet packet_;  // Holds the packet being read
-  int packetPos_;  // -1 if not currently reading a packet
+  Packet packet_;       // Holds the packet being read
+  int packetPos_ = -1;  // -1 if not currently reading a packet
 
   // Outgoing packets
   Packet outPacket_;
-  bool hasOutPacket_;
+  bool hasOutPacket_ = false;
 
   // Stats
-  uint32_t droppedReceiveCount_;
-  uint32_t totalReceiveCount_;
+  uint32_t droppedReceiveCount_ = 0;
+  uint32_t totalReceiveCount_   = 0;
 };
 
 }  // namespace network

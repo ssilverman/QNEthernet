@@ -164,8 +164,8 @@ class MDNSClass final {
   int findService(const char *name, const char *type,
                   const char *protocol, uint16_t port);
 
-  struct netif *netif_;
-  char hostname_[MDNS_LABEL_MAXLEN + 1];
+  struct netif *netif_ = nullptr;
+  char hostname_[MDNS_LABEL_MAXLEN + 1]{'\0'};
 
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];

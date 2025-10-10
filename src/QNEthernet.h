@@ -476,22 +476,22 @@ class EthernetClass final {
   // Driver configuration
   DriverCapabilities driverCapabilities_;
 
-  int chipSelectPin_;
+  int chipSelectPin_ = -1;
 
-  uint32_t lastPollTime_;
+  uint32_t lastPollTime_ = 0;
 
-  bool hasMAC_;
+  bool hasMAC_ = false;
   uint8_t mac_[kMACAddrSize];
 #if LWIP_NETIF_HOSTNAME
-  char hostname_[256];  // Empty means no hostname
+  char hostname_[256]{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
-  struct netif *netif_;
-  char ifName_[6];  // Two letters plus up to 3-digit number
+  struct netif *netif_ = nullptr;
+  char ifName_[6]{'\0'};  // Two letters plus up to 3-digit number
 
 #if LWIP_DHCP
-  bool dhcpEnabled_;
-  bool dhcpDesired_;  // Whether the user wants static or dynamic IP
-  bool dhcpActive_;
+  bool dhcpEnabled_ = true;
+  bool dhcpDesired_ = false;  // Whether the user wants static or dynamic IP
+  bool dhcpActive_  = false;
 #endif  // LWIP_DHCP
 
   // Callbacks
