@@ -434,6 +434,8 @@ int EthernetUDP::endPacket() {
   if (!outPacket_.data.empty() &&
       (err = pbuf_take(p, outPacket_.data.data(), outPacket_.data.size())) != ERR_OK) {
     pbuf_free(p);
+    outPacket_.clear();
+    Ethernet.loop();  // Allow the stack to move along
     errno = err_to_errno(err);
     return false;
   }
