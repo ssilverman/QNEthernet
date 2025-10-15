@@ -406,24 +406,25 @@ bool EthernetUDP::beginPacket(const ip_addr_t *const ipaddr,
   //   outPacket_.data.reserve(kMaxPayloadSize);
   // }
 
-  outPacket_.addr = *ipaddr;
-  outPacket_.port = port;
-  hasOutPacket_ = true;
-  outPacket_.data.clear();
+  outPacket_.has_value = true;
+  outPacket_.value.addr = *ipaddr;
+  outPacket_.value.port = port;
+  outPacket_.value.data.clear();
   return true;
 }
 
 int EthernetUDP::endPacket() {
-  if (!hasOutPacket_) {
+  if (!outPacket_.has_value) {
     return false;
   }
-  hasOutPacket_ = false;
+  Packet &op = outPacket_.value;
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *const p =
-      pbuf_alloc(PBUF_TRANSPORT, outPacket_.data.size(), PBUF_RAM);
+  struct pbuf *const p = pbuf_alloc(PBUF_TRANSPORT, op.data.size(), PBUF_RAM);
   if (p == nullptr) {
-    outPacket_.clear();
+    op.clear();
+    outPacket_.has_value = false;
+
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
     return false;
@@ -431,10 +432,13 @@ int EthernetUDP::endPacket() {
 
   // pbuf_take() considers NULL data an error
   err_t err;
-  if (!outPacket_.data.empty() &&
-      (err = pbuf_take(p, outPacket_.data.data(), outPacket_.data.size())) != ERR_OK) {
+  if (!op.data.empty() &&
+      (err = pbuf_take(p, op.data.data(), op.data.size())) != ERR_OK) {
     pbuf_free(p);
-    outPacket_.clear();
+
+    op.clear();
+    outPacket_.has_value = false;
+
     Ethernet.loop();  // Allow the stack to move along
     errno = err_to_errno(err);
     return false;
@@ -443,18 +447,20 @@ int EthernetUDP::endPacket() {
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
   // if there are no internal TX buffers available
   do {
-    err = udp_sendto(pcb_, p, &outPacket_.addr, outPacket_.port);
+    err = udp_sendto(pcb_, p, &op.addr, op.port);
     if (err != ERR_WOULDBLOCK) {
       break;
     }
 
     // udp_sendto() may have added a header
-    if (p->tot_len > outPacket_.data.size()) {
-      pbuf_remove_header(p, p->tot_len - outPacket_.data.size());
+    if (p->tot_len > op.data.size()) {
+      pbuf_remove_header(p, p->tot_len - op.data.size());
     }
   } while (true);
 
-  outPacket_.clear();
+  op.clear();
+  outPacket_.has_value = false;
+
   pbuf_free(p);
 
   if (err != ERR_OK) {

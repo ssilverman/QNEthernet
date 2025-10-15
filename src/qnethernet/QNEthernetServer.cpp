@@ -17,13 +17,8 @@
 namespace qindesign {
 namespace network {
 
-EthernetServer::EthernetServer()
-    : hasPort_(false),
-      port_(0) {}
-
 EthernetServer::EthernetServer(const uint16_t port)
-    : hasPort_(true),
-      port_(port) {}
+    : port_{true, port} {}
 
 EthernetServer::~EthernetServer() {
   end();
@@ -72,8 +67,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
   const int32_t p = internal::ConnectionManager::instance().listen(port, reuse);
   if (p > 0) {
     listeningPort_ = p;
-    port_ = (port == 0) ? 0 : p;
-    hasPort_ = true;
+    port_ = {true, (port == 0) ? 0 : p};
     reuse_ = reuse;
     return true;
   }
@@ -85,8 +79,7 @@ void EthernetServer::end() {
     internal::ConnectionManager::instance().stopListening(listeningPort_);
     listeningPort_ = 0;
   }
-  port_ = 0;
-  hasPort_ = false;
+  port_ = {false, 0};
 }
 
 EthernetClient EthernetServer::accept() const {

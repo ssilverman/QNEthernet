@@ -24,6 +24,7 @@
 #include "qnethernet/QNEthernetUDP.h"
 #include "qnethernet/QNMDNS.h"
 #include "qnethernet/StaticInit.h"
+#include "qnethernet/internal/optional.h"
 #include "qnethernet/lwip_driver.h"
 #include "qnethernet/security/RandomDevice.h"
 #include "qnethernet/util/PrintUtils.h"
@@ -480,8 +481,7 @@ class EthernetClass final {
 
   uint32_t lastPollTime_ = 0;
 
-  bool hasMAC_ = false;
-  uint8_t mac_[kMACAddrSize];
+  internal::optional<uint8_t[kMACAddrSize]> mac_;
 #if LWIP_NETIF_HOSTNAME
   char hostname_[256]{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME

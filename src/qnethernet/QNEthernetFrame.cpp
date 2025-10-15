@@ -93,8 +93,10 @@ void EthernetFrameClass::Frame::clear() {
 
 void EthernetFrameClass::clear() {
   // Outgoing
-  hasOutFrame_ = false;
-  outFrame_.clear();
+  if (outFrame_.has_value) {
+    outFrame_.value.clear();
+    outFrame_.has_value = false;
+  }
 
   // Incoming
   for (Frame &f : inBuf_) {
@@ -233,12 +235,13 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
 
 void EthernetFrameClass::beginFrame() {
   // Don't reserve memory because that might exhaust the heap
-  // if (outFrame_.data.capacity() < maxFrameLen()) {
-  //   outFrame_.data.reserve(maxFrameLen());
+  // outFrame_.has_value = true;
+  // if (outFrame_.value.data.capacity() < maxFrameLen()) {
+  //   outFrame_.value.data.reserve(maxFrameLen());
   // }
 
-  hasOutFrame_ = true;
-  outFrame_.data.clear();
+  outFrame_.has_value = true;
+  outFrame_.value.data.clear();
 }
 
 void EthernetFrameClass::beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
@@ -263,14 +266,14 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
 }
 
 bool EthernetFrameClass::endFrame() {
-  if (!hasOutFrame_) {
+  if (!outFrame_.has_value) {
     return false;
   }
-  hasOutFrame_ = false;
 
-  const bool retval =
-      enet_output_frame(outFrame_.data.data(), outFrame_.data.size());
-  outFrame_.clear();
+  const bool retval = enet_output_frame(outFrame_.value.data.data(),
+                                        outFrame_.value.data.size());
+  outFrame_.value.clear();
+  outFrame.has_value = false;
   return retval;
 }
 

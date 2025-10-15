@@ -24,6 +24,7 @@
 #include "lwip_driver.h"
 #include "qnethernet/StaticInit.h"
 #include "qnethernet/internal/PrintfChecked.h"
+#include "qnethernet/internal/optional.h"
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
@@ -246,8 +247,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   int framePos_ = -1;  // -1 if not currently reading a frame
 
   // Outgoing frames
-  bool hasOutFrame_ = false;
-  Frame outFrame_;
+  internal::optional<Frame> outFrame_;
 
   // Stats
   uint32_t droppedReceiveCount_ = 0;

@@ -18,6 +18,7 @@
 #include <Server.h>
 
 #include "qnethernet/QNEthernetClient.h"
+#include "qnethernet/internal/optional.h"
 #include "qnethernet/internal/PrintfChecked.h"
 
 namespace qindesign {
@@ -25,7 +26,7 @@ namespace network {
 
 class EthernetServer : public Server, public internal::PrintfChecked {
  public:
-  EthernetServer();
+  EthernetServer() = default;
   explicit EthernetServer(uint16_t port);
 
   // Disallow copying but allow moving
@@ -122,8 +123,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
  private:
   bool begin(uint16_t port, bool reuse);
 
-  bool hasPort_;
-  uint16_t port_;       // Zero means let the system choose a port
+  internal::optional<uint16_t>
+      port_;            // Zero means let the system choose a port
   bool reuse_ = false;  // Whether the SO_REUSEADDR socket option is set
 
   // The listening port may be different from the requested port, say if the

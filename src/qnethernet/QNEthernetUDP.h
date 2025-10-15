@@ -24,6 +24,7 @@
 #include "lwip/udp.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
+#include "qnethernet/internal/optional.h"
 
 namespace qindesign {
 namespace network {
@@ -307,8 +308,7 @@ class EthernetUDP : public UDP,
   int packetPos_ = -1;  // -1 if not currently reading a packet
 
   // Outgoing packets
-  Packet outPacket_;
-  bool hasOutPacket_ = false;
+  internal::optional<Packet> outPacket_;
 
   // Stats
   uint32_t droppedReceiveCount_ = 0;
