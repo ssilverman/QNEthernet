@@ -13,6 +13,7 @@
 // C++ includes
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 #include <vector>
 
 #include <Stream.h>
@@ -191,6 +192,11 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // with the receive function if called from an ISR.
   void setReceiveQueueCapacity(size_t capacity);
 
+  // Gets the IEEE 1588 timestamp for the received frame and assigns it to the
+  // `timestamp` parameter, if available. This returns whether the received
+  // frame has a timestamp.
+  bool timestamp(timespec &timestamp) const;
+
   // Returns the receive queue capacity.
   size_t receiveQueueCapacity() const {
     return inBuf_.size();
@@ -221,6 +227,8 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
  private:
   struct Frame final {
     std::vector<uint8_t> data;
+    volatile bool hasTimestamp = false;
+    timespec timestamp{0, 0};
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
 
     // Clears all the data.
