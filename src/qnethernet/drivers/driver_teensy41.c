@@ -14,10 +14,13 @@
 #include <stdalign.h>
 #include <stdatomic.h>
 #include <string.h>
+#include <math.h>
 
 #include <avr/pgmspace.h>
 #include <core_pins.h>
 #include <imxrt.h>
+#include <pgmspace.h>
+#include <util/atomic.h>
 
 #include "lwip/arch.h"
 #include "lwip/err.h"
@@ -305,6 +308,15 @@ static int s_checkLinkStatusState = 0;
 static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
 static bool s_linkIsCrossover   = false;
+
+// Is Ethernet initialized?
+static bool isInitialized = false;
+
+// IEEE 1588
+static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
+static volatile bool doTimestampNext = false;
+static volatile bool hasTxTimestamp = false;
+static volatile struct timespec txTimestamp = {0, 0};
 
 // Forward declarations
 static void enet_isr(void);
@@ -648,6 +660,16 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
       arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       pbuf_take(p, pBD->buffer, p->tot_len);
+      p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
+      if (p->timestampValid) {
+        enet_ieee1588_read_timer(&p->timestamp);
+        if ((unsigned long)p->timestamp.tv_nsec < pBD->timestamp) {
+          // The timer has wrapped around
+          p->timestamp.tv_sec--;
+        }
+        p->timestamp.tv_nsec = pBD->timestamp;
+      }
+      LINK_STATS_INC(link.recv);
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
@@ -682,6 +704,14 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
                 kEnetTxBdTransmitCrc          |
                 kEnetTxBdLast                 |
                 kEnetTxBdReady;
+
+  hasTxTimestamp = false;  // The timestamp isn't yet available
+  if (doTimestampNext) {
+    doTimestampNext = false;
+    pBD->extend1 |= kEnetTxBdTimestamp;
+  } else {
+    pBD->extend1 &= ~kEnetTxBdTimestamp;
+  }
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
@@ -722,6 +752,18 @@ static void enet_isr(void) {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
     atomic_flag_clear(&s_rxNotAvail);
+  }
+
+  if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
+    ENET_EIR = ENET_EIR_TS_TIMER;
+    ieee1588Seconds++;
+  }
+
+  if ((ENET_EIR & ENET_EIR_TS_AVAIL) != 0) {
+    ENET_EIR = ENET_EIR_TS_AVAIL;
+    hasTxTimestamp = true;
+    txTimestamp.tv_sec = ieee1588Seconds;
+    txTimestamp.tv_nsec = ENET_ATSTMP;
   }
 }
 
@@ -970,6 +1012,10 @@ FLASHMEM bool driver_init(void) {
   attachInterruptVector(IRQ_ENET, &enet_isr);
   NVIC_ENABLE_IRQ(IRQ_ENET);
 
+  // Set the IEEE 1588 timestamp to zero, in case it's used but not enabled
+  ENET_ATVR = 0;
+  ieee1588Seconds = 0;
+
   // Last few things to do
   ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
   atomic_flag_test_and_set(&s_rxNotAvail);
@@ -992,6 +1038,19 @@ FLASHMEM bool driver_init(void) {
 void unused_interrupt_vector(void);  // startup.c
 
 FLASHMEM void driver_deinit(void) {
+  struct netif *s_netif = enet_netif();
+
+  isInitialized = false;
+
+  enet_ieee1588_deinit();
+  netif_set_addr(s_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+  netif_set_link_down(s_netif);
+  netif_set_down(s_netif);
+
+  // Restore state
+  // grrrr: the following should already have been done in enet_deinit 
+//  memset(s_mac, 0, sizeof(s_mac));
+
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1201,5 +1260,293 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
+// --------------------------------------------------------------------------
+//  IEEE 1588 functions
+// --------------------------------------------------------------------------
+
+#define ENET_ATCR_SLAVE    ((uint32_t)(1U << 13))
+#define ENET_ATCR_CAPTURE  ((uint32_t)(1U << 11))
+#define ENET_ATCR_RESTART  ((uint32_t)(1U << 9))
+#define ENET_ATCR_PINPER   ((uint32_t)(1U << 7))
+#define ENET_ATCR_Reserved ((uint32_t)(1U << 5))  // Spec says always write a 1
+#define ENET_ATCR_PEREN    ((uint32_t)(1U << 4))
+#define ENET_ATCR_OFFRST   ((uint32_t)(1U << 3))
+#define ENET_ATCR_OFFEN    ((uint32_t)(1U << 2))
+#define ENET_ATCR_EN       ((uint32_t)(1U << 0))
+
+#define ENET_ATCOR_COR_MASK    (0x7fffffffU)
+#define ENET_ATINC_INC_MASK    (0x00007f00U)
+#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
+#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
+
+#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
+#define F_ENET_TS_CLK (25 * 1000 * 1000)
+
+#define ENET_TCSR_TMODE_MASK (0x0000003cU)
+#define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
+
+#define ENET_TCSR_TPWC_MASK  ((uint32_t)(0x1f << 11))
+#define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
+
+#define ENET_TCSR_TF         ((uint32_t)(1U << 7))
+
+#define ENET_TCSR_TIE_MASK   ((uint32_t)(1U << 6))
+#define ENET_TCSR_TIE(n)     ((uint32_t)(((n) & 0x01) << 6))
+
+void enet_ieee1588_init() {
+  ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
+  ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
+  ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET_ATCOR = 0;                                      // Start with no corr.
+  while ((ENET_ATCR & ENET_ATCR_RESTART) != 0) {
+    // Wait for bit to clear before being able to write to ATCR
+  }
+
+  // Reset the seconds counter to zero
+  ieee1588Seconds = 0;
+
+  // Enable the timer and periodic event
+  ENET_ATCR = ENET_ATCR_PINPER | ENET_ATCR_Reserved | ENET_ATCR_PEREN |
+              ENET_ATCR_EN;
+
+  ENET_EIMR |= ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER;
+}
+
+void enet_ieee1588_deinit() {
+  ENET_EIMR &= ~(ENET_EIMR_TS_AVAIL | ENET_EIMR_TS_TIMER);
+  ENET_ATCR = ENET_ATCR_Reserved;
+}
+
+bool enet_ieee1588_is_enabled() {
+  return ((ENET_ATCR & ENET_ATCR_EN) != 0);
+}
+
+bool enet_ieee1588_read_timer(struct timespec *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    t->tv_sec = ieee1588Seconds;
+
+    ENET_ATCR |= ENET_ATCR_CAPTURE;
+    while ((ENET_ATCR & ENET_ATCR_CAPTURE) != 0) {
+      // Wait for bit to clear
+    }
+    t->tv_nsec = ENET_ATVR;
+
+    // The timer could have wrapped while we were doing stuff
+    // Leave the interrupt set so that our internal timer will catch it
+    if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
+      t->tv_sec++;
+    }
+  }
+
+  return true;
+}
+
+bool enet_ieee1588_write_timer(const struct timespec *t) {
+  if (t == NULL) {
+    return false;
+  }
+
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    ieee1588Seconds = t->tv_sec;
+    ENET_ATVR = t->tv_nsec;
+  }
+
+  return true;
+}
+
+bool enet_ieee1588_offset_timer(int64_t ns){
+  struct timespec tm;
+  if(!enet_ieee1588_read_timer(&tm)){
+    return false;
+  }
+  int64_t t = (((int64_t)tm.tv_sec) * NANOSECONDS_PER_SECOND) + ((int64_t)tm.tv_nsec);
+  t += ns;
+  tm.tv_nsec = t % NANOSECONDS_PER_SECOND;
+  tm.tv_sec = t / NANOSECONDS_PER_SECOND;
+  return enet_ieee1588_write_timer(&tm);
+}
+
+void enet_ieee1588_timestamp_next_frame() {
+  doTimestampNext = true;
+}
+
+bool enet_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    if (hasTxTimestamp) {
+      hasTxTimestamp = false;
+      if (timestamp != NULL) {
+        timestamp->tv_sec = txTimestamp.tv_sec;
+        timestamp->tv_nsec = txTimestamp.tv_nsec;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+bool enet_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+  if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
+    return false;
+  }
+  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
+  ENET_ATCOR = corrPeriod & ENET_ATCOR_COR_MASK;
+  return true;
+}
+
+bool enet_ieee1588_adjust_freq(double nsps) {
+  if (nsps == 0) {
+    ENET_ATCOR = 0;
+    return true;
+  }
+
+  uint32_t inc = NANOSECONDS_PER_SECOND / F_ENET_TS_CLK;
+
+  if (nsps < 0) {
+    // Slow down
+    inc--;
+    nsps = -nsps;
+  } else {
+    // Speed up
+    inc++;
+  }
+  return enet_ieee1588_adjust_timer(inc, round(F_ENET_TS_CLK / nsps));
+}
+
+// Channels
+
+static volatile uint32_t *tcsrReg(int channel) {
+  switch (channel) {
+    case 0: return &ENET_TCSR0;
+    case 1: return &ENET_TCSR1;
+    case 2: return &ENET_TCSR2;
+    case 3: return &ENET_TCSR3;
+    default:
+      return NULL;
+  }
+}
+
+static volatile uint32_t *tccrReg(int channel) {
+  switch (channel) {
+    case 0: return &ENET_TCCR0;
+    case 1: return &ENET_TCCR1;
+    case 2: return &ENET_TCCR2;
+    case 3: return &ENET_TCCR3;
+    default:
+      return NULL;
+  }
+
+}
+
+bool enet_ieee1588_set_channel_mode(int channel, int mode) {
+  if (channel < 0 || channel > 3){
+    return false;
+  }
+  
+  if (mode < 0 || mode > 15 || mode == 8 || mode == 12 || mode == 13) {//Check for reserverd modes
+    return false;
+  }
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+
+  uint32_t state = *tcsr; // Backup current state
+  *tcsr = 0;
+  while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
+    // Check until the channel is disabled
+  }
+  CLRSET(state,ENET_TCSR_TMODE_MASK,ENET_TCSR_TMODE(mode));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
+
+  return true;
+}
+
+bool enet_ieee1588_set_channel_output_pulse_width(int channel,
+                                                  int pulseWidth) {       
+  if (channel < 0 || channel > 3){
+    return false;
+  }
+  
+  if (pulseWidth < 1 || 32 < pulseWidth) {
+    return false;
+  }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  uint32_t state = *tcsr; // Backup current state
+  *tcsr = 0;
+  while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
+    // Check until the channel is disabled
+  }
+  CLRSET(state,ENET_TCSR_TPWC_MASK,ENET_TCSR_TPWC(pulseWidth - 1));
+  *tcsr = state;
+  while (*tcsr != state) {
+    // Check until the channel is enabled
+  }
+  return true;
+}
+
+bool enet_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+  volatile uint32_t *tccr = tccrReg(channel);
+  if (tccr == NULL) {
+    return false;
+  }
+  *tccr = value;
+  return true;
+}
+
+bool enet_ieee1588_get_channel_compare_value(int channel, uint32_t *value) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+  volatile uint32_t *tccr = tccrReg(channel);
+  if (tccr == NULL) {
+    return false;
+  }
+  *value = *tccr;
+  return true;
+}
+
+bool enet_ieee1588_get_and_clear_channel_status(int channel) {
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  if ((*tcsr & ENET_TCSR_TF) != 0) {
+    *tcsr |= ENET_TCSR_TF;
+    ENET_TGSR = (1 << channel);
+    return true;
+  }
+  return false;
+}
+
+bool enet_ieee1588_set_channel_interrupt_enable(int channel, bool enable){
+  if (channel < 0 || channel > 3) {
+    return false;
+  }
+
+  volatile uint32_t *tcsr = tcsrReg(channel);
+  if (tcsr == NULL) {
+    return false;
+  }
+  CLRSET(*tcsr,ENET_TCSR_TIE_MASK,ENET_TCSR_TIE(enable));
+  return true;
+}
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41
