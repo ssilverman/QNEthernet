@@ -4,6 +4,8 @@
 // optional.h defines a simple "optional" implementation.
 // This file is part of the QNEthernet library.
 
+#pragma once
+
 namespace qindesign {
 namespace network {
 namespace internal {
