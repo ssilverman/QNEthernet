@@ -75,6 +75,12 @@ class PixelPusherServer final {
   PixelPusherServer() = default;
   ~PixelPusherServer();
 
+  // Disallow copying, but allow moving
+  PixelPusherServer(const PixelPusherServer &) = delete;
+  PixelPusherServer(PixelPusherServer &&) = default;
+  PixelPusherServer &operator=(const PixelPusherServer &) = delete;
+  PixelPusherServer &operator=(PixelPusherServer &&) = default;
+
   // Initializes the server and starts listening for pixel data on the
   // specified port. This uses the current Ethernet information. This
   // should be called whenever the Ethernet information changes.

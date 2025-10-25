@@ -26,7 +26,6 @@ class OctoWS2811Receiver : public Receiver {
   OctoWS2811Receiver(PixelPusherServer &pp,
                      size_t numStrips,
                      size_t pixelsPerStrip);
-  ~OctoWS2811Receiver() override = default;
 
   // Initializes the receiver. This performs tasks that can't be done
   // upon program creation. For example, OctoWS2811::begin() can't be
