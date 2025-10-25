@@ -74,7 +74,6 @@ class ConnectionManager final {
 
  private:
   ConnectionManager() = default;
-  ~ConnectionManager() = default;
 
   static err_t connectedFunc(void *arg, struct altcp_pcb *tpcb, err_t err);
   static void errFunc(void *arg, err_t err);

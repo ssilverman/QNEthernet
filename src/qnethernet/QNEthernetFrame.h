@@ -41,10 +41,6 @@ namespace network {
 // 3. IPv6 (0x86DD) (if enabled)
 class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
  public:
-  // EthernetFrameClass is neither copyable nor movable
-  EthernetFrameClass(const EthernetFrameClass &) = delete;
-  EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
-
   // Returns the maximum frame length. This includes any padding and the 4-byte
   // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
   //
@@ -230,6 +226,10 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
   EthernetFrameClass();
   ~EthernetFrameClass() = default;
+
+  // EthernetFrameClass is neither copyable nor movable
+  EthernetFrameClass(const EthernetFrameClass &) = delete;
+  EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
 
   static err_t recvFunc(struct pbuf *p, struct netif *netif);
 

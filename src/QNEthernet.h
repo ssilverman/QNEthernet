@@ -57,11 +57,6 @@ class EthernetClass final {
  public:
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
 
-  // EthernetClass is neither copyable nor movable
-  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
-  EthernetClass(const EthernetClass &) = delete;
-  EthernetClass &operator=(const EthernetClass &) = delete;
-
   // Returns a string containing the library version number.
   static const char *libraryVersion() {
     return "0.33.0-snapshot";
@@ -451,6 +446,11 @@ class EthernetClass final {
   EthernetClass();
 
   ~EthernetClass();
+
+  // EthernetClass is neither copyable nor movable
+  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
+  EthernetClass(const EthernetClass &) = delete;
+  EthernetClass &operator=(const EthernetClass &) = delete;
 
   static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t *args);

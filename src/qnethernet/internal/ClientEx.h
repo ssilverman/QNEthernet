@@ -22,6 +22,13 @@ class ClientEx : public Client {
   ClientEx() = default;
   virtual ~ClientEx() = default;
 
+  // Rule of five
+  // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
+  ClientEx(const ClientEx &) = default;
+  ClientEx(ClientEx &&) = default;
+  ClientEx &operator=(const ClientEx &) = default;
+  ClientEx &operator=(ClientEx &&) = default;
+
   // Local and remote IP address and port
 
   // Returns the local IP address for this connection or INADDR_NONE if this

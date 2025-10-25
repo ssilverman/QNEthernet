@@ -26,10 +26,6 @@ namespace network {
 // MDNS provides mDNS responder functionality.
 class MDNSClass final {
  public:
-  // MDNSClass is neither copyable nor movable
-  MDNSClass(const MDNSClass &) = delete;
-  MDNSClass &operator=(const MDNSClass &) = delete;
-
   // Returns the maximum number of services this can support.
   static constexpr int maxServices() {
     return MDNS_MAX_SERVICES;
@@ -136,7 +132,6 @@ class MDNSClass final {
   class Service final {
    public:
     Service();
-    ~Service() = default;
 
     void set(bool valid, const char *name, const char *type,
              enum mdns_sd_proto proto, uint16_t port,
@@ -158,6 +153,10 @@ class MDNSClass final {
 
   MDNSClass();
   ~MDNSClass();
+
+  // MDNSClass is neither copyable nor movable
+  MDNSClass(const MDNSClass &) = delete;
+  MDNSClass &operator=(const MDNSClass &) = delete;
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.

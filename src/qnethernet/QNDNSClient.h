@@ -78,6 +78,11 @@ class DNSClient final {
   DNSClient() = delete;
   ~DNSClient() = delete;
 
+  // Disallow copying and moving
+  // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
+  DNSClient(const DNSClient &) = delete;
+  DNSClient &operator=(const DNSClient &) = delete;
+
   static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
                            void *callback_arg);
 };
