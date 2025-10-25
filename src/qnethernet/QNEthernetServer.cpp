@@ -25,24 +25,24 @@ EthernetServer::~EthernetServer() {
 }
 
 int32_t EthernetServer::port() const {
-  if (!hasPort_) {
+  if (!port_.has_value) {
     return -1;
   }
-  return (listeningPort_ > 0) ? listeningPort_ : port_;
+  return (listeningPort_ > 0) ? listeningPort_ : port_.value;
 }
 
 void EthernetServer::begin() {
-  if (!hasPort_) {
+  if (!port_.has_value) {
     return;
   }
-  begin(port_, false);
+  begin(port_.value, false);
 }
 
 bool EthernetServer::beginWithReuse() {
-  if (!hasPort_) {
+  if (!port_.has_value) {
     return false;
   }
-  return begin(port_, true);
+  return begin(port_.value, true);
 }
 
 bool EthernetServer::begin(const uint16_t port) {
@@ -57,7 +57,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
   // Only call end() if parameters have changed
   if (listeningPort_ > 0) {
     // If the request port is zero then choose another port
-    if (port != 0 && port_ == port && reuse_ == reuse) {
+    if ((port != 0) && (port_ == port) && (reuse_ == reuse)) {
       return true;
     }
     end();  // TODO: Should we call end() only if the new begin is successful?
@@ -67,7 +67,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
   const int32_t p = internal::ConnectionManager::instance().listen(port, reuse);
   if (p > 0) {
     listeningPort_ = p;
-    port_ = {true, (port == 0) ? 0 : p};
+    port_ = {true, (port == 0) ? uint16_t{0} : static_cast<uint16_t>(p)};
     reuse_ = reuse;
     return true;
   }

@@ -163,7 +163,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
   }
 
   mac_.has_value = true;
-  std::copy_n(mac, kMACAddrSize, mac_);
+  std::copy_n(mac, kMACAddrSize, mac_.value);
 
   if (netif_ == nullptr) {
     return;
@@ -302,7 +302,7 @@ bool EthernetClass::start() {
     return false;
   }
 
-  enet_get_mac(mac_);
+  enet_get_mac(mac_.value);
 
 #if LWIP_NETIF_HOSTNAME
   if (std::strlen(hostname_) == 0) {
@@ -447,10 +447,10 @@ bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
     }
   }
   std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
-  std::copy_n(mac, kMACAddrSize, mac_);
+  std::copy_n(mac, kMACAddrSize, mac_.value);
 
   if (!begin(ip, subnet, gateway, dns)) {
-    std::copy_n(m2, kMACAddrSize, mac_);  // Restore the previous
+    std::copy_n(m2, kMACAddrSize, mac_.value);  // Restore the previous
     return false;
   }
 

@@ -548,35 +548,36 @@ bool EthernetUDP::send(const ip_addr_t *const ipaddr, const uint16_t port,
 }
 
 size_t EthernetUDP::write(const uint8_t b) {
-  if (!hasOutPacket_) {
+  if (!outPacket_.has_value) {
     return 0;
   }
-  if (outPacket_.data.size() >= kMaxPossiblePayloadSize) {
+  if (outPacket_.value.data.size() >= kMaxPossiblePayloadSize) {
     return 0;
   }
-  outPacket_.data.push_back(b);
+  outPacket_.value.data.push_back(b);
   return 1;
 }
 
 size_t EthernetUDP::write(const uint8_t *const buffer, const size_t size) {
-  if (!hasOutPacket_ || size == 0) {
+  if (!outPacket_.has_value || size == 0) {
     return 0;
   }
   const size_t actualSize =
-      std::min(kMaxPossiblePayloadSize - outPacket_.data.size(), size);
-  outPacket_.data.insert(outPacket_.data.end(), &buffer[0],
-                         &buffer[actualSize]);
+      std::min(kMaxPossiblePayloadSize - outPacket_.value.data.size(), size);
+  outPacket_.value.data.insert(outPacket_.value.data.end(), &buffer[0],
+                               &buffer[actualSize]);
   return actualSize;
 }
 
 int EthernetUDP::availableForWrite() {
-  if (!hasOutPacket_) {
+  if (!outPacket_.has_value) {
     return 0;
   }
-  if (outPacket_.data.size() > kMaxPossiblePayloadSize) {
+  if (outPacket_.value.data.size() > kMaxPossiblePayloadSize) {
     return 0;
   }
-  return static_cast<int>(kMaxPossiblePayloadSize - outPacket_.data.size());
+  return static_cast<int>(kMaxPossiblePayloadSize -
+                          outPacket_.value.data.size());
 }
 
 }  // namespace network

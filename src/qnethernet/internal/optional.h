@@ -17,6 +17,10 @@ template <typename T>
 struct optional {
   bool has_value = false;
   T value{};
+
+  bool operator==(const T &t) {
+    return has_value && (value == t);
+  }
 };
 
 }  // namespace internal
