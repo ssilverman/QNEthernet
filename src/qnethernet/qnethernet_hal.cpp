@@ -67,8 +67,8 @@ uint32_t qnethernet_hal_micros(void) {
 namespace qindesign {
 namespace network {
 
-Print *volatile stdoutPrint = nullptr;
-Print *volatile stderrPrint = nullptr;
+Print* volatile stdoutPrint = nullptr;
+Print* volatile stderrPrint = nullptr;
 
 }  // namespace network
 }  // namespace qindesign
@@ -78,7 +78,7 @@ Print *volatile stderrPrint = nullptr;
 extern "C" {
 
 // Gets the Print* for the given file descriptor.
-static inline Print *getPrint(const int file) {
+static inline Print* getPrint(const int file) {
   switch (file) {
 #if QNETHERNET_CUSTOM_WRITE
     case STDOUT_FILENO:
@@ -88,12 +88,12 @@ static inline Print *getPrint(const int file) {
 #else
     case STDOUT_FILENO:
     case STDERR_FILENO:
-      return &Serial;
+      return& Serial;
 #endif  // QNETHERNET_CUSTOM_WRITE
     case STDIN_FILENO:
       return nullptr;
     default:
-      return reinterpret_cast<Print *>(file);
+      return reinterpret_cast<Print*>(file);
   }
 }
 
@@ -105,14 +105,14 @@ static inline Print *getPrint(const int file) {
 // Note: Can't define as weak by default because we don't know which `_write`
 //       would be chosen by the linker, this one or the one defined elsewhere
 //       (Print.cpp, for example)
-int _write(const int file, const void *const buf, const size_t len) {
-  Print *const out = getPrint(file);
+int _write(const int file, const void* const buf, const size_t len) {
+  Print* const out = getPrint(file);
   if (out == nullptr) {
     errno = EBADF;
     return -1;
   }
 
-  return out->write(static_cast<const uint8_t *>(buf), len);
+  return out->write(static_cast<const uint8_t*>(buf), len);
 }
 
 #endif  // QNETHERNET_CUSTOM_WRITE
@@ -121,7 +121,7 @@ int _write(const int file, const void *const buf, const size_t len) {
 // to the FILE*. This doesn't necessarily send all the bytes right away. For
 // example, Serial/USB output behaves this way.
 void qnethernet_hal_stdio_flush(const int file) {
-  Print *const p = getPrint(file);
+  Print* const p = getPrint(file);
   if (p != nullptr) {
     p->flush();
   }
@@ -137,8 +137,8 @@ extern "C" {
 
 // Asserts if this is called from an interrupt context.
 [[gnu::weak]]
-void qnethernet_hal_check_core_locking(const char *const file, const int line,
-                                       const char *const func) {
+void qnethernet_hal_check_core_locking(const char* const file, const int line,
+                                       const char* const func) {
   bool inInterruptCtx = false;
 
 #if defined(__arm__)
@@ -186,7 +186,7 @@ extern "C" {
 
 // Fills a buffer with random values. This will return the number of bytes
 // actually filled.
-[[gnu::weak]] size_t qnethernet_hal_fill_entropy(void *buf, size_t size);
+[[gnu::weak]] size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 
 #if WHICH_ENTROPY_TYPE == 1
 
@@ -200,7 +200,7 @@ uint32_t qnethernet_hal_entropy(void) {
   return entropy_random();
 }
 
-size_t qnethernet_hal_fill_entropy(void *const buf, const size_t size) {
+size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
   return trng_data(buf, size);
 }
 
@@ -228,7 +228,7 @@ uint32_t qnethernet_hal_entropy(void) {
 #else
 
 // Returns a UniformRandomBitGenerator instance.
-static std::minstd_rand &urbg_instance() {
+static std::minstd_rand& urbg_instance() {
   static std::minstd_rand gen;
   return gen;
 }
@@ -246,8 +246,8 @@ uint32_t qnethernet_hal_entropy(void) {
 // Multi-byte fill
 #if WHICH_ENTROPY_TYPE != 1
 
-size_t qnethernet_hal_fill_entropy(void *const buf, const size_t size) {
-  auto pBuf = static_cast<uint8_t *>(buf);
+size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
+  auto pBuf = static_cast<uint8_t*>(buf);
 
   size_t count = size / 4;
   for (size_t i = 0; i < count; i++) {
@@ -330,7 +330,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  uint32_t num = *(uint32_t *)&FTFL_FCCOB7;
+  uint32_t num = *(uint32_t*)&FTFL_FCCOB7;
   __enable_irq();
   mac[0] = 0x04;
   mac[1] = 0xE9;
@@ -343,12 +343,12 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   __disable_irq();
   kinetis_hsrun_disable();
   FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
-  *(uint32_t *)&FTFL_FCCOB3 = 0x41070000;
+  *(uint32_t*)&FTFL_FCCOB3 = 0x41070000;
   FTFL_FSTAT = FTFL_FSTAT_CCIF;
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  const uint32_t num = *(uint32_t *)&FTFL_FCCOBB;
+  const uint32_t num = *(uint32_t*)&FTFL_FCCOBB;
   kinetis_hsrun_enable();
   __enable_irq();
   mac[0] = 0x04;

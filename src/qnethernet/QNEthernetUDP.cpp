@@ -37,14 +37,14 @@ static constexpr size_t kMaxPayloadSize =
 static constexpr size_t kMaxPossiblePayloadSize =
     (UINT16_MAX >= kHeaderSize) ? (UINT16_MAX - kHeaderSize) : 0;
 
-void EthernetUDP::recvFunc(void *const arg, struct udp_pcb *const pcb,
-                           struct pbuf *const p,
-                           const ip_addr_t *const addr, const u16_t port) {
+void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
+                           struct pbuf* const p,
+                           const ip_addr_t* const addr, const u16_t port) {
   if (pcb == nullptr) {
     return;
   }
 
-  const auto udp = static_cast<EthernetUDP *>(arg);
+  const auto udp = static_cast<EthernetUDP*>(arg);
 
   if (p == nullptr) {
     udp->stop();
@@ -53,16 +53,16 @@ void EthernetUDP::recvFunc(void *const arg, struct udp_pcb *const pcb,
 
   const uint32_t timestamp = sys_now();
 
-  struct pbuf *pNext = p;
+  struct pbuf* pNext = p;
 
   // Push (replace the head)
-  Packet &packet = udp->inBuf_[udp->inBufHead_];
+  Packet& packet = udp->inBuf_[udp->inBufHead_];
   packet.data.clear();
   if (pNext->tot_len > 0) {
     packet.data.reserve(pNext->tot_len);
     // TODO: Limit vector size
     while (pNext != nullptr) {
-      const auto data = static_cast<const uint8_t *>(pNext->payload);
+      const auto data = static_cast<const uint8_t*>(pNext->payload);
       packet.data.insert(packet.data.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
@@ -181,7 +181,7 @@ bool EthernetUDP::begin(const uint16_t localPort, const bool reuse) {
   listenReuse_ = reuse;
 
   // Don't reserve memory because that might exhaust the heap
-  // for (Packet &p : inBuf_) {
+  // for (Packet& p : inBuf_) {
   //   p.data.reserve(kMaxPayloadSize);
   // }
   // if (packet_.data.capacity() < kMaxPayloadSize) {
@@ -202,12 +202,12 @@ uint8_t EthernetUDP::beginMulticast(const IPAddress ip,
   return beginMulticast(ip, localPort, false);
 }
 
-bool EthernetUDP::beginMulticastWithReuse(const IPAddress &ip,
+bool EthernetUDP::beginMulticastWithReuse(const IPAddress& ip,
                                           const uint16_t localPort) {
   return beginMulticast(ip, localPort, true);
 }
 
-bool EthernetUDP::beginMulticast(const IPAddress &ip, const uint16_t localPort,
+bool EthernetUDP::beginMulticast(const IPAddress& ip, const uint16_t localPort,
                                  const bool reuse) {
   if (!begin(localPort, reuse)) {
     return false;
@@ -330,7 +330,7 @@ int EthernetUDP::read() {
   return packet_.data[packetPos_++];
 }
 
-int EthernetUDP::read(uint8_t *const buffer, const size_t len) {
+int EthernetUDP::read(uint8_t* const buffer, const size_t len) {
   if (len == 0 || !isAvailable()) {
     return 0;
   }
@@ -342,8 +342,8 @@ int EthernetUDP::read(uint8_t *const buffer, const size_t len) {
   return actualLen;
 }
 
-int EthernetUDP::read(char *const buffer, const size_t len) {
-  return read(reinterpret_cast<uint8_t *>(buffer), len);
+int EthernetUDP::read(char* const buffer, const size_t len) {
+  return read(reinterpret_cast<uint8_t*>(buffer), len);
 }
 
 int EthernetUDP::peek() {
@@ -380,7 +380,7 @@ int EthernetUDP::beginPacket(const IPAddress ip, const uint16_t port) {
 #endif  // LWIP_IPV4
 }
 
-int EthernetUDP::beginPacket(const char *const host, const uint16_t port) {
+int EthernetUDP::beginPacket(const char* const host, const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -395,7 +395,7 @@ int EthernetUDP::beginPacket(const char *const host, const uint16_t port) {
 #endif  // LWIP_DNS
 }
 
-bool EthernetUDP::beginPacket(const ip_addr_t *const ipaddr,
+bool EthernetUDP::beginPacket(const ip_addr_t* const ipaddr,
                               const uint16_t port) {
   if (!tryCreatePCB()) {
     return false;
@@ -417,10 +417,10 @@ int EthernetUDP::endPacket() {
   if (!outPacket_.has_value) {
     return false;
   }
-  Packet &op = outPacket_.value;
+  Packet& op = outPacket_.value;
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *const p = pbuf_alloc(PBUF_TRANSPORT, op.data.size(), PBUF_RAM);
+  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, op.data.size(), PBUF_RAM);
   if (p == nullptr) {
     op.clear();
     outPacket_.has_value = false;
@@ -470,8 +470,8 @@ int EthernetUDP::endPacket() {
   return true;
 }
 
-bool EthernetUDP::send(const IPAddress &ip, const uint16_t port,
-                       const void *const data, const size_t len) {
+bool EthernetUDP::send(const IPAddress& ip, const uint16_t port,
+                       const void* const data, const size_t len) {
 #if LWIP_IPV4
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return send(&ipaddr, port, data, len);
@@ -480,8 +480,8 @@ bool EthernetUDP::send(const IPAddress &ip, const uint16_t port,
 #endif  // LWIP_IPV4
 }
 
-bool EthernetUDP::send(const char *const host, const uint16_t port,
-                       const void *const data, const size_t len) {
+bool EthernetUDP::send(const char* const host, const uint16_t port,
+                       const void* const data, const size_t len) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -498,8 +498,8 @@ bool EthernetUDP::send(const char *const host, const uint16_t port,
 #endif  // LWIP_DNS
 }
 
-bool EthernetUDP::send(const ip_addr_t *const ipaddr, const uint16_t port,
-                       const void *const data, const size_t len) {
+bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
+                       const void* const data, const size_t len) {
   if (len > kMaxPossiblePayloadSize) {
     errno = ENOBUFS;
     return false;
@@ -509,7 +509,7 @@ bool EthernetUDP::send(const ip_addr_t *const ipaddr, const uint16_t port,
   }
 
   // Note: Use PBUF_RAM for TX
-  struct pbuf *const p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
+  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
   if (p == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
@@ -558,7 +558,7 @@ size_t EthernetUDP::write(const uint8_t b) {
   return 1;
 }
 
-size_t EthernetUDP::write(const uint8_t *const buffer, const size_t size) {
+size_t EthernetUDP::write(const uint8_t* const buffer, const size_t size) {
   if (!outPacket_.has_value || size == 0) {
     return 0;
   }

@@ -40,10 +40,10 @@ class EthernetUDP : public UDP,
   explicit EthernetUDP(size_t capacity);
 
   // Disallow copying but allow moving
-  EthernetUDP(const EthernetUDP &) = delete;
-  EthernetUDP &operator=(const EthernetUDP &) = delete;
-  EthernetUDP(EthernetUDP &&) = default;
-  EthernetUDP &operator=(EthernetUDP &&) = default;
+  EthernetUDP(const EthernetUDP&) = delete;
+  EthernetUDP& operator=(const EthernetUDP&) = delete;
+  EthernetUDP(EthernetUDP&&) = default;
+  EthernetUDP& operator=(EthernetUDP&&) = default;
 
   virtual ~EthernetUDP();
 
@@ -107,7 +107,7 @@ class EthernetUDP : public UDP,
   //
   // If these return false and there was an error then errno will be set.
   uint8_t beginMulticast(IPAddress ip, uint16_t port) final;  // Wish: Boolean return
-  bool beginMulticastWithReuse(const IPAddress &ip, uint16_t port);
+  bool beginMulticastWithReuse(const IPAddress& ip, uint16_t port);
 
   // Returns the port to which this socket is bound, or zero if it is not bound.
   uint16_t localPort() const;
@@ -122,7 +122,7 @@ class EthernetUDP : public UDP,
   //
   // If these return false and there was an error then errno will be set.
   int beginPacket(IPAddress ip, uint16_t port) final;
-  int beginPacket(const char *host, uint16_t port) final;
+  int beginPacket(const char* host, uint16_t port) final;
   int endPacket() final;  // Always clears accumulated data
 
   // Sends a UDP packet and returns whether the attempt was successful. This
@@ -130,12 +130,12 @@ class EthernetUDP : public UDP,
   // causes less overhead.
   //
   // If this returns false and there was an error then errno will be set.
-  bool send(const IPAddress &ip, uint16_t port, const void *data, size_t len);
+  bool send(const IPAddress& ip, uint16_t port, const void* data, size_t len);
 
   // Calls the other send() function after performing a DNS lookup.
   //
   // If this returns false and there was an error then errno will be set.
-  bool send(const char *host, uint16_t port, const void *data, size_t len);
+  bool send(const char* host, uint16_t port, const void* data, size_t len);
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -144,7 +144,7 @@ class EthernetUDP : public UDP,
   using Print::write;
 
   size_t write(uint8_t b) final;
-  size_t write(const uint8_t *buffer, size_t size) final;
+  size_t write(const uint8_t* buffer, size_t size) final;
   int availableForWrite() final;
 
   // Receiving UDP packets
@@ -154,11 +154,11 @@ class EthernetUDP : public UDP,
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(uint8_t *buffer, size_t len) final;
+  int read(uint8_t* buffer, size_t len) final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(char *buffer, size_t len) final;
+  int read(char* buffer, size_t len) final;
 
   int peek() final;
   void flush() final;
@@ -172,7 +172,7 @@ class EthernetUDP : public UDP,
   // Returns a pointer to the received packet data. This is only valid if a
   // packet has been received with parsePacket(). This may return NULL if the
   // size is zero.
-  const uint8_t *data() const {
+  const uint8_t* data() const {
     return packet_.data.data();
   }
 
@@ -261,8 +261,8 @@ class EthernetUDP : public UDP,
     void clear();
   };
 
-  static void recvFunc(void *arg, struct udp_pcb *pcb, struct pbuf *p,
-                       const ip_addr_t *addr, u16_t port);
+  static void recvFunc(void* arg, struct udp_pcb* pcb, struct pbuf* p,
+                       const ip_addr_t* addr, u16_t port);
 
   // Attempts to create the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns
@@ -277,19 +277,19 @@ class EthernetUDP : public UDP,
   // Multicast functions make use of Ethernet.joinGroup()
   //
   // If this returns false and there was an error then errno will be set.
-  bool beginMulticast(const IPAddress &ip, uint16_t port, bool reuse);
+  bool beginMulticast(const IPAddress& ip, uint16_t port, bool reuse);
 
   // ip_addr_t versions of transmission functions
-  bool beginPacket(const ip_addr_t *ipaddr, uint16_t port);
+  bool beginPacket(const ip_addr_t* ipaddr, uint16_t port);
 
   // If this returns false and there was an error then errno will be set.
-  bool send(const ip_addr_t *ipaddr, uint16_t port,
-            const void *data, size_t len);
+  bool send(const ip_addr_t* ipaddr, uint16_t port,
+            const void* data, size_t len);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
 
-  udp_pcb *pcb_ = nullptr;
+  udp_pcb* pcb_ = nullptr;
 
   // Listening parameters
   bool listening_          = false;

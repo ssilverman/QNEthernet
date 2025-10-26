@@ -66,7 +66,7 @@ int EthernetClient::connect(const IPAddress ip, const uint16_t port) {
 #endif  // LWIP_IPV4
 }
 
-int EthernetClient::connect(const char *const host, const uint16_t port) {
+int EthernetClient::connect(const char* const host, const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
   if (!DNSClient::getHostByName(host, ip,
@@ -82,7 +82,7 @@ int EthernetClient::connect(const char *const host, const uint16_t port) {
 #endif  // LWIP_DNS
 }
 
-bool EthernetClient::connectNoWait(const IPAddress &ip, const uint16_t port) {
+bool EthernetClient::connectNoWait(const IPAddress& ip, const uint16_t port) {
 #if LWIP_IPV4
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return connect(&ipaddr, port, false);
@@ -93,7 +93,7 @@ bool EthernetClient::connectNoWait(const IPAddress &ip, const uint16_t port) {
 #endif  // LWIP_IPV4
 }
 
-bool EthernetClient::connectNoWait(const char *const host,
+bool EthernetClient::connectNoWait(const char* const host,
                                    const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
@@ -110,7 +110,7 @@ bool EthernetClient::connectNoWait(const char *const host,
 #endif  // LWIP_DNS
 }
 
-bool EthernetClient::connect(const ip_addr_t *const ipaddr, const uint16_t port,
+bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
                              const bool wait) {
   // First close any existing connection (without waiting)
   close(false);
@@ -216,7 +216,7 @@ void EthernetClient::close(const bool wait) {
     return;
   }
 
-  auto &state = conn_->state;
+  auto& state = conn_->state;
   if (state == nullptr) {
     // This can happen if this object was moved to another
     // or if the connection was disconnected
@@ -270,7 +270,7 @@ void EthernetClient::closeOutput() {
   if (!static_cast<bool>(*this)) {
     return;
   }
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return;
   }
@@ -290,7 +290,7 @@ void EthernetClient::abort() {
     return;
   }
 
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state != nullptr) {
     altcp_abort(state->pcb);
   }
@@ -338,12 +338,12 @@ IPAddress EthernetClient::localIP() {
 }
 
 bool EthernetClient::getAddrInfo(const bool local,
-                                 ip_addr_t *const addr, u16_t *const port) {
+                                 ip_addr_t* const addr, u16_t* const port) {
   if (!static_cast<bool>(*this)) {
     return false;
   }
 
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return false;
   }
@@ -354,7 +354,7 @@ bool EthernetClient::getAddrInfo(const bool local,
 
 uintptr_t EthernetClient::connectionId() {
   if (conn_ != nullptr && conn_->connected) {
-    const auto &state = conn_->state;
+    const auto& state = conn_->state;
     if (state != nullptr) {
       return reinterpret_cast<uintptr_t>(state->pcb);
     }
@@ -370,11 +370,11 @@ size_t EthernetClient::writeFully(const uint8_t b) {
   return writeFully(&b, 1);
 }
 
-size_t EthernetClient::writeFully(const char *const buf) {
+size_t EthernetClient::writeFully(const char* const buf) {
   return writeFully(buf, std::strlen(buf));
 }
 
-size_t EthernetClient::writeFully(const void *const buf, const size_t size) {
+size_t EthernetClient::writeFully(const void* const buf, const size_t size) {
   // Don't use connected() as the "connected" check because that will
   // return true if there's data available, and the loop doesn't check
   // for data available. Instead, use operator bool().
@@ -386,12 +386,12 @@ size_t EthernetClient::write(const uint8_t b) {
   return write(&b, 1);
 }
 
-size_t EthernetClient::write(const uint8_t *const buf, const size_t size) {
+size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
   if (!static_cast<bool>(*this)) {
     return 0;
   }
 
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -432,7 +432,7 @@ int EthernetClient::availableForWrite() {
   if (!static_cast<bool>(*this)) {
     return 0;
   }
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return 0;
   }
@@ -454,7 +454,7 @@ void EthernetClient::flush() {
   if (!static_cast<bool>(*this)) {
     return;
   }
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return;
   }
@@ -469,7 +469,7 @@ void EthernetClient::flush() {
 
 // Check if there's data available in the buffer.
 static inline bool isAvailable(
-    const std::unique_ptr<internal::ConnectionState> &state) {
+    const std::unique_ptr<internal::ConnectionState>& state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
          (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
 }
@@ -489,7 +489,7 @@ static inline bool isAvailable(
     conn_ = nullptr;                   \
     return (R);                        \
   }                                    \
-  const auto &state = conn_->state;    \
+  const auto& state = conn_->state;    \
   if (state == nullptr) {              \
     return (R);                        \
   }                                    \
@@ -532,10 +532,10 @@ int EthernetClient::read() {
   return state->buf[state->bufPos++];
 }
 
-int EthernetClient::read(uint8_t *const buf, const size_t size) {
+int EthernetClient::read(uint8_t* const buf, const size_t size) {
   CHECK_STATE(0)
 
-  const auto &rem = conn_->remaining;
+  const auto& rem = conn_->remaining;
   if (!rem.empty()) {
     if (size == 0) {
       return 0;
@@ -601,7 +601,7 @@ tcp_state EthernetClient::status() const {
     return tcp_state::CLOSED;
   }
 
-  const auto &state = conn_->state;
+  const auto& state = conn_->state;
   if (state == nullptr) {
     return tcp_state::CLOSED;
   }
@@ -619,20 +619,20 @@ tcp_state EthernetClient::status() const {
   if (conn_ == nullptr) {           \
     return (R);                     \
   }                                 \
-  const auto &state = conn_->state; \
+  const auto& state = conn_->state; \
   if (state == nullptr) {           \
     return (R);                     \
   }
 
 // Gets the innermost PCB from the state. For altcp, the PCB's are nested.
-static inline tcp_pcb *innermost(
-    const std::unique_ptr<internal::ConnectionState> &state) {
+static inline tcp_pcb* innermost(
+    const std::unique_ptr<internal::ConnectionState>& state) {
 #if LWIP_ALTCP
-  altcp_pcb *innermost = state->pcb;
+  altcp_pcb* innermost = state->pcb;
   while (innermost->inner_conn != nullptr) {
     innermost = innermost->inner_conn;
   }
-  return static_cast<tcp_pcb *>(innermost->state);
+  return static_cast<tcp_pcb*>(innermost->state);
 #else
   return state->pcb;
 #endif  // LWIP_ALTCP

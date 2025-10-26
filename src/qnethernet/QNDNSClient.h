@@ -32,7 +32,7 @@ class DNSClient final {
   // Sets the specified DNS server address. This will return whether setting the
   // address was successful. This will return false if the index is not in the
   // range [0, maxServers()).
-  static bool setServer(int index, const IPAddress &ip);
+  static bool setServer(int index, const IPAddress& ip);
 
   // Gets the specified DNS server address. This will return INADDR_NONE if
   // the address is not set or the index is out of range.
@@ -52,8 +52,8 @@ class DNSClient final {
   // The timeout is ignored if it is zero.
   //
   // If this returns false and there was an error then errno will be set.
-  static bool getHostByName(const char *hostname,
-                            std::function<void(const ip_addr_t *)> callback,
+  static bool getHostByName(const char* hostname,
+                            std::function<void(const ip_addr_t*)> callback,
                             uint32_t timeout);
 
   // Looks up a host by name and wait for the given timeout, in milliseconds.
@@ -64,13 +64,13 @@ class DNSClient final {
   // * No DNS server is set
   //
   // If this returns false and there was an error then errno will be set.
-  static bool getHostByName(const char *hostname, IPAddress &ip,
+  static bool getHostByName(const char* hostname, IPAddress& ip,
                             uint32_t timeout);
 
  private:
   // DNS request state.
   struct Request final {
-    std::function<void(const ip_addr_t *)> callback;
+    std::function<void(const ip_addr_t*)> callback;
     uint32_t startTime = 0;
     uint32_t timeout = 0;
   };
@@ -80,11 +80,11 @@ class DNSClient final {
 
   // Disallow copying and moving
   // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
-  DNSClient(const DNSClient &) = delete;
-  DNSClient &operator=(const DNSClient &) = delete;
+  DNSClient(const DNSClient&) = delete;
+  DNSClient& operator=(const DNSClient&) = delete;
 
-  static void dnsFoundFunc(const char *name, const ip_addr_t *ipaddr,
-                           void *callback_arg);
+  static void dnsFoundFunc(const char* name, const ip_addr_t* ipaddr,
+                           void* callback_arg);
 };
 
 }  // namespace network

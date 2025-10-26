@@ -29,14 +29,14 @@ namespace util {
 //
 // This returns the number of bytes actually written. If `breakf` never returns
 // true then this will have written all the bytes upon return.
-size_t writeFully(Print &p, const void *buf, size_t size,
+size_t writeFully(Print& p, const void* buf, size_t size,
                   std::function<bool()> breakf = nullptr);
 
 // Calls writeFully() with a break function that static_casts the given object
 // to a bool.
 template <typename T>
-size_t writeFully(Print &p, const void *const buf, const size_t size,
-                  T *const breakobj) {
+size_t writeFully(Print& p, const void* const buf, const size_t size,
+                  T* const breakobj) {
   return writeFully(p, buf, size,
                     [&]() { return !static_cast<bool>(*breakobj); });
 }
@@ -46,14 +46,14 @@ size_t writeFully(Print &p, const void *const buf, const size_t size,
 //
 // This utilizes `writeFully()` under the covers, meaning this loops until
 // all bytes are written or `breakf` returns true.
-size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
+size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
                   std::function<bool()> breakf = nullptr);
 
 // Calls writeMagic() with a break function that static_casts the given object
 // to a bool.
 template <typename T>
-size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
-                  T *const breakobj) {
+size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
+                  T* const breakobj) {
   return writeMagic(p, mac, [&]() { return !static_cast<bool>(*breakobj); });
 }
 
@@ -68,21 +68,21 @@ size_t writeMagic(Print &p, const uint8_t mac[ETH_HWADDR_LEN],
 // See: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html
 class StdioPrint : public Print {
  public:
-  explicit StdioPrint(std::FILE *stream) : stream_(stream) {}
+  explicit StdioPrint(std::FILE* stream) : stream_(stream) {}
   virtual ~StdioPrint() = default;
 
   // Define these because there's a pointer data member
   // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
-  StdioPrint(const StdioPrint &) = delete;
-  StdioPrint &operator=(const StdioPrint &) = delete;
+  StdioPrint(const StdioPrint&) = delete;
+  StdioPrint& operator=(const StdioPrint&) = delete;
 
   size_t write(uint8_t b) override;
-  size_t write(const uint8_t *buffer, size_t size) override;
+  size_t write(const uint8_t* buffer, size_t size) override;
   int availableForWrite() override;
   void flush() override;
 
  protected:
-  std::FILE *stream() const {
+  std::FILE* stream() const {
     return stream_;
   }
 
@@ -90,7 +90,7 @@ class StdioPrint : public Print {
   // Checks and clears any error because clearWriteError() is not overridable.
   void checkAndClearErr();
 
-  std::FILE *stream_;
+  std::FILE* stream_;
 };
 
 // NullPrint is a Print object that accepts all writes and sends them nowhere.
@@ -104,7 +104,7 @@ class NullPrint final : public Print {
     return 1;
   }
 
-  size_t write(const uint8_t *const buffer, const size_t size) override {
+  size_t write(const uint8_t* const buffer, const size_t size) override {
     LWIP_UNUSED_ARG(buffer);
     return size;
   }
@@ -121,14 +121,14 @@ class NullPrint final : public Print {
 // a base class.
 class PrintDecorator : public Print {
  public:
-  explicit PrintDecorator(Print &p) : p_(p) {}
+  explicit PrintDecorator(Print& p) : p_(p) {}
   virtual ~PrintDecorator() = default;
 
   size_t write(const uint8_t b) override {
     return p_.write(b);
   }
 
-  size_t write(const uint8_t *const buffer, const size_t size) override {
+  size_t write(const uint8_t* const buffer, const size_t size) override {
     return p_.write(buffer, size);
   }
 
@@ -141,7 +141,7 @@ class PrintDecorator : public Print {
   }
 
  private:
-  Print &p_;
+  Print& p_;
 };
 
 }  // namespace util

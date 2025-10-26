@@ -24,10 +24,10 @@ class ClientEx : public Client {
 
   // Rule of five
   // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
-  ClientEx(const ClientEx &) = default;
-  ClientEx(ClientEx &&) = default;
-  ClientEx &operator=(const ClientEx &) = default;
-  ClientEx &operator=(ClientEx &&) = default;
+  ClientEx(const ClientEx&) = default;
+  ClientEx(ClientEx&&) = default;
+  ClientEx& operator=(const ClientEx&) = default;
+  ClientEx& operator=(ClientEx&&) = default;
 
   // Local and remote IP address and port
 

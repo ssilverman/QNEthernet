@@ -27,7 +27,7 @@
 #include "qnethernet/internal/optional.h"
 
 extern "C" {
-err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
+err_t unknown_eth_protocol(struct pbuf* p, struct netif* netif);
 }  // extern "C"
 
 namespace qindesign {
@@ -101,7 +101,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
   //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
-  bool send(const void *frame, size_t len) const;
+  bool send(const void* frame, size_t len) const;
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -111,7 +111,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
   // The write functions limit the allowed size to Ethernet.maxFrameLen()-4
   size_t write(uint8_t b) override;
-  size_t write(const uint8_t *buffer, size_t size) override;
+  size_t write(const uint8_t* buffer, size_t size) override;
 
   // Receiving frames
   int parseFrame();
@@ -120,7 +120,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(void *buffer, size_t len);
+  int read(void* buffer, size_t len);
 
   int peek() override;
   void flush() override {}
@@ -137,7 +137,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Returns a pointer to the received frame data. This is only valid if a frame
   // has been received with parseFrame() or has been created. This may return
   // NULL if the size is zero.
-  const uint8_t *data() const {
+  const uint8_t* data() const {
     return frame_.data.data();
   }
 
@@ -155,13 +155,13 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // been received with parseFrame() or has had this value written.
   //
   // This returns data().
-  const uint8_t *destinationMAC() const;
+  const uint8_t* destinationMAC() const;
 
   // Returns a pointer to the source MAC. This is only valid if a frame has been
   // received with parseFrame() or has had this value written.
   //
   // This returns data() + 6.
-  const uint8_t *sourceMAC() const;
+  const uint8_t* sourceMAC() const;
 
   // Returns the EtherType/length value immediately following the source MAC.
   // Note that VLAN frames are handled specially. This is only valid if a frame
@@ -177,7 +177,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // had at least 14 bytes written.
   //
   // This returns data() + 14.
-  const uint8_t *payload() const;
+  const uint8_t* payload() const;
 
   // Sets the receive queue capacity. This will use a minimum of 1.
   //
@@ -228,10 +228,10 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   ~EthernetFrameClass() = default;
 
   // EthernetFrameClass is neither copyable nor movable
-  EthernetFrameClass(const EthernetFrameClass &) = delete;
-  EthernetFrameClass &operator=(const EthernetFrameClass &) = delete;
+  EthernetFrameClass(const EthernetFrameClass&) = delete;
+  EthernetFrameClass& operator=(const EthernetFrameClass&) = delete;
 
-  static err_t recvFunc(struct pbuf *p, struct netif *netif);
+  static err_t recvFunc(struct pbuf* p, struct netif* netif);
 
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
@@ -254,7 +254,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   uint32_t totalReceiveCount_   = 0;
 
   friend class StaticInit<EthernetFrameClass>;
-  friend err_t ::unknown_eth_protocol(struct pbuf *p, struct netif *netif);
+  friend err_t ::unknown_eth_protocol(struct pbuf* p, struct netif* netif);
 };
 
 // Instance for using raw Ethernet frames.

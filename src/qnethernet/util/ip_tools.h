@@ -22,7 +22,7 @@ namespace util {
 // Gets the 32-bit IPv4 address from the given ip_addr_t. This takes into
 // consideration IPv4-mapped IPv6 addresses. This will return zero for
 // non-IPv4-mapped addresses.
-uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *ip);
+uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* ip);
 
 #endif  // LWIP_IPV4
 

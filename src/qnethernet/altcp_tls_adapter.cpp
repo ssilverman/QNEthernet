@@ -33,7 +33,7 @@
 // Determines if the connection should use TLS. The IP address will be NULL for
 // a server connection. If this is defined to be the empty function, then
 // regular TCP is assumed.
-extern std::function<bool(const ip_addr_t *ip, uint16_t port)>
+extern std::function<bool(const ip_addr_t* ip, uint16_t port)>
     qnethernet_altcp_is_tls;
 
 // Retrieves the certificate for a client connection. The values are initialized
@@ -42,8 +42,8 @@ extern std::function<bool(const ip_addr_t *ip, uint16_t port)>
 // The IP address and port can be used to determine the certificate data,
 // if needed. If this is defined to be the empty function, then no certificate
 // data is assumed.
-extern std::function<void(const ip_addr_t &ipaddr, uint16_t port,
-                          const uint8_t *&cert, size_t &cert_len)>
+extern std::function<void(const ip_addr_t& ipaddr, uint16_t port,
+                          const uint8_t*& cert, size_t& cert_len)>
     qnethernet_altcp_tls_client_cert;
 
 // Returns the certificate count for a server connection. If this is defined to
@@ -63,9 +63,9 @@ extern std::function<uint8_t(uint16_t port)>
 // if needed.
 extern std::function<void(
     uint16_t port, uint8_t index,
-    const uint8_t *&privkey,      size_t &privkey_len,
-    const uint8_t *&privkey_pass, size_t &privkey_pass_len,
-    const uint8_t *&cert,         size_t &cert_len)>
+    const uint8_t*& privkey,      size_t& privkey_len,
+    const uint8_t*& privkey_pass, size_t& privkey_pass_len,
+    const uint8_t*& cert,         size_t& cert_len)>
     qnethernet_altcp_tls_server_cert;
 
 // The qnethernet_altcp_get_allocator() function fills in the given
@@ -75,26 +75,26 @@ extern std::function<void(
 // resources that haven't already been freed.
 //
 // This returns false if the config could not be created and true otherwise.
-std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
-    qnethernet_altcp_get_allocator = [](const ip_addr_t *const ipaddr,
+std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
+    qnethernet_altcp_get_allocator = [](const ip_addr_t* const ipaddr,
                                         const uint16_t port,
-                                        altcp_allocator_t &allocator) {
+                                        altcp_allocator_t& allocator) {
       if (qnethernet_altcp_is_tls && qnethernet_altcp_is_tls(ipaddr, port)) {
         // TLS
         allocator.alloc = &altcp_tls_alloc;
         if (ipaddr == nullptr) {  // Server
-          const uint8_t *privkey;
+          const uint8_t* privkey;
           size_t         privkey_len;
-          const uint8_t *privkey_pass;
+          const uint8_t* privkey_pass;
           size_t         privkey_pass_len;
-          const uint8_t *cert;
+          const uint8_t* cert;
           size_t         cert_len;
           uint8_t cert_count = 0;
           if (qnethernet_altcp_tls_server_cert_count) {
             cert_count = qnethernet_altcp_tls_server_cert_count(port);
           }
 
-          struct altcp_tls_config *const config =
+          struct altcp_tls_config* const config =
               altcp_tls_create_config_server(cert_count);
           if (config == nullptr) {
             return false;
@@ -121,7 +121,7 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
             }
           }
         } else {  // Client
-          const uint8_t *cert = nullptr;
+          const uint8_t* cert = nullptr;
           size_t cert_len = 0;
           if (qnethernet_altcp_tls_client_cert) {
             qnethernet_altcp_tls_client_cert(*ipaddr, port, cert, cert_len);
@@ -142,12 +142,12 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
 // allocated with qnethernet_altcp_get_allocator() if they haven't already
 // been freed. It is up to the implementation to decide if a resource
 // has already been freed or not.
-std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
-    [](const altcp_allocator_t &allocator) {
+std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
+    [](const altcp_allocator_t& allocator) {
       // For altcp_tcp_alloc, there's nothing to free
       if (allocator.alloc == &altcp_tls_alloc) {
-        struct altcp_tls_config *const config =
-            (struct altcp_tls_config *)allocator.arg;
+        struct altcp_tls_config* const config =
+            (struct altcp_tls_config*)allocator.arg;
         if (config != nullptr) {
           altcp_tls_free_config(config);
         }

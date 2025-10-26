@@ -41,10 +41,10 @@ class EthernetClient : public internal::ClientEx,
   // by one client at a time. However, user code may need to copy and the writer
   // may not get that compiler errors are because std::move was required.
 
-  EthernetClient(const EthernetClient &) = default;
-  EthernetClient &operator=(const EthernetClient &) = default;
-  EthernetClient(EthernetClient &&other) = default;
-  EthernetClient &operator=(EthernetClient &&other) = default;
+  EthernetClient(const EthernetClient&) = default;
+  EthernetClient& operator=(const EthernetClient&) = default;
+  EthernetClient(EthernetClient&& other) = default;
+  EthernetClient& operator=(EthernetClient&& other) = default;
 
   // Returns the maximum number of TCP connections.
   static constexpr int maxSockets() {
@@ -65,14 +65,14 @@ class EthernetClient : public internal::ClientEx,
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
   // This function is defined by the Arduino API.
-  int connect(const char *host, uint16_t port) final;
+  int connect(const char* host, uint16_t port) final;
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete.
   //
   // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
   // with connect().
-  bool connectNoWait(const IPAddress &ip, uint16_t port);
+  bool connectNoWait(const IPAddress& ip, uint16_t port);
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete. Note that DNS lookup might still take some time.
@@ -83,7 +83,7 @@ class EthernetClient : public internal::ClientEx,
   //
   // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
   // with connect().
-  bool connectNoWait(const char *host, uint16_t port);
+  bool connectNoWait(const char* host, uint16_t port);
 
   // Returns whether the client is in the process of connecting. This is used
   // when doing a non-blocking connect.
@@ -173,8 +173,8 @@ class EthernetClient : public internal::ClientEx,
   // actual number of bytes sent. In other words, these only return a value less
   // than the specified size if the connection was closed.
   size_t writeFully(uint8_t b);
-  size_t writeFully(const char *s);
-  size_t writeFully(const void *buf, size_t size);
+  size_t writeFully(const char* s);
+  size_t writeFully(const void* buf, size_t size);
 
   // Use the one from here instead of the one from Print
   using internal::PrintfChecked::printf;
@@ -183,7 +183,7 @@ class EthernetClient : public internal::ClientEx,
   size_t write(uint8_t b) final;
 
   // If this returns zero and there was an error then errno will be set.
-  size_t write(const uint8_t *buf, size_t size) final;
+  size_t write(const uint8_t* buf, size_t size) final;
 
   int availableForWrite() final;
   void flush() final;
@@ -193,7 +193,7 @@ class EthernetClient : public internal::ClientEx,
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(uint8_t *buf, size_t size) final;
+  int read(uint8_t* buf, size_t size) final;
 
   int peek() final;
 
@@ -251,7 +251,7 @@ class EthernetClient : public internal::ClientEx,
   explicit EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
-  bool connect(const ip_addr_t *ipaddr, uint16_t port, bool wait);
+  bool connect(const ip_addr_t* ipaddr, uint16_t port, bool wait);
 
   // Checks if there's a pending connection. If there is, the state is modified
   // appropriately. This returns false if the connection is inactive; 'conn_' is
@@ -269,7 +269,7 @@ class EthernetClient : public internal::ClientEx,
 
   // Gets address info for this connection. This returns whether the client is
   // connected and there was information to get.
-  bool getAddrInfo(bool local, ip_addr_t *addr, u16_t *port);
+  bool getAddrInfo(bool local, ip_addr_t* addr, u16_t* port);
 
   // Connection state
   uint32_t connTimeout_    = 1000;

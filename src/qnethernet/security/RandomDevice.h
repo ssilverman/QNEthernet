@@ -22,7 +22,7 @@ class RandomDevice {
   typedef uint32_t result_type;
 
   // Accesses the singleton instance.
-  static RandomDevice &instance();
+  static RandomDevice& instance();
 
   static constexpr result_type min() {
     return std::numeric_limits<result_type>::min();
@@ -39,8 +39,8 @@ class RandomDevice {
   ~RandomDevice() = default;
 
   // Disallow copying and moving
-  RandomDevice(const RandomDevice &) = delete;
-  RandomDevice &operator=(const RandomDevice &) = delete;
+  RandomDevice(const RandomDevice&) = delete;
+  RandomDevice& operator=(const RandomDevice&) = delete;
 
   friend class StaticInit<RandomDevice>;
 };

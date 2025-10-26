@@ -92,9 +92,9 @@ extern "C" void yield() {
 #endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
 void EthernetClass::netifEventFunc(
-    struct netif *const netif,
+    struct netif* const netif,
     const netif_nsc_reason_t reason,
-    const netif_ext_callback_args_t *const args) {
+    const netif_ext_callback_args_t* const args) {
   if (netif != Ethernet.netif_) {
     return;
   }
@@ -129,7 +129,7 @@ FLASHMEM EthernetClass::~EthernetClass() {
   end();
 }
 
-const uint8_t *EthernetClass::macAddress() {
+const uint8_t* EthernetClass::macAddress() {
   // First ensure there's a value
   if (!mac_.has_value) {
     mac_.has_value = true;
@@ -202,23 +202,23 @@ bool EthernetClass::begin() {
   return begin(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
 }
 
-bool EthernetClass::begin(const IPAddress &ip,
-                          const IPAddress &mask,
-                          const IPAddress &gateway) {
-  return begin(ip, mask, gateway, static_cast<const IPAddress *>(nullptr));
+bool EthernetClass::begin(const IPAddress& ip,
+                          const IPAddress& mask,
+                          const IPAddress& gateway) {
+  return begin(ip, mask, gateway, static_cast<const IPAddress*>(nullptr));
 }
 
-bool EthernetClass::begin(const IPAddress &ip,
-                          const IPAddress &mask,
-                          const IPAddress &gateway,
-                          const IPAddress &dns) {
+bool EthernetClass::begin(const IPAddress& ip,
+                          const IPAddress& mask,
+                          const IPAddress& gateway,
+                          const IPAddress& dns) {
   return begin(ip, mask, gateway, &dns);
 }
 
-bool EthernetClass::begin(const IPAddress &ip,
-                          const IPAddress &mask,
-                          const IPAddress &gateway,
-                          const IPAddress *dns) {
+bool EthernetClass::begin(const IPAddress& ip,
+                          const IPAddress& mask,
+                          const IPAddress& gateway,
+                          const IPAddress* dns) {
 #if LWIP_IPV4
   const ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
   const ip4_addr_t netmask{static_cast<uint32_t>(mask)};
@@ -416,26 +416,26 @@ int EthernetClass::begin(const uint8_t mac[kMACAddrSize],
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 bool EthernetClass::begin(const uint8_t mac[kMACAddrSize],
-                          const IPAddress &ip) {
+                          const IPAddress& ip) {
   const IPAddress gateway{ip[0], ip[1], ip[2], 1};
   return begin(mac, ip, gateway, gateway, IPAddress{255, 255, 255, 0});
 }
 
-bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-                          const IPAddress &dns) {
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+                          const IPAddress& dns) {
   return begin(mac, ip, dns, IPAddress{ip[0], ip[1], ip[2], 1},
                IPAddress{255, 255, 255, 0});
 }
 
-bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-                          const IPAddress &dns, const IPAddress &gateway) {
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+                          const IPAddress& dns, const IPAddress& gateway) {
   return begin(mac, ip, dns, gateway, IPAddress{255, 255, 255, 0});
 }
 #pragma GCC diagnostic pop
 
-bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-                          const IPAddress &dns, const IPAddress &gateway,
-                          const IPAddress &subnet) {
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+                          const IPAddress& dns, const IPAddress& gateway,
+                          const IPAddress& subnet) {
   uint8_t m1[kMACAddrSize];
   uint8_t m2[kMACAddrSize];
   if (mac == nullptr) {
@@ -601,7 +601,7 @@ IPAddress EthernetClass::broadcastIP() const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setLocalIP(const IPAddress &ip) const {
+void EthernetClass::setLocalIP(const IPAddress& ip) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
@@ -613,7 +613,7 @@ void EthernetClass::setLocalIP(const IPAddress &ip) const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
+void EthernetClass::setSubnetMask(const IPAddress& subnetMask) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
@@ -625,7 +625,7 @@ void EthernetClass::setSubnetMask(const IPAddress &subnetMask) const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setGatewayIP(const IPAddress &ip) const {
+void EthernetClass::setGatewayIP(const IPAddress& ip) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
     return;
@@ -637,11 +637,11 @@ void EthernetClass::setGatewayIP(const IPAddress &ip) const {
 #endif  // LWIP_IPV4
 }
 
-void EthernetClass::setDNSServerIP(const IPAddress &ip) const {
+void EthernetClass::setDNSServerIP(const IPAddress& ip) const {
   setDNSServerIP(0, ip);
 }
 
-void EthernetClass::setDNSServerIP(const int index, const IPAddress &ip) const {
+void EthernetClass::setDNSServerIP(const int index, const IPAddress& ip) const {
 #if LWIP_DNS
   DNSClient::setServer(index, ip);
 #else
@@ -663,7 +663,7 @@ EthernetHardwareStatus EthernetClass::hardwareStatus() const {
   return EthernetNoHardware;
 }
 
-bool EthernetClass::joinGroup(const IPAddress &ip) const {
+bool EthernetClass::joinGroup(const IPAddress& ip) const {
 #if LWIP_IGMP
   if (netif_ == nullptr) {
     errno = ENOTCONN;
@@ -683,7 +683,7 @@ bool EthernetClass::joinGroup(const IPAddress &ip) const {
 #endif  // LWIP_IGMP
 }
 
-bool EthernetClass::leaveGroup(const IPAddress &ip) const {
+bool EthernetClass::leaveGroup(const IPAddress& ip) const {
 #if LWIP_IGMP
   if (netif_ == nullptr) {
     return false;
@@ -714,7 +714,7 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 }
 
-void EthernetClass::setHostname(const char *const hostname) {
+void EthernetClass::setHostname(const char* const hostname) {
 #if LWIP_NETIF_HOSTNAME
   if (hostname == hostname_) {
     return;
@@ -737,8 +737,8 @@ void EthernetClass::setHostname(const char *const hostname) {
 #endif  // LWIP_NETIF_HOSTNAME
 }
 
-bool EthernetClass::hostByName(const char *const hostname,
-                               IPAddress &ip) const {
+bool EthernetClass::hostByName(const char* const hostname,
+                               IPAddress& ip) const {
 #if LWIP_DNS
   if (netif_ == nullptr) {
     return false;

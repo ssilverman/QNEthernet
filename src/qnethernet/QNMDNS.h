@@ -38,7 +38,7 @@ class MDNSClass final {
   // hostname is different.
   //
   // If this returns false and there was an error then errno will be set.
-  bool begin(const char *hostname);
+  bool begin(const char* hostname);
 
   // Stops the mDNS responder.
   //
@@ -47,7 +47,7 @@ class MDNSClass final {
 
   // Returns the hostname. This will return an empty string if the responder
   // is not currently running.
-  const char *hostname() const {
+  const char* hostname() const {
     return hostname_;
   }
 
@@ -67,7 +67,7 @@ class MDNSClass final {
   // name as the service name.
   //
   // If this returns false and there was an error then errno will be set.
-  bool addService(const char *type, const char *protocol, uint16_t port);
+  bool addService(const char* type, const char* protocol, uint16_t port);
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
   // "_tcp". The strings should have a "_" prefix.
@@ -77,8 +77,8 @@ class MDNSClass final {
   // This calls `addService(name, type, protocol, port, nullptr)`.
   //
   // If this returns false and there was an error then errno will be set.
-  bool addService(const char *name, const char *type,
-                  const char *protocol, uint16_t port);
+  bool addService(const char* name, const char* type,
+                  const char* protocol, uint16_t port);
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
   // "_tcp". The strings should have a "_" prefix.
@@ -87,7 +87,7 @@ class MDNSClass final {
   // host name as the service name.
   //
   // If this returns false and there was an error then errno will be set.
-  bool addService(const char *type, const char *protocol, uint16_t port,
+  bool addService(const char* type, const char* protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)());
 
   // Adds a service. The protocol will be set to "_udp" for anything other than
@@ -100,21 +100,21 @@ class MDNSClass final {
   // items are added.
   //
   // If this returns false and there was an error then errno will be set.
-  bool addService(const char *name, const char *type,
-                  const char *protocol, uint16_t port,
+  bool addService(const char* name, const char* type,
+                  const char* protocol, uint16_t port,
                   std::vector<String> (*getTXTFunc)());
 
   // Removes a service. The host name is used as the service name. This will
   // return whether the service was removed.
   //
   // If this returns false and there was an error then errno will be set.
-  bool removeService(const char *type, const char *protocol, uint16_t port);
+  bool removeService(const char* type, const char* protocol, uint16_t port);
 
   // Removes a service and returns whether the service was removed.
   //
   // If this returns false and there was an error then errno will be set.
-  bool removeService(const char *name, const char *type,
-                     const char *protocol, uint16_t port);
+  bool removeService(const char* name, const char* type,
+                     const char* protocol, uint16_t port);
 
   // Returns whether mDNS has been started.
   explicit operator bool() const;
@@ -133,10 +133,10 @@ class MDNSClass final {
    public:
     Service();
 
-    void set(bool valid, const char *name, const char *type,
+    void set(bool valid, const char* name, const char* type,
              enum mdns_sd_proto proto, uint16_t port,
              std::vector<String> (*getTXTFunc)());
-    bool equals(bool valid, const char *name, const char *type,
+    bool equals(bool valid, const char* name, const char* type,
                 enum mdns_sd_proto proto, uint16_t port) const;
 
     // Resets this service to be invalid and empty.
@@ -155,15 +155,15 @@ class MDNSClass final {
   ~MDNSClass();
 
   // MDNSClass is neither copyable nor movable
-  MDNSClass(const MDNSClass &) = delete;
-  MDNSClass &operator=(const MDNSClass &) = delete;
+  MDNSClass(const MDNSClass&) = delete;
+  MDNSClass& operator=(const MDNSClass&) = delete;
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
-  int findService(const char *name, const char *type,
-                  const char *protocol, uint16_t port);
+  int findService(const char* name, const char* type,
+                  const char* protocol, uint16_t port);
 
-  struct netif *netif_ = nullptr;
+  struct netif* netif_ = nullptr;
   char hostname_[MDNS_LABEL_MAXLEN + 1]{'\0'};
 
   // Holds information about all the slots.

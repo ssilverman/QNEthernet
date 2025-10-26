@@ -14,7 +14,7 @@ namespace util {
 
 #if LWIP_IPV4
 
-uint32_t ip_addr_get_ip4_uint32(const ip_addr_t *const ip) {
+uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* const ip) {
   if (IP_IS_V4(ip)) {
     return ip4_addr_get_u32(ip_2_ip4(ip));
 #if LWIP_IPV6

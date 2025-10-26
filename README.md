@@ -317,7 +317,7 @@ The `Ethernet` object is the main Ethernet interface.
     interface goes down.
 * `static constexpr bool isPromiscuousMode()`: Returns whether promiscuous mode
   is enabled.
-* `static const char *libraryVersion()`: Returns the library version.
+* `static const char* libraryVersion()`: Returns the library version.
 * `static constexpr int maxMulticastGroups()`: Returns the maximum number of
   available multicast groups, not including the "all systems" group.
 * `static constexpr size_t mtu()`: Returns the MTU.
@@ -593,7 +593,7 @@ qualified: `qindesign::network::util::writeMagic()`.
 
 Functions:
 
-1. `writeFully(Print &, buf, size, breakf = nullptr)`: Attempts to completely
+1. `writeFully(Print&, buf, size, breakf = nullptr)`: Attempts to completely
    write bytes to the given `Print` object; the optional `breakf` function is
    used as the stopping condition. It returns the number of bytes actually
    written. The return value will be less than the requested size only if
@@ -603,7 +603,7 @@ Functions:
    For example, the `EthernetClient::writeFully(...)` functions use this and
    pass the "am I disconnected" condition as the `breakf` function.
 
-2. `writeMagic(Print &, mac, breakf = nullptr)`: Writes the payload for a
+2. `writeMagic(Print&, mac, breakf = nullptr)`: Writes the payload for a
    [Magic packet](https://en.wikipedia.org/wiki/Wake-on-LAN#Magic_packet) to
    the given `Print` object. This uses `writeFully(...)` under the covers and
    passes along the `breakf` function as the stopping condition.
@@ -843,7 +843,7 @@ the data:
 ```c++
 // Keep writing until all the bytes are sent or the connection
 // is closed.
-void writeFully(EthernetClient &client, const char *data, int len) {
+void writeFully(EthernetClient& client, const char* data, int len) {
   // Don't use client.connected() as the "connected" check because
   // that will return true if there's data available, and this loop
   // does not check for data available or remove it if it's there.
@@ -899,14 +899,14 @@ void sendTestData(EthernetClient& client) {
 Let's go back to our original statement about not using the
 <code>print<em>X</em>(...)</code> functions. Their implementation is opaque and
 they sometimes make assumptions that the data will be "written fully". For
-example, Teensyduino's current `print(const String &)` implementation attempts
+example, Teensyduino's current `print(const String&)` implementation attempts
 to send all the bytes and returns the number of bytes sent, but it doesn't tell
 you _which_ bytes were sent. For the string `"12345"`, `print(s)` might send
 `"12"`, fail to send `"3"`, and successfully send `"45"`, returning the value 4.
 
-Similarly, we have no idea what `print(const Printable &obj)` does because the
+Similarly, we have no idea what `print(const Printable& obj)` does because the
 `Printable` implementation passed to it is beyond our control. For example,
-Teensyduino's `IPAddress::printTo(Print &)` implementation prints the address
+Teensyduino's `IPAddress::printTo(Print&)` implementation prints the address
 without checking the return value of the `print(...)` calls.
 
 Also, most examples I've seen that use any of the
@@ -936,7 +936,7 @@ the stopping condition function (the `breakf` parameter).
 For example, to break on connection close or link down:
 
 ```c++
-size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size) {
+size_t writeFully(EthernetClient& c, const uint8_t* buf, size_t size) {
   return qindesign::network::util::writeFully(c, buf, size, [&c]() {
     return !static_cast<bool>(c) || !Ethernet.linkState();
   });
@@ -946,7 +946,7 @@ size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size) {
 To break on connection close or timeout:
 
 ```c++
-size_t writeFully(EthernetClient &c, const uint8_t *buf, size_t size,
+size_t writeFully(EthernetClient& c, const uint8_t* buf, size_t size,
                   uint32_t timeout) {
   uint32_t startT = millis();
   return qindesign::network::util::writeFully(
@@ -1370,9 +1370,9 @@ Here are the steps to add decorated TCP:
 2. Implement two functions somewhere in your code, having these names and
    signatures:
    ```c++
-   std::function<bool(const ip_addr_t *ipaddr, uint16_t port,
-                      altcp_allocator_t &allocator)> qnethernet_altcp_get_allocator;
-   std::function<void(const altcp_allocator_t &allocator)> qnethernet_altcp_free_allocator;
+   std::function<bool(const ip_addr_t* ipaddr, uint16_t port,
+                      altcp_allocator_t& allocator)> qnethernet_altcp_get_allocator;
+   std::function<void(const altcp_allocator_t& allocator)> qnethernet_altcp_free_allocator;
    ```
 3. Implement all the functions necessary for the wrapping implementation. For
    example, for TLS, this means all the functions declared in
@@ -1413,12 +1413,12 @@ The _src/altcp_tls_adapter.cpp_ file implements the allocator functions for
 altcp TLS integration. It specifies new functions that make it a little easier
 to integrate a library. These are as follows:
 
-1. Type: `std::function<bool(const ip_addr_t *ip, uint16_t port)>`\
+1. Type: `std::function<bool(const ip_addr_t* ip, uint16_t port)>`\
    Name: `qnethernet_altcp_is_tls`\
    Description: Determines if the connection should use TLS. The IP address will
                 be NULL for a server connection.
-2. Type: `std::function<void(const ip_addr_t &ipaddr, uint16_t port,
-                             const uint8_t *&cert, size_t &cert_len)>`\
+2. Type: `std::function<void(const ip_addr_t& ipaddr, uint16_t port,
+                             const uint8_t*& cert, size_t& cert_len)>`\
    Name: `qnethernet_altcp_tls_client_cert`\
    Note: All the arguments are references.\
    Description: Retrieves the certificate for a client connection. The values
@@ -1429,9 +1429,9 @@ to integrate a library. These are as follows:
    Name: `qnethernet_altcp_tls_server_cert_count`\
    Description: Returns the certificate count for a server connection.
 4. Type: `std::function<void(uint16_t port, uint8_t index,
-                             const uint8_t *&privkey,      size_t &privkey_len,
-                             const uint8_t *&privkey_pass, size_t &privkey_pass_len,
-                             const uint8_t *&cert,         size_t &cert_len)>`\
+                             const uint8_t*& privkey,      size_t& privkey_len,
+                             const uint8_t*& privkey_pass, size_t& privkey_pass_len,
+                             const uint8_t*& cert,         size_t& cert_len)>`\
    Name: `qnethernet_altcp_tls_server_cert`\
    Description: Retrieves the certificate and private key for a server
                 connection. The values are initialized to NULL and zero before
@@ -1988,9 +1988,9 @@ This section describes compatibility with other Ethernet APIs. The term
 What follows are explanatory notes for each differing API function from
 that link.
 
-`uint8_t *Ethernet.macAddress(uint8_t * mac)`:-\
-For MAC address retrieval, see `uint8_t *Ethernet.macAddress()` and
-`void Ethernet.macAddress(uint8_t *mac)`. This form isn't implemented because
+`uint8_t* Ethernet.macAddress(uint8_t* mac)`:-\
+For MAC address retrieval, see `uint8_t* Ethernet.macAddress()` and
+`void Ethernet.macAddress(uint8_t* mac)`. This form isn't implemented because
 the return value is ambiguous when the input is NULL.
 
 `Ethernet.begin(...)` functions:-\

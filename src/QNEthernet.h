@@ -58,7 +58,7 @@ class EthernetClass final {
   static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
 
   // Returns a string containing the library version number.
-  static const char *libraryVersion() {
+  static const char* libraryVersion() {
     return "0.33.0-snapshot";
   }
 
@@ -96,19 +96,19 @@ class EthernetClass final {
   // Notes:
   // * If the link state is not detectable then it must be managed
   //   with 'setLinkState(flag)'.
-  const DriverCapabilities &driverCapabilities() const {
+  const DriverCapabilities& driverCapabilities() const {
     return driverCapabilities_;
   }
 
   // Gets the interface name. This will return an empty string if Ethernet is
   // not initialized.
-  const char *interfaceName() const {
+  const char* interfaceName() const {
     return ifName_;
   }
 
   // Returns a pointer to the current MAC address. If it has not yet been
   // accessed, then this first retrieves the system MAC address from the driver.
-  const uint8_t *macAddress();
+  const uint8_t* macAddress();
 
   // Retrieves the MAC address. If 'mac' is not NULL and if the MAC address has
   // not yet been accessed, then this first retrieves the system MAC address
@@ -189,9 +189,9 @@ class EthernetClass final {
 
   // Starts Ethernet with the given address configuration. This is similar to
   // `begin(ipaddr, netmask, gw, dns)`, but doesn't set the DNS address.
-  bool begin(const IPAddress &ipaddr,
-             const IPAddress &netmask,
-             const IPAddress &gateway);
+  bool begin(const IPAddress& ipaddr,
+             const IPAddress& netmask,
+             const IPAddress& gateway);
 
   // Starts Ethernet with the given address configuration. If the IP address is
   // INADDR_NONE then this will start a DHCP client, if enabled, and attempt to
@@ -204,10 +204,10 @@ class EthernetClass final {
   // yet been accessed.
   //
   // This returns whether starting Ethernet was successful.
-  bool begin(const IPAddress &ipaddr,
-             const IPAddress &netmask,
-             const IPAddress &gateway,
-             const IPAddress &dns);
+  bool begin(const IPAddress& ipaddr,
+             const IPAddress& netmask,
+             const IPAddress& gateway,
+             const IPAddress& dns);
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.
@@ -306,17 +306,17 @@ class EthernetClass final {
   //
   // These functions are defined by the Arduino API
 
-  void setLocalIP(const IPAddress &ip) const;
-  void setSubnetMask(const IPAddress &subnetMask) const;
-  void setGatewayIP(const IPAddress &ip) const;
+  void setLocalIP(const IPAddress& ip) const;
+  void setSubnetMask(const IPAddress& subnetMask) const;
+  void setGatewayIP(const IPAddress& ip) const;
 
   // Sets the DNS server address at index zero. This does nothing if DNS is
   // is disabled.
-  void setDNSServerIP(const IPAddress &ip) const;
+  void setDNSServerIP(const IPAddress& ip) const;
 
   // Sets a specific DNS server IP. This does nothing if the index is not in the
   // range [0, DNSClient::maxServers()).
-  void setDNSServerIP(int index, const IPAddress &ip) const;
+  void setDNSServerIP(int index, const IPAddress& ip) const;
 
   // The MAC addresses are used in the following begin() functions. If NULL or
   // the driver can't set the MAC address, then the system MAC address is first
@@ -331,16 +331,16 @@ class EthernetClass final {
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   [[deprecated("See begin(ip, subnet, gateway)")]]
-  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip);
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-             const IPAddress &dns);
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+             const IPAddress& dns);
   [[deprecated("See begin(ip, subnet, gateway, dns)")]]
-  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-             const IPAddress &dns, const IPAddress &gateway);
-  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress &ip,
-             const IPAddress &dns, const IPAddress &gateway,
-             const IPAddress &subnet);
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+             const IPAddress& dns, const IPAddress& gateway);
+  bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
+             const IPAddress& dns, const IPAddress& gateway,
+             const IPAddress& subnet);
 
   // This function is defined by the Arduino API.
   EthernetHardwareStatus hardwareStatus() const;
@@ -370,7 +370,7 @@ class EthernetClass final {
   // These functions are defined by the Arduino API
 
   void MACAddress(uint8_t mac[kMACAddrSize]) { macAddress(mac); }
-  void setDnsServerIP(const IPAddress &dnsServerIP) const {
+  void setDnsServerIP(const IPAddress& dnsServerIP) const {
     setDNSServerIP(dnsServerIP);
   }
 
@@ -382,7 +382,7 @@ class EthernetClass final {
   // This always returns false if `LWIP_IGMP` is disabled.
   //
   // If this returns false and there was an error then errno will be set.
-  bool joinGroup(const IPAddress &ip) const;
+  bool joinGroup(const IPAddress& ip) const;
 
   // Leaves a multicast group. This returns whether the call was successful.
   //
@@ -392,7 +392,7 @@ class EthernetClass final {
   // This always returns false if `LWIP_IGMP` is disabled.
   //
   // If this returns false and there was an error then errno will be set.
-  bool leaveGroup(const IPAddress &ip) const;
+  bool leaveGroup(const IPAddress& ip) const;
 
   // Sets whether Ethernet frames addressed to the given MAC address are allowed
   // or disallowed through the Ethernet filter. Note that this is not meant to
@@ -414,13 +414,13 @@ class EthernetClass final {
   // like the hostname to be set at system start.
   //
   // This does nothing if 'LWIP_NETIF_HOSTNAME' is not enabled.
-  void setHostname(const char *hostname);
+  void setHostname(const char* hostname);
 
   // Gets the DHCP client option 12 hostname. An empty string means that no
   // hostname is set. The default is "qnethernet-lwip".
   //
   // This returns the empty string if 'LWIP_NETIF_HOSTNAME' is not enabled.
-  const char *hostname() const {
+  const char* hostname() const {
 #if LWIP_NETIF_HOSTNAME
     return hostname_;
 #else
@@ -437,7 +437,7 @@ class EthernetClass final {
   // address. This returns whether successful.
   //
   // If this returns false and there was an error then errno will be set.
-  bool hostByName(const char *hostname, IPAddress &ip) const;
+  bool hostByName(const char* hostname, IPAddress& ip) const;
 
  private:
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
@@ -449,11 +449,11 @@ class EthernetClass final {
 
   // EthernetClass is neither copyable nor movable
   // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
-  EthernetClass(const EthernetClass &) = delete;
-  EthernetClass &operator=(const EthernetClass &) = delete;
+  EthernetClass(const EthernetClass&) = delete;
+  EthernetClass& operator=(const EthernetClass&) = delete;
 
-  static void netifEventFunc(struct netif *netif, netif_nsc_reason_t reason,
-                             const netif_ext_callback_args_t *args);
+  static void netifEventFunc(struct netif* netif, netif_nsc_reason_t reason,
+                             const netif_ext_callback_args_t* args);
 
   // Possibly start the DHCP client, given the current address settings. This
   // returns whether successful. This reads the netif's current ip4 settings.
@@ -471,10 +471,10 @@ class EthernetClass final {
   // Starts Ethernet with the given address configuration. If the IP address is
   // INADDR_NONE then DHCP will be started. This sets the DNS address if the
   // argument is not NULL.
-  bool begin(const IPAddress &ipaddr,
-             const IPAddress &netmask,
-             const IPAddress &gateway,
-             const IPAddress *dns);
+  bool begin(const IPAddress& ipaddr,
+             const IPAddress& netmask,
+             const IPAddress& gateway,
+             const IPAddress* dns);
 
   // Driver configuration
   DriverCapabilities driverCapabilities_;
@@ -487,7 +487,7 @@ class EthernetClass final {
 #if LWIP_NETIF_HOSTNAME
   char hostname_[256]{QNETHERNET_DEFAULT_HOSTNAME};  // Empty means no hostname
 #endif  // LWIP_NETIF_HOSTNAME
-  struct netif *netif_ = nullptr;
+  struct netif* netif_ = nullptr;
   char ifName_[6]{'\0'};  // Two letters plus up to 3-digit number
 
 #if LWIP_DHCP
@@ -511,10 +511,10 @@ STATIC_INIT_DECL(EthernetClass, Ethernet);
 
 #if QNETHERNET_CUSTOM_WRITE
 // stdout output.
-extern Print *stdoutPrint;
+extern Print* stdoutPrint;
 
 // stderr output.
-extern Print *stderrPrint;
+extern Print* stderrPrint;
 #endif  // QNETHERNET_CUSTOM_WRITE
 
 }  // namespace network

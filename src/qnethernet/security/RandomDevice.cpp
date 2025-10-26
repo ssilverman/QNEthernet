@@ -25,7 +25,7 @@ uint32_t qnethernet_hal_entropy(void);
 
 STATIC_INIT_DEFN(RandomDevice, randomDevice);
 
-RandomDevice &RandomDevice::instance() {
+RandomDevice& RandomDevice::instance() {
   return randomDevice;
 }
 

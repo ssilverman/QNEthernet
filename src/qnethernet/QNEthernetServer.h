@@ -30,10 +30,10 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   explicit EthernetServer(uint16_t port);
 
   // Disallow copying but allow moving
-  EthernetServer(const EthernetServer &) = delete;
-  EthernetServer &operator=(const EthernetServer &) = delete;
-  EthernetServer(EthernetServer &&) = default;
-  EthernetServer &operator=(EthernetServer &&) = default;
+  EthernetServer(const EthernetServer&) = delete;
+  EthernetServer& operator=(const EthernetServer&) = delete;
+  EthernetServer(EthernetServer&&) = default;
+  EthernetServer& operator=(EthernetServer&&) = default;
 
   virtual ~EthernetServer();
 
@@ -106,7 +106,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
 
   // Writes data to all the connections. This does nothing and returns size if
   // the port is not set.
-  size_t write(const uint8_t *buffer, size_t size) final;
+  size_t write(const uint8_t* buffer, size_t size) final;
 
   // Returns the minimum availability of all the connections, or zero if there
   // are no connections or if the port is not set.

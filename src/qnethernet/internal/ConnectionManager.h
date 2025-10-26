@@ -27,9 +27,9 @@ namespace internal {
 class ConnectionManager final {
  public:
   // Accesses the singleton instance.
-  static ConnectionManager &instance();
+  static ConnectionManager& instance();
 
-  std::shared_ptr<ConnectionHolder> connect(const ip_addr_t *ipaddr,
+  std::shared_ptr<ConnectionHolder> connect(const ip_addr_t* ipaddr,
                                             uint16_t port);
 
   // Listens on a port. The `reuse` parameter controls the SO_REUSEADDR flag.
@@ -53,11 +53,11 @@ class ConnectionManager final {
 
   // Removes the given connection and returns whether the connection existed in
   // the list and was removed.
-  bool remove(const std::shared_ptr<ConnectionHolder> &holder);
+  bool remove(const std::shared_ptr<ConnectionHolder>& holder);
 
   // Output routines
   size_t write(uint16_t port, uint8_t b);
-  size_t write(uint16_t port, const void *b, size_t len);
+  size_t write(uint16_t port, const void* b, size_t len);
   void flush(uint16_t port);
   int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
@@ -67,26 +67,26 @@ class ConnectionManager final {
 
   // Iterates over all the valid connections and calls the specified function
   // for each.
-  void iterateConnections(std::function<void(struct altcp_pcb *pcb)> f);
+  void iterateConnections(std::function<void(struct altcp_pcb* pcb)> f);
 
   // Iterates over all the listeners and calls the specified function for each.
-  void iterateListeners(std::function<void(struct altcp_pcb *pcb)> f);
+  void iterateListeners(std::function<void(struct altcp_pcb* pcb)> f);
 
  private:
   ConnectionManager() = default;
 
-  static err_t connectedFunc(void *arg, struct altcp_pcb *tpcb, err_t err);
-  static void errFunc(void *arg, err_t err);
-  static err_t recvFunc(void *arg, struct altcp_pcb *tpcb, struct pbuf *p,
+  static err_t connectedFunc(void* arg, struct altcp_pcb* tpcb, err_t err);
+  static void errFunc(void* arg, err_t err);
+  static err_t recvFunc(void* arg, struct altcp_pcb* tpcb, struct pbuf* p,
                         err_t err);
-  static err_t acceptFunc(void *arg, struct altcp_pcb *newpcb, err_t err);
+  static err_t acceptFunc(void* arg, struct altcp_pcb* newpcb, err_t err);
 
   // Adds a created connection to the list. It is expected that the object is
   // already set up.
-  void addConnection(const std::shared_ptr<ConnectionHolder> &holder);
+  void addConnection(const std::shared_ptr<ConnectionHolder>& holder);
 
   std::vector<std::shared_ptr<ConnectionHolder>> connections_;
-  std::vector<struct altcp_pcb *> listeners_;
+  std::vector<struct altcp_pcb*> listeners_;
 };
 
 }  // namespace internal

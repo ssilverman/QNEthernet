@@ -43,12 +43,12 @@ struct StaticInit {
 
   // Rule of three
   // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
-  StaticInit(const StaticInit &) = delete;
-  StaticInit &operator=(const StaticInit &) = delete;
+  StaticInit(const StaticInit&) = delete;
+  StaticInit& operator=(const StaticInit&) = delete;
 
   static int nifty_counter;
   alignas(T) static unsigned char buf[sizeof(T)];
-  static T *pT;
+  static T* pT;
 };
 
 // Notes:
@@ -56,7 +56,7 @@ struct StaticInit {
 // 2. Can't currently declare more than one object of the same type
 #define STATIC_INIT_DECL(Type, name)  \
   static StaticInit<Type> name##Init; \
-  extern Type &name
+  extern Type& name
 
 // Notes:
 // 1. Need to define the static class members
@@ -64,4 +64,4 @@ struct StaticInit {
   template<> int StaticInit<Type>::nifty_counter = 0;                       \
   template<> decltype(StaticInit<Type>::buf) StaticInit<Type>::buf{0};      \
   template<> decltype(StaticInit<Type>::pT) StaticInit<Type>::pT = nullptr; \
-  Type &name = *name##Init.pT
+  Type& name = *name##Init.pT

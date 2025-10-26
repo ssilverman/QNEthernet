@@ -23,23 +23,23 @@ extern "C" void yield();
 namespace qindesign {
 namespace network {
 
-void DNSClient::dnsFoundFunc(const char *const name,
-                             const ip_addr_t *const ipaddr,
-                             void *const callback_arg) {
+void DNSClient::dnsFoundFunc(const char* const name,
+                             const ip_addr_t* const ipaddr,
+                             void* const callback_arg) {
   LWIP_UNUSED_ARG(name);
 
   if (callback_arg == nullptr) {
     return;
   }
 
-  const auto req = static_cast<const Request *>(callback_arg);
+  const auto req = static_cast<const Request*>(callback_arg);
   if (req->timeout == 0 || sys_now() - req->startTime < req->timeout) {
     req->callback(ipaddr);
   }
   delete req;
 }
 
-bool DNSClient::setServer(const int index, const IPAddress &ip) {
+bool DNSClient::setServer(const int index, const IPAddress& ip) {
 #if LWIP_IPV4
   if (index < 0 || maxServers() <= index) {
     return false;
@@ -67,15 +67,15 @@ IPAddress DNSClient::getServer(const int index) {
 }
 
 bool DNSClient::getHostByName(
-    const char *const hostname,
-    const std::function<void(const ip_addr_t *)> callback,
+    const char* const hostname,
+    const std::function<void(const ip_addr_t*)> callback,
     const uint32_t timeout) {
   if (callback == nullptr || hostname == nullptr) {
     errno = EINVAL;
     return false;
   }
 
-  Request *const req = new Request{};
+  Request* const req = new Request{};
   req->callback = callback;
   req->startTime = sys_now();
   req->timeout = timeout;
@@ -99,14 +99,14 @@ bool DNSClient::getHostByName(
   }
 }
 
-bool DNSClient::getHostByName(const char *const hostname, IPAddress &ip,
+bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
                               const uint32_t timeout) {
 #if LWIP_IPV4
   volatile bool found = false;
   volatile bool lookupDone = false;
   if (!DNSClient::getHostByName(
           hostname,
-          [&lookupDone, &found, &ip](const ip_addr_t *foundIP) {
+          [&lookupDone, &found, &ip](const ip_addr_t* foundIP) {
             if (foundIP != nullptr) {
               found = true;
               ip = util::ip_addr_get_ip4_uint32(foundIP);
