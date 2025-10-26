@@ -43,8 +43,8 @@ class EthernetClient : public internal::ClientEx,
 
   EthernetClient(const EthernetClient&) = default;
   EthernetClient& operator=(const EthernetClient&) = default;
-  EthernetClient(EthernetClient&& other) = default;
-  EthernetClient& operator=(EthernetClient&& other) = default;
+  EthernetClient(EthernetClient&&) = default;
+  EthernetClient& operator=(EthernetClient&&) = default;
 
   // Returns the maximum number of TCP connections.
   static constexpr int maxSockets() {
