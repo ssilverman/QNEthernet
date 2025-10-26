@@ -185,6 +185,8 @@ class EthernetClass final {
 
   // Waits, up to the specified timeout, for an IP address and returns whether
   // one was acquired. The timeout is in milliseconds.
+  //
+  // If the network is not enabled then this will return false immediately.
   bool waitForLocalIP(uint32_t timeout) const;
 
   // Starts Ethernet with the given address configuration. This is similar to
@@ -211,6 +213,8 @@ class EthernetClass final {
 
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.
+  //
+  // If the network is not enabled then this will return false immediately.
   bool waitForLink(uint32_t timeout) const;
 
   // Shuts down the Ethernet peripheral(s) and stops all services.
@@ -435,6 +439,8 @@ class EthernetClass final {
 
   // Convenience function that tries to resolve the given hostname into an IP
   // address. This returns whether successful.
+  //
+  // If the network is not enabled then this will return false immediately.
   //
   // If this returns false and there was an error then errno will be set.
   bool hostByName(const char* hostname, IPAddress& ip) const;
