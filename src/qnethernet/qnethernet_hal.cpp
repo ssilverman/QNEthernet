@@ -330,7 +330,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  uint32_t num = *(uint32_t*)&FTFL_FCCOB7;
+  uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB7);
   __enable_irq();
   mac[0] = 0x04;
   mac[1] = 0xE9;
@@ -343,12 +343,12 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   __disable_irq();
   kinetis_hsrun_disable();
   FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
-  *(uint32_t*)&FTFL_FCCOB3 = 0x41070000;
+  *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB3) = 0x41070000;
   FTFL_FSTAT = FTFL_FSTAT_CCIF;
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  const uint32_t num = *(uint32_t*)&FTFL_FCCOBB;
+  const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOBB);
   kinetis_hsrun_enable();
   __enable_irq();
   mac[0] = 0x04;

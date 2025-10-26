@@ -147,7 +147,7 @@ std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
       // For altcp_tcp_alloc, there's nothing to free
       if (allocator.alloc == &altcp_tls_alloc) {
         struct altcp_tls_config* const config =
-            (struct altcp_tls_config*)allocator.arg;
+            static_cast<struct altcp_tls_config*>(allocator.arg);
         if (config != nullptr) {
           altcp_tls_free_config(config);
         }
