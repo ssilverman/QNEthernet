@@ -87,7 +87,7 @@ std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
 #if LWIP_ALTCP_TLS
       if (allocator.alloc == &altcp_tls_alloc) {
         struct altcp_tls_config* config =
-            (struct altcp_tls_config*)allocator.arg;
+            static_cast<struct altcp_tls_config*>(allocator.arg);
         altcp_tls_free_config(config);  // <-- Example without can-free check
             // Implementation MUST NOT free if already freed
       }
