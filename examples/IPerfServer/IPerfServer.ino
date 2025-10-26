@@ -174,10 +174,10 @@ uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
 
 // Forward declarations
 void networkChanged(bool hasIP, bool linkState);
-bool connectToClient(ConnectionState &state,
-                     std::vector<ConnectionState> &list);
-void processConnection(ConnectionState &state,
-                       std::vector<ConnectionState> &list);
+bool connectToClient(ConnectionState& state,
+                     std::vector<ConnectionState>& list);
+void processConnection(ConnectionState& state,
+                       std::vector<ConnectionState>& list);
 
 // Main program setup.
 void setup() {
@@ -266,25 +266,25 @@ void networkChanged(bool hasIP, bool linkState) {
   }
 }
 
-static inline bool isExtended(const ConnectionState &s) {
+static inline bool isExtended(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
          ((s.settings.settingsV1.flags &
            static_cast<uint32_t>(Flags::kExtend)) != 0);
 }
 
-static inline bool isV1(const ConnectionState &s) {
+static inline bool isV1(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
          ((s.settings.settingsV1.flags &
            static_cast<uint32_t>(Flags::kVersion1)) != 0);
 }
 
-static inline bool isRunNow(const ConnectionState &s) {
+static inline bool isRunNow(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
          ((s.settings.settingsV1.flags &
            static_cast<uint32_t>(Flags::kRunNow)) != 0);
 }
 
-static inline bool isClient(const ConnectionState &s) {
+static inline bool isClient(const ConnectionState& s) {
   return s.ioState == IOStates::kWrite;
 }
 
@@ -303,7 +303,7 @@ void loop() {
   std::vector<ConnectionState> list;  // Add new connections to here
 
   // Process data from each client
-  for (ConnectionState &state : conns) {  // Use a reference so we don't copy
+  for (ConnectionState& state : conns) {  // Use a reference so we don't copy
     if (!state.client.connected()) {
       printf("Disconnected: %u.%u.%u.%u:%u\r\n",
              state.remoteIP[0],
@@ -336,7 +336,7 @@ void loop() {
   size_t size = conns.size();
   conns.erase(
       std::remove_if(conns.begin(), conns.end(),
-                     [](const ConnectionState &state) { return state.closed; }),
+                     [](const ConnectionState& state) { return state.closed; }),
       conns.end());
   if (conns.size() != size) {
     printf("Connection count: %zu\r\n", conns.size());
@@ -345,8 +345,8 @@ void loop() {
 
 // Connects back to the client and returns whether the connection was
 // successful. This adds any new connection to the given list.
-bool connectToClient(ConnectionState &state,
-                     std::vector<ConnectionState> &list) {
+bool connectToClient(ConnectionState& state,
+                     std::vector<ConnectionState>& list) {
   printf("Connecting back to client: %u.%u.%u.%u:%" PRIu32 "...",
          state.remoteIP[0],
          state.remoteIP[1],
@@ -362,7 +362,7 @@ bool connectToClient(ConnectionState &state,
   printf("done.\r\n");
 
   list.emplace_back(std::move(client), true);
-  ConnectionState &newState = list[list.size() - 1];
+  ConnectionState& newState = list[list.size() - 1];
   newState.settings = state.settings;
   std::memcpy(newState.settingsRaw, state.settingsRaw, state.settingsSize);
   newState.settingsSize = state.settingsSize;
@@ -372,7 +372,7 @@ bool connectToClient(ConnectionState &state,
 }
 
 // Sends data until it can't fill the buffer.
-void send(ConnectionState &state) {
+void send(ConnectionState& state) {
   while (true) {
     if (state.settings.settingsV1.amount < 0) {
       // The session is time-limited
@@ -404,7 +404,7 @@ void send(ConnectionState &state) {
       }
     }
 
-    const uint8_t *buf;
+    const uint8_t* buf;
     size_t len;
 
     int avail = state.client.availableForWrite();
@@ -447,8 +447,8 @@ static int compareAvail(int avail, size_t size) {
 
 // Processes data from a single connection. This adds any new
 // connections to the given list.
-void processConnection(ConnectionState &state,
-                       std::vector<ConnectionState> &list) {
+void processConnection(ConnectionState& state,
+                       std::vector<ConnectionState>& list) {
   while (true) {
     switch (state.ioState) {
       case IOStates::kReadSettingsV1: {

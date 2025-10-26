@@ -36,7 +36,7 @@ PixelPusherServer::~PixelPusherServer() {
   end();
 }
 
-bool PixelPusherServer::begin(Receiver *recv, uint16_t port,
+bool PixelPusherServer::begin(Receiver* recv, uint16_t port,
                               int controllerNum, int groupNum,
                               uint16_t vendorId, uint16_t productId,
                               uint16_t hwRevision,
@@ -135,7 +135,7 @@ void PixelPusherServer::setGroupNum(int n) {
 }
 
 // Checks if all values in a std::vector<bool> are a specific value.
-static bool isAll(const std::vector<bool> &v, bool flag) {
+static bool isAll(const std::vector<bool>& v, bool flag) {
   return (std::find(v.begin(), v.end(), !flag) == v.end());
 }
 
@@ -168,7 +168,7 @@ void PixelPusherServer::loop() {
     return;
   }
 
-  const uint8_t *data = pixelsUDP_.data();
+  const uint8_t* data = pixelsUDP_.data();
 
   uint32_t seq;
   std::memcpy(&seq, data, 4);
@@ -262,9 +262,9 @@ void PixelPusherServer::loop() {
 
 void PixelPusherServer::sendDiscovery() {
   discoveryUDP_.beginPacket(broadcastIP_, kDiscoveryPort);
-  discoveryUDP_.write(reinterpret_cast<unsigned char *>(&deviceData_),
+  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&deviceData_),
                       sizeof(deviceData_));
-  discoveryUDP_.write(reinterpret_cast<unsigned char *>(&ppData1_),
+  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&ppData1_),
                       sizeof(ppData1_));
 
   // Mystery padding. Why?
@@ -281,7 +281,7 @@ void PixelPusherServer::sendDiscovery() {
   discoveryUDP_.write(uint8_t{0});
   discoveryUDP_.write(uint8_t{0});
 
-  discoveryUDP_.write(reinterpret_cast<unsigned char *>(&ppData2_),
+  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&ppData2_),
                       sizeof(ppData2_));
   discoveryUDP_.endPacket();
 

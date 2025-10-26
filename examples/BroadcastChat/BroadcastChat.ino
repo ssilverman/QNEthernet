@@ -89,7 +89,7 @@ void loop() {
 // --------------------------------------------------------------------------
 
 // Control character names.
-static const char *kCtrlNames[]{
+static const char* kCtrlNames[]{
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
   "BS",  "HT",  "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
   "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
@@ -104,7 +104,7 @@ static void receivePacket() {
   }
 
   // Get the packet data and remote address
-  const uint8_t *data = udp.data();
+  const uint8_t* data = udp.data();
   IPAddress ip = udp.remoteIP();
 
   printf("[%u.%u.%u.%u][%d] ", ip[0], ip[1], ip[2], ip[3], size);
@@ -125,7 +125,7 @@ static void receivePacket() {
 
 // Tries to read a line from the console and returns whether
 // a complete line was read. This is CR/CRLF/LF EOL-aware.
-static bool readLine(String &line) {
+static bool readLine(String& line) {
   static bool inCR = false;  // Keeps track of CR state
 
   while (Serial.available() > 0) {

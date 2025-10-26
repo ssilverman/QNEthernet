@@ -23,8 +23,8 @@
 #include <lwip/ip_addr.h>
 
 // Determines if a connection should use TLS.
-std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
-    [](const ip_addr_t *ipaddr, uint16_t port) {
+std::function<bool(const ip_addr_t*, uint16_t)> qnethernet_altcp_is_tls =
+    [](const ip_addr_t* ipaddr, uint16_t port) {
       // Given the IP address and port, determine if the connection
       // needs to use TLS
       printf("[[qnethernet_altcp_is_tls(%s, %" PRIu16 "): %s]]\r\n",
@@ -43,10 +43,10 @@ std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
     };
 
 // Gets the client certificate data.
-std::function<void(const ip_addr_t &, uint16_t, const uint8_t *&, size_t &)>
+std::function<void(const ip_addr_t&, uint16_t, const uint8_t*&, size_t&)>
     qnethernet_altcp_tls_client_cert =
-        [](const ip_addr_t &ipaddr, uint16_t port,
-           const uint8_t *&cert, size_t &cert_len) {
+        [](const ip_addr_t& ipaddr, uint16_t port,
+           const uint8_t*& cert, size_t& cert_len) {
           printf("[[qnethernet_altcp_tls_client_cert(%s, %" PRIu16 ")]]"
                  " No certificate\r\n",
                  ipaddr_ntoa(&ipaddr), port);
@@ -67,14 +67,14 @@ std::function<uint8_t(uint16_t)> qnethernet_altcp_tls_server_cert_count =
 
 // Gets the server certificate data.
 std::function<void(uint16_t, uint8_t,
-                   const uint8_t *&, size_t &,
-                   const uint8_t *&, size_t &,
-                   const uint8_t *&, size_t &)>
+                   const uint8_t*&, size_t&,
+                   const uint8_t*&, size_t&,
+                   const uint8_t*&, size_t&)>
     qnethernet_altcp_tls_server_cert =
         [](uint16_t port, uint8_t index,
-           const uint8_t *&privkey,      size_t &privkey_len,
-           const uint8_t *&privkey_pass, size_t &privkey_pass_len,
-           const uint8_t *&cert,         size_t &cert_len) {
+           const uint8_t*& privkey,      size_t& privkey_len,
+           const uint8_t*& privkey_pass, size_t& privkey_pass_len,
+           const uint8_t*& cert,         size_t& cert_len) {
           printf("[[qnethernet_altcp_tls_server_cert(port %" PRIu16 ","
                  " index %" PRIu8 ")]]\r\n",
                  port, index);

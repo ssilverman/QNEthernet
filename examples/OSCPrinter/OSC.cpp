@@ -17,17 +17,17 @@
 namespace osc = ::qindesign::osc;
 
 // Prints the current OSC message. This does not terminate with a newline.
-static void printMessage(Print &out, const osc::LiteOSCParser &osc);
+static void printMessage(Print& out, const osc::LiteOSCParser& osc);
 
 // Prints an OSC bundle, one message per line. This terminates with a newline.
-static void printBundle(Print &out, const uint8_t *b, int len);
+static void printBundle(Print& out, const uint8_t* b, int len);
 
 // Prints an OSC datum.
-static void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index);
+static void printOSCData(Print& out, const osc::LiteOSCParser& osc, int index);
 
 // Checks if the buffer starts as a valid bundle. If this returns true, then
 // the bundle starts at len+16.
-static bool isBundleStart(const uint8_t *buf, size_t len) {
+static bool isBundleStart(const uint8_t* buf, size_t len) {
   if (len < 16 || (len & 0x03) != 0) {
     return false;
   }
@@ -37,7 +37,7 @@ static bool isBundleStart(const uint8_t *buf, size_t len) {
   return true;
 }
 
-void printOSC(Print &out, const uint8_t *b, int len) {
+void printOSC(Print& out, const uint8_t* b, int len) {
   osc::LiteOSCParser osc;
 
   // For bundles, loop over all the messages in the bundle, not doing
@@ -59,7 +59,7 @@ void printOSC(Print &out, const uint8_t *b, int len) {
   out.println();
 }
 
-static void printMessage(Print &out, const osc::LiteOSCParser &osc) {
+static void printMessage(Print& out, const osc::LiteOSCParser& osc) {
   out.printf("%s", osc.getAddress());
 
   int size = osc.getArgCount();
@@ -73,7 +73,7 @@ static void printMessage(Print &out, const osc::LiteOSCParser &osc) {
   }
 }
 
-static void printBundle(Print &out, const uint8_t *b, int len) {
+static void printBundle(Print& out, const uint8_t* b, int len) {
   if (len < 16) {
     return;
   }
@@ -109,7 +109,7 @@ static void printBundle(Print &out, const uint8_t *b, int len) {
   out.println("#endbundle");
 }
 
-static void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index) {
+static void printOSCData(Print& out, const osc::LiteOSCParser& osc, int index) {
   out.printf("%c(", osc.getTag(index));
   switch (osc.getTag(index)) {
     case 'i':
@@ -123,7 +123,7 @@ static void printOSCData(Print &out, const osc::LiteOSCParser &osc, int index) {
       break;
     case 'b': {
       out.print('[');
-      const uint8_t *p = osc.getBlob(index);
+      const uint8_t* p = osc.getBlob(index);
       for (int i = osc.getBlobLength(index); --i >= 0; ) {
         out.printf(" %02x", *(p++));
       }

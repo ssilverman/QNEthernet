@@ -116,7 +116,7 @@ void loop() {
     return;
   }
 
-  const uint8_t *buf = udp.data();
+  const uint8_t* buf = udp.data();
   // Alternative:
   // if (udp.read(buf, 48) != 48) {
   //   printf("Not enough bytes\r\n");
@@ -157,7 +157,7 @@ void loop() {
 
   // Print the time
   std::time_t time = t;
-  std::tm *tm = std::gmtime(&time);
+  std::tm* tm = std::gmtime(&time);
   if (tm != nullptr) {
     printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\r\n",
            tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,

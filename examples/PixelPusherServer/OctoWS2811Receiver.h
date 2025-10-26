@@ -23,7 +23,7 @@ class OctoWS2811Receiver : public Receiver {
  public:
   // Creates a new object. The parameters are restricted:
   // * 'numStrips': 0-255
-  OctoWS2811Receiver(PixelPusherServer &pp,
+  OctoWS2811Receiver(PixelPusherServer& pp,
                      size_t numStrips,
                      size_t pixelsPerStrip);
 
@@ -45,8 +45,8 @@ class OctoWS2811Receiver : public Receiver {
   }
 
   uint8_t stripFlags(size_t stripNum) const override;
-  void handleCommand(uint8_t command, const uint8_t *data, size_t len) override;
-  void pixels(size_t stripNum, const uint8_t *pixels,
+  void handleCommand(uint8_t command, const uint8_t* data, size_t len) override;
+  void pixels(size_t stripNum, const uint8_t* pixels,
               size_t pixelsPerStrip) override;
   void endPixels() override;
 
@@ -61,9 +61,9 @@ class OctoWS2811Receiver : public Receiver {
 
   // Gets the config for the given strip. This returns the default config if the
   // strip number is out of range.
-  const StripConfig &getStripConfig(size_t stripNum) const;
+  const StripConfig& getStripConfig(size_t stripNum) const;
 
-  PixelPusherServer &pp_;
+  PixelPusherServer& pp_;
   const size_t numStrips_;
   const size_t pixelsPerStrip_;
 

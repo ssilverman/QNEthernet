@@ -19,7 +19,7 @@ static constexpr uint8_t kConfig = WS2811_RGB | WS2811_800kHz;
 // Define this object.
 const OctoWS2811Receiver::StripConfig OctoWS2811Receiver::kDefaultStripConfig;
 
-OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer &pp, size_t numStrips,
+OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer& pp, size_t numStrips,
                                        size_t pixelsPerStrip)
     : pp_(pp),
       numStrips_(std::min(numStrips, size_t{UINT8_MAX})),
@@ -45,7 +45,7 @@ bool OctoWS2811Receiver::begin() {
   return true;
 }
 
-const OctoWS2811Receiver::StripConfig &OctoWS2811Receiver::getStripConfig(
+const OctoWS2811Receiver::StripConfig& OctoWS2811Receiver::getStripConfig(
     size_t stripNum) const {
   return (stripNum < stripConfigs_.size())
              ? stripConfigs_[stripNum]
@@ -57,7 +57,7 @@ uint8_t OctoWS2811Receiver::stripFlags(size_t stripNum) const {
 }
 
 void OctoWS2811Receiver::handleCommand(uint8_t command,
-                                       const uint8_t *data, size_t len) {
+                                       const uint8_t* data, size_t len) {
   switch (command) {
     case PixelPusherServer::Commands::GLOBALBRIGHTNESS_SET:
       if (len >= 2) {
@@ -77,7 +77,7 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
       if (len >= 32) {
         // Colour order
         for (size_t i = 0; i < 8; i++) {
-          StripConfig &config = stripConfigs_[i];
+          StripConfig& config = stripConfigs_[i];
           switch (data[16 + i]) {
             case PixelPusherServer::ColourOrders::RGB:
               config.rgbOrder[0] = 0;
@@ -144,7 +144,7 @@ static inline uint16_t scale16(uint16_t b, uint16_t scale) {
   return (uint32_t{b} * (1 + uint32_t{scale})) >> 16;
 }
 
-void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
+void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t* pixels,
                                 size_t pixelsPerStrip) {
   if (stripNum < 0 || numStrips_ <= stripNum) {
     return;
@@ -153,9 +153,9 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t *pixels,
   size_t it = stripNum * pixelsPerStrip;
   size_t end = it + pixelsPerStrip;
 
-  const StripConfig &config = getStripConfig(stripNum);
+  const StripConfig& config = getStripConfig(stripNum);
   const uint8_t bri = scale16(config.brightness, globalBri_) >> 8;
-  const auto &rgbOrder = config.rgbOrder;
+  const auto& rgbOrder = config.rgbOrder;
 
   if (bri == UINT8_MAX) {
     while (it != end) {

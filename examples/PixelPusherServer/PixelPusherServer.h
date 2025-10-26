@@ -76,10 +76,10 @@ class PixelPusherServer final {
   ~PixelPusherServer();
 
   // Disallow copying, but allow moving
-  PixelPusherServer(const PixelPusherServer &) = delete;
-  PixelPusherServer(PixelPusherServer &&) = default;
-  PixelPusherServer &operator=(const PixelPusherServer &) = delete;
-  PixelPusherServer &operator=(PixelPusherServer &&) = default;
+  PixelPusherServer(const PixelPusherServer&) = delete;
+  PixelPusherServer(PixelPusherServer&&) = default;
+  PixelPusherServer& operator=(const PixelPusherServer&) = delete;
+  PixelPusherServer& operator=(PixelPusherServer&&) = default;
 
   // Initializes the server and starts listening for pixel data on the
   // specified port. This uses the current Ethernet information. This
@@ -91,7 +91,7 @@ class PixelPusherServer final {
   // This does not call recv->begin().
   //
   // See: kDefaultPixelsPort
-  bool begin(Receiver *recv, uint16_t port,
+  bool begin(Receiver* recv, uint16_t port,
              int controllerNum, int groupNum,
              uint16_t vendorId, uint16_t productId,
              uint16_t hwRevision,
@@ -171,7 +171,7 @@ class PixelPusherServer final {
     size_t pixelsPerStrip() const override { return 0; }
     uint8_t stripFlags(size_t stripNum) const override { return 0; }
 
-    void pixels(size_t stripNum, const uint8_t *pixels,
+    void pixels(size_t stripNum, const uint8_t* pixels,
                 size_t pixelsPerStrip) override {}
     void endPixels() override {}
   };
@@ -193,7 +193,7 @@ class PixelPusherServer final {
   EthernetUDP pixelsUDP_;     // Receive
 
   // Data receiver.
-  Receiver *recv_ = &nullReceiver_;
+  Receiver* recv_ = &nullReceiver_;
 
   // Useful cached values
   IPAddress broadcastIP_;

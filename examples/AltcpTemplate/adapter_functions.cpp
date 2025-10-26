@@ -31,9 +31,9 @@ extern struct altcp_proxyconnect_config proxyConfig;
 // using the IP address and port to choose one. If creating the socket
 // failed then qnethernet_altcp_free_allocator() is called to free any
 // resources that haven't already been freed.
-std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
-    qnethernet_altcp_get_allocator = [](const ip_addr_t *ipaddr, uint16_t port,
-                                        altcp_allocator_t &allocator) {
+std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
+    qnethernet_altcp_get_allocator = [](const ip_addr_t* ipaddr, uint16_t port,
+                                        altcp_allocator_t& allocator) {
       printf("[[qnethernet_altcp_get_allocator(%s, %u): %s]]\r\n",
              (ipaddr == nullptr) ? "(null)" : ipaddr_ntoa(ipaddr), port,
              (ipaddr == nullptr) ? "Listen" : "Connect");
@@ -79,15 +79,15 @@ std::function<bool(const ip_addr_t *, uint16_t, altcp_allocator_t &)>
 // allocated with qnethernet_altcp_get_allocator() if they haven't already
 // been freed. It is up to the implementation to decide if a resource
 // has already been freed or not.
-std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
-    [](const altcp_allocator_t &allocator) {
+std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
+    [](const altcp_allocator_t& allocator) {
       printf("[[qnethernet_altcp_free_allocator()]]\r\n");
       // For the proxyConfig and for altcp_tcp_alloc,
       // there's nothing to free
 #if LWIP_ALTCP_TLS
       if (allocator.alloc == &altcp_tls_alloc) {
-        struct altcp_tls_config *config =
-            (struct altcp_tls_config *)allocator.arg;
+        struct altcp_tls_config* config =
+            (struct altcp_tls_config*)allocator.arg;
         altcp_tls_free_config(config);  // <-- Example without can-free check
             // Implementation MUST NOT free if already freed
       }
@@ -97,8 +97,8 @@ std::function<void(const altcp_allocator_t &)> qnethernet_altcp_free_allocator =
 #else
 
 // Determines if a connection should use TLS.
-std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
-    [](const ip_addr_t *ipaddr, uint16_t port) {
+std::function<bool(const ip_addr_t*, uint16_t)> qnethernet_altcp_is_tls =
+    [](const ip_addr_t* ipaddr, uint16_t port) {
       printf("[[qnethernet_altcp_is_tls(%s, %" PRIu16 "): %s]]\r\n",
              (ipaddr == nullptr) ? "(null)" : ipaddr_ntoa(ipaddr), port,
              (ipaddr == nullptr) ? "Listen" : "Connect");
@@ -106,10 +106,10 @@ std::function<bool(const ip_addr_t *, uint16_t)> qnethernet_altcp_is_tls =
     };
 
 // Gets the client certificate data.
-std::function<void(const ip_addr_t &, uint16_t, const uint8_t *&, size_t &)>
+std::function<void(const ip_addr_t&, uint16_t, const uint8_t*&, size_t&)>
     qnethernet_altcp_tls_client_cert =
-        [](const ip_addr_t &ipaddr, uint16_t port,
-           const uint8_t *&cert, size_t &cert_len) {
+        [](const ip_addr_t& ipaddr, uint16_t port,
+           const uint8_t*& cert, size_t& cert_len) {
           printf("[[qnethernet_altcp_tls_client_cert(%s, %" PRIu16 ")]]"
                  " No certificate\r\n",
                  ipaddr_ntoa(&ipaddr), port);
@@ -123,14 +123,14 @@ std::function<uint8_t(uint16_t)> qnethernet_altcp_tls_server_cert_count =
 
 // Gets the server certificate data.
 std::function<void(uint16_t, uint8_t,
-                   const uint8_t *&, size_t &,
-                   const uint8_t *&, size_t &,
-                   const uint8_t *&, size_t &)>
+                   const uint8_t*&, size_t&,
+                   const uint8_t*&, size_t&,
+                   const uint8_t*&, size_t&)>
     qnethernet_altcp_tls_server_cert =
         [](uint16_t port, uint8_t index,
-           const uint8_t *&privkey,      size_t &privkey_len,
-           const uint8_t *&privkey_pass, size_t &privkey_pass_len,
-           const uint8_t *&cert,         size_t &cert_len) {
+           const uint8_t*& privkey,      size_t& privkey_len,
+           const uint8_t*& privkey_pass, size_t& privkey_pass_len,
+           const uint8_t*& cert,         size_t& cert_len) {
           printf("[[qnethernet_altcp_tls_server_cert(port %" PRIu16 ","
                  " index %" PRIu8 ")]]\r\n",
                  port, index);

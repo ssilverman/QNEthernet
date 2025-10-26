@@ -197,7 +197,7 @@ bool initEthernet() {
 
 // The simplest possible (very non-compliant) HTTP server. Respond to
 // any input with an HTTP/1.1 response.
-void processClientData(ClientState &state) {
+void processClientData(ClientState& state) {
   // Loop over available data until an empty line or no more data
   // Note that if emptyLine starts as false then this will ignore any
   // initial blank line.
@@ -252,7 +252,7 @@ void loop() {
   }
 
   // Process data from each client
-  for (ClientState &state : clients) {  // Use a reference so we don't copy
+  for (ClientState& state : clients) {  // Use a reference so we don't copy
     if (!state.client.connected()) {
       state.closed = true;
       continue;
@@ -285,7 +285,7 @@ void loop() {
   size_t size = clients.size();
   clients.erase(
       std::remove_if(clients.begin(), clients.end(),
-                     [](const ClientState &state) { return state.closed; }),
+                     [](const ClientState& state) { return state.closed; }),
       clients.end());
   if (clients.size() != size) {
     printf("New client count: %zu\r\n", clients.size());

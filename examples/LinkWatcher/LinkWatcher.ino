@@ -24,7 +24,7 @@ void setup() {
       printf("[Ethernet] Link ON");
 
       // We can use driver capabilities to determine what to print
-      const DriverCapabilities &dc = Ethernet.driverCapabilities();
+      const DriverCapabilities& dc = Ethernet.driverCapabilities();
       if (dc.isLinkSpeedDetectable) {
         printf(", %d Mbps", Ethernet.linkSpeed());
       }

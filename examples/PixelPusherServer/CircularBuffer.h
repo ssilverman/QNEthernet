@@ -41,7 +41,7 @@ class CircularBuffer {
     return element;
   }
 
-  void put(const T &t) {
+  void put(const T& t) {
     buf_[head_] = t;
     if (size_ == capacity_) {
       tail_ = (tail_ + 1) % capacity_;
@@ -57,18 +57,18 @@ class CircularBuffer {
     size_ = 0;
   }
 
-  T &operator[](size_t n) {
+  T& operator[](size_t n) {
     return get(*this, n, capacity_);
   }
 
-  const T &operator[](size_t n) const {
+  const T& operator[](size_t n) const {
     return get(*this, n, capacity_);
   }
 
  private:
   // Handles both const and non-const cases
   template <typename U>
-  static T &get(U &t, size_t n, size_t capacity) {
+  static T& get(U& t, size_t n, size_t capacity) {
     return t.buf_[(t.tail_ + n) % capacity];
   }
 

@@ -98,7 +98,7 @@ void setup() {
 //
 // We could pass just the buffer, but we're passing the whole state
 // here so we know which client it's from.
-void processMessage(const ClientState &state) {
+void processMessage(const ClientState& state) {
   printf("Message: ");
   fwrite(state.buf, sizeof(state.buf[0]), kMessageSize, stdout);
   printf("\r\n");
@@ -115,7 +115,7 @@ void loop() {
   }
 
   // Process data from each client
-  for (ClientState &state : clients) {  // Use a reference
+  for (ClientState& state : clients) {  // Use a reference
     if (!state.client.connected()) {
       state.closed = true;
       continue;
@@ -136,7 +136,7 @@ void loop() {
   size_t size = clients.size();
   clients.erase(
       std::remove_if(clients.begin(), clients.end(),
-                     [](const ClientState &state) { return state.closed; }),
+                     [](const ClientState& state) { return state.closed; }),
       clients.end());
   if (clients.size() != size) {
     printf("Client count: %zu\r\n", clients.size());

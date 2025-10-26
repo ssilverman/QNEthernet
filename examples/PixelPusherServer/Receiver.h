@@ -18,8 +18,8 @@ class Receiver {
   virtual ~Receiver() = default;
 
   // Avoid slicing
-  Receiver(const Receiver &) = delete;
-  Receiver &operator=(const Receiver &) = delete;
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
 
   // Initializes the receiver. This performs tasks that must be done
   // after the system is booted and is meant to be called from setup()
@@ -39,14 +39,14 @@ class Receiver {
   virtual uint8_t stripFlags(size_t stripNum) const = 0;
 
   // Handles a PixelPusher command.
-  virtual void handleCommand(uint8_t command, const uint8_t *data, size_t len) {
+  virtual void handleCommand(uint8_t command, const uint8_t* data, size_t len) {
   }
 
   // Starts receiving pixels from a packet.
   virtual void startPixels() {}
 
   // Processes pixels for one strip.
-  virtual void pixels(size_t stripNum, const uint8_t *pixels,
+  virtual void pixels(size_t stripNum, const uint8_t* pixels,
                       size_t pixelsPerStrip) = 0;
 
   // All the pixels from the packet have been sent to this receiver.

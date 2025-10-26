@@ -55,7 +55,7 @@ void setup() {
 // Generates numbers from a variety of distributions using the given
 // UniformRandomBitGenerator, G.
 template <typename G>
-void demo(G &g) {
+void demo(G& g) {
   printf("Raw numbers:");
   for (int i = 0; i < 20; i++) {
     if (i % 5 == 0) {
