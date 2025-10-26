@@ -625,14 +625,14 @@ tcp_state EthernetClient::status() const {
   }
 
 // Gets the innermost PCB from the state. For altcp, the PCB's are nested.
-static inline tcp_pcb* innermost(
+static inline struct tcp_pcb* innermost(
     const std::unique_ptr<internal::ConnectionState>& state) {
 #if LWIP_ALTCP
-  altcp_pcb* innermost = state->pcb;
+  struct altcp_pcb* innermost = state->pcb;
   while (innermost->inner_conn != nullptr) {
     innermost = innermost->inner_conn;
   }
-  return static_cast<tcp_pcb*>(innermost->state);
+  return static_cast<struct tcp_pcb*>(innermost->state);
 #else
   return state->pcb;
 #endif  // LWIP_ALTCP

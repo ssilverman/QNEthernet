@@ -24,7 +24,7 @@ namespace internal {
 struct ConnectionState final {
   // Creates a new object and sets `arg` as the pcb's arg. This also reserves
   // TCP_WND bytes as buffer space.
-  ConnectionState(altcp_pcb* const tpcb, void* const arg)
+  ConnectionState(struct altcp_pcb* const tpcb, void* const arg)
       : pcb(tpcb),
         bufPos(0) {
     altcp_arg(tpcb, arg);
@@ -51,7 +51,7 @@ struct ConnectionState final {
   ConnectionState(const ConnectionState&) = delete;
   ConnectionState& operator=(const ConnectionState&) = delete;
 
-  altcp_pcb* /*volatile*/ pcb;
+  struct altcp_pcb* /*volatile*/ pcb;
 
   // Incoming data buffer
   std::vector<uint8_t> buf;

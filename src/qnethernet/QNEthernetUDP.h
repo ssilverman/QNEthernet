@@ -289,7 +289,7 @@ class EthernetUDP : public UDP,
   // Checks if there's data still available in the packet.
   bool isAvailable() const;
 
-  udp_pcb* pcb_ = nullptr;
+  struct udp_pcb* pcb_ = nullptr;
 
   // Listening parameters
   bool listening_          = false;

@@ -262,10 +262,11 @@ void ConnectionManager::addConnection(
   };
 }
 
-static altcp_pcb* create_altcp_pcb(const ip_addr_t* const ipaddr,
-                                   const uint16_t port, const u8_t ip_type) {
+static struct altcp_pcb* create_altcp_pcb(const ip_addr_t* const ipaddr,
+                                          const uint16_t port,
+                                          const u8_t ip_type) {
 #if LWIP_ALTCP
-  altcp_pcb* pcb = nullptr;
+  struct altcp_pcb* pcb = nullptr;
   altcp_allocator_t allocator{nullptr, nullptr};
   if (qnethernet_altcp_get_allocator(ipaddr, port, allocator)) {
     pcb = altcp_new_ip_type(&allocator, ip_type);
@@ -288,7 +289,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
     return nullptr;
   }
 
-  altcp_pcb* const pcb = create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
+  struct altcp_pcb* const pcb =
+      create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     return nullptr;
@@ -322,7 +324,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
 }
 
 int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
-  altcp_pcb* pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
+  struct altcp_pcb* pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     return -1;
@@ -331,11 +333,12 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
   // Try to bind
   if (reuse) {
 #if LWIP_ALTCP
-    altcp_pcb* innermost = pcb;
+    struct altcp_pcb* innermost = pcb;
     while (innermost->inner_conn != nullptr) {
       innermost = innermost->inner_conn;
     }
-    ip_set_option(static_cast<tcp_pcb*>(innermost->state), SOF_REUSEADDR);
+    ip_set_option(static_cast<struct tcp_pcb*>(innermost->state),
+                  SOF_REUSEADDR);
 #else
     ip_set_option(pcb, SOF_REUSEADDR);
 #endif  // LWIP_ALTCP
@@ -347,7 +350,7 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
   }
 
   // Try to listen
-  altcp_pcb* const pcbNew = altcp_listen(pcb);
+  struct altcp_pcb* const pcbNew = altcp_listen(pcb);
   if (pcbNew == nullptr) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
@@ -368,7 +371,7 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
 }
 
 // Gets the local port from the given tcp_pcb.
-static uint16_t getLocalPort(altcp_pcb* pcb) {
+static uint16_t getLocalPort(struct altcp_pcb* pcb) {
 #if LWIP_ALTCP
   return altcp_get_port(pcb, 1);
 #else
@@ -379,22 +382,24 @@ static uint16_t getLocalPort(altcp_pcb* pcb) {
 }
 
 bool ConnectionManager::isListening(const uint16_t port) const {
-  const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb* const elem) {
-        return (elem != nullptr) && (getLocalPort(elem) == port);
-      });
+  const auto it =
+      std::find_if(listeners_.cbegin(), listeners_.cend(),
+                   [port](struct altcp_pcb* const elem) {
+                     return (elem != nullptr) && (getLocalPort(elem) == port);
+                   });
   return (it != listeners_.cend());
 }
 
 bool ConnectionManager::stopListening(const uint16_t port) {
-  const auto it = std::find_if(
-      listeners_.cbegin(), listeners_.cend(), [port](altcp_pcb* const elem) {
-        return (elem != nullptr) && (getLocalPort(elem) == port);
-      });
+  const auto it =
+      std::find_if(listeners_.cbegin(), listeners_.cend(),
+                   [port](struct altcp_pcb* const elem) {
+                     return (elem != nullptr) && (getLocalPort(elem) == port);
+                   });
   if (it == listeners_.cend()) {
     return false;
   }
-  altcp_pcb* const pcb = *it;
+  struct altcp_pcb* const pcb = *it;
   listeners_.erase(it);
   if (altcp_close(pcb) != ERR_OK) {
     altcp_abort(pcb);
