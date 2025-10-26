@@ -349,6 +349,7 @@ bool EthernetClass::setDHCPEnabled(const bool flag) {
 bool EthernetClass::renewDHCP() const {
 #if LWIP_DHCP
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return false;
   }
 
