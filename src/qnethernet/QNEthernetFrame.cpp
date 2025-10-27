@@ -82,9 +82,8 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   return ERR_OK;
 }
 
-FLASHMEM EthernetFrameClass::EthernetFrameClass() {
-  setReceiveQueueCapacity(1);
-}
+FLASHMEM EthernetFrameClass::EthernetFrameClass()
+    : inBuf_(1) {}
 
 void EthernetFrameClass::Frame::clear() {
   data.clear();

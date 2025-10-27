@@ -237,7 +237,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   bool isAvailable() const;
 
   // Received frame; updated every time one is received
-  std::vector<Frame> inBuf_(1);  // Holds received frames
+  std::vector<Frame> inBuf_;  // Holds received frames
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
   size_t inBufSize_ = 0;
