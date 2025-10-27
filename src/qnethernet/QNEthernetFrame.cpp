@@ -273,7 +273,7 @@ bool EthernetFrameClass::endFrame() {
   const bool retval = enet_output_frame(outFrame_.value.data.data(),
                                         outFrame_.value.data.size());
   outFrame_.value.clear();
-  outFrame.has_value = false;
+  outFrame_.has_value = false;
   return retval;
 }
 
@@ -282,33 +282,34 @@ bool EthernetFrameClass::send(const void* const frame, const size_t len) const {
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {
-  if (!hasOutFrame_ || availableForWrite() <= 0) {
+  if (!outFrame_.has_value || availableForWrite() <= 0) {
     return 0;
   }
-  outFrame_.data.push_back(b);
+  outFrame_.value.data.push_back(b);
   return 1;
 }
 
 size_t EthernetFrameClass::write(const uint8_t* const buffer,
                                  const size_t size) {
   const int avail = availableForWrite();
-  if (!hasOutFrame_ || size == 0 || avail <= 0) {
+  if (!outFrame_.has_value || size == 0 || avail <= 0) {
     return 0;
   }
 
   const size_t actualSize = std::min(size, static_cast<size_t>(avail));
-  outFrame_.data.insert(outFrame_.data.end(), &buffer[0], &buffer[actualSize]);
+  outFrame_.value.data.insert(outFrame_.value.data.end(), &buffer[0],
+                              &buffer[actualSize]);
   return actualSize;
 }
 
 int EthernetFrameClass::availableForWrite() {
-  if (!hasOutFrame_) {
+  if (!outFrame_.has_value) {
     return 0;
   }
-  if (outFrame_.data.size() > (maxFrameLen() - 4)) {
+  if (outFrame_.value.data.size() > (maxFrameLen() - 4)) {
     return 0;
   }
-  return static_cast<int>((maxFrameLen() - 4) - outFrame_.data.size());
+  return static_cast<int>((maxFrameLen() - 4) - outFrame_.value.data.size());
 }
 
 }  // namespace network
