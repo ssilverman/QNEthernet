@@ -26,43 +26,43 @@ class MbedTLSClient : public internal::ClientEx {
   // Creates an unconnectable client.
   MbedTLSClient();
 
-  explicit MbedTLSClient(Client &client);
-  explicit MbedTLSClient(ClientEx &client);
+  explicit MbedTLSClient(Client& client);
+  explicit MbedTLSClient(ClientEx& client);
   virtual ~MbedTLSClient();
 
   // Allow moving but not copying
-  MbedTLSClient(const MbedTLSClient &) = delete;
-  MbedTLSClient &operator=(const MbedTLSClient &) = delete;
-  MbedTLSClient(MbedTLSClient &&other) = default;
-  MbedTLSClient &operator=(MbedTLSClient &&other) = default;
+  MbedTLSClient(const MbedTLSClient&) = delete;
+  MbedTLSClient& operator=(const MbedTLSClient&) = delete;
+  MbedTLSClient(MbedTLSClient&& other) = default;
+  MbedTLSClient& operator=(MbedTLSClient&& other) = default;
 
   // Sets a new client. This calls stop() first.
-  void setClient(Client &client);
+  void setClient(Client& client);
 
   // Sets a new client. This calls stop() first.
-  void setClient(internal::ClientEx &client);
+  void setClient(internal::ClientEx& client);
 
   // Sets the CA certificate(s).
-  void setCACert(security::MbedTLSCert *ca) {
+  void setCACert(security::MbedTLSCert* ca) {
     ca_ = ca;
   }
 
   // Sets the client certificate.
-  void setClientCert(security::MbedTLSCert *cert) {
+  void setClientCert(security::MbedTLSCert* cert) {
     clientCert_ = cert;
   }
 
   // Sets the pre-shared key.
-  void setPSK(const security::MbedTLSPSK *psk) {
+  void setPSK(const security::MbedTLSPSK* psk) {
     psk_ = psk;
   }
 
   // Sets the hostname for the ServerName extension. If the given string is NULL
   // or empty then the hostname is cleared.
-  void setHostname(const char *s);
+  void setHostname(const char* s);
 
   // Gets the hostname for the ServerName extension.
-  const char *hostname() const {
+  const char* hostname() const {
     return hostname_;
   }
 
@@ -99,7 +99,7 @@ class MbedTLSClient : public internal::ClientEx {
 
   // Two forms of the connect() function
   int connect(IPAddress ip, uint16_t port) final;
-  int connect(const char *host, uint16_t port) final;
+  int connect(const char* host, uint16_t port) final;
 
   // Returns whether the client is still in the process of doing the handshake.
   // This is useful when doing a non-blocking connect.
@@ -113,21 +113,21 @@ class MbedTLSClient : public internal::ClientEx {
   // Write functions
   // The connection may be closed if there was an error.
   size_t write(uint8_t b) final;
-  size_t write(const uint8_t *buf, size_t size) final;
+  size_t write(const uint8_t* buf, size_t size) final;
 
   // Functions that loop until all bytes are written. If the connection is
   // closed before all bytes are sent then these break early and return the
   // actual number of bytes sent. In other words, these only return a value less
   // than the specified size if the connection was closed.
   size_t writeFully(uint8_t b);
-  size_t writeFully(const char *s);
-  size_t writeFully(const void *buf, size_t size);
+  size_t writeFully(const char* s);
+  size_t writeFully(const void* buf, size_t size);
 
   // Read functions
   // The connection may be closed if there was an error.
   int available() final;
   int read() final;
-  int read(uint8_t *buf, size_t size) final;
+  int read(uint8_t* buf, size_t size) final;
   int peek() final;
 
   int availableForWrite() final;
@@ -143,8 +143,8 @@ class MbedTLSClient : public internal::ClientEx {
 
  private:
   // PSK callback function type.
-  using pskf = int (*)(void *p_psk, mbedtls_ssl_context *ssl,
-                       const unsigned char *id, size_t idLen);
+  using pskf = int (*)(void* p_psk, mbedtls_ssl_context* ssl,
+                       const unsigned char* id, size_t idLen);
 
   enum class States {
     kStart,
@@ -154,7 +154,7 @@ class MbedTLSClient : public internal::ClientEx {
     kConnected,
   };
 
-  MbedTLSClient(Client *client, bool isClientEx);
+  MbedTLSClient(Client* client, bool isClientEx);
 
   // Initializes the client or server.
   bool init(bool server);
@@ -164,15 +164,15 @@ class MbedTLSClient : public internal::ClientEx {
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The key password is optional.
-  void addServerCert(security::MbedTLSCert *cert);
+  void addServerCert(security::MbedTLSCert* cert);
 
   // Sets the PSK callback for a server-side connection.
-  void setPSKCallback(pskf f_psk, void *p_psk);
+  void setPSKCallback(pskf f_psk, void* p_psk);
 
   // Connects to either an IP address or hostname. This is a template because
   // there are two Client connect() functions.
   template <typename T>
-  bool connect(const char *const host, const T hostOrIp, const uint16_t port);
+  bool connect(const char* const host, const T hostOrIp, const uint16_t port);
 
   // Starts the connection by first ensuring the underlying client is connected
   // and then performing the handshake. The handshake is performed with the
@@ -181,7 +181,7 @@ class MbedTLSClient : public internal::ClientEx {
   // client will be deinitialized and the underlying client stopped.
   //
   // This optionally waits for the connection/handshake to be complete.
-  bool connect(const char *hostname, bool wait);
+  bool connect(const char* hostname, bool wait);
 
   // If we're in the middle of connecting or a handshake then this moves the
   // connection or handshake along. If the handshake is complete then this sets
@@ -210,7 +210,7 @@ class MbedTLSClient : public internal::ClientEx {
 
   bool isServer_;
 
-  Client *client_;
+  Client* client_;
   bool isClientEx_;
 
   uint32_t connTimeout_;
@@ -227,14 +227,14 @@ class MbedTLSClient : public internal::ClientEx {
   mbedtls_ssl_config conf_;
 
   // Certificates
-  security::MbedTLSCert *ca_;
-  security::MbedTLSCert *clientCert_;
-  std::vector<security::MbedTLSCert *> serverCerts_;  // Guaranteed no NULLs
+  security::MbedTLSCert* ca_;
+  security::MbedTLSCert* clientCert_;
+  std::vector<security::MbedTLSCert*> serverCerts_;  // Guaranteed no NULLs
 
   // Key
-  const security::MbedTLSPSK *psk_;
+  const security::MbedTLSPSK* psk_;
   pskf f_psk_;
-  void *p_psk_;
+  void* p_psk_;
 
   friend class MbedTLSServer;
 };
@@ -242,7 +242,7 @@ class MbedTLSClient : public internal::ClientEx {
 // Connects to either an IP address or hostname. This is a template because
 // there are two Client connect() functions.
 template <typename T>
-inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
+inline bool MbedTLSClient::connect(const char* const host, const T hostOrIp,
                                    const uint16_t port) {
   stop();
 
@@ -261,7 +261,7 @@ inline bool MbedTLSClient::connect(const char *const host, const T hostOrIp,
     state_ = States::kConnecting;
   }
 
-  const char *hostname;
+  const char* hostname;
   if (std::strlen(hostname_) != 0) {
     hostname = hostname_;
   } else {

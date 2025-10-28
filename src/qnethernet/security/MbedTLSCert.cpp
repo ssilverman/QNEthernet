@@ -24,12 +24,12 @@ MbedTLSCert::~MbedTLSCert() {
   mbedtls_x509_crt_free(&cert_);
 }
 
-bool MbedTLSCert::parse(const void *const buf, const size_t len) {
+bool MbedTLSCert::parse(const void* const buf, const size_t len) {
   if (buf == nullptr) {
     return false;
   }
   int err =
-      mbedtls_x509_crt_parse(&cert_, static_cast<const uint8_t *>(buf), len);
+      mbedtls_x509_crt_parse(&cert_, static_cast<const uint8_t*>(buf), len);
   if (err >= 0) {
     hasCerts_ = true;
     return (err == 0);
@@ -37,9 +37,9 @@ bool MbedTLSCert::parse(const void *const buf, const size_t len) {
   return false;
 }
 
-bool MbedTLSCert::parseDERNoCopy(const void *const buf, const size_t len) {
+bool MbedTLSCert::parseDERNoCopy(const void* const buf, const size_t len) {
   int err = mbedtls_x509_crt_parse_der_nocopy(
-      &cert_, static_cast<const uint8_t *>(buf), len);
+      &cert_, static_cast<const uint8_t*>(buf), len);
   if (err == 0) {
     hasCerts_ = true;
     return true;
@@ -47,10 +47,10 @@ bool MbedTLSCert::parseDERNoCopy(const void *const buf, const size_t len) {
   return false;
 }
 
-bool MbedTLSCert::parseKey(const void *const buf, const size_t len,
-                           const void *const pwd, const size_t pwdLen) {
-  hasKey_ = (mbedtls_pk_parse_key(&key_, static_cast<const uint8_t *>(buf), len,
-                                  static_cast<const uint8_t *>(pwd), pwdLen,
+bool MbedTLSCert::parseKey(const void* const buf, const size_t len,
+                           const void* const pwd, const size_t pwdLen) {
+  hasKey_ = (mbedtls_pk_parse_key(&key_, static_cast<const uint8_t*>(buf), len,
+                                  static_cast<const uint8_t*>(pwd), pwdLen,
                                   qnethernet_mbedtls_rand_f_rng,
                                   qnethernet_mbedtls_rand_p_rng) == 0);
   return hasKey_;
@@ -61,7 +61,7 @@ size_t MbedTLSCert::size() const {
     return 0;
   }
 
-  auto *p = &cert_;
+  auto* p = &cert_;
   size_t size = 0;
   while (p != nullptr) {
     size++;
