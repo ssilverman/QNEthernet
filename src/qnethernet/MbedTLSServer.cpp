@@ -17,14 +17,14 @@ namespace qindesign {
 namespace network {
 
 // PSK callback.
-static int pskCallback(void *const p_psk, mbedtls_ssl_context *const ssl,
-                       const unsigned char *const id, const size_t idLen) {
+static int pskCallback(void* const p_psk, mbedtls_ssl_context* const ssl,
+                       const unsigned char* const id, const size_t idLen) {
   if ((p_psk == nullptr) || (ssl == nullptr)) {
     return -1;
   }
-  auto *f = static_cast<MbedTLSServer::pskf *>(p_psk);
+  auto* f = static_cast<MbedTLSServer::pskf*>(p_psk);
   int retval = -1;
-  (*f)(id, idLen, [ssl, &retval](const unsigned char *psk, size_t psk_len) {
+  (*f)(id, idLen, [ssl, &retval](const unsigned char* psk, size_t psk_len) {
     if (psk != nullptr && psk_len != 0) {
       retval = mbedtls_ssl_set_hs_psk(ssl, psk, psk_len);
     }
@@ -32,7 +32,7 @@ static int pskCallback(void *const p_psk, mbedtls_ssl_context *const ssl,
   return retval;
 }
 
-MbedTLSServer::MbedTLSServer(EthernetServer &server)
+MbedTLSServer::MbedTLSServer(EthernetServer& server)
     : server_(server),
       state_(States::kStart) {}
 
@@ -56,7 +56,7 @@ void MbedTLSServer::end() {
   state_ = States::kStart;
 }
 
-void MbedTLSServer::addServerCert(security::MbedTLSCert *cert) {
+void MbedTLSServer::addServerCert(security::MbedTLSCert* cert) {
   if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     certs_.push_back(cert);
   }
@@ -70,7 +70,7 @@ MbedTLSClient MbedTLSServer::accept() {
       if (ca_ != nullptr && !ca_->empty()) {
         tlsClient.setCACert(ca_);
       }
-      for (security::MbedTLSCert *c : certs_) {
+      for (security::MbedTLSCert* c : certs_) {
         tlsClient.addServerCert(c);
       }
       if (pskCB_) {
@@ -87,7 +87,7 @@ MbedTLSClient MbedTLSServer::accept() {
     }
   }
 
-  return MbedTLSClient{static_cast<Client *>(nullptr), false};
+  return MbedTLSClient{static_cast<Client*>(nullptr), false};
 }
 
 size_t MbedTLSServer::write(const uint8_t b) {
@@ -96,7 +96,7 @@ size_t MbedTLSServer::write(const uint8_t b) {
   return 0;
 }
 
-size_t MbedTLSServer::write(const uint8_t *const buffer, const size_t size) {
+size_t MbedTLSServer::write(const uint8_t* const buffer, const size_t size) {
   (void)buffer;
   (void)size;
 
