@@ -191,7 +191,7 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
   qnethernet_hal_enable_interrupts();
 }
 
-bool EthernetFrameClass::timestamp(timespec &timestamp) const {
+bool EthernetFrameClass::timestamp(timespec& timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (frame_.hasTimestamp) {
     timestamp = frame_.timestamp;
