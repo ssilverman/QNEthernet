@@ -264,7 +264,7 @@ class EthernetUDP : public UDP,
   // Gets the IEEE 1588 timestamp for the received packet and assigns it to the
   // `timestamp` parameter, if available. This returns whether the received
   // packet has a timestamp.
-  bool timestamp(timespec &timestamp) const;
+  bool timestamp(timespec& timestamp) const;
 
  private:
   // Packet holds packet data. destAddr is unused for outgoing packets.
