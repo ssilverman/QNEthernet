@@ -22,8 +22,8 @@ class MbedTLSCert {
   // Allow moving but not copying
   MbedTLSCert(const MbedTLSCert&) = delete;
   MbedTLSCert& operator=(const MbedTLSCert&) = delete;
-  MbedTLSCert(MbedTLSCert&& other) = default;
-  MbedTLSCert& operator=(MbedTLSCert&& other) = default;
+  MbedTLSCert(MbedTLSCert&&) = default;
+  MbedTLSCert& operator=(MbedTLSCert&&) = default;
 
   // Parses one DER-encoded certificate or a list of PEM-encoded certificates.
   // PEM-encoded data must be NUL-terminated.
