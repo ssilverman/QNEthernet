@@ -24,7 +24,7 @@ namespace network {
 class MbedTLSClient : public internal::ClientEx {
  public:
   // Creates an unconnectable client.
-  MbedTLSClient();
+  MbedTLSClient() = default;
 
   explicit MbedTLSClient(Client& client);
   explicit MbedTLSClient(ClientEx& client);
@@ -206,33 +206,33 @@ class MbedTLSClient : public internal::ClientEx {
   // there's data available.
   bool isConnected();
 
-  int lastError_;
+  int lastError_ = 0;
 
-  bool isServer_;
+  bool isServer_ = false;
 
-  Client* client_;
-  bool isClientEx_;
+  Client* client_ = nullptr;
+  bool isClientEx_ = false;
 
-  uint32_t connTimeout_;
-  bool connTimeoutEnabled_;
+  uint32_t connTimeout_ = 0;
+  bool connTimeoutEnabled_ = true;
 
-  States state_;
+  States state_ = States::kStart;
 
-  char hostname_[MBEDTLS_SSL_MAX_HOST_NAME_LEN + 1];
+  char hostname_[MBEDTLS_SSL_MAX_HOST_NAME_LEN + 1]{'\0'};
 
-  int peeked_;  // < 0 for not there
+  int peeked_ = -1;  // < 0 for not there
 
   // State
   mbedtls_ssl_context ssl_;
   mbedtls_ssl_config conf_;
 
   // Certificates
-  security::MbedTLSCert* ca_;
-  security::MbedTLSCert* clientCert_;
+  security::MbedTLSCert* ca_ = nullptr;
+  security::MbedTLSCert* clientCert_ = nullptr;
   std::vector<security::MbedTLSCert*> serverCerts_;  // Guaranteed no NULLs
 
   // Key
-  const security::MbedTLSPSK* psk_;
+  const security::MbedTLSPSK* psk_ = nullptr;
   pskf f_psk_;
   void* p_psk_;
 
