@@ -297,7 +297,7 @@ class EthernetUDP : public UDP,
   bool listeningMulticast_ = false;
   IPAddress multicastIP_;
 
-  // Received packet; updated every time one is received
+  // Received packets; updated every time one is received
   std::vector<Packet> inBuf_;  // Holds received packets
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
