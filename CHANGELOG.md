@@ -11,12 +11,16 @@ and this project adheres to
 ### Added
 * Added a way to iterate over the internal TCP connection PCBs.
 * Added calls to `Ethernet.loop()` in more places.
+* Added setting `errno` to `ENETDOWN` in `EthernetClass` in more places where
+  network initialization is checked.
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
 * Made `EthernetClass::hostByName(hostname, result)` `const`.
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
 * Improved code style and structure.
+* Changed `errno` value in `EthernetClass::joinGroup(ip)` if network is down to
+  `ENETDOWN` from `ENOTCONN`.
 
 ## [0.32.0]
 

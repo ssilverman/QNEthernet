@@ -186,7 +186,8 @@ class EthernetClass final {
   // Waits, up to the specified timeout, for an IP address and returns whether
   // one was acquired. The timeout is in milliseconds.
   //
-  // If the network is not enabled then this will return false immediately.
+  // If the network is not enabled then this will return false immediately and
+  // errno will be set to ENETDOWN.
   bool waitForLocalIP(uint32_t timeout) const;
 
   // Starts Ethernet with the given address configuration. This is similar to
@@ -214,7 +215,8 @@ class EthernetClass final {
   // Waits, up to the specified timeout, for a link to be detected. This returns
   // whether a link was detected. The timeout is in milliseconds.
   //
-  // If the network is not enabled then this will return false immediately.
+  // If the network is not enabled then this will return false immediately and
+  // errno will be set to ENETDOWN.
   bool waitForLink(uint32_t timeout) const;
 
   // Shuts down the Ethernet peripheral(s) and stops all services.
@@ -235,6 +237,9 @@ class EthernetClass final {
 
   // Manually sets the link state. This is useful when using the loopback
   // feature. Network operations will usually fail unless there's a link.
+  //
+  // If the network is not enabled then this will return false immediately and
+  // errno will be set to ENETDOWN.
   void setLinkState(bool flag) const;
 
   // Returns the link speed in Mbps. This is only valid if the link is up and
@@ -407,6 +412,9 @@ class EthernetClass final {
   // for there to be collisions. This means that it's not always possible to
   // disallow an address once it's been allowed. This will return false in that
   // case and true otherwise.
+  //
+  // If the network is not enabled then this will return false immediately and
+  // errno will be set to ENETDOWN.
   bool setMACAddressAllowed(const uint8_t mac[kMACAddrSize], bool flag) const;
 
   // Sets the DHCP client option 12 hostname. The empty string will set the

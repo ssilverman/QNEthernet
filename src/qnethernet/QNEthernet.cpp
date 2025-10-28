@@ -371,6 +371,7 @@ bool EthernetClass::renewDHCP() const {
 bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return false;
   }
 
@@ -391,6 +392,7 @@ bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
 
 bool EthernetClass::waitForLink(const uint32_t timeout) const {
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return false;
   }
 
@@ -516,6 +518,7 @@ bool EthernetClass::linkState() const {
 
 void EthernetClass::setLinkState(const bool flag) const {
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return;
   }
   if (flag) {
@@ -667,7 +670,7 @@ EthernetHardwareStatus EthernetClass::hardwareStatus() const {
 bool EthernetClass::joinGroup(const IPAddress& ip) const {
 #if LWIP_IGMP
   if (netif_ == nullptr) {
-    errno = ENOTCONN;
+    errno = ENETDOWN;
     return false;
   }
 
@@ -687,6 +690,7 @@ bool EthernetClass::joinGroup(const IPAddress& ip) const {
 bool EthernetClass::leaveGroup(const IPAddress& ip) const {
 #if LWIP_IGMP
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return false;
   }
 
@@ -705,7 +709,11 @@ bool EthernetClass::leaveGroup(const IPAddress& ip) const {
 
 bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
                                          const bool flag) const {
-  if (netif_ == nullptr || mac == nullptr) {
+  if (netif_ == nullptr) {
+    errno = ENETDOWN;
+    return false;
+  }
+  if (mac == nullptr) {
     return false;
   }
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -742,6 +750,7 @@ bool EthernetClass::hostByName(const char* const hostname,
                                IPAddress& ip) const {
 #if LWIP_DNS
   if (netif_ == nullptr) {
+    errno = ENETDOWN;
     return false;
   }
   return DNSClient::getHostByName(hostname, ip,
