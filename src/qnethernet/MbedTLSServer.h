@@ -28,7 +28,7 @@ class MbedTLSServer : public Server {
       const unsigned char* id, size_t idLen,
       std::function<void(const unsigned char* psk, size_t psk_len)> psk)>;
 
-  MbedTLSServer(EthernetServer& Server);
+  MbedTLSServer(EthernetServer& server);
   virtual ~MbedTLSServer();
 
   // Allow moving but not copying
