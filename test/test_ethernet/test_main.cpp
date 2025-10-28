@@ -30,7 +30,7 @@ using namespace ::qindesign::network;
 // terminated with a NUL. This returns an empty string if something goes wrong
 // with the print function.
 template <typename... Args>
-std::vector<char> format(const char *format, Args... args) {
+std::vector<char> format(const char* format, Args... args) {
   std::vector<char> out;
 
   int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
@@ -782,7 +782,7 @@ static void test_udp() {
       continue;
     }
 
-    const uint8_t *data = udp->data();
+    const uint8_t* data = udp->data();
 
     // See: Section 5, "SNTP Client Operations"
     int mode = data[0] & 0x07;
@@ -823,7 +823,7 @@ static void test_udp() {
 
   // Print the time
   std::time_t time = sntpTime;
-  std::tm *tm = std::gmtime(&time);
+  std::tm* tm = std::gmtime(&time);
   TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u (UTC)",
                       tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
                       tm->tm_hour, tm->tm_min, tm->tm_sec).data());
@@ -1542,7 +1542,7 @@ static void test_raw_frames() {
                             "Expected correct frame size");
 
   if (EthernetFrame.size() > 0) {  // Avoid potentially accessing NULL data
-    const uint8_t *frameData = EthernetFrame.data();
+    const uint8_t* frameData = EthernetFrame.data();
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), &frameData[0], 6,
                                           "Expected matching dest MAC");
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(srcMAC, &frameData[6], 6,

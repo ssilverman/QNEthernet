@@ -23,7 +23,7 @@
 // terminated with a NUL. This returns an empty string if something goes wrong
 // with the print function.
 template <typename... Args>
-std::vector<char> format(const char *format, Args... args) {
+std::vector<char> format(const char* format, Args... args) {
   std::vector<char> out;
 
   int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
