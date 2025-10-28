@@ -120,7 +120,7 @@ static uint16_t waitForTDRReady() {
 
 // Waits for TDR ready and then prints the results.
 static void waitAndPrintResult(uint16_t seg, bool cross, bool channel) {
-  const char *segName;
+  const char* segName;
   switch (seg) {
     case 1: segName = " 0-10m"; break;
     case 2: segName = "10-20m"; break;
@@ -164,7 +164,7 @@ static void runTests() {
   for (uint16_t seg = 1; seg <= 5; seg++) {
     // Set some registers for this segment
     for (size_t i = 0; i < kRegCount; i++) {
-      const Reg &reg = kRegList[i];
+      const Reg& reg = kRegList[i];
       uint16_t r = mdio_read(reg.addr);
       CLRSET(r,
              (reg.mask << reg.shift),
