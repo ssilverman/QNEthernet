@@ -33,8 +33,7 @@ static int pskCallback(void* const p_psk, mbedtls_ssl_context* const ssl,
 }
 
 MbedTLSServer::MbedTLSServer(EthernetServer& server)
-    : server_(server),
-      state_(States::kStart) {}
+    : server_(server) {}
 
 MbedTLSServer::~MbedTLSServer() {
   end();
