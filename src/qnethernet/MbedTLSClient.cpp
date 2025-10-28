@@ -19,27 +19,9 @@ uint32_t qnethernet_hal_millis(void);
 namespace qindesign {
 namespace network {
 
-MbedTLSClient::MbedTLSClient()
-    : MbedTLSClient(static_cast<Client*>(nullptr), false) {}
-
 MbedTLSClient::MbedTLSClient(Client* const client, const bool isClientEx)
-    : lastError_(0),
-      isServer_(false),
-      client_(client),
-      isClientEx_(isClientEx),
-      connTimeout_(0),
-      connTimeoutEnabled_(true),
-      state_(States::kStart),
-      hostname_{0},
-      peeked_(-1),
-      ssl_{},
-      conf_{},
-      ca_(nullptr),
-      clientCert_(nullptr),
-      serverCerts_(),
-      psk_{},
-      f_psk_(nullptr),
-      p_psk_(nullptr) {}
+    : client_(client),
+      isClientEx_(isClientEx) {}
 
 MbedTLSClient::MbedTLSClient(Client& client) : MbedTLSClient(&client, false) {}
 
