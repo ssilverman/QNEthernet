@@ -16,7 +16,7 @@
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip.h"
-#include "lwip/ip4.h"
+#include "lwip/prot/ip4.h"
 #include "lwip/sys.h"
 #include "qnethernet/QNDNSClient.h"
 #include "qnethernet/util/ip_tools.h"
