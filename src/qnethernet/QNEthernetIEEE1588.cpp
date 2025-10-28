@@ -22,11 +22,11 @@ void EthernetIEEE1588Class::end() const {
   driver_ieee1588_deinit();
 }
 
-bool EthernetIEEE1588Class::readTimer(timespec &t) const {
+bool EthernetIEEE1588Class::readTimer(timespec& t) const {
   return driver_ieee1588_read_timer(&t);
 }
 
-bool EthernetIEEE1588Class::writeTimer(const timespec &t) const {
+bool EthernetIEEE1588Class::writeTimer(const timespec& t) const {
   return driver_ieee1588_write_timer(&t);
 }
 
@@ -35,7 +35,7 @@ void EthernetIEEE1588Class::timestampNextFrame() const {
 }
 
 bool EthernetIEEE1588Class::readAndClearTxTimestamp(
-    struct timespec &timestamp) const {
+    struct timespec& timestamp) const {
   return driver_ieee1588_read_and_clear_tx_timestamp(&timestamp);
 }
 
