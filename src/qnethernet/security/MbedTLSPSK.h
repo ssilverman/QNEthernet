@@ -23,8 +23,8 @@ class MbedTLSPSK {
   // Allow both copying and moving
   MbedTLSPSK(const MbedTLSPSK&) = default;
   MbedTLSPSK& operator=(const MbedTLSPSK&) = default;
-  MbedTLSPSK(MbedTLSPSK&& other) = default;
-  MbedTLSPSK& operator=(MbedTLSPSK&& other) = default;
+  MbedTLSPSK(MbedTLSPSK&&) = default;
+  MbedTLSPSK& operator=(MbedTLSPSK&&) = default;
 
   // Returns whether both the PSK and ID are empty.
   bool empty() const;
