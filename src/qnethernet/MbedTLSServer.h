@@ -34,8 +34,8 @@ class MbedTLSServer : public Server {
   // Allow moving but not copying
   MbedTLSServer(const MbedTLSServer&) = delete;
   MbedTLSServer& operator=(const MbedTLSServer&) = delete;
-  MbedTLSServer(MbedTLSServer&& other) = default;
-  MbedTLSServer& operator=(MbedTLSServer&& other) = default;
+  MbedTLSServer(MbedTLSServer&&) = default;
+  MbedTLSServer& operator=(MbedTLSServer&&) = default;
 
   // Starts the server.
   void begin() final;
