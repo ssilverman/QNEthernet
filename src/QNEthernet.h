@@ -408,10 +408,10 @@ class EthernetClass final {
   // be used for joining or leaving multicast groups; see `joinGroup(ip)` and
   // `leaveGroup(ip)` instead.
   //
-  // Because the underlying system uses a hash of the MAC address, it's possible
-  // for there to be collisions. This means that it's not always possible to
-  // disallow an address once it's been allowed. This will return false in that
-  // case and true otherwise.
+  // Because the underlying system may use a hash of the MAC address, it's
+  // possible for there to be collisions. This means that it's not always
+  // possible to disallow an address once it's been allowed. This will return
+  // false in that case and true otherwise.
   //
   // If the network is not enabled then this will return false immediately and
   // errno will be set to ENETDOWN.
