@@ -81,9 +81,9 @@ class MbedTLSServer : public Server {
   };
 
   EthernetServer& server_;
-  States state_;
+  States state_ = States::kStart;
 
-  security::MbedTLSCert* ca_;
+  security::MbedTLSCert* ca_ = nullptr;
   std::vector<security::MbedTLSCert*> certs_;  // Won't contain NULLs
   pskf pskCB_;
 };
