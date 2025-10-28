@@ -21,27 +21,27 @@ class MbedTLSPSK {
   ~MbedTLSPSK() = default;
 
   // Allow both copying and moving
-  MbedTLSPSK(const MbedTLSPSK &) = default;
-  MbedTLSPSK &operator=(const MbedTLSPSK &) = default;
-  MbedTLSPSK(MbedTLSPSK &&other) = default;
-  MbedTLSPSK &operator=(MbedTLSPSK &&other) = default;
+  MbedTLSPSK(const MbedTLSPSK&) = default;
+  MbedTLSPSK& operator=(const MbedTLSPSK&) = default;
+  MbedTLSPSK(MbedTLSPSK&& other) = default;
+  MbedTLSPSK& operator=(MbedTLSPSK&& other) = default;
 
   // Returns whether both the PSK and ID are empty.
   bool empty() const;
 
   // Sets the PSK data. If the buffer is NULL then the PSK will be cleared.
-  void setPSK(const uint8_t *buf, size_t len);
+  void setPSK(const uint8_t* buf, size_t len);
 
   // Sets the ID data. If the buffer is NULL then the ID will be cleared.
-  void setId(const uint8_t *buf, size_t len);
+  void setId(const uint8_t* buf, size_t len);
 
   // Returns a reference to the internal PSK vector.
-  const std::vector<uint8_t> &psk() const {
+  const std::vector<uint8_t>& psk() const {
     return psk_;
   }
 
   // Returns a reference to the internal PSK ID vector.
-  const std::vector<uint8_t> &id() const {
+  const std::vector<uint8_t>& id() const {
     return id_;
   }
 

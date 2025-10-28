@@ -227,7 +227,7 @@ static void clientConnect() {
   }
 
   // Send the request
-  ::util::writeFully(tlsclient, reinterpret_cast<const uint8_t *>(kRequest),
+  ::util::writeFully(tlsclient, reinterpret_cast<const uint8_t*>(kRequest),
                      std::strlen(kRequest),
                      [&tlsclient]() { return !static_cast<bool>(tlsclient); });
   tlsclient.flush();

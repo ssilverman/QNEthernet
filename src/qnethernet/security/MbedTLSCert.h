@@ -20,10 +20,10 @@ class MbedTLSCert {
   ~MbedTLSCert();
 
   // Allow moving but not copying
-  MbedTLSCert(const MbedTLSCert &) = delete;
-  MbedTLSCert &operator=(const MbedTLSCert &) = delete;
-  MbedTLSCert(MbedTLSCert &&other) = default;
-  MbedTLSCert &operator=(MbedTLSCert &&other) = default;
+  MbedTLSCert(const MbedTLSCert&) = delete;
+  MbedTLSCert& operator=(const MbedTLSCert&) = delete;
+  MbedTLSCert(MbedTLSCert&& other) = default;
+  MbedTLSCert& operator=(MbedTLSCert&& other) = default;
 
   // Parses one DER-encoded certificate or a list of PEM-encoded certificates.
   // PEM-encoded data must be NUL-terminated.
@@ -35,28 +35,28 @@ class MbedTLSCert {
   // some of the certificates may have been loaded. See size().
   //
   // This does nothing and returns false if the buffer is NULL.
-  bool parse(const void *buf, size_t len);
+  bool parse(const void* buf, size_t len);
 
   // Parses one DER-encoded certificate and adds it to the chain. This calls
   // mbedtls_x509_crt_parse_der_nocopy() under the hood.
   //
   // The buffer pointer is held internally until the cert is destroyed.
-  bool parseDERNoCopy(const void *buf, size_t len);
+  bool parseDERNoCopy(const void* buf, size_t len);
 
   // Parses a key. If the key is PEM-encoded, then it must be NUL-terminated and
   // the NUL terminator must be included in the count. The password may be NULL.
   //
   // Client and server certificates should have a key.
-  bool parseKey(const void *buf, size_t len,
-                const void *pwd, size_t pwdLen);
+  bool parseKey(const void* buf, size_t len,
+                const void* pwd, size_t pwdLen);
 
   // Returns a reference to the internal certificate object.
-  mbedtls_x509_crt &cert() {
+  mbedtls_x509_crt& cert() {
     return cert_;
   }
 
   // Returns a reference to the internal private key object.
-  mbedtls_pk_context &key() {
+  mbedtls_pk_context& key() {
     return key_;
   }
 
