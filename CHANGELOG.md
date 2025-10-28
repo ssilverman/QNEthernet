@@ -10,10 +10,13 @@ and this project adheres to
 
 ### Added
 * Added a way to iterate over the internal TCP connection PCBs.
+* Added calls to `Ethernet.loop()` in more places.
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
 * Made `EthernetClass::hostByName(hostname, result)` `const`.
+* Made `qnethernet_hal_get_system_mac_address(mac)` weak.
+* Improved code style and structure.
 
 ## [0.32.0]
 
