@@ -9,7 +9,7 @@
 namespace qindesign {
 namespace security {
 
-void MbedTLSPSK::setPSK(const uint8_t *const buf, const size_t len) {
+void MbedTLSPSK::setPSK(const uint8_t* const buf, const size_t len) {
   if (buf != nullptr) {
     psk_.assign(&buf[0], &buf[len]);
   } else {
@@ -17,7 +17,7 @@ void MbedTLSPSK::setPSK(const uint8_t *const buf, const size_t len) {
   }
 }
 
-void MbedTLSPSK::setId(const uint8_t *const buf, const size_t len) {
+void MbedTLSPSK::setId(const uint8_t* const buf, const size_t len) {
   if (buf != nullptr) {
     id_.assign(&buf[0], &buf[len]);
   } else {

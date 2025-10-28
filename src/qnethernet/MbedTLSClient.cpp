@@ -20,9 +20,9 @@ namespace qindesign {
 namespace network {
 
 MbedTLSClient::MbedTLSClient()
-    : MbedTLSClient(static_cast<Client *>(nullptr), false) {}
+    : MbedTLSClient(static_cast<Client*>(nullptr), false) {}
 
-MbedTLSClient::MbedTLSClient(Client *const client, const bool isClientEx)
+MbedTLSClient::MbedTLSClient(Client* const client, const bool isClientEx)
     : lastError_(0),
       isServer_(false),
       client_(client),
@@ -41,9 +41,9 @@ MbedTLSClient::MbedTLSClient(Client *const client, const bool isClientEx)
       f_psk_(nullptr),
       p_psk_(nullptr) {}
 
-MbedTLSClient::MbedTLSClient(Client &client) : MbedTLSClient(&client, false) {}
+MbedTLSClient::MbedTLSClient(Client& client) : MbedTLSClient(&client, false) {}
 
-MbedTLSClient::MbedTLSClient(internal::ClientEx &client)
+MbedTLSClient::MbedTLSClient(internal::ClientEx& client)
     : MbedTLSClient(&client, true) {}
 
 MbedTLSClient::~MbedTLSClient() {
@@ -54,30 +54,30 @@ MbedTLSClient::~MbedTLSClient() {
   p_psk_ = nullptr;
 }
 
-void MbedTLSClient::setClient(Client &client) {
+void MbedTLSClient::setClient(Client& client) {
   stop();
   client_ = &client;
   isClientEx_ = false;
 }
 
-void MbedTLSClient::setClient(internal::ClientEx &client) {
+void MbedTLSClient::setClient(internal::ClientEx& client) {
   stop();
   client_ = &client;
   isClientEx_ = true;
 }
 
-void MbedTLSClient::addServerCert(security::MbedTLSCert *const cert) {
+void MbedTLSClient::addServerCert(security::MbedTLSCert* const cert) {
   if (cert != nullptr && !cert->empty() && cert->hasKey()) {
     serverCerts_.push_back(cert);
   }
 }
 
-void MbedTLSClient::setPSKCallback(const pskf f_psk, void *const p_psk) {
+void MbedTLSClient::setPSKCallback(const pskf f_psk, void* const p_psk) {
   f_psk_ = f_psk;
   p_psk_ = p_psk;
 }
 
-void MbedTLSClient::setHostname(const char *const s) {
+void MbedTLSClient::setHostname(const char* const s) {
   if (s == nullptr) {
     hostname_[0] = '\0';
   } else {
@@ -109,8 +109,8 @@ bool MbedTLSClient::init(const bool server) {
   // Configure debug output
   mbedtls_ssl_conf_dbg(
       &conf_,
-      [](void *const ctx, const int level, const char *const file,
-         const int line, const char *const msg) {
+      [](void* const ctx, const int level, const char* const file,
+         const int line, const char* const msg) {
         std::printf("[%d] %s:%d: %s\r\n", level, file, line, msg);
       },
       nullptr);
@@ -142,7 +142,7 @@ bool MbedTLSClient::init(const bool server) {
       }
     }
   } else {
-    for (security::MbedTLSCert *c : serverCerts_) {
+    for (security::MbedTLSCert* c : serverCerts_) {
       if (!c->empty() && c->hasKey()) {
         if ((ret = mbedtls_ssl_conf_own_cert(&conf_, &c->cert(), &c->key())) !=
             0) {
@@ -192,7 +192,7 @@ int MbedTLSClient::connect(const IPAddress ip, const uint16_t port) {
   return connect(ipaddr_ntoa(&ipaddr), ip, port);
 }
 
-int MbedTLSClient::connect(const char *const host, const uint16_t port) {
+int MbedTLSClient::connect(const char* const host, const uint16_t port) {
   return connect(host, host, port);
 }
 
@@ -207,9 +207,9 @@ bool MbedTLSClient::connecting() {
 }
 
 // Low-level send function.
-static int sendf(void *const ctx,
-                 const unsigned char *const buf, const size_t len) {
-  Client *const c = static_cast<Client *>(ctx);
+static int sendf(void* const ctx,
+                 const unsigned char* const buf, const size_t len) {
+  Client* const c = static_cast<Client*>(ctx);
   if (c == nullptr || !c->connected()) {
     return -1;
   }
@@ -221,8 +221,8 @@ static int sendf(void *const ctx,
 }
 
 // Low-level receive function.
-static int recvf(void *const ctx, unsigned char *const buf, const size_t len) {
-  Client *const c = static_cast<Client *>(ctx);
+static int recvf(void* const ctx, unsigned char* const buf, const size_t len) {
+  Client* const c = static_cast<Client*>(ctx);
   if (c == nullptr || !c->connected()) {
     return 0;
   }
@@ -237,7 +237,7 @@ bool MbedTLSClient::watchConnecting() {
   if (state_ == States::kConnecting) {
     bool connecting;
     if (isClientEx_) {
-      connecting = reinterpret_cast<ClientEx *>(client_)->connecting();
+      connecting = reinterpret_cast<ClientEx*>(client_)->connecting();
     } else {
       connecting = !client_->connected();
     }
@@ -273,7 +273,7 @@ bool MbedTLSClient::watchConnecting() {
   }
 }
 
-bool MbedTLSClient::connect(const char *const hostname, const bool wait) {
+bool MbedTLSClient::connect(const char* const hostname, const bool wait) {
   int ret;
   lastError_ = 0;
 
@@ -328,7 +328,7 @@ size_t MbedTLSClient::write(const uint8_t b) {
   return write(&b, 1);
 }
 
-size_t MbedTLSClient::write(const uint8_t *const buf, const size_t size) {
+size_t MbedTLSClient::write(const uint8_t* const buf, const size_t size) {
   if (!isConnected() || size == 0) {
     return 0;
   }
@@ -345,16 +345,16 @@ size_t MbedTLSClient::writeFully(const uint8_t b) {
   return writeFully(&b, 1);
 }
 
-size_t MbedTLSClient::writeFully(const char *const buf) {
+size_t MbedTLSClient::writeFully(const char* const buf) {
   return writeFully(buf, std::strlen(buf));
 }
 
-size_t MbedTLSClient::writeFully(const void *const buf, const size_t size) {
+size_t MbedTLSClient::writeFully(const void* const buf, const size_t size) {
   // Don't use connected() as the "connected" check because that will
   // return true if there's data available, and the loop doesn't check
   // for data available. Instead, use operator bool().
 
-  return util::writeFully(*this, static_cast<const uint8_t *>(buf), size, this);
+  return util::writeFully(*this, static_cast<const uint8_t*>(buf), size, this);
 }
 
 bool MbedTLSClient::checkRead(const int ret) {
@@ -410,14 +410,14 @@ int MbedTLSClient::read() {
   return data;
 }
 
-int MbedTLSClient::read(uint8_t *const buf, const size_t size) {
+int MbedTLSClient::read(uint8_t* const buf, const size_t size) {
   if (!isConnected() || size == 0) {
     return 0;
   }
 
   // TODO: Handle NULL buffer for skipping?
 
-  uint8_t *pBuf = buf;
+  uint8_t* pBuf = buf;
   size_t sizeRem = size;
   int totalRead = 0;
 
@@ -516,28 +516,28 @@ MbedTLSClient::operator bool() {
 
 IPAddress MbedTLSClient::localIP() {
   if (isClientEx_) {
-    return reinterpret_cast<internal::ClientEx *>(client_)->localIP();
+    return reinterpret_cast<internal::ClientEx*>(client_)->localIP();
   }
   return INADDR_NONE;
 }
 
 uint16_t MbedTLSClient::localPort() {
   if (isClientEx_) {
-    return reinterpret_cast<internal::ClientEx *>(client_)->localPort();
+    return reinterpret_cast<internal::ClientEx*>(client_)->localPort();
   }
   return 0;
 }
 
 IPAddress MbedTLSClient::remoteIP() {
   if (isClientEx_) {
-    return reinterpret_cast<internal::ClientEx *>(client_)->remoteIP();
+    return reinterpret_cast<internal::ClientEx*>(client_)->remoteIP();
   }
   return INADDR_NONE;
 }
 
 uint16_t MbedTLSClient::remotePort() {
   if (isClientEx_) {
-    return reinterpret_cast<internal::ClientEx *>(client_)->remotePort();
+    return reinterpret_cast<internal::ClientEx*>(client_)->remotePort();
   }
   return 0;
 }

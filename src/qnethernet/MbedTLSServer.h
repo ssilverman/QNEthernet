@@ -25,17 +25,17 @@ class MbedTLSServer : public Server {
  public:
   // Callback function for processing a client PSK request.
   using pskf = std::function<void(
-      const unsigned char *id, size_t idLen,
-      std::function<void(const unsigned char *psk, size_t psk_len)> psk)>;
+      const unsigned char* id, size_t idLen,
+      std::function<void(const unsigned char* psk, size_t psk_len)> psk)>;
 
-  MbedTLSServer(EthernetServer &Server);
+  MbedTLSServer(EthernetServer& Server);
   virtual ~MbedTLSServer();
 
   // Allow moving but not copying
-  MbedTLSServer(const MbedTLSServer &) = delete;
-  MbedTLSServer &operator=(const MbedTLSServer &) = delete;
-  MbedTLSServer(MbedTLSServer &&other) = default;
-  MbedTLSServer &operator=(MbedTLSServer &&other) = default;
+  MbedTLSServer(const MbedTLSServer&) = delete;
+  MbedTLSServer& operator=(const MbedTLSServer&) = delete;
+  MbedTLSServer(MbedTLSServer&& other) = default;
+  MbedTLSServer& operator=(MbedTLSServer&& other) = default;
 
   // Starts the server.
   void begin() final;
@@ -44,13 +44,13 @@ class MbedTLSServer : public Server {
   void end();
 
   // Sets the CA certificate(s).
-  void setCACert(security::MbedTLSCert *ca) {
+  void setCACert(security::MbedTLSCert* ca) {
     ca_ = ca;
   }
 
   // Adds a server certificate. This does not add it if the cert or key don't
   // have content. The password is optional.
-  void addServerCert(security::MbedTLSCert *cert);
+  void addServerCert(security::MbedTLSCert* cert);
 
   // Sets the callback for processing a PSK request from the client.
   void onPSK(pskf f) {
@@ -68,7 +68,7 @@ class MbedTLSServer : public Server {
   // Defined by Print; these do nothing or return 0. flush() flushes the
   // underlying Server.
   size_t write(uint8_t b) override;
-  size_t write(const uint8_t *buffer, size_t size) override;
+  size_t write(const uint8_t* buffer, size_t size) override;
   int availableForWrite()	override;
   void flush() override;
 
@@ -80,11 +80,11 @@ class MbedTLSServer : public Server {
     kStarted,
   };
 
-  EthernetServer &server_;
+  EthernetServer& server_;
   States state_;
 
-  security::MbedTLSCert *ca_;
-  std::vector<security::MbedTLSCert *> certs_;  // Won't contain NULLs
+  security::MbedTLSCert* ca_;
+  std::vector<security::MbedTLSCert*> certs_;  // Won't contain NULLs
   pskf pskCB_;
 };
 
