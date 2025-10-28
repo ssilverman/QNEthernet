@@ -58,8 +58,6 @@ static void srv_txt(struct mdns_service* const service,
 static bool initialized = false;
 static bool netifAdded = false;
 
-FLASHMEM MDNSClass::MDNSClass() {}
-
 FLASHMEM MDNSClass::~MDNSClass() {
   end();
 }

@@ -457,7 +457,7 @@ class EthernetClass final {
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
 
   // Creates a new network interface. The MAC address will be unset.
-  EthernetClass();
+  EthernetClass() = default;
 
   ~EthernetClass();
 

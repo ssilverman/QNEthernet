@@ -151,7 +151,7 @@ class MDNSClass final {
     std::vector<String> (*getTXTFunc_)() = nullptr;
   };
 
-  MDNSClass();
+  MDNSClass() = default;
   ~MDNSClass();
 
   // MDNSClass is neither copyable nor movable
