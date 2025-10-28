@@ -42,8 +42,6 @@ namespace network {
 //   TRUNCATED        = -3
 //   INVALID_RESPONSE = -4
 
-EthernetClient::EthernetClient() : EthernetClient(nullptr) {}
-
 EthernetClient::EthernetClient(
     const std::shared_ptr<internal::ConnectionHolder> conn)
     : conn_(conn) {}

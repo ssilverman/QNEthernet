@@ -34,7 +34,7 @@ class EthernetClient : public internal::ClientEx,
                        public internal::IPOpts,
                        public internal::PrintfChecked {
  public:
-  EthernetClient();
+  EthernetClient() = default;
   virtual ~EthernetClient();
 
   // Ideally, we only want move semantics because the state should only be owned
