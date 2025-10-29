@@ -7,6 +7,7 @@
 #pragma once
 
 // C++ includes
+#include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -436,6 +437,7 @@ class EthernetClass final {
 #if LWIP_NETIF_HOSTNAME
     return hostname_;
 #else
+    errno = ENOSYS;
     return "";
 #endif  // LWIP_NETIF_HOSTNAME
   }

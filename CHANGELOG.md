@@ -13,6 +13,8 @@ and this project adheres to
 * Added calls to `Ethernet.loop()` in more places.
 * Added setting `errno` to `ENETDOWN` in `EthernetClass` in more places where
   network initialization is checked.
+* Added setting `errno` to `ENOSYS` when some networking feature
+  isn't implemented
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.

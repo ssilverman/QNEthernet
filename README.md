@@ -203,6 +203,7 @@ For API additions beyond what the Arduino-style API provides, see:\
   for `EthernetClient`, `EthernetServer`, and `EthernetUDP`.
 * Most of the `Ethernet` functions do nothing or return some form of
   empty/nothing/false unless the system has been initialized.
+* `errno` is used to indicate some underlying errors.
 
 ## Additional functions and features not in the Arduino-style API
 
@@ -675,6 +676,9 @@ See also:
 When a function call fails, it is often the case that `errno` will be set to
 something appropriate. See the function documentation of interest in the
 relevant header for more information.
+
+If some networking feature is not implemented, for example, DNS is disabled,
+then associated functions will set `errno` to `ENOSYS`.
 
 ## How to run
 

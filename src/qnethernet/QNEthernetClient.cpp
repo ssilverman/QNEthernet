@@ -60,6 +60,7 @@ int EthernetClient::connect(const IPAddress ip, const uint16_t port) {
 #else
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(port);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -76,6 +77,7 @@ int EthernetClient::connect(const char* const host, const uint16_t port) {
 #else
   LWIP_UNUSED_ARG(host);
   LWIP_UNUSED_ARG(port);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
 }
@@ -87,6 +89,7 @@ bool EthernetClient::connectNoWait(const IPAddress& ip, const uint16_t port) {
 #else
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(port);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -104,6 +107,7 @@ bool EthernetClient::connectNoWait(const char* const host,
 #else
   LWIP_UNUSED_ARG(host);
   LWIP_UNUSED_ARG(port);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
 }
@@ -311,6 +315,7 @@ IPAddress EthernetClient::remoteIP() {
   }
   return util::ip_addr_get_ip4_uint32(&ip);
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -331,6 +336,7 @@ IPAddress EthernetClient::localIP() {
   }
   return util::ip_addr_get_ip4_uint32(&ip);
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }

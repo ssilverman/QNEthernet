@@ -363,6 +363,7 @@ IPAddress EthernetUDP::remoteIP() {
 #if LWIP_IPV4
   return util::ip_addr_get_ip4_uint32(&packet_.addr);
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -376,6 +377,7 @@ int EthernetUDP::beginPacket(const IPAddress ip, const uint16_t port) {
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return beginPacket(&ipaddr, port);
 #else
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -391,6 +393,7 @@ int EthernetUDP::beginPacket(const char* const host, const uint16_t port) {
 #else
   LWIP_UNUSED_ARG(host);
   LWIP_UNUSED_ARG(port);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
 }
@@ -476,6 +479,7 @@ bool EthernetUDP::send(const IPAddress& ip, const uint16_t port,
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return send(&ipaddr, port, data, len);
 #else
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -494,6 +498,7 @@ bool EthernetUDP::send(const char* const host, const uint16_t port,
   LWIP_UNUSED_ARG(port);
   LWIP_UNUSED_ARG(data);
   LWIP_UNUSED_ARG(len);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
 }

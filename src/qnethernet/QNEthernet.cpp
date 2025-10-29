@@ -8,7 +8,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <cerrno>
 #include <cstdio>
 #include <cstring>
 
@@ -340,6 +339,7 @@ bool EthernetClass::setDHCPEnabled(const bool flag) {
   return true;
 #else
   LWIP_UNUSED_ARG(flag);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DHCP
 }
@@ -362,6 +362,7 @@ bool EthernetClass::renewDHCP() const {
   }
   return true;
 #else
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DHCP
 }
@@ -384,6 +385,7 @@ bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
   return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
 #else
   LWIP_UNUSED_ARG(timeout);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -552,6 +554,7 @@ IPAddress EthernetClass::localIP() const {
   }
   return ip4_addr_get_u32(netif_ip4_addr(netif_));
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -563,6 +566,7 @@ IPAddress EthernetClass::subnetMask() const {
   }
   return ip4_addr_get_u32(netif_ip4_netmask(netif_));
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -574,6 +578,7 @@ IPAddress EthernetClass::gatewayIP() const {
   }
   return ip4_addr_get_u32(netif_ip4_gw(netif_));
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -587,6 +592,7 @@ IPAddress EthernetClass::dnsServerIP(const int index) const {
   return DNSClient::getServer(index);
 #else
   LWIP_UNUSED_ARG(index);
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_DNS
 }
@@ -599,6 +605,7 @@ IPAddress EthernetClass::broadcastIP() const {
   return ip4_addr_get_u32(netif_ip4_addr(netif_)) |
          ~ip4_addr_get_u32(netif_ip4_netmask(netif_));
 #else
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -612,6 +619,7 @@ void EthernetClass::setLocalIP(const IPAddress& ip) const {
   netif_set_ipaddr(netif_, &ipaddr);
 #else
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
 
@@ -624,6 +632,7 @@ void EthernetClass::setSubnetMask(const IPAddress& subnetMask) const {
   netif_set_netmask(netif_, &netmask);
 #else
   LWIP_UNUSED_ARG(subnetMask);
+  errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
 
@@ -636,6 +645,7 @@ void EthernetClass::setGatewayIP(const IPAddress& ip) const {
   netif_set_gw(netif_, &gw);
 #else
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
 
@@ -649,6 +659,7 @@ void EthernetClass::setDNSServerIP(const int index, const IPAddress& ip) const {
 #else
   LWIP_UNUSED_ARG(index);
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
 #endif  // LWIP_DNS
 }
 
@@ -681,6 +692,7 @@ bool EthernetClass::joinGroup(const IPAddress& ip) const {
   return true;
 #else
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IGMP
 }
@@ -701,6 +713,7 @@ bool EthernetClass::leaveGroup(const IPAddress& ip) const {
   return true;
 #else
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IGMP
 }
@@ -741,6 +754,7 @@ void EthernetClass::setHostname(const char* const hostname) {
   }
 #else
   LWIP_UNUSED_ARG(hostname);
+  errno = ENOSYS;
 #endif  // LWIP_NETIF_HOSTNAME
 }
 
@@ -756,6 +770,7 @@ bool EthernetClass::hostByName(const char* const hostname,
 #else
   LWIP_UNUSED_ARG(hostname);
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
 }

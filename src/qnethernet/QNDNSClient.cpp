@@ -50,6 +50,7 @@ bool DNSClient::setServer(const int index, const IPAddress& ip) {
 #else
   LWIP_UNUSED_ARG(index);
   LWIP_UNUSED_ARG(ip);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
@@ -62,6 +63,7 @@ IPAddress DNSClient::getServer(const int index) {
   return util::ip_addr_get_ip4_uint32(dns_getserver(index));
 #else
   LWIP_UNUSED_ARG(index);
+  errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
 }
@@ -129,6 +131,7 @@ bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
   LWIP_UNUSED_ARG(hostname);
   LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(timeout);
+  errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
 }
