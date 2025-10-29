@@ -448,6 +448,8 @@ class EthernetClass final {
   // Convenience function that tries to resolve the given hostname into an IP
   // address. This returns whether successful.
   //
+  // This uses QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT as the timeout.
+  //
   // If the network is not enabled then this will return false immediately.
   //
   // If this returns false and there was an error then errno will be set.
