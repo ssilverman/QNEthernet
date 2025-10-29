@@ -250,8 +250,9 @@ The `Ethernet` object is the main Ethernet interface.
   * If the link state is not detectable then it must be managed
     with `setLinkState(flag)`.
 * `end()`: Shuts down the library, including the Ethernet clocks.
-* `hostByName()`: Convenience function that tries to resolve a hostname into an
-  IP address. This returns whether successful.
+* `hostByName(hostname, ip)`: Convenience function that tries to resolve a
+  hostname into an IP address. This returns whether successful.
+  See also [`DNSClient`](#dnsclient).
 * `hostname()`: Gets the DHCP client hostname. An empty string means that no
   hostname is set. The default is "qnethernet-lwip".
 * `interfaceName()`: Returns the interface name, or, if Ethernet has not been
@@ -570,6 +571,8 @@ The `MDNS` object provides an mDNS API.
 ### `DNSClient`
 
 The `DNSClient` class provides an interface to the DNS client.
+
+See also: [`Ethernet`](#ethernet)'s `hostByName(hostname, ip)`
 
 * `setServer(index, ip)`: Sets a DNS server address.
 * `getServer(index)`: Gets a DNS server address.
@@ -1236,8 +1239,8 @@ It's possible to register mDNS services. Some notes:
 
 ## DNS
 
-The library interfaces with DNS using the `DNSClient` class. Note that all the
-functions are static.
+The library interfaces with DNS using the [`DNSClient`](#dnsclient) class. Note
+that all the functions are static.
 
 Things you can do:
 1. Look up an IP address by name, and
@@ -1246,6 +1249,8 @@ Things you can do:
 The `Ethernet.setDNSServerIP(ip)` function sets the zeroth DNS server address
 and the `Ethernet.setDNSServerIP(index, ip)` function sets the nth DNS server
 address. Corresponding `dnsServerIP()` functions get the DNS server addresses.
+
+See also: [`Ethernet`](#ethernet)'s `hostByName(hostname, ip)`
 
 ## stdio
 
