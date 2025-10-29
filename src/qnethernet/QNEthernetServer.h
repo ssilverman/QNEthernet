@@ -31,8 +31,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
 
   // Disallow copying but allow moving
   EthernetServer(const EthernetServer&) = delete;
-  EthernetServer& operator=(const EthernetServer&) = delete;
   EthernetServer(EthernetServer&&) = default;
+  EthernetServer& operator=(const EthernetServer&) = delete;
   EthernetServer& operator=(EthernetServer&&) = default;
 
   virtual ~EthernetServer();

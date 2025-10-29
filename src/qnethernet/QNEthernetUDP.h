@@ -41,8 +41,8 @@ class EthernetUDP : public UDP,
 
   // Disallow copying but allow moving
   EthernetUDP(const EthernetUDP&) = delete;
-  EthernetUDP& operator=(const EthernetUDP&) = delete;
   EthernetUDP(EthernetUDP&&) = default;
+  EthernetUDP& operator=(const EthernetUDP&) = delete;
   EthernetUDP& operator=(EthernetUDP&&) = default;
 
   virtual ~EthernetUDP();

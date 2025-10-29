@@ -42,8 +42,8 @@ class EthernetClient : public internal::ClientEx,
   // may not get that compiler errors are because std::move was required.
 
   EthernetClient(const EthernetClient&) = default;
-  EthernetClient& operator=(const EthernetClient&) = default;
   EthernetClient(EthernetClient&&) = default;
+  EthernetClient& operator=(const EthernetClient&) = default;
   EthernetClient& operator=(EthernetClient&&) = default;
 
   // Returns the maximum number of TCP connections.
