@@ -33,9 +33,10 @@ lwIP release.
    5. [`EthernetFrame`](#ethernetframe)
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
-   8. [Print utilities](#print-utilities)
-   9. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
-   10. [Use of `errno`](#use-of-errno)
+   8. [Ping](#ping)
+   9. [Print utilities](#print-utilities)
+   10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
+   11. [Use of `errno`](#use-of-errno)
 3. [How to run](#how-to-run)
    1. [Concurrent use is not supported](#concurrent-use-is-not-supported)
    2. [How to move the stack forward and receive data](#how-to-move-the-stack-forward-and-receive-data)
@@ -276,6 +277,10 @@ The `Ethernet` object is the main Ethernet interface.
   MAC address.
 * `macAddress(mac)`: Fills the 6-byte `mac` array with the current MAC address.
   Note that the equivalent Arduino function is `MACAddress(mac)`.
+* `ping(hostname[, ttl])`: Pings a host, given by a string, and returns the
+  round trip time. The `ttl` parameter is optional. See also [Ping](#ping).
+* `ping(ip[, ttl])`: Pings a host, given as an `IPAddress`, and returns the
+  round trip time. The `ttl` parameter is optional. See also [Ping](#ping).
 * `renewDHCP()`: Renews any active DHCP lease and returns whether the request
   was sent successfully.
 * `setDHCPEnabled(flag)`: Enables or disables the DHCP client. This may be
@@ -583,6 +588,22 @@ See also: [`Ethernet`](#ethernet)'s `hostByName(hostname, ip)`
 * `getHostByName(hostname, ip, timeout)`: Looks up a host by name.
 * `static constexpr int maxServers()`: Returns the maximum number of
   DNS servers.
+
+### Ping
+
+The `Ping` class provides a way to send ICMP echo requests and receive replies.
+
+See also: [`Ethernet`](#ethernet)'s `ping(host[, ttl])`
+
+How to use:
+1. Enable ping support (or raw IP support) with the `QNETHERNET_ENABLE_PING`
+   configuration macro (or `LWIP_RAW`).
+2. Create an instance of the `Ping` class.
+3. Provide a reply callback function either in the constructor or with a call
+   to `setCallback(f)`. (See the `QNPing.h` header for more details.)
+
+Ping ID, timeout, and TTL all have defaults. These are defined
+in _qnethernet_opts.h_.
 
 ### Print utilities
 
@@ -1777,6 +1798,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_CUSTOM_WRITE`                   | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                         |
 | `QNETHERNET_DO_LOOP_IN_YIELD`               | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                   |
 | `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Enables default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_ENABLE_PING`                    | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                   |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Disabled | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
@@ -1987,6 +2009,7 @@ _QNEthernet_ library.
 26. Ability to set some IP header fields: differentiated services (DiffServ)
     and TTL
 27. Secure TCP initial sequence numbers (ISNs)
+28. [Ping](#ping) (ICMP echo) support
 
 ## Compatibility with other APIs
 
