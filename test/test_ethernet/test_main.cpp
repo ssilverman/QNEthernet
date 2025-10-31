@@ -1689,6 +1689,19 @@ static void test_raw_frames_receive_queueing() {
                                        "Expected at least 4 total");
 }
 
+// Tests ping.
+static void test_ping() {
+  constexpr char kHost[]{"www.google.com"};
+
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  long rtt = Ethernet.ping(kHost);
+  TEST_ASSERT_TRUE_MESSAGE(rtt >= 0, "Expected ping success");
+  TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -1758,6 +1771,7 @@ void setup() {
   RUN_TEST(test_other_state);
   RUN_TEST(test_raw_frames);
   RUN_TEST(test_raw_frames_receive_queueing);
+  RUN_TEST(test_ping);
   UNITY_END();
 }
 
