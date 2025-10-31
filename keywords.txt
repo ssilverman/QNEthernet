@@ -23,6 +23,7 @@ PrintDecorator	KEYWORD1
 EthernetLinkStatus	KEYWORD1	EthernetLinkStatus
 EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
 DriverCapabilities	KEYWORD1
+Ping	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -73,6 +74,7 @@ setMACAddressAllowed	KEYWORD2
 setHostname	KEYWORD2	WiFi.setHostname
 hostname	KEYWORD2
 hostByName	KEYWORD2
+ping	KEYWORD2
 maxSockets	KEYWORD2
 connect	KEYWORD2	client.connect
 connectNoWait	KEYWORD2

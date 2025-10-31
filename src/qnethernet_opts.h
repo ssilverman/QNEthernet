@@ -49,6 +49,21 @@
 #define QNETHERNET_DEFAULT_HOSTNAME "qnethernet-lwip"
 #endif
 
+// The default ping ID.
+#ifndef QNETHERNET_DEFAULT_PING_ID
+#define QNETHERNET_DEFAULT_PING_ID 0x514E
+#endif
+
+// The default ping reply timeout, in milliseconds.
+#ifndef QNETHERNET_DEFAULT_PING_TIMEOUT
+#define QNETHERNET_DEFAULT_PING_TIMEOUT 1000
+#endif
+
+// The default ping TTL.
+#ifndef QNETHERNET_DEFAULT_PING_TTL
+#define QNETHERNET_DEFAULT_PING_TTL 64
+#endif
+
 // Indicates that the library should try to call Ethernet.loop() inside yield().
 // This means that the library will use EventResponder, if available, or
 // override yield() with its own version. If disabled, Ethernet.loop() should be
@@ -64,6 +79,11 @@
 // Enables default implementations of the altcp interface functions.
 #ifndef QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
+#endif
+
+// Enables ping support. (Includes raw IP layer support.)
+#ifndef QNETHERNET_ENABLE_PING
+#define QNETHERNET_ENABLE_PING 0
 #endif
 
 // Enables promiscuous mode.

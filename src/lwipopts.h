@@ -142,7 +142,9 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 // #define LWIP_MULTICAST_PING 0
 
 // RAW options
-// #define LWIP_RAW 0
+#ifndef LWIP_RAW
+#define LWIP_RAW (QNETHERNET_ENABLE_PING)
+#endif  // LWIP_RAW
 // #define RAW_TTL  IP_DEFAULT_TTL
 
 // DHCP options
