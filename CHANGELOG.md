@@ -14,7 +14,9 @@ and this project adheres to
 * Added setting `errno` to `ENETDOWN` in `EthernetClass` in more places where
   network initialization is checked.
 * Added setting `errno` to `ENOSYS` when some networking feature
-  isn't implemented
+  isn't implemented.
+* Added support for ping (ICMP echo)
+* Added two ping examples: _Ping_ and _SimplePing_
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
