@@ -14,6 +14,7 @@
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip_addr.h"
+#include "qnethernet/QNPing.h"
 
 #if defined(TEENSYDUINO)
 // Teensyduino < 1.59 doesn't support casting a `const IPAddress` to uint32_t
@@ -773,6 +774,74 @@ bool EthernetClass::hostByName(const char* const hostname,
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
+}
+
+long EthernetClass::ping(const char *const hostname, const uint8_t ttl) const {
+#if LWIP_RAW
+  if (netif_ == nullptr) {
+    errno = ENETDOWN;
+    return -1;
+  }
+
+  IPAddress ip;
+  if (!hostByName(hostname, ip)) {
+    return -1;
+  }
+  return ping(ip, ttl);
+#else
+  LWIP_UNUSED_ARG(hostname);
+  LWIP_UNUSED_ARG(ttl);
+  errno = ENOSYS;
+  return -1;
+#endif  // LWIP_RAW
+}
+
+long EthernetClass::ping(const IPAddress &ip, const uint8_t ttl) const {
+#if LWIP_RAW
+  if (netif_ == nullptr) {
+    errno = ENETDOWN;
+    return -1;
+  }
+
+  const PingData &req{.ip       = ip,
+                      .ttl      = ttl,
+                      .id       = QNETHERNET_DEFAULT_PING_ID,
+                      .seq      = 0,
+                      .data     = nullptr,
+                      .dataSize = 0};
+
+  volatile bool found = false;
+  Ping ping{[&ip, &found](const PingData& reply) {
+    if ((reply.id != QNETHERNET_DEFAULT_PING_ID) || (reply.ip != ip)) {
+      return;
+    }
+    found = true;
+  }};
+
+  ping.send(req);
+
+  const uint32_t t = sys_now();
+  uint32_t dt = 0;
+  while (!found && (dt < QNETHERNET_DEFAULT_PING_TIMEOUT)) {
+    yield();
+#if !QNETHERNET_DO_LOOP_IN_YIELD
+    Ethernet.loop();
+#endif  // !QNETHERNET_DO_LOOP_IN_YIELD
+    dt = sys_now() - t;
+  }
+
+  if (found) {
+    return static_cast<long>(dt);
+  } else {
+    return -1;
+  }
+
+#else
+  LWIP_UNUSED_ARG(hostname);
+  LWIP_UNUSED_ARG(ttl);
+  errno = ENOSYS;
+  return -1;
+#endif  // LWIP_RAW
 }
 
 }  // namespace network

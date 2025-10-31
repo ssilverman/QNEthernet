@@ -457,6 +457,28 @@ class EthernetClass final {
   // If this returns false and there was an error then errno will be set.
   bool hostByName(const char* hostname, IPAddress& ip) const;
 
+  // Convenience function that pings the given host and returns the round trip
+  // time in milliseconds. This will return a negative value if the ping was
+  // not successful.
+  //
+  // This uses QNETHERNET_DEFAULT_PING_TIMEOUT as the timeout.
+  //
+  // If this returns a negative value and there was an error then errno will
+  // be set.
+  long ping(const char* hostname,
+            uint8_t ttl = QNETHERNET_DEFAULT_PING_TTL) const;
+
+  // Convenience functions that pings the given IP address and returns the round
+  // trip time in milliseconds. This will return a negative value if the ping
+  // was not successful.
+  //
+  // This uses QNETHERNET_DEFAULT_PING_TIMEOUT as the timeout.
+  //
+  // If this returns a negative value and there was an error then errno will
+  // be set.
+  long ping(const IPAddress& ip,
+            uint8_t ttl = QNETHERNET_DEFAULT_PING_TTL) const;
+
  private:
   static constexpr uint32_t kPollInterval = 125;  // About 8 times a second
 
