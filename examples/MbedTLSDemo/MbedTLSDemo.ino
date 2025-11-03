@@ -10,14 +10,16 @@
 //    2. LWIP_ALTCP_TLS
 //    3. LWIP_ALTCP_TLS_MBEDTLS
 // 2. Enable the QNETHERNET_ALTCP_TLS_ADAPTER option.
-//    (In the qnethernet_opts.h library file or the project build options.)
+//    (In the qnethernet_opts.h library file or the project
+//    build options.)
 // 3. Install the latest 2.x.x version of Mbed TLS. As of this
 //    writing, the current version is 2.28.9. In order to use this
 //    example program in the Arduino IDE, Mbed TLS needs to be
 //    installed as a library. Please see the README for more
 //    information.
-// 4. Update src/mbedtls/config.h in the Mbed TLS library with the desired
-//    options. A sample config is in this project. Simply cut & paste.
+// 4. Update src/mbedtls/config.h in the Mbed TLS library with the
+//    desired options. A sample config is in this project. Simply
+//    cut & paste.
 //
 // This file is part of the QNEthernet library.
 
