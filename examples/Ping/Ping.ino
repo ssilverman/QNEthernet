@@ -53,6 +53,7 @@ static bool running = false;  // Whether the program is still running
 
 static IPAddress pingIP;
 static elapsedMillis pingTimer = kPingInterval;  // Start expired
+static unsigned int pingCounter = 0;
 
 static uint16_t seq = 0;        // Current sequence number
 static bool doNextSend = true;  // Indicates if ready to send the next ping
@@ -70,9 +71,11 @@ static void replyCallback(const PingData &reply) {
 
   // Print the ping result
   // Add 8 to the data size to print the whole ICMP packet size
-  printf("%zu bytes from %u.%u.%u.%u: seq=%" PRIu16 " ttl=%u time=%lu ms\r\n",
-         reply.dataSize + 8, reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
-         reply.seq, reply.ttl, static_cast<unsigned long>(pingTimer));
+  printf(
+      "%u. %zu bytes from %u.%u.%u.%u: seq=%" PRIu16 " ttl=%u time=%lu ms\r\n",
+      pingCounter,
+      reply.dataSize + 8, reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
+      reply.seq, reply.ttl, static_cast<unsigned long>(pingTimer));
 
   doNextSend = true;
 }
@@ -138,6 +141,7 @@ void loop() {
                      .seq      = seq++,
                      .data     = kPayload.data(),
                      .dataSize = kPayload.size()};
+  pingCounter++;
   if (ping.send(req)) {
     pingTimer = 0;
   } else {

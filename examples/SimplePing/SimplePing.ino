@@ -30,6 +30,8 @@ constexpr char kHostname[]{"arduino.cc"};
 
 static elapsedMillis pingTimer = kPingInterval;  // Start expired
 
+static unsigned int pingCounter = 0;
+
 // --------------------------------------------------------------------------
 //  Main Program
 // --------------------------------------------------------------------------
@@ -76,12 +78,14 @@ void loop() {
     return;
   }
 
+  pingCounter++;
+
   long rtt = Ethernet.ping(kHostname);
   if (rtt >= 0) {
-    printf("Time = %lu ms\r\n", rtt);
+    printf("%u. Time = %lu ms\r\n", pingCounter, rtt);
     pingTimer = rtt;
   } else {
-    printf("Ping failed\r\n");
+    printf("%u. Ping failed\r\n", pingCounter);
     pingTimer = 0;
   }
 }
