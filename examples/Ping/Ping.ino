@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: (c) 2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// Ping demonstrates a simple Ping program.
+// Ping demonstrates a simple Ping program. This uses the echo
+// packet's payload to hold the ping counter.
 // See: https://en.wikipedia.org/wiki/Ping_(networking_utility)
 //
 // In order to use this example, define the QNETHERNET_ENABLE_PING macro.
@@ -11,9 +12,12 @@
 //
 // This file is part of the QNEthernet library.
 
+#include <algorithm>
 #include <array>
 #include <cerrno>
-#include <utility>
+#include <cstdint>
+#include <cinttypes>
+#include <cstring>
 
 #include <QNEthernet.h>
 #include <qnethernet/QNPing.h>
@@ -33,17 +37,7 @@ constexpr char kHostname[]{"arduino.cc"};
 constexpr uint8_t kPingTTL = 64;
 constexpr uint16_t kPingId = 0x514E;
 constexpr size_t kPayloadSize = 56;
-
-// Create a payload containing incrementing bytes up to the payload
-// size. For example, if the payload size is 3, then the array will
-// contain {0, 1, 2}.
-// This is a fancy alternative to just filling in a byte array.
-template <typename T, size_t N, T... I>
-constexpr std::array<T, N> make_seq_array(std::integer_sequence<T, I...>) {
-  return {{I...}};
-}
-constexpr auto kPayload = make_seq_array<uint8_t, kPayloadSize>(
-    std::make_integer_sequence<uint8_t, kPayloadSize>{});
+static_assert(kPayloadSize >= 4, "Payload size must be >= 4");
 
 // --------------------------------------------------------------------------
 //  Program State
@@ -53,10 +47,13 @@ static bool running = false;  // Whether the program is still running
 
 static IPAddress pingIP;
 static elapsedMillis pingTimer = kPingInterval;  // Start expired
-static unsigned int pingCounter = 0;
+static uint32_t pingCounter = 0;
 
-static uint16_t seq = 0;        // Current sequence number
-static bool doNextSend = true;  // Indicates if ready to send the next ping
+static std::array<uint8_t, kPayloadSize> payload;
+
+static uint16_t seq = 0;            // Current sequence number
+static bool replyReceived = false;  // Indicates if the current reply has
+                                    // been received
 
 // --------------------------------------------------------------------------
 //  Main Program
@@ -69,15 +66,24 @@ static void replyCallback(const PingData &reply) {
     return;
   }
 
+  // Check that the payload data matches
+  bool payloadMatches =
+      (reply.dataSize == kPayloadSize) &&
+      std::equal(&reply.data[4], &reply.data[kPayloadSize], &payload[4]);
+  uint32_t counter;
+  std::memcpy(&counter, &reply.data[0], 4);
+  counter = ntohl(counter);  // Correct the byte order
+
   // Print the ping result
   // Add 8 to the data size to print the whole ICMP packet size
-  printf(
-      "%u. %zu bytes from %u.%u.%u.%u: seq=%" PRIu16 " ttl=%u time=%lu ms\r\n",
-      pingCounter,
-      reply.dataSize + 8, reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
-      reply.seq, reply.ttl, static_cast<unsigned long>(pingTimer));
+  printf("%" PRIu32 ". %zu bytes from %u.%u.%u.%u:"
+         " seq=%" PRIu16 " ttl=%u time=%lu ms%s\r\n",
+         counter, reply.dataSize + 8,
+         reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
+         reply.seq, reply.ttl, static_cast<unsigned long>(pingTimer),
+         payloadMatches ? "" : " (payload mismatch)");
 
-  doNextSend = true;
+  replyReceived = true;
 }
 
 // Ping object, for sending and receiving echo requests and replies.
@@ -117,6 +123,12 @@ void setup() {
 
   printf("\r\n");
 
+  // Fill the payload with some data
+  // It could also be random data or something else
+  for (size_t i = 0; i < kPayloadSize; i++) {
+    payload[i] = i;
+  }
+
   // Look up the hostname
   printf("Looking up \"%s\"...", kHostname);
   if (Ethernet.hostByName(kHostname, pingIP)) {
@@ -130,18 +142,26 @@ void setup() {
 
 // Main program loop.
 void loop() {
-  if (!running || (pingTimer < kPingInterval) || !doNextSend) {
+  if (!running || (pingTimer < kPingInterval)) {
     return;
   }
 
-  doNextSend = false;
+  if (!replyReceived && pingCounter != 0) {
+    printf("%u. Timeout\r\n", pingCounter);
+  }
+  replyReceived = false;
+
   const PingData req{.ip       = pingIP,
                      .ttl      = kPingTTL,
                      .id       = kPingId,
                      .seq      = seq++,
-                     .data     = kPayload.data(),
-                     .dataSize = kPayload.size()};
-  pingCounter++;
+                     .data     = payload.data(),
+                     .dataSize = payload.size()};
+
+  // Track the ping counter in the payload data
+  uint32_t counter = htonl(++pingCounter);  // Send in network order
+  std::memcpy(payload.data(), &counter, 4);
+
   if (ping.send(req)) {
     pingTimer = 0;
   } else {
