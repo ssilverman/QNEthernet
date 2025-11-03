@@ -80,12 +80,13 @@ void loop() {
 
   pingCounter++;
 
+  printf("%u. ", pingCounter);
   long rtt = Ethernet.ping(kHostname);
   if (rtt >= 0) {
-    printf("%u. Time = %lu ms\r\n", pingCounter, rtt);
+    printf("Time = %ld ms\r\n", rtt);
     pingTimer = rtt;
   } else {
-    printf("%u. Ping failed\r\n", pingCounter);
+    printf("Ping failed\r\n");
     pingTimer = 0;
   }
 }
