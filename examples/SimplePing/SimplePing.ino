@@ -67,7 +67,7 @@ void setup() {
   printf("    DNS         = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   printf("\r\n");
-  printf("Pinging %s...\r\n");
+  printf("Pinging %s...\r\n", kHostname);
 }
 
 // Main program loop.
