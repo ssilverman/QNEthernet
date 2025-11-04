@@ -15,8 +15,13 @@ and this project adheres to
   network initialization is checked.
 * Added setting `errno` to `ENOSYS` when some networking feature
   isn't implemented.
-* Added support for ping (ICMP echo)
-* Added two ping examples: _Ping_ and _SimplePing_
+* Added support for ping (ICMP echo).
+* Added two ping examples: _Ping_ and _SimplePing_.
+* Added new configuration and default macros to _qnethernet_opts.h_:
+  * `QNETHERNET_ENABLE_PING`
+  * `QNETHERNET_DEFAULT_PING_ID`
+  * `QNETHERNET_DEFAULT_PING_TIMEOUT`
+  * `QNETHERNET_DEFAULT_PING_TTL`
 
 ### Changed
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
