@@ -34,7 +34,7 @@
 namespace qindesign {
 namespace network {
 
-// See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.linkstatus/
+// See: https://docs.arduino.cc/libraries/ethernet/#Ethernet%20Class
 enum EthernetLinkStatus {
   Unknown,
   LinkON,
@@ -44,7 +44,7 @@ enum EthernetLinkStatus {
 // Define this enum because Arduino API. Use a new `EthernetOtherHardware` with
 // value -1 as the return value for anything unknown.
 //
-// See: https://www.arduino.cc/reference/en/libraries/ethernet/ethernet.hardwarestatus/
+// See: https://docs.arduino.cc/libraries/ethernet/#Ethernet%20Class
 enum EthernetHardwareStatus {
   EthernetNoHardware = 0,
   EthernetW5100,
