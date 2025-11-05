@@ -515,7 +515,7 @@ void netif_set_link_callback(struct netif *netif, netif_status_callback_fn link_
 #define netif_set_mld_mac_filter(netif, function) do { if((netif) != NULL) { (netif)->mld_mac_filter = function; }}while(0)
 /** Get the mld mac filter function for a netif. */
 #define netif_get_mld_mac_filter(netif) (((netif) != NULL) ? ((netif)->mld_mac_filter) : NULL)
-#define netif_mld_mac_filter(netif, addr, action) do { if(((netif) != NULL) && (netif)->mld_mac_filter) { (netif)->mld_mac_filter((netif), (addr), (action)); }}while(0)
+#define netif_mld_mac_filter(netif, addr, action) do { if((netif) && (netif)->mld_mac_filter) { (netif)->mld_mac_filter((netif), (addr), (action)); }}while(0)
 #endif /* LWIP_IPV6 && LWIP_IPV6_MLD */
 
 #if ENABLE_LOOPBACK
@@ -629,7 +629,6 @@ typedef union
     /** 1: up; 0: down */
     u8_t state;
   } status_changed;
-#if LWIP_IPV4
   /** Args to LWIP_NSC_IPV4_ADDRESS_CHANGED|LWIP_NSC_IPV4_GATEWAY_CHANGED|LWIP_NSC_IPV4_NETMASK_CHANGED|LWIP_NSC_IPV4_SETTINGS_CHANGED callback */
   struct ipv4_changed_s
   {
@@ -638,8 +637,6 @@ typedef union
     const ip_addr_t* old_netmask;
     const ip_addr_t* old_gw;
   } ipv4_changed;
-#endif /* LWIP_IPV4 */
-#if LWIP_IPV6
   /** Args to LWIP_NSC_IPV6_SET callback */
   struct ipv6_set_s
   {
@@ -658,7 +655,6 @@ typedef union
     /** Affected IPv6 address */
     const ip_addr_t* address;
   } ipv6_addr_state_changed;
-#endif /* LWIP_IPV6 */
 } netif_ext_callback_args_t;
 
 /**

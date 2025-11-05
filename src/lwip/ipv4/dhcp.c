@@ -773,9 +773,6 @@ dhcp_set_struct(struct netif *netif, struct dhcp *dhcp)
  * @ingroup dhcp4
  * Removes a struct dhcp from a netif.
  *
- * ATTENTION: Only use this when not using dhcp_set_struct() to allocate the
- *            struct dhcp since the memory is passed back to the heap.
- *
  * @param netif the netif from which to remove the struct dhcp
  */
 void dhcp_cleanup(struct netif *netif)
@@ -811,6 +808,7 @@ dhcp_start(struct netif *netif)
 {
   struct dhcp *dhcp;
   err_t result;
+  u8_t saved_flags;
 
   LWIP_ASSERT_CORE_LOCKED();
   LWIP_ERROR("netif != NULL", (netif != NULL), return ERR_ARG;);
@@ -833,6 +831,8 @@ dhcp_start(struct netif *netif)
       return ERR_MEM;
     }
 
+    /* clear the flags, the rest is cleared below */
+    dhcp->flags = 0;
     /* store this dhcp client in the netif */
     netif_set_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP, dhcp);
     LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE, ("dhcp_start(): allocated dhcp\n"));
@@ -846,9 +846,10 @@ dhcp_start(struct netif *netif)
     /* dhcp is cleared below, no need to reset flag*/
   }
 
-  /* clear data structure */
+  /* clear data structure but preserve DHCP_FLAG_EXTERNAL_MEM for dhcp_cleanup() */
+  saved_flags = dhcp->flags;
   memset(dhcp, 0, sizeof(struct dhcp));
-  /* dhcp_set_state(&dhcp, DHCP_STATE_OFF); */
+  dhcp->flags = saved_flags & DHCP_FLAG_EXTERNAL_MEM;
 
 
 #if LWIP_DHCP_DOES_ACD_CHECK
