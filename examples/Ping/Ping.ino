@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: (c) 2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// Ping demonstrates a simple Ping program. This uses the echo
-// packet's payload to hold the ping counter.
+// Ping demonstrates a ping program. This uses the echo packet's
+// payload to hold the ping counter.
 // See: https://en.wikipedia.org/wiki/Ping_(networking_utility)
 //
 // In order to use this example, define the QNETHERNET_ENABLE_PING macro.
