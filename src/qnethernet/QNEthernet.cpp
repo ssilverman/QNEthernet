@@ -837,7 +837,7 @@ long EthernetClass::ping(const IPAddress &ip, const uint8_t ttl) const {
   }
 
 #else
-  LWIP_UNUSED_ARG(hostname);
+  LWIP_UNUSED_ARG(ip);
   LWIP_UNUSED_ARG(ttl);
   errno = ENOSYS;
   return -1;
