@@ -28,8 +28,8 @@ and this project adheres to
 * Made `EthernetClass::hostByName(hostname, result)` `const`.
 * Made `qnethernet_hal_get_system_mac_address(mac)` weak.
 * Improved code style and structure.
-* Changed `errno` value in `EthernetClass::joinGroup(ip)` if network is down to
-  `ENETDOWN` from `ENOTCONN`.
+* Changed `errno` value in `EthernetClass::joinGroup(ip)` if network is not
+  initialized to `ENETDOWN` from `ENOTCONN`.
 * Updated lwIP to latest master (4599f551).
 
 ## [0.32.0]
