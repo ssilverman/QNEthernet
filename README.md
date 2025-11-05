@@ -74,6 +74,7 @@ lwIP release.
        2. [Implementing the _altcp_tls_adapter_ functions](#implementing-the-altcp_tls_adapter-functions)
        3. [Implementing the Mbed TLS entropy function](#implementing-the-mbed-tls-entropy-function)
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
+    1. [Mitigations](#mitigations)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
 19. [Notes on RAM1 usage](#notes-on-ram1-usage)
 20. [Heap memory use](#heap-memory-use)
@@ -1647,6 +1648,8 @@ stack there apparently drops a connection if the link disconnects. This left the
 Teensy side waiting for replies and retrying, and the Windows side no longer
 sending traffic.
 
+### Mitigations
+
 To mitigate this problem, there are a few possible solutions, including:
 1. Reduce the number of retransmission attempts by changing the `TCP_MAXRTX`
    setting in `lwipopts.h`, or
@@ -1656,6 +1659,12 @@ To accomplish #2, there's an `EthernetClient::abort()` function that simply
 drops a TCP connection without going though the normal TCP close process. This
 could be called on connections when the link has been disconnected. (See also
 `Ethernet.onLinkState(cb)` or `Ethernet.linkState()`.)
+
+Alternatively, you can call the internal:
+
+```c++
+qindesign::network::internal::ConnectionManager::instance().abortAll();
+```
 
 Fun links:
 * [Removing Exponential Backoff from TCP](http://ccr.sigcomm.org/online/files/p19-mondal.pdf)
