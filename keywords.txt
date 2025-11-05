@@ -2,6 +2,7 @@
 # Syntax Coloring Map for QNEthernet
 # https://arduino.github.io/arduino-cli/latest/library-specification/#keywords
 # https://github.com/arduino/Arduino/blob/master/build/shared/lib/keywords.txt
+# https://docs.arduino.cc/arduino-cli/library-specification/#keywords
 #######################################
 
 #######################################
