@@ -73,8 +73,8 @@ leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
 setHostname	KEYWORD2	WiFi.setHostname
 hostname	KEYWORD2
-hostByName	KEYWORD2
-ping	KEYWORD2
+hostByName	KEYWORD2	WiFi.hostByName
+ping	KEYWORD2	WiFi.ping
 maxSockets	KEYWORD2
 connect	KEYWORD2	client.connect
 connectNoWait	KEYWORD2
