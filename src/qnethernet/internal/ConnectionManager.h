@@ -63,6 +63,8 @@ class ConnectionManager final {
 
   // Aborts all connections. The motivation is outlined in the "On connections
   // that hang around after cable disconnect" section of the Readme.
+  //
+  // This calls altcp_abort() for each PCB using iterateConnections().
   void abortAll();
 
   // Iterates over all the valid connections and calls the specified function
