@@ -17,7 +17,6 @@
 
 #include <Arduino.h>  // For pinMode() and digitalWrite()
 #include <SPI.h>
-#include <avr/pgmspace.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
@@ -26,10 +25,7 @@
 #include "lwip/def.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
+#include "qnethernet/platforms/pgmspace.h"
 
 // --------------------------------------------------------------------------
 //  Types

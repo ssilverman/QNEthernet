@@ -13,8 +13,9 @@
 #include <errno.h>
 #include <string.h>
 
-#include <avr/pgmspace.h>
 #include <imxrt.h>
+
+#include "qnethernet/platforms/pgmspace.h"
 
 // Clock settings
 #define TRNG_CONFIG_CLOCK_MODE   0  /* 0=Ring Oscillator, 1=System Clock (test use only) */

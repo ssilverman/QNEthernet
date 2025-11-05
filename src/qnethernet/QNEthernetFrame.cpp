@@ -11,21 +11,16 @@
 // C++ includes
 #include <algorithm>
 
-#include <avr/pgmspace.h>
-
 #include "QNEthernet.h"
 #include "lwip/arch.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
+#include "qnethernet/platforms/pgmspace.h"
 
 extern "C" {
 void qnethernet_hal_disable_interrupts(void);
 void qnethernet_hal_enable_interrupts(void);
 }  // extern "C"
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
 
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf* const p, struct netif* const netif) {

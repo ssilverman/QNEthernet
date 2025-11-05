@@ -6,14 +6,9 @@
 
 #include "qnethernet/lwip_driver.h"
 
-#include <avr/pgmspace.h>
-
 #include "lwip/arch.h"
 #include "lwip/err.h"
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
+#include "qnethernet/platforms/pgmspace.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 

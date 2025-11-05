@@ -31,18 +31,13 @@ static_assert(TEENSYDUINO >= 159, "Must be built with Teensydino >= 1.59");
 #endif  // defined(__has_include)
 #endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
-#include <avr/pgmspace.h>
-
 #include "lwip/arch.h"
 #include "lwip/dhcp.h"
 #include "lwip/err.h"
 #include "lwip/igmp.h"
 #include "lwip/sys.h"
 #include "qnethernet/QNDNSClient.h"
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
+#include "qnethernet/platforms/pgmspace.h"
 
 extern "C" void yield();
 

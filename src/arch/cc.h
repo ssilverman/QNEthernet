@@ -12,8 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <avr/pgmspace.h>
-
+#include "qnethernet/platforms/pgmspace.h"
 #include "qnethernet_opts.h"
 
 // Define this for err_to_errno()

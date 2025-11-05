@@ -13,13 +13,8 @@
 #include <cerrno>
 #include <cstring>
 
-#include <avr/pgmspace.h>
-
 #include "lwip/err.h"
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
+#include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
 namespace network {

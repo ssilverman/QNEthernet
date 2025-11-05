@@ -9,11 +9,7 @@
 // C++ includes
 #include <cstdint>
 
-#include <avr/pgmspace.h>
-
-#ifndef FLASHMEM
-#define FLASHMEM
-#endif  // !FLASHMEM
+#include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
 namespace security {
