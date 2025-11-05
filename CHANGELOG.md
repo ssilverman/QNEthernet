@@ -44,6 +44,7 @@ and this project adheres to
 * Changed definition of `TCP_MSS` to be based on `MTU` instead of being
   a constant.
 * Updated _LinkWatcher_ example to only print detectable details.
+* Updated lwIP to latest release (STABLE-2_2_1_RELEASE, 77dcd25a).
 
 ### Fixed
 * Restored automatic entropy initialization when including
