@@ -30,6 +30,7 @@ and this project adheres to
 * Improved code style and structure.
 * Changed `errno` value in `EthernetClass::joinGroup(ip)` if network is down to
   `ENETDOWN` from `ENOTCONN`.
+* Updated lwIP to latest master (4599f551).
 
 ## [0.32.0]
 
