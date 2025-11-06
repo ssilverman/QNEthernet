@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Added missing _src/qnethernet/platforms/pgmspace.h_ file.
+
 ## [0.33.0]
 
 ### Added
