@@ -21,6 +21,7 @@
 #include "lwip/prot/ethernet.h"
 #include "qnethernet/QNEthernetClient.h"
 #include "qnethernet/QNEthernetFrame.h"
+#include "qnethernet/QNEthernetIEEE1588.h"
 #include "qnethernet/QNEthernetServer.h"
 #include "qnethernet/QNEthernetUDP.h"
 #include "qnethernet/QNMDNS.h"
@@ -548,6 +549,9 @@ class EthernetClass final {
 
 // Instance for interacting with the library.
 STATIC_INIT_DECL(EthernetClass, Ethernet);
+
+// Instance for using IEEE 1588 functions.
+extern EthernetIEEE1588Class &EthernetIEEE1588;
 
 #if QNETHERNET_CUSTOM_WRITE
 // stdout output.
