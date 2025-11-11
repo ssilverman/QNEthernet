@@ -6,22 +6,22 @@
 
 #pragma once
 
-#define MTU 1500
+#define MTU           1500
 #define MAX_FRAME_LEN 1522
 
 // lwIP options
 
 // ARP options
-#define ETH_PAD_SIZE 2 /* 0 */
+#define ETH_PAD_SIZE 2  /* 0 */
 
 // Checksum options
-#define CHECKSUM_GEN_IP 0   /* 1 */
-#define CHECKSUM_GEN_UDP 0  /* 1 */
-#define CHECKSUM_GEN_TCP 0  /* 1 */
-#define CHECKSUM_GEN_ICMP 0 /* 1 */
+#define CHECKSUM_GEN_IP      0  /* 1 */
+#define CHECKSUM_GEN_UDP     0  /* 1 */
+#define CHECKSUM_GEN_TCP     0  /* 1 */
+#define CHECKSUM_GEN_ICMP    0  /* 1 */
 // #define CHECKSUM_GEN_ICMP6   1
-#define CHECKSUM_CHECK_IP 0   /* 1 */
-#define CHECKSUM_CHECK_UDP 0  /* 1 */
-#define CHECKSUM_CHECK_TCP 0  /* 1 */
-#define CHECKSUM_CHECK_ICMP 0 /* 1 */
+#define CHECKSUM_CHECK_IP    0  /* 1 */
+#define CHECKSUM_CHECK_UDP   0  /* 1 */
+#define CHECKSUM_CHECK_TCP   0  /* 1 */
+#define CHECKSUM_CHECK_ICMP  0  /* 1 */
 // #define CHECKSUM_CHECK_ICMP6 1
