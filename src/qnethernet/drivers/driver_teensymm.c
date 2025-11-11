@@ -15,13 +15,13 @@
 #include <stdatomic.h>
 #include <string.h>
 
-#include <avr/pgmspace.h>
 #include <core_pins.h>
 #include <imxrt.h>
 
 #include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
+#include "qnethernet/platforms/pgmspace.h"
 
 // Some test code from the forum:
 // https://forum.pjrc.com/index.php?threads/add-ethernet-to-a-micromod-format-teensy.67643/post-356447
