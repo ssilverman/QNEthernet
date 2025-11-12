@@ -32,8 +32,8 @@ class MbedTLSClient : public internal::ClientEx {
 
   // Allow moving but not copying
   MbedTLSClient(const MbedTLSClient&) = delete;
-  MbedTLSClient& operator=(const MbedTLSClient&) = delete;
   MbedTLSClient(MbedTLSClient&&) = default;
+  MbedTLSClient& operator=(const MbedTLSClient&) = delete;
   MbedTLSClient& operator=(MbedTLSClient&&) = default;
 
   // Sets a new client. This calls stop() first.
