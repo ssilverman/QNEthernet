@@ -17,9 +17,11 @@ class Receiver {
   Receiver() = default;
   virtual ~Receiver() = default;
 
-  // Avoid slicing
+  // Avoid slicing by deleting copy
   Receiver(const Receiver&) = delete;
+  Receiver(Receiver&&) = default;
   Receiver& operator=(const Receiver&) = delete;
+  Receiver& operator=(Receiver&&) = default;
 
   // Initializes the receiver. This performs tasks that must be done
   // after the system is booted and is meant to be called from setup()
