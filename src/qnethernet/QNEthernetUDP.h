@@ -39,13 +39,13 @@ class EthernetUDP : public UDP,
   // set to a minimum of 1.
   explicit EthernetUDP(size_t capacity);
 
+  virtual ~EthernetUDP();
+
   // Disallow copying but allow moving
   EthernetUDP(const EthernetUDP&) = delete;
   EthernetUDP(EthernetUDP&&) = default;
   EthernetUDP& operator=(const EthernetUDP&) = delete;
   EthernetUDP& operator=(EthernetUDP&&) = default;
-
-  virtual ~EthernetUDP();
 
   // Returns the maximum number of UDP sockets.
   static constexpr int maxSockets() {

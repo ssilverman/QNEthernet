@@ -40,7 +40,9 @@ class RandomDevice {
 
   // Disallow copying and moving
   RandomDevice(const RandomDevice&) = delete;
+  RandomDevice(RandomDevice&&) = delete;
   RandomDevice& operator=(const RandomDevice&) = delete;
+  RandomDevice& operator=(RandomDevice&&) = delete;
 
   friend class StaticInit<RandomDevice>;
 };

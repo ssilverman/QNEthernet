@@ -490,7 +490,9 @@ class EthernetClass final {
   // EthernetClass is neither copyable nor movable
   // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
   EthernetClass(const EthernetClass&) = delete;
+  EthernetClass(EthernetClass&&) = delete;
   EthernetClass& operator=(const EthernetClass&) = delete;
+  EthernetClass& operator=(EthernetClass&&) = delete;
 
   static void netifEventFunc(struct netif* netif, netif_nsc_reason_t reason,
                              const netif_ext_callback_args_t* args);

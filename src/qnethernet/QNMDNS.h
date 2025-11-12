@@ -156,7 +156,9 @@ class MDNSClass final {
 
   // MDNSClass is neither copyable nor movable
   MDNSClass(const MDNSClass&) = delete;
+  MDNSClass(MDNSClass&&) = delete;
   MDNSClass& operator=(const MDNSClass&) = delete;
+  MDNSClass& operator=(MDNSClass&&) = delete;
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.

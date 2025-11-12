@@ -17,7 +17,6 @@ namespace internal {
 class IPOpts {
  public:
   IPOpts() = default;
-  virtual ~IPOpts() = default;
 
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)

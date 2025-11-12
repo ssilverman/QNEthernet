@@ -29,13 +29,13 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   EthernetServer() = default;
   explicit EthernetServer(uint16_t port);
 
+  virtual ~EthernetServer();
+
   // Disallow copying but allow moving
   EthernetServer(const EthernetServer&) = delete;
   EthernetServer(EthernetServer&&) = default;
   EthernetServer& operator=(const EthernetServer&) = delete;
   EthernetServer& operator=(EthernetServer&&) = default;
-
-  virtual ~EthernetServer();
 
   // Returns the maximum number of TCP listeners.
   static constexpr int maxListeners() {

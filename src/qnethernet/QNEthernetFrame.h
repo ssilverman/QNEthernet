@@ -229,7 +229,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
 
   // EthernetFrameClass is neither copyable nor movable
   EthernetFrameClass(const EthernetFrameClass&) = delete;
+  EthernetFrameClass(EthernetFrameClass&&) = delete;
   EthernetFrameClass& operator=(const EthernetFrameClass&) = delete;
+  EthernetFrameClass& operator=(EthernetFrameClass&&) = delete;
 
   static err_t recvFunc(struct pbuf* p, struct netif* netif);
 
