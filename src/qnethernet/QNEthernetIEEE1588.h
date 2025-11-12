@@ -35,7 +35,9 @@ class EthernetIEEE1588Class final {
 
   // EthernetIEEE1588Class is neither copyable nor movable.
   EthernetIEEE1588Class(const EthernetIEEE1588Class&) = delete;
+  EthernetIEEE1588Class(EthernetIEEE1588Class&&) = delete;
   EthernetIEEE1588Class& operator=(const EthernetIEEE1588Class&) = delete;
+  EthernetIEEE1588Class& operator=(EthernetIEEE1588Class&&) = delete;
 
   // Starts the IEEE 1588 timer.
   void begin() const;
