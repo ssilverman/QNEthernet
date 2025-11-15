@@ -1489,7 +1489,7 @@ static void test_server_accept() {
   TEST_ASSERT_TRUE_MESSAGE(server->beginWithReuse(kPort), "Expected listen success");
   TEST_ASSERT_TRUE_MESSAGE(client->connect(Ethernet.localIP(), kPort), "Expected connect success");
   EthernetClient c = server->accept();
-  TEST_ASSERT_TRUE_MESSAGE(c, "Expected accepted connection");
+  TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(c), "Expected accepted connection");
   TEST_ASSERT_EQUAL_MESSAGE(-1, c.read(), "Expected no data");
   TEST_ASSERT_EQUAL_MESSAGE(0, c.read(nullptr, 0), "Expected no 0-length data");
   TEST_ASSERT_EQUAL_MESSAGE(0, c.read(nullptr, 1), "Expected no 1-length data");
@@ -1590,7 +1590,7 @@ static void test_raw_frames_receive_queueing() {
                                        "Expected at least 1 total");
   buf[14] = 2;
   TEST_ASSERT_TRUE_MESSAGE(EthernetFrame.send(buf, sizeof(buf)),
-                   "Expected frame 2 send success");
+                           "Expected frame 2 send success");
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected queue capacity 1");
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueSize(),
