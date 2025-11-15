@@ -194,16 +194,16 @@ static void test_set_mac() {
   TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
 
   // Test changing the MAC address while Ethernet is up
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no IP");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == INADDR_NONE, "Expected no netmask");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == INADDR_NONE, "Expected no gateway");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected no IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.subnetMask(), "Expected no netmask");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.gatewayIP(), "Expected no gateway");
   Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
   TEST_ASSERT_TRUE_MESSAGE(interfaceState, "Expected interface up");
   TEST_ASSERT_EQUAL_MESSAGE(1, upCount, "Expected matching up count");
   TEST_ASSERT_EQUAL_MESSAGE(0, downCount, "Expected matching down count");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching IP");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching netmask");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching IP");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching netmask");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway");
   Ethernet.setMACAddress(testMAC);
   Ethernet.macAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC");
@@ -248,7 +248,7 @@ static bool waitForLocalIP() {
   IPAddress netmask = Ethernet.subnetMask();
   IPAddress gateway = Ethernet.gatewayIP();
   IPAddress dns = Ethernet.dnsServerIP();
-  TEST_ASSERT_MESSAGE(ip != INADDR_NONE, "Expected valid IP");
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(INADDR_NONE, ip, "Expected valid IP");
   TEST_MESSAGE(format("DHCP IP:      %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
   TEST_MESSAGE(format("     Netmask: %u.%u.%u.%u", netmask[0], netmask[1], netmask[2], netmask[3]).data());
   TEST_MESSAGE(format("     Gateway: %u.%u.%u.%u", gateway[0], gateway[1], gateway[2], gateway[3]).data());
@@ -313,13 +313,13 @@ static void test_dhcp() {
   Ethernet.setDHCPEnabled(true);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
 
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected invalid IP");
   waitForLocalIP();
 }
 
 // Tests double DHCP: begin() twice.
 static void test_double_dhcp() {
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected invalid IP");
 
   TEST_MESSAGE("Begin (1)...");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start with DHCP okay");
@@ -339,45 +339,45 @@ static void test_double_dhcp() {
 // Tests using a static IP.
 void test_static_ip() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP before start");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected no local IP before start");
 
   // Without a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success (1)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.dnsServerIP(), "Expected unset DNS (1)");
 
   Ethernet.setDnsServerIP(kGateway);
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected gateway as DNS after set (old API)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.dnsServerIP(), "Expected gateway as DNS after set (old API)");
   Ethernet.setDNSServerIP(INADDR_NONE);
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == INADDR_NONE, "Expected unset DNS after set");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.dnsServerIP(), "Expected unset DNS after set");
 
   const IPAddress ip{192, 168, 1, 3};
   Ethernet.setLocalIP(ip);
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == ip, "Expected matching local IP after set new");
+  TEST_ASSERT_EQUAL_MESSAGE(ip, Ethernet.localIP(), "Expected matching local IP after set new");
   Ethernet.setLocalIP(kStaticIP);
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP after set static");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP after set static");
 
   Ethernet.setDNSServerIP(kGateway);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, INADDR_NONE, INADDR_NONE),
                            "Expected start success (2)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == INADDR_NONE, "Expected empty subnet mask (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == INADDR_NONE, "Expected unset gateway (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected DNS not modified(2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.subnetMask(), "Expected empty subnet mask (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.gatewayIP(), "Expected unset gateway (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.dnsServerIP(), "Expected DNS not modified(2)");
 
   // With a DNS server
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway, kGateway),
                            "Expected start success (3)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expecting matching DNS (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.dnsServerIP(), "Expecting matching DNS (3)");
 }
 
 // Tests the Arduino-style begin() functions.
@@ -387,7 +387,7 @@ static void test_arduino_begin() {
   Ethernet.macAddress(systemMAC);
 
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP before start");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP before start");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected no local IP before start");
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -395,66 +395,66 @@ static void test_arduino_begin() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP), "Expected start success (1)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (1)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (1)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected matching DNS (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.dnsServerIP(), "Expected matching DNS (1)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP), "Expected start success (2)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (2)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (2)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kGateway, "Expected matching DNS (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.dnsServerIP(), "Expected matching DNS (2)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS), "Expected start success (3)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (3)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (3)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (3)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (3)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS), "Expected start success (4)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (4)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (4)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (4)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (4)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (4)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (4)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (4)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (4)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (4)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (4)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS, kGateway), "Expected start success (5)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (5)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (5)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (5)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (5)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (5)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (5)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (5)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (5)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (5)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (5)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS, kGateway), "Expected start success (6)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (6)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (6)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (6)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (6)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (6)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (6)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (6)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (6)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (6)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (6)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, kStaticIP, kDNS, kGateway, kSubnetMask), "Expected start success (7)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (7)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(systemMAC, Ethernet.macAddress(), 6, "Expected matching MAC (7)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (7)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (7)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (7)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (7)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (7)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (7)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (7)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (7)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(testMAC, kStaticIP, kDNS, kGateway, kSubnetMask), "Expected start success (8)");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPActive(), "Expected inactive DHCP (8)");
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, Ethernet.macAddress(), 6, "Expected matching MAC (8)");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == kStaticIP, "Expected matching local IP (8)");
-  TEST_ASSERT_MESSAGE(Ethernet.subnetMask() == kSubnetMask, "Expected matching subnet mask (8)");
-  TEST_ASSERT_MESSAGE(Ethernet.gatewayIP() == kGateway, "Expected matching gateway (8)");
-  TEST_ASSERT_MESSAGE(Ethernet.dnsServerIP() == kDNS, "Expected matching DNS (8)");
+  TEST_ASSERT_EQUAL_MESSAGE(kStaticIP, Ethernet.localIP(), "Expected matching local IP (8)");
+  TEST_ASSERT_EQUAL_MESSAGE(kSubnetMask, Ethernet.subnetMask(), "Expected matching subnet mask (8)");
+  TEST_ASSERT_EQUAL_MESSAGE(kGateway, Ethernet.gatewayIP(), "Expected matching gateway (8)");
+  TEST_ASSERT_EQUAL_MESSAGE(kDNS, Ethernet.dnsServerIP(), "Expected matching DNS (8)");
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE), "Expected start success (9)");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPActive(), "Expected active DHCP (9)");
@@ -529,7 +529,7 @@ static void test_dns_lookup() {
 
 // Tests setting and getting the option 12 hostname.
 static void test_hostname() {
-  TEST_ASSERT_MESSAGE(std::strlen(Ethernet.hostname()) == 0, "Expected no hostname");
+  TEST_ASSERT_EQUAL_MESSAGE(0, std::strlen(Ethernet.hostname()), "Expected no hostname");
   Ethernet.setHostname(kTestHostname);
   TEST_ASSERT_MESSAGE(
       std::strlen(Ethernet.hostname()) == std::strlen(kTestHostname) &&
@@ -647,7 +647,7 @@ static void test_setLinkState() {
 
 // Tests the address-changed listener.
 static void test_address_listener() {
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected no local IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected no local IP");
 
   volatile bool latch = false;
   volatile bool hasIP = false;
@@ -662,7 +662,7 @@ static void test_address_listener() {
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(Ethernet), "Expected started");
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on up");
   TEST_ASSERT_TRUE_MESSAGE(hasIP, "Expected valid IP in callback");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() != INADDR_NONE, "Expected valid IP");
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected valid IP");
 
   latch = false;
   hasIP = true;
@@ -677,7 +677,7 @@ static void test_address_listener() {
   //                     static_cast<uint32_t>(timer)).data());
   TEST_ASSERT_TRUE_MESSAGE(latch, "Expected callback to be called on down");
   TEST_ASSERT_FALSE_MESSAGE(hasIP, "Expected no IP in callback");
-  TEST_ASSERT_MESSAGE(Ethernet.localIP() == INADDR_NONE, "Expected invalid IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected invalid IP");
 }
 
 // Tests the interface status listener.
@@ -1244,7 +1244,7 @@ static void test_client_state() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->localPort(), "Expected invalid local port");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->remotePort(), "Expected invalid remote port");
-  TEST_ASSERT_MESSAGE(client->remoteIP() == INADDR_NONE, "Expected no remote IP");
+  TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, client->remoteIP(), "Expected no remote IP");
 
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB, EthernetClient::maxSockets(),
@@ -1282,9 +1282,9 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Connect time: %" PRIu32 "ms", t).data());
 
   TEST_ASSERT_EQUAL_MESSAGE(kPort, client->remotePort(), "Expected correct remote port");
-  TEST_ASSERT_TRUE_MESSAGE(hostIP == client->remoteIP(), "Expected correct remote IP");
-  TEST_ASSERT_TRUE_MESSAGE(client->localPort() >= 49152, "Expected correct local port");
-  TEST_ASSERT_TRUE_MESSAGE(Ethernet.localIP() == client->localIP(), "Expected correct local IP");
+  TEST_ASSERT_EQUAL_MESSAGE(hostIP, client->remoteIP(), "Expected correct remote IP");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(49152, client->localPort(), "Expected correct local port");
+  TEST_ASSERT_EQUAL_MESSAGE(Ethernet.localIP(), client->localIP(), "Expected correct local IP");
 
   TEST_MESSAGE("Stopping client...");
   t = millis();
@@ -1698,7 +1698,7 @@ static void test_ping() {
   }
 
   long rtt = Ethernet.ping(kHost);
-  TEST_ASSERT_TRUE_MESSAGE(rtt >= 0, "Expected ping success");
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(0, rtt, "Expected ping success");
   TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());
 }
 
