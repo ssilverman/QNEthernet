@@ -71,8 +71,7 @@ class StdioPrint : public Print {
   explicit StdioPrint(std::FILE* stream) : stream_(stream) {}
   virtual ~StdioPrint() = default;
 
-  // Delete copy operations because there's a pointer data member
-  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
+  // See: https://en.cppreference.com/w/cpp/language/rule_of_three
   StdioPrint(const StdioPrint&) = delete;
   StdioPrint(StdioPrint&&) = default;
   StdioPrint& operator=(const StdioPrint&) = delete;
@@ -99,6 +98,13 @@ class StdioPrint : public Print {
 class NullPrint final : public Print {
  public:
   NullPrint() = default;
+  virtual ~NullPrint() = default;
+
+  // Rule of five
+  NullPrint(const NullPrint&) = delete;
+  NullPrint(NullPrint&&) = delete;
+  NullPrint& operator=(const NullPrint&) = delete;
+  NullPrint& operator=(NullPrint&&) = delete;
 
   size_t write(const uint8_t b) override {
     LWIP_UNUSED_ARG(b);
@@ -123,6 +129,13 @@ class NullPrint final : public Print {
 class PrintDecorator : public Print {
  public:
   explicit PrintDecorator(Print& p) : p_(p) {}
+  virtual ~PrintDecorator() = default;
+
+  // Rule of five
+  PrintDecorator(const PrintDecorator&) = delete;
+  PrintDecorator(PrintDecorator&&) = delete;
+  PrintDecorator& operator=(const PrintDecorator&) = delete;
+  PrintDecorator& operator=(PrintDecorator&&) = delete;
 
   size_t write(const uint8_t b) override {
     return p_.write(b);
