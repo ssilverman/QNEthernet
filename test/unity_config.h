@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023,2025 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // Unity test framework configuration.
@@ -11,3 +11,4 @@
 // the printf options
 // #define UNITY_INCLUDE_PRINT_FORMATTED
 #define UNITY_EXCLUDE_SETJMP_H
+#define UNITY_SHORTHAND_AS_RAW
