@@ -52,7 +52,7 @@ struct ConnectionState final {
   ConnectionState& operator=(const ConnectionState&) = delete;
   ConnectionState& operator=(ConnectionState&&) = delete;
 
-  struct altcp_pcb* /*volatile*/ pcb;
+  struct altcp_pcb* const /*volatile*/ pcb;
 
   // Incoming data buffer
   std::vector<uint8_t> buf;
