@@ -7,6 +7,7 @@
 #pragma once
 
 // C++ includes
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -117,7 +118,7 @@ class NullPrint final : public Print {
   }
 
   int availableForWrite() override {
-    return 0;
+    return INT_MAX;
   }
 
   void flush() override {
