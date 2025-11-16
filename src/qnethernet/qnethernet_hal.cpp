@@ -87,6 +87,7 @@ static inline Print* getPrint(const int file) {
       return ::qindesign::network::stderrPrint;
 #else
     case STDOUT_FILENO:
+      // Fallthrough
     case STDERR_FILENO:
       return& Serial;
 #endif  // QNETHERNET_CUSTOM_WRITE

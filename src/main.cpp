@@ -177,7 +177,9 @@ static void clientConnect() {
       int c = client.read();
       switch (c) {
         case '\t':
+          // Fallthrough
         case '\n':
+          // Fallthrough
         case '\r':
           printf("%c", c);
           break;
