@@ -41,10 +41,12 @@ struct StaticInit {
     }
   }
 
-  // Rule of three
+  // Rule of five
   // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
   StaticInit(const StaticInit&) = delete;
+  StaticInit(StaticInit&&) = delete;
   StaticInit& operator=(const StaticInit&) = delete;
+  StaticInit& operator=(StaticInit&&) = delete;
 
   static int nifty_counter;
   alignas(T) static unsigned char buf[sizeof(T)];
