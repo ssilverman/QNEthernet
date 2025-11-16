@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added tests for some of the print utility functions and classes.
+
 ### Changed
 * Improved code style and structure.
 * Made `NullPrint::availableForWrite()` return `INT_MAX` instead of zero.
