@@ -62,7 +62,7 @@ static void test_siphash() {
 
   uint64_t want = uint64_t{0xa129ca6149be45e5};
   uint64_t got = siphash(2, 4, kKey, kMsg, 15);
-  TEST_ASSERT_EQUAL(want, got);
+  TEST_ASSERT_EQUAL_MESSAGE(want, got, "Expected proper hash");
 
   // Test vectors
 
