@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Improved code style and structure.
+* Made `NullPrint::availableForWrite()` return `INT_MAX` instead of zero.
+
 ## [0.33.1]
 
 ### Fixed
