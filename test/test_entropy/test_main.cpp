@@ -4,6 +4,7 @@
 // test_main.cpp tests the entropy functions.
 // This file is part of the QNEthernet library.
 
+// C++ includes
 #include <cerrno>
 
 #include <Arduino.h>
