@@ -277,6 +277,8 @@ uint8_t EthernetUDP::outgoingTTL() const {
 }
 
 void EthernetUDP::Packet::clear() {
+  diffServ = 0;
+  ttl = 0;
   data.clear();
   addr = *IP_ANY_TYPE;
   port = 0;

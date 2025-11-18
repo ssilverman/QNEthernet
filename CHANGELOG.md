@@ -16,6 +16,9 @@ and this project adheres to
 * Made `NullPrint::availableForWrite()` return `INT_MAX` instead of zero.
 * Changed `EthernetUDP::stop()` to not clear the current packet.
 
+### Fixed
+* Fixed `EthernetUDP` internal packet clear to reset all variables.
+
 ## [0.33.1]
 
 ### Fixed
