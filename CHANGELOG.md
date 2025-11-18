@@ -14,6 +14,7 @@ and this project adheres to
 ### Changed
 * Improved code style and structure.
 * Made `NullPrint::availableForWrite()` return `INT_MAX` instead of zero.
+* Changed `EthernetUDP::stop()` to not clear the current packet.
 
 ## [0.33.1]
 

@@ -244,8 +244,6 @@ void EthernetUDP::stop() {
   pcb_ = nullptr;
   listening_ = false;
   listenReuse_ = false;
-
-  packet_.clear();
 }
 
 bool EthernetUDP::setOutgoingDiffServ(const uint8_t ds) {
