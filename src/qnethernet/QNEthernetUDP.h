@@ -113,7 +113,8 @@ class EthernetUDP : public UDP,
   uint16_t localPort() const;
 
   // If there was an error leaving the multicast group joined when starting to
-  // listen on a multicast address then errno will be set.
+  // listen on a multicast address then errno will be set. This does not clear
+  // the incoming packet queue.
   void stop() final;
 
   // Sending UDP packets
