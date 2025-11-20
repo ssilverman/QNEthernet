@@ -117,4 +117,12 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
+// --------------------------------------------------------------------------
+//  Notifications from upper layers
+// --------------------------------------------------------------------------
+
+void driver_notify_manual_link_state(bool flag) {
+  LWIP_UNUSED_ARG(flag);
+}
+
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED

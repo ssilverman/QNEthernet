@@ -18,6 +18,8 @@ and this project adheres to
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
+* Now keeping any manually-set link UP state sticky so that the driver can
+  choose not to set it to DOWN.
 
 ## [0.33.1]
 

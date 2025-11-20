@@ -517,6 +517,10 @@ void EthernetClass::setLinkState(const bool flag) const {
     errno = ENETDOWN;
     return;
   }
+
+  // Tell the driver about this possibly sticky setting
+  driver_notify_manual_link_state(flag);
+
   if (flag) {
     netif_set_link_up(netif_);
   } else {

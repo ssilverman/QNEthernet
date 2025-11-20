@@ -189,6 +189,9 @@ static bool s_macFilteringEnabled = false;  // Whether actually enabled
 static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
 
+// Notification data
+static bool s_manualLinkState = false;  // True for sticky
+
 // --------------------------------------------------------------------------
 //  Internal Functions: Registers
 // --------------------------------------------------------------------------
@@ -462,7 +465,9 @@ static void check_link_status(struct netif* const netif) {
 
       netif_set_link_up(netif);
     } else {
-      netif_set_link_down(netif);
+      if (!s_manualLinkState) {
+        netif_set_link_down(netif);
+      }
     }
   }
 }
@@ -747,6 +752,14 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
+// --------------------------------------------------------------------------
+//  Notifications from upper layers
+// --------------------------------------------------------------------------
+
+void driver_notify_manual_link_state(bool flag) {
+  s_manualLinkState = flag;
+}
 
 }  // extern "C"
 

@@ -215,6 +215,10 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
+// Notifies the driver that the system manually set the link state. It is
+// assumed that if the new link state is TRUE then it should be sticky.
+void driver_notify_manual_link_state(bool flag);
+
 // --------------------------------------------------------------------------
 //  Public Interface
 // --------------------------------------------------------------------------
