@@ -845,7 +845,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_has_hardware(void) {
   switch (s_initState) {
     case kInitStateHasHardware:
+      // Fallthrough
     case kInitStatePHYInitialized:
+      // Fallthrough
     case kInitStateInitialized:
       return true;
     case kInitStateNoHardware:
