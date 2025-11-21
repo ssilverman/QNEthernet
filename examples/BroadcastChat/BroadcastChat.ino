@@ -149,6 +149,7 @@ static bool readLine(String& line) {
         }
         inCR = false;
         line.concat(static_cast<char>(c));
+        break;
     }
   }
 

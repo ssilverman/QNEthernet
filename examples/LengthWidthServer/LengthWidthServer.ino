@@ -134,6 +134,7 @@ void processMessage(const ClientState& state) {
         case '\\': printf("\\\\"); break;
         default:
           printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
+          break;
       }
     } else if (0x7f <= b && b < 0xa0) {
       printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
