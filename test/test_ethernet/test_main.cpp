@@ -507,10 +507,8 @@ static void test_dns_lookup() {
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName).data());
   IPAddress ip;
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(
-      DNSClient::getHostByName(kName, ip,
-                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
-      "Expected lookup success");
+  TEST_ASSERT_TRUE_MESSAGE(DNSClient::getHostByName(kName, ip),
+                           "Expected lookup success");
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
   TEST_ASSERT_MESSAGE((ip == ip1) || (ip == ip2), "Expected different IP address");
@@ -518,10 +516,8 @@ static void test_dns_lookup() {
   constexpr char kName2[]{"dms.goomgle"};
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kName2).data());
   t = millis();
-  TEST_ASSERT_FALSE_MESSAGE(
-      DNSClient::getHostByName(kName2, ip,
-                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
-      "Expected can't look up");
+  TEST_ASSERT_FALSE_MESSAGE(DNSClient::getHostByName(kName2, ip),
+                            "Expected can't look up");
   t = millis() - t;
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", t).data());
   TEST_ASSERT_LESS_THAN_MESSAGE(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT, t,
@@ -1264,10 +1260,8 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Waiting for DNS lookup [%s]...", kHost).data());
   IPAddress hostIP;
   uint32_t t = millis();
-  TEST_ASSERT_TRUE_MESSAGE(
-      DNSClient::getHostByName(kHost, hostIP,
-                               QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT),
-      "Expected lookup success");
+  TEST_ASSERT_TRUE_MESSAGE(DNSClient::getHostByName(kHost, hostIP),
+                           "Expected lookup success");
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", hostIP[0], hostIP[1], hostIP[2], hostIP[3]).data());
 
