@@ -765,8 +765,9 @@ bool EthernetClass::hostByName(const char* const hostname,
     errno = ENETDOWN;
     return false;
   }
-  return DNSClient::getHostByName(hostname, ip,
-                                  QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
+  return DNSClient::getHostByName(
+      hostname, ip,
+      static_cast<uint32_t>(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT));
 #else
   LWIP_UNUSED_ARG(hostname);
   LWIP_UNUSED_ARG(ip);
