@@ -108,7 +108,7 @@ bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
   volatile bool lookupDone = false;
   if (!DNSClient::getHostByName(
           hostname,
-          [&lookupDone, &found, &ip](const ip_addr_t* foundIP) {
+          [&lookupDone, &found, &ip](const ip_addr_t* const foundIP) {
             if (foundIP != nullptr) {
               found = true;
               ip = util::ip_addr_get_ip4_uint32(foundIP);
