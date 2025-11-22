@@ -385,9 +385,7 @@ int EthernetUDP::beginPacket(const IPAddress ip, const uint16_t port) {
 int EthernetUDP::beginPacket(const char* const host, const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(
-          host, ip,
-          static_cast<uint32_t>(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT))) {
+  if (!DNSClient::getHostByName(host, ip)) {
     return false;
   }
   return beginPacket(ip, port);
@@ -489,9 +487,7 @@ bool EthernetUDP::send(const char* const host, const uint16_t port,
                        const void* const data, const size_t len) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(
-          host, ip,
-          static_cast<uint32_t>(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT))) {
+  if (!DNSClient::getHostByName(host, ip)) {
     return false;
   }
   return send(ip, port, data, len);

@@ -134,8 +134,7 @@ static void dnsLookup() {
   static constexpr char kHostname[]{"dns.google"};
   IPAddress ip;
   printf("[Main] Looking up \"%s\"...\r\n", kHostname);
-  if (!DNSClient::getHostByName(kHostname, ip,
-                                QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT)) {
+  if (!DNSClient::getHostByName(kHostname, ip)) {
     printf("[Main] Lookup failed\r\n");
   } else {
     printf("[Main] IP address: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);

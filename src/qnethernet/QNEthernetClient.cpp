@@ -68,9 +68,7 @@ int EthernetClient::connect(const IPAddress ip, const uint16_t port) {
 int EthernetClient::connect(const char* const host, const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(
-          host, ip,
-          static_cast<uint32_t>(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT))) {
+  if (!DNSClient::getHostByName(host, ip)) {
     // INVALID_SERVER (-2)
     return false;
   }
@@ -99,9 +97,7 @@ bool EthernetClient::connectNoWait(const char* const host,
                                    const uint16_t port) {
 #if LWIP_DNS
   IPAddress ip;
-  if (!DNSClient::getHostByName(
-          host, ip,
-          static_cast<uint32_t>(QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT))) {
+  if (!DNSClient::getHostByName(host, ip)) {
     // INVALID_SERVER (-2)
     return false;
   }

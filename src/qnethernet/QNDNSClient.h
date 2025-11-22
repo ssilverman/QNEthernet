@@ -16,6 +16,7 @@
 
 #include <IPAddress.h>
 
+#include "lwip/dns.h"
 #include "lwip/ip_addr.h"
 
 namespace qindesign {
@@ -52,9 +53,9 @@ class DNSClient final {
   // The timeout is ignored if it is zero.
   //
   // If this returns false and there was an error then errno will be set.
-  static bool getHostByName(const char* hostname,
-                            std::function<void(const ip_addr_t*)> callback,
-                            uint32_t timeout);
+  static bool getHostByName(
+      const char* hostname, std::function<void(const ip_addr_t*)> callback,
+      uint32_t timeout = QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
 
   // Looks up a host by name and wait for the given timeout, in milliseconds.
   // This returns whether the given IP address object was filled in and there
@@ -64,8 +65,9 @@ class DNSClient final {
   // * No DNS server is set
   //
   // If this returns false and there was an error then errno will be set.
-  static bool getHostByName(const char* hostname, IPAddress& ip,
-                            uint32_t timeout);
+  static bool getHostByName(
+      const char* hostname, IPAddress& ip,
+      uint32_t timeout = QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
 
  private:
   // DNS request state.

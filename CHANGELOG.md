@@ -15,6 +15,8 @@ and this project adheres to
 * Improved code style and structure.
 * Made `NullPrint::availableForWrite()` return `INT_MAX` instead of zero.
 * Changed `EthernetUDP::stop()` to not clear the current packet.
+* Changed `DNSClient::hostByName()` functions to use a default value of
+  `QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT` for the timeout parameter.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
