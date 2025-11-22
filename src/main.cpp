@@ -68,7 +68,7 @@ void setup() {
 
   Ethernet.onAddressChanged([]() {
     IPAddress ip = Ethernet.localIP();
-    bool hasIP = (ip != INADDR_NONE);
+    const bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
       IPAddress subnet = Ethernet.subnetMask();
       IPAddress gw = Ethernet.gatewayIP();
@@ -169,12 +169,12 @@ static void clientConnect() {
 
   // Read the response
   while (client.connected()) {
-    int avail = client.available();
+    const int avail = client.available();
     if (avail <= 0) {
       continue;
     }
     for (int i = 0; i < avail; i++) {
-      int c = client.read();
+      const int c = client.read();
       switch (c) {
         case '\t':
           // Fallthrough
