@@ -176,8 +176,8 @@ void PixelPusherServer::loop() {
   size -= 4;
 
   // Possibly a PP command
-  if (size >= sizeof(kCommandMagic) &&
-      std::memcmp(data, kCommandMagic, sizeof(kCommandMagic)) == 0) {
+  if ((size >= sizeof(kCommandMagic)) &&
+      (std::memcmp(data, kCommandMagic, sizeof(kCommandMagic)) == 0)) {
     data += sizeof(kCommandMagic);
     size -= sizeof(kCommandMagic);
     if (size >= 1) {

@@ -77,7 +77,7 @@ EthernetServer server{kServerPort};
 // Program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   printf("Starting...\r\n");
@@ -136,7 +136,7 @@ void processMessage(const ClientState& state) {
           printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
           break;
       }
-    } else if (0x7f <= b && b < 0xa0) {
+    } else if ((0x7f <= b) && (b < 0xa0)) {
       printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
     } else {
       printf("%c", b);

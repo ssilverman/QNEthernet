@@ -55,7 +55,7 @@ static bool readResponse();
 // Main program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   Serial.println("Starting...");

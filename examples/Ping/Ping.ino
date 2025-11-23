@@ -92,7 +92,7 @@ static Ping ping{&replyCallback};
 // Program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   printf("Starting...\r\n");
@@ -146,7 +146,7 @@ void loop() {
     return;
   }
 
-  if (!replyReceived && pingCounter != 0) {
+  if (!replyReceived && (pingCounter != 0)) {
     printf("%u. Timeout\r\n", pingCounter);
   }
   replyReceived = false;

@@ -47,7 +47,7 @@ uint8_t buf[48];
 // Program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   printf("Starting...\r\n");
@@ -112,7 +112,7 @@ void setup() {
 // Main program loop.
 void loop() {
   int size = udp.parsePacket();
-  if (size != 48 && size != 68) {
+  if ((size != 48) && (size != 68)) {
     return;
   }
 
@@ -125,9 +125,9 @@ void loop() {
 
   // See: Section 5, "SNTP Client Operations"
   int mode = buf[0] & 0x07;
-  if (((buf[0] & 0xc0) == 0xc0) ||  // LI == 3 (Alarm condition)
-      (buf[1] == 0) ||              // Stratum == 0 (Kiss-o'-Death)
-      !(mode == 4 || mode == 5)) {  // Must be Server or Broadcast mode
+  if (((buf[0] & 0xc0) == 0xc0) ||      // LI == 3 (Alarm condition)
+      (buf[1] == 0) ||                  // Stratum == 0 (Kiss-o'-Death)
+      !((mode == 4) || (mode == 5))) {  // Must be Server or Broadcast mode
     printf("Discarding reply\r\n");
     return;
   }

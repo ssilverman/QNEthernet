@@ -182,7 +182,7 @@ void processConnection(ConnectionState& state,
 // Main program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   printf("Starting IPerfServer...\r\n");
@@ -268,20 +268,20 @@ void networkChanged(bool hasIP, bool linkState) {
 
 static inline bool isExtended(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
-         ((s.settings.settingsV1.flags &
-           static_cast<uint32_t>(Flags::kExtend)) != 0);
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kExtend)) != 0));
 }
 
 static inline bool isV1(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
-         ((s.settings.settingsV1.flags &
-           static_cast<uint32_t>(Flags::kVersion1)) != 0);
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kVersion1)) != 0));
 }
 
 static inline bool isRunNow(const ConnectionState& s) {
   return (s.settingsSize > 0) &&
-         ((s.settings.settingsV1.flags &
-           static_cast<uint32_t>(Flags::kRunNow)) != 0);
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kRunNow)) != 0));
 }
 
 static inline bool isClient(const ConnectionState& s) {
@@ -436,7 +436,7 @@ void send(ConnectionState& state) {
 // avail < size, zero if avail == size, or 1 if avail > size.
 static int compareAvail(int avail, size_t size) {
   size_t a = static_cast<size_t>(avail);
-  if (avail < 0 || a < size) {
+  if ((avail < 0) || (a < size)) {
     return -1;
   }
   if (a == size) {

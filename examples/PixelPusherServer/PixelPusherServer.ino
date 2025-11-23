@@ -68,7 +68,7 @@ void networkChanged(bool hasIP, bool linkState);
 // Program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
 

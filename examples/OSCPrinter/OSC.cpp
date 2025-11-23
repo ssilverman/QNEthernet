@@ -28,7 +28,7 @@ static void printOSCData(Print& out, const osc::LiteOSCParser& osc, int index);
 // Checks if the buffer starts as a valid bundle. If this returns true, then
 // the bundle starts at len+16.
 static bool isBundleStart(const uint8_t* buf, size_t len) {
-  if (len < 16 || (len & 0x03) != 0) {
+  if ((len < 16) || ((len & 0x03) != 0)) {
     return false;
   }
   if (!std::equal(&buf[0], &buf[8], "#bundle")) {
@@ -92,7 +92,7 @@ static void printBundle(Print& out, const uint8_t* b, int len) {
     if (index + size > len) {
       break;
     }
-    if (index < len && b[index] == '/') {
+    if ((index < len) && (b[index] == '/')) {
       if (osc.parse(&b[index], size)) {
         printMessage(out, osc);
         out.println();

@@ -146,7 +146,7 @@ static inline uint16_t scale16(uint16_t b, uint16_t scale) {
 
 void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t* pixels,
                                 size_t pixelsPerStrip) {
-  if (stripNum < 0 || numStrips_ <= stripNum) {
+  if ((stripNum < 0) || (numStrips_ <= stripNum)) {
     return;
   }
 

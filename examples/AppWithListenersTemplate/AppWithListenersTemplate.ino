@@ -79,7 +79,7 @@ void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp);
 void setup() {
   // Initialize Serial output
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   delay(1500);  // Give external monitors a chance to start
@@ -179,7 +179,7 @@ void setup() {
       startWithStatic = true;
     }
 
-    if (startWithStatic && staticIP == INADDR_NONE) {
+    if (startWithStatic && (staticIP == INADDR_NONE)) {
       printf("Error: No static IP\r\n");
       return;
     }
@@ -229,7 +229,7 @@ void setup() {
 // is considered ready if there's an IP address and the link and network
 // interface are up.
 void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp) {
-  networkReadyLatch = hasIP && hasLink && interfaceUp;
+  (networkReadyLatch = hasIP) && hasLink && interfaceUp;
 
   printf("Network is%s READY\r\n", networkReadyLatch ? "" : " NOT");
 
