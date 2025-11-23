@@ -124,7 +124,7 @@ static void test_entropy() {
     !QNETHERNET_USE_ENTROPY_LIB
   uint32_t r1 = LWIP_RAND();
   uint32_t r2 = LWIP_RAND();
-  TEST_ASSERT_FALSE_MESSAGE(r1 == 568509518 && r2 == 2577880531, "No entropy");
+  TEST_ASSERT_FALSE_MESSAGE((r1 == 568509518) && (r2 == 2577880531), "No entropy");
 #endif  // TEENSYDUINO && __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
 }
 
@@ -479,9 +479,9 @@ static void test_mdns() {
   TEST_ASSERT_TRUE_MESSAGE(MDNS.begin(kTestHostname), "Expected start success");
 
   TEST_ASSERT_MESSAGE(
-      std::strlen(MDNS.hostname()) == std::strlen(kTestHostname) &&
-          std::strncmp(MDNS.hostname(), kTestHostname,
-                       sizeof(kTestHostname)) == 0,
+      (std::strlen(MDNS.hostname()) == std::strlen(kTestHostname)) &&
+          (std::strncmp(MDNS.hostname(), kTestHostname,
+                        sizeof(kTestHostname)) == 0),
       "Expected matching hostname");
 
   TEST_ASSERT_FALSE_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
@@ -529,9 +529,9 @@ static void test_hostname() {
   TEST_ASSERT_EQUAL_MESSAGE(0, std::strlen(Ethernet.hostname()), "Expected no hostname");
   Ethernet.setHostname(kTestHostname);
   TEST_ASSERT_MESSAGE(
-      std::strlen(Ethernet.hostname()) == std::strlen(kTestHostname) &&
-          std::strncmp(Ethernet.hostname(), kTestHostname,
-                       sizeof(kTestHostname)) == 0,
+      (std::strlen(Ethernet.hostname()) == std::strlen(kTestHostname)) &&
+          (std::strncmp(Ethernet.hostname(), kTestHostname,
+                        sizeof(kTestHostname)) == 0),
       "Expected set hostname");
 }
 
@@ -564,7 +564,7 @@ static bool waitForLink() {
 // Tests seeing a link.
 static void test_link() {
   EthernetLinkStatus ls = Ethernet.linkStatus();
-  TEST_ASSERT_TRUE_MESSAGE(ls == LinkOFF || ls == Unknown, "Expected no link");
+  TEST_ASSERT_TRUE_MESSAGE((ls == LinkOFF) || (ls == Unknown), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected start success");
@@ -581,7 +581,7 @@ static void test_link() {
   Ethernet.end();
 
   EthernetLinkStatus status = Ethernet.linkStatus();
-  TEST_ASSERT_TRUE_MESSAGE(status == LinkOFF || status == Unknown, "Expected no link");
+  TEST_ASSERT_TRUE_MESSAGE((status == LinkOFF) || (status == Unknown), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 }
 
@@ -613,7 +613,7 @@ static void test_link_listener() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   TEST_MESSAGE("Waiting for link down...");
   uint32_t timer = millis();
-  while (Ethernet.linkState() && (millis() - timer) < kLinkTimeout) {
+  while (Ethernet.linkState() && ((millis() - timer) < kLinkTimeout)) {
     yield();
   }
   TEST_MESSAGE(format("Link down time: %" PRIu32 "ms", (millis() - timer)).data());
@@ -667,7 +667,7 @@ static void test_address_listener() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   // TEST_MESSAGE("Waiting for no-address...");
   // elapsedMillis timer;
-  // while ((Ethernet.localIP() != INADDR_NONE) && timer < kLinkTimeout) {
+  // while ((Ethernet.localIP() != INADDR_NONE) && (timer < kLinkTimeout)) {
   //   yield();
   // }
   // TEST_MESSAGE(format("No-address time: %" PRIu32 "ms",
@@ -702,7 +702,7 @@ static void test_interface_listener() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   // TEST_MESSAGE("Waiting for interface-down...");
   // elapsedMillis timer;
-  // while (Ethernet.interfaceStatus() && timer < kLinkTimeout) {
+  // while (Ethernet.interfaceStatus() && (timer < kLinkTimeout)) {
   //   yield();
   // }
   // TEST_MESSAGE(format("Interface-down time: %" PRIu32 "ms",
@@ -774,7 +774,7 @@ static void test_udp() {
     if (size < 0) {
       continue;
     }
-    if (size != 48 && size != 68) {
+    if ((size != 48) && (size != 68)) {
       TEST_MESSAGE("Discarding incorrect-sized reply");
       continue;
     }
@@ -783,9 +783,9 @@ static void test_udp() {
 
     // See: Section 5, "SNTP Client Operations"
     int mode = data[0] & 0x07;
-    if (((data[0] & 0xc0) == 0xc0) ||  // LI == 3 (Alarm condition)
-        (data[1] == 0) ||              // Stratum == 0 (Kiss-o'-Death)
-        !(mode == 4 || mode == 5)) {   // Must be Server or Broadcast mode
+    if (((data[0] & 0xc0) == 0xc0) ||     // LI == 3 (Alarm condition)
+        (data[1] == 0) ||                 // Stratum == 0 (Kiss-o'-Death)
+        !((mode == 4) || (mode == 5))) {  // Must be Server or Broadcast mode
       TEST_MESSAGE("Discarding SNTP reply");
       continue;
     }
@@ -862,7 +862,7 @@ static void test_udp_receive_queueing() {
 
   // Expect to receive only the last packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 2, "Expected packet 2 data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 2), "Expected packet 2 data");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
@@ -901,13 +901,13 @@ static void test_udp_receive_queueing() {
 
   // Expect to receive both packets
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 3 with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 3, "Expected packet 3 data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 3), "Expected packet 3 data");
   TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueSize(), "Expected queue size 1");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
   TEST_ASSERT_EQUAL_MESSAGE(4, udp->totalReceiveCount(), "Expected total 4");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet 4 with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == 4, "Expected packet 4 data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 4), "Expected packet 4 data");
   TEST_ASSERT_EQUAL_MESSAGE(2, udp->receiveQueueCapacity(), "Expected queue capacity 2");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
@@ -938,7 +938,7 @@ static void test_udp_receive_timestamp() {
 
   // Test that we actually received the packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
 
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, udp->receivedTimestamp(), "Expected valid timestamp");
 
@@ -1045,7 +1045,7 @@ static void test_udp_diffserv() {
 
   // Test that we actually received the packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->receivedDiffServ(), "Expected matching DiffServ");
 
   udp->stop();
@@ -1074,7 +1074,7 @@ static void test_udp_ttl() {
 
   // Test that we actually received the packet
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE(udp->size() > 0 && udp->data()[0] == b, "Expected packet data");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->receivedTTL(), "Expected matching TTL");
 
   udp->stop();
@@ -1313,7 +1313,7 @@ static void test_client_wait_for_disconnect() {
   t = millis();
   client->stop();
   t = millis() - t;
-  TEST_ASSERT_MESSAGE(!static_cast<bool>(*client) && t < kConnectTimeout,
+  TEST_ASSERT_MESSAGE(!static_cast<bool>(*client) && (t < kConnectTimeout),
                       "Expected disconnected before timeout");
   TEST_MESSAGE(format("Stop time: %" PRIu32 "ms", t).data());
 }
@@ -1599,7 +1599,7 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
                             "Expected frame with size 15");
   TEST_ASSERT_MESSAGE(
-      EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 2,
+      (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 2),
       "Expected frame 2 data");
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected queue capacity 1");
@@ -1659,7 +1659,7 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
                             "Expected frame 3 with size 15");
   TEST_ASSERT_MESSAGE(
-      EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 3,
+      (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 3),
       "Expected frame 3 data");
   TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
                             "Expected queue capacity 2");
@@ -1672,7 +1672,7 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
                             "Expected frame 4 with size 1");
   TEST_ASSERT_MESSAGE(
-      EthernetFrame.size() >= 15 && EthernetFrame.data()[14] == 4,
+      (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 4),
       "Expected frame 4 data");
   TEST_ASSERT_EQUAL_MESSAGE(2, EthernetFrame.receiveQueueCapacity(),
                             "Expected queue capacity 2");
@@ -1700,7 +1700,7 @@ static void test_ping() {
 // Main program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
 

@@ -113,7 +113,7 @@ static void test_NullPrint() {
 // Main program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
 
@@ -157,7 +157,7 @@ int _write(const int file, const void* const buf, const size_t len) {
       errno = EBADF;
       return -1;
     default:
-      if (file != kFD || !s_outputIsOpen) {
+      if ((file != kFD) || !s_outputIsOpen) {
         errno = EBADF;
         return -1;
       }
@@ -188,7 +188,7 @@ int _open(const char *const path, const int flags, const int mode) {
 }
 
 int _close(const int fd) {
-  if (fd != kFD || !s_outputIsOpen) {
+  if ((fd != kFD) || !s_outputIsOpen) {
     errno = EBADF;
     return -1;
   }
