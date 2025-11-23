@@ -32,7 +32,7 @@ void DNSClient::dnsFoundFunc(const char* const name,
   }
 
   const auto req = static_cast<const Request*>(callback_arg);
-  if (req->timeout == 0 || sys_now() - req->startTime < req->timeout) {
+  if ((req->timeout == 0) || ((sys_now() - req->startTime) < req->timeout)) {
     req->callback(ipaddr);
   }
   delete req;
@@ -40,7 +40,7 @@ void DNSClient::dnsFoundFunc(const char* const name,
 
 bool DNSClient::setServer(const int index, const IPAddress& ip) {
 #if LWIP_IPV4
-  if (index < 0 || maxServers() <= index) {
+  if ((index < 0) || (maxServers() <= index)) {
     return false;
   }
   const ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
@@ -56,7 +56,7 @@ bool DNSClient::setServer(const int index, const IPAddress& ip) {
 
 IPAddress DNSClient::getServer(const int index) {
 #if LWIP_IPV4
-  if (index < 0 || maxServers() <= index) {
+  if ((index < 0) || (maxServers() <= index)) {
     return INADDR_NONE;
   }
   return util::ip_addr_get_ip4_uint32(dns_getserver(index));
@@ -71,7 +71,7 @@ bool DNSClient::getHostByName(
     const char* const hostname,
     const std::function<void(const ip_addr_t*)> callback,
     const uint32_t timeout) {
-  if (callback == nullptr || hostname == nullptr) {
+  if ((callback == nullptr) || (hostname == nullptr)) {
     errno = EINVAL;
     return false;
   }
@@ -120,7 +120,7 @@ bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
   }
 
   const uint32_t t = sys_now();
-  while (!lookupDone && (sys_now() - t) < timeout) {
+  while (!lookupDone && ((sys_now() - t) < timeout)) {
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();

@@ -27,7 +27,7 @@ static volatile bool networkChanged = false;
 // Main program setup.
 void setup() {
   Serial.begin(115200);
-  while (!Serial && millis() < 4000) {
+  while (!Serial && (millis() < 4000)) {
     // Wait for Serial
   }
   printf("Waiting for %" PRIu32 "ms...\r\n", kStartupDelay);
@@ -183,7 +183,7 @@ static void clientConnect() {
           printf("%c", c);
           break;
         default:
-          if (c < ' ' || 0x7f <= c) {
+          if ((c < ' ') || (0x7f <= c)) {
             printf("<%02x>", c);
           } else {
             printf("%c", c);

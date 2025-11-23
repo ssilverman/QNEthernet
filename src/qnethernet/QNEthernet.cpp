@@ -95,7 +95,7 @@ void EthernetClass::netifEventFunc(
   }
 
   if (reason & LWIP_NSC_LINK_CHANGED) {
-    if (Ethernet.linkStateCB_ != nullptr && args != nullptr) {
+    if ((Ethernet.linkStateCB_ != nullptr) && (args != nullptr)) {
       Ethernet.linkStateCB_(args->link_changed.state != 0);
     }
   }
@@ -112,7 +112,7 @@ void EthernetClass::netifEventFunc(
 #endif  // LWIP_IPV4
 
   if (reason & LWIP_NSC_STATUS_CHANGED) {
-    if (Ethernet.interfaceStatusCB_ != nullptr && args != nullptr) {
+    if ((Ethernet.interfaceStatusCB_ != nullptr) && (args != nullptr)) {
       Ethernet.interfaceStatusCB_(args->status_changed.state != 0);
     }
   }
@@ -372,7 +372,7 @@ bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
 
   const uint32_t t = sys_now();
   while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
-         (sys_now() - t) < timeout) {
+         ((sys_now() - t) < timeout)) {
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
@@ -393,7 +393,7 @@ bool EthernetClass::waitForLink(const uint32_t timeout) const {
   }
 
   const uint32_t t = sys_now();
-  while (!netif_is_link_up(netif_) && (sys_now() - t) < timeout) {
+  while (!netif_is_link_up(netif_) && ((sys_now() - t) < timeout)) {
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();

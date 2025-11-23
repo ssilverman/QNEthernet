@@ -546,7 +546,8 @@ FLASHMEM static void configure_rmii_pins(void) {
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
 FLASHMEM static void init_phy(void) {
-  if (s_initState != kInitStateStart && s_initState != kInitStateHasHardware) {
+  if ((s_initState != kInitStateStart) &&
+      (s_initState != kInitStateHasHardware)) {
     return;
   }
 
@@ -923,7 +924,9 @@ FLASHMEM bool driver_init(void) {
              ;
 
   ENET_TACC = 0
-#if CHECKSUM_GEN_UDP == 0 || CHECKSUM_GEN_TCP == 0 || CHECKSUM_GEN_ICMP == 0
+#if (CHECKSUM_GEN_UDP == 0) || \
+    (CHECKSUM_GEN_TCP == 0) || \
+    (CHECKSUM_GEN_ICMP == 0)
       | ENET_TACC_PROCHK  // Insert protocol checksum
 #endif  // not(Generate all checksums)
 #if CHECKSUM_GEN_IP == 0
@@ -939,9 +942,9 @@ FLASHMEM bool driver_init(void) {
       | ENET_RACC_SHIFT16
 #endif  // ETH_PAD_SIZE == 2
       | ENET_RACC_LINEDIS  // Discard bad frames
-#if CHECKSUM_CHECK_UDP == 0 && \
-    CHECKSUM_CHECK_TCP == 0 && \
-    CHECKSUM_CHECK_ICMP == 0
+#if (CHECKSUM_CHECK_UDP == 0) && \
+    (CHECKSUM_CHECK_TCP == 0) && \
+    (CHECKSUM_CHECK_ICMP == 0)
       | ENET_RACC_PRODIS   // Discard frames with incorrect protocol checksum
                            // Requires RSFL == 0
 #endif  // not(Check any checksums)

@@ -29,7 +29,7 @@ size_t writeFully(Print& p, const void* const buf, const size_t size,
     return size;
   }
 
-  while (sizeRem > 0 && !breakf()) {
+  while ((sizeRem > 0) && !breakf()) {
     const size_t written = p.write(pBuf, sizeRem);
     sizeRem -= written;
     pBuf += written;
@@ -89,7 +89,7 @@ void StdioPrint::flush() {
 }
 
 void StdioPrint::checkAndClearErr() {
-  if (std::ferror(stream_) != 0 && getWriteError() == 0) {
+  if ((std::ferror(stream_) != 0) && (getWriteError() == 0)) {
     std::clearerr(stream_);
   }
 }

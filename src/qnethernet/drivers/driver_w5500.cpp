@@ -54,7 +54,7 @@ static void read(uint16_t addr, uint8_t block, void* buf, size_t len);
 // Represents a specific register in a specific block.
 template <typename T>
 struct Reg {
-  static_assert(sizeof(T) == 1 || sizeof(T) == 2);
+  static_assert((sizeof(T) == 1) || (sizeof(T) == 2));
 
   uint16_t addr;
   uint8_t block;
@@ -616,7 +616,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   uint16_t frameLen;
   read(ptr, blocks::kSocketRx, &frameLen, 2);
   frameLen = ntohs(frameLen);
-  if (frameLen < 2 || size < frameLen) {
+  if ((frameLen < 2) || (size < frameLen)) {
     LINK_STATS_INC(link.lenerr);
 
     // Recommendation is to close and then re-open the socket

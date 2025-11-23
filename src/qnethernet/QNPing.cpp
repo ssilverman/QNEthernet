@@ -29,10 +29,10 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
   // Ensure the PCB matches and the packet is the right type and size
   Ping* const ping = static_cast<Ping*>(arg);
 
-  if (ping->pcb_ != pcb ||
-      p->tot_len < IP_HLEN + kEchoHdrSize ||
-      pbuf_get_at(p, IP_HLEN) != ICMP_ER ||  // Type
-      pbuf_get_at(p, IP_HLEN + 1) != 0) {    // Code
+  if ((ping->pcb_ != pcb) ||
+      (p->tot_len < IP_HLEN + kEchoHdrSize) ||
+      (pbuf_get_at(p, IP_HLEN) != ICMP_ER) ||  // Type
+      (pbuf_get_at(p, IP_HLEN + 1) != 0)) {    // Code
     return 0;  // Don't eat the packet
   }
 
@@ -141,7 +141,7 @@ bool Ping::send(const PingData& req) {
   if (err != ERR_OK) {
     goto send_err;
   }
-  if (req.data != nullptr && req.dataSize != 0) {
+  if ((req.data != nullptr) && (req.dataSize != 0)) {
     err = pbuf_take_at(p, req.data, req.dataSize, sizeof(echo));
     if (err != ERR_OK) {
       goto send_err;

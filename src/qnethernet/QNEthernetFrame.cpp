@@ -59,8 +59,8 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   frame.receivedTimestamp = timestamp;
 
   // Increment the size
-  if (EthernetFrame.inBufSize_ != 0 &&
-      EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_) {
+  if ((EthernetFrame.inBufSize_ != 0) &&
+      (EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_)) {
     // Full
     EthernetFrame.inBufTail_ =
         (EthernetFrame.inBufTail_ + 1) % EthernetFrame.inBuf_.size();
@@ -129,8 +129,8 @@ int EthernetFrameClass::parseFrame() {
 }
 
 inline bool EthernetFrameClass::isAvailable() const {
-  return (0 <= framePos_ &&
-          static_cast<size_t>(framePos_) < frame_.data.size());
+  return ((0 <= framePos_) &&
+          (static_cast<size_t>(framePos_) < frame_.data.size()));
 }
 
 int EthernetFrameClass::available() {
@@ -148,7 +148,7 @@ int EthernetFrameClass::read() {
 }
 
 int EthernetFrameClass::read(void* const buffer, const size_t len) {
-  if (len == 0 || !isAvailable()) {
+  if ((len == 0) || !isAvailable()) {
     return 0;
   }
   const size_t actualLen = std::min(len, frame_.data.size() - framePos_);
@@ -276,7 +276,7 @@ bool EthernetFrameClass::send(const void* const frame, const size_t len) const {
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {
-  if (!outFrame_.has_value || availableForWrite() <= 0) {
+  if (!outFrame_.has_value || (availableForWrite() <= 0)) {
     return 0;
   }
   outFrame_.value.data.push_back(b);
@@ -286,7 +286,7 @@ size_t EthernetFrameClass::write(const uint8_t b) {
 size_t EthernetFrameClass::write(const uint8_t* const buffer,
                                  const size_t size) {
   const int avail = availableForWrite();
-  if (!outFrame_.has_value || size == 0 || avail <= 0) {
+  if (!outFrame_.has_value || (size == 0) || (avail <= 0)) {
     return 0;
   }
 

@@ -126,14 +126,14 @@ bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
   if (wait) {
     const uint32_t t = sys_now();
     // NOTE: conn_ could be set to NULL somewhere during the yield
-    while (conn_ != nullptr && !conn_->connected &&
-           (sys_now() - t) < connTimeout_) {
+    while ((conn_ != nullptr) && !conn_->connected &&
+           ((sys_now() - t) < connTimeout_)) {
       yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
       Ethernet.loop();
 #endif  // !QNETHERNET_DO_LOOP_IN_YIELD
     }
-    if (conn_ == nullptr || !conn_->connected) {
+    if ((conn_ == nullptr) || !conn_->connected) {
       close(false);
       // TIMED_OUT (-1)
       return false;
@@ -145,7 +145,7 @@ bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
 }
 
 bool EthernetClient::connecting() {
-  if (conn_ == nullptr || !pendingConnect_) {
+  if ((conn_ == nullptr) || !pendingConnect_) {
     return false;
   }
   return watchPendingConnect() && !conn_->connected;
@@ -247,12 +247,12 @@ void EthernetClient::close(const bool wait) {
       conn_->connected = false;
       state = nullptr;
 #else
-      if (err == ERR_OK && wait) {
+      if ((err == ERR_OK) && wait) {
         const uint32_t t = sys_now();
         // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
-        while (conn_ != nullptr && conn_->connected &&
-               (sys_now() - t) < connTimeout_) {
+        while ((conn_ != nullptr) && conn_->connected &&
+               ((sys_now() - t) < connTimeout_)) {
           yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
           Ethernet.loop();
@@ -355,7 +355,7 @@ bool EthernetClient::getAddrInfo(const bool local,
 }
 
 uintptr_t EthernetClient::connectionId() {
-  if (conn_ != nullptr && conn_->connected) {
+  if ((conn_ != nullptr) && conn_->connected) {
     const auto& state = conn_->state;
     if (state != nullptr) {
       return reinterpret_cast<uintptr_t>(state->pcb);
@@ -473,7 +473,7 @@ void EthernetClient::flush() {
 static inline bool isAvailable(
     const std::unique_ptr<internal::ConnectionState>& state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
-         (/*0 <= state->bufPos &&*/ state->bufPos < state->buf.size());
+         (/*(0 <= state->bufPos) &&*/ (state->bufPos < state->buf.size()));
 }
 
 #define CHECK_STATE(R)           \

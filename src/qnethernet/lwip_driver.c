@@ -252,13 +252,13 @@ void enet_poll(void) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool enet_output_frame(const void *const frame, const size_t len) {
-  if (frame == NULL || len < (6 + 6 + 2)) {  // dst + src + len/type
+  if ((frame == NULL) || (len < (6 + 6 + 2))) {  // dst + src + len/type
     return false;
   }
 
   // Check length depending on VLAN
-  if (((const uint8_t *)frame)[12] == (uint8_t)(ETHTYPE_VLAN >> 8) &&
-      ((const uint8_t *)frame)[13] == (uint8_t)(ETHTYPE_VLAN)) {
+  if ((((const uint8_t *)frame)[12] == (uint8_t)(ETHTYPE_VLAN >> 8)) &&
+      (((const uint8_t *)frame)[13] == (uint8_t)(ETHTYPE_VLAN))) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
@@ -267,14 +267,15 @@ bool enet_output_frame(const void *const frame, const size_t len) {
     }
   } else {
     // Don't include 4-byte FCS and VLAN
-    if ((MAX_FRAME_LEN < (4 + 4)) || (len > MAX_FRAME_LEN - (4 + 4))) {
+    if ((MAX_FRAME_LEN < (4 + 4)) || (len > (MAX_FRAME_LEN - (4 + 4)))) {
       return false;
     }
   }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
   // Check for a loopback frame
-  if (memcmp(frame, s_mac, 6) == 0 || memcmp(frame, kBroadcastMAC, 6) == 0) {
+  if ((memcmp(frame, s_mac, 6) == 0) ||
+      (memcmp(frame, kBroadcastMAC, 6) == 0)) {
     struct pbuf *const p = pbuf_alloc(PBUF_RAW, len + ETH_PAD_SIZE, PBUF_POOL);
     if (p) {
       pbuf_take_at(p, frame, len, ETH_PAD_SIZE);

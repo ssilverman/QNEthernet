@@ -76,8 +76,8 @@ bool MDNSClass::begin(const char* const hostname) {
   }
 
   if (netifAdded) {
-    if (std::strlen(hostname_) == std::strlen(hostname) &&
-        std::strncmp(hostname_, hostname, std::strlen(hostname_)) == 0) {
+    if ((std::strlen(hostname_) == std::strlen(hostname)) &&
+        (std::strncmp(hostname_, hostname, std::strlen(hostname_)) == 0)) {
       return true;
     }
     const err_t err = mdns_resp_rename_netif(netif_, hostname);
@@ -160,7 +160,7 @@ bool MDNSClass::addService(const char* const name, const char* const type,
   const int8_t slot =
       mdns_resp_add_service(netif_, name, type, proto, port, &srv_txt,
                             reinterpret_cast<void*>(getTXTFunc));
-  if (slot < 0 || maxServices() <= slot) {
+  if ((slot < 0) || (maxServices() <= slot)) {
     if (slot >= 0) {
       // Remove if the addition was successful but we couldn't add it
       mdns_resp_del_service(netif_, slot);

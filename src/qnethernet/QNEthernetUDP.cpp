@@ -74,7 +74,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   packet.ttl = pcb->ttl;
 
   // Increment the size
-  if (udp->inBufSize_ != 0 && udp->inBufTail_ == udp->inBufHead_) {
+  if ((udp->inBufSize_ != 0) && (udp->inBufTail_ == udp->inBufHead_)) {
     // Full
     udp->inBufTail_ = (udp->inBufTail_ + 1) % udp->inBuf_.size();
     udp->droppedReceiveCount_++;
@@ -156,7 +156,7 @@ bool EthernetUDP::tryCreatePCB() {
 
 bool EthernetUDP::begin(const uint16_t localPort, const bool reuse) {
   if (listening_) {
-    if (pcb_->local_port == localPort && listenReuse_ == reuse) {
+    if ((pcb_->local_port == localPort) && (listenReuse_ == reuse)) {
       return true;
     }
     stop();
@@ -331,7 +331,7 @@ int EthernetUDP::read() {
 }
 
 int EthernetUDP::read(uint8_t* const buffer, const size_t len) {
-  if (len == 0 || !isAvailable()) {
+  if ((len == 0) || !isAvailable()) {
     return 0;
   }
   const size_t actualLen = std::min(len, packet_.data.size() - packetPos_);
@@ -435,7 +435,7 @@ int EthernetUDP::endPacket() {
   // pbuf_take() considers NULL data an error
   err_t err;
   if (!op.data.empty() &&
-      (err = pbuf_take(p, op.data.data(), op.data.size())) != ERR_OK) {
+      ((err = pbuf_take(p, op.data.data(), op.data.size())) != ERR_OK)) {
     pbuf_free(p);
 
     op.clear();
@@ -521,7 +521,7 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
 
   // pbuf_take() considers NULL data an error
   err_t err;
-  if (len != 0 && (err = pbuf_take(p, data, len)) != ERR_OK) {
+  if ((len != 0) && ((err = pbuf_take(p, data, len)) != ERR_OK)) {
     pbuf_free(p);
     errno = err_to_errno(err);
     return false;
@@ -562,7 +562,7 @@ size_t EthernetUDP::write(const uint8_t b) {
 }
 
 size_t EthernetUDP::write(const uint8_t* const buffer, const size_t size) {
-  if (!outPacket_.has_value || size == 0) {
+  if (!outPacket_.has_value || (size == 0)) {
     return 0;
   }
   const size_t actualSize =
