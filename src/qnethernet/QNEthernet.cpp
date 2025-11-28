@@ -125,8 +125,8 @@ FLASHMEM EthernetClass::~EthernetClass() {
 const uint8_t* EthernetClass::macAddress() {
   // First ensure there's a value
   if (!mac_.has_value) {
-    mac_.has_value = true;
     enet_get_system_mac(mac_.value);
+    mac_.has_value = true;
   }
   return mac_.value;
 }
@@ -144,8 +144,8 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
     enet_get_system_mac(m);
     mac = m;
     if (!mac_.has_value) {  // Take the opportunity to fill this in if we need
-      mac_.has_value = true;
       std::copy_n(&m[0], kMACAddrSize, &mac_.value[0]);
+      mac_.has_value = true;
     }
   }
 
@@ -155,8 +155,8 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
     return;
   }
 
-  mac_.has_value = true;
   std::copy_n(mac, kMACAddrSize, mac_.value);
+  mac_.has_value = true;
 
   if (netif_ == nullptr) {
     return;
@@ -441,8 +441,8 @@ bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
     enet_get_system_mac(m1);
     mac = m1;
     if (!mac_.has_value) {  // Take the opportunity to fill this in if we need
-      mac_.has_value = true;
       std::copy_n(&m1[0], kMACAddrSize, &mac_.value[0]);
+      mac_.has_value = true;
     }
   }
   std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address

@@ -408,10 +408,10 @@ bool EthernetUDP::beginPacket(const ip_addr_t* const ipaddr,
   //   outPacket_.data.reserve(kMaxPayloadSize);
   // }
 
-  outPacket_.has_value = true;
   outPacket_.value.addr = *ipaddr;
   outPacket_.value.port = port;
   outPacket_.value.data.clear();
+  outPacket_.has_value = true;
   return true;
 }
 
@@ -424,8 +424,8 @@ int EthernetUDP::endPacket() {
   // Note: Use PBUF_RAM for TX
   struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, op.data.size(), PBUF_RAM);
   if (p == nullptr) {
-    op.clear();
     outPacket_.has_value = false;
+    op.clear();
 
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
@@ -438,8 +438,8 @@ int EthernetUDP::endPacket() {
       ((err = pbuf_take(p, op.data.data(), op.data.size())) != ERR_OK)) {
     pbuf_free(p);
 
-    op.clear();
     outPacket_.has_value = false;
+    op.clear();
 
     Ethernet.loop();  // Allow the stack to move along
     errno = err_to_errno(err);
@@ -460,8 +460,8 @@ int EthernetUDP::endPacket() {
     }
   } while (true);
 
-  op.clear();
   outPacket_.has_value = false;
+  op.clear();
 
   pbuf_free(p);
 

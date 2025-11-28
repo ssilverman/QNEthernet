@@ -88,8 +88,8 @@ void EthernetFrameClass::Frame::clear() {
 void EthernetFrameClass::clear() {
   // Outgoing
   if (outFrame_.has_value) {
-    outFrame_.value.clear();
     outFrame_.has_value = false;
+    outFrame_.value.clear();
   }
 
   // Incoming
@@ -229,13 +229,13 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
 
 void EthernetFrameClass::beginFrame() {
   // Don't reserve memory because that might exhaust the heap
-  // outFrame_.has_value = true;
   // if (outFrame_.value.data.capacity() < maxFrameLen()) {
   //   outFrame_.value.data.reserve(maxFrameLen());
   // }
+  // outFrame_.has_value = true;
 
-  outFrame_.has_value = true;
   outFrame_.value.data.clear();
+  outFrame_.has_value = true;
 }
 
 void EthernetFrameClass::beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
@@ -266,8 +266,8 @@ bool EthernetFrameClass::endFrame() {
 
   const bool retval = enet_output_frame(outFrame_.value.data.data(),
                                         outFrame_.value.data.size());
-  outFrame_.value.clear();
   outFrame_.has_value = false;
+  outFrame_.value.clear();
   return retval;
 }
 
