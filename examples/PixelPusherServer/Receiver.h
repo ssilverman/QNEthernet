@@ -19,9 +19,7 @@ class Receiver {
 
   // Avoid slicing by deleting copy
   Receiver(const Receiver&) = delete;
-  Receiver(Receiver&&) = default;
   Receiver& operator=(const Receiver&) = delete;
-  Receiver& operator=(Receiver&&) = default;
 
   // Initializes the receiver. This performs tasks that must be done
   // after the system is booted and is meant to be called from setup()
@@ -57,4 +55,8 @@ class Receiver {
   // Executes periodically whenever PixelPusherServer::loop()
   // is called.
   virtual void loop() {}
+
+ protected:
+  Receiver(Receiver&&) = default;
+  Receiver& operator=(Receiver&&) = default;
 };

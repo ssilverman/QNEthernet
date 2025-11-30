@@ -74,9 +74,7 @@ class StdioPrint : public Print {
 
   // See: https://en.cppreference.com/w/cpp/language/rule_of_three
   StdioPrint(const StdioPrint&) = delete;
-  StdioPrint(StdioPrint&&) = default;
   StdioPrint& operator=(const StdioPrint&) = delete;
-  StdioPrint& operator=(StdioPrint&&) = default;
 
   size_t write(uint8_t b) override;
   size_t write(const uint8_t* buffer, size_t size) override;
@@ -84,6 +82,9 @@ class StdioPrint : public Print {
   void flush() override;
 
  protected:
+  StdioPrint(StdioPrint&&) = default;
+  StdioPrint& operator=(StdioPrint&&) = default;
+
   std::FILE* stream() const {
     return stream_;
   }
