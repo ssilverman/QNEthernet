@@ -83,10 +83,14 @@ icmp_input(struct pbuf *p, struct netif *inp)
 #ifdef LWIP_DEBUG
   u8_t code;
 #endif /* LWIP_DEBUG */
-  struct icmp_echo_hdr *iecho;
-  const struct ip_hdr *iphdr_in;
+#if QNETHERNET_ENABLE_PING_REPLY
+  struct icmp_echo_hdr* iecho;
+#endif /* QNETHERNET_ENABLE_PING_REPLY */
+  const struct ip_hdr* iphdr_in;
   u16_t hlen;
-  const ip4_addr_t *src;
+#if QNETHERNET_ENABLE_PING_REPLY
+  const ip4_addr_t* src;
+#endif /* QNETHERNET_ENABLE_PING_REPLY */
 
   ICMP_STATS_INC(icmp.recv);
   MIB2_STATS_INC(mib2.icmpinmsgs);
@@ -116,6 +120,7 @@ icmp_input(struct pbuf *p, struct netif *inp)
       break;
     case ICMP_ECHO:
       MIB2_STATS_INC(mib2.icmpinechos);
+#if QNETHERNET_ENABLE_PING_REPLY
       src = ip4_current_dest_addr();
       /* multicast destination address? */
       if (ip4_addr_ismulticast(ip4_current_dest_addr())) {
@@ -254,6 +259,7 @@ icmp_input(struct pbuf *p, struct netif *inp)
           LWIP_DEBUGF(ICMP_DEBUG, ("icmp_input: ip_output_if returned an error: %s\n", lwip_strerr(ret)));
         }
       }
+#endif /* QNETHERNET_ENABLE_PING_REPLY */
       break;
     default:
       if (type == ICMP_DUR) {
@@ -287,6 +293,7 @@ lenerr:
   ICMP_STATS_INC(icmp.lenerr);
   MIB2_STATS_INC(mib2.icmpinerrors);
   return;
+#if QNETHERNET_ENABLE_PING_REPLY
 #if LWIP_ICMP_ECHO_CHECK_INPUT_PBUF_LEN || !LWIP_MULTICAST_PING || !LWIP_BROADCAST_PING
 icmperr:
   pbuf_free(p);
@@ -294,6 +301,7 @@ icmperr:
   MIB2_STATS_INC(mib2.icmpinerrors);
   return;
 #endif /* LWIP_ICMP_ECHO_CHECK_INPUT_PBUF_LEN || !LWIP_MULTICAST_PING || !LWIP_BROADCAST_PING */
+#endif /* QNETHERNET_ENABLE_PING_REPLY */
 }
 
 /**
