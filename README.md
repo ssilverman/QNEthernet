@@ -597,8 +597,8 @@ The `Ping` class provides a way to send ICMP echo requests and receive replies.
 See also: [`Ethernet`](#ethernet)'s `ping(host[, ttl])`
 
 How to use:
-1. Enable ping support (or raw IP support) with the `QNETHERNET_ENABLE_PING`
-   configuration macro (or `LWIP_RAW`).
+1. Enable ping send support (or raw IP support) with the
+   `QNETHERNET_ENABLE_PING_SEND` configuration macro (or `LWIP_RAW`).
 2. Create an instance of the `Ping` class.
 3. Provide a reply callback function either in the constructor or with a call
    to `setCallback(f)`. (See the `QNPing.h` header for more details.)
@@ -1807,7 +1807,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_CUSTOM_WRITE`                   | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                         |
 | `QNETHERNET_DO_LOOP_IN_YIELD`               | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                   |
 | `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Enables default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
-| `QNETHERNET_ENABLE_PING`                    | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                           |
+| `QNETHERNET_ENABLE_PING_SEND`               | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                           |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Disabled | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |

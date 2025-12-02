@@ -81,9 +81,9 @@
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
 #endif
 
-// Enables ping support. (Includes raw IP layer support.)
-#ifndef QNETHERNET_ENABLE_PING
-#define QNETHERNET_ENABLE_PING 0
+// Enables ping send support. (Includes raw IP layer support.)
+#ifndef QNETHERNET_ENABLE_PING_SEND
+#define QNETHERNET_ENABLE_PING_SEND 0
 #endif
 
 // Enables promiscuous mode.

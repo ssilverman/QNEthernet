@@ -18,6 +18,8 @@ and this project adheres to
 * Changed `DNSClient::hostByName()` functions to use a default value of
   `QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT` for the timeout parameter.
 * Improved _SimplePing_ example to catch DNS lookup errors.
+* Changed ping send enable macro to `QNETHERNET_ENABLE_PING_SEND`
+  from `QNETHERNET_ENABLE_PING`.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.

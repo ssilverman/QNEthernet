@@ -3,7 +3,7 @@
 
 // SimplePing demonstrates a simpler Ping program.
 //
-// In order to use this example, define the QNETHERNET_ENABLE_PING macro.
+// In order to use this example, define the QNETHERNET_ENABLE_PING_SEND macro.
 //
 // Note: the configuration macros must either be defined in the
 //       project build options or in the qnethernet_opts.h
