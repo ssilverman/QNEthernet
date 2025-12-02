@@ -2020,9 +2020,9 @@ _QNEthernet_ library.
 17. `SO_REUSEADDR` support (see [`EthernetServer`](#ethernetserver)
     and [`EthernetUDP`](#ethernetudp))
 18. [`TCP_NODELAY`](#tcp-socket-options) support
-19. Configuration via [Configuration macros](#configuration-macros)
+19. Configuration via [configuration macros](#configuration-macros)
 20. Non-blocking TCP connections
-21. Teensy platform: Internal [Entropy generation](#entropy-generation)
+21. Teensy platform: Internal [entropy generation](#entropy-generation)
     functions to avoid the _Entropy_ lib dependency; this can be disabled with a
     configuration macro
 22. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
