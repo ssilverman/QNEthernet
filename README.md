@@ -83,6 +83,7 @@ lwIP release.
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
 22. [Security features](#security-features)
     1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
+    2. [Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
 23. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
@@ -612,6 +613,9 @@ in _qnethernet_opts.h_.
 The above describes how to send ICMP echo requests. It is also possible to
 disable echo replies so that the stack does not respond to echo requests. Simply
 set the `QNETHERNET_ENABLE_PING_REPLY` configuration macro to zero.
+
+See also:
+[Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
 
 ### Print utilities
 
@@ -1793,6 +1797,13 @@ The ISN is calculated as follows:
 
 This feature can be enabled or disabled with the
 [`QNETHERNET_ENABLE_SECURE_TCP_ISN` macro](#configuration-macros).
+
+### Disabling ICMP echo (ping) replies
+
+The stack can be configured to not reply to ICMP echo requests. To do this, set
+the `QNETHERNET_ENABLE_PING_REPLY` to zero.
+
+See also: [Ping reply](#ping-reply)
 
 ## Configuration macros
 
