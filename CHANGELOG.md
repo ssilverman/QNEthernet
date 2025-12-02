@@ -17,6 +17,7 @@ and this project adheres to
 * Changed `EthernetUDP::stop()` to not clear the current packet.
 * Changed `DNSClient::hostByName()` functions to use a default value of
   `QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT` for the timeout parameter.
+* Improved _SimplePing_ example to catch DNS lookup errors.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.

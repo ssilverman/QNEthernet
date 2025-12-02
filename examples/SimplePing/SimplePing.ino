@@ -29,8 +29,10 @@ constexpr char kHostname[]{"arduino.cc"};
 //  Program State
 // --------------------------------------------------------------------------
 
-static elapsedMillis pingTimer = kPingInterval;  // Start expired
+static bool running = false;  // Whether the program is still running
 
+static IPAddress hostIP;
+static elapsedMillis pingTimer = kPingInterval;  // Start expired
 static unsigned int pingCounter = 0;
 
 // --------------------------------------------------------------------------
@@ -70,19 +72,28 @@ void setup() {
   printf("    DNS         = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   printf("\r\n");
-  printf("Pinging %s...\r\n", kHostname);
+
+  if (!Ethernet.hostByName(kHostname, hostIP)) {
+    printf("Failed to look up host (%s)\r\n", kHostname);
+    return;
+  }
+
+  printf("Pinging %s (%u.%u.%u.%u)...\r\n",
+         kHostname, hostIP[0], hostIP[1], hostIP[2], hostIP[3]);
+
+  running = true;
 }
 
 // Main program loop.
 void loop() {
-  if (pingTimer < kPingInterval) {
+  if (!running || (pingTimer < kPingInterval)) {
     return;
   }
 
   pingCounter++;
 
   printf("%u. ", pingCounter);
-  long rtt = Ethernet.ping(kHostname);
+  long rtt = Ethernet.ping(hostIP);
   if (rtt >= 0) {
     printf("Time = %ld ms\r\n", rtt);
     pingTimer = rtt;
