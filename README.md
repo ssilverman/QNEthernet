@@ -34,6 +34,7 @@ lwIP release.
    6. [`MDNS`](#mdns)
    7. [`DNSClient`](#dnsclient)
    8. [Ping](#ping)
+      1. [Ping reply](#ping-reply)
    9. [Print utilities](#print-utilities)
    10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
    11. [Use of `errno`](#use-of-errno)
@@ -605,6 +606,12 @@ How to use:
 
 Ping ID, timeout, and TTL all have defaults. These are defined
 in _qnethernet_opts.h_.
+
+#### Ping reply
+
+The above describes how to send ICMP echo requests. It is also possible to
+disable echo replies so that the stack does not respond to echo requests. Simply
+set the `QNETHERNET_ENABLE_PING_REPLY` configuration macro to zero.
 
 ### Print utilities
 
@@ -1807,6 +1814,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_CUSTOM_WRITE`                   | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                         |
 | `QNETHERNET_DO_LOOP_IN_YIELD`               | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                   |
 | `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Enables default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_ENABLE_PING_REPLY`              | Enabled  | Enables ICMP echo reply support                                                                | [Ping reply](#ping-reply)                                                               |
 | `QNETHERNET_ENABLE_PING_SEND`               | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                           |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Disabled | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
@@ -2019,6 +2027,7 @@ _QNEthernet_ library.
     and TTL
 27. Secure TCP initial sequence numbers (ISNs)
 28. [Ping](#ping) (ICMP echo) support
+29. Ability to disable [ping replies](#ping-reply)
 
 ## Compatibility with other APIs
 

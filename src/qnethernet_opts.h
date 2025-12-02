@@ -81,6 +81,11 @@
 #define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
 #endif
 
+// Enables ping reply support.
+#ifndef QNETHERNET_ENABLE_PING_REPLY
+#define QNETHERNET_ENABLE_PING_REPLY 1
+#endif
+
 // Enables ping send support. (Includes raw IP layer support.)
 #ifndef QNETHERNET_ENABLE_PING_SEND
 #define QNETHERNET_ENABLE_PING_SEND 0
