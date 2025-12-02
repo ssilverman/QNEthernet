@@ -1998,7 +1998,6 @@ _QNEthernet_ library.
     2. IEEE 1588, Precision Time Protocol (PTP)
     3. TLS and TCP proxies
     4. IEEE 802.3az, Energy-Efficient Ethernet (EEE)
-    5. Secure TCP initial sequence numbers (ISNs)
 13. [Client shutdown options](#ethernetclient): _close_ (start close process
     without waiting), _closeOutput_ (close just the output side, also called a
     "half-close"), _abort_ (shuts down the connection without going through the
