@@ -1697,6 +1697,20 @@ static void test_ping() {
   TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());
 }
 
+static void test_ping_reply() {
+  if (!waitForLocalIP()) {
+    return;
+  }
+
+  long rtt = Ethernet.ping(Ethernet.localIP());
+#if QNETHERNET_ENABLE_PING_REPLY
+  TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(0, rtt, "Expected ping success");
+  TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());
+#else
+  TEST_ASSERT_LESS_THAN_MESSAGE(0, rtt, "Expected ping failure");
+#endif
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -1767,6 +1781,7 @@ void setup() {
   RUN_TEST(test_raw_frames);
   RUN_TEST(test_raw_frames_receive_queueing);
   RUN_TEST(test_ping);
+  RUN_TEST(test_ping_reply);
   UNITY_END();
 }
 
