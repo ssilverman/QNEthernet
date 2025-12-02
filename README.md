@@ -2107,7 +2107,6 @@ Input is welcome.
   See also:
   [Restarting  · Issue #31 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/31)
 * Raw IP.
-* Ping.
 * Figure out why SYS_TIMEOUT exhaustion occurs sometimes. Is it mDNS?
 
 ## Code style
