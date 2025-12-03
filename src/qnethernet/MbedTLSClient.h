@@ -246,7 +246,7 @@ inline bool MbedTLSClient::connect(const char* const host, const T hostOrIp,
                                    const uint16_t port) {
   stop();
 
-  if (client_ == nullptr || !init(false)) {
+  if ((client_ == nullptr) || !init(false)) {
     return false;
   }
 
