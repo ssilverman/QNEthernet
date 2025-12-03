@@ -49,7 +49,7 @@ void MbedTLSClient::setClient(internal::ClientEx& client) {
 }
 
 void MbedTLSClient::addServerCert(security::MbedTLSCert* const cert) {
-  if (cert != nullptr && !cert->empty() && cert->hasKey()) {
+  if ((cert != nullptr) && !cert->empty() && cert->hasKey()) {
     serverCerts_.push_back(cert);
   }
 }
@@ -103,19 +103,19 @@ bool MbedTLSClient::init(const bool server) {
   // mbedtls_ssl_conf_read_timeout(&sslConf_, timeout);
 
   // Certificate chain
-  if (ca_ != nullptr && !ca_->empty()) {
+  if ((ca_ != nullptr) && !ca_->empty()) {
     mbedtls_ssl_conf_ca_chain(&conf_, &ca_->cert(), nullptr);
   }
 
   // Certificate(s)
   if (!server) {
-    if (ca_ != nullptr && !ca_->empty()) {
+    if ((ca_ != nullptr) && !ca_->empty()) {
       mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_REQUIRED);
     } else {
       mbedtls_ssl_conf_authmode(&conf_, MBEDTLS_SSL_VERIFY_NONE);
     }
 
-    if (clientCert_ != nullptr && !clientCert_->empty() &&
+    if ((clientCert_ != nullptr) && !clientCert_->empty() &&
         clientCert_->hasKey()) {
       if ((ret = mbedtls_ssl_conf_own_cert(&conf_, &clientCert_->cert(),
                                            &clientCert_->key())) != 0) {
@@ -137,7 +137,7 @@ bool MbedTLSClient::init(const bool server) {
 
   // Pre-shared key
   if (!server) {
-    if (psk_ != nullptr && !psk_->empty()) {
+    if ((psk_ != nullptr) && !psk_->empty()) {
       if ((ret = mbedtls_ssl_conf_psk(
                &conf_,
                psk_->psk().data(), psk_->psk().size(),
@@ -179,7 +179,7 @@ int MbedTLSClient::connect(const char* const host, const uint16_t port) {
 }
 
 bool MbedTLSClient::connecting() {
-  if (state_ == States::kConnecting || state_ == States::kHandshake) {
+  if ((state_ == States::kConnecting) || (state_ == States::kHandshake)) {
     if (!watchConnecting()) {
       return false;
     }
@@ -192,11 +192,11 @@ bool MbedTLSClient::connecting() {
 static int sendf(void* const ctx,
                  const unsigned char* const buf, const size_t len) {
   Client* const c = static_cast<Client*>(ctx);
-  if (c == nullptr || !c->connected()) {
+  if ((c == nullptr) || !c->connected()) {
     return -1;
   }
   size_t written = c->write(buf, len);  // TODO: Flush?
-  if (len != 0 && written == 0) {
+  if ((len != 0) && (written == 0)) {
     return MBEDTLS_ERR_SSL_WANT_WRITE;
   }
   return written;
@@ -205,7 +205,7 @@ static int sendf(void* const ctx,
 // Low-level receive function.
 static int recvf(void* const ctx, unsigned char* const buf, const size_t len) {
   Client* const c = static_cast<Client*>(ctx);
-  if (c == nullptr || !c->connected()) {
+  if ((c == nullptr) || !c->connected()) {
     return 0;
   }
   int read = c->read(buf, len);
@@ -280,8 +280,8 @@ bool MbedTLSClient::connect(const char* const hostname, const bool wait) {
 
   uint32_t startTime = qnethernet_hal_millis();
   while (connecting()) {
-    if (connTimeout_ != 0 &&
-        qnethernet_hal_millis() - startTime >= connTimeout_) {
+    if ((connTimeout_ != 0) &&
+        ((qnethernet_hal_millis() - startTime) >= connTimeout_)) {
       stop();
       return false;
     }
@@ -311,7 +311,7 @@ size_t MbedTLSClient::write(const uint8_t b) {
 }
 
 size_t MbedTLSClient::write(const uint8_t* const buf, const size_t size) {
-  if (!isConnected() || size == 0) {
+  if (!isConnected() || (size == 0)) {
     return 0;
   }
 
@@ -393,7 +393,7 @@ int MbedTLSClient::read() {
 }
 
 int MbedTLSClient::read(uint8_t* const buf, const size_t size) {
-  if (!isConnected() || size == 0) {
+  if (!isConnected() || (size == 0)) {
     return 0;
   }
 
@@ -441,7 +441,7 @@ int MbedTLSClient::availableForWrite() {
     return 0;
   }
   int expan = mbedtls_ssl_get_record_expansion(&ssl_);
-  if (expan < 0 || avail <= expan) {
+  if ((expan < 0) || (avail <= expan)) {
     return 0;
   }
   avail -= expan;
@@ -449,7 +449,7 @@ int MbedTLSClient::availableForWrite() {
   if (payload < 0) {
     lastError_ = payload;
   }
-  if (payload < 0 || avail <= payload) {
+  if ((payload < 0) || (avail <= payload)) {
     return avail;
   }
   return payload;
@@ -477,7 +477,7 @@ void MbedTLSClient::stop() {
 }
 
 bool MbedTLSClient::isConnected() {
-  if (state_ == States::kConnecting || state_ == States::kHandshake) {
+  if ((state_ == States::kConnecting) || (state_ == States::kHandshake)) {
     if (!watchConnecting()) {
       return false;
     }
