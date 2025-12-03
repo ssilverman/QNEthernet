@@ -25,7 +25,7 @@ static int pskCallback(void* const p_psk, mbedtls_ssl_context* const ssl,
   auto* f = static_cast<MbedTLSServer::pskf*>(p_psk);
   int retval = -1;
   (*f)(id, idLen, [ssl, &retval](const unsigned char* psk, size_t psk_len) {
-    if (psk != nullptr && psk_len != 0) {
+    if ((psk != nullptr) && (psk_len != 0)) {
       retval = mbedtls_ssl_set_hs_psk(ssl, psk, psk_len);
     }
   });
@@ -56,7 +56,7 @@ void MbedTLSServer::end() {
 }
 
 void MbedTLSServer::addServerCert(security::MbedTLSCert* cert) {
-  if (cert != nullptr && !cert->empty() && cert->hasKey()) {
+  if ((cert != nullptr) && !cert->empty() && cert->hasKey()) {
     certs_.push_back(cert);
   }
 }
@@ -66,7 +66,7 @@ MbedTLSClient MbedTLSServer::accept() {
     EthernetClient c = server_.accept();
     if (c) {
       MbedTLSClient tlsClient{c};
-      if (ca_ != nullptr && !ca_->empty()) {
+      if ((ca_ != nullptr) && !ca_->empty()) {
         tlsClient.setCACert(ca_);
       }
       for (security::MbedTLSCert* c : certs_) {
