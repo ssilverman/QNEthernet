@@ -17,6 +17,7 @@
 #include <lwip/dns.h>
 #include <lwip/opt.h>
 #include <qnethernet/QNDNSClient.h>
+#include <qnethernet/compat/c++11_compat.h>
 #include <qnethernet/lwip_driver.h>
 #include <qnethernet_opts.h>
 #include <unity.h>
@@ -715,10 +716,10 @@ static void test_interface_listener() {
 // Tests UDP by using SNTP.
 static void test_udp() {
   // 01-Jan-1900 00:00:00 -> 01-Jan-1970 00:00:00
-  constexpr std::time_t kEpochDiff = 2'208'988'800;
+  constexpr std::time_t kEpochDiff = 2208988800;
 
   // Epoch -> 07-Feb-2036 06:28:16
-  constexpr std::time_t kBreakTime = 2'085'978'496;
+  constexpr std::time_t kBreakTime = 2085978496;
 
   constexpr uint16_t kNTPPort = 123;
 
@@ -728,7 +729,11 @@ static void test_udp() {
 
   uint8_t buf[48];
   std::fill_n(buf, 48, 0);
+#if __cplusplus < 201402L
+  buf[0] = 0x23;
+#else
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
+#endif  // C++ < 14
 
   // Set the Transmit Timestamp
   std::time_t t = std::time(nullptr);
@@ -743,7 +748,7 @@ static void test_udp() {
   buf[43] = t;
 
   // Send the packet
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
   TEST_MESSAGE("Listening on SNTP port...");
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kNTPPort), "Expected UDP listen success");
 
@@ -835,7 +840,7 @@ static void test_udp_receive_queueing() {
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
-  udp = std::make_unique<EthernetUDP>();  // Receive queue of 1
+  udp = compat::make_unique<EthernetUDP>();  // Receive queue of 1
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(),
                             "Expected default queue capacity");
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
@@ -925,7 +930,7 @@ static void test_udp_receive_timestamp() {
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->beginWithReuse(kPort), "Expected UDP listen success");
 
   uint8_t b = 13;  // The buffer
@@ -952,7 +957,7 @@ static void test_udp_state() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*udp), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->localPort(), "Expected invalid local port");
@@ -974,7 +979,7 @@ static void test_udp_options() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
 
   TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(0xa5), "Expected set DiffServ success (1)");
   TEST_ASSERT_EQUAL_MESSAGE(0xa5, udp->outgoingDiffServ(), "Expected Diffserv 0xa5");
@@ -996,7 +1001,7 @@ static void test_udp_zero_length() {
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
 
   TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected nothing there");
@@ -1031,7 +1036,7 @@ static void test_udp_diffserv() {
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
   TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->outgoingDiffServ(),
@@ -1060,7 +1065,7 @@ static void test_udp_ttl() {
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
   // Create and listen
-  udp = std::make_unique<EthernetUDP>();
+  udp = compat::make_unique<EthernetUDP>();
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
   TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL - 1), "Expected can set TTL");
   TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(),
@@ -1097,7 +1102,7 @@ static void test_client() {
     return;
   }
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   client->setConnectionTimeout(kConnectTimeout);
   TEST_ASSERT_EQUAL_MESSAGE(kConnectTimeout, client->connectionTimeout(), "Expected set timeout");
@@ -1153,7 +1158,7 @@ static void test_client_write_single_bytes() {
     return;
   }
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
   client->setConnectionTimeout(kConnectTimeout);
 
   // Connect and send the request
@@ -1196,7 +1201,7 @@ static void test_client_connectNoWait() {
                            "Expected start success");
   Ethernet.setLinkState(true);  // Use loopback
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
@@ -1219,7 +1224,7 @@ static void test_client_connect_timeout() {
                            "Expected start success");
   Ethernet.setLinkState(true);  // Use loopback
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
   TEST_ASSERT_EQUAL_MESSAGE(1000, client->connectionTimeout(), "Expected default connection timeout");
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
@@ -1236,7 +1241,7 @@ static void test_client_connect_timeout() {
 
 // Tests a variety of client object states.
 static void test_client_state() {
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(0, client->localPort(), "Expected invalid local port");
@@ -1265,7 +1270,7 @@ static void test_client_addr_info() {
   TEST_MESSAGE(format("Lookup time: %" PRIu32 "ms", millis() - t).data());
   TEST_MESSAGE(format("IP: %u.%u.%u.%u", hostIP[0], hostIP[1], hostIP[2], hostIP[3]).data());
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
 
   // Connect and check address info
   TEST_MESSAGE("Connecting...");
@@ -1298,7 +1303,7 @@ static void test_client_wait_for_disconnect() {
     return;
   }
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
 
   // Connect and check address info
   TEST_MESSAGE("Connecting...");
@@ -1326,7 +1331,7 @@ static void test_client_options() {
                            "Expected start success");
   Ethernet.setLinkState(true);  // Use loopback
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
@@ -1363,7 +1368,7 @@ static void test_client_diffserv() {
     return;
   }
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
   client->setConnectionTimeout(kConnectTimeout);
 
   // Check that can't set DiffServ before connect
@@ -1391,7 +1396,7 @@ static void test_client_ttl() {
     return;
   }
 
-  client = std::make_unique<EthernetClient>();
+  client = compat::make_unique<EthernetClient>();
   client->setConnectionTimeout(kConnectTimeout);
 
   // Check that can't set TTL before connect
@@ -1417,7 +1422,7 @@ static void test_server_state() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  server = std::make_unique<EthernetServer>();
+  server = compat::make_unique<EthernetServer>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
@@ -1436,7 +1441,7 @@ static void test_server_state() {
 static void test_server_construct_int_port() {
   constexpr int port = 1025;
 
-  server = std::make_unique<EthernetServer>(port);
+  server = compat::make_unique<EthernetServer>(port);
   TEST_ASSERT_EQUAL_MESSAGE(uint16_t{1025}, server->port(), "Expected port 1025");
 }
 
@@ -1445,7 +1450,7 @@ static void test_server_zero_port() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
 
-  server = std::make_unique<EthernetServer>();
+  server = compat::make_unique<EthernetServer>();
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
@@ -1458,7 +1463,7 @@ static void test_server_zero_port() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 
-  server = std::make_unique<EthernetServer>(0);
+  server = compat::make_unique<EthernetServer>(0);
 
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
   TEST_ASSERT_EQUAL_MESSAGE(0, server->port(), "Expected zero port");
@@ -1478,8 +1483,8 @@ static void test_server_accept() {
                            "Expected successful Ethernet start");
   Ethernet.setLinkState(true);  // connect() won't work unless there's a link
 
-  server = std::make_unique<EthernetServer>();
-  client = std::make_unique<EthernetClient>();
+  server = compat::make_unique<EthernetServer>();
+  client = compat::make_unique<EthernetClient>();
 
   TEST_ASSERT_TRUE_MESSAGE(server->beginWithReuse(kPort), "Expected listen success");
   TEST_ASSERT_TRUE_MESSAGE(client->connect(Ethernet.localIP(), kPort), "Expected connect success");
