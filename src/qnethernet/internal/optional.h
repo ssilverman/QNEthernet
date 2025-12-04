@@ -18,6 +18,14 @@ struct optional {
   bool has_value = false;
   T value{};
 
+#if __cplusplus < 201402L
+  optional() = default;
+
+  optional(bool has, T val)
+      : has_value(has),
+        value{val} {}
+#endif  // C++ < 14
+
   bool operator==(const T& t) {
     return has_value && (value == t);
   }
