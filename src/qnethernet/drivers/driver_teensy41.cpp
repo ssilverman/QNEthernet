@@ -1526,7 +1526,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
 }
 
 bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
-  if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
+  if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
     return false;
   }
   ENET::ATINC::INC_CORR = corrInc;
@@ -1565,7 +1565,7 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
     case 13:  // Reserved
       return false;
     default:
-      if (mode < 0 || 0x0f < mode) {
+      if ((mode < 0) || (0x0f < mode)) {
         return false;
       }
       break;
@@ -1593,7 +1593,7 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
     return false;
   }
 
-  if (pulseWidth < 1 || 32 < pulseWidth) {
+  if ((pulseWidth < 1) || (32 < pulseWidth)) {
     return false;
   }
 
