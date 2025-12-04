@@ -70,11 +70,11 @@ class EthernetClass final {
   static constexpr int maxMulticastGroups() {
 #if LWIP_IGMP
     // Exclude the "All Systems" group
-    if (MEMP_NUM_IGMP_GROUP > 0) {
-      return MEMP_NUM_IGMP_GROUP - 1;
-    }
-#endif  // LWIP_IGMP
+    // Note: Using a ternary expression to be compatible with C++11
+    return (MEMP_NUM_IGMP_GROUP > 0) ? (MEMP_NUM_IGMP_GROUP - 1) : 0;
+#else
     return 0;
+#endif  // LWIP_IGMP
   }
 
   // Gets the MTU.

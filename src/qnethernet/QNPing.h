@@ -34,6 +34,19 @@ struct PingData {
   uint16_t seq        = 0;
   const uint8_t* data = nullptr;
   size_t dataSize     = 0;
+
+#if __cplusplus < 201402L
+  PingData() = default;
+
+  PingData(const IPAddress& ip, uint8_t ttl, uint16_t id, uint16_t seq,
+           const uint8_t* data, size_t dataSize)
+      : ip{ip},
+        ttl(ttl),
+        id(id),
+        seq(seq),
+        data(data),
+        dataSize(dataSize) {}
+#endif  // C++ < 14
 };
 
 // Interfaces with lwIP's ICMP functions to perform a ping.
