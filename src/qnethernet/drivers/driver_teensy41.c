@@ -1381,7 +1381,7 @@ bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
 }
 
 bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
-  if (corrInc >= 128 || corrPeriod >= (1U << 31)) {
+  if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
     return false;
   }
   CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
@@ -1411,14 +1411,14 @@ bool driver_ieee1588_adjust_freq(int nsps) {
 // Channels
 
 static inline volatile uint32_t *tcsrReg(int channel) {
-  if (channel < 0 || TIMER_CHANNEL_COUNT <= channel) {
+  if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
   return &ENET_TCSR0 + 2*channel;
 }
 
 static inline volatile uint32_t *tccrReg(int channel) {
-  if (channel < 0 || TIMER_CHANNEL_COUNT <= channel) {
+  if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
   return &ENET_TCCR0 + 2*channel;
@@ -1430,7 +1430,7 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode) {
     case 13:  // Reserved
       return false;
     default:
-      if (mode < 0 || 0x0f < mode) {
+      if ((mode < 0) || (0x0f < mode)) {
         return false;
       }
       break;
@@ -1456,7 +1456,7 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode) {
 
 bool driver_ieee1588_set_channel_output_pulse_width(int channel,
                                                     int pulseWidth) {
-  if (pulseWidth < 1 || 32 < pulseWidth) {
+  if ((pulseWidth < 1) || (32 < pulseWidth)) {
     return false;
   }
 
