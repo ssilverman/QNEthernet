@@ -293,6 +293,9 @@ static bool s_linkSpeed10Not100 = false;
 static bool s_linkIsFullDuplex  = false;
 static bool s_linkIsCrossover   = false;
 
+// Notification data
+static bool s_manualLinkState = false;  // True for sticky
+
 // Forward declarations
 static void enet_isr(void);
 
@@ -749,7 +752,9 @@ static inline int check_link_status(struct netif *const netif,
 
       netif_set_link_up(netif);
     } else {
-      netif_set_link_down(netif);
+      if (!s_manualLinkState) {
+        netif_set_link_down(netif);
+      }
     }
   }
 
@@ -1177,5 +1182,13 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
+
+// --------------------------------------------------------------------------
+//  Notifications from upper layers
+// --------------------------------------------------------------------------
+
+void driver_notify_manual_link_state(bool flag) {
+  s_manualLinkState = flag;
+}
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSYMM
