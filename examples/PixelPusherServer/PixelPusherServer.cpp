@@ -66,13 +66,13 @@ bool PixelPusherServer::begin(Receiver* recv, uint16_t port,
   deviceData_.productId = productId;
   deviceData_.hwRevision = hwRevision;
   deviceData_.swRevision = kSoftwareRevision;
-  deviceData_.linkSpeed = Ethernet.linkSpeed() * 1'000'000;
+  deviceData_.linkSpeed = Ethernet.linkSpeed() * 1000000;
 
   ppData1_.stripsAttached = numStrips;
   ppData1_.maxStripsPerPacket =
       std::min((kMaxUDPSize - 4)/stripSize_, numStrips);
   ppData1_.pixelsPerStrip = pixelsPerStrip;
-  ppData1_.updatePeriod = 100'000;  // Start at 100ms
+  ppData1_.updatePeriod = 100000;  // Start at 100ms
   ppData1_.powerTotal = 0;
   ppData1_.deltaSequence = 0;
   ppData1_.controllerOrdinal = controllerNum;

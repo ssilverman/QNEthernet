@@ -176,7 +176,7 @@ class PixelPusherServer final {
     void endPixels() override {}
   };
 
-  static constexpr uint32_t kDiscoveryPeriod = 1'000;  // In milliseconds
+  static constexpr uint32_t kDiscoveryPeriod = 1000;  // In milliseconds
 
   static constexpr uint16_t kSoftwareRevision = 142;
 

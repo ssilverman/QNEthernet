@@ -31,11 +31,11 @@ using namespace qindesign::network;
 
 // The DHCP timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of an address assignment.
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // The link timeout, in milliseconds. Set to zero to not wait and
 // instead rely on the listener to inform us of a link.
-constexpr uint32_t kLinkTimeout = 5'000;  // 5 seconds
+constexpr uint32_t kLinkTimeout = 5000;  // 5 seconds
 
 // Indicates whether to always try DHCP first. If this is false, then
 // the value of `staticIP` determines whether DHCP is tried first. If

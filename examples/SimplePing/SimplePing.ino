@@ -19,9 +19,9 @@ using namespace qindesign::network;
 //  Configuration
 // --------------------------------------------------------------------------
 
-constexpr uint32_t kDHCPTimeout = 15'000;  // 15 seconds
+constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
-constexpr uint32_t kPingInterval = 1'000;  // 1 second
+constexpr uint32_t kPingInterval = 1000;  // 1 second
 
 constexpr char kHostname[]{"arduino.cc"};
 
