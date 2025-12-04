@@ -314,10 +314,10 @@ static bool s_linkIsCrossover   = false;
 static bool s_manualLinkState = false;  // True for sticky
 
 // IEEE 1588
-static volatile uint32_t ieee1588Seconds = 0;  // Since the timer was started
-static volatile bool doTimestampNext = false;
-static volatile bool hasTxTimestamp = false;
-static volatile struct timespec txTimestamp = {0, 0};
+static volatile uint32_t s_ieee1588Seconds = 0;  // Since the timer was started
+static volatile bool s_doTimestampNext = false;
+static volatile bool s_hasTxTimestamp = false;
+static volatile struct timespec s_txTimestamp = {0, 0};
 
 // Forward declarations
 static void enet_isr(void);
@@ -707,9 +707,9 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
                 kEnetTxBdLast                 |
                 kEnetTxBdReady;
 
-  hasTxTimestamp = false;  // The timestamp isn't yet available
-  if (doTimestampNext) {
-    doTimestampNext = false;
+  s_hasTxTimestamp = false;  // The timestamp isn't yet available
+  if (s_doTimestampNext) {
+    s_doTimestampNext = false;
     pBD->extend1 |= kEnetTxBdTimestamp;
   } else {
     pBD->extend1 &= ~kEnetTxBdTimestamp;
@@ -753,14 +753,14 @@ static inline volatile enetbufferdesc_t *rxbd_next(void) {
 static void enet_isr(void) {
   if ((ENET_EIR & ENET_EIR_TS_TIMER) != 0) {
     ENET_EIR = ENET_EIR_TS_TIMER;
-    ieee1588Seconds++;
+    s_ieee1588Seconds++;
   }
 
   if ((ENET_EIR & ENET_EIR_TS_AVAIL) != 0) {
     ENET_EIR = ENET_EIR_TS_AVAIL;
-    hasTxTimestamp = true;
-    txTimestamp.tv_sec = ieee1588Seconds;
-    txTimestamp.tv_nsec = ENET_ATSTMP;
+    s_hasTxTimestamp = true;
+    s_txTimestamp.tv_sec = s_ieee1588Seconds;
+    s_txTimestamp.tv_nsec = ENET_ATSTMP;
   }
 
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
@@ -1022,7 +1022,7 @@ FLASHMEM bool driver_init(void) {
 
   // Set the IEEE 1588 timestamp to zero, in case it's used but not enabled
   ENET_ATVR = 0;
-  ieee1588Seconds = 0;
+  s_ieee1588Seconds = 0;
 
   // Last few things to do
   ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
@@ -1306,7 +1306,7 @@ void ieee1588_init(void) {
   }
 
   // Reset the seconds counter to zero
-  ieee1588Seconds = 0;
+  s_ieee1588Seconds = 0;
 
   // Enable the timer and periodic event
   ENET_ATCR = ENET_ATCR_PINPER | ENET_ATCR_Reserved | ENET_ATCR_PEREN |
@@ -1330,7 +1330,7 @@ bool driver_ieee1588_read_timer(struct timespec *t) {
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  t->tv_sec = ieee1588Seconds;
+  t->tv_sec = s_ieee1588Seconds;
 
   ENET_ATCR |= ENET_ATCR_CAPTURE;
   while ((ENET_ATCR & ENET_ATCR_CAPTURE) != 0) {
@@ -1354,7 +1354,7 @@ bool driver_ieee1588_write_timer(const struct timespec *t) {
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  ieee1588Seconds = t->tv_sec;
+  s_ieee1588Seconds = t->tv_sec;
   ENET_ATVR = t->tv_nsec;
   qnethernet_hal_enable_interrupts();  // }
 
@@ -1362,16 +1362,16 @@ bool driver_ieee1588_write_timer(const struct timespec *t) {
 }
 
 void driver_ieee1588_timestamp_next_frame() {
-  doTimestampNext = true;
+  s_doTimestampNext = true;
 }
 
 bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   qnethernet_hal_disable_interrupts();  // {
-  if (hasTxTimestamp) {
-    hasTxTimestamp = false;
+  if (s_hasTxTimestamp) {
+    s_hasTxTimestamp = false;
     if (timestamp != NULL) {
-      timestamp->tv_sec = txTimestamp.tv_sec;
-      timestamp->tv_nsec = txTimestamp.tv_nsec;
+      timestamp->tv_sec = s_txTimestamp.tv_sec;
+      timestamp->tv_nsec = s_txTimestamp.tv_nsec;
     }
     return true;
   }
