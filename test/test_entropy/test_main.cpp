@@ -24,7 +24,7 @@ void setUp() {
 void tearDown() {
 }
 
-#if !QNETHERNET_USE_ENTROPY_LIB
+#if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
 // Tests that the feature is active.
 static void test_active() {
   TEST_ASSERT_TRUE_MESSAGE(trng_is_started(), "Expected started");
@@ -74,7 +74,7 @@ static void test_random_range() {
     TEST_ASSERT_LESS_THAN_UINT32_MESSAGE(10, r, msg.c_str());
   }
 }
-#endif  // !QNETHERNET_USE_ENTROPY_LIB
+#endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
 
 // Tests entropy_random().
 static void test_randomDevice() {
@@ -105,12 +105,14 @@ void setup() {
   // if board doesn't support software reset via Serial.DTR/RTS
   delay(2000);
 
+#if defined(TEENSYDUINO)
   if (CrashReport) {
     Serial.println(CrashReport);
   }
+#endif  // defined(TEENSYDUINO)
 
   UNITY_BEGIN();
-#if !QNETHERNET_USE_ENTROPY_LIB
+#if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   RUN_TEST(test_inactive);
   trng_init();
   RUN_TEST(test_active);
@@ -118,12 +120,12 @@ void setup() {
   RUN_TEST(test_data);
   RUN_TEST(test_random);
   RUN_TEST(test_random_range);
-#endif  // !QNETHERNET_USE_ENTROPY_LIB
+#endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   RUN_TEST(test_randomDevice);
-#if !QNETHERNET_USE_ENTROPY_LIB
+#if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   trng_deinit();
   RUN_TEST(test_inactive);
-#endif  // !QNETHERNET_USE_ENTROPY_LIB
+#endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   UNITY_END();
 }
 

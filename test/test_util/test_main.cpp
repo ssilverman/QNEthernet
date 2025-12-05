@@ -121,9 +121,11 @@ void setup() {
   // if board doesn't support software reset via Serial.DTR/RTS
   delay(2000);
 
+#if defined(TEENSYDUINO)
   if (CrashReport) {
     Serial.println(CrashReport);
   }
+#endif  // defined(TEENSYDUINO)
 
   UNITY_BEGIN();
   RUN_TEST(test_writeMagic);
