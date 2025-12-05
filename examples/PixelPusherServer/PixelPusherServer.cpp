@@ -32,7 +32,7 @@ static constexpr uint8_t kCommandMagic[]{
 
 PixelPusherServer::NullReceiver PixelPusherServer::nullReceiver_;
 
-PixelPusherServer::~PixelPusherServer() {
+PixelPusherServer::~PixelPusherServer() noexcept {
   end();
 }
 

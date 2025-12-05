@@ -73,13 +73,13 @@ class PixelPusherServer final {
   static constexpr uint16_t kDefaultPixelsPort = 5078;//9897;
 
   PixelPusherServer() = default;
-  ~PixelPusherServer();
+  ~PixelPusherServer() noexcept;
 
   // Disallow copying, but allow moving
   PixelPusherServer(const PixelPusherServer&) = delete;
-  PixelPusherServer(PixelPusherServer&&) = default;
+  PixelPusherServer(PixelPusherServer&&) noexcept = default;
   PixelPusherServer& operator=(const PixelPusherServer&) = delete;
-  PixelPusherServer& operator=(PixelPusherServer&&) = default;
+  PixelPusherServer& operator=(PixelPusherServer&&) noexcept = default;
 
   // Initializes the server and starts listening for pixel data on the
   // specified port. This uses the current Ethernet information. This

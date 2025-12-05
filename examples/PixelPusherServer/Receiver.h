@@ -57,6 +57,6 @@ class Receiver {
   virtual void loop() {}
 
  protected:
-  Receiver(Receiver&&) = default;
-  Receiver& operator=(Receiver&&) = default;
+  Receiver(Receiver&&) noexcept = default;
+  Receiver& operator=(Receiver&&) noexcept = default;
 };
