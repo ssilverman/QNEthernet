@@ -35,7 +35,9 @@ class EthernetClient : public internal::ClientEx,
                        public internal::PrintfChecked {
  public:
   EthernetClient() = default;
-  virtual ~EthernetClient();
+  virtual ~EthernetClient() = default;
+      // Questionable not to call close(),
+      // but copy semantics demand that we don't
 
   // Ideally, we only want move semantics because the state should only be owned
   // by one client at a time. However, user code may need to copy and the writer

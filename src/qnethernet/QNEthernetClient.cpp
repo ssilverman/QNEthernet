@@ -46,9 +46,6 @@ EthernetClient::EthernetClient(
     const std::shared_ptr<internal::ConnectionHolder> conn)
     : conn_(conn) {}
 
-EthernetClient::~EthernetClient() = default;
-    // Questionable not to call close(), but copy semantics demand that we don't
-
 // --------------------------------------------------------------------------
 //  Connection
 // --------------------------------------------------------------------------
