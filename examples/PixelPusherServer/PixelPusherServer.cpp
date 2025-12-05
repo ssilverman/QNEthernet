@@ -136,7 +136,7 @@ void PixelPusherServer::setGroupNum(int n) {
 
 // Checks if all values in a std::vector<bool> are a specific value.
 static bool isAll(const std::vector<bool>& v, bool flag) {
-  return (std::find(v.begin(), v.end(), !flag) == v.end());
+  return (std::find(v.cbegin(), v.cend(), !flag) == v.cend());
 }
 
 void PixelPusherServer::loop() {
