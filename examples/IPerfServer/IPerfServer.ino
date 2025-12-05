@@ -327,8 +327,8 @@ void loop() {
 
   if (!list.empty()) {
     conns.insert(conns.end(),
-                std::make_move_iterator(list.begin()),
-                std::make_move_iterator(list.end()));
+                 std::make_move_iterator(list.begin()),
+                 std::make_move_iterator(list.end()));
     list.clear();
   }
 
