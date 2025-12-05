@@ -485,7 +485,7 @@ class EthernetClass final {
   // Creates a new network interface. The MAC address will be unset.
   EthernetClass() = default;
 
-  ~EthernetClass();
+  ~EthernetClass() noexcept;
 
   // EthernetClass is neither copyable nor movable
   // See also: https://en.cppreference.com/w/cpp/language/rule_of_three

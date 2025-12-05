@@ -34,7 +34,7 @@ struct StaticInit {
     }
   }
 
-  ~StaticInit() {
+  ~StaticInit() noexcept {
     if (--nifty_counter == 0) {
       pT->~T();
       pT = nullptr;

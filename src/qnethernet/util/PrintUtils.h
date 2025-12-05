@@ -82,8 +82,8 @@ class StdioPrint : public Print {
   void flush() override;
 
  protected:
-  StdioPrint(StdioPrint&&) = default;
-  StdioPrint& operator=(StdioPrint&&) = default;
+  StdioPrint(StdioPrint&&) noexcept = default;
+  StdioPrint& operator=(StdioPrint&&) noexcept = default;
 
   std::FILE* stream() const {
     return stream_;

@@ -69,7 +69,7 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
   return 1;  // Eat the packet
 }
 
-Ping::~Ping() {
+Ping::~Ping() noexcept {
   // Ensure the PCB is removed
   if (pcb_ != nullptr) {
     raw_remove(pcb_);

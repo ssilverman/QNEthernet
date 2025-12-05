@@ -93,7 +93,7 @@ EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
 EthernetUDP::EthernetUDP(const size_t capacity)
     : inBuf_(std::max(capacity, size_t{1})) {}
 
-EthernetUDP::~EthernetUDP() {
+EthernetUDP::~EthernetUDP() noexcept {
   stop();
 }
 

@@ -118,7 +118,7 @@ void EthernetClass::netifEventFunc(
   }
 }
 
-FLASHMEM EthernetClass::~EthernetClass() {
+FLASHMEM EthernetClass::~EthernetClass() noexcept {
   end();
 }
 

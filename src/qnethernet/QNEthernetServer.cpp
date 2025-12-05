@@ -20,7 +20,7 @@ namespace network {
 EthernetServer::EthernetServer(const uint16_t port)
     : port_{true, port} {}
 
-EthernetServer::~EthernetServer() {
+EthernetServer::~EthernetServer() noexcept {
   end();
 }
 

@@ -37,7 +37,7 @@ struct ConnectionState final {
 
   // Sets the callback arg to nullptr and then calls the 'remove' function. The
   // object should be deleted before more 'tcp' functions are called.
-  ~ConnectionState() {
+  ~ConnectionState() noexcept {
     // Ensure callbacks are no longer called with this as the argument
     altcp_arg(pcb, nullptr);
 

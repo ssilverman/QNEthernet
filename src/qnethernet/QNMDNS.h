@@ -152,7 +152,7 @@ class MDNSClass final {
   };
 
   MDNSClass() = default;
-  ~MDNSClass();
+  ~MDNSClass() noexcept;
 
   // MDNSClass is neither copyable nor movable
   MDNSClass(const MDNSClass&) = delete;
