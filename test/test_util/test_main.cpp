@@ -171,7 +171,7 @@ int _write(const int file, const void* const buf, const size_t len) {
 
 // Opens any file for write-only and returns the file descriptor
 // for s_outputString.
-int _open(const char *const path, const int flags, const int mode) {
+int _open(const char* const path, const int flags, const int mode) {
   if (((flags & O_CREAT) != 0) && ((flags & O_EXCL) != 0)) {
     errno = EEXIST;
     return -1;
