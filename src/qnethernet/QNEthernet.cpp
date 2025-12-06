@@ -774,7 +774,7 @@ bool EthernetClass::hostByName(const char* const hostname,
 #endif  // LWIP_DNS
 }
 
-long EthernetClass::ping(const char *const hostname, const uint8_t ttl) const {
+long EthernetClass::ping(const char* const hostname, const uint8_t ttl) const {
 #if LWIP_RAW
   if (netif_ == nullptr) {
     errno = ENETDOWN;
@@ -794,7 +794,7 @@ long EthernetClass::ping(const char *const hostname, const uint8_t ttl) const {
 #endif  // LWIP_RAW
 }
 
-long EthernetClass::ping(const IPAddress &ip, const uint8_t ttl) const {
+long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
 #if LWIP_RAW
   if (netif_ == nullptr) {
     errno = ENETDOWN;
