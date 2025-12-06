@@ -801,12 +801,12 @@ long EthernetClass::ping(const IPAddress &ip, const uint8_t ttl) const {
     return -1;
   }
 
-  const PingData &req{.ip       = ip,
-                      .ttl      = ttl,
-                      .id       = QNETHERNET_DEFAULT_PING_ID,
-                      .seq      = 0,
-                      .data     = nullptr,
-                      .dataSize = 0};
+  const PingData req{.ip       = ip,
+                     .ttl      = ttl,
+                     .id       = QNETHERNET_DEFAULT_PING_ID,
+                     .seq      = 0,
+                     .data     = nullptr,
+                     .dataSize = 0};
 
   volatile bool found = false;
   Ping ping{[&ip, &found](const PingData& reply) {
