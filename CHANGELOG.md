@@ -21,6 +21,7 @@ and this project adheres to
 * Improved _SimplePing_ example to catch DNS lookup errors.
 * Changed ping send enable macro to `QNETHERNET_ENABLE_PING_SEND`
   from `QNETHERNET_ENABLE_PING`.
+* Updated to support C++11 compilers.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
