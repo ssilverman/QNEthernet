@@ -2035,7 +2035,7 @@ _QNEthernet_ library.
 25. Ability to toggle Nagle's algorithm for TCP
 26. Ability to set some IP header fields: differentiated services (DiffServ)
     and TTL
-27. Secure TCP initial sequence numbers (ISNs)
+27. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
 28. [Ping](#ping) (ICMP echo) support
 29. Ability to disable [ping replies](#ping-reply)
 
