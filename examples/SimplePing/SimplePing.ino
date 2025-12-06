@@ -11,6 +11,9 @@
 //
 // This file is part of the QNEthernet library.
 
+#include <cinttypes>
+#include <cstdint>
+
 #include <QNEthernet.h>
 
 using namespace qindesign::network;
@@ -33,7 +36,7 @@ static bool running = false;  // Whether the program is still running
 
 static IPAddress hostIP;
 static elapsedMillis pingTimer = kPingInterval;  // Start expired
-static unsigned int pingCounter = 0;
+static uint32_t pingCounter = 0;
 
 // --------------------------------------------------------------------------
 //  Main Program
@@ -92,7 +95,7 @@ void loop() {
 
   pingCounter++;
 
-  printf("%u. ", pingCounter);
+  printf("%" PRIu32 ". ", pingCounter);
   long rtt = Ethernet.ping(hostIP);
   if (rtt >= 0) {
     printf("Time = %ld ms\r\n", rtt);
