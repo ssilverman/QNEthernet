@@ -147,7 +147,7 @@ void loop() {
   }
 
   if (!replyReceived && (pingCounter != 0)) {
-    printf("%u. Timeout\r\n", pingCounter);
+    printf("%" PRIu32 ". Timeout\r\n", pingCounter);
   }
   replyReceived = false;
 
