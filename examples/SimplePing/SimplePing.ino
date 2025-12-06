@@ -24,7 +24,7 @@ using namespace qindesign::network;
 
 constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
-constexpr uint32_t kPingInterval = 1000;  // 1 second
+constexpr unsigned long kPingInterval = 1000;  // 1 second
 
 constexpr char kHostname[]{"arduino.cc"};
 
@@ -35,7 +35,7 @@ constexpr char kHostname[]{"arduino.cc"};
 static bool running = false;  // Whether the program is still running
 
 static IPAddress hostIP;
-static elapsedMillis pingTimer = kPingInterval;  // Start expired
+static unsigned long pingTimer = millis() - kPingInterval;  // Start expired
 static uint32_t pingCounter = 0;
 
 // --------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void setup() {
 
 // Main program loop.
 void loop() {
-  if (!running || (pingTimer < kPingInterval)) {
+  if (!running || ((millis() - pingTimer) < kPingInterval)) {
     return;
   }
 
@@ -99,9 +99,9 @@ void loop() {
   long rtt = Ethernet.ping(hostIP);
   if (rtt >= 0) {
     printf("Time = %ld ms\r\n", rtt);
-    pingTimer = rtt;
+    pingTimer = millis() - rtt;
   } else {
     printf("Ping failed\r\n");
-    pingTimer = 0;
+    pingTimer = millis();
   }
 }

@@ -30,7 +30,7 @@ using namespace qindesign::network;
 
 constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
-constexpr uint32_t kPingInterval = 1000;  // 1 second
+constexpr unsigned long kPingInterval = 1000;  // 1 second
 
 constexpr char kHostname[]{"arduino.cc"};
 
@@ -46,7 +46,7 @@ static_assert(kPayloadSize >= 4, "Payload size must be >= 4");
 static bool running = false;  // Whether the program is still running
 
 static IPAddress pingIP;
-static elapsedMillis pingTimer = kPingInterval;  // Start expired
+static unsigned long pingTimer = millis() - kPingInterval;  // Start expired
 static uint32_t pingCounter = 0;
 
 static std::array<uint8_t, kPayloadSize> payload;
@@ -80,7 +80,7 @@ static void replyCallback(const PingData &reply) {
          " seq=%" PRIu16 " ttl=%u time=%lu ms%s\r\n",
          counter, reply.dataSize + 8,
          reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
-         reply.seq, reply.ttl, static_cast<unsigned long>(pingTimer),
+         reply.seq, reply.ttl, millis() - pingTimer,
          payloadMatches ? "" : " (payload mismatch)");
 
   replyReceived = true;
@@ -142,7 +142,7 @@ void setup() {
 
 // Main program loop.
 void loop() {
-  if (!running || (pingTimer < kPingInterval)) {
+  if (!running || ((millis() - pingTimer) < kPingInterval)) {
     return;
   }
 
@@ -163,7 +163,7 @@ void loop() {
   std::memcpy(payload.data(), &counter, 4);
 
   if (ping.send(req)) {
-    pingTimer = 0;
+    pingTimer = millis();
   } else {
     printf("Error sending: errno=%d\r\n", errno);
     running = false;
