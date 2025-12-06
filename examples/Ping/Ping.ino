@@ -60,7 +60,7 @@ static bool replyReceived = false;  // Indicates if the current reply has
 // --------------------------------------------------------------------------
 
 // The Echo Reply callback.
-static void replyCallback(const PingData &reply) {
+static void replyCallback(const PingData& reply) {
   // Check that the ID is ours
   if (reply.id != kPingId) {
     return;
