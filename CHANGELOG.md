@@ -27,6 +27,8 @@ and this project adheres to
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
 * Now keeping any manually-set link UP state sticky so that the driver can
   choose not to set it to DOWN.
+* Update _Ping_ and _SimplePing_ examples to work with other systems by changing
+  use of `elapsedMillis` to `unsigned long` plus calculations.
 
 ## [0.33.1]
 
