@@ -15,8 +15,8 @@
 #include <algorithm>
 #include <array>
 #include <cerrno>
-#include <cstdint>
 #include <cinttypes>
+#include <cstdint>
 #include <cstring>
 
 #include <QNEthernet.h>
