@@ -46,10 +46,10 @@ class EthernetIEEE1588Class final {
   void end() const;
 
   // Reads the current IEEE 1588 timer value. This returns whether successful.
-  bool readTimer(timespec& t) const;
+  bool readTimer(std::timespec& t) const;
 
   // Writes the current IEEE 1588 timer value. This returns whether successful.
-  bool writeTimer(const timespec& t) const;
+  bool writeTimer(const std::timespec& t) const;
 
   // Tells the driver to timestamp the next transmitted frame. This should be
   // called before functions like `EthernetUDP::endPacket()`,
@@ -63,7 +63,7 @@ class EthernetIEEE1588Class final {
   //
   // This will always returns false if `EthernetIEEE1588.timestampNextFrame()`
   // was not called before this.
-  bool readAndClearTxTimestamp(timespec& timestamp) const;
+  bool readAndClearTxTimestamp(std::timespec& timestamp) const;
 
   // Adjusts the raw correction settings. The increment must be in the range
   // 0-127 and the period must be in the range 0-(2^31-1), zero meaning

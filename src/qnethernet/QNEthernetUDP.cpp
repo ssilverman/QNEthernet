@@ -379,7 +379,7 @@ IPAddress EthernetUDP::remoteIP() {
 #endif  // LWIP_IPV4
 }
 
-bool EthernetUDP::timestamp(timespec& timestamp) const {
+bool EthernetUDP::timestamp(std::timespec& timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (packet_.hasTimestamp) {
     timestamp = packet_.timestamp;
