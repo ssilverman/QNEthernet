@@ -7,7 +7,9 @@
 #pragma once
 
 // C includes
+#if __STDC_VERSION__ < 202311L
 #include <stdalign.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

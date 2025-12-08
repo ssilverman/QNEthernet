@@ -11,7 +11,9 @@
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
 
 // C includes
+#if __STDC_VERSION__ < 202311L
 #include <stdalign.h>
+#endif
 #include <stdatomic.h>
 #include <string.h>
 
