@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added tests for some of the print utility functions and classes.
 * Added the `QNETHERNET_ENABLE_PING_REPLY` macro to disable ICMP echo replies.
+* Added a "Requirements" section listing some library requirements to
+  the README.
 
 ### Changed
 * Improved code style and structure.

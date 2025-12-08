@@ -21,6 +21,7 @@ lwIP release.
 1. [Introduction](#introduction)
    1. [Two notes](#two-notes)
    2. [Other differences and notes](#other-differences-and-notes)
+   3. [Requirements](#requirements)
 2. [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
    1. [`Ethernet`](#ethernet)
    2. [`EthernetClient`](#ethernetclient)
@@ -208,6 +209,15 @@ For API additions beyond what the Arduino-style API provides, see:\
 * Most of the `Ethernet` functions do nothing or return some form of
   empty/nothing/false unless the system has been initialized.
 * `errno` is used to indicate some underlying errors.
+
+### Requirements
+
+This library requires the following:
+1. C++11
+2. C11
+3. Somewhere in the range of 55-60Ki of flash, 5-10Ki of RAM, and some heap
+   memory, depending on the platform. Including more features will require
+   more space.
 
 ## Additional functions and features not in the Arduino-style API
 
