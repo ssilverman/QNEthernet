@@ -1296,7 +1296,7 @@ void driver_notify_manual_link_state(const bool flag) {
 
 #define TIMER_CHANNEL_COUNT 4
 
-void ieee1588_init(void) {
+void driver_ieee1588_init(void) {
   ENET_ATCR = ENET_ATCR_RESTART | ENET_ATCR_Reserved;  // Reset timer
   ENET_ATPER = NANOSECONDS_PER_SECOND;                 // Wrap at 10^9
   ENET_ATINC = ENET_ATINC_INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
