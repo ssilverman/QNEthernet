@@ -231,7 +231,7 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
   inBuf_.shrink_to_fit();
 }
 
-bool EthernetFrameClass::timestamp(std::timespec& timestamp) const {
+bool EthernetFrameClass::timestamp(timespec& timestamp) const {
   // NOTE: This is not "concurrent safe"
   if (frame_.hasTimestamp) {
     timestamp = frame_.timestamp;
