@@ -13,6 +13,9 @@ and this project adheres to
 * Added the `QNETHERNET_ENABLE_PING_REPLY` macro to disable ICMP echo replies.
 * Added a "Requirements" section listing some library requirements to
   the README.
+* Added a `QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER` configuration
+  option for including our own version of
+  `__gnu_cxx::__verbose_terminate_handler` for space-saving reasons.
 
 ### Changed
 * Improved code style and structure.

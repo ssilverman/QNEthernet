@@ -125,6 +125,16 @@
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
 #endif
 
+// Optionally provides a function definition for
+// __gnu_cxx::__verbose_terminate_handler(). If the standard library has a
+// version of this function and it gets included in the binary, then there will
+// potentially be a lot of unnecessary bloat. By including our own definition,
+// there's a potential size savings of maybe 25Ki. (Tested by building the
+// example program for the Teensy 4.1)
+#ifndef QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER
+#define QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER 0
+#endif
+
 // Use the Entropy library instead of internal functions. (Teensy 4)
 #ifndef QNETHERNET_USE_ENTROPY_LIB
 #define QNETHERNET_USE_ENTROPY_LIB 0

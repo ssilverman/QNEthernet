@@ -9,6 +9,7 @@
 // C++ includes
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "lwip/dns.h"
@@ -844,3 +845,21 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
 
 }  // namespace network
 }  // namespace qindesign
+
+#if QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER
+// See:
+// * https://gcc.gnu.org/onlinedocs/libstdc++/manual/termination.html
+// * https://forum.pjrc.com/index.php?threads/libstdc-exception-handling-__verbose_terminate_handler-causing-bloat-in-output-binary.75084/
+
+// This is being defined here so that the standard library isn't including it.
+// The large implementation isn't being elided from the Teensy build.
+//
+// Define QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER=1 to possibly make
+// your programs smaller by about 25Ki.
+
+namespace __gnu_cxx {
+void __verbose_terminate_handler() {
+  std::abort();
+}
+}  // namespace __gnu_cxx
+#endif  // QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER
