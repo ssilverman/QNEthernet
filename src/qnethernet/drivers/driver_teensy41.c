@@ -1324,7 +1324,7 @@ bool driver_ieee1588_is_enabled(void) {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool driver_ieee1588_read_timer(struct timespec *t) {
+bool driver_ieee1588_read_timer(struct timespec *const t) {
   if (t == NULL) {
     return false;
   }
@@ -1348,7 +1348,7 @@ bool driver_ieee1588_read_timer(struct timespec *t) {
   return true;
 }
 
-bool driver_ieee1588_write_timer(const struct timespec *t) {
+bool driver_ieee1588_write_timer(const struct timespec *const t) {
   if (t == NULL) {
     return false;
   }
@@ -1365,7 +1365,8 @@ void driver_ieee1588_timestamp_next_frame() {
   s_doTimestampNext = true;
 }
 
-bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+bool driver_ieee1588_read_and_clear_tx_timestamp(
+    struct timespec* const timestamp) {
   qnethernet_hal_disable_interrupts();  // {
   if (s_hasTxTimestamp) {
     s_hasTxTimestamp = false;
@@ -1380,7 +1381,8 @@ bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   return false;
 }
 
-bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+bool driver_ieee1588_adjust_timer(const uint32_t corrInc,
+                                  const uint32_t corrPeriod) {
   if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
     return false;
   }
@@ -1410,21 +1412,21 @@ bool driver_ieee1588_adjust_freq(int nsps) {
 
 // Channels
 
-static inline volatile uint32_t *tcsrReg(int channel) {
+static inline volatile uint32_t *tcsrReg(const int channel) {
   if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
   return &ENET_TCSR0 + 2*channel;
 }
 
-static inline volatile uint32_t *tccrReg(int channel) {
+static inline volatile uint32_t *tccrReg(const int channel) {
   if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
   return &ENET_TCCR0 + 2*channel;
 }
 
-bool driver_ieee1588_set_channel_mode(int channel, int mode) {
+bool driver_ieee1588_set_channel_mode(const int channel, const int mode) {
   switch (mode) {
     case 12:  // Reserved
     case 13:  // Reserved
@@ -1436,7 +1438,7 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode) {
       break;
   }
 
-  volatile uint32_t *tcsr = tcsrReg(channel);
+  volatile uint32_t *const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
@@ -1454,13 +1456,13 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode) {
   return true;
 }
 
-bool driver_ieee1588_set_channel_output_pulse_width(int channel,
-                                                    int pulseWidth) {
+bool driver_ieee1588_set_channel_output_pulse_width(const int channel,
+                                                    const int pulseWidth) {
   if ((pulseWidth < 1) || (32 < pulseWidth)) {
     return false;
   }
 
-  volatile uint32_t *tcsr = tcsrReg(channel);
+  volatile uint32_t *const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
@@ -1478,8 +1480,9 @@ bool driver_ieee1588_set_channel_output_pulse_width(int channel,
   return true;
 }
 
-bool driver_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
-  volatile uint32_t *tccr = tccrReg(channel);
+bool driver_ieee1588_set_channel_compare_value(const int channel,
+                                               const uint32_t value) {
+  volatile uint32_t *const tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
   }
@@ -1487,8 +1490,8 @@ bool driver_ieee1588_set_channel_compare_value(int channel, uint32_t value) {
   return true;
 }
 
-bool driver_ieee1588_get_and_clear_channel_status(int channel) {
-  volatile uint32_t *tcsr = tcsrReg(channel);
+bool driver_ieee1588_get_and_clear_channel_status(const int channel) {
+  volatile uint32_t *const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
