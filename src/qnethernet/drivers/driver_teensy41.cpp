@@ -1467,7 +1467,7 @@ bool ieee1588_is_enabled(void) {
   return (ENET::ATCR::EN != 0);
 }
 
-bool ieee1588_read_timer(struct timespec *t) {
+bool ieee1588_read_timer(struct timespec *const t) {
   if (t == NULL) {
     return false;
   }
@@ -1491,7 +1491,7 @@ bool ieee1588_read_timer(struct timespec *t) {
   return true;
 }
 
-bool ieee1588_write_timer(const struct timespec *t) {
+bool ieee1588_write_timer(const struct timespec *const t) {
   if (t == NULL) {
     return false;
   }
@@ -1508,7 +1508,7 @@ void ieee1588_timestamp_next_frame() {
   s_doTimestampNext = true;
 }
 
-bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
+bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   qnethernet_hal_disable_interrupts();  // {
   if (s_hasTxTimestamp) {
     s_hasTxTimestamp = false;
@@ -1523,7 +1523,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp) {
   return false;
 }
 
-bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod) {
+bool ieee1588_adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
   if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
     return false;
   }
@@ -1553,7 +1553,7 @@ bool ieee1588_adjust_freq(int nsps) {
 
 // Channels
 
-bool ieee1588_set_channel_mode(size_t channel, int mode) {
+bool ieee1588_set_channel_mode(const size_t channel, const int mode) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
@@ -1569,7 +1569,7 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
       break;
   }
 
-  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
   uint32_t r = *tcsr;
   *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
@@ -1586,7 +1586,8 @@ bool ieee1588_set_channel_mode(size_t channel, int mode) {
   return true;
 }
 
-bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
+bool ieee1588_set_channel_output_pulse_width(const size_t channel,
+                                             const int pulseWidth) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
@@ -1595,7 +1596,7 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
     return false;
   }
 
-  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
   uint32_t r = *tcsr;
   *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
@@ -1612,7 +1613,8 @@ bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth) {
   return true;
 }
 
-bool ieee1588_set_channel_compare_value(size_t channel, uint32_t value) {
+bool ieee1588_set_channel_compare_value(const size_t channel,
+                                        const uint32_t value) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
@@ -1621,12 +1623,12 @@ bool ieee1588_set_channel_compare_value(size_t channel, uint32_t value) {
   return true;
 }
 
-bool ieee1588_get_and_clear_channel_status(size_t channel) {
+bool ieee1588_get_and_clear_channel_status(const size_t channel) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
 
-  volatile uint32_t *tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
   if ((*tcsr & ENET::CHANNEL::TCSR::vals::TF(1)) != 0) {
     *tcsr |= ENET::CHANNEL::TCSR::vals::TF(1);
     ENET::group->TGSR = (1 << channel);
