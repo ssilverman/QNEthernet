@@ -510,6 +510,7 @@ bool EthernetClass::linkState() const {
   if (netif_ == nullptr) {
     return false;
   }
+  Ethernet.loop();  // Move the stack along
   return netif_is_link_up(netif_);
 }
 

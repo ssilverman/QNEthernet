@@ -27,6 +27,7 @@ and this project adheres to
 * Changed ping send enable macro to `QNETHERNET_ENABLE_PING_SEND`
   from `QNETHERNET_ENABLE_PING`.
 * Updated to support C++11 compilers.
+* Added a call to `Ethernet.loop()` in `EthernetClass::linkState()`.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
