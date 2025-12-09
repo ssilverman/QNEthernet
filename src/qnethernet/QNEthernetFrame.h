@@ -227,8 +227,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
 
     // IEEE 1588
-    volatile bool hasTimestamp = false;
-    timespec timestamp{0, 0};
+    internal::optional<timespec> timestamp;
 
     // Clears all the data.
     void clear();
