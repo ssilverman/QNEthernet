@@ -791,9 +791,9 @@ static void enet_isr() {
 
   if ((ENET_EIR & ENET_EIR_TS_AVAIL) != 0) {
     ENET_EIR = ENET_EIR_TS_AVAIL;
-    s_hasTxTimestamp = true;
     s_txTimestamp.tv_sec = s_ieee1588Seconds;
     s_txTimestamp.tv_nsec = ENET_ATSTMP;
+    s_hasTxTimestamp = true;
   }
 
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
