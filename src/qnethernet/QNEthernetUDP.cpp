@@ -84,9 +84,11 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
 
-  packet.hasTimestamp = p->timestampValid;
-  if (packet.hasTimestamp) {
-    packet.timestamp = p->timestamp;
+  if (p->timestampValid) {
+    packet.timestamp.value = p->timestamp;
+    packet.timestamp.has_value = true;
+  } else {
+    packet.timestamp.has_value = false;
   }
 
   (void)pbuf_free(p);
@@ -259,9 +261,8 @@ void EthernetUDP::Packet::clear() {
   port = 0;
   destAddr = *IP_ANY_TYPE;
   receivedTimestamp = 0;
-  hasTimestamp = false;
-  timestamp.tv_sec = 0;
-  timestamp.tv_nsec = 0;
+  timestamp.has_value = false;
+  timestamp.value = {0, 0};
 }
 
 // --------------------------------------------------------------------------
@@ -355,8 +356,8 @@ IPAddress EthernetUDP::destIP() const {
 
 bool EthernetUDP::timestamp(timespec& timestamp) const {
   // NOTE: This is not "concurrent safe"
-  if (packet_.hasTimestamp) {
-    timestamp = packet_.timestamp;
+  if (packet_.timestamp.has_value) {
+    timestamp = packet_.timestamp.value;
     return true;
   }
   return false;
