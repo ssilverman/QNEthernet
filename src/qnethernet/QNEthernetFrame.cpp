@@ -61,9 +61,11 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   }
   frame.receivedTimestamp = timestamp;
 
-  frame.hasTimestamp = p->timestampValid;
-  if (frame.hasTimestamp) {
-    frame.timestamp = p->timestamp;
+  if (p->timestampValid) {
+    frame.timestamp.value = p->timestamp;
+    frame.timestamp.has_value = true;
+  } else {
+    frame.timestamp.has_value = false;
   }
 
   (void)pbuf_free(p);
@@ -78,9 +80,8 @@ FLASHMEM EthernetFrameClass::EthernetFrameClass()
 void EthernetFrameClass::Frame::clear() {
   data.clear();
   receivedTimestamp = 0;
-  hasTimestamp = false;
-  timestamp.tv_sec = 0;
-  timestamp.tv_nsec = 0;
+  timestamp.has_value = false;
+  timestamp.value = {0, 0};
 }
 
 void EthernetFrameClass::clear() {
@@ -188,8 +189,8 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
 
 bool EthernetFrameClass::timestamp(timespec& timestamp) const {
   // NOTE: This is not "concurrent safe"
-  if (frame_.hasTimestamp) {
-    timestamp = frame_.timestamp;
+  if (frame_.timestamp.has_value) {
+    timestamp = frame_.timestamp.value;
     return true;
   }
   return false;
