@@ -54,6 +54,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   //
   // This first calls end() if the _reuse_ socket option differs.
   //
+  // If there was an error then errno will be set appropriately.
+  //
   // This function is defined by the Arduino API.
   void begin() final;  // Wish: Boolean return
 
@@ -62,12 +64,16 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // always return false if the port is not set.
   //
   // This first calls end() if the _reuse_ socket option differs.
+  //
+  // If there was an error then errno will be set appropriately.
   bool beginWithReuse();
 
   // Starts listening on the specified port. This does not set the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
   // This first calls end() if the port or _reuse_ socket option differ.
+  //
+  // If there was an error then errno will be set appropriately.
   bool begin(uint16_t port);
 
   // Starts listening on the specified port, if set, and sets the SO_REUSEADDR
@@ -76,10 +82,14 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // If the port or _reuse_ socket option differ then this first calls end() to
   // prevent a single server object from representing more than one
   // listening socket.
+  //
+  // If there was an error then errno will be set appropriately.
   bool beginWithReuse(uint16_t port);
 
   // Stops listening. This does nothing if the port is not set or the server is
   // not listening.
+  //
+  // If there was an error then errno will be set appropriately.
   void end();
 
   // Accepts a connection and returns a client, possibly unconnected. This

@@ -10,10 +10,12 @@
 
 // C++ includes
 #include <algorithm>
+#include <cerrno>
 #include <limits>
 
 #include "QNEthernet.h"
 #include "lwip/arch.h"
+#include "lwip/err.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
 #include "lwip/tcp.h"
@@ -298,9 +300,10 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   }
 
   // Try to bind
-  if (altcp_bind(pcb, IP_ANY_TYPE, 0) != ERR_OK) {
+  if (err_t err = altcp_bind(pcb, IP_ANY_TYPE, 0); err != ERR_OK) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
+    errno = err_to_errno(err);
     return nullptr;
   }
 
@@ -313,10 +316,12 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   altcp_recv(pcb, &recvFunc);
 
   // Try to connect
-  if (altcp_connect(pcb, ipaddr, port, &connectedFunc) != ERR_OK) {
+  if (err_t err = altcp_connect(pcb, ipaddr, port, &connectedFunc);
+      err != ERR_OK) {
     // holder->state will be removed when holder is removed
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
+    errno = err_to_errno(err);
     return nullptr;
   }
 
@@ -344,17 +349,21 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
     ip_set_option(pcb, SOF_REUSEADDR);
 #endif  // LWIP_ALTCP
   }
-  if (altcp_bind(pcb, IP_ANY_TYPE, port) != ERR_OK) {
+  if (err_t err = altcp_bind(pcb, IP_ANY_TYPE, port); err != ERR_OK) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
+    errno = err_to_errno(err);
     return -1;
   }
 
   // Try to listen
-  struct altcp_pcb* const pcbNew = altcp_listen(pcb);
+  err_t err = ERR_OK;
+  struct altcp_pcb* const pcbNew =
+      altcp_listen_with_backlog_and_err(pcb, TCP_DEFAULT_LISTEN_BACKLOG, &err);
   if (pcbNew == nullptr) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
+    errno = err_to_errno(err);
     return -1;
   }
   pcb = pcbNew;
@@ -398,12 +407,14 @@ bool ConnectionManager::stopListening(const uint16_t port) {
                      return (elem != nullptr) && (getLocalPort(elem) == port);
                    });
   if (it == listeners_.cend()) {
+    errno = ENOTCONN;
     return false;
   }
   struct altcp_pcb* const pcb = *it;
   listeners_.erase(it);
   if (altcp_close(pcb) != ERR_OK) {
     altcp_abort(pcb);
+    // Note: Don't set errno because we're returning true here
   }
   return true;
 }

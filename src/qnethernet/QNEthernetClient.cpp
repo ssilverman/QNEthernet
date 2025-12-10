@@ -114,6 +114,7 @@ bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
 
   conn_ = internal::ConnectionManager::instance().connect(ipaddr, port);
   if (conn_ == nullptr) {
+    // Note: errno set by connect()
     return false;
   }
 
@@ -133,6 +134,7 @@ bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
     if ((conn_ == nullptr) || !conn_->connected) {
       close(false);
       // TIMED_OUT (-1)
+      errno = ETIMEDOUT;
       return false;
     }
   }

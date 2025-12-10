@@ -57,6 +57,8 @@ class EthernetClient : public internal::ClientEx,
   //
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
+  // If there was an error then errno will be set appropriately.
+  //
   // This function is defined by the Arduino API.
   int connect(IPAddress ip, uint16_t port) final;
 
@@ -71,6 +73,8 @@ class EthernetClient : public internal::ClientEx,
 
   // Starts the connection process but doesn't wait for the connection to
   // be complete.
+  //
+  // If there was an error then errno will be set appropriately.
   //
   // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
   // with connect().

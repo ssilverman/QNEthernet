@@ -9,6 +9,7 @@
 #if LWIP_TCP
 
 // C++ includes
+#include <cerrno>
 #include <memory>
 
 #include "QNEthernet.h"
@@ -21,7 +22,10 @@ EthernetServer::EthernetServer(const uint16_t port)
     : port_{true, port} {}
 
 EthernetServer::~EthernetServer() noexcept {
+  int lastErrno = errno;
   end();
+  errno = lastErrno;  // Because end() may have set it via
+                      // ConnectionManager::stopListening()
 }
 
 int32_t EthernetServer::port() const {
@@ -60,7 +64,10 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
     if ((port != 0) && (port_ == port) && (reuse_ == reuse)) {
       return true;
     }
+    int lastErrno = errno;
     end();  // TODO: Should we call end() only if the new begin is successful?
+    errno = lastErrno;  // Because end() may have set it via
+                        // ConnectionManager::stopListening()
   }
 
   // Only change the port if listening was successful
@@ -71,6 +78,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
     reuse_ = reuse;
     return true;
   }
+  // Note: errno set by listen()
   return false;
 }
 
@@ -78,6 +86,7 @@ void EthernetServer::end() {
   if (listeningPort_ > 0) {
     internal::ConnectionManager::instance().stopListening(listeningPort_);
     listeningPort_ = 0;
+    // Note: errno set by stopListening()
   }
   port_ = {false, 0};
 }
