@@ -130,6 +130,8 @@ class EthernetClass final {
   // to the given address until initialization, where the driver may change it
   // if the MAC address can't be set.
   //
+  // If there was an error then errno will be set appropriately.
+  //
   // See: driverCapabilities()
   void setMACAddress(const uint8_t mac[kMACAddrSize]);
 
@@ -146,6 +148,8 @@ class EthernetClass final {
   // This also retrieves the system MAC address from the driver if it has not
   // yet been accessed.
   //
+  // If there was an error then errno will be set appropriately.
+  //
   // See: waitForLocalIP(timeout)
   bool begin();
 
@@ -157,6 +161,8 @@ class EthernetClass final {
   //
   // This returns whether DHCP doesn't require a restart or it does and whether
   // the restart attempt was successful.
+  //
+  // If there was an error then errno will be set appropriately.
   bool setDHCPEnabled(bool flag);
 
   // Returns whether the DHCP client is enabled. This is valid whether Ethernet

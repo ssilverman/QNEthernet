@@ -257,8 +257,12 @@ bool EthernetClass::maybeStartDHCP() {
 #if LWIP_DHCP
   const bool isDHCP = ip4_addr_isany(netif_ip4_addr(netif_));
   if (isDHCP && dhcpEnabled_ && !dhcpActive_) {
-    dhcpActive_ = (dhcp_start(netif_) == ERR_OK);
+    const err_t err = dhcp_start(netif_);
+    dhcpActive_ = (err == ERR_OK);
     dhcpDesired_ = true;
+    if (err != ERR_OK) {
+      errno = err_to_errno(err);
+    }
     return dhcpActive_;
   }
   if (!isDHCP) {
@@ -324,7 +328,11 @@ bool EthernetClass::setDHCPEnabled(const bool flag) {
 
   if (flag) {  // DHCP enabled
     if (dhcpDesired_ && !dhcpActive_) {
-      dhcpActive_ = (dhcp_start(netif_) == ERR_OK);
+      const err_t err = dhcp_start(netif_);
+      dhcpActive_ = (err == ERR_OK);
+      if (err != ERR_OK) {
+        errno = err_to_errno(err);
+      }
       return dhcpActive_;
     }
   } else {  // DHCP disabled

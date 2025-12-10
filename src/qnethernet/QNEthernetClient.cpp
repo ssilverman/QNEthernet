@@ -228,16 +228,19 @@ void EthernetClient::close(const bool wait) {
       Ethernet.loop();  // Maybe some TCP data gets in
       // NOTE: loop() requires a re-check of the state
     } else if (!conn_->connected) {
-      if (altcp_close(state->pcb) != ERR_OK) {
+      if (const err_t err = altcp_close(state->pcb); err != ERR_OK) {
         altcp_abort(state->pcb);
+        errno = err_to_errno(err);
       }
       state = nullptr;
     }
 
     if (state != nullptr) {
-      const err_t err = altcp_close(state->pcb);  // In altcp, removes TCP callbacks
+      // Note: In altcp, altcp_close() removes TCP callbacks
+      const err_t err = altcp_close(state->pcb);
       if (err != ERR_OK) {
         altcp_abort(state->pcb);
+        errno = err_to_errno(err);
       }
 #if LWIP_ALTCP
       // Altcp sockets don't seem to receive close or error events

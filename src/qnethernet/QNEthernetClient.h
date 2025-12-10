@@ -128,6 +128,8 @@ class EthernetClient : public internal::ClientEx,
 
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
+  // If there was an error then errno will be set appropriately.
+  //
   // This function is defined by the Arduino API.
   void stop() final;
 
@@ -136,6 +138,8 @@ class EthernetClient : public internal::ClientEx,
   //
   // Note: This has been superseded by setConnectionTimeoutEnabled(false) used
   // with stop().
+  //
+  // If there was an error then errno will be set appropriately.
   void close();
 
   // Closes the sending side of this connection.
@@ -269,6 +273,8 @@ class EthernetClient : public internal::ClientEx,
   // Closes the connection. The `wait` parameter indicates whether to wait for
   // close or timeout. Set to true to wait and false to not wait. stop() calls
   // this with true and close() calls this with false.
+  //
+  // If there was an error then errno will be set appropriately.
   void close(bool wait);
 
   // Gets address info for this connection. This returns whether the client is
