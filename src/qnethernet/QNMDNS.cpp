@@ -26,16 +26,20 @@ static void srv_txt(struct mdns_service* const service,
                     void* const txt_userdata) {
   // TODO: Not clear yet why we need at least an empty TXT record for SRV to appear
   if (txt_userdata == nullptr) {
-    const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
-    errno = err_to_errno(err);
+    if (const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
+        err != ERR_OK) {
+      errno = err_to_errno(err);
+    }
     return;
   }
 
   const auto fn = reinterpret_cast<std::vector<String> (*)()>(txt_userdata);
   const std::vector<String> list = fn();
   if (list.empty()) {
-    const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
-    errno = err_to_errno(err);
+    if (const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
+        err != ERR_OK) {
+      errno = err_to_errno(err);
+    }
     return;
   }
 
