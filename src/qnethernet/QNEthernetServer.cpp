@@ -84,7 +84,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
 
 void EthernetServer::end() {
   if (listeningPort_ > 0) {
-    internal::ConnectionManager::instance().stopListening(listeningPort_);
+    (void)internal::ConnectionManager::instance().stopListening(listeningPort_);
     listeningPort_ = 0;
     // Note: errno set by stopListening()
   }

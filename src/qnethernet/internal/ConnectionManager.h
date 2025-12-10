@@ -29,36 +29,46 @@ class ConnectionManager final {
   // Accesses the singleton instance.
   static ConnectionManager& instance();
 
+  [[nodiscard]]
   std::shared_ptr<ConnectionHolder> connect(const ip_addr_t* ipaddr,
                                             uint16_t port);
 
   // Listens on a port. The `reuse` parameter controls the SO_REUSEADDR flag.
   // This returns a negative value if the attempt was not successful or the port
   // number otherwise. In theory, this shouldn't return zero.
+  [[nodiscard]]
   int32_t listen(uint16_t port, bool reuse);
 
+  [[nodiscard]]
   bool isListening(uint16_t port) const;
 
   // Stops listening on the specified port. This returns true if the listener
   // was found and successfully stopped. This returns false if the listener was
   // not found or was found and not successfully stopped.
+  [[nodiscard]]
   bool stopListening(uint16_t port);
 
   // Finds a connection whose local port is the specified port, and which has
   // not yet been acknowledged by accept().
+  [[nodiscard]]
   std::shared_ptr<ConnectionHolder> findUnacknowledged(uint16_t port) const;
 
   // Finds a connection on the given port that has data available.
+  [[nodiscard]]
   std::shared_ptr<ConnectionHolder> findAvailable(uint16_t port) const;
 
   // Removes the given connection and returns whether the connection existed in
   // the list and was removed.
+  [[nodiscard]]
   bool remove(const std::shared_ptr<ConnectionHolder>& holder);
 
   // Output routines
+  [[nodiscard]]
   size_t write(uint16_t port, uint8_t b);
+  [[nodiscard]]
   size_t write(uint16_t port, const void* b, size_t len);
   void flush(uint16_t port);
+  [[nodiscard]]
   int availableForWrite(uint16_t port);  // Finds the minimum, or zero for none
 
   // Aborts all connections. The motivation is outlined in the "On connections
