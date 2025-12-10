@@ -28,13 +28,14 @@ and this project adheres to
   from `QNETHERNET_ENABLE_PING`.
 * Updated to support C++11 compilers.
 * Added a call to `Ethernet.loop()` in `EthernetClass::linkState()`.
+* Improved setting of `errno`.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
 * Now keeping any manually-set link UP state sticky so that the driver can
   choose not to set it to DOWN.
-* Update _Ping_ and _SimplePing_ examples to work with other systems by changing
-  use of `elapsedMillis` to `unsigned long` plus calculations.
+* Updated _Ping_ and _SimplePing_ examples to work with other systems by
+  changing use of `elapsedMillis` to `unsigned long` plus calculations.
 
 ## [0.33.1]
 
