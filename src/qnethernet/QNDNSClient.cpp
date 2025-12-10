@@ -116,11 +116,16 @@ bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
             lookupDone = true;
           },
           timeout)) {
+    // Note: errno set by getHostByName()
     return false;
   }
 
   const uint32_t t = sys_now();
-  while (!lookupDone && ((sys_now() - t) < timeout)) {
+  while (!lookupDone) {
+    if ((sys_now() - t) >= timeout) {
+      errno = ETIMEDOUT;
+      break;
+    }
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
