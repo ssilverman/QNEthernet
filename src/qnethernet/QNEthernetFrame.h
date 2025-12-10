@@ -236,6 +236,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   static err_t recvFunc(struct pbuf* p, struct netif* netif);
 
   // Checks if there's data still available in the packet.
+  [[nodiscard]]
   bool isAvailable() const;
 
   // Received frame; updated every time one is received

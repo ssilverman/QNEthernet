@@ -35,7 +35,7 @@ void EthernetServer::begin() {
   if (!port_.has_value) {
     return;
   }
-  begin(port_.value, false);
+  (void)begin(port_.value, false);
 }
 
 bool EthernetServer::beginWithReuse() {

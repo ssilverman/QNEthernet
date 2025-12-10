@@ -162,6 +162,7 @@ class MDNSClass final {
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
+  [[nodiscard]]
   int findService(const char* name, const char* type,
                   const char* protocol, uint16_t port);
 

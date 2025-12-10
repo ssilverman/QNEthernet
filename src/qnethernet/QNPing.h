@@ -89,6 +89,7 @@ class Ping final {
   // Attempts to create and bind the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns
   // false. This returns true if the PCB is set.
+  [[nodiscard]]
   bool tryCreatePCB();
 
   replyf replyf_;

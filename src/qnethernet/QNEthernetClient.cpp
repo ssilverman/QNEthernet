@@ -479,7 +479,7 @@ static inline bool isAvailable(
   }                              \
   /* For non-blocking connect */ \
   if (pendingConnect_) {         \
-    watchPendingConnect();       \
+    (void)watchPendingConnect(); \
     return 0;                    \
   }
 

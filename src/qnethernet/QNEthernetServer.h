@@ -121,6 +121,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   explicit operator bool() const;
 
  private:
+  [[nodiscard]]
   bool begin(uint16_t port, bool reuse);
 
   internal::optional<uint16_t>

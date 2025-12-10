@@ -513,6 +513,7 @@ class EthernetClass final {
   // Starts Ethernet with the given address configuration. If the IP address is
   // INADDR_NONE then DHCP will be started. This sets the DNS address if the
   // argument is not NULL.
+  [[nodiscard]]
   bool begin(const IPAddress& ipaddr,
              const IPAddress& netmask,
              const IPAddress& gateway,

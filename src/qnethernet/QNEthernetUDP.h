@@ -268,26 +268,32 @@ class EthernetUDP : public UDP,
   // Attempts to create the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns
   // false. This returns true if the PCB is set.
+  [[nodiscard]]
   bool tryCreatePCB();
 
   // Starts listening on a port and sets the SO_REUSEADDR socket option
   // according to the `reuse` parameter. This returns whether the attempt
   // was successful.
+  [[nodiscard]]
   bool begin(uint16_t localPort, bool reuse);
 
   // Multicast functions make use of Ethernet.joinGroup()
   //
   // If this returns false and there was an error then errno will be set.
+  [[nodiscard]]
   bool beginMulticast(const IPAddress& ip, uint16_t port, bool reuse);
 
   // ip_addr_t versions of transmission functions
+  [[nodiscard]]
   bool beginPacket(const ip_addr_t* ipaddr, uint16_t port);
 
   // If this returns false and there was an error then errno will be set.
+  [[nodiscard]]
   bool send(const ip_addr_t* ipaddr, uint16_t port,
             const void* data, size_t len);
 
   // Checks if there's data still available in the packet.
+  [[nodiscard]]
   bool isAvailable() const;
 
   struct udp_pcb* pcb_ = nullptr;
