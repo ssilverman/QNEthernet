@@ -58,7 +58,10 @@ static bool initialized = false;
 static bool netifAdded = false;
 
 FLASHMEM MDNSClass::~MDNSClass() noexcept {
+  int lastErrno = errno;
   end();
+  errno = lastErrno;  // Because end() may have set it via
+                      // ConnectionManager::stopListening()
 }
 
 bool MDNSClass::begin(const char* const hostname) {
