@@ -2048,6 +2048,7 @@ _QNEthernet_ library.
 27. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
 28. [Ping](#ping) (ICMP echo) support
 29. Ability to disable [ping replies](#ping-reply)
+30. Use of `errno` when function calls fail
 
 ## Compatibility with other APIs
 
