@@ -64,6 +64,7 @@ void setup() {
     printf("Failed to start Ethernet\r\n");
     return;
   }
+  printf("Waiting for local IP...\r\n");
   if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
     printf("Failed to get IP address from DHCP\r\n");
     return;
