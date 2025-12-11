@@ -1367,6 +1367,7 @@ void driver_ieee1588_timestamp_next_frame() {
 
 bool driver_ieee1588_read_and_clear_tx_timestamp(
     struct timespec* const timestamp) {
+  bool retval = false;
   qnethernet_hal_disable_interrupts();  // {
   if (s_hasTxTimestamp) {
     s_hasTxTimestamp = false;
@@ -1374,11 +1375,11 @@ bool driver_ieee1588_read_and_clear_tx_timestamp(
       timestamp->tv_sec = s_txTimestamp.tv_sec;
       timestamp->tv_nsec = s_txTimestamp.tv_nsec;
     }
-    return true;
+    retval = true;
   }
   qnethernet_hal_enable_interrupts();  // }
 
-  return false;
+  return retval;
 }
 
 bool driver_ieee1588_adjust_timer(const uint32_t corrInc,
