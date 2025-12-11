@@ -167,6 +167,7 @@ void setup() {
       if (kWaitForDHCP) {
         // Option 1.1 - Wait for a DHCP-assigned address
 
+        printf("Waiting for local IP...\r\n");
         if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
           printf("No address from DHCP; setting static IP...\r\n");
           startWithStatic = true;
@@ -194,6 +195,7 @@ void setup() {
       }
 
       if (kWaitForDHCP) {
+        printf("Waiting for local IP...\r\n");
         if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
           printf("Warning: No address from DHCP\r\n");
           // An address could still come in later

@@ -240,6 +240,7 @@ void setup() {
 
   // We don't really need to do the following because the
   // address-changed listener will notify us
+  // printf("Waiting for local IP...\r\n");
   // if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
   //   printf("Failed to get IP address from DHCP\r\n");
   //   return;

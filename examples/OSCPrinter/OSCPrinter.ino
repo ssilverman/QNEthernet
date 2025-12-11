@@ -45,6 +45,7 @@ void setup() {
     Serial.println("Failed to start Ethernet");
     return;
   }
+  printf("Waiting for local IP...\r\n");
   if (!Ethernet.waitForLocalIP(kDHCPTimeout)) {
     Serial.println("Failed to get IP address from DHCP");
     return;
