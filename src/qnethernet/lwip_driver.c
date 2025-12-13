@@ -7,6 +7,7 @@
 #include "qnethernet/lwip_driver.h"
 
 // C includes
+#include <errno.h>
 #include <string.h>
 
 #include "lwip/arch.h"
@@ -200,8 +201,13 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     remove_netif();
   }
 
-  driver_set_mac(mac);
-  driver_get_mac(s_mac);
+  // TODO: Is masking a false return value what we want here?
+  (void)driver_set_mac(mac);
+  if (!driver_get_mac(s_mac)) {
+    // This shouldn't happen because the driver's been initialized
+    errno = EFAULT;
+    return false;
+  }
 
   if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);

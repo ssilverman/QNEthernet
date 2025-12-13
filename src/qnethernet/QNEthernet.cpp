@@ -300,7 +300,12 @@ bool EthernetClass::start() {
     return false;
   }
 
-  enet_get_mac(mac_.value);
+  if (!enet_get_mac(mac_.value)) {
+    // This shouldn't happen
+    enet_deinit();
+    errno = EFAULT;
+    return false;
+  }
 
 #if LWIP_NETIF_HOSTNAME
   if (std::strlen(hostname_) == 0) {
