@@ -1670,9 +1670,9 @@ Relevant classes:
 
 Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest 3.6.x version (current as
-of this writing is 3.6.3): http://github.com/Mbed-TLS/mbedtls
+of this writing is 3.6.5): http://github.com/Mbed-TLS/mbedtls
 
-See the `v3.6.3` or `mbedtls-3.6.3` tags for the 3.6.3 version.
+See the `v3.6.5` or `mbedtls-3.6.5` tags for the 3.6.5 version.
 
 #### Mbed TLS library install for Arduino IDE (v3.6.x)
 
@@ -1691,7 +1691,7 @@ Next, create an empty _mbedtls.h_ file inside _"Libraries"/mbedtls/src/_.
 Next, create a _library.properties_ file inside _"Libraries"/mbedtls/_:
 ```properties
 name=Mbed TLS
-version=3.6.3
+version=3.6.5
 sentence=Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols.
 paragraph=Its small code footprint makes it suitable for embedded systems.
 category=Communication
@@ -1736,7 +1736,7 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
 ```json
 {
   "name": "Mbed TLS",
-  "version": "3.6.3",
+  "version": "3.6.5",
   "description": "Mbed TLS is a C library that implements cryptographic primitives, X.509 certificate manipulation and the SSL/TLS and DTLS protocols. Its small code footprint makes it suitable for embedded systems.",
   "keywords": [
     "tls",
