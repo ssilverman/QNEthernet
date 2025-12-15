@@ -176,9 +176,9 @@ static void clientConnect() {
       const int c = client.read();
       switch (c) {
         case '\t':
-          // Fallthrough
+          [[fallthrough]];
         case '\n':
-          // Fallthrough
+          [[fallthrough]];
         case '\r':
           printf("%c", c);
           break;

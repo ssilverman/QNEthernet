@@ -505,7 +505,7 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      // Fallthrough
+      [[fallthrough]];
     case EnetInitStates::kInitialized:
       break;
     default:
@@ -524,7 +524,7 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      // Fallthrough
+      [[fallthrough]];
     case EnetInitStates::kInitialized:
       break;
     default:
@@ -540,9 +540,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_has_hardware(void) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      // Fallthrough
+      [[fallthrough]];
     case EnetInitStates::kInitialized:
-      // Fallthrough
+      [[fallthrough]];
     case EnetInitStates::kNotInitialized:
       return true;
     case EnetInitStates::kNoHardware:
@@ -581,7 +581,7 @@ FLASHMEM bool driver_init(void) {
 FLASHMEM void driver_deinit(void) {
   switch (s_initState) {
     case EnetInitStates::kStart:
-      // Fallthrough
+      [[fallthrough]];
     case EnetInitStates::kNoHardware:
       return;
     default:

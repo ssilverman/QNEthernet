@@ -152,7 +152,7 @@ extern "C" {
 int _write(const int file, const void* const buf, const size_t len) {
   switch (file) {
     case STDOUT_FILENO:
-      // Fallthrough
+      [[fallthrough]];
     case STDERR_FILENO:
       return Serial.write(static_cast<const uint8_t*>(buf), len);
     case STDIN_FILENO:

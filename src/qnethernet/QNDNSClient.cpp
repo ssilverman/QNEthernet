@@ -93,7 +93,7 @@ bool DNSClient::getHostByName(
       return true;
 
     case ERR_ARG:
-      // Fallthrough
+      [[fallthrough]];
     default:
       delete req;
       errno = err_to_errno(err);

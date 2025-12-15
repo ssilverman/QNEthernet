@@ -749,7 +749,7 @@ static inline int check_link_status(struct netif *const netif,
 
   switch (state) {
     case 0:
-      // Fallthrough
+      [[fallthrough]];
     case 1:
       if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
         return 1;
@@ -758,7 +758,7 @@ static inline int check_link_status(struct netif *const netif,
       if (!is_link_up) {
         break;
       }
-      // Fallthrough
+      [[fallthrough]];
 
     case 2:
       if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
@@ -848,9 +848,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_has_hardware(void) {
   switch (s_initState) {
     case kInitStateHasHardware:
-      // Fallthrough
+      [[fallthrough]];
     case kInitStatePHYInitialized:
-      // Fallthrough
+      [[fallthrough]];
     case kInitStateInitialized:
       return true;
     case kInitStateNoHardware:
