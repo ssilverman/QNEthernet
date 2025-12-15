@@ -4,6 +4,8 @@
 // c++11_compat.h defines some C++11 compatibility functions.
 // This file is part of the QNEthernet library.
 
+#pragma once
+
 #include <memory>
 #include <utility>
 
