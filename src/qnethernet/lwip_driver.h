@@ -18,6 +18,7 @@
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
+#include "qnethernet/compat/c11_compat.h"
 #include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
@@ -107,7 +108,7 @@ struct DriverCapabilities {
 void driver_get_capabilities(struct DriverCapabilities *dc);
 
 // Returns if the hardware hasn't yet been probed.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_is_unknown(void);
 
 // Gets the built-in Ethernet MAC address.
@@ -120,20 +121,20 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 // internal address has not yet been set.
 //
 // This returns whether the address was retrieved.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the internal MAC address and returns whether successful. This will be
 // set as a transmitted Ethernet frame's source address.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
 // probed (driver_is_unknown() would return 'true'), then this will check
 // the hardware.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_has_hardware(void);
 
 // Sets the SPI chip select pin given in Ethernet.init(). The pin will be -1 if
@@ -142,7 +143,7 @@ void driver_set_chip_select_pin(int pin);
 
 // Does low-level initialization. This returns whether the initialization
 // was successful. Most functions depend on the driver being initialized.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_init(void);
 
 // Uninitializes the driver.
@@ -152,7 +153,7 @@ void driver_deinit(void);
 // parameter indicates how many times the call has looped. This is useful so
 // that drivers can know when to stop checking to give the rest of the program a
 // chance to run.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 struct pbuf *driver_proc_input(struct netif *netif, int counter);
 
 // Polls anything that needs to be polled, for example, the link status.
@@ -161,40 +162,40 @@ void driver_poll(struct netif *netif);
 // Returns the link speed in Mbps. The value is only valid if the link is up.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 int driver_link_speed(void);
 
 // Sets the link speed in Mbps and returns whether successful.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_link_set_speed(int speed);
 
 // Returns the link duplex mode, true for full and false for half. The value is
 // only valid if the link is up.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_link_is_full_duplex(void);
 
 // Sets the link duplex mode, true for full and false for half. This returns
 // whether successful.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_link_set_full_duplex(bool flag);
 
 // Returns whether a crossover cable is detected. The value is only valid if the
 // link is up.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_link_is_crossover(void);
 
 // Outputs the given pbuf data.
 //
 // Note that the data will already contain any extra ETH_PAD_SIZE bytes.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 err_t driver_output(struct pbuf *p);
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -222,7 +223,7 @@ bool driver_output_frame(const void *frame, size_t len);
 // will also return false if 'mac' is NULL. Otherwise, this will return true.
 //
 // Note that this function may be passed a NULL MAC address.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              bool allow);
 
@@ -237,14 +238,14 @@ void driver_notify_manual_link_state(bool flag);
 // --------------------------------------------------------------------------
 
 // Returns the MTU.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 inline int enet_get_mtu(void) {
   return MTU;
 }
 
 // Returns the maximum frame length. This includes the 4-byte FCS (frame
 // check sequence).
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 inline int enet_get_max_frame_len(void) {
   return MAX_FRAME_LEN;
 }
@@ -256,12 +257,12 @@ void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Gets the current MAC address and returns whether it was retrieved. This does
 // nothing if 'mac' is NULL.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the current MAC address and returns whether it was changed. This does
 // nothing if 'mac' is NULL.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Initializes Ethernet and returns whether successful. This does not set the
@@ -276,7 +277,7 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // qnethernet_hal_init_entropy() before calling this.
 //
 // See also: driver_get_capabilities(dc)
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback,
                struct DriverCapabilities *dc);
@@ -286,7 +287,7 @@ void enet_deinit(void);
 
 // Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 struct netif *enet_netif(void);
 
 // Processes any Ethernet input. This is meant to be called often by the
@@ -315,9 +316,9 @@ bool enet_output_frame(const void *frame, size_t len);
 //
 // If 'group' is NULL then these return false. Otherwise, these return the
 // result of 'enet_set_mac_address_allowed()'.
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool enet_join_group(const ip4_addr_t *group);
-[[nodiscard]]
+ATTRIBUTE_NODISCARD
 bool enet_leave_group(const ip4_addr_t *group);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
