@@ -230,7 +230,8 @@ void EthernetClient::close(const bool wait) {
       Ethernet.loop();  // Maybe some TCP data gets in
       // NOTE: loop() requires a re-check of the state
     } else if (!conn_->connected) {
-      if (const err_t err = altcp_close(state->pcb); err != ERR_OK) {
+      const err_t err = altcp_close(state->pcb);
+      if (err != ERR_OK) {
         altcp_abort(state->pcb);
         errno = err_to_errno(err);
       }

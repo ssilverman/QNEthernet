@@ -300,7 +300,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   }
 
   // Try to bind
-  if (err_t err = altcp_bind(pcb, IP_ANY_TYPE, 0); err != ERR_OK) {
+  err_t err = altcp_bind(pcb, IP_ANY_TYPE, 0);
+  if (err != ERR_OK) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
     errno = err_to_errno(err);
@@ -316,8 +317,8 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
   altcp_recv(pcb, &recvFunc);
 
   // Try to connect
-  if (err_t err = altcp_connect(pcb, ipaddr, port, &connectedFunc);
-      err != ERR_OK) {
+  err = altcp_connect(pcb, ipaddr, port, &connectedFunc);
+  if (err != ERR_OK) {
     // holder->state will be removed when holder is removed
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
@@ -349,7 +350,8 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
     ip_set_option(pcb, SOF_REUSEADDR);
 #endif  // LWIP_ALTCP
   }
-  if (err_t err = altcp_bind(pcb, IP_ANY_TYPE, port); err != ERR_OK) {
+  err_t err = altcp_bind(pcb, IP_ANY_TYPE, port);
+  if (err != ERR_OK) {
     altcp_abort(pcb);
     Ethernet.loop();  // Allow the stack to move along
     errno = err_to_errno(err);
@@ -357,7 +359,7 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
   }
 
   // Try to listen
-  err_t err = ERR_OK;
+  err = ERR_OK;
   struct altcp_pcb* const pcbNew =
       altcp_listen_with_backlog_and_err(pcb, TCP_DEFAULT_LISTEN_BACKLOG, &err);
   if (pcbNew == nullptr) {
