@@ -113,7 +113,7 @@ static bool waitForLocalIP() {
                       gateway[0], gateway[1], gateway[2], gateway[3]).data());
   TEST_MESSAGE(format("     DNS:     %u.%u.%u.%u",
                       dns[0], dns[1], dns[2], dns[3]).data());
-  for (int i = 0; i < DNSClient::maxServers(); i++) {
+  for (int i = 0; i < DNSClient::maxServers(); ++i) {
     dns = DNSClient::getServer(i);
     TEST_MESSAGE(format("DNS Server %d: %u.%u.%u.%u", i,
                         dns[0], dns[1], dns[2], dns[3]).data());
@@ -165,7 +165,7 @@ static void test_client() {
   // // mbedtls_debug_set_threshold(3);
   // qindesign::security::MbedTLSCert ca;
   // if (!kRootCAIndexes.empty()) {
-  //   for (size_t i = 0; i < kRootCAIndexes.size() - 1; i++) {
+  //   for (size_t i = 0; i < kRootCAIndexes.size() - 1; ++i) {
   //     ca.parseDERNoCopy(&kRootCAs[i],
   //                       kRootCAIndexes[i + 1] - kRootCAIndexes[i]);
   //   }
@@ -204,7 +204,7 @@ static void test_client() {
     if (avail <= 0) {
       continue;
     }
-    for (int i = 0; i < avail; i++) {
+    for (int i = 0; i < avail; ++i) {
       UNITY_OUTPUT_CHAR(tlsClient->read());
     }
     UNITY_OUTPUT_FLUSH();
