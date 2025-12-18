@@ -412,8 +412,8 @@ int MbedTLSClient::read(uint8_t* const buf, const size_t size) {
     }
 
     totalRead = 1;
-    pBuf++;
-    sizeRem--;
+    ++pBuf;
+    --sizeRem;
   }
 
   int read = mbedtls_ssl_read(&ssl_, pBuf, sizeRem);

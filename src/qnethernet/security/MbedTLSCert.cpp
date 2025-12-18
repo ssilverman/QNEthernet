@@ -64,7 +64,7 @@ size_t MbedTLSCert::size() const {
   auto* p = &cert_;
   size_t size = 0;
   while (p != nullptr) {
-    size++;
+    ++size;
     p = p->next;
   }
   return size;
