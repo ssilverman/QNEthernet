@@ -196,4 +196,4 @@ static void clientConnect() {
 #endif  // LWIP_TCP
 }
 
-#endif  // MAIN_TEST_PROGRAM
+#endif  // MAIN_TEST_PROGRAM && !PIO_UNIT_TESTING
