@@ -6,7 +6,7 @@
 
 #pragma once
 
-#if defined(__cplusplus) || (__STDC__VERSION__ >= 202311L)
+#if defined(__cplusplus) || (__STDC_VERSION__ >= 202311L)
 #define ATTRIBUTE_NODISCARD [[nodiscard]]
 #else
 #define ATTRIBUTE_NODISCARD
