@@ -77,15 +77,15 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   if ((udp->inBufSize_ != 0) && (udp->inBufTail_ == udp->inBufHead_)) {
     // Full
     udp->inBufTail_ = (udp->inBufTail_ + 1) % udp->inBuf_.size();
-    udp->droppedReceiveCount_++;
+    ++udp->droppedReceiveCount_;
   } else {
-    udp->inBufSize_++;
+    ++udp->inBufSize_;
   }
   udp->inBufHead_ = (udp->inBufHead_ + 1) % udp->inBuf_.size();
 
   pbuf_free(p);
 
-  udp->totalReceiveCount_++;
+  ++udp->totalReceiveCount_;
 }
 
 EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
@@ -124,7 +124,7 @@ void EthernetUDP::setReceiveQueueCapacity(const size_t capacity) {
       inBufHead_ = inBufSize_;
 
       // Don't reserve memory because that might exhaust the heap
-      // for (size_t i = oldSize; i < size; i++) {
+      // for (size_t i = oldSize; i < size; ++i) {
       //   inBuf_[i].data.reserve(kMaxPayloadSize);
       // }
     }
@@ -305,7 +305,7 @@ int EthernetUDP::parsePacket() {
   packet_ = inBuf_[inBufTail_];
   inBuf_[inBufTail_].clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
-  inBufSize_--;
+  --inBufSize_;
 
   packetPos_ = 0;
   return static_cast<int>(packet_.data.size());

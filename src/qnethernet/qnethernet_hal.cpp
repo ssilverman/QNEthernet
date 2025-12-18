@@ -251,7 +251,7 @@ size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
   auto pBuf = static_cast<uint8_t*>(buf);
 
   size_t count = size / 4;
-  for (size_t i = 0; i < count; i++) {
+  for (size_t i = 0; i < count; ++i) {
     uint32_t r = qnethernet_hal_entropy();
     std::memcpy(pBuf, &r, 4);
     pBuf += 4;

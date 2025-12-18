@@ -108,7 +108,7 @@ struct Reg {
 
   // Pre-decrement operator.
   Reg& operator++() {
-    addr++;
+    ++addr;
     return *this;
   }
 };
@@ -391,7 +391,7 @@ FLASHMEM static void low_level_init() {
   kSn_RXBUF_SIZE = 16;
   kSn_TXBUF_SIZE = 16;
   // Set the others to 0k
-  for (uint8_t i = 1; i < 8; i++) {
+  for (uint8_t i = 1; i < 8; ++i) {
     Reg<uint8_t>{kSn_RXBUF_SIZE, i} = 0;
     Reg<uint8_t>{kSn_TXBUF_SIZE, i} = 0;
   }
@@ -513,7 +513,7 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   }
 
   auto reg = kSHAR;
-  for (int i = 0; i < ETH_HWADDR_LEN; i++) {
+  for (int i = 0; i < ETH_HWADDR_LEN; ++i) {
     mac[i] = *reg;
     ++reg;
   }

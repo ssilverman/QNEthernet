@@ -50,7 +50,7 @@ uint64_t siphash(const size_t c, const size_t d,
     m = __builtin_bswap64(m);
 #endif  // Big-endian
     v3 ^= m;
-    for (size_t i = 0; i < c; i++) {
+    for (size_t i = 0; i < c; ++i) {
       SIPROUND;
     }
     v0 ^= m;
@@ -66,14 +66,14 @@ uint64_t siphash(const size_t c, const size_t d,
   m = __builtin_bswap64(m);
 #endif  // Big-endian
   v3 ^= m;
-  for (size_t i = 0; i < c; i++) {
+  for (size_t i = 0; i < c; ++i) {
     SIPROUND;
   }
   v0 ^= m;
 
   // Finalization
   v2 ^= 0xff;
-  for (size_t i = 0; i < d; i++) {
+  for (size_t i = 0; i < d; ++i) {
     SIPROUND;
   }
 

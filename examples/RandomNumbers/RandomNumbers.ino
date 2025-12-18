@@ -57,7 +57,7 @@ void setup() {
 template <typename G>
 void demo(G& g) {
   printf("Raw numbers:");
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; ++i) {
     if (i % 5 == 0) {
       printf("\r\n");
     }
@@ -69,25 +69,25 @@ void demo(G& g) {
   int buckets[6]{0};
 
   printf("Dice rolls:");
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; ++i) {
     if (i % 20 == 0) {
       printf("\r\n");
     }
     int roll = diceDist(g);
     printf(" %d", roll);
-    buckets[roll - 1]++;
+    ++buckets[roll - 1];
   }
   printf("\r\n");
 
   // Print the dice roll counts
   printf("Dice counts:");
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; ++i) {
     printf(" [%d]=%d", i + 1, buckets[i]);
   }
   printf("\r\n");
 
   printf("Reals:");
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; ++i) {
     if (i % 5 == 0) {
       printf("\r\n");
     }
@@ -96,7 +96,7 @@ void demo(G& g) {
   printf("\r\n");
 
   printf("Normals:");
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; ++i) {
     if (i % 5 == 0) {
       printf("\r\n");
     }

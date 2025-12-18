@@ -37,7 +37,7 @@ bool OctoWS2811Receiver::begin() {
 
   // Ensure everything is cleared to black
   int numPixels = leds_.numPixels();
-  for (int i = 0; i < numPixels; i++) {
+  for (int i = 0; i < numPixels; ++i) {
     leds_.setPixel(i, 0);
   }
   leds_.show();
@@ -76,7 +76,7 @@ void OctoWS2811Receiver::handleCommand(uint8_t command,
       // uint16_t artnet_channel
       if (len >= 32) {
         // Colour order
-        for (size_t i = 0; i < 8; i++) {
+        for (size_t i = 0; i < 8; ++i) {
           StripConfig& config = stripConfigs_[i];
           switch (data[16 + i]) {
             case PixelPusherServer::ColourOrders::RGB:
@@ -164,7 +164,7 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t* pixels,
                      pixels[rgbOrder[1]],
                      pixels[rgbOrder[2]]);
       pixels += 3;
-      it++;
+      ++it;
     }
   } else {
     while (it != end) {
@@ -173,7 +173,7 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t* pixels,
                      scale8(pixels[rgbOrder[1]], bri),
                      scale8(pixels[rgbOrder[2]], bri));
       pixels += 3;
-      it++;
+      ++it;
     }
   }
 }

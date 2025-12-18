@@ -126,7 +126,7 @@ void setup() {
 
   // Fill the payload with some data
   // It could also be random data or something else
-  for (size_t i = 0; i < kPayloadSize; i++) {
+  for (size_t i = 0; i < kPayloadSize; ++i) {
     payload[i] = i;
   }
 

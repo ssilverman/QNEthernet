@@ -68,7 +68,7 @@ static void test_siphash() {
   // Test vectors
 
   uint8_t msg[64];
-  for (size_t i = 0; i < 64; i++) {
+  for (size_t i = 0; i < 64; ++i) {
     msg[i] = i;
     uint64_t h = siphash(2, 4, kKey, msg, i);
     TEST_ASSERT_EQUAL_MESSAGE(h, vectors_sip64[i],

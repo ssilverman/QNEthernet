@@ -247,7 +247,7 @@ void setup() {
   // }
 
   // Initialize the digits buffer
-  for (size_t i = 0; i < sizeof(kDigitsBuf); i++) {
+  for (size_t i = 0; i < sizeof(kDigitsBuf); ++i) {
     kDigitsBuf[i] = (i % 10) + '0';
   }
 }

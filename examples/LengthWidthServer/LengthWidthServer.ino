@@ -121,7 +121,7 @@ void setup() {
 // here so we know which client it's from.
 void processMessage(const ClientState& state) {
   printf("Message [%d]: ", state.messageSize);
-  for (int i = 0; i < state.messageSize; i++) {
+  for (int i = 0; i < state.messageSize; ++i) {
     uint8_t b = state.buf[i];
     if (b < 0x20) {
       switch (b) {
@@ -169,7 +169,7 @@ void loop() {
         case MessageParseState::kStart:
           state.messageSize = state.client.read();
           printf("Message size: %d\r\n", state.messageSize);
-          avail--;
+          --avail;
           state.parseState = MessageParseState::kValue;
           break;
 

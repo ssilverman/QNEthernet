@@ -166,9 +166,9 @@ static void test_set_mac() {
       [&interfaceState, &downCount, &upCount](bool state) {
         interfaceState = state;
         if (state) {
-          upCount++;
+          ++upCount;
         } else {
-          downCount++;
+          ++downCount;
         }
       });
 
@@ -255,7 +255,7 @@ static bool waitForLocalIP() {
   TEST_MESSAGE(format("     Netmask: %u.%u.%u.%u", netmask[0], netmask[1], netmask[2], netmask[3]).data());
   TEST_MESSAGE(format("     Gateway: %u.%u.%u.%u", gateway[0], gateway[1], gateway[2], gateway[3]).data());
   TEST_MESSAGE(format("     DNS:     %u.%u.%u.%u", dns[0], dns[1], dns[2], dns[3]).data());
-  for (int i = 0; i < DNSClient::maxServers(); i++) {
+  for (int i = 0; i < DNSClient::maxServers(); ++i) {
     dns = DNSClient::getServer(i);
     TEST_MESSAGE(format("DNS Server %d: %u.%u.%u.%u", i, dns[0], dns[1], dns[2], dns[3]).data());
   }
@@ -631,7 +631,7 @@ static void test_setLinkState() {
   volatile int count = 0;
   Ethernet.onLinkState([&linkState, &count](bool state) {
     linkState = state;
-    count++;
+    ++count;
   });
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
@@ -1129,7 +1129,7 @@ static void test_client() {
     if (avail <= 0) {
       continue;
     }
-    for (int i = 0; i < avail; i++) {
+    for (int i = 0; i < avail; ++i) {
       UNITY_OUTPUT_CHAR(client->read());
     }
     UNITY_OUTPUT_FLUSH();
@@ -1169,7 +1169,7 @@ static void test_client_write_single_bytes() {
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
 
   size_t len = std::strlen(kRequest);
-  for (size_t i = 0; i < len; i++) {
+  for (size_t i = 0; i < len; ++i) {
     while (client->write(kRequest[i]) == 0) {
       // Try until written
     }
@@ -1184,7 +1184,7 @@ static void test_client_write_single_bytes() {
     if (avail <= 0) {
       continue;
     }
-    for (int i = 0; i < avail; i++) {
+    for (int i = 0; i < avail; ++i) {
       UNITY_OUTPUT_CHAR(client->read());
     }
     UNITY_OUTPUT_FLUSH();

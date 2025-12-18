@@ -63,7 +63,7 @@ static void printMessage(Print& out, const osc::LiteOSCParser& osc) {
   out.printf("%s", osc.getAddress());
 
   int size = osc.getArgCount();
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; ++i) {
     if (i == 0) {
       out.print(": ");
     } else {

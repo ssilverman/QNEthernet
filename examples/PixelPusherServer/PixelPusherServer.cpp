@@ -90,7 +90,7 @@ bool PixelPusherServer::begin(Receiver* recv, uint16_t port,
   ppData2_.lastDrivenPort = 0;
 
   // Fill in the strip flags
-  for (size_t i = 0; i < numStrips; i++) {
+  for (size_t i = 0; i < numStrips; ++i) {
     stripFlags_[i] = recv->stripFlags(i);
   }
 
@@ -193,7 +193,7 @@ void PixelPusherServer::loop() {
       recv_->startPixels();
     }
 
-    for (size_t i = 0; i < stripsInPacket; i++) {
+    for (size_t i = 0; i < stripsInPacket; ++i) {
       // If we've already seen a particular strip, it probably means a
       // new frame has started, so show what we've got and start again
 

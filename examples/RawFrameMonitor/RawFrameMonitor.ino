@@ -106,14 +106,14 @@ void loop() {
     return;
   }
 
-  frameCount++;
+  ++frameCount;
 
   // Access the frame's data directly instead of using read()
   // size = EthernetFrame.read(buf, size);
   const uint8_t* buf = EthernetFrame.data();
   if (size < EthernetFrame.minFrameLen() - 4) {
     printf("%d: SHORT Frame[%d]: ", frameCount, size);
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; ++i) {
       printf(" %02x", buf[i]);
     }
     printf("\r\n");
@@ -175,7 +175,7 @@ void loop() {
   }
 
   printf("\tpayload[%d]=", payloadEnd - payloadStart);
-  for (int i = payloadStart; i < payloadEnd; i++) {
+  for (int i = payloadStart; i < payloadEnd; ++i) {
     printf(" %02x", buf[i]);
   }
   printf("\r\n");

@@ -172,7 +172,7 @@ static void clientConnect() {
     if (avail <= 0) {
       continue;
     }
-    for (int i = 0; i < avail; i++) {
+    for (int i = 0; i < avail; ++i) {
       const int c = client.read();
       switch (c) {
         case '\t':

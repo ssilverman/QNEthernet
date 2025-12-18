@@ -168,7 +168,7 @@ static bool fillEntropyBuf(void) {
 
   // Fill the array
   volatile uint32_t *addr = &TRNG_ENT0;
-  for (size_t i = 0; i < ENTROPY_COUNT; i++) {
+  for (size_t i = 0; i < ENTROPY_COUNT; ++i) {
     s_entropy[i] = *(addr++);
   }
   TRNG_ENT0;  // Dummy read after TRNG_ENT15 for defect workaround (according to SDK)

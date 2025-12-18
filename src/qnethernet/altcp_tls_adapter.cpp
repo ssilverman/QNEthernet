@@ -101,7 +101,7 @@ std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
           }
           allocator.arg = config;
           if (qnethernet_altcp_tls_server_cert) {
-            for (uint8_t i = 0; i < cert_count; i++) {
+            for (uint8_t i = 0; i < cert_count; ++i) {
               privkey          = nullptr;
               privkey_len      = 0;
               privkey_pass     = nullptr;

@@ -184,7 +184,7 @@ bool MDNSClass::addService(const char* const name, const char* const type,
 
 int MDNSClass::findService(const char* const name, const char* const type,
                            const char* const protocol, const uint16_t port) {
-  for (int i = 0; i < maxServices(); i++) {
+  for (int i = 0; i < maxServices(); ++i) {
     if (slots_[i].equals(true, name, type, toProto(protocol), port)) {
       return i;
     }

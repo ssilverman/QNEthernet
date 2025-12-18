@@ -37,7 +37,7 @@ class CircularBuffer {
 
     T element = buf_[tail_];
     tail_ = (tail_ + 1) % capacity_;
-    size_--;
+    --size_;
     return element;
   }
 
@@ -46,7 +46,7 @@ class CircularBuffer {
     if (size_ == capacity_) {
       tail_ = (tail_ + 1) % capacity_;
     } else {
-      size_++;
+      ++size_;
     }
     head_ = (head_ + 1) % capacity_;
   }

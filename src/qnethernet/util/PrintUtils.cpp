@@ -43,7 +43,7 @@ size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
   if (written < ETH_HWADDR_LEN) {
     return written;
   }
-  for (int i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; ++i) {
     const size_t w = writeFully(p, mac, ETH_HWADDR_LEN, breakf);
     written += w;
     if (w < ETH_HWADDR_LEN) {

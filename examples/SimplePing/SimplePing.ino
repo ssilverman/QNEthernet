@@ -94,7 +94,7 @@ void loop() {
     return;
   }
 
-  pingCounter++;
+  ++pingCounter;
 
   printf("%" PRIu32 ". ", pingCounter);
   long rtt = Ethernet.ping(hostIP);

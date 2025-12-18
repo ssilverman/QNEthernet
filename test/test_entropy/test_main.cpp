@@ -66,7 +66,7 @@ static void test_random_range() {
   errno = 0;
   TEST_ASSERT_EQUAL_MESSAGE(0, entropy_random_range(1), "Expected zero");
   TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
-  for (int i = 0; i < (1 << 10); i++) {
+  for (int i = 0; i < (1 << 10); ++i) {
     uint32_t r = entropy_random_range(10);
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
     String msg{"Expected value < 10: iteration "};
@@ -88,7 +88,7 @@ static void test_randomDevice() {
                             "Expected full-range maximum");
 
   errno = 0;
-  for (int i = 0; i < (1 << 10); i++) {
+  for (int i = 0; i < (1 << 10); ++i) {
     qindesign::security::randomDevice();
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
   }

@@ -119,7 +119,7 @@ void loop() {
     int avail = client.available();
     if (avail > 0) {
       dataCount += avail;
-      for (int i = 0; i < avail; i++) {
+      for (int i = 0; i < avail; ++i) {
         putc(client.read(), stdout);
       }
     }

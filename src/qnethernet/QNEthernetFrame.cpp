@@ -64,15 +64,15 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
     // Full
     EthernetFrame.inBufTail_ =
         (EthernetFrame.inBufTail_ + 1) % EthernetFrame.inBuf_.size();
-    EthernetFrame.droppedReceiveCount_++;
+    ++EthernetFrame.droppedReceiveCount_;
   } else {
-    EthernetFrame.inBufSize_++;
+    ++EthernetFrame.inBufSize_;
   }
   EthernetFrame.inBufHead_ =
       (EthernetFrame.inBufHead_ + 1) % EthernetFrame.inBuf_.size();
 
   pbuf_free(p);
-  EthernetFrame.totalReceiveCount_++;
+  ++EthernetFrame.totalReceiveCount_;
 
   return ERR_OK;
 }
@@ -115,7 +115,7 @@ int EthernetFrameClass::parseFrame() {
   frame_ = inBuf_[inBufTail_];
   inBuf_[inBufTail_].clear();
   inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
-  inBufSize_--;
+  --inBufSize_;
 
   Ethernet.loop();  // Allow the stack to move along
 
@@ -213,7 +213,7 @@ void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
     inBufHead_ = inBufSize_;
 
     // Don't reserve memory because that might exhaust the heap
-    // for (size_t i = oldSize; i < actualCap; i++) {
+    // for (size_t i = oldSize; i < actualCap; ++i) {
     //   inBuf_[i].data.reserve(maxFrameLen());
     // }
   }

@@ -694,7 +694,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
   if (pBD->status & kEnetTxBdWrap) {
     s_pTxBD = &s_txRing[0];
   } else {
-    s_pTxBD++;
+    ++s_pTxBD;
   }
 
   LINK_STATS_INC(link.xmit);
@@ -708,7 +708,7 @@ static inline volatile enetbufferdesc_t *rxbd_next(void) {
     if (pBD->status & kEnetRxBdWrap) {
       pBD = &s_rxRing[0];
     } else {
-      pBD++;
+      ++pBD;
     }
     if (pBD == s_pRxBD) {
       return NULL;
@@ -718,7 +718,7 @@ static inline volatile enetbufferdesc_t *rxbd_next(void) {
   if (s_pRxBD->status & kEnetRxBdWrap) {
     s_pRxBD = &s_rxRing[0];
   } else {
-    s_pRxBD++;
+    ++s_pRxBD;
   }
   return pBD;
 }
@@ -886,7 +886,7 @@ FLASHMEM bool driver_init(void) {
   memset(s_rxRing, 0, sizeof(s_rxRing));
   memset(s_txRing, 0, sizeof(s_txRing));
 
-  for (int i = 0; i < RX_SIZE; i++) {
+  for (int i = 0; i < RX_SIZE; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
     s_rxRing[i].status  = kEnetRxBdEmpty;
     s_rxRing[i].extend1 = kEnetRxBdInterrupt;
@@ -894,7 +894,7 @@ FLASHMEM bool driver_init(void) {
   // The last buffer descriptor should be set with the wrap flag
   s_rxRing[RX_SIZE - 1].status |= kEnetRxBdWrap;
 
-  for (int i = 0; i < TX_SIZE; i++) {
+  for (int i = 0; i < TX_SIZE; ++i) {
     s_txRing[i].buffer  = &s_txBufs[i * BUF_SIZE];
     s_txRing[i].status  = kEnetTxBdTransmitCrc;
     s_txRing[i].extend1 = kEnetTxBdTxInterrupt  |
@@ -1151,7 +1151,7 @@ static uint32_t crc32(const void *const data, const size_t len) {
   crc = ~crc;
   while (lenRem--) {
     crc ^= *(pData++);
-    for (int j = 0; j < 8; j++) {
+    for (int j = 0; j < 8; ++j) {
       crc = (crc >> 1) ^ (-(crc & 0x01) & 0xEDB88320);
     }
   }

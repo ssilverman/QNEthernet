@@ -111,7 +111,7 @@ static void receivePacket() {
   printf("[%u.%u.%u.%u][%d] ", ip[0], ip[1], ip[2], ip[3], size);
 
   // Print each character
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; ++i) {
     uint8_t b = data[i];
     if (b < 0x20) {
       printf("<%s>", kCtrlNames[b]);
