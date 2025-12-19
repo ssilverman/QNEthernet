@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define MTU 1500
+
 // lwIP options
 
 // ARP options

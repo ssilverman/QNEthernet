@@ -30,17 +30,23 @@ enum {
 
 // STATIC_ASSERT(MIN_FRAME_LEN >= 0, "MIN_FRAME_LEN must be >= 0");
 
+// Check things that are supposed to be set properly by the driver headers
+#if !defined(MTU) || (MTU <= 0)
+#error "MTU must be defined and > 0"
+#endif  // Constant checks
+
 // Check some sizes
 STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // Requirements for driver-specific headers:
-// 1. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
+// 1. Define MTU
+// 2. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
 //    for your driver. For example, Ethernet padding, checksum generation, and
 //    checksum checking.
 
 // How to create a driver:
-// 1. Create a driver header. Don't forget to use either `#pragma once` or a
-//    #define guard.
+// 1. Create a header that defines MTU. Don't forget to use either
+//    `#pragma once` or a #define guard.
 // 2. Create driver source and include lwip_driver.h. Implement all the
 //    `driver_x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
@@ -58,8 +64,8 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 //    be returned if hardware is found (driver_has_hardware() returns true).
 
 // How to create an external driver that isn't inside the distribution:
-// 1. Create a header named "qnethernet_external_driver.h". Don't forget to use
-//    either `#pragma once` or a #define guard.
+// 1. Create a header named "qnethernet_external_driver.h" that defines MTU.
+//    Don't forget to use either `#pragma once` or a #define guard.
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 3. Create driver source and include lwip_driver.h. Implement all the
