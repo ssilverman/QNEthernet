@@ -46,7 +46,6 @@ using namespace qindesign::hardware::imxrt1060;
 //  Defines
 // --------------------------------------------------------------------------
 
-#define MTU           1500
 #define MAX_FRAME_LEN 1518
 
 static constexpr uint32_t kGPIOPadOutput = (0

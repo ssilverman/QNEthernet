@@ -5,3 +5,5 @@
 // This file is part of the QNEthernet library.
 
 #pragma once
+
+#define MTU 1500
