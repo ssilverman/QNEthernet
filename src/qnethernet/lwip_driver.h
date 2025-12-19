@@ -343,17 +343,20 @@ void driver_ieee1588_init(void);
 void driver_ieee1588_deinit(void);
 
 // Tests if the IEEE 1588 timer is enabled.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_is_enabled(void);
 
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool driver_ieee1588_read_timer(struct timespec *t);
+ATTRIBUTE_NODISCARD
+bool driver_ieee1588_read_timer(struct timespec* t);
 
 // Writes the IEEE 1588 timer. This returns whether successful.
 //
 // This will return false if the argument is NULL.
-bool driver_ieee1588_write_timer(const struct timespec *t);
+ATTRIBUTE_NODISCARD
+bool driver_ieee1588_write_timer(const struct timespec* t);
 
 // Tells the driver to timestamp the next transmitted frame.
 void driver_ieee1588_timestamp_next_frame();
@@ -366,7 +369,8 @@ void driver_ieee1588_timestamp_next_frame();
 // sent. Note that this only returns the latest value, so if a second
 // timestamped packet is sent before retrieving the timestamp for the first
 // then this will return the second timestamp (if already available).
-bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
+ATTRIBUTE_NODISCARD
+bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec* timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
 // timer in "nanoseconds per second", see `driver_ieee1588_adjust_freq`. This
@@ -375,10 +379,12 @@ bool driver_ieee1588_read_and_clear_tx_timestamp(struct timespec *timestamp);
 // This will return false if:
 // 1. The correction increment is not in the range 0-127, or
 // 2. The correction period is not in the range 0-(2^31-1).
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
 // `driver_ieee1588_adjust_timer()` under the hood.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_adjust_freq(int nsps);
 
 // Sets the channel mode for the given channel. This does not set the output
@@ -388,6 +394,7 @@ bool driver_ieee1588_adjust_freq(int nsps);
 // 1. The channel is unknown,
 // 2. The mode is one of the output compare pulse modes, or
 // 3. The mode is a reserved value or unknown.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_set_channel_mode(int channel, int mode);
 
 // Sets the pulse width for the given channel and returns whether successful.
@@ -397,16 +404,19 @@ bool driver_ieee1588_set_channel_mode(int channel, int mode);
 // This will return false if:
 // 1. The channel is unknown, or
 // 2. The pulse width is not in the range 1-32.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_set_channel_output_pulse_width(int channel,
                                                     int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
 //
 // This will return false for an unknown channel.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_set_channel_compare_value(int channel, uint32_t value);
 
 // Retrieves and then clears the status for the given channel. This will return
 // false for an unknown channel.
+ATTRIBUTE_NODISCARD
 bool driver_ieee1588_get_and_clear_channel_status(int channel);
 
 #ifdef __cplusplus
