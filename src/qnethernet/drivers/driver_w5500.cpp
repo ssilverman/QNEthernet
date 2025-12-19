@@ -163,7 +163,7 @@ namespace socketinterrupts {
 //  Internal Variables
 // --------------------------------------------------------------------------
 
-static constexpr size_t kMTU         = 1500;
+static constexpr size_t kMTU         = MTU;
 static constexpr size_t kMaxFrameLen = 1522;  // Includes the 4-byte FCS (frame check sequence)
 
 static_assert(kMaxFrameLen >= 4, "Max. frame len must be >= 4");
