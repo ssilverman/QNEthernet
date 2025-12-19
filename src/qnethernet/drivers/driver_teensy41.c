@@ -36,7 +36,6 @@
 //  Defines
 // --------------------------------------------------------------------------
 
-#define MTU           1500
 #define MAX_FRAME_LEN 1522
 
 #define GPIO_PAD_OUTPUT (0                         \
