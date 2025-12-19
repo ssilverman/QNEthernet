@@ -1887,7 +1887,7 @@ Here's how to implement the behaviour:
 2. Insert `{compiler.cpp.extra_flags}` and `{build.extra_flags}` before
    `{includes}` in:
    1. `recipe.preproc.includes` (no longer used as of Arduino IDE 1.6.7)
-   2. `recipe.preproc.macros`
+   2. `recipe.preproc.macros` (if it exists)
    3. `recipe.cpp.o.pattern`
 3. Insert `{compiler.c.extra_flags}` and `{build.extra_flags}` before
    `{includes}` in:
