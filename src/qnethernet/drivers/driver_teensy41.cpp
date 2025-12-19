@@ -724,7 +724,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
         driver::ieee1588_read_timer(&p->timestamp);
         if ((uint32_t)p->timestamp.tv_nsec < pBD->timestamp) {
           // The timer has wrapped around
-          p->timestamp.tv_sec--;
+          --p->timestamp.tv_sec;
         }
         p->timestamp.tv_nsec = pBD->timestamp;
       }
@@ -812,7 +812,7 @@ static inline volatile BufferDescriptor* rxbd_next() {
 static void enet_isr() {
   if (ENET::EIR::TS_TIMER != 0) {
     ENET::EIR::TS_TIMER = 1;
-    s_ieee1588Seconds++;
+    ++s_ieee1588Seconds;
   }
 
   if (ENET::EIR::TS_AVAIL != 0) {
@@ -1484,7 +1484,7 @@ bool ieee1588_read_timer(struct timespec *const t) {
   // The timer could have wrapped while we were doing stuff
   // Leave the interrupt set so that our internal timer will catch it
   if (ENET::EIR::TS_TIMER != 0) {
-    t->tv_sec++;
+    ++t->tv_sec;
   }
   qnethernet_hal_enable_interrupts();  // }
 
@@ -1543,11 +1543,11 @@ bool ieee1588_adjust_freq(int nsps) {
 
   if (nsps < 0) {
     // Slow down
-    inc--;
+    --inc;
     nsps = -nsps;
   } else {
     // Speed up
-    inc++;
+    ++inc;
   }
   return ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
 }
