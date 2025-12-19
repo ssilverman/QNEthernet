@@ -1886,7 +1886,7 @@ Here's how to implement the behaviour:
    ```
 2. Insert `{compiler.cpp.extra_flags}` and `{build.extra_flags}` before
    `{includes}` in:
-   1. `recipe.preproc.includes`
+   1. `recipe.preproc.includes` (no longer used as of Arduino IDE 1.6.7)
    2. `recipe.preproc.macros`
    3. `recipe.cpp.o.pattern`
 3. Insert `{compiler.c.extra_flags}` and `{build.extra_flags}` before
@@ -1934,10 +1934,10 @@ will be different, but should be similar, for other platforms):
 * Windows: _%userprofile%\\AppData\\Local\\Arduino15\\packages\\teensy\\hardware\\avr\\{version}_
 
 References:
-1. [Additional compiler options - Programming - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
-2. [Arduino IDE: Where can I pass defines to the compiler? - IDE 1.x - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
-3. [Request for Arduino IDE &quot;extra_flags&quot; support | Teensy Forum](https://forum.pjrc.com/index.php?threads/request-for-arduino-ide-extra_flags-support.72556/)
-4. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
+1. [Platform specification - Arduino CLI](https://arduino.github.io/arduino-cli/latest/platform-specification/)
+2. [Additional compiler options - Programming - Arduino Forum](https://forum.arduino.cc/t/additional-compiler-options/631297)
+3. [Arduino IDE: Where can I pass defines to the compiler? - IDE 1.x - Arduino Forum](https://forum.arduino.cc/t/arduino-ide-where-can-i-pass-defines-to-the-compiler/680845)
+4. [Request for Arduino IDE &quot;extra_flags&quot; support | Teensy Forum](https://forum.pjrc.com/index.php?threads/request-for-arduino-ide-extra_flags-support.72556/)
 5. This one started it all &rarr; [RawFrameMonitor example seems to be missing something... · Issue #33 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/33)
 6. [Open the Arduino15 folder &ndash; Arduino Help Center](https://support.arduino.cc/hc/en-us/articles/360018448279-Open-the-Arduino15-folder)
 7. [Enabling Raw Frame Support and Promiscuous · Issue #54 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/54)
