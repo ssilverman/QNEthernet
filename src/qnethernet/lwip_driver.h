@@ -383,7 +383,8 @@ ATTRIBUTE_NODISCARD
 bool driver_ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
-// `driver_ieee1588_adjust_timer()` under the hood.
+// `driver_ieee1588_adjust_timer()` under the hood. This returns
+// whether successful.
 ATTRIBUTE_NODISCARD
 bool driver_ieee1588_adjust_freq(int nsps);
 
