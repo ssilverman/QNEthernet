@@ -1857,7 +1857,7 @@ features, thus saving space.
 
 ### Configuring macros using the Arduino IDE
 
-_[Current as of this writing: Arduino IDE 2.3.6, Teensyduino 1.60-beta5]_
+_[Current as of this writing: Arduino IDE 2.3.7, Teensyduino 1.60-beta5]_
 
 The Arduino IDE provides a facility to override the build options specified in a
 platform's build configuration file, _platform.txt_. It does this by looking for
