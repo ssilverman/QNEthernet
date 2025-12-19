@@ -35,7 +35,6 @@
 //  Defines
 // --------------------------------------------------------------------------
 
-#define MTU           1500
 #define MAX_FRAME_LEN 1518
 
 static const uint32_t GPIO_PAD_OUTPUT = (0
