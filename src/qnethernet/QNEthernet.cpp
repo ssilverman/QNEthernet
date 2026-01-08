@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 #include "lwip/dns.h"
 #include "lwip/err.h"
@@ -614,7 +615,7 @@ IPAddress EthernetClass::dnsServerIP(const int index) const {
 IPAddress EthernetClass::broadcastIP() const {
 #if LWIP_IPV4
   if (netif_ == nullptr) {
-    return IPAddress{UINT32_MAX};
+    return IPAddress{std::numeric_limits<uint32_t>::max()};
   }
   return ip4_addr_get_u32(netif_ip4_addr(netif_)) |
          ~ip4_addr_get_u32(netif_ip4_netmask(netif_));

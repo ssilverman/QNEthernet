@@ -7,11 +7,11 @@
 #pragma once
 
 // C++ includes
-#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <functional>
+#include <limits>
 
 #include <Print.h>
 
@@ -119,7 +119,7 @@ class NullPrint final : public Print {
   }
 
   int availableForWrite() override {
-    return INT_MAX;
+    return std::numeric_limits<int>::max();
   }
 
   void flush() override {

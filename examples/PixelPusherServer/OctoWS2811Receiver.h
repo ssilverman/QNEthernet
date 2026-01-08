@@ -12,6 +12,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <memory>
 
 #include <OctoWS2811.h>
@@ -52,7 +53,7 @@ class OctoWS2811Receiver : public Receiver {
 
  private:
   struct StripConfig {
-    uint16_t brightness = UINT16_MAX;
+    uint16_t brightness = std::numeric_limits<uint16_t>::max();
     uint8_t flags = 0;
     size_t rgbOrder[3]{1, 0, 2};  // GRB
   };
@@ -73,5 +74,5 @@ class OctoWS2811Receiver : public Receiver {
   std::unique_ptr<uint8_t[]> drawingMem_;
   OctoWS2811 leds_;
 
-  uint16_t globalBri_ = UINT16_MAX;
+  uint16_t globalBri_ = std::numeric_limits<uint16_t>::max();
 };

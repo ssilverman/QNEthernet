@@ -11,6 +11,7 @@
 // C++ includes
 #include <algorithm>
 #include <cerrno>
+#include <limits>
 
 #include "QNEthernet.h"
 #include "lwip/dns.h"
@@ -35,7 +36,9 @@ static constexpr size_t kMaxPayloadSize =
 
 // Maximum possible payload size.
 static constexpr size_t kMaxPossiblePayloadSize =
-    (UINT16_MAX >= kHeaderSize) ? (UINT16_MAX - kHeaderSize) : 0;
+    (std::numeric_limits<uint16_t>::max() >= kHeaderSize)
+        ? (std::numeric_limits<uint16_t>::max() - kHeaderSize)
+        : 0;
 
 void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
                            struct pbuf* const p,

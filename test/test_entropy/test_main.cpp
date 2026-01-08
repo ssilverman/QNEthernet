@@ -6,6 +6,7 @@
 
 // C++ includes
 #include <cerrno>
+#include <limits>
 
 #include <Arduino.h>
 #include <qnethernet/security/RandomDevice.h>
@@ -84,7 +85,8 @@ static void test_randomDevice() {
                             "Expected objects equal");
   TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::RandomDevice::min(),
                             "Expected full-range minimum");
-  TEST_ASSERT_EQUAL_MESSAGE(UINT32_MAX, qindesign::security::RandomDevice::max(),
+  TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<uint32_t>::max(),
+                            qindesign::security::RandomDevice::max(),
                             "Expected full-range maximum");
 
   errno = 0;

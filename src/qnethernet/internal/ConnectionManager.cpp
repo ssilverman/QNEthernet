@@ -475,7 +475,8 @@ size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
 
 size_t ConnectionManager::write(const uint16_t port,
                                 const void* const b, const size_t len) {
-  const size_t actualLen = std::min(len, size_t{UINT16_MAX});
+  const size_t actualLen =
+      std::min(len, size_t{std::numeric_limits<uint16_t>::max()});
   const uint16_t size16 = actualLen;
   iterateConnections([port, b, size16](struct altcp_pcb* pcb) {
     if (getLocalPort(pcb) != port) {

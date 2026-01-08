@@ -22,7 +22,8 @@ const OctoWS2811Receiver::StripConfig OctoWS2811Receiver::kDefaultStripConfig;
 OctoWS2811Receiver::OctoWS2811Receiver(PixelPusherServer& pp, size_t numStrips,
                                        size_t pixelsPerStrip)
     : pp_(pp),
-      numStrips_(std::min(numStrips, size_t{UINT8_MAX})),
+      numStrips_(
+          std::min(numStrips, size_t{std::numeric_limits<uint8_t>::max()})),
       pixelsPerStrip_(pixelsPerStrip),
       displayMem_{std::make_unique<uint8_t[]>(numStrips * pixelsPerStrip *
                                               kBytesPerPixel)},
@@ -157,7 +158,7 @@ void OctoWS2811Receiver::pixels(size_t stripNum, const uint8_t* pixels,
   const uint8_t bri = scale16(config.brightness, globalBri_) >> 8;
   const auto& rgbOrder = config.rgbOrder;
 
-  if (bri == UINT8_MAX) {
+  if (bri == std::numeric_limits<uint8_t>::max()) {
     while (it != end) {
       leds_.setPixel(it,
                      pixels[rgbOrder[0]],

@@ -9,6 +9,7 @@
 #if LWIP_RAW
 
 #include <cerrno>
+#include <limits>
 
 #include "QNEthernet.h"
 #include "lwip/def.h"
@@ -106,7 +107,9 @@ bool Ping::tryCreatePCB() {
 }
 
 bool Ping::send(const PingData& req) {
-  if (req.dataSize > UINT16_MAX - IP_HLEN - kEchoHdrSize) {  // IPv4 header size is 20
+  // IPv4 header size is 20
+  if (req.dataSize >
+      (std::numeric_limits<uint16_t>::max() - IP_HLEN - kEchoHdrSize)) {
     errno = EINVAL;
     return false;
   }

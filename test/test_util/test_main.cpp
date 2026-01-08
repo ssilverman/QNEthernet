@@ -10,11 +10,11 @@
 
 // C++ includes
 #include <cerrno>
-#include <climits>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 #include <Arduino.h>
@@ -47,7 +47,8 @@ class StringPrint final : public Print {
 
   int availableForWrite() {
     static_assert(sizeof(size_t) >= sizeof(int));
-    return std::min(s_.max_size() - s_.size(), static_cast<size_t>(INT_MAX));
+    return std::min(s_.max_size() - s_.size(),
+                    static_cast<size_t>(std::numeric_limits<int>::max()));
   }
 
  private:
@@ -107,7 +108,9 @@ static void test_NullPrint() {
   NullPrint np;
   TEST_ASSERT_EQUAL_MESSAGE(1, np.write(1), "Expected byte written");
   TEST_ASSERT_EQUAL_MESSAGE(12, np.write(nullptr, 12), "Expected bytes written");
-  TEST_ASSERT_EQUAL_MESSAGE(INT_MAX, np.availableForWrite(), "Expected max. bytes available to write");
+  TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<int>::max(),
+                            np.availableForWrite(),
+                            "Expected max. bytes available to write");
 }
 
 // Main program setup.

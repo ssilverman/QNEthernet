@@ -10,6 +10,7 @@
 // C++ includes
 #include <algorithm>
 #include <cstring>
+#include <limits>
 
 #include <IPAddress.h>
 #include <QNEthernet.h>
@@ -21,7 +22,8 @@ using namespace qindesign::network;
 // The alternative would be to use bit shifting.
 static_assert(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__, "Not little-endian");
 
-static constexpr size_t kMaxUDPSize = UINT16_MAX - 8 - 20;
+static constexpr size_t kMaxUDPSize =
+    std::numeric_limits<uint16_t>::max() - 8 - 20;
 static constexpr size_t kMaxPixelsPerStrip = (kMaxUDPSize - 4 - 1)/3;
 
 // Indicates that the packet is a PixelPusher command.
@@ -45,7 +47,8 @@ bool PixelPusherServer::begin(Receiver* recv, uint16_t port,
     recv = &nullReceiver_;
   }
   recv_ = recv;
-  size_t numStrips = std::min(recv->numStrips(), size_t{UINT8_MAX});
+  size_t numStrips =
+      std::min(recv->numStrips(), size_t{std::numeric_limits<uint8_t>::max()});
   size_t pixelsPerStrip = std::min(recv->pixelsPerStrip(), kMaxPixelsPerStrip);
 
   broadcastIP_ = Ethernet.broadcastIP();
