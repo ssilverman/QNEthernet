@@ -11,6 +11,7 @@
 #if LWIP_TCP
 
 // C++ includes
+#include <cstdint>
 #include <memory>
 #include <functional>
 #include <vector>
