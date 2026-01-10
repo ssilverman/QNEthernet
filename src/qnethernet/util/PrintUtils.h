@@ -129,7 +129,7 @@ class NullPrint final : public Print {
 };
 
 // PrintDecorator is a Print object that decorates another. This is meant to be
-// a base class.
+// a base class. This also guarantees calls to printf() are checked.
 class PrintDecorator : public Print, public internal::PrintfChecked {
  public:
   explicit PrintDecorator(Print& p) : p_(p) {}
@@ -165,7 +165,7 @@ class PrintDecorator : public Print, public internal::PrintfChecked {
 };
 
 // StreamDecorator is a Stream object that decorates another. This is meant to
-// be a base class.
+// be a base class. This also guarantees calls to printf() are checked.
 class StreamDecorator : public Stream, public internal::PrintfChecked {
  public:
   explicit StreamDecorator(Stream& s) : s_(s) {}
