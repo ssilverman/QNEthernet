@@ -17,6 +17,7 @@
 
 #include "lwip/arch.h"
 #include "lwip/prot/ethernet.h"
+#include "qnethernet/internal/PrintfChecked.h"
 
 namespace qindesign {
 namespace network {
@@ -128,7 +129,7 @@ class NullPrint final : public Print {
 
 // PrintDecorator is a Print object that decorates another. This is meant to be
 // a base class.
-class PrintDecorator : public Print {
+class PrintDecorator : public Print, public internal::PrintfChecked {
  public:
   explicit PrintDecorator(Print& p) : p_(p) {}
   virtual ~PrintDecorator() = default;
@@ -138,6 +139,9 @@ class PrintDecorator : public Print {
   PrintDecorator(PrintDecorator&&) = delete;
   PrintDecorator& operator=(const PrintDecorator&) = delete;
   PrintDecorator& operator=(PrintDecorator&&) = delete;
+
+  // Use the one from here instead of the one from Print
+  using internal::PrintfChecked::printf;
 
   size_t write(const uint8_t b) override {
     return p_.write(b);
