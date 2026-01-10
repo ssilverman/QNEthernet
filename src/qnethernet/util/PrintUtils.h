@@ -14,6 +14,7 @@
 #include <limits>
 
 #include <Print.h>
+#include <Stream.h>
 
 #include "lwip/arch.h"
 #include "lwip/prot/ethernet.h"
@@ -161,6 +162,54 @@ class PrintDecorator : public Print, public internal::PrintfChecked {
 
  private:
   Print& p_;
+};
+
+// StreamDecorator is a Stream object that decorates another. This is meant to
+// be a base class.
+class StreamDecorator : public Stream, public internal::PrintfChecked {
+ public:
+  explicit StreamDecorator(Stream& s) : s_(s) {}
+  virtual ~StreamDecorator() = default;
+
+  // Rule of five
+  StreamDecorator(const StreamDecorator&) = delete;
+  StreamDecorator(StreamDecorator&&) = delete;
+  StreamDecorator& operator=(const StreamDecorator&) = delete;
+  StreamDecorator& operator=(StreamDecorator&&) = delete;
+
+  int available() override {
+    return s_.available();
+  }
+
+  int read() override {
+    return s_.read();
+  }
+
+  int peek() override {
+    return  s_.peek();
+  }
+
+  // Use the one from here instead of the one from Print
+  using internal::PrintfChecked::printf;
+
+  size_t write(const uint8_t b) override {
+    return s_.write(b);
+  }
+
+  size_t write(const uint8_t* const buffer, const size_t size) override {
+    return s_.write(buffer, size);
+  }
+
+  int availableForWrite() override {
+    return s_.availableForWrite();
+  }
+
+  void flush() override {
+    s_.flush();
+  }
+
+ private:
+  Stream& s_;
 };
 
 }  // namespace util
