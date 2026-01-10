@@ -16,6 +16,7 @@ and this project adheres to
 * Added a `QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER` configuration
   option for including our own version of
   `__gnu_cxx::__verbose_terminate_handler` for space-saving reasons.
+* New `StreamDecorator` class that also does `printf` checking.
 
 ### Changed
 * Improved code style and structure.
@@ -28,6 +29,7 @@ and this project adheres to
   from `QNETHERNET_ENABLE_PING`.
 * Updated to support C++11 compilers.
 * Improved setting of `errno`.
+* Added `printf` checking to `PrintDecorator`.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
@@ -1271,4 +1273,4 @@ and this project adheres to
 
 ---
 
-Copyright (c) 2021-2025 Shawn Silverman
+Copyright (c) 2021-2026 Shawn Silverman
