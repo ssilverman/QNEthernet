@@ -148,9 +148,9 @@ void PixelPusherServer::loop() {
   }
 
   // Send the discovery packet every once in a while
-  if (discoveryTimer_ >= kDiscoveryPeriod) {
+  if ((millis() - discoveryTimer_) >= kDiscoveryPeriod) {
     sendDiscovery();
-    discoveryTimer_ = 0;
+    discoveryTimer_ = millis();
   }
 
   recv_->loop();

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // PixelPusherServer.h is the include file for the PixelPusher server.
@@ -16,8 +16,8 @@
 #include <memory>
 #include <vector>
 
+#include <Arduino.h>
 #include <QNEthernet.h>
-#include <elapsedMillis.h>
 
 #include "CircularBuffer.h"
 #include "Receiver.h"
@@ -200,7 +200,7 @@ class PixelPusherServer final {
   size_t stripSize_ = 0;  // Strip size in bytes, including the strip number
 
   // Computed packet data
-  elapsedMillis discoveryTimer_;
+  unsigned long discoveryTimer_ = millis() - kDiscoveryPeriod;  // Start expired
   uint32_t lastSeq_ = 0;
   std::unique_ptr<CircularBuffer<uint32_t>> lastUpdateTimes_;
       // Used for averaging the last set of update times
