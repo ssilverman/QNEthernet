@@ -31,7 +31,7 @@ class PrintfChecked {
   int printf(const char* const format, ...) {
     std::va_list args;
     va_start(args, format);
-    const int retval = vdprintf(reinterpret_cast<int>(this), format, args);
+    const int retval = ::vdprintf(reinterpret_cast<int>(this), format, args);
     va_end(args);
     return retval;
   }
