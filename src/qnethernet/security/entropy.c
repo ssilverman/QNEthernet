@@ -15,6 +15,7 @@
 
 #include <imxrt.h>
 
+#include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 // Clock settings
@@ -67,8 +68,6 @@
 #define TRNG_FRQMIN_FRQ_MIN(n)  ((uint32_t)(((n) & 0x003fffff) << 0))
 #define TRNG_SEC_CFG_NO_PROG(n) ((uint32_t)(((n) & 0x01) << 1))
 
-#define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
-
 // Entropy storage
 #define ENTROPY_COUNT       16                      /* In dwords */
 #define ENTROPY_COUNT_BYTES ((ENTROPY_COUNT) << 2)  /* In bytes */
@@ -120,27 +119,31 @@ FLASHMEM void trng_init(void) {
   TRNG_FRQMIN = TRNG_FRQMIN_FRQ_MIN(TRNG_CONFIG_FREQUENCY_MIN);
 
   // Clock settings
-  CLRSET(TRNG_MCTL, TRNG_MCTL_FOR_SCLK,
-         TRNG_CONFIG_CLOCK_MODE ? TRNG_MCTL_FOR_SCLK : 0);
-  CLRSET(TRNG_MCTL, TRNG_MCTL_OSC_DIV(3),
-         TRNG_MCTL_OSC_DIV(TRNG_CONFIG_RING_OSC_DIV));
+  clearAndSet32(&TRNG_MCTL,
+                TRNG_MCTL_FOR_SCLK,
+                TRNG_CONFIG_CLOCK_MODE ? TRNG_MCTL_FOR_SCLK : 0);
+  clearAndSet32(&TRNG_MCTL,
+                TRNG_MCTL_OSC_DIV(3),
+                TRNG_MCTL_OSC_DIV(TRNG_CONFIG_RING_OSC_DIV));
 
   // Sampling
-  CLRSET(TRNG_MCTL, TRNG_MCTL_SAMP_MODE(3),
-         TRNG_MCTL_SAMP_MODE(TRNG_CONFIG_SAMPLE_MODE));
+  clearAndSet32(&TRNG_MCTL,
+                TRNG_MCTL_SAMP_MODE(3),
+                TRNG_MCTL_SAMP_MODE(TRNG_CONFIG_SAMPLE_MODE));
   TRNG_SBLIM = TRNG_SBLIM_SB_LIM(TRNG_CONFIG_SPARSE_BIT_LIMIT);
 
   // Seed control
   TRNG_SDCTL = TRNG_SDCTL_ENT_DLY(TRNG_CONFIG_ENTROPY_DELAY) |
                TRNG_SDCTL_SAMP_SIZE(TRNG_CONFIG_SAMPLE_SIZE);
 
-  // CLRSET(TRNG_SCMISC, TRNG_SCMISC_LRUN_MAX, TRNG_CONFIG_RUN_MAX_LIMIT);
+  // clearAndSet32(&TRNG_SCMISC, TRNG_SCMISC_LRUN_MAX, TRNG_CONFIG_RUN_MAX_LIMIT);
 
   // Security configuration
-  CLRSET(TRNG_SEC_CFG, TRNG_SEC_CFG_NO_PROG(1),
-         TRNG_SEC_CFG_NO_PROG(TRNG_CONFIG_LOCK));
+  clearAndSet32(&TRNG_SEC_CFG,
+                TRNG_SEC_CFG_NO_PROG(1),
+                TRNG_SEC_CFG_NO_PROG(TRNG_CONFIG_LOCK));
 
-  CLRSET(TRNG_MCTL, TRNG_MCTL_PRGM, 0);
+  clearAndSet32(&TRNG_MCTL, TRNG_MCTL_PRGM, 0);
 
   // Discard stale data
   restartEntropy();
@@ -214,13 +217,6 @@ size_t trng_available(void) {
   return s_entropySizeBytes;
 }
 
-// See: https://gcc.gnu.org/onlinedocs/gcc/Typeof.html
-#define min(a, b) __extension__ ({   \
-  typeof(a) _a = (a);  \
-  typeof(b) _b = (b);  \
-  (_a < _b) ? _a : _b; \
-})
-
 size_t trng_data(void *const data, const size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
@@ -239,7 +235,7 @@ size_t trng_data(void *const data, const size_t size) {
     if (!fillEntropy()) {
       return size - rem;
     }
-    const size_t toCopy = min(rem, s_entropySizeBytes);
+    const size_t toCopy = min_size(rem, s_entropySizeBytes);
     memcpy(p,
            &((uint8_t *)s_entropy)[ENTROPY_COUNT_BYTES - s_entropySizeBytes],
            toCopy);
@@ -250,8 +246,6 @@ size_t trng_data(void *const data, const size_t size) {
 
   return size;
 }
-
-#undef min
 
 uint32_t entropy_random(void) {
   uint32_t r;

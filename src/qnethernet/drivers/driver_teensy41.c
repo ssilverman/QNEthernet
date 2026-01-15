@@ -6,6 +6,7 @@
 // https://github.com/PaulStoffregen/teensy41_ethernet
 // This file is part of the QNEthernet library.
 
+#include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/lwip_driver.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
@@ -34,8 +35,6 @@
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
-
-#define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 #define GPIO_PAD_OUTPUT (0                         \
     /* HYS_0_Hysteresis_Disabled */                \
@@ -452,15 +451,16 @@ FLASHMEM static void enable_enet_clocks(void) {
   // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG_PLL_ENET);
 
   // Configure REFCLK to be driven as output by PLL6 (page 325)
-  CLRSET(IOMUXC_GPR_GPR1,
-         IOMUXC_GPR_GPR1_ENET1_CLK_SEL,
-         IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
+  clearAndSet32(
+      &IOMUXC_GPR_GPR1,
+      IOMUXC_GPR_GPR1_ENET1_CLK_SEL,
+      IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
 }
 
 // Disables everything enabled with enable_enet_clocks().
 FLASHMEM static void disable_enet_clocks(void) {
   // Configure REFCLK
-  CLRSET(IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
+  clearAndSet32(&IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
 
   // Stop the PLL (first bypassing)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;

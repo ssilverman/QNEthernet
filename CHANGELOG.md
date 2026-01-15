@@ -30,6 +30,7 @@ and this project adheres to
 * Updated to support C++11 compilers.
 * Improved setting of `errno`.
 * Added `printf` checking to `PrintDecorator`.
+* Replaced function-like-macros with `static inline` C functions.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
