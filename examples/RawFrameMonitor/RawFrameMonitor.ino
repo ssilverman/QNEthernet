@@ -16,7 +16,8 @@
 // macro.
 //
 // In order to use this example, define the
-// QNETHERNET_ENABLE_RAW_FRAME_SUPPORT macro.
+// `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` macro to `1`, either externally or in
+// the _qnethernet_opts.h_ file.
 //
 // Note: the configuration macros must either be defined in the
 //       project build options or in the qnethernet_opts.h
