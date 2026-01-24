@@ -8,7 +8,6 @@
 
 namespace qindesign {
 namespace network {
-
 namespace util {
 
 static constexpr uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{
