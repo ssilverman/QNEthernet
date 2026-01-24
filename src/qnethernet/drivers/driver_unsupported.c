@@ -118,7 +118,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // --------------------------------------------------------------------------
-//  Notifications from upper layers
+//  Notifications from Upper Layers
 // --------------------------------------------------------------------------
 
 void driver_notify_manual_link_state(const bool flag) {
