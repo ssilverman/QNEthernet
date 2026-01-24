@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // RandomDevice.h defines a class that conforms to the
 // UniformRandomBitGenerator C++ named requirement.
+// See: https://www.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator.html
 // This file is part of the QNEthernet library.
 
 #pragma once
@@ -17,6 +18,7 @@ namespace qindesign {
 namespace security {
 
 // RandomDevice implements UniformRandomBitGenerator.
+// See: https://www.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator.html
 class RandomDevice {
  public:
   typedef uint32_t result_type;
