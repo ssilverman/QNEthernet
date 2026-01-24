@@ -770,6 +770,13 @@ void driver_notify_manual_link_state(const bool flag) {
   s_manualLinkState = flag;
 }
 
+// --------------------------------------------------------------------------
+//  Link Functions
+// --------------------------------------------------------------------------
+
+FLASHMEM void driver_restart_auto_negotiation() {
+}
+
 }  // extern "C"
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_W5500

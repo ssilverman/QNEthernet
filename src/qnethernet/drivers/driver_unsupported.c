@@ -125,4 +125,11 @@ void driver_notify_manual_link_state(const bool flag) {
   LWIP_UNUSED_ARG(flag);
 }
 
+// --------------------------------------------------------------------------
+//  Link Functions
+// --------------------------------------------------------------------------
+
+FLASHMEM void driver_restart_auto_negotiation() {
+}
+
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
