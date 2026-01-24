@@ -238,6 +238,13 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 void driver_notify_manual_link_state(bool flag);
 
 // --------------------------------------------------------------------------
+//  Link Functions
+// --------------------------------------------------------------------------
+
+// Restarts auto-negotiation, if the driver supports it.
+void driver_restart_auto_negotiation();
+
+// --------------------------------------------------------------------------
 //  Public Interface
 // --------------------------------------------------------------------------
 

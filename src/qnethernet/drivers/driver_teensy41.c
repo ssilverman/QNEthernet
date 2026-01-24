@@ -355,6 +355,8 @@ static void enet_isr(void);
 #define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
 #define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  /* 0: Normal, 1: Swapped */
 
+#define PHY_BMCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart */
+
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
 // continuation is needed (not complete). If continuation is needed, then this
 // should be called again with 'cont' set to true. If this is the first call,
@@ -1220,6 +1222,14 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
 void driver_notify_manual_link_state(const bool flag) {
   s_manualLinkState = flag;
+}
+
+// --------------------------------------------------------------------------
+//  Link Functions
+// --------------------------------------------------------------------------
+
+void driver_restart_auto_negotiation() {
+  mdio_write(PHY_BMCR, mdio_read(PHY_BMCR) | PHY_BMCR_RESTART_AUTO_NEG);
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41
