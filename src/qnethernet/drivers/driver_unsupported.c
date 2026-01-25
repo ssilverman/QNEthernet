@@ -13,13 +13,14 @@
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
 FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
-  dc->isMACSettable              = false;
-  dc->isLinkStateDetectable      = false;
-  dc->isLinkSpeedDetectable      = false;
-  dc->isLinkSpeedSettable        = false;
-  dc->isLinkFullDuplexDetectable = false;
-  dc->isLinkFullDuplexSettable   = false;
-  dc->isLinkCrossoverDetectable  = false;
+  dc->isMACSettable                = false;
+  dc->isLinkStateDetectable        = false;
+  dc->isLinkSpeedDetectable        = false;
+  dc->isLinkSpeedSettable          = false;
+  dc->isLinkFullDuplexDetectable   = false;
+  dc->isLinkFullDuplexSettable     = false;
+  dc->isLinkCrossoverDetectable    = false;
+  dc->isAutoNegotiationRestartable = false;
 }
 
 bool driver_is_unknown(void) {

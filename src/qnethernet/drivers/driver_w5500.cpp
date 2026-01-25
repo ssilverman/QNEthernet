@@ -483,13 +483,14 @@ static void check_link_status(struct netif* const netif) {
 extern "C" {
 
 FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
-  dc->isMACSettable              = true;
-  dc->isLinkStateDetectable      = true;
-  dc->isLinkSpeedDetectable      = true;
-  dc->isLinkSpeedSettable        = false;
-  dc->isLinkFullDuplexDetectable = true;
-  dc->isLinkFullDuplexSettable   = false;
-  dc->isLinkCrossoverDetectable  = false;
+  dc->isMACSettable                = true;
+  dc->isLinkStateDetectable        = true;
+  dc->isLinkSpeedDetectable        = true;
+  dc->isLinkSpeedSettable          = false;
+  dc->isLinkFullDuplexDetectable   = true;
+  dc->isLinkFullDuplexSettable     = false;
+  dc->isLinkCrossoverDetectable    = false;
+  dc->isAutoNegotiationRestartable = false;
 }
 
 bool driver_is_unknown(void) {
