@@ -76,11 +76,6 @@
 // Builds with the W5500 driver.
 // #define QNETHERNET_DRIVER_W5500
 
-// Enables default implementations of the altcp interface functions.
-#ifndef QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
-#define QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS 0
-#endif
-
 // Enables ping reply support.
 #ifndef QNETHERNET_ENABLE_PING_REPLY
 #define QNETHERNET_ENABLE_PING_REPLY 1
@@ -123,6 +118,11 @@
 // Put lwIP-declared memory into RAM1. (Teensy 4)
 #ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
+#endif
+
+// Provides default implementations of the altcp interface functions.
+#ifndef QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS
+#define QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS 0
 #endif
 
 // Optionally provides a function definition for

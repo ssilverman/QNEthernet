@@ -8,7 +8,7 @@
 #include "lwip/opt.h"
 #include "qnethernet_opts.h"
 
-#if LWIP_ALTCP && QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
+#if LWIP_ALTCP && QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS
 
 // C++ includes
 #include <cstdint>
@@ -40,4 +40,4 @@ std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
       LWIP_UNUSED_ARG(allocator);
     };
 
-#endif  // LWIP_ALTCP && QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS
+#endif  // LWIP_ALTCP && QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS

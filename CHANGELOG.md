@@ -34,6 +34,8 @@ and this project adheres to
 * Improved setting of `errno`.
 * Added `printf` checking to `PrintDecorator`.
 * Replaced function-like-macros with `static inline` C functions.
+* Renamed `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` macro
+  to `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS`.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.

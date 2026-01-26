@@ -1433,7 +1433,7 @@ Here are the steps to add decorated TCP:
 
 See _src/lwip/altcp.c_ and the _AltcpTemplate_ example for more information.
 
-Note that if the `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` macro is enabled,
+Note that if the `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` macro is enabled,
 default, simple, implementations of these functions will be provided. Only the
 regular TCP allocator will be used.
 
@@ -1829,22 +1829,22 @@ in the relevant configuration file:
 
 The _QNEthernet_-specific macros are as follows:
 
-| Macro                                       | Default  | Description                                                                                    | Link                                                                                    |
-| ------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `QNETHERNET_ALTCP_TLS_ADAPTER`              | Disabled | Enables the _altcp_tls_adapter_ functions for easier TLS library integration                   | [About the TLS adapter functions](#about-the-tls-adapter-functions)                     |
-| `QNETHERNET_BUFFERS_IN_RAM1`                | Disabled | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_CUSTOM_WRITE`                   | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                         |
-| `QNETHERNET_DO_LOOP_IN_YIELD`               | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                   |
-| `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Enables default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
-| `QNETHERNET_ENABLE_PING_REPLY`              | Enabled  | Enables ICMP echo reply support                                                                | [Ping reply](#ping-reply)                                                               |
-| `QNETHERNET_ENABLE_PING_SEND`               | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                           |
-| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`        | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                   |
-| `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`      | Disabled | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                               |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`       | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                             |
-| `QNETHERNET_ENABLE_SECURE_TCP_ISN`          | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns) |
-| `QNETHERNET_FLUSH_AFTER_WRITE`              | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                     |
-| `QNETHERNET_LWIP_MEMORY_IN_RAM1`            | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                             |
-| `QNETHERNET_USE_ENTROPY_LIB`                | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                               |
+| Macro                                        | Default  | Description                                                                                    | Link                                                                                     |
+| -------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `QNETHERNET_ALTCP_TLS_ADAPTER`               | Disabled | Enables the _altcp_tls_adapter_ functions for easier TLS library integration                   | [About the TLS adapter functions](#about-the-tls-adapter-functions)                      |
+| `QNETHERNET_BUFFERS_IN_RAM1`                 | Disabled | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
+| `QNETHERNET_CUSTOM_WRITE`                    | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                          |
+| `QNETHERNET_DO_LOOP_IN_YIELD`                | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                    |
+| `QNETHERNET_ENABLE_PING_REPLY`               | Enabled  | Enables ICMP echo reply support                                                                | [Ping reply](#ping-reply)                                                                |
+| `QNETHERNET_ENABLE_PING_SEND`                | Disabled | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                            |
+| `QNETHERNET_ENABLE_PROMISCUOUS_MODE`         | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                    |
+| `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`       | Disabled | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                                |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`        | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                              |
+| `QNETHERNET_ENABLE_SECURE_TCP_ISN`           | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)  |
+| `QNETHERNET_FLUSH_AFTER_WRITE`               | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                      |
+| `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
+| `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Provides default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_USE_ENTROPY_LIB`                 | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                                |
 
 To enable a feature, set the associated macro to `1` or just define it. To
 disable a feature, either set the same macro to `0` or leave it undefined.
