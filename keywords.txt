@@ -93,6 +93,7 @@ localPort	KEYWORD2	client.localPort
 data	KEYWORD2
 remoteIP	KEYWORD2
 remotePort	KEYWORD2
+destIP	KEYWORD2
 receivedTimestamp	KEYWORD2
 connectionId	KEYWORD2
 writeFully	KEYWORD2

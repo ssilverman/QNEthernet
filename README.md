@@ -428,6 +428,7 @@ listening and the port or _reuse_ options have changed.
 * `beginMulticastWithReuse(ip, localPort)`: Similar to
   `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
+* `destIP()`: Returns the destination IP of a received packet.
 * `droppedReceiveCount()`: Returns the total number of dropped received packets
   since reception was started. Note that this is the count of dropped packets at
   the layer above the driver.

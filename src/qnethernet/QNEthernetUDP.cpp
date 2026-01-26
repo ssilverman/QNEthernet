@@ -72,6 +72,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   }
   packet.addr = *addr;
   packet.port = port;
+  packet.destAddr = *ip4_current_dest_addr();
   packet.receivedTimestamp = timestamp;
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
@@ -285,6 +286,7 @@ void EthernetUDP::Packet::clear() {
   data.clear();
   addr = *IP_ANY_TYPE;
   port = 0;
+  destAddr = *IP_ANY_TYPE;
   receivedTimestamp = 0;
 }
 
@@ -365,6 +367,15 @@ void EthernetUDP::flush() {
 IPAddress EthernetUDP::remoteIP() {
 #if LWIP_IPV4
   return util::ip_addr_get_ip4_uint32(&packet_.addr);
+#else
+  errno = ENOSYS;
+  return INADDR_NONE;
+#endif  // LWIP_IPV4
+}
+
+IPAddress EthernetUDP::destIP() const {
+#if LWIP_IPV4
+  return util::ip_addr_get_ip4_uint32(&packet_.destAddr);
 #else
   errno = ENOSYS;
   return INADDR_NONE;

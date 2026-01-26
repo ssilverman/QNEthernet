@@ -18,6 +18,8 @@ and this project adheres to
   `__gnu_cxx::__verbose_terminate_handler` for space-saving reasons.
 * New `StreamDecorator` class that also does `printf` checking.
 * Added `qindesign::network::util::isBroadcast(ip, localIP, mask)`.
+* New `EthernetUDP::destIP()` for getting the destination IP address from
+  a received packet.
 
 ### Changed
 * Improved code style and structure.

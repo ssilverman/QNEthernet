@@ -182,6 +182,10 @@ class EthernetUDP : public UDP,
     return packet_.port;
   }
 
+  // Returns the IP address to which the packet was sent. This is only valid if
+  // a packet has been received with parsePacket().
+  IPAddress destIP() const;
+
   // Returns the approximate packet arrival time, measured with sys_now(). This
   // is only valid if a packet has been received with parsePacket().
   //
@@ -250,12 +254,14 @@ class EthernetUDP : public UDP,
   }
 
  private:
+  // Packet holds packet data. destAddr is unused for outgoing packets.
   struct Packet final {
     uint8_t diffServ = 0;
     uint8_t ttl = 0;
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;
     volatile uint16_t port = 0;
+    ip_addr_t destAddr = *IP_ANY_TYPE;        // Address the packet was sent to
     volatile uint32_t receivedTimestamp = 0;  // Approximate arrival time
 
     // Clears all the data.
