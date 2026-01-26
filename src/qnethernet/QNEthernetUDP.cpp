@@ -154,6 +154,11 @@ bool EthernetUDP::tryCreatePCB() {
       errno = ENOMEM;
       return false;
     }
+
+    // Set the broadcast option
+    // This is used if the LWIP_IP_SOF_BROADCAST or LWIP_IP_SOF_BROADCAST_RECV
+    // options are set
+    ip_set_option(pcb_, SOF_BROADCAST);
   }
   return true;
 }

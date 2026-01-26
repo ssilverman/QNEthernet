@@ -16,6 +16,7 @@
 #include "lwip/err.h"
 #include "lwip/icmp.h"
 #include "lwip/inet_chksum.h"
+#include "lwip/ip.h"
 #include "lwip/prot/ip4.h"
 #include "lwip/prot/ip.h"
 #include "qnethernet/util/ip_tools.h"
@@ -88,6 +89,11 @@ bool Ping::tryCreatePCB() {
       errno = ENOMEM;
       return false;
     }
+
+    // Set the broadcast option
+    // This is used if the LWIP_IP_SOF_BROADCAST or LWIP_IP_SOF_BROADCAST_RECV
+    // options are set
+    ip_set_option(pcb_, SOF_BROADCAST);
 
     raw_recv(pcb_, &recvFunc, this);
   }

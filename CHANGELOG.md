@@ -36,6 +36,9 @@ and this project adheres to
 * Replaced function-like-macros with `static inline` C functions.
 * Renamed `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` macro
   to `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS`.
+* Now setting the `SOF_BROADCAST` IP option on both UDP and raw PCBs. This
+  allows the `LWIP_IP_SOF_BROADCAST` and `LWIP_IP_SOF_BROADCAST_RECV` options to
+  be used if needed.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
