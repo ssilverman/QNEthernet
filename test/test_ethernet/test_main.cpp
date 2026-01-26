@@ -1085,6 +1085,38 @@ static void test_udp_ttl() {
   udp->stop();
 }
 
+// Tests UDP addresses and ports.
+static void test_udp_addrs() {
+  constexpr uint16_t kPort = 1025;
+
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
+                           "Expected successful Ethernet start");
+  Ethernet.setLinkState(true);  // send() won't work unless there's a link
+
+  // Create and listen
+  udp = compat::make_unique<EthernetUDP>();
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
+
+  const uint8_t b = 13;
+
+  // Send a packet
+  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
+                           "Expected packet send success");
+
+  // Test that we actually received the packet and check the IP addresses
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
+  TEST_ASSERT_EQUAL_MESSAGE(Ethernet.localIP(), udp->remoteIP(), "Expected matching remote IP");
+  TEST_ASSERT_EQUAL_MESSAGE(udp->localPort(), udp->remotePort(), "Expected matching remote port");
+  TEST_ASSERT_EQUAL_MESSAGE(Ethernet.localIP(), udp->destIP(), "Expected matching dest IP");
+
+  // Note: It doesn't look like a broadcast packet will get sent over
+  //       the loopback interface
+  // TODO: Implement this if we can
+
+  udp->stop();
+}
+
 // Tests a TCP client.
 static void test_client() {
 #define HOST "www.google.com"
@@ -1768,6 +1800,7 @@ void setup() {
   RUN_TEST(test_udp_zero_length);
   RUN_TEST(test_udp_diffserv);
   RUN_TEST(test_udp_ttl);
+  RUN_TEST(test_udp_addrs);
   RUN_TEST(test_client);
   RUN_TEST(test_client_write_single_bytes);
   RUN_TEST(test_client_connectNoWait);
