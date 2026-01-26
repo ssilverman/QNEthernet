@@ -6,6 +6,8 @@
 
 #include "qnethernet/util/ip_tools.h"
 
+#include "lwip/def.h"
+#include "lwip/ip4_addr.h"
 #include "lwip/opt.h"
 
 namespace qindesign {
@@ -28,6 +30,15 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* const ip) {
 }
 
 #endif  // LWIP_IPV4
+
+bool isBroadcast(const uint32_t ip, const uint32_t mask) {
+  if (ip == IPADDR_ANY ||  // Non-standard broadcast
+      ip == IPADDR_NONE) {
+    return true;
+  }
+  const uint32_t nmask = htonl(mask);
+  return (ip & ~nmask) == (IPADDR_BROADCAST & ~nmask);
+}
 
 }  // namespace util
 }  // namespace network

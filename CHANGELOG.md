@@ -17,6 +17,7 @@ and this project adheres to
   option for including our own version of
   `__gnu_cxx::__verbose_terminate_handler` for space-saving reasons.
 * New `StreamDecorator` class that also does `printf` checking.
+* Added `qindesign::network::util::isBroadcast(ip, mask)`.
 
 ### Changed
 * Improved code style and structure.
