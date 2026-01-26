@@ -24,9 +24,9 @@ namespace util {
 // non-IPv4-mapped addresses.
 uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* ip);
 
-// Checks if the given IP address (given in network order) is a broadcast
-// address, given the mask (also in network order).
-bool isBroadcast(uint32_t ip, uint32_t mask);
+// Checks if the given IP address is a broadcast address, given the local IP and
+// mask. All values are expected to be in network order.
+bool isBroadcast(uint32_t ip, uint32_t localIP, uint32_t mask);
 
 #endif  // LWIP_IPV4
 

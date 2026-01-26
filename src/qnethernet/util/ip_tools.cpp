@@ -31,12 +31,19 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* const ip) {
 
 #endif  // LWIP_IPV4
 
-bool isBroadcast(const uint32_t ip, const uint32_t mask) {
+bool isBroadcast(const uint32_t ip, const uint32_t localIP,
+                 const uint32_t mask) {
   if (ip == IPADDR_ANY ||  // Non-standard broadcast
       ip == IPADDR_NONE) {
     return true;
   }
-  return (ip & ~mask) == (IPADDR_BROADCAST & ~mask);
+
+  // It's a broadcast address if not a matching IP, the IP's are on
+  // the same subnet (network prefix matches), and the host identifier
+  // bits are all set
+  // See: ip4_addr_isbroadcast_u32(addr, netif) in lwip/lpv4/ip4_addr.c
+  return (localIP != ip) && ((localIP & mask) == (ip & mask)) &&
+         ((ip & ~mask) == (IPADDR_BROADCAST & ~mask));
 }
 
 }  // namespace util
