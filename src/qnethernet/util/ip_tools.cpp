@@ -36,8 +36,7 @@ bool isBroadcast(const uint32_t ip, const uint32_t mask) {
       ip == IPADDR_NONE) {
     return true;
   }
-  const uint32_t nmask = htonl(mask);
-  return (ip & ~nmask) == (IPADDR_BROADCAST & ~nmask);
+  return (ip & ~mask) == (IPADDR_BROADCAST & ~mask);
 }
 
 }  // namespace util
