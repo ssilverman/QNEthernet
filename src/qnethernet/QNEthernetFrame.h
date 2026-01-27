@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetFrame.h defines the raw frame interface.
@@ -212,7 +212,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
     return totalReceiveCount_;
   }
 
-  // Clears any outgoing packet and the incoming queue.
+  // Clears any outgoing frame and the incoming queue.
   void clear();
 
  private:
@@ -239,7 +239,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   [[nodiscard]]
   bool isAvailable() const;
 
-  // Received frame; updated every time one is received
+  // Received frames; updated every time one is received
   std::vector<Frame> inBuf_;  // Holds received frames
   size_t inBufTail_ = 0;
   size_t inBufHead_ = 0;
