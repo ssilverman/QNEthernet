@@ -17,6 +17,8 @@ and this project adheres to
   option for including our own version of
   `__gnu_cxx::__verbose_terminate_handler` for space-saving reasons.
 * New `StreamDecorator` class that also does `printf` checking.
+* Added `driver_restart_auto_negotiation()` driver function for restarting link
+  auto-negotiation. This is useful for when EMF brings the link down.
 * Added `qindesign::network::util::isBroadcast(ip, localIP, mask)`.
 * New `EthernetUDP::destIP()` for getting the destination IP address from
   a received packet.
