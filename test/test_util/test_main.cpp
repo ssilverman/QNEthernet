@@ -21,7 +21,10 @@
 #include <Print.h>
 #include <unity.h>
 
+#include "lwip/def.h"
+#include "lwip/ip4_addr.h"
 #include "qnethernet/util/PrintUtils.h"
+#include "qnethernet/util/ip_tools.h"
 
 using namespace qindesign::network::util;
 
@@ -113,6 +116,29 @@ static void test_NullPrint() {
                             "Expected max. bytes available to write");
 }
 
+// Makes a 32-bit IP address in network order.
+static inline constexpr uint32_t makeIP(uint8_t a, uint8_t b, uint8_t c,
+                                        uint8_t d) {
+  return PP_HTONL(LWIP_MAKEU32((a), (b), (c), (d)));
+}
+
+static void test_isBroadcast() {
+  static constexpr uint32_t kLocalIP = makeIP(10, 0, 0, 59);
+  static constexpr uint32_t kSubnet  = makeIP(255, 0, 0, 0);
+  static constexpr uint32_t tests[][4]{
+      {IPADDR_ANY,                kLocalIP, kSubnet, true},
+      {IPADDR_BROADCAST,          kLocalIP, kSubnet, true},
+      {makeIP(10, 255, 255, 255), kLocalIP, kSubnet, true},
+      {makeIP(11, 255, 255, 255), kLocalIP, kSubnet, false},
+      {makeIP(10, 0, 0, 2),       kLocalIP, kSubnet, false},
+  };
+
+  for (const uint32_t* test : tests) {
+    TEST_ASSERT_EQUAL(test[3], qindesign::network::util::isBroadcast(
+                                   test[0], test[1], test[2]));
+  }
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -134,6 +160,7 @@ void setup() {
   RUN_TEST(test_writeMagic);
   RUN_TEST(test_StdioPrint);
   RUN_TEST(test_NullPrint);
+  RUN_TEST(test_isBroadcast);
   UNITY_END();
 }
 
