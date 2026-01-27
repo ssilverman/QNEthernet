@@ -82,19 +82,20 @@ lwIP release.
 20. [Heap memory use](#heap-memory-use)
 21. [Entropy generation](#entropy-generation)
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
-22. [Security features](#security-features)
+22. [EMF interference mitigation](#emf-interference-mitigation)
+23. [Security features](#security-features)
     1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
     2. [Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
-23. [Configuration macros](#configuration-macros)
+24. [Configuration macros](#configuration-macros)
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
-24. [Complete list of features](#complete-list-of-features)
-25. [Compatibility with other APIs](#compatibility-with-other-apis)
-26. [Other notes](#other-notes)
-27. [To do](#to-do)
-28. [Code style](#code-style)
-29. [References](#references)
+25. [Complete list of features](#complete-list-of-features)
+26. [Compatibility with other APIs](#compatibility-with-other-apis)
+27. [Other notes](#other-notes)
+28. [To do](#to-do)
+29. [Code style](#code-style)
+30. [References](#references)
 
 ## Introduction
 
@@ -1786,6 +1787,19 @@ _Entropy_ library.
 
 This is the preferred way to acquire entropy. It is meant to be used with a
 [Random number distribution](https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions).
+
+## EMF interference mitigation
+
+It's possible, based on some experience in the wild, that EMF interference, say
+from a power supply, may bring the link down. It was discovered that unplugging
+and then re-plugging the Ethernet kit ribbon cable from the Teensy 4.1 restored
+the link. The link was restored because performing that action caused the link
+to be re-negotiated.
+
+To assist in solving this, a driver function was added:
+`driver_restart_auto_negotiation()`. This can be called, when link-down is
+detected, to restart auto-negotiation. This seemed to solve the link-down
+issues in the project.
 
 ## Security features
 
