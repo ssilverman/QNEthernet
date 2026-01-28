@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetClient.cpp contains the EthernetClient implementation.
@@ -481,12 +481,12 @@ static inline bool isAvailable(
 
 #define CHECK_STATE(R)           \
   if (conn_ == nullptr) {        \
-    return 0;                    \
+    return (R);                  \
   }                              \
   /* For non-blocking connect */ \
   if (pendingConnect_) {         \
     (void)watchPendingConnect(); \
-    return 0;                    \
+    return (R);                  \
   }
 
 #define GET_STATE_AND_LOOP_OR_CLOSE(R) \

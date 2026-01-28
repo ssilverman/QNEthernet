@@ -52,6 +52,8 @@ and this project adheres to
   `Ethernet.loop()` in the callback because that could potentially invalidate
   the iterator. Also added notes about potential iteration invalidation to the
   `iterateConnections()` and `iterateListeners()` docs.
+* Fixed `EthernetClient` `read()` and `peek()` to return the correct value if
+  not connected.
 
 ## [0.33.1]
 
