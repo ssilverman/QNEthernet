@@ -193,6 +193,7 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     if (v.capacity() - v.size() < p->tot_len) {
       const size_t n = v.size() - state->bufPos;
       if (n > 0) {
+        // TODO: Use a ring buffer for performance?
         std::copy_n(v.cbegin() + state->bufPos, n, v.begin());
         v.resize(n);
       } else {
@@ -528,6 +529,7 @@ void ConnectionManager::abortAll() {
   iterateConnections([](struct altcp_pcb* pcb) { altcp_abort(pcb); });
 }
 
+// TODO: Is it dangerous to call this if the function calls Ethernet.loop()?
 void ConnectionManager::iterateConnections(
     std::function<void(struct altcp_pcb* pcb)> f) {
   std::for_each(connections_.cbegin(), connections_.cend(),
