@@ -48,6 +48,10 @@ and this project adheres to
   choose not to set it to DOWN.
 * Updated _Ping_ and _SimplePing_ examples to work with other systems by
   changing use of `elapsedMillis` to `unsigned long` plus calculations.
+* Fixed `ConnectionManager::iterateConnections()` calls to not call
+  `Ethernet.loop()` in the callback because that could potentially invalidate
+  the iterator. Also added notes about potential iteration invalidation to the
+  `iterateConnections()` and `iterateListeners()` docs.
 
 ## [0.33.1]
 
