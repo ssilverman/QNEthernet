@@ -53,12 +53,14 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   }
   Frame& frame = EthernetFrame.inBuf_.put();
   frame.data.clear();
-  frame.data.reserve(p->tot_len);
-  // TODO: Limit vector size
-  while (pNext != nullptr) {
-    const auto data = static_cast<const uint8_t*>(pNext->payload);
-    frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
-    pNext = pNext->next;
+  if (p->tot_len > 0) {
+    frame.data.reserve(p->tot_len);
+    // TODO: Limit vector size
+    while (pNext != nullptr) {
+      const auto data = static_cast<const uint8_t*>(pNext->payload);
+      frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
+      pNext = pNext->next;
+    }
   }
   frame.receivedTimestamp = timestamp;
 
