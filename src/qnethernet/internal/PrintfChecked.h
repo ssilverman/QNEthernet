@@ -18,6 +18,8 @@
 #include <cstdarg>
 #include <cstdio>
 
+#include "qnethernet/compat/c++11_compat.h"
+
 namespace qindesign {
 namespace network {
 namespace internal {
@@ -27,7 +29,7 @@ class PrintfChecked {
   PrintfChecked() = default;
 
   // Define a format-checked printf.
-  [[gnu::format(printf, 2, 3)]]
+  ATTRIBUTE_FORMAT(printf, 2, 3)
   int printf(const char* const format, ...) {
     std::va_list args;
     va_start(args, format);
