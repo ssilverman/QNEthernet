@@ -487,7 +487,8 @@ size_t ConnectionManager::write(const uint16_t port,
       if (altcp_output(pcb) != ERR_OK) {
         return;
       }
-      Ethernet.loop();
+      // May invalidate connections_:
+      // Ethernet.loop();
     }
     const uint16_t len = std::min(size16, altcp_sndbuf(pcb));
     if (len > 0) {
@@ -504,7 +505,8 @@ void ConnectionManager::flush(const uint16_t port) {
       return;
     }
     altcp_output(pcb);
-    Ethernet.loop();
+    // May invalidate connections_:
+    // Ethernet.loop();
   });
   Ethernet.loop();
 }
@@ -529,7 +531,6 @@ void ConnectionManager::abortAll() {
   iterateConnections([](struct altcp_pcb* pcb) { altcp_abort(pcb); });
 }
 
-// TODO: Is it dangerous to call this if the function calls Ethernet.loop()?
 void ConnectionManager::iterateConnections(
     std::function<void(struct altcp_pcb* pcb)> f) {
   std::for_each(connections_.cbegin(), connections_.cend(),
