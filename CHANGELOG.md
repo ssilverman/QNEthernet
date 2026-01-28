@@ -39,6 +39,8 @@ and this project adheres to
 * Replaced function-like-macros with `static inline` C functions.
 * Renamed `QNETHERNET_ENABLE_ALTCP_DEFAULT_FUNCTIONS` macro
   to `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS`.
+* `EthernetUDP` and `EthernetFrame` now share some common circular buffer code
+  in an internal utility class.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.

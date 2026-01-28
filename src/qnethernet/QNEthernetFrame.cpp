@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetFrame.cpp contains an EthernetFrame implementation.
@@ -10,6 +10,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <utility>
 
 #include "QNEthernet.h"
 #include "lwip/arch.h"
@@ -46,8 +47,11 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
 
   struct pbuf* pNext = p;
 
-  // Push (replace the head)
-  Frame& frame = EthernetFrame.inBuf_[EthernetFrame.inBufHead_];
+  // Push
+  if (EthernetFrame.inBuf_.full()) {
+    ++EthernetFrame.droppedReceiveCount_;
+  }
+  Frame& frame = EthernetFrame.inBuf_.put();
   frame.data.clear();
   frame.data.reserve(p->tot_len);
   // TODO: Limit vector size
@@ -57,19 +61,6 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
     pNext = pNext->next;
   }
   frame.receivedTimestamp = timestamp;
-
-  // Increment the size
-  if ((EthernetFrame.inBufSize_ != 0) &&
-      (EthernetFrame.inBufTail_ == EthernetFrame.inBufHead_)) {
-    // Full
-    EthernetFrame.inBufTail_ =
-        (EthernetFrame.inBufTail_ + 1) % EthernetFrame.inBuf_.size();
-    ++EthernetFrame.droppedReceiveCount_;
-  } else {
-    ++EthernetFrame.inBufSize_;
-  }
-  EthernetFrame.inBufHead_ =
-      (EthernetFrame.inBufHead_ + 1) % EthernetFrame.inBuf_.size();
 
   pbuf_free(p);
   ++EthernetFrame.totalReceiveCount_;
@@ -93,12 +84,10 @@ void EthernetFrameClass::clear() {
   }
 
   // Incoming
-  for (Frame& f : inBuf_) {
-    f.clear();
+  for (size_t i = 0; i < inBuf_.size(); ++i) {
+    inBuf_[i].clear();
   }
-  inBufTail_ = 0;
-  inBufHead_ = 0;
-  inBufSize_ = 0;
+  inBuf_.clear();
 }
 
 // --------------------------------------------------------------------------
@@ -106,16 +95,13 @@ void EthernetFrameClass::clear() {
 // --------------------------------------------------------------------------
 
 int EthernetFrameClass::parseFrame() {
-  if (inBufSize_ == 0) {
+  if (inBuf_.empty()) {
     framePos_ = -1;
     return -1;
   }
 
-  // Pop (from the tail)
-  frame_ = inBuf_[inBufTail_];
-  inBuf_[inBufTail_].clear();
-  inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
-  --inBufSize_;
+  // Pop
+  frame_ = std::move(inBuf_.get());
 
   Ethernet.loop();  // Allow the stack to move along
 
@@ -188,39 +174,9 @@ const uint8_t* EthernetFrameClass::payload() const {
 }
 
 void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
-  if (capacity == inBuf_.size()) {
-    return;
-  }
-
-  const size_t actualCap = std::max(capacity, size_t{1});
-
-  // Keep all the newest elements
   qnethernet_hal_disable_interrupts();
-  if (actualCap <= inBufSize_) {
-    // Keep all the newest frames
-    if (inBufTail_ != 0) {
-      const size_t n = (inBufTail_ + (inBufSize_ - actualCap)) % inBuf_.size();
-      std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
-    }
-    inBuf_.resize(actualCap);
-    inBufHead_ = 0;
-    inBufSize_ = actualCap;
-  } else {
-    if (inBufTail_ != 0) {
-      std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
-    }
-    inBuf_.resize(actualCap);
-    inBufHead_ = inBufSize_;
-
-    // Don't reserve memory because that might exhaust the heap
-    // for (size_t i = oldSize; i < actualCap; ++i) {
-    //   inBuf_[i].data.reserve(maxFrameLen());
-    // }
-  }
-  inBufTail_ = 0;
+  inBuf_.setCapacity(capacity);
   qnethernet_hal_enable_interrupts();
-
-  inBuf_.shrink_to_fit();
 }
 
 // --------------------------------------------------------------------------

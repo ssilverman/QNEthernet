@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <limits>
+#include <utility>
 
 #include "QNEthernet.h"
 #include "lwip/dns.h"
@@ -58,9 +59,12 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
 
   struct pbuf* pNext = p;
 
-  // Push (replace the head)
-  Packet& packet = udp->inBuf_[udp->inBufHead_];
-  packet.data.clear();
+  // Push
+  if (udp->inBuf_.full()) {
+    ++udp->droppedReceiveCount_;
+  }
+  Packet& packet = udp->inBuf_.put();
+  packet.clear();
   if (pNext->tot_len > 0) {
     packet.data.reserve(pNext->tot_len);
     // TODO: Limit vector size
@@ -77,16 +81,6 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
 
-  // Increment the size
-  if ((udp->inBufSize_ != 0) && (udp->inBufTail_ == udp->inBufHead_)) {
-    // Full
-    udp->inBufTail_ = (udp->inBufTail_ + 1) % udp->inBuf_.size();
-    ++udp->droppedReceiveCount_;
-  } else {
-    ++udp->inBufSize_;
-  }
-  udp->inBufHead_ = (udp->inBufHead_ + 1) % udp->inBuf_.size();
-
   pbuf_free(p);
 
   ++udp->totalReceiveCount_;
@@ -102,40 +96,9 @@ EthernetUDP::~EthernetUDP() noexcept {
 }
 
 void EthernetUDP::setReceiveQueueCapacity(const size_t capacity) {
-  if (capacity == inBuf_.size()) {
-    return;
-  }
-
-  const size_t actualCap = std::max(capacity, size_t{1});
-
-  // Keep all the newest elements
   // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    if (actualCap <= inBufSize_) {
-      // Keep all the newest packets
-      if (inBufTail_ != 0) {
-        const size_t n =
-            (inBufTail_ + (inBufSize_ - actualCap)) % inBuf_.size();
-        std::rotate(inBuf_.begin(), inBuf_.begin() + n, inBuf_.end());
-      }
-      inBuf_.resize(actualCap);
-      inBufHead_ = 0;
-      inBufSize_ = actualCap;
-    } else {
-      if (inBufTail_ != 0) {
-        std::rotate(inBuf_.begin(), inBuf_.begin() + inBufTail_, inBuf_.end());
-      }
-      inBuf_.resize(actualCap);
-      inBufHead_ = inBufSize_;
-
-      // Don't reserve memory because that might exhaust the heap
-      // for (size_t i = oldSize; i < size; ++i) {
-      //   inBuf_[i].data.reserve(kMaxPayloadSize);
-      // }
-    }
-    inBufTail_ = 0;
+  inBuf_.setCapacity(capacity);
   // }
-
-  inBuf_.shrink_to_fit();
 }
 
 uint8_t EthernetUDP::begin(const uint16_t localPort) {
@@ -301,16 +264,13 @@ int EthernetUDP::parsePacket() {
 
   Ethernet.loop();  // Allow the stack to move along
 
-  if (inBufSize_ == 0) {
+  if (inBuf_.empty()) {
     packetPos_ = -1;
     return -1;
   }
 
-  // Pop (from the tail)
-  packet_ = inBuf_[inBufTail_];
-  inBuf_[inBufTail_].clear();
-  inBufTail_ = (inBufTail_ + 1) % inBuf_.size();
-  --inBufSize_;
+  // Pop
+  packet_ = std::move(inBuf_.get());
 
   packetPos_ = 0;
   return static_cast<int>(packet_.data.size());

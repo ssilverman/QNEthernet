@@ -22,6 +22,7 @@
 #include "lwip/ip_addr.h"
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
+#include "qnethernet/internal/CircularBuffer.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
 #include "qnethernet/internal/optional.h"
@@ -54,12 +55,12 @@ class EthernetUDP : public UDP,
 
   // Returns the receive queue capacity.
   size_t receiveQueueCapacity() const {
-    return inBuf_.size();
+    return inBuf_.capacity();
   }
 
   // Returns the number of packets currently in the receive queue.
   size_t receiveQueueSize() const {
-    return inBufSize_;
+    return inBuf_.size();
   }
 
   // Changes the receive queue capacity. This will use a minimum of 1.
@@ -311,10 +312,7 @@ class EthernetUDP : public UDP,
   IPAddress multicastIP_;
 
   // Received packets; updated every time one is received
-  std::vector<Packet> inBuf_;  // Holds received packets
-  size_t inBufTail_ = 0;
-  size_t inBufHead_ = 0;
-  size_t inBufSize_ = 0;
+  internal::CircularBuffer<Packet> inBuf_;
 
   // Packet being processed by the caller
   Packet packet_;       // Holds the packet being read
