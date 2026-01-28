@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // PrintUtils.cpp implements the Print utility functions.
@@ -20,6 +20,7 @@ size_t writeFully(Print& p, const void* const buf, const size_t size,
   size_t sizeRem = size;
 
   if (breakf == nullptr) {
+    // Note: This may spin forever if p.write() always returns zero
     while (sizeRem > 0) {
       const size_t written = p.write(pBuf, sizeRem);
       sizeRem -= written;
@@ -29,6 +30,7 @@ size_t writeFully(Print& p, const void* const buf, const size_t size,
   }
 
   while ((sizeRem > 0) && !breakf()) {
+    // Note: This may spin forever if p.write() always returns zero
     const size_t written = p.write(pBuf, sizeRem);
     sizeRem -= written;
     pBuf += written;
