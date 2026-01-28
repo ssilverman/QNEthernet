@@ -80,6 +80,7 @@ Print* volatile stderrPrint = nullptr;
 extern "C" {
 
 // Gets the Print* for the given file descriptor.
+ATTRIBUTE_NODISCARD
 static inline Print* getPrint(const int file) {
   switch (file) {
 #if QNETHERNET_CUSTOM_WRITE
@@ -231,6 +232,7 @@ uint32_t qnethernet_hal_entropy(void) {
 #else
 
 // Returns a UniformRandomBitGenerator instance.
+ATTRIBUTE_NODISCARD
 static std::minstd_rand& urbg_instance() {
   static std::minstd_rand gen;
   return gen;

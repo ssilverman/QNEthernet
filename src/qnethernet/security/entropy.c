@@ -6,6 +6,8 @@
 
 #include "qnethernet/security/entropy.h"
 
+#include "qnethernet/compat/c11_compat.h"
+
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
@@ -162,6 +164,7 @@ FLASHMEM void trng_deinit(void) {
 
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
 // available. This checks for an error, and if there is one, returns false.
+ATTRIBUTE_NODISCARD
 static bool fillEntropyBuf(void) {
   // Check for an error
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
@@ -182,6 +185,7 @@ static bool fillEntropyBuf(void) {
 
 // Fills the entropy pool if empty. This waits for entropy to be available or
 // an error.
+ATTRIBUTE_NODISCARD
 static bool fillEntropy(void) {
   if (s_entropySizeBytes > 0) {
     return true;
@@ -195,6 +199,7 @@ static bool fillEntropy(void) {
 }
 
 // // Reads a single entropy byte.
+// ATTRIBUTE_NODISCARD
 // static bool readEntropy(uint8_t *b) {
 //   if (!fillEntropy()) {
 //     return false;

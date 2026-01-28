@@ -118,6 +118,7 @@ static void test_NullPrint() {
 }
 
 // Makes a 32-bit IP address in network order.
+ATTRIBUTE_NODISCARD
 static inline constexpr uint32_t makeIP(uint8_t a, uint8_t b, uint8_t c,
                                         uint8_t d) {
   return PP_HTONL(LWIP_MAKEU32((a), (b), (c), (d)));

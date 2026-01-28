@@ -20,7 +20,6 @@
 #if LWIP_ALTCP
 #include "lwip/tcp.h"
 #endif  // LWIP_ALTCP
-#include "qnethernet/compat/c++11_compat.h"
 
 #if LWIP_ALTCP
 // This is a function that fills in the given 'altcp_allocator_t' with an
@@ -82,6 +81,7 @@ err_t ConnectionManager::connectedFunc(void* const arg,
 }
 
 // Check if there's data available in the buffer.
+ATTRIBUTE_NODISCARD
 static inline bool isAvailable(const std::unique_ptr<ConnectionState>& state) {
   return (/*(0 <= state->bufPos) &&*/ (state->bufPos < state->buf.size()));
 }
@@ -268,6 +268,7 @@ void ConnectionManager::addConnection(
   };
 }
 
+ATTRIBUTE_NODISCARD
 static struct altcp_pcb* create_altcp_pcb(const ip_addr_t* const ipaddr,
                                           const uint16_t port,
                                           const u8_t ip_type) {
@@ -386,6 +387,7 @@ int32_t ConnectionManager::listen(const uint16_t port, const bool reuse) {
 }
 
 // Gets the local port from the given tcp_pcb.
+ATTRIBUTE_NODISCARD
 static uint16_t getLocalPort(struct altcp_pcb* pcb) {
 #if LWIP_ALTCP
   return altcp_get_port(pcb, 1);

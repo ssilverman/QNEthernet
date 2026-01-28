@@ -205,6 +205,7 @@ err_t driver_output(struct pbuf *p);
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add, to the start, any extra padding bytes given by ETH_PAD_SIZE.
+ATTRIBUTE_NODISCARD
 bool driver_output_frame(const void *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
@@ -318,6 +319,7 @@ void enet_poll(void);
 // ranges exclude the 4-byte FCS (frame check sequence).
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
+ATTRIBUTE_NODISCARD
 bool enet_output_frame(const void *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 

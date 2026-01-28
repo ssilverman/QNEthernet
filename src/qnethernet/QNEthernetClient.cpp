@@ -473,6 +473,7 @@ void EthernetClient::flush() {
 // --------------------------------------------------------------------------
 
 // Check if there's data available in the buffer.
+ATTRIBUTE_NODISCARD
 static inline bool isAvailable(
     const std::unique_ptr<internal::ConnectionState>& state) {
   return (state != nullptr) &&  // Necessary because loop() may reset state
@@ -657,6 +658,7 @@ EthernetClient::getState() const {
 }
 
 // Gets the innermost PCB from the state. For altcp, the PCB's are nested.
+ATTRIBUTE_NODISCARD
 static inline struct tcp_pcb* innermost(
     const std::unique_ptr<internal::ConnectionState>& state) {
 #if LWIP_ALTCP

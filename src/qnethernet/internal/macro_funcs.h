@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "qnethernet/compat/c11_compat.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -31,6 +33,7 @@ static inline void clearAndSet32(volatile uint32_t* const reg,
 */
 
 // Returns the minimum of two size_t variables.
+ATTRIBUTE_NODISCARD
 static inline size_t min_size(size_t a, size_t b) {
   return (a < b) ? a : b;
 }

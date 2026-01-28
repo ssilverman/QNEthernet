@@ -50,6 +50,7 @@ static struct autoip s_autoip;
 // --------------------------------------------------------------------------
 
 // Outputs the given pbuf to the driver.
+ATTRIBUTE_NODISCARD
 static err_t link_output(struct netif *const netif, struct pbuf *const p) {
   LWIP_UNUSED_ARG(netif);
 
@@ -62,6 +63,7 @@ static err_t link_output(struct netif *const netif, struct pbuf *const p) {
 
 #if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 // Multicast filter for letting the hardware know which packets to let in.
+ATTRIBUTE_NODISCARD
 static err_t multicast_filter(struct netif *const netif,
                               const ip4_addr_t *const group,
                               const enum netif_mac_filter_action action) {
@@ -85,6 +87,7 @@ static err_t multicast_filter(struct netif *const netif,
 #endif  // LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // Initializes the netif.
+ATTRIBUTE_NODISCARD
 FLASHMEM static err_t init_netif(struct netif *const netif) {
   if (netif == NULL) {
     return ERR_ARG;
@@ -308,6 +311,7 @@ bool enet_output_frame(const void *const frame, const size_t len) {
 
 // Joins or leaves a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
+ATTRIBUTE_NODISCARD
 static bool enet_join_notleave_group(const ip4_addr_t *const group,
                                      const bool flag) {
   if (group == NULL) {

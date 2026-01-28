@@ -137,6 +137,7 @@ class MDNSClass final {
     void set(bool valid, const char* name, const char* type,
              enum mdns_sd_proto proto, uint16_t port,
              std::vector<String> (*getTXTFunc)());
+    ATTRIBUTE_NODISCARD
     bool equals(bool valid, const char* name, const char* type,
                 enum mdns_sd_proto proto, uint16_t port) const;
 

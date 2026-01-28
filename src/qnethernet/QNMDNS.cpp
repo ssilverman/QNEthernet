@@ -129,6 +129,7 @@ void MDNSClass::restart() {
 
 // toProto converts a protocol to a protocol enum. This returns DNSSD_PROTO_TCP
 // for "_tcp" and DNSSD_PROTO_UDP for all else.
+ATTRIBUTE_NODISCARD
 static enum mdns_sd_proto toProto(const char* const protocol) {
   if (String{protocol}.equalsIgnoreCase("_tcp")) {
     return mdns_sd_proto::DNSSD_PROTO_TCP;

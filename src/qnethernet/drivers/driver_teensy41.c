@@ -24,6 +24,7 @@
 #include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
+#include "qnethernet/compat/c11_compat.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
@@ -361,6 +362,7 @@ static void enet_isr(void);
 // continuation is needed (not complete). If continuation is needed, then this
 // should be called again with 'cont' set to true. If this is the first call,
 // then 'cont' should be set to false.
+ATTRIBUTE_NODISCARD
 static bool mdio_read_nonblocking(const uint16_t regaddr,
                                   uint16_t data[static 1],
                                   const bool cont) {
@@ -395,6 +397,7 @@ uint16_t mdio_read(const uint16_t regaddr) {
 // continuation is needed (not complete). If continuation is needed, then this
 // should be called again with 'cont' set to true. If this is the first call,
 // then 'cont' should be set to false.
+ATTRIBUTE_NODISCARD
 static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
                                    const bool cont) {
   if (!cont) {
@@ -616,6 +619,7 @@ FLASHMEM static void init_phy(void) {
 // Low-level input function that transforms a received frame into an lwIP pbuf.
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
+ATTRIBUTE_NODISCARD
 static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
   const u16_t err_mask = kEnetRxBdTrunc    |
                          kEnetRxBdOverrun  |
@@ -672,6 +676,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This returns NULL if there is no TX buffer available.
+ATTRIBUTE_NODISCARD
 static inline volatile enetbufferdesc_t *get_bufdesc(void) {
   volatile enetbufferdesc_t *const pBD = s_pTxBD;
 
@@ -703,6 +708,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
 }
 
 // Finds the next non-empty BD.
+ATTRIBUTE_NODISCARD
 static inline volatile enetbufferdesc_t *rxbd_next(void) {
   volatile enetbufferdesc_t *pBD = s_pRxBD;
 
@@ -736,6 +742,7 @@ static void enet_isr(void) {
 // Checks the link status and returns zero if complete and a state value if
 // not complete. The return value should be used in the next call to
 // this function.
+ATTRIBUTE_NODISCARD
 static inline int check_link_status(struct netif *const netif,
                                     const int state) {
   static uint16_t bmsr;
@@ -1144,6 +1151,7 @@ bool driver_output_frame(const void *const frame, const size_t len) {
 
 // CRC-32 routine for computing the 4-byte FCS for multicast lookup. The initial
 // value will be zero.
+ATTRIBUTE_NODISCARD
 static uint32_t crc32(const void *const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
 

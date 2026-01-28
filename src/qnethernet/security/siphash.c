@@ -7,9 +7,12 @@
 
 #include "qnethernet/security/siphash.h"
 
+#include "qnethernet/compat/c11_compat.h"
+
 #include <string.h>
 
 // Rotates 'x' left by 's' bits.
+ATTRIBUTE_NODISCARD
 static inline uint64_t rotl(const uint64_t x, const int s) {
   // int r = s % 64;
   return (x << s) | (x >> (64 - s));

@@ -93,6 +93,7 @@ struct Reg {
   }
 
   // Reads the N-bit register value in a non-atomic operation.
+  ATTRIBUTE_NODISCARD
   explicit operator T() const {
     T r;
     read(addr, block, &r, sizeof(T));
@@ -103,6 +104,7 @@ struct Reg {
   }
 
   // Reads the N-bit register value. This calls operator T().
+  ATTRIBUTE_NODISCARD
   T operator*() const {
     return operator T();
   }
@@ -276,6 +278,7 @@ static inline void write_reg(const uint16_t addr, const uint8_t block,
 
 // // Reads a 16-bit value, not guaranteeing that the value is stable. Callers may
 // // wish to read until there's no change.
+// ATTRIBUTE_NODISCARD
 // static uint16_t read_reg_word_nonatomic(const Reg& reg) {
 //   uint16_t r;
 //   read(reg.addr, reg.block, &r, 2);
@@ -284,7 +287,7 @@ static inline void write_reg(const uint16_t addr, const uint8_t block,
 
 // // Reads a 16-bit value, guaranteeing the results are stable. This loops until
 // // the value is stable.
-// [[maybe_unused]]
+// ATTRIBUTE_MAYBE_UNUSED ATTRIBUTE_NODISCARD
 // static uint16_t read_reg_word_atomic(const Reg& reg) {
 //   uint16_t v1;
 //   uint16_t v2;
@@ -298,6 +301,7 @@ static inline void write_reg(const uint16_t addr, const uint8_t block,
 
 // Reads a 16-bit value. If the value isn't stable, then this will return false.
 // Otherwise, this will return true and 'v' will be set to the word.
+ATTRIBUTE_NODISCARD
 static bool read_reg_word(const Reg<uint16_t>& reg, uint16_t& v) {
   const uint16_t v1 = *reg;
   const uint16_t v2 = *reg;
@@ -328,6 +332,7 @@ static void set_socket_command(const uint8_t v) {
 }
 
 // Soft resets the chip.
+ATTRIBUTE_NODISCARD
 FLASHMEM static bool soft_reset() {
   int count = 0;
 
@@ -417,6 +422,7 @@ low_level_init_nohardware:
 }
 
 // Sends a frame. This uses data already in s_frameBuf.
+ATTRIBUTE_NODISCARD
 static err_t send_frame(const size_t len) {
   if (len == 0) {
     return ERR_OK;
