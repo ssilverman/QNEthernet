@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // main.cpp is a testing playground for this library.
@@ -12,6 +12,7 @@
 #include "QNEthernet.h"
 #include "lwip/dns.h"
 #include "qnethernet/QNDNSClient.h"
+#include "qnethernet/compat/c++11_compat.h"
 
 using namespace qindesign::network;
 
@@ -176,9 +177,9 @@ static void clientConnect() {
       const int c = client.read();
       switch (c) {
         case '\t':
-          [[fallthrough]];
+          ATTRIBUTE_FALLTHROUGH;
         case '\n':
-          [[fallthrough]];
+          ATTRIBUTE_FALLTHROUGH;
         case '\r':
           printf("%c", c);
           break;

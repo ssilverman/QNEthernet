@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNDNSClient.cpp implements DNSClient.
@@ -15,6 +15,7 @@
 #include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/ip_tools.h"
 
 extern "C" void yield();
@@ -93,7 +94,7 @@ bool DNSClient::getHostByName(
       return true;
 
     case ERR_ARG:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     default:
       delete req;
       errno = err_to_errno(err);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetServer.h defines the TCP server interface.
@@ -18,6 +18,7 @@
 #include <Server.h>
 
 #include "qnethernet/QNEthernetClient.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/optional.h"
 #include "qnethernet/internal/PrintfChecked.h"
 
@@ -131,7 +132,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   explicit operator bool() const;
 
  private:
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool begin(uint16_t port, bool reuse);
 
   internal::optional<uint16_t>

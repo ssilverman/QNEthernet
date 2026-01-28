@@ -23,6 +23,7 @@
 #include "lwip/prot/ethernet.h"
 #include "lwip_driver.h"
 #include "qnethernet/StaticInit.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/CircularBuffer.h"
 #include "qnethernet/internal/PrintfChecked.h"
 #include "qnethernet/internal/optional.h"
@@ -237,7 +238,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   static err_t recvFunc(struct pbuf* p, struct netif* netif);
 
   // Checks if there's data still available in the packet.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool isAvailable() const;
 
   // Received frames; updated every time one is received

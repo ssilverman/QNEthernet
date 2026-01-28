@@ -8,6 +8,7 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
 
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/drivers/driver_w5500_config.h"
 
 // C++ includes
@@ -506,7 +507,7 @@ void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case EnetInitStates::kInitialized:
       break;
     default:
@@ -525,7 +526,7 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case EnetInitStates::kInitialized:
       break;
     default:
@@ -541,9 +542,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_has_hardware(void) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case EnetInitStates::kInitialized:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case EnetInitStates::kNotInitialized:
       return true;
     case EnetInitStates::kNoHardware:
@@ -582,7 +583,7 @@ FLASHMEM bool driver_init(void) {
 FLASHMEM void driver_deinit(void) {
   switch (s_initState) {
     case EnetInitStates::kStart:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case EnetInitStates::kNoHardware:
       return;
     default:

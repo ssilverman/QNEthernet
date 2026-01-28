@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "qnethernet/compat/c++11_compat.h"
+
 namespace qindesign {
 namespace network {
 namespace internal {
@@ -26,22 +28,22 @@ class CircularBuffer {
   explicit CircularBuffer(const size_t capacity)
       : buf_(std::max(capacity, size_t{1})) {}
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool empty() const {
     return (size() == 0);
   }
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool full() const {
     return (size() == capacity());
   }
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   size_t size() const {
     return size_;
   }
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   size_t capacity() const {
     return buf_.size();
   }
@@ -83,7 +85,7 @@ class CircularBuffer {
 
   // Pops the oldest element. If this is empty then a new T{} is returned. The
   // caller may want to std::move() the returned element.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   T get() {
     if (empty()) {
       return T{};
@@ -101,7 +103,7 @@ class CircularBuffer {
   // Stores and returns a reference to a latest element. If the buffer is full
   // then the returned value will be a reference to the overwritten element. It
   // may be in an unspecified state.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   T& put() {
     T& t = buf_[head_];
     if (full()) {
@@ -119,12 +121,12 @@ class CircularBuffer {
     tail_ = 0;
   }
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   T& operator[](size_t n) {
     return get(*this, n);
   }
 
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   const T& operator[](size_t n) const {
     return get(*this, n);
   }
@@ -134,7 +136,7 @@ class CircularBuffer {
   // will assert.
   // Handles both const and non-const cases.
   template <typename U>
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   static T& get(U& t, const size_t n) {
     assert(n < t.size());
     return t.buf_[(t.tail_ + n) % t.capacity()];

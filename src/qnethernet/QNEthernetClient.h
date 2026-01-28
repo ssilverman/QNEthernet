@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetClient.h defines the TCP client interface.
@@ -20,6 +20,7 @@
 
 #include "lwip/ip_addr.h"
 #include "lwip/tcpbase.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ClientEx.h"
 #include "qnethernet/internal/ConnectionHolder.h"
 #include "qnethernet/internal/IPOpts.h"
@@ -261,7 +262,7 @@ class EthernetClient : public internal::ClientEx,
   explicit EthernetClient(std::shared_ptr<internal::ConnectionHolder> holder);
 
   // ip_addr_t version of connect() function.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool connect(const ip_addr_t* ipaddr, uint16_t port, bool wait);
 
   // Checks if there's a pending connection. If there is, the state is modified
@@ -271,7 +272,7 @@ class EthernetClient : public internal::ClientEx,
   //
   // This should only be called if 'pendingConnect_' is true and 'conn_' is
   // not NULL.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool watchPendingConnect();
 
   // Closes the connection. The `wait` parameter indicates whether to wait for
@@ -283,7 +284,7 @@ class EthernetClient : public internal::ClientEx,
 
   // Gets address info for this connection. This returns whether the client is
   // connected and there was information to get.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool getAddrInfo(bool local, ip_addr_t* addr, u16_t* port);
 
   // Connection state

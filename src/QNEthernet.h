@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernet.h defines an Arduino-style Ethernet driver for Teensy 4.1.
@@ -25,6 +25,7 @@
 #include "qnethernet/QNEthernetUDP.h"
 #include "qnethernet/QNMDNS.h"
 #include "qnethernet/StaticInit.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/optional.h"
 #include "qnethernet/lwip_driver.h"
 #include "qnethernet/security/RandomDevice.h"
@@ -505,7 +506,7 @@ class EthernetClass final {
 
   // Possibly start the DHCP client, given the current address settings. This
   // returns whether successful. This reads the netif's current ip4 settings.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool maybeStartDHCP();
 
   // Starts Ethernet. See the public version of this function, with IPAddress
@@ -513,13 +514,13 @@ class EthernetClass final {
   // restart the netif, including bringing the link and interface down.
   //
   // This assumes that mac_ has a value.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool start();
 
   // Starts Ethernet with the given address configuration. If the IP address is
   // INADDR_NONE then DHCP will be started. This sets the DNS address if the
   // argument is not NULL.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool begin(const IPAddress& ipaddr,
              const IPAddress& netmask,
              const IPAddress& gateway,

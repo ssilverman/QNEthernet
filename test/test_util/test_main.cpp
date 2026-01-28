@@ -23,6 +23,7 @@
 
 #include "lwip/def.h"
 #include "lwip/ip4_addr.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/PrintUtils.h"
 #include "qnethernet/util/ip_tools.h"
 
@@ -182,7 +183,7 @@ extern "C" {
 int _write(const int file, const void* const buf, const size_t len) {
   switch (file) {
     case STDOUT_FILENO:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case STDERR_FILENO:
       return Serial.write(static_cast<const uint8_t*>(buf), len);
     case STDIN_FILENO:

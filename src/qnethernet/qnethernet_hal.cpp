@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // qnethernet_hal.cpp implements the hardware abstraction layer (HAL).
@@ -19,6 +19,8 @@
 
 #include <Arduino.h>
 #include <Print.h>
+
+#include "qnethernet/compat/c++11_compat.h"
 
 // Processor-specific include
 #if defined(TEENSYDUINO)
@@ -87,7 +89,7 @@ static inline Print* getPrint(const int file) {
       return ::qindesign::network::stderrPrint;
 #else
     case STDOUT_FILENO:
-      [[fallthrough]];
+      ATTRIBUTE_FALLTHROUGH;
     case STDERR_FILENO:
       return& Serial;
 #endif  // QNETHERNET_CUSTOM_WRITE

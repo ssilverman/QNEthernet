@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2025-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNPing.h defines the Ping interface.
@@ -22,6 +22,7 @@
 #include "lwip/ip_addr.h"
 #include "lwip/pbuf.h"
 #include "lwip/raw.h"
+#include "qnethernet/compat/c++11_compat.h"
 
 namespace qindesign {
 namespace network {
@@ -89,7 +90,7 @@ class Ping final {
   // Attempts to create and bind the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns
   // false. This returns true if the PCB is set.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   bool tryCreatePCB();
 
   replyf replyf_;

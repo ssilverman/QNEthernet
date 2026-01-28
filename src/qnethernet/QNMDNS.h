@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNMDNS.h defines an mDNS implementation.
@@ -19,6 +19,7 @@
 #include "lwip/apps/mdns.h"
 #include "lwip/netif.h"
 #include "qnethernet/StaticInit.h"
+#include "qnethernet/compat/c++11_compat.h"
 
 namespace qindesign {
 namespace network {
@@ -162,7 +163,7 @@ class MDNSClass final {
 
   // Finds the slot for the given service. This returns -1 if the service could
   // not be found.
-  [[nodiscard]]
+  ATTRIBUTE_NODISCARD
   int findService(const char* name, const char* type,
                   const char* protocol, uint16_t port);
 
