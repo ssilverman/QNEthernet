@@ -782,7 +782,7 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-FLASHMEM void driver_restart_auto_negotiation() {
+void driver_restart_auto_negotiation() {
 }
 
 }  // extern "C"

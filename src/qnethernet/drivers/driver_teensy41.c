@@ -872,7 +872,7 @@ bool driver_has_hardware(void) {
   return (s_initState != kInitStateNoHardware);
 }
 
-FLASHMEM void driver_set_chip_select_pin(const int pin) {
+void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 

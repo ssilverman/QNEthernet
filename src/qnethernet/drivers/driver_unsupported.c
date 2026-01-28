@@ -47,15 +47,15 @@ bool driver_has_hardware(void) {
   return false;
 }
 
-FLASHMEM void driver_set_chip_select_pin(const int pin) {
+void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
-FLASHMEM bool driver_init(void) {
+bool driver_init(void) {
   return false;
 }
 
-FLASHMEM void driver_deinit(void) {
+void driver_deinit(void) {
 }
 
 struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
@@ -130,7 +130,7 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-FLASHMEM void driver_restart_auto_negotiation() {
+void driver_restart_auto_negotiation() {
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
