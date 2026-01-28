@@ -18,10 +18,12 @@ namespace compat {
 #if __cplusplus < 201703L
 #define ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
 #define ATTRIBUTE_FALLTHROUGH
+#define ATTRIBUTE_MAYBE_UNUSED __attribute__((maybe_unused))
 #define ATTRIBUTE_NODISCARD
 #else
 #define ATTRIBUTE_ALWAYS_INLINE [[gnu::always_inline]]
 #define ATTRIBUTE_FALLTHROUGH [[fallthrough]]
+#define ATTRIBUTE_MAYBE_UNUSED [[maybe_unused]]
 #define ATTRIBUTE_NODISCARD [[nodiscard]]
 #endif  // C++ < 17
 
