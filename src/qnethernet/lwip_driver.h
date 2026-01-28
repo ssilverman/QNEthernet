@@ -246,6 +246,8 @@ void driver_notify_manual_link_state(bool flag);
 // --------------------------------------------------------------------------
 
 // Restarts auto-negotiation, if the driver supports it.
+//
+// See also: driver_get_capabilities(dc)
 void driver_restart_auto_negotiation();
 
 // --------------------------------------------------------------------------
