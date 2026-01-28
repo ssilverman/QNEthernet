@@ -23,6 +23,7 @@
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ClientEx.h"
 #include "qnethernet/internal/ConnectionHolder.h"
+#include "qnethernet/internal/ConnectionState.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
 
@@ -286,6 +287,21 @@ class EthernetClient : public internal::ClientEx,
   // connected and there was information to get.
   ATTRIBUTE_NODISCARD
   bool getAddrInfo(bool local, ip_addr_t* addr, u16_t* port);
+
+  // Checks the state and returns false if not connected, or true otherwise.
+  ATTRIBUTE_NODISCARD
+  bool checkState();
+
+  // Gets the connection state. This returns a pointer to the state if it exists
+  // and NULL otherwise.
+  ATTRIBUTE_NODISCARD
+  const std::unique_ptr<internal::ConnectionState>* getState() const;
+
+  // Gets the connection state. This returns a pointer to the state if it exists
+  // and NULL otherwise. If not connected, this closes the connection, and if
+  // the state is valid then this calls Ethernet.loop().
+  ATTRIBUTE_NODISCARD
+  const std::unique_ptr<internal::ConnectionState>* getStateAndLoopOrClose();
 
   // Connection state
   uint32_t connTimeout_    = 1000;

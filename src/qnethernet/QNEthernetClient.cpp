@@ -479,45 +479,59 @@ static inline bool isAvailable(
          (/*(0 <= state->bufPos) &&*/ (state->bufPos < state->buf.size()));
 }
 
-#define CHECK_STATE(R)           \
-  if (conn_ == nullptr) {        \
-    return (R);                  \
-  }                              \
-  /* For non-blocking connect */ \
-  if (pendingConnect_) {         \
-    (void)watchPendingConnect(); \
-    return (R);                  \
+inline bool EthernetClient::checkState() {
+  if (conn_ == nullptr) {
+    return false;
   }
 
-#define GET_STATE_AND_LOOP_OR_CLOSE(R) \
-  if (!conn_->connected) {             \
-    conn_ = nullptr;                   \
-    return (R);                        \
-  }                                    \
-  const auto& state = conn_->state;    \
-  if (state == nullptr) {              \
-    return (R);                        \
-  }                                    \
-  Ethernet.loop();  /* Allow data to come in */
+  // For non-blocking connect
+  if (pendingConnect_) {
+    (void)watchPendingConnect();
+    return false;
+  }
+
+  return true;
+}
+
+inline const std::unique_ptr<internal::ConnectionState>*
+EthernetClient::getStateAndLoopOrClose() {
+  if (!conn_->connected) {
+    conn_ = nullptr;
+    return nullptr;
+  }
+  const auto& state = conn_->state;
+  if (state == nullptr) {
+    return nullptr;
+  }
+  Ethernet.loop();  // Allow data to come in
+  return &state;
+}
 
 int EthernetClient::available() {
-  CHECK_STATE(0)
+  if (!checkState()) {
+    return 0;
+  }
 
   if (!conn_->remaining.empty()) {
     return conn_->remaining.size() - conn_->remainingPos;
   }
 
-  GET_STATE_AND_LOOP_OR_CLOSE(0)
-
-  // NOTE: loop() requires a re-check of the state
-  if (!isAvailable(state)) {
+  const auto* state = getStateAndLoopOrClose();
+  if (state == nullptr) {
     return 0;
   }
-  return state->buf.size() - state->bufPos;
+
+  // NOTE: loop() requires a re-check of the state
+  if (!isAvailable(*state)) {
+    return 0;
+  }
+  return (*state)->buf.size() - (*state)->bufPos;
 }
 
 int EthernetClient::read() {
-  CHECK_STATE(-1)
+  if (!checkState()) {
+    return -1;
+  }
 
   if (!conn_->remaining.empty()) {
     const int c = conn_->remaining[conn_->remainingPos++];
@@ -528,17 +542,22 @@ int EthernetClient::read() {
     return c;
   }
 
-  GET_STATE_AND_LOOP_OR_CLOSE(-1)
-
-  // NOTE: loop() requires a re-check of the state
-  if (!isAvailable(state)) {
+  const auto* state = getStateAndLoopOrClose();
+  if (state == nullptr) {
     return -1;
   }
-  return state->buf[state->bufPos++];
+
+  // NOTE: loop() requires a re-check of the state
+  if (!isAvailable(*state)) {
+    return -1;
+  }
+  return (*state)->buf[(*state)->bufPos++];
 }
 
 int EthernetClient::read(uint8_t* const buf, const size_t size) {
-  CHECK_STATE(0)
+  if (!checkState()) {
+    return 0;
+  }
 
   const auto& rem = conn_->remaining;
   if (!rem.empty()) {
@@ -557,42 +576,48 @@ int EthernetClient::read(uint8_t* const buf, const size_t size) {
     return static_cast<int>(actualSize);
   }
 
-  GET_STATE_AND_LOOP_OR_CLOSE(0)
+  const auto* state = getStateAndLoopOrClose();
+  if (state == nullptr) {
+    return 0;
+  }
 
   if (size == 0) {
     return 0;
   }
 
   // NOTE: loop() requires a re-check of the state
-  if (!isAvailable(state)) {
+  if (!isAvailable(*state)) {
     return 0;
   }
-  const size_t actualSize = std::min(size, state->buf.size() - state->bufPos);
+  const size_t actualSize =
+      std::min(size, (*state)->buf.size() - (*state)->bufPos);
   if (buf != nullptr) {
-    std::copy_n(&state->buf.data()[state->bufPos], actualSize, buf);
+    std::copy_n(&(*state)->buf.data()[(*state)->bufPos], actualSize, buf);
   }
-  state->bufPos += actualSize;
+  (*state)->bufPos += actualSize;
   return actualSize;
 }
 
 int EthernetClient::peek() {
-  CHECK_STATE(-1)
+  if (!checkState()) {
+    return -1;
+  }
 
   if (!conn_->remaining.empty()) {
     return conn_->remaining[conn_->remainingPos];
   }
 
-  GET_STATE_AND_LOOP_OR_CLOSE(-1)
-
-  // NOTE: loop() requires a re-check of the state
-  if (!isAvailable(state)) {
+  const auto* state = getStateAndLoopOrClose();
+  if (state == nullptr) {
     return -1;
   }
-  return state->buf[state->bufPos];
-}
 
-#undef CHECK_STATE
-#undef GET_STATE_AND_LOOP_OR_CLOSE
+  // NOTE: loop() requires a re-check of the state
+  if (!isAvailable(*state)) {
+    return -1;
+  }
+  return (*state)->buf[(*state)->bufPos];
+}
 
 // --------------------------------------------------------------------------
 //  State and Socket Options
@@ -619,15 +644,17 @@ tcp_state EthernetClient::status() const {
 }
 #endif  // !LWIP_ALTCP || defined(LWIP_DEBUG)
 
-// Gets the connection state and returns the given result if it doesn't exist.
-#define GET_STATE(R)                \
-  if (conn_ == nullptr) {           \
-    return (R);                     \
-  }                                 \
-  const auto& state = conn_->state; \
-  if (state == nullptr) {           \
-    return (R);                     \
+inline const std::unique_ptr<internal::ConnectionState>*
+EthernetClient::getState() const {
+  if (conn_ == nullptr) {
+    return nullptr;
   }
+  const auto& state = conn_->state;
+  if (state == nullptr) {
+    return nullptr;
+  }
+  return &state;
+}
 
 // Gets the innermost PCB from the state. For altcp, the PCB's are nested.
 static inline struct tcp_pcb* innermost(
@@ -644,45 +671,61 @@ static inline struct tcp_pcb* innermost(
 }
 
 bool EthernetClient::setNoDelay(const bool flag) {
-  GET_STATE(false)
+  const auto* state = getState();
+  if (state == nullptr) {
+    return false;
+  }
 
   if (flag) {
-    altcp_nagle_disable(state->pcb);
+    altcp_nagle_disable((*state)->pcb);
   } else {
-    altcp_nagle_enable(state->pcb);
+    altcp_nagle_enable((*state)->pcb);
   }
   return true;
 }
 
 bool EthernetClient::isNoDelay() const {
-  GET_STATE(false)
+  const auto* state = getState();
+  if (state == nullptr) {
+    return false;
+  }
 
-  return altcp_nagle_disabled(state->pcb);
+  return altcp_nagle_disabled((*state)->pcb);
 }
 
 bool EthernetClient::setOutgoingDiffServ(const uint8_t ds) {
-  GET_STATE(false)
-  innermost(state)->tos = ds;
+  const auto* state = getState();
+  if (state == nullptr) {
+    return false;
+  }
+  innermost(*state)->tos = ds;
   return true;
 }
 
 uint8_t EthernetClient::outgoingDiffServ() const {
-  GET_STATE(0)
-  return innermost(state)->tos;
+  const auto* state = getState();
+  if (state == nullptr) {
+    return 0;
+  }
+  return innermost(*state)->tos;
 }
 
 bool EthernetClient::setOutgoingTTL(const uint8_t ttl) {
-  GET_STATE(false)
-  innermost(state)->ttl = ttl;
+  const auto* state = getState();
+  if (state == nullptr) {
+    return false;
+  }
+  innermost(*state)->ttl = ttl;
   return true;
 }
 
 uint8_t EthernetClient::outgoingTTL() const {
-  GET_STATE(0)
-  return innermost(state)->ttl;
+  const auto* state = getState();
+  if (state == nullptr) {
+    return 0;
+  }
+  return innermost(*state)->ttl;
 }
-
-#undef GET_STATE
 
 }  // namespace network
 }  // namespace qindesign

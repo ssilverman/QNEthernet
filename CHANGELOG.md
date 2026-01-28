@@ -41,6 +41,7 @@ and this project adheres to
   to `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS`.
 * `EthernetUDP` and `EthernetFrame` now share some common circular buffer code
   in an internal utility class.
+* Replaced macros in `EthernetClient` with inline functions.
 
 ### Fixed
 * Fixed `EthernetUDP` internal packet clear to reset all variables.
