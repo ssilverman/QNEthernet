@@ -184,6 +184,8 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     // Check that we can store all the data
     const size_t rem = v.capacity() - v.size() + state->bufPos;
     if (rem < p->tot_len) {
+      // Note: Don't need to free the pbuf here because not returning
+      //       ERR_OK or ERR_ABRT
       altcp_recved(tpcb, rem);
       return ERR_INPROGRESS;  // ERR_MEM? Other?
     }

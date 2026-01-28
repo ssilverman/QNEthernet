@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // lwip_driver.c implements Ethernet interface functions.
@@ -239,6 +239,8 @@ FLASHMEM void enet_deinit(void) {
 void enet_proc_input(void) {
   int counter = 0;
   while (true) {
+    // Note: It is expected that driver_proc_input() will return NULL
+    //       at some point
     struct pbuf *const p = driver_proc_input(&s_netif, counter++);
     if (p == NULL) {  // Happens on frame error, pbuf allocation error, or loop end
       break;

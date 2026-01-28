@@ -154,7 +154,8 @@ void driver_deinit(void);
 // Processes any input and returns any received frames as a pbuf. The counter
 // parameter indicates how many times the call has looped. This is useful so
 // that drivers can know when to stop checking to give the rest of the program a
-// chance to run.
+// chance to run. In other words, it is expected that this will return NULL at
+// some point.
 ATTRIBUTE_NODISCARD
 struct pbuf *driver_proc_input(struct netif *netif, int counter);
 
@@ -203,7 +204,7 @@ err_t driver_output(struct pbuf *p);
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw Ethernet frame and returns whether successful.
 //
-// This should add any extra padding bytes given by ETH_PAD_SIZE.
+// This should add, to the start, any extra padding bytes given by ETH_PAD_SIZE.
 bool driver_output_frame(const void *frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
