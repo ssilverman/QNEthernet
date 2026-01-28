@@ -8,7 +8,6 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
 
-#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/drivers/driver_w5500_config.h"
 
 // C++ includes
@@ -222,7 +221,7 @@ static void read(const uint16_t addr, const uint8_t block,
 }
 
 // // Writes to the specified register.
-// [[maybe_unused]]
+// ATTRIBUTE_MAYBE_UNUSED
 // static void write(const Reg& reg, void* const buf, const size_t len) {
 //   s_spiBuf[0] = reg.addr >> 8;
 //   s_spiBuf[1] = reg.addr;
