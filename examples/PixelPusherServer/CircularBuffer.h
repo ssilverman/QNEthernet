@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // CircularBuffer.h defines a circular buffer.
@@ -19,7 +19,7 @@ class CircularBuffer {
         buf_{std::make_unique<T[]>(capacity)} {}
 
   bool empty() const {
-    return size_ == 0;
+    return (size() == 0);
   }
 
   size_t size() const {
@@ -35,41 +35,41 @@ class CircularBuffer {
       return T{};
     }
 
-    T element = buf_[tail_];
-    tail_ = (tail_ + 1) % capacity_;
+    const size_t oldTail = tail_;
+    tail_ = (tail_ + 1) % capacity();
     --size_;
-    return element;
+    return buf_[oldTail];
   }
 
   void put(const T& t) {
     buf_[head_] = t;
-    if (size_ == capacity_) {
-      tail_ = (tail_ + 1) % capacity_;
+    if (size() == capacity()) {
+      tail_ = (tail_ + 1) % capacity();
     } else {
       ++size_;
     }
-    head_ = (head_ + 1) % capacity_;
+    head_ = (head_ + 1) % capacity();
   }
 
   void clear() {
+    size_ = 0;
     head_ = 0;
     tail_ = 0;
-    size_ = 0;
   }
 
   T& operator[](size_t n) {
-    return get(*this, n, capacity_);
+    return get(*this, n);
   }
 
   const T& operator[](size_t n) const {
-    return get(*this, n, capacity_);
+    return get(*this, n);
   }
 
  private:
   // Handles both const and non-const cases
   template <typename U>
-  static T& get(U& t, size_t n, size_t capacity) {
-    return t.buf_[(t.tail_ + n) % capacity];
+  static T& get(U& t, size_t n) {
+    return t.buf_[(t.tail_ + n) % t.capacity()];
   }
 
   const size_t capacity_;
