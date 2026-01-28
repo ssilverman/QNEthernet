@@ -298,12 +298,16 @@ bool EthernetClass::start() {
   std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u", netif_->num);
 
   if (!enet_init(macAddress(), &netifEventFunc, &driverCapabilities_)) {
+    netif_ = nullptr;
+    ifName_[0] = '\0';
     return false;
   }
 
   if (!enet_get_mac(mac_.value)) {
     // This shouldn't happen
     enet_deinit();
+    netif_ = nullptr;
+    ifName_[0] = '\0';
     errno = EFAULT;
     return false;
   }
