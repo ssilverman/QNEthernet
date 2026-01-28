@@ -18,9 +18,10 @@
 #include "lwip/altcp_tcp.h"
 #include "lwip/arch.h"
 #include "lwip/ip_addr.h"
+#include "qnethernet/compat/c++11_compat.h"
 
 // This implementation uses the TCP allocator and returns true.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t* const ipaddr,
                                         const uint16_t port,
@@ -34,7 +35,7 @@ std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
     };
 
 // This implementation does nothing.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
     [](const altcp_allocator_t& allocator) {
       LWIP_UNUSED_ARG(allocator);

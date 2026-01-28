@@ -45,13 +45,13 @@
 extern "C" {
 
 // Returns the current time in milliseconds.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 uint32_t qnethernet_hal_millis(void) {
   return millis();
 }
 
 // Returns the current time in microseconds.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 uint32_t qnethernet_hal_micros(void) {
   return micros();
 }
@@ -140,7 +140,7 @@ void qnethernet_hal_stdio_flush(const int file) {
 extern "C" {
 
 // Asserts if this is called from an interrupt context.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 void qnethernet_hal_check_core_locking(const char* const file, const int line,
                                        const char* const func) {
   bool inInterruptCtx = false;
@@ -183,14 +183,14 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
 extern "C" {
 
 // Initializes randomness.
-[[gnu::weak]] void qnethernet_hal_init_entropy(void);
+ATTRIBUTE_WEAK void qnethernet_hal_init_entropy(void);
 
 // Gets 32-bits of entropy for LWIP_RAND() and RandomDevice.
-[[gnu::weak]] uint32_t qnethernet_hal_entropy(void);
+ATTRIBUTE_WEAK uint32_t qnethernet_hal_entropy(void);
 
 // Fills a buffer with random values. This will return the number of bytes
 // actually filled.
-[[gnu::weak]] size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
+ATTRIBUTE_WEAK size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 
 #if WHICH_ENTROPY_TYPE == 1
 
@@ -281,13 +281,13 @@ size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
 extern "C" {
 
 // Disables interrupts.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 void qnethernet_hal_disable_interrupts(void) {
   noInterrupts();
 }
 
 // Enables interrupts.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 void qnethernet_hal_enable_interrupts(void) {
   interrupts();
 }
@@ -308,7 +308,7 @@ static const uint8_t kDefaultMACAddress[ETH_HWADDR_LEN] = {
 
 // Gets the system MAC address. This will either be some platform-specific value
 // or a predefined value.
-[[gnu::weak]]
+ATTRIBUTE_WEAK
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == nullptr) {
     return;
