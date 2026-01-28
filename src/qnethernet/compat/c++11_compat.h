@@ -17,14 +17,16 @@ namespace compat {
 // See: https://en.cppreference.com/w/cpp/language/attributes.html
 #if __cplusplus < 201703L
 #define ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
-#define ATTRIBUTE_FALLTHROUGH
-#define ATTRIBUTE_MAYBE_UNUSED __attribute__((maybe_unused))
-#define ATTRIBUTE_NODISCARD
+#define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+#define ATTRIBUTE_MAYBE_UNUSED __attribute__((unused))
+#define ATTRIBUTE_NODISCARD __attribute__((warn_unused_result))
+#define ATTRIBUTE_WEAK __attribute__((weak))
 #else
 #define ATTRIBUTE_ALWAYS_INLINE [[gnu::always_inline]]
 #define ATTRIBUTE_FALLTHROUGH [[fallthrough]]
 #define ATTRIBUTE_MAYBE_UNUSED [[maybe_unused]]
 #define ATTRIBUTE_NODISCARD [[nodiscard]]
+#define ATTRIBUTE_WEAK [[gnu::weak]]
 #endif  // C++ < 17
 
 // Creates a new std::unique_ptr.
