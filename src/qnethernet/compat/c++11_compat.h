@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2025-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // c++11_compat.h defines some C++11 compatibility functions.
@@ -12,6 +12,16 @@
 namespace qindesign {
 namespace network {
 namespace compat {
+
+// Unknown attributes are not specified to be ignored before C++17
+// See: https://en.cppreference.com/w/cpp/language/attributes.html
+#if __cplusplus < 201703L
+#define ATTRIBUTE_FALLTHROUGH
+#define ATTRIBUTE_NODISCARD
+#else
+#define ATTRIBUTE_FALLTHROUGH [[fallthrough]]
+#define ATTRIBUTE_NODISCARD [[nodiscard]]
+#endif  // C++ < 17
 
 // Creates a new std::unique_ptr.
 template <typename T, typename... Args>
