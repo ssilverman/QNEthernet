@@ -121,12 +121,12 @@ class CircularBuffer {
 
   [[nodiscard]]
   T& operator[](size_t n) {
-    return get(*this, n, size(), capacity());
+    return get(*this, n);
   }
 
   [[nodiscard]]
   const T& operator[](size_t n) const {
-    return get(*this, n, size(), capacity());
+    return get(*this, n);
   }
 
  private:
@@ -135,10 +135,9 @@ class CircularBuffer {
   // Handles both const and non-const cases.
   template <typename U>
   [[nodiscard]]
-  static T& get(U& t, const size_t n, const size_t size,
-                const size_t capacity) {
-    assert(n < size);
-    return t.buf_[(t.tail_ + n) % capacity];
+  static T& get(U& t, const size_t n) {
+    assert(n < t.size());
+    return t.buf_[(t.tail_ + n) % t.capacity()];
   }
 
   std::vector<T> buf_;
