@@ -347,12 +347,12 @@ class EthernetClass final {
 
   int begin(const uint8_t mac[kMACAddrSize],
             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
-  [[deprecated("See begin(ip, subnet, gateway)")]]
+  ATTRIBUTE_DEPRECATED("See begin(ip, subnet, gateway)")
   bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip);
-  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
+  ATTRIBUTE_DEPRECATED("See begin(ip, subnet, gateway, dns)")
   bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
              const IPAddress& dns);
-  [[deprecated("See begin(ip, subnet, gateway, dns)")]]
+  ATTRIBUTE_DEPRECATED("See begin(ip, subnet, gateway, dns)")
   bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
              const IPAddress& dns, const IPAddress& gateway);
   bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
@@ -371,13 +371,13 @@ class EthernetClass final {
   //
   // These functions are defined by the Arduino API
 
-  [[deprecated("DHCP maintained internally")]]
+  ATTRIBUTE_DEPRECATED("DHCP maintained internally")
   uint8_t maintain() const { return 0; }
-  [[deprecated("See TCP_MAXRTX")]]
+  ATTRIBUTE_DEPRECATED("See TCP_MAXRTX")
   void setRetransmissionCount(const uint8_t number) const {
     LWIP_UNUSED_ARG(number);
   }
-  [[deprecated("Handled internally")]]
+  ATTRIBUTE_DEPRECATED("Handled internally")
   void setRetransmissionTimeout(const uint16_t milliseconds) const {
     LWIP_UNUSED_ARG(milliseconds);
   }
