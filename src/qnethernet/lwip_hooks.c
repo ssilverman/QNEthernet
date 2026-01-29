@@ -8,7 +8,9 @@
 
 #if LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
 
+#if __STDC_VERSION__ < 202311L
 #include <stdbool.h>
+#endif  // < C23
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
