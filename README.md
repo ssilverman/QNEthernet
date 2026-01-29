@@ -2046,7 +2046,7 @@ _QNEthernet_ library.
     and [`EthernetUDP`](#ethernetudp))
 18. [`TCP_NODELAY`](#tcp-socket-options) support
 19. Configuration via [configuration macros](#configuration-macros)
-20. Non-blocking TCP connections
+20. [Non-blocking](#non-blocking-connection-functions) TCP connections
 21. Teensy platform: Internal [entropy generation](#entropy-generation)
     functions to avoid the _Entropy_ lib dependency; this can be disabled with a
     configuration macro
@@ -2057,13 +2057,14 @@ _QNEthernet_ library.
     1. Teensy 4.1
     2. W5500
 24. Straightforward to add new Ethernet frame drivers
-25. Ability to toggle Nagle's algorithm for TCP
+25. Ability to toggle [Nagle's algorithm](#tcp-socket-options) for TCP
 26. Ability to set some IP header fields: differentiated services (DiffServ)
-    and TTL
+    and TTL (see [here](#ip-header-values) and [here](#ip-header-values-1))
 27. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
 28. [Ping](#ping) (ICMP echo) support
 29. Ability to disable [ping replies](#ping-reply)
 30. Use of `errno` when function calls fail
+31. C++11 and C11 compatibility
 
 ## Compatibility with other APIs
 
