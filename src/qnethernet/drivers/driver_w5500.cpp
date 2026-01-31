@@ -54,7 +54,8 @@ static void read(uint16_t addr, uint8_t block, void* buf, size_t len);
 // Represents a specific register in a specific block.
 template <typename T>
 struct Reg {
-  static_assert((sizeof(T) == 1) || (sizeof(T) == 2));
+  static_assert((sizeof(T) == 1) || (sizeof(T) == 2),
+                "Type T must be 1 or 2 bytes");
 
   uint16_t addr;
   uint8_t block;
