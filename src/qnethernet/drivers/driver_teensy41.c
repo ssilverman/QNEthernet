@@ -24,7 +24,6 @@
 #include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
-#include "qnethernet/compat/c11_compat.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
