@@ -186,7 +186,10 @@
 #define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
-#define MULTIPLE_OF_32(x) (((x) + 31) & ~31)
+static inline uint32_t multipleOf32(unsigned int x) {
+  return (x + 31) & ~31;
+}
+
 #define BUFFER_DMAMEM DMAMEM
 #else
 #define BUFFER_DMAMEM
@@ -657,7 +660,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
     if (p) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
-      arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
+      arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       pbuf_take(p, pBD->buffer, p->tot_len);
     } else {
@@ -1116,7 +1119,7 @@ err_t driver_output(struct pbuf *const p) {
     return ERR_BUF;
   }
 #if !QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
+  arm_dcache_flush_delete(pBD->buffer, multipleOf32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, copied);
   return ERR_OK;
@@ -1135,7 +1138,7 @@ bool driver_output_frame(const void *const frame, const size_t len) {
 
   memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
+  arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, len + ETH_PAD_SIZE);
 
