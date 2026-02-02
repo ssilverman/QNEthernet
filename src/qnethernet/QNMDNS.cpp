@@ -183,14 +183,16 @@ bool MDNSClass::addService(const char* const name, const char* const type,
   return true;
 }
 
-int MDNSClass::findService(const char* const name, const char* const type,
-                           const char* const protocol, const uint16_t port) {
+internal::optional<uint8_t> MDNSClass::findService(const char* const name,
+                                                   const char* const type,
+                                                   const char* const protocol,
+                                                   const uint16_t port) {
   for (int i = 0; i < maxServices(); ++i) {
     if (slots_[i].equals(true, name, type, toProto(protocol), port)) {
-      return i;
+      return {true, static_cast<uint8_t>(i)};
     }
   }
-  return -1;
+  return {};
 }
 
 bool MDNSClass::removeService(const char* const type,
@@ -207,15 +209,15 @@ bool MDNSClass::removeService(const char* const name, const char* const type,
   }
 
   // Find a matching service
-  const int found = findService(name, type, protocol, port);
-  if (found < 0) {
+  const auto found = findService(name, type, protocol, port);
+  if (!found.has_value) {
     return false;
   }
-  if (found < maxServices()) {
-    slots_[found].reset();
+  if (found.value < maxServices()) {
+    slots_[found.value].reset();
   }
 
-  const err_t err = mdns_resp_del_service(netif_, static_cast<uint8_t>(found));
+  const err_t err = mdns_resp_del_service(netif_, found.value);
   if (err != ERR_OK) {
     errno = err_to_errno(err);
     return false;

@@ -21,6 +21,7 @@
 #include "lwip/netif.h"
 #include "qnethernet/StaticInit.h"
 #include "qnethernet/compat/c++11_compat.h"
+#include "qnethernet/internal/optional.h"
 
 namespace qindesign {
 namespace network {
@@ -166,11 +167,10 @@ class MDNSClass final {
   MDNSClass& operator=(const MDNSClass&) = delete;
   MDNSClass& operator=(MDNSClass&&) = delete;
 
-  // Finds the slot for the given service. This returns -1 if the service could
-  // not be found.
+  // Finds the slot for the given service.
   ATTRIBUTE_NODISCARD
-  int findService(const char* name, const char* type,
-                  const char* protocol, uint16_t port);
+  internal::optional<uint8_t> findService(const char* name, const char* type,
+                                          const char* protocol, uint16_t port);
 
   struct netif* netif_ = nullptr;
   char hostname_[MDNS_LABEL_MAXLEN + 1]{'\0'};
