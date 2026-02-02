@@ -164,10 +164,8 @@ void loop() {
   uint32_t counter = htonl(++pingCounter);  // Send in network order
   std::memcpy(payload.data(), &counter, 4);
 
-  if (ping.send(req)) {
-    pingTimer = millis();
-  } else {
+  if (!ping.send(req)) {
     printf("Error sending: errno=%d\r\n", errno);
-    running = false;
   }
+  pingTimer = millis();
 }

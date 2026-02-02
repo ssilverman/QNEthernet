@@ -11,6 +11,10 @@ and this project adheres to
 ### Added
 * Added a ping call to the main program.
 
+### Changed
+* Improved _Ping_ example by always sending, even if a send fails. It was
+  stopping on error.
+
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.
 
