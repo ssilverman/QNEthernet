@@ -185,8 +185,8 @@
 #define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
-static inline uint32_t multipleOf32(unsigned int x) {
-  return (x + 31) & ~31;
+static inline uint32_t multipleOf32(uint32_t x) {
+  return (x + 31u) & ~31u;
 }
 
 #define BUFFER_DMAMEM DMAMEM
@@ -584,7 +584,7 @@ FLASHMEM static void init_phy(void) {
   if ((mdio_read(PHY_PHYIDR1) != 0x2000) ||
       ((mdio_read(PHY_PHYIDR2) & 0xfff0) != 0xA140)) {
     // Undo some pin configuration, for posterity
-    GPIO7_GDIR &= ~((1 << 15) | (1 << 14));
+    GPIO7_GDIR &= ~((1u << 15) | (1u << 14));
 
     disable_enet_clocks();
 
@@ -831,13 +831,13 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   }
 
   uint32_t r = ENET_PALR;
-  mac[0] = r >> 24;
-  mac[1] = r >> 16;
-  mac[2] = r >> 8;
-  mac[3] = r;
+  mac[0] = (uint8_t)(r >> 24);
+  mac[1] = (uint8_t)(r >> 16);
+  mac[2] = (uint8_t)(r >> 8);
+  mac[3] = (uint8_t)(r);
   r = ENET_PAUR;
-  mac[4] = r >> 24;
-  mac[5] = r >> 16;
+  mac[4] = (uint8_t)(r >> 24);
+  mac[5] = (uint8_t)(r >> 16);
 
   return true;
 }
@@ -1129,6 +1129,9 @@ bool driver_output_frame(const void *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
+  if (len > (UINT16_MAX - ETH_PAD_SIZE)) {
+    return false;
+  }
 
   volatile enetbufferdesc_t *const pBD = get_bufdesc();
   if (pBD == NULL) {
@@ -1139,7 +1142,7 @@ bool driver_output_frame(const void *const frame, const size_t len) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, len + ETH_PAD_SIZE);
+  update_bufdesc(pBD, (uint16_t)(len + ETH_PAD_SIZE));
 
   return true;
 }

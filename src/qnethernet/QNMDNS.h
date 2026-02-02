@@ -12,6 +12,7 @@
 
 // C++ includes
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 #include <WString.h>
@@ -23,6 +24,9 @@
 
 namespace qindesign {
 namespace network {
+
+static_assert(MDNS_MAX_SERVICES <= std::numeric_limits<uint8_t>::max(),
+              "MDNS_MAX_SERVICES must be an 8-bit value");
 
 // MDNS provides mDNS responder functionality.
 class MDNSClass final {

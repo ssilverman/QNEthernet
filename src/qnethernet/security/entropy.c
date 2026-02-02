@@ -293,7 +293,7 @@ uint32_t entropy_random_range(const uint32_t range) {
       low = (uint32_t)product;
     }
   }
-  return product >> 32;
+  return (uint32_t)(product >> 32);
 }
 
 /*

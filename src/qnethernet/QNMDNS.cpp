@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QMMDNS.cpp implements MDNS.
@@ -45,8 +45,8 @@ static void srv_txt(struct mdns_service* const service,
 
   for (const String& item : list) {
     const char* const txt = item.c_str();
-    const uint8_t len =
-        std::min(item.length(), (unsigned int)(MDNS_LABEL_MAXLEN));
+    const auto len = static_cast<uint8_t>(
+        std::min(item.length(), (unsigned int)(MDNS_LABEL_MAXLEN)));
     const err_t res = mdns_resp_add_service_txtitem(service, txt, len);
     LWIP_ERROR("mdns add service txt failed\n", (res == ERR_OK),
                errno = err_to_errno(res);
@@ -215,7 +215,7 @@ bool MDNSClass::removeService(const char* const name, const char* const type,
     slots_[found].reset();
   }
 
-  const err_t err = mdns_resp_del_service(netif_, found);
+  const err_t err = mdns_resp_del_service(netif_, static_cast<uint8_t>(found));
   if (err != ERR_OK) {
     errno = err_to_errno(err);
     return false;

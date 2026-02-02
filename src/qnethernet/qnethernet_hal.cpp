@@ -317,12 +317,12 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   const uint32_t m1 = HW_OCOTP_MAC1;
   const uint32_t m2 = HW_OCOTP_MAC0;
-  mac[0] = m1 >> 8;
-  mac[1] = m1 >> 0;
-  mac[2] = m2 >> 24;
-  mac[3] = m2 >> 16;
-  mac[4] = m2 >> 8;
-  mac[5] = m2 >> 0;
+  mac[0] = static_cast<uint8_t>(m1 >>  8);
+  mac[1] = static_cast<uint8_t>(m1 >>  0);
+  mac[2] = static_cast<uint8_t>(m2 >> 24);
+  mac[3] = static_cast<uint8_t>(m2 >> 16);
+  mac[4] = static_cast<uint8_t>(m2 >>  8);
+  mac[5] = static_cast<uint8_t>(m2 >>  0);
 #elif defined(ARDUINO_TEENSY30) || \
       defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY31) || \
       defined(ARDUINO_TEENSYLC)

@@ -25,6 +25,8 @@ namespace network {
 
 static constexpr size_t kEchoHdrSize = sizeof(struct icmp_echo_hdr);
 static constexpr size_t kMaxHdrSize = IP_HLEN + kEchoHdrSize;
+static_assert(kMaxHdrSize <= std::numeric_limits<uint16_t>::max(),
+              "Max. header size overflow");
 
 u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
                     const ip_addr_t* addr) {
@@ -43,7 +45,7 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     struct icmp_echo_hdr echo;
     pbuf_copy_partial(p, &echo, kEchoHdrSize, IP_HLEN);
 
-    size_t dataSize = p->tot_len - kMaxHdrSize;
+    size_t dataSize = p->tot_len - kMaxHdrSize;  // 16-bit
     const uint8_t* data = nullptr;
 
     if (dataSize != 0) {
@@ -52,7 +54,9 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
       } else {
         // Avoid churn, so use a vector instead of a byte array
         ping->dataBuf_.resize(dataSize);
-        pbuf_copy_partial(p, ping->dataBuf_.data(), dataSize, kMaxHdrSize);
+        pbuf_copy_partial(p, ping->dataBuf_.data(),
+                          static_cast<uint16_t>(dataSize),
+                          kMaxHdrSize);
         data = ping->dataBuf_.data();
       }
     }
@@ -121,7 +125,8 @@ bool Ping::send(const PingData& req) {
 
   // Allocate the IP packet
   const size_t packetSize = kEchoHdrSize + req.dataSize;
-  struct pbuf* const p = pbuf_alloc(PBUF_IP, packetSize, PBUF_RAM);
+  struct pbuf* const p =
+      pbuf_alloc(PBUF_IP, static_cast<uint16_t>(packetSize), PBUF_RAM);
   if (p == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
@@ -144,7 +149,8 @@ bool Ping::send(const PingData& req) {
     goto send_err;
   }
   if ((req.data != nullptr) && (req.dataSize != 0)) {
-    err = pbuf_take_at(p, req.data, req.dataSize, sizeof(echo));
+    err = pbuf_take_at(p, req.data, static_cast<uint16_t>(req.dataSize),
+                       sizeof(echo));
     if (err != ERR_OK) {
       goto send_err;
     }

@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "QNEthernet.h"
+#include "lwip/debug.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip.h"
@@ -40,6 +41,8 @@ static constexpr size_t kMaxPossiblePayloadSize =
     (std::numeric_limits<uint16_t>::max() >= kHeaderSize)
         ? (std::numeric_limits<uint16_t>::max() - kHeaderSize)
         : 0;
+static_assert(kMaxPossiblePayloadSize <= std::numeric_limits<uint16_t>::max(),
+              "Max. possible payload size overflow");
 
 void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
                            struct pbuf* const p,
@@ -395,7 +398,7 @@ static inline err_t sendWhileWouldBlock(const err_t err, udp_pcb* const pcb,
                                         pbuf* const p,
                                         const ip_addr_t* const ip,
                                         const uint16_t port,
-                                        const size_t dataSize) {
+                                        const uint16_t dataSize) {
   err_t retval = err;
 
   // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
@@ -421,8 +424,13 @@ int EthernetUDP::endPacket() {
   }
   Packet& op = outPacket_.value;
 
+  // op.data.size() should be <= UINT16_MAX
+  LWIP_ASSERT("Output packet too large",
+              op.data.size() <= std::numeric_limits<uint16_t>::max());
+  auto outSize = static_cast<uint16_t>(op.data.size());
+
   // Note: Use PBUF_RAM for TX
-  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, op.data.size(), PBUF_RAM);
+  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, outSize, PBUF_RAM);
   if (p == nullptr) {
     outPacket_.has_value = false;
     op.clear();
@@ -435,7 +443,7 @@ int EthernetUDP::endPacket() {
   // pbuf_take() considers NULL data an error
   err_t err;
   if (!op.data.empty() &&
-      ((err = pbuf_take(p, op.data.data(), op.data.size())) != ERR_OK)) {
+      ((err = pbuf_take(p, op.data.data(), outSize)) != ERR_OK)) {
     pbuf_free(p);
 
     outPacket_.has_value = false;
@@ -446,7 +454,7 @@ int EthernetUDP::endPacket() {
     return false;
   }
 
-  err = sendWhileWouldBlock(err, pcb_, p, &op.addr, op.port, op.data.size());
+  err = sendWhileWouldBlock(err, pcb_, p, &op.addr, op.port, outSize);
 
   outPacket_.has_value = false;
   op.clear();
@@ -499,8 +507,12 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
     return false;
   }
 
+  // Adjust the length's type to 16 bits
+  // kMaxPossiblePayloadSize is < UINT16_MAX
+  const auto adjLen = static_cast<uint16_t>(len);
+
   // Note: Use PBUF_RAM for TX
-  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, len, PBUF_RAM);
+  struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, adjLen, PBUF_RAM);
   if (p == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
     errno = ENOMEM;
@@ -509,13 +521,13 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
 
   // pbuf_take() considers NULL data an error
   err_t err;
-  if ((len != 0) && ((err = pbuf_take(p, data, len)) != ERR_OK)) {
+  if ((adjLen != 0) && ((err = pbuf_take(p, data, adjLen)) != ERR_OK)) {
     pbuf_free(p);
     errno = err_to_errno(err);
     return false;
   }
 
-  err = sendWhileWouldBlock(err, pcb_, p, ipaddr, port, len);
+  err = sendWhileWouldBlock(err, pcb_, p, ipaddr, port, adjLen);
 
   pbuf_free(p);
 

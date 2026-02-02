@@ -62,11 +62,11 @@ struct Reg {
 
   constexpr Reg(const uint16_t a, const uint8_t b, const uint8_t socket = 0)
       : addr(a),
-        block(b + (socket << 2)) {}
+        block(static_cast<uint8_t>(b + (socket << 2))) {}
 
   constexpr Reg(const Reg& r, const uint8_t socket = 0)
       : addr(r.addr),
-        block((r.block & 0x03) + (socket << 2)) {}
+        block(static_cast<uint8_t>((r.block & 0x03) + (socket << 2))) {}
 
   // Note: C++11-style std::enable_if
   template <
@@ -187,7 +187,7 @@ static uint8_t s_inputBuf[16 * 1024] BUFFER_DMAMEM;
 
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
-static int s_chipSelectPin = kDefaultCSPin;
+static int s_chipSelectPin = kDefaultCSPin;  // Note: Arduino doesn't specify pin type
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 static bool s_macFilteringEnabled = false;  // Whether actually enabled
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -206,18 +206,18 @@ static bool s_manualLinkState = false;  // True for sticky
 // Reads bytes starting from the specified register.
 static void read(const uint16_t addr, const uint8_t block,
                  void* const buf, const size_t len) {
-  s_spiBuf[0] = addr >> 8;
-  s_spiBuf[1] = addr;
-  s_spiBuf[2] = block << 3;
+  s_spiBuf[0] = static_cast<uint8_t>(addr >> 8);
+  s_spiBuf[1] = static_cast<uint8_t>(addr);
+  s_spiBuf[2] = static_cast<uint8_t>(block << 3);
 
   // Write zeros during transfer (is this step even necessary?)
   std::memset(buf, 0, len);
 
   spi.beginTransaction(kSPISettings);
-  digitalWrite(s_chipSelectPin, LOW);
+  digitalWrite(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, 3);
   spi.transfer(buf, len);
-  digitalWrite(s_chipSelectPin, HIGH);
+  digitalWrite(s_chipSelectPin, HIGH);  // Warning: implicit conversion
   spi.endTransaction();
 }
 
@@ -252,14 +252,14 @@ static void read(const uint16_t addr, const uint8_t block,
 // Writes a frame to the specified register. The data starts at &s_spiBuf[3].
 static void write_frame(const uint16_t addr, const uint8_t block,
                         const size_t len) {
-  s_spiBuf[0] = addr >> 8;
-  s_spiBuf[1] = addr;
-  s_spiBuf[2] = (block << 3) | kControlRWBit;
+  s_spiBuf[0] = static_cast<uint8_t>(addr >> 8);
+  s_spiBuf[1] = static_cast<uint8_t>(addr);
+  s_spiBuf[2] = static_cast<uint8_t>((block << 3) | kControlRWBit);
 
   spi.beginTransaction(kSPISettings);
-  digitalWrite(s_chipSelectPin, LOW);
+  digitalWrite(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, len + 3);
-  digitalWrite(s_chipSelectPin, HIGH);
+  digitalWrite(s_chipSelectPin, HIGH);  // Warning: implicit conversion
   spi.endTransaction();
 }
 
@@ -314,8 +314,8 @@ static bool read_reg_word(const Reg<uint16_t>& reg, uint16_t& v) {
 
 static inline void write_reg_word(const uint16_t addr, const uint8_t block,
                                   const uint16_t v) {
-  s_frameBuf[0] = v >> 8;
-  s_frameBuf[1] = v;
+  s_frameBuf[0] = static_cast<uint8_t>(v >> 8);
+  s_frameBuf[1] = static_cast<uint8_t>(v);
   write_frame(addr, block, 2);
 }
 
@@ -357,7 +357,7 @@ FLASHMEM static void low_level_init() {
   // Delay some worst case scenario because Arduino's Ethernet library does
   delay(560);
 
-  pinMode(s_chipSelectPin, OUTPUT);
+  pinMode(s_chipSelectPin, OUTPUT);  // Warning: implicit conversion
   spi.begin();
 
   if (!soft_reset()) {
@@ -640,8 +640,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     }
     return NULL;
   }
-  frameLen -= 2;
-  ptr += 2;
+  frameLen = static_cast<uint16_t>(frameLen - 2);
+  ptr = static_cast<uint16_t>(ptr + 2);
 
   LINK_STATS_INC(link.recv);
 
@@ -758,7 +758,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
     // Allow all MACs now
     uint8_t r = *kSn_MR;
     if ((r & socketmodes::kMFEN) != 0) {
-      r &= ~socketmodes::kMFEN;
+      r &= static_cast<uint8_t>(~socketmodes::kMFEN);
       kSn_MR = r;
     }
     s_macFilteringEnabled = false;

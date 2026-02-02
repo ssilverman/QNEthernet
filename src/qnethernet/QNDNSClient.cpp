@@ -10,6 +10,7 @@
 
 // C++ includes
 #include <cerrno>
+#include <limits>
 
 #include "QNEthernet.h"
 #include "lwip/arch.h"
@@ -41,11 +42,12 @@ void DNSClient::dnsFoundFunc(const char* const name,
 
 bool DNSClient::setServer(const int index, const IPAddress& ip) {
 #if LWIP_IPV4
-  if ((index < 0) || (maxServers() <= index)) {
+  if ((index < 0) || (maxServers() <= index) ||
+      (index > std::numeric_limits<uint8_t>::max())) {
     return false;
   }
   const ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
-  dns_setserver(index, &addr);
+  dns_setserver(static_cast<uint8_t>(index), &addr);
   return true;
 #else
   LWIP_UNUSED_ARG(index);
@@ -57,10 +59,12 @@ bool DNSClient::setServer(const int index, const IPAddress& ip) {
 
 IPAddress DNSClient::getServer(const int index) {
 #if LWIP_IPV4
-  if ((index < 0) || (maxServers() <= index)) {
+  if ((index < 0) || (maxServers() <= index) ||
+      (index > std::numeric_limits<uint8_t>::max())) {
     return INADDR_NONE;
   }
-  return util::ip_addr_get_ip4_uint32(dns_getserver(index));
+  return util::ip_addr_get_ip4_uint32(
+      dns_getserver(static_cast<uint8_t>(index)));
 #else
   LWIP_UNUSED_ARG(index);
   errno = ENOSYS;

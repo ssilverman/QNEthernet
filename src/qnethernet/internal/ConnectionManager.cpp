@@ -184,9 +184,12 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     // Check that we can store all the data
     const size_t rem = v.capacity() - v.size() + state->bufPos;
     if (rem < p->tot_len) {
+      static_assert((std::numeric_limits<decltype(p->tot_len)>::max() <=
+                     std::numeric_limits<uint16_t>::max()),
+                    "Can't assume length doesn't overflow");
       // Note: Don't need to free the pbuf here because not returning
       //       ERR_OK or ERR_ABRT
-      altcp_recved(tpcb, rem);
+      altcp_recved(tpcb, static_cast<uint16_t>(rem));  // p->tot_len is u16_t
       return ERR_INPROGRESS;  // ERR_MEM? Other?
     }
 
@@ -481,9 +484,8 @@ size_t ConnectionManager::write(const uint16_t port, const uint8_t b) {
 
 size_t ConnectionManager::write(const uint16_t port,
                                 const void* const b, const size_t len) {
-  const size_t actualLen =
-      std::min(len, size_t{std::numeric_limits<uint16_t>::max()});
-  const uint16_t size16 = actualLen;
+  const auto size16 = static_cast<uint16_t>(
+      std::min(len, size_t{std::numeric_limits<uint16_t>::max()}));
   iterateConnections([port, b, size16](struct altcp_pcb* pcb) {
     if (getLocalPort(pcb) != port) {
       return;
@@ -501,7 +503,7 @@ size_t ConnectionManager::write(const uint16_t port,
     }
   });
   Ethernet.loop();
-  return actualLen;
+  return size16;
 }
 
 void ConnectionManager::flush(const uint16_t port) {

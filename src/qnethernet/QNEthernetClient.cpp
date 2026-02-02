@@ -411,7 +411,7 @@ size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
     return 0;
   }
 
-  size_t sndBufSize = altcp_sndbuf(state->pcb);
+  size_t sndBufSize = altcp_sndbuf(state->pcb);  // 16-bit
   if (sndBufSize == 0) {  // Possibly flush if there's no space
     altcp_output(state->pcb);
     Ethernet.loop();  // Loop to allow incoming data
@@ -421,7 +421,8 @@ size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
     sndBufSize = altcp_sndbuf(state->pcb);
   }
 
-  size_t actualSize = std::min(size, sndBufSize);
+  // Adjust the size to be the proper type
+  auto actualSize = static_cast<uint16_t>(std::min(size, sndBufSize));
   if (actualSize > 0) {
     const err_t err =
         altcp_write(state->pcb, buf, actualSize, TCP_WRITE_FLAG_COPY);

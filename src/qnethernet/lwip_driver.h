@@ -32,6 +32,11 @@
 #error "MAX_FRAME_LEN must be defined and >= 4"
 #endif  // Constant checks
 
+// Check some sizes
+#if ETH_PAD_SIZE > UINT16_MAX
+#error "ETH_PAD_SIZE must be <= UINT16_MAX"
+#endif  // UINT16_MAX <= ETH_PAD_SIZE
+
 // Requirements for driver-specific headers:
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN (including the 4-byte FCS (frame check sequence))

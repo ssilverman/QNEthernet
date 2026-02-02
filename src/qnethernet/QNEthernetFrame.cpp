@@ -168,7 +168,7 @@ uint16_t EthernetFrameClass::etherTypeOrLength() const {
     return 0;
   }
   const uint8_t* const p = data();
-  return (uint16_t{p[12]} << 8) | uint16_t{p[13]};
+  return static_cast<uint16_t>((uint16_t{p[12]} << 8) | uint16_t{p[13]});
 }
 
 const uint8_t* EthernetFrameClass::payload() const {

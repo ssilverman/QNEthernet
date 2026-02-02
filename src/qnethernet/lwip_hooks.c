@@ -51,7 +51,7 @@ u32_t calc_tcp_isn(const ip_addr_t *const local_ip, const u16_t local_port,
   pMsg += sizeof(ip_addr_t);
   memcpy(pMsg, local_ip, sizeof(ip_addr_t));
 
-  uint32_t hash = siphash(2, 4, s_key, s_msg, sizeof(s_msg));
+  uint32_t hash = (uint32_t)(siphash(2, 4, s_key, s_msg, sizeof(s_msg)));
   return hash + qnethernet_hal_micros();
 }
 
