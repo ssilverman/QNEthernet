@@ -375,7 +375,13 @@ class EthernetClass final {
   // These functions are defined by the Arduino API
 
   ATTRIBUTE_DEPRECATED("DHCP maintained internally")
-  uint8_t maintain() const { return 0; }
+  uint8_t maintain() const {
+    return 0;  // Nothing happened
+    // 1: Renew failed
+    // 2: Renew success
+    // 3: Rebind fail
+    // 4: Rebind success
+  }
   ATTRIBUTE_DEPRECATED("See TCP_MAXRTX")
   void setRetransmissionCount(const uint8_t number) const {
     LWIP_UNUSED_ARG(number);
