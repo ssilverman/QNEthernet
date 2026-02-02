@@ -50,7 +50,7 @@ class EthernetUDP : public UDP,
   EthernetUDP& operator=(EthernetUDP&&) noexcept = default;
 
   // Returns the maximum number of UDP sockets.
-  static constexpr int maxSockets() {
+  static constexpr size_t maxSockets() {
     return MEMP_NUM_UDP_PCB;
   }
 

@@ -57,7 +57,7 @@ enum EthernetHardwareStatus {
 
 class EthernetClass final {
  public:
-  static constexpr int kMACAddrSize = ETH_HWADDR_LEN;
+  static constexpr size_t kMACAddrSize = ETH_HWADDR_LEN;
 
   // Returns a string containing the library version number.
   static const char* libraryVersion() {
@@ -68,7 +68,7 @@ class EthernetClass final {
   // one group. Also note that this does not include the "all systems" group.
   //
   // This will return zero if IGMP is disabled.
-  static constexpr int maxMulticastGroups() {
+  static constexpr size_t maxMulticastGroups() {
 #if LWIP_IGMP
     // Exclude the "All Systems" group
     // Note: Using a ternary expression to be compatible with C++11
@@ -312,7 +312,7 @@ class EthernetClass final {
 
   // Returns the DNS server IP at the specified index. This returns INADDR_NONE
   // if there is no configured server at that index or if DNS is disabled.
-  IPAddress dnsServerIP(int index) const;
+  IPAddress dnsServerIP(size_t index) const;
 
   // Returns the broadcast IP address. This is equal to:
   // localIP | ~subnetMask
@@ -335,7 +335,7 @@ class EthernetClass final {
 
   // Sets a specific DNS server IP. This does nothing if the index is not in the
   // range [0, DNSClient::maxServers()).
-  void setDNSServerIP(int index, const IPAddress& ip) const;
+  void setDNSServerIP(size_t index, const IPAddress& ip) const;
 
   // The MAC addresses are used in the following begin() functions. If NULL or
   // the driver can't set the MAC address, then the system MAC address is first

@@ -10,7 +10,6 @@
 
 // C++ includes
 #include <cerrno>
-#include <limits>
 
 #include "QNEthernet.h"
 #include "lwip/arch.h"
@@ -40,10 +39,9 @@ void DNSClient::dnsFoundFunc(const char* const name,
   delete req;
 }
 
-bool DNSClient::setServer(const int index, const IPAddress& ip) {
+bool DNSClient::setServer(const size_t index, const IPAddress& ip) {
 #if LWIP_IPV4
-  if ((index < 0) || (maxServers() <= index) ||
-      (index > std::numeric_limits<uint8_t>::max())) {
+  if (index >= maxServers()) {
     return false;
   }
   const ip_addr_t addr IPADDR4_INIT(static_cast<uint32_t>(ip));
@@ -57,10 +55,9 @@ bool DNSClient::setServer(const int index, const IPAddress& ip) {
 #endif  // LWIP_IPV4
 }
 
-IPAddress DNSClient::getServer(const int index) {
+IPAddress DNSClient::getServer(const size_t index) {
 #if LWIP_IPV4
-  if ((index < 0) || (maxServers() <= index) ||
-      (index > std::numeric_limits<uint8_t>::max())) {
+  if (index >= maxServers()) {
     return INADDR_NONE;
   }
   return util::ip_addr_get_ip4_uint32(

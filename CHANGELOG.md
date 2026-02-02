@@ -14,6 +14,21 @@ and this project adheres to
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
   stopping on error.
+* Changed some sizes to `size_t` instead of `int`:
+  * `writeFully(client, data, len)` example in the Readme
+  * `EthernetClass::kMACAddrSize`
+  * `EthernetClass::maxMulticastGroups()`
+  * `EthernetClass::dnsServerIP(index)`
+  * `EthernetClass::setDNSServerIP(index, ip)`
+  * `DNSClient::maxServers()`
+  * `DNSClient::setServer(index, ip)`
+  * `DNSClient::getServer(index)`
+  * `EthernetClient::maxSockets()`
+  * `EthernetFrame::maxFrameLen()`
+  * `EthernetFrame::minFrameLen()`
+  * `EthernetServer::maxListeners()`
+  * `EthernetUDP::maxSockets()`
+  * `MDNSClass::maxServices()`
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.

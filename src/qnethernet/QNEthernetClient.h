@@ -51,7 +51,7 @@ class EthernetClient : public internal::ClientEx,
   EthernetClient& operator=(EthernetClient&&) noexcept = default;
 
   // Returns the maximum number of TCP connections.
-  static constexpr int maxSockets() {
+  static constexpr size_t maxSockets() {
     return MEMP_NUM_TCP_PCB;
   }
 

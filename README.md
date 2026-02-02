@@ -339,7 +339,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `static constexpr bool isPromiscuousMode()`: Returns whether promiscuous mode
   is enabled.
 * `static const char* libraryVersion()`: Returns the library version.
-* `static constexpr int maxMulticastGroups()`: Returns the maximum number of
+* `static constexpr size_t maxMulticastGroups()`: Returns the maximum number of
   available multicast groups, not including the "all systems" group.
 * `static constexpr size_t mtu()`: Returns the MTU.
 
@@ -376,7 +376,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(buf, size)`: Writes a data buffer (`const void *`).
-* `static constexpr int maxSockets()`: Returns the maximum number of
+* `static constexpr size_t maxSockets()`: Returns the maximum number of
   TCP connections.
 
 #### TCP socket options
@@ -414,7 +414,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `end()`: Shuts down the server.
 * `port()`: Returns the server's port, a signed 32-bit value, where -1 means the
   port is not set and a non-negative value is a 16-bit quantity.
-* `static constexpr int maxListeners()`: Returns the maximum number of
+* `static constexpr size_t maxListeners()`: Returns the maximum number of
   TCP listeners.
 * `EthernetServer()`: Creates a placeholder server without a port. This form is
   useful when you don't know the port in advance.
@@ -454,7 +454,7 @@ listening and the port or _reuse_ options have changed.
   dropped packets, since reception was started. Note that this is the count at
   the layer above the driver.
 * `operator bool()`: Tests if the socket is listening.
-* `static constexpr int maxSockets()`: Returns the maximum number of
+* `static constexpr size_t maxSockets()`: Returns the maximum number of
   UDP sockets.
 * `EthernetUDP(capacity)`: Creates a new UDP socket having the specified receive
   packet queue capacity. The minimum possible value is 1 and the default is 1.
@@ -556,11 +556,11 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `totalReceiveCount()`: Returns the total number of received frames, including
   dropped frames, since reception was started. Note that this is the count at
   the layer above the driver.
-* `static constexpr int maxFrameLen()`: Returns the maximum frame length
+* `static constexpr size_t maxFrameLen()`: Returns the maximum frame length
   including the 4-byte FCS. Subtract 4 to get the maximum length that can be
   sent or received using this API. Note that this size includes VLAN frames,
   which are 4 bytes larger.
-* `static constexpr int minFrameLen()`: Returns the minimum frame length
+* `static constexpr size_t minFrameLen()`: Returns the minimum frame length
   including the 4-byte FCS. Subtract 4 to get the minimum length that can be
   sent or received using this API. Note that padding does not need to be managed
   by the caller, meaning frames smaller than this size are allowed; the system
@@ -586,7 +586,7 @@ The `MDNS` object provides an mDNS API.
   disconnected for a while and then reconnected. This isn't normally needed
   because the responder already watches for link reconnect.
 * `operator bool()`: Tests if the mDNS responder is operating.
-* `static constexpr int maxServices()`: Returns the maximum number of
+* `static constexpr size_t maxServices()`: Returns the maximum number of
   supported services.
 
 ### `DNSClient`
@@ -601,7 +601,7 @@ See also: [`Ethernet`](#ethernet)'s `hostByName(hostname, ip)`
   calls the callback when there's a result. The callback is not called once the
   timeout has been reached. The timeout is ignored if it's set to zero.
 * `getHostByName(hostname, ip, timeout)`: Looks up a host by name.
-* `static constexpr int maxServers()`: Returns the maximum number of
+* `static constexpr size_t maxServers()`: Returns the maximum number of
   DNS servers.
 
 ### Ping
@@ -895,7 +895,7 @@ the data:
 ```c++
 // Keep writing until all the bytes are sent or the connection
 // is closed.
-void writeFully(EthernetClient& client, const char* data, int len) {
+void writeFully(EthernetClient& client, const char* data, size_t len) {
   // Don't use client.connected() as the "connected" check because
   // that will return true if there's data available, and this loop
   // does not check for data available or remove it if it's there.

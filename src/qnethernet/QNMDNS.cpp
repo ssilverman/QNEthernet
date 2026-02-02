@@ -171,7 +171,7 @@ bool MDNSClass::addService(const char* const name, const char* const type,
   if (slot < 0) {
     errno = err_to_errno(slot);
     return false;
-  } else if (slot >= maxServices()) {
+  } else if (static_cast<size_t>(slot) >= maxServices()) {
     // Remove if the addition was successful but we couldn't add it
     mdns_resp_del_service(netif_, slot);
     errno = ENOBUFS;
@@ -186,7 +186,7 @@ internal::optional<uint8_t> MDNSClass::findService(const char* const name,
                                                    const char* const type,
                                                    const char* const protocol,
                                                    const uint16_t port) {
-  for (int i = 0; i < maxServices(); ++i) {
+  for (size_t i = 0; i < maxServices(); ++i) {
     if (slots_[i].equals(true, name, type, toProto(protocol), port)) {
       return {true, static_cast<uint8_t>(i)};
     }

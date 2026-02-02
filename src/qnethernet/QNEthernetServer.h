@@ -39,7 +39,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   EthernetServer& operator=(EthernetServer&&) noexcept = default;
 
   // Returns the maximum number of TCP listeners.
-  static constexpr int maxListeners() {
+  static constexpr size_t maxListeners() {
     return MEMP_NUM_TCP_PCB_LISTEN;
   }
 

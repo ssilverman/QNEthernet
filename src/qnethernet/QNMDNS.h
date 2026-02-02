@@ -11,6 +11,7 @@
 #if LWIP_MDNS_RESPONDER
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <vector>
@@ -33,7 +34,7 @@ static_assert(MDNS_MAX_SERVICES <= std::numeric_limits<uint8_t>::max(),
 class MDNSClass final {
  public:
   // Returns the maximum number of services this can support.
-  static constexpr int maxServices() {
+  static constexpr size_t maxServices() {
     return MDNS_MAX_SERVICES;
   }
 

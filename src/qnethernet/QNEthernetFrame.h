@@ -48,7 +48,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   //
   // Note that this size includes VLAN frames, which are 4 bytes larger.
   // Also note that the padding does not need to be managed by the caller.
-  static constexpr int maxFrameLen() {
+  static constexpr size_t maxFrameLen() {
     return MAX_FRAME_LEN;
   }
 
@@ -58,7 +58,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Note that the padding does not need to be managed by the caller, meaning
   // frames smaller than this size are allowed; the system will insert padding
   // as needed.
-  static constexpr int minFrameLen() {
+  static constexpr size_t minFrameLen() {
     return 64;
   }
 

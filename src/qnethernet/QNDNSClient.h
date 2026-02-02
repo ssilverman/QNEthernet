@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNDNSClient.h defines the DNS client interface.
@@ -11,8 +11,10 @@
 #if LWIP_DNS
 
 // C++ includes
+#include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <limits>
 
 #include <IPAddress.h>
 
@@ -22,22 +24,25 @@
 namespace qindesign {
 namespace network {
 
+static_assert(DNS_MAX_SERVERS <= std::numeric_limits<uint8_t>::max(),
+              "DNS_MAX_SERVERS must be an 8-bit value");
+
 // Interfaces with lwIP's DNS functions.
 class DNSClient final {
  public:
   // Returns the maximum number of DNS servers.
-  static constexpr int maxServers() {
+  static constexpr size_t maxServers() {
     return DNS_MAX_SERVERS;
   }
 
   // Sets the specified DNS server address. This will return whether setting the
   // address was successful. This will return false if the index is not in the
   // range [0, maxServers()).
-  static bool setServer(int index, const IPAddress& ip);
+  static bool setServer(size_t index, const IPAddress& ip);
 
   // Gets the specified DNS server address. This will return INADDR_NONE if
   // the address is not set or the index is out of range.
-  static IPAddress getServer(int index);
+  static IPAddress getServer(size_t index);
 
   // Looks up a host by name. This calls the callback when it has a result. This
   // returns whether the call was successful. If the call was not successful,

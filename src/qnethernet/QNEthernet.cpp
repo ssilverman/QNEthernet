@@ -617,7 +617,7 @@ IPAddress EthernetClass::dnsServerIP() const {
   return dnsServerIP(0);
 }
 
-IPAddress EthernetClass::dnsServerIP(const int index) const {
+IPAddress EthernetClass::dnsServerIP(const size_t index) const {
 #if LWIP_DNS
   return DNSClient::getServer(index);
 #else
@@ -683,7 +683,8 @@ void EthernetClass::setDNSServerIP(const IPAddress& ip) const {
   setDNSServerIP(0, ip);
 }
 
-void EthernetClass::setDNSServerIP(const int index, const IPAddress& ip) const {
+void EthernetClass::setDNSServerIP(const size_t index,
+                                   const IPAddress& ip) const {
 #if LWIP_DNS
   DNSClient::setServer(index, ip);
 #else
