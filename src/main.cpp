@@ -133,6 +133,7 @@ void loop() {
 }
 
 static void ping() {
+#if QNETHERNET_ENABLE_PING_SEND
   printf("Sending ping to the gateway...\r\n");
   const long t = Ethernet.ping(Ethernet.gatewayIP());
   if (t >= 0) {
@@ -140,6 +141,7 @@ static void ping() {
   } else {
     printf("[Ping] Ping failed. errno=%d\r\n", errno);
   }
+#endif  // QNETHERNET_ENABLE_PING_SEND
 }
 
 static void dnsLookup() {
