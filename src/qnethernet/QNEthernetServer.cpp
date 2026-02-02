@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // QNEthernetServer.cpp contains the EthernetServer implementation.
@@ -71,10 +71,10 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
   }
 
   // Only change the port if listening was successful
-  const int32_t p = internal::ConnectionManager::instance().listen(port, reuse);
-  if (p > 0) {
-    listeningPort_ = p;
-    port_ = {true, (port == 0) ? uint16_t{0} : static_cast<uint16_t>(p)};
+  const auto p = internal::ConnectionManager::instance().listen(port, reuse);
+  if (p.has_value && p.value > 0) {
+    listeningPort_ = p.value;
+    port_ = {true, (port == 0) ? uint16_t{0} : p.value};
     reuse_ = reuse;
     return true;
   }

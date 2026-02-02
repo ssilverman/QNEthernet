@@ -20,6 +20,7 @@
 #include "lwip/ip_addr.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ConnectionHolder.h"
+#include "qnethernet/internal/optional.h"
 
 namespace qindesign {
 namespace network {
@@ -39,7 +40,7 @@ class ConnectionManager final {
   // This returns a negative value if the attempt was not successful or the port
   // number otherwise. In theory, this shouldn't return zero.
   ATTRIBUTE_NODISCARD
-  int32_t listen(uint16_t port, bool reuse);
+  optional<uint16_t> listen(uint16_t port, bool reuse);
 
   ATTRIBUTE_NODISCARD
   bool isListening(uint16_t port) const;
