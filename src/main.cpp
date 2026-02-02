@@ -23,7 +23,7 @@ static constexpr uint32_t kStartupDelay = 2000;
 static constexpr uint32_t kDHCPTimeout = 15000;
 
 // Flag that indicates something about the network changed.
-static volatile bool networkChanged = false;
+static volatile bool s_networkChanged = false;
 
 // Main program setup.
 void setup() {
@@ -64,7 +64,7 @@ void setup() {
     } else {
       printf("[Ethernet] Link: OFF\r\n");
     }
-    networkChanged = true;
+    s_networkChanged = true;
   });
 
   Ethernet.onAddressChanged([]() {
@@ -86,7 +86,7 @@ void setup() {
     } else {
       printf("[Ethernet] Address changed: No IP address\r\n");
     }
-    networkChanged = true;
+    s_networkChanged = true;
   });
 
   // Start DHCP
@@ -118,8 +118,8 @@ static void clientConnect();
 // Main program loop.
 void loop() {
   // Check for a network change
-  if (networkChanged) {
-    networkChanged = false;
+  if (s_networkChanged) {
+    s_networkChanged = false;
 
     if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
       // Do network things here, but only if there's an address and a link
