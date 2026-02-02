@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // IPerfServer implements an iPerf server for TCP traffic.
@@ -327,7 +327,7 @@ void loop() {
   }
 
   if (!list.empty()) {
-    conns.insert(conns.end(),
+    conns.insert(conns.cend(),
                  std::make_move_iterator(list.begin()),
                  std::make_move_iterator(list.end()));
     list.clear();
@@ -338,7 +338,7 @@ void loop() {
   conns.erase(
       std::remove_if(conns.begin(), conns.end(),
                      [](const ConnectionState& state) { return state.closed; }),
-      conns.end());
+      conns.cend());
   if (conns.size() != size) {
     printf("Connection count: %zu\r\n", conns.size());
   }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2023,2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2023,2025-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // LengthWidthServer demonstrates how to serve a protocol having a
@@ -198,7 +198,7 @@ void loop() {
   clients.erase(
       std::remove_if(clients.begin(), clients.end(),
                      [](const ClientState& state) { return state.closed; }),
-      clients.end());
+      clients.cend());
   if (clients.size() != size) {
     printf("Client count: %zu\r\n", clients.size());
   }
