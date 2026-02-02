@@ -29,6 +29,7 @@ and this project adheres to
   * `EthernetServer::maxListeners()`
   * `EthernetUDP::maxSockets()`
   * `MDNSClass::maxServices()`
+* Changed `EthernetClass::begin(mac, timeout)` return type to `bool` from `int`.
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.

@@ -342,13 +342,14 @@ class EthernetClass final {
   // retrieved from the driver.
   //
   // Wish: Boolean returns
-  // Technically, the non-DHCP begin() functions aren't supposed to
-  // return anything.
+  // Technically, the non-DHCP begin(mac, ...) functions aren't supposed to
+  // return anything, and the DHCP begin(mac) function is supposed to return
+  // an int.
   //
   // These functions are defined by the Arduino API.
 
-  int begin(const uint8_t mac[kMACAddrSize],
-            uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
+  bool begin(const uint8_t mac[kMACAddrSize],
+             uint32_t timeout = QNETHERNET_DEFAULT_DHCP_CLIENT_TIMEOUT);
   ATTRIBUTE_DEPRECATED("See begin(ip, subnet, gateway)")
   bool begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip);
   ATTRIBUTE_DEPRECATED("See begin(ip, subnet, gateway, dns)")

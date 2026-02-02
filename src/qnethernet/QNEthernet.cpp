@@ -432,8 +432,8 @@ bool EthernetClass::waitForLink(const uint32_t timeout) const {
   return !timedOut;
 }
 
-int EthernetClass::begin(const uint8_t mac[kMACAddrSize],
-                         const uint32_t timeout) {
+bool EthernetClass::begin(const uint8_t mac[kMACAddrSize],
+                          const uint32_t timeout) {
   if (!begin(mac, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE)) {
     return false;
   }
