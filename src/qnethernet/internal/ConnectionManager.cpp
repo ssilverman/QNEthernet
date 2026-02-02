@@ -491,7 +491,7 @@ size_t ConnectionManager::write(const uint16_t port,
       if (altcp_output(pcb) != ERR_OK) {
         return;
       }
-      // May invalidate connections_:
+      // May invalidate connections_ iterators:
       // Ethernet.loop();
     }
     const uint16_t len = std::min(size16, altcp_sndbuf(pcb));
@@ -509,7 +509,7 @@ void ConnectionManager::flush(const uint16_t port) {
       return;
     }
     altcp_output(pcb);
-    // May invalidate connections_:
+    // May invalidate connections_ iterators:
     // Ethernet.loop();
   });
   Ethernet.loop();
