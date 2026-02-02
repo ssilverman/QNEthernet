@@ -12,8 +12,8 @@
 
 // C++ includes
 #include <cstdint>
-#include <memory>
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "lwip/altcp.h"
