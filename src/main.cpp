@@ -112,6 +112,7 @@ void setup() {
   }
 }
 
+static void ping();
 static void dnsLookup();
 static void clientConnect();
 
@@ -124,9 +125,20 @@ void loop() {
     if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
       // Do network things here, but only if there's an address and a link
 
+      ping();
       dnsLookup();
       clientConnect();
     }
+  }
+}
+
+static void ping() {
+  printf("Sending ping to the gateway...\r\n");
+  const long t = Ethernet.ping(Ethernet.gatewayIP());
+  if (t >= 0) {
+    printf("[Ping] Ping time = %ld ms\r\n", t);
+  } else {
+    printf("[Ping] Ping failed. errno=%d\r\n", errno);
   }
 }
 
