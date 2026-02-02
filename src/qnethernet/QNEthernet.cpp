@@ -835,7 +835,9 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
     found = true;
   }};
 
-  ping.send(req);
+  if (!ping.send(req)) {
+    return -1;
+  }
 
   const uint32_t t = sys_now();
   uint32_t dt = 0;

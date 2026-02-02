@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.
+
 ## [0.34.0]
 
 ### Added
