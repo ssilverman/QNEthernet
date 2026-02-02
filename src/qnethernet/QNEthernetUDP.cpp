@@ -543,7 +543,7 @@ size_t EthernetUDP::write(const uint8_t* const buffer, const size_t size) {
   }
   const size_t actualSize =
       std::min(kMaxPossiblePayloadSize - outPacket_.value.data.size(), size);
-  outPacket_.value.data.insert(outPacket_.value.data.end(), &buffer[0],
+  outPacket_.value.data.insert(outPacket_.value.data.cend(), &buffer[0],
                                &buffer[actualSize]);
   return actualSize;
 }

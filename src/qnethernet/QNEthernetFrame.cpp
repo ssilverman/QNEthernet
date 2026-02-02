@@ -249,7 +249,7 @@ size_t EthernetFrameClass::write(const uint8_t* const buffer,
   }
 
   const size_t actualSize = std::min(size, static_cast<size_t>(avail));
-  outFrame_.value.data.insert(outFrame_.value.data.end(), &buffer[0],
+  outFrame_.value.data.insert(outFrame_.value.data.cend(), &buffer[0],
                               &buffer[actualSize]);
   return actualSize;
 }
