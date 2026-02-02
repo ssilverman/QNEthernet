@@ -168,14 +168,13 @@ bool MDNSClass::addService(const char* const name, const char* const type,
   const int8_t slot =
       mdns_resp_add_service(netif_, name, type, proto, port, &srv_txt,
                             reinterpret_cast<void*>(getTXTFunc));
-  if ((slot < 0) || (maxServices() <= slot)) {
-    if (slot >= 0) {
-      // Remove if the addition was successful but we couldn't add it
-      mdns_resp_del_service(netif_, slot);
-      errno = ENOBUFS;
-    } else {
-      errno = err_to_errno(slot);
-    }
+  if (slot < 0) {
+    errno = err_to_errno(slot);
+    return false;
+  } else if (slot >= maxServices()) {
+    // Remove if the addition was successful but we couldn't add it
+    mdns_resp_del_service(netif_, slot);
+    errno = ENOBUFS;
     return false;
   }
 
