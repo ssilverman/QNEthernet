@@ -24,6 +24,7 @@ namespace qindesign {
 namespace network {
 
 static constexpr size_t kEchoHdrSize = sizeof(struct icmp_echo_hdr);
+static constexpr size_t kMaxHdrSize = IP_HLEN + kEchoHdrSize;
 
 u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
                     const ip_addr_t* addr) {
@@ -31,7 +32,7 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
   Ping* const ping = static_cast<Ping*>(arg);
 
   if ((ping->pcb_ != pcb) ||
-      (p->tot_len < IP_HLEN + kEchoHdrSize) ||
+      (p->tot_len < kMaxHdrSize) ||
       (pbuf_get_at(p, IP_HLEN) != ICMP_ER) ||  // Type
       (pbuf_get_at(p, IP_HLEN + 1) != 0)) {    // Code
     return 0;  // Don't eat the packet
@@ -42,17 +43,16 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     struct icmp_echo_hdr echo;
     pbuf_copy_partial(p, &echo, kEchoHdrSize, IP_HLEN);
 
-    size_t dataSize = p->tot_len - (IP_HLEN + kEchoHdrSize);
+    size_t dataSize = p->tot_len - kMaxHdrSize;
     const uint8_t* data = nullptr;
 
     if (dataSize != 0) {
       if (p->len == p->tot_len) {
-        data = static_cast<uint8_t*>(p->payload) + IP_HLEN + kEchoHdrSize;
+        data = static_cast<uint8_t*>(p->payload) + kMaxHdrSize;
       } else {
         // Avoid churn, so use a vector instead of a byte array
         ping->dataBuf_.resize(dataSize);
-        pbuf_copy_partial(p, ping->dataBuf_.data(), dataSize,
-                          IP_HLEN + kEchoHdrSize);
+        pbuf_copy_partial(p, ping->dataBuf_.data(), dataSize, kMaxHdrSize);
         data = ping->dataBuf_.data();
       }
     }
@@ -108,8 +108,7 @@ bool Ping::tryCreatePCB() {
 
 bool Ping::send(const PingData& req) {
   // IPv4 header size is 20
-  if (req.dataSize >
-      (std::numeric_limits<uint16_t>::max() - IP_HLEN - kEchoHdrSize)) {
+  if (req.dataSize > (std::numeric_limits<uint16_t>::max() - kMaxHdrSize)) {
     errno = EINVAL;
     return false;
   }

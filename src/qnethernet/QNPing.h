@@ -77,7 +77,8 @@ class Ping final {
     replyf_ = f;
   }
 
-  // Sends an Echo Request ICMP packet to the given IP address.
+  // Sends an Echo Request ICMP packet to the given IP address. This will return
+  // false if the data doesn't fit into a packet.
   //
   // If this returns false and there was an error then errno will be set.
   bool send(const PingData& req);
