@@ -124,8 +124,10 @@ bool EthernetClient::connect(const ip_addr_t* const ipaddr, const uint16_t port,
   if (wait) {
     const uint32_t t = sys_now();
     // NOTE: conn_ could be set to NULL somewhere during the yield
-    while ((conn_ != nullptr) && !conn_->connected &&
-           ((sys_now() - t) < connTimeout_)) {
+    while ((conn_ != nullptr) && !conn_->connected) {
+      if ((sys_now() - t) >= connTimeout_) {
+        break;
+      }
       yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
       Ethernet.loop();
@@ -254,8 +256,11 @@ void EthernetClient::close(const bool wait) {
         const uint32_t t = sys_now();
         // TODO: Make this work for altcp, if possible
         // NOTE: conn_ could be set to NULL somewhere during the yield
-        while ((conn_ != nullptr) && conn_->connected &&
-               ((sys_now() - t) < connTimeout_)) {
+        while ((conn_ != nullptr) && conn_->connected) {
+          if ((sys_now() - t) >= connTimeout_) {
+            errno = ETIMEDOUT;
+            break;
+          }
           yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
           Ethernet.loop();

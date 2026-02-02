@@ -390,14 +390,19 @@ bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
   }
 
   const uint32_t t = sys_now();
-  while (ip4_addr_isany_val(*netif_ip4_addr(netif_)) &&
-         ((sys_now() - t) < timeout)) {
+  bool timedOut = false;
+  while (ip4_addr_isany_val(*netif_ip4_addr(netif_))) {
+    if ((sys_now() - t) >= timeout) {
+      timedOut = true;
+      errno = ETIMEDOUT;
+      break;
+    }
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
 #endif  // !QNETHERNET_DO_LOOP_IN_YIELD
   }
-  return (!ip4_addr_isany_val(*netif_ip4_addr(netif_)));
+  return !timedOut;
 #else
   LWIP_UNUSED_ARG(timeout);
   errno = ENOSYS;
@@ -412,13 +417,19 @@ bool EthernetClass::waitForLink(const uint32_t timeout) const {
   }
 
   const uint32_t t = sys_now();
-  while (!netif_is_link_up(netif_) && ((sys_now() - t) < timeout)) {
+  bool timedOut = false;
+  while (!netif_is_link_up(netif_)) {
+    if ((sys_now() - t) >= timeout) {
+      timedOut = true;
+      errno = ETIMEDOUT;
+      break;
+    }
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();
 #endif  // !QNETHERNET_DO_LOOP_IN_YIELD
   }
-  return netif_is_link_up(netif_);
+  return !timedOut;
 }
 
 int EthernetClass::begin(const uint8_t mac[kMACAddrSize],
@@ -841,7 +852,11 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
 
   const uint32_t t = sys_now();
   uint32_t dt = 0;
-  while (!found && (dt < QNETHERNET_DEFAULT_PING_TIMEOUT)) {
+  while (!found) {
+    if (dt >= QNETHERNET_DEFAULT_PING_TIMEOUT) {
+      errno = ETIMEDOUT;
+      break;
+    }
     yield();
 #if !QNETHERNET_DO_LOOP_IN_YIELD
     Ethernet.loop();

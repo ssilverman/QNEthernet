@@ -59,14 +59,16 @@ class EthernetClient : public internal::ClientEx,
   //
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
-  // If there was an error then errno will be set appropriately.
+  // If there was an error then errno will be set appropriately.  It will be set
+  // to ETIMEDOUT if the connection attempt timed out.
   //
   // This function is defined by the Arduino API.
   int connect(IPAddress ip, uint16_t port) final;
 
   // Returns false if DNS is disabled.
   //
-  // If this returns false and there was an error then errno will be set.
+  // If this returns false and there was an error then errno will be set. It
+  // will be set to ETIMEDOUT if the connection attempt timed out.
   //
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
@@ -134,7 +136,8 @@ class EthernetClient : public internal::ClientEx,
 
   // Waiting can be disabled by setConnectionTimeoutEnabled(false).
   //
-  // If there was an error then errno will be set appropriately.
+  // If there was an error then errno will be set appropriately. It will be set
+  // to ETIMEDOUT if waiting for the close timed out.
   //
   // This function is defined by the Arduino API.
   void stop() final;

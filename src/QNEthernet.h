@@ -195,7 +195,8 @@ class EthernetClass final {
   // one was acquired. The timeout is in milliseconds.
   //
   // If the network is not enabled then this will return false immediately and
-  // errno will be set to ENETDOWN.
+  // errno will be set to ENETDOWN. If there was a timeout then errno will be
+  // set to ETIMEDOUT.
   bool waitForLocalIP(uint32_t timeout) const;
 
   // Starts Ethernet with the given address configuration. This is similar to
@@ -224,7 +225,8 @@ class EthernetClass final {
   // whether a link was detected. The timeout is in milliseconds.
   //
   // If the network is not enabled then this will return false immediately and
-  // errno will be set to ENETDOWN.
+  // errno will be set to ENETDOWN. If there was a timeout then errno will be
+  // set to ETIMEDOUT.
   bool waitForLink(uint32_t timeout) const;
 
   // Shuts down the Ethernet peripheral(s) and stops all services.
@@ -471,7 +473,7 @@ class EthernetClass final {
   // This uses QNETHERNET_DEFAULT_PING_TIMEOUT as the timeout.
   //
   // If this returns a negative value and there was an error then errno will
-  // be set.
+  // be set. It will be set to ETIMEDOUT if there was a timeout.
   long ping(const char* hostname,
             uint8_t ttl = QNETHERNET_DEFAULT_PING_TTL) const;
 
@@ -482,7 +484,7 @@ class EthernetClass final {
   // This uses QNETHERNET_DEFAULT_PING_TIMEOUT as the timeout.
   //
   // If this returns a negative value and there was an error then errno will
-  // be set.
+  // be set. It will be set to ETIMEDOUT if there was a timeout.
   long ping(const IPAddress& ip,
             uint8_t ttl = QNETHERNET_DEFAULT_PING_TTL) const;
 
