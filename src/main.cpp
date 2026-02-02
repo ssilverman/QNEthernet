@@ -146,11 +146,11 @@ static void dnsLookup() {
 #if LWIP_DNS
   static constexpr char kHostname[]{"dns.google"};
   IPAddress ip;
-  printf("[Main] Looking up \"%s\"...\r\n", kHostname);
+  printf("[DNS] Looking up \"%s\"...\r\n", kHostname);
   if (!DNSClient::getHostByName(kHostname, ip)) {
-    printf("[Main] Lookup failed\r\n");
+    printf("[DNS] Lookup failed\r\n");
   } else {
-    printf("[Main] IP address: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+    printf("[DNS] IP address: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
   }
 #endif  // LWIP_DNS
 }
@@ -169,9 +169,9 @@ static constexpr uint16_t kPort = 80;
 static void clientConnect() {
 #if LWIP_TCP
   EthernetClient client;
-  printf("[Main] Connecting to %s...\r\n", kHost);
+  printf("[Client] Connecting to %s...\r\n", kHost);
   if (!client.connect(kHost, 80)) {
-    printf("[Main] Error connecting\r\n");
+    printf("[Client] Error connecting\r\n");
     return;
   }
 
