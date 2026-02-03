@@ -29,8 +29,8 @@ uint64_t siphash(const size_t c, const size_t d,
                  const void *const msg, const size_t len) {
   uint64_t k0;
   uint64_t k1;
-  memcpy(&k0, key, 8);
-  memcpy(&k1, (uint8_t *)key + 8, 8);
+  (void)memcpy(&k0, key, 8);
+  (void)memcpy(&k1, (uint8_t *)key + 8, 8);
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   k0 = __builtin_bswap64(k0);
   k1 = __builtin_bswap64(k1);
@@ -48,7 +48,7 @@ uint64_t siphash(const size_t c, const size_t d,
   size_t count = (len + 8)/8 - 1;
   uint64_t m;
   while (count-- != 0) {
-    memcpy(&m, pMsg, 8);
+    (void)memcpy(&m, pMsg, 8);
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     m = __builtin_bswap64(m);
 #endif  // Big-endian
@@ -62,10 +62,10 @@ uint64_t siphash(const size_t c, const size_t d,
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   m = ((uint64_t)len << 56);
-  memcpy(&m, pMsg, len % 8);
+  (void)memcpy(&m, pMsg, len % 8);
 #else
   m = len & 0xff;
-  memcpy(&m, pMsg, len % 8);
+  (void)memcpy(&m, pMsg, len % 8);
   m = __builtin_bswap64(m);
 #endif  // Big-endian
   v3 ^= m;

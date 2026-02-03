@@ -152,7 +152,7 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
 #endif  // defined(__arm__)
 
   if (inInterruptCtx) {
-    printf("%s:%d:%s()\r\n", file, line, func);
+    (void)printf("%s:%d:%s()\r\n", file, line, func);
     LWIP_PLATFORM_ASSERT("Function called from interrupt context");
   }
 }
@@ -257,14 +257,14 @@ size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
   size_t count = size / 4;
   for (size_t i = 0; i < count; ++i) {
     uint32_t r = qnethernet_hal_entropy();
-    std::memcpy(pBuf, &r, 4);
+    (void)std::memcpy(pBuf, &r, 4);
     pBuf += 4;
   }
 
   size_t rem = size % 4;
   if (rem != 0) {
     uint32_t r = qnethernet_hal_entropy();
-    std::memcpy(pBuf, &r, rem);
+    (void)std::memcpy(pBuf, &r, rem);
   }
 
   return size;
@@ -346,7 +346,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
 #elif defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY36)
   // usb_desc.c:usb_init_serialnumber()
   __disable_irq();
-  kinetis_hsrun_disable();
+  LWIP_ASSERT("Expected HSRUN disable success", kinetis_hsrun_disable() != 0);
   FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
   *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB3) = 0x41070000;
   FTFL_FSTAT = FTFL_FSTAT_CCIF;
@@ -354,7 +354,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
     // Wait
   }
   const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOBB);
-  kinetis_hsrun_enable();
+  LWIP_ASSERT("Expected HSRUN enable success", kinetis_hsrun_enable() != 0);
   __enable_irq();
   mac[0] = 0x04;
   mac[1] = 0xE9;
@@ -363,7 +363,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   mac[4] = num >> 8;
   mac[5] = num;
 #else
-  memcpy(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
+  (void)memcpy(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
 #endif  // Board type
 }
 

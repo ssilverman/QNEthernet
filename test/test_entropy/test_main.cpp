@@ -55,14 +55,14 @@ static void test_data() {
 // Tests entropy_random().
 static void test_random() {
   errno = 0;
-  entropy_random();
+  (void)entropy_random();
   TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
 }
 
 // Tests entropy_random_range(range).
 static void test_random_range() {
   errno = 0;
-  entropy_random_range(0);
+  (void)entropy_random_range(0);
   TEST_ASSERT_EQUAL_MESSAGE(EDOM, errno, "Expected EDOM");
   errno = 0;
   TEST_ASSERT_EQUAL_MESSAGE(0, entropy_random_range(1), "Expected zero");
@@ -91,7 +91,7 @@ static void test_randomDevice() {
 
   errno = 0;
   for (int i = 0; i < (1 << 10); ++i) {
-    qindesign::security::randomDevice();
+    (void)qindesign::security::randomDevice();
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
   }
 }
@@ -109,7 +109,7 @@ void setup() {
 
 #if defined(TEENSYDUINO)
   if (CrashReport) {
-    Serial.println(CrashReport);
+    (void)Serial.println(CrashReport);
   }
 #endif  // defined(TEENSYDUINO)
 

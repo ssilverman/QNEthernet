@@ -13,6 +13,7 @@
 #include <cstring>
 #include <limits>
 
+#include "lwip/debug.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/ip_addr.h"
@@ -135,7 +136,7 @@ const uint8_t* EthernetClass::macAddress() {
 
 void EthernetClass::macAddress(uint8_t mac[kMACAddrSize]) {
   if (mac != nullptr) {
-    std::copy_n(macAddress(), kMACAddrSize, mac);
+    (void)std::copy_n(macAddress(), kMACAddrSize, mac);
   }
 }
 
@@ -146,7 +147,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
     enet_get_system_mac(m);
     mac = m;
     if (!mac_.has_value) {  // Take the opportunity to fill this in if we need
-      std::copy_n(&m[0], kMACAddrSize, &mac_.value[0]);
+      (void)std::copy_n(&m[0], kMACAddrSize, &mac_.value[0]);
       mac_.has_value = true;
     }
   }
@@ -157,7 +158,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
     return;
   }
 
-  std::copy_n(mac, kMACAddrSize, mac_.value);
+  (void)std::copy_n(mac, kMACAddrSize, mac_.value);
   mac_.has_value = true;
 
   if (netif_ == nullptr) {
@@ -295,7 +296,18 @@ bool EthernetClass::start() {
 
   ifName_[0] = netif_->name[0];
   ifName_[1] = netif_->name[1];
-  std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u", netif_->num);
+  const int numSize = [](const uint8_t n) {
+    if (n < 10) {
+      return 1;
+    } else if (n < 100) {
+      return 2;
+    } else {
+      return 3;
+    }
+  }(netif_->num);
+  LWIP_ASSERT("Expected complete interface name fill",
+              std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u",
+                            netif_->num) == numSize);
 
   if (!enet_init(macAddress(), &netifEventFunc, &driverCapabilities_)) {
     netif_ = nullptr;
@@ -471,15 +483,15 @@ bool EthernetClass::begin(const uint8_t mac[kMACAddrSize], const IPAddress& ip,
     enet_get_system_mac(m1);
     mac = m1;
     if (!mac_.has_value) {  // Take the opportunity to fill this in if we need
-      std::copy_n(&m1[0], kMACAddrSize, &mac_.value[0]);
+      (void)std::copy_n(&m1[0], kMACAddrSize, &mac_.value[0]);
       mac_.has_value = true;
     }
   }
-  std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
-  std::copy_n(mac, kMACAddrSize, mac_.value);
+  (void)std::copy_n(macAddress(), kMACAddrSize, m2);  // Cache the current MAC address
+  (void)std::copy_n(mac, kMACAddrSize, mac_.value);
 
   if (!begin(ip, subnet, gateway, dns)) {
-    std::copy_n(m2, kMACAddrSize, mac_.value);  // Restore the previous
+    (void)std::copy_n(m2, kMACAddrSize, mac_.value);  // Restore the previous
     return false;
   }
 
@@ -494,7 +506,7 @@ void EthernetClass::end() {
 #if defined(HAS_EVENT_RESPONDER)
   if (loopAttached) {
     loopAttached = false;
-    ethLoop.clearEvent();
+    (void)ethLoop.clearEvent();
     ethLoop.detach();
   }
 #endif  // defined(HAS_EVENT_RESPONDER)
@@ -504,7 +516,7 @@ void EthernetClass::end() {
 #endif  // LWIP_MDNS_RESPONDER
 
 #if LWIP_DNS
-  DNSClient::setServer(0, INADDR_NONE);
+  (void)DNSClient::setServer(0, INADDR_NONE);
 #endif  // LWIP_DNS
 #if LWIP_DHCP
   if (dhcpActive_) {
@@ -686,7 +698,7 @@ void EthernetClass::setDNSServerIP(const IPAddress& ip) const {
 void EthernetClass::setDNSServerIP(const size_t index,
                                    const IPAddress& ip) const {
 #if LWIP_DNS
-  DNSClient::setServer(index, ip);
+  (void)DNSClient::setServer(index, ip);
 #else
   LWIP_UNUSED_ARG(index);
   LWIP_UNUSED_ARG(ip);
@@ -773,7 +785,7 @@ void EthernetClass::setHostname(const char* const hostname) {
   if (hostname == nullptr) {
     hostname_[0] = '\0';
   } else {
-    std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
+    (void)std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
     hostname_[sizeof(hostname_) - 1] = '\0';
   }
   if (netif_ != nullptr) {

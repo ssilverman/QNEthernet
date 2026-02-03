@@ -22,6 +22,7 @@
 #include <imxrt.h>
 
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
 #include "qnethernet/platforms/pgmspace.h"
@@ -661,7 +662,8 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
       arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-      pbuf_take(p, pBD->buffer, p->tot_len);
+      LWIP_ASSERT("Expected space for pbuf fill",
+                  pbuf_take(p, pBD->buffer, p->tot_len) == ERR_OK);
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
@@ -895,8 +897,8 @@ FLASHMEM bool driver_init(void) {
   // Note: The original code left RXD0, RXEN, and RXER with PULLDOWN
   configure_rmii_pins();
 
-  memset(s_rxRing, 0, sizeof(s_rxRing));
-  memset(s_txRing, 0, sizeof(s_txRing));
+  (void)memset(s_rxRing, 0, sizeof(s_rxRing));
+  (void)memset(s_txRing, 0, sizeof(s_txRing));
 
   for (int i = 0; i < RX_SIZE; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
@@ -996,7 +998,7 @@ FLASHMEM bool driver_init(void) {
 
   // Last few things to do
   ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
-  atomic_flag_test_and_set(&s_rxNotAvail);
+  (void)atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
@@ -1138,7 +1140,7 @@ bool driver_output_frame(const void *const frame, const size_t len) {
     return false;
   }
 
-  memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
+  (void)memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1

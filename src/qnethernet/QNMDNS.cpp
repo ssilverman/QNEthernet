@@ -13,6 +13,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include "lwip/debug.h"
 #include "lwip/err.h"
 #include "qnethernet/platforms/pgmspace.h"
 
@@ -103,7 +104,7 @@ bool MDNSClass::begin(const char* const hostname) {
     netif_ = netif_default;
   }
 
-  std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
+  (void)std::strncpy(hostname_, hostname, sizeof(hostname_) - 1);
   hostname_[sizeof(hostname_) - 1] = '\0';
   return true;
 }
@@ -173,7 +174,8 @@ bool MDNSClass::addService(const char* const name, const char* const type,
     return false;
   } else if (static_cast<size_t>(slot) >= maxServices()) {
     // Remove if the addition was successful but we couldn't add it
-    mdns_resp_del_service(netif_, slot);
+    LWIP_ASSERT("Can't delete service",
+                mdns_resp_del_service(netif_, slot) == ERR_OK);
     errno = ENOBUFS;
     return false;
   }
@@ -244,8 +246,8 @@ void MDNSClass::Service::set(bool valid, const char* name, const char* type,
                              enum mdns_sd_proto proto, uint16_t port,
                              std::vector<String> (*const getTXTFunc)()) {
   valid_ = valid;
-  std::strncpy(name_, name, sizeof(name_) - 1);
-  std::strncpy(type_, type, sizeof(type_) - 1);
+  (void)std::strncpy(name_, name, sizeof(name_) - 1);
+  (void)std::strncpy(type_, type, sizeof(type_) - 1);
   proto_ = proto;
   port_ = port;
   getTXTFunc_ = getTXTFunc;

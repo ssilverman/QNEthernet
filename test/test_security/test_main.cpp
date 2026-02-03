@@ -14,6 +14,7 @@
 #include <qnethernet/security/siphash.h>
 #include <unity.h>
 
+#include "lwip/debug.h"
 #include "siphash_vectors.h"
 
 // --------------------------------------------------------------------------
@@ -32,7 +33,8 @@ std::vector<char> format(const char* format, Args... args) {
     out.resize(1, 0);
   } else {
     out.resize(size);
-    std::snprintf(out.data(), size, format, args...);
+    LWIP_ASSERT("Expected complete string fill",
+                std::snprintf(out.data(), size, format, args...) == (size - 1));
   }
   return out;
 }
@@ -89,7 +91,7 @@ void setup() {
 
 #if defined(TEENSYDUINO)
   if (CrashReport) {
-    Serial.println(CrashReport);
+    (void)Serial.println(CrashReport);
   }
 #endif  // defined(TEENSYDUINO)
 

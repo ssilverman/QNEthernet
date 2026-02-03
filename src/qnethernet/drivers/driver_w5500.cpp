@@ -22,6 +22,7 @@
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/def.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
@@ -211,7 +212,7 @@ static void read(const uint16_t addr, const uint8_t block,
   s_spiBuf[2] = static_cast<uint8_t>(block << 3);
 
   // Write zeros during transfer (is this step even necessary?)
-  std::memset(buf, 0, len);
+  (void)std::memset(buf, 0, len);
 
   spi.beginTransaction(kSPISettings);
   digitalWrite(s_chipSelectPin, LOW);  // Warning: implicit conversion
@@ -237,7 +238,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //   size_t index = 3;
 //   do {
 //     size_t size = std::min(lenRem, std::size(s_spiBuf) - index);
-//     std::memcpy(&s_spiBuf[index], pBuf, size);
+//     (void)std::memcpy(&s_spiBuf[index], pBuf, size);
 //     lenRem -= size;
 //     pBuf += size;
 
@@ -539,7 +540,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
       return false;
   }
 
-  std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
+  (void)std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
   write_frame(kSHAR, ETH_HWADDR_LEN);
 
   return true;
@@ -668,7 +669,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
   } else {
-    pbuf_take(p, s_inputBuf, p->tot_len);
+    LWIP_ASSERT("Expected space for pbuf fill",
+                pbuf_take(p, s_inputBuf, p->tot_len) == ERR_OK);
   }
   return p;
 
@@ -709,7 +711,8 @@ err_t driver_output(struct pbuf* const p) {
   }
 
 #if ETH_PAD_SIZE
-  pbuf_remove_header(p, ETH_PAD_SIZE);
+  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header",
+              pbuf_remove_header(p, ETH_PAD_SIZE) == 0);
 #endif  // ETH_PAD_SIZE
 
   // Shouldn't need this check:
@@ -735,7 +738,7 @@ bool driver_output_frame(const void* const frame, const size_t len) {
     return false;
   }
 
-  std::memcpy(s_frameBuf, frame, len);
+  (void)std::memcpy(s_frameBuf, frame, len);
   return send_frame(len);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT

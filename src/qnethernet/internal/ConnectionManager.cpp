@@ -99,7 +99,8 @@ static void maybeCopyRemaining(ConnectionHolder* const holder) {
   holder->remainingPos = 0;
 
   if (isAvailable(state)) {
-    v.insert(v.cend(), state->buf.cbegin() + state->bufPos, state->buf.cend());
+    (void)v.insert(v.cend(), state->buf.cbegin() + state->bufPos,
+                   state->buf.cend());
   }
 }
 
@@ -149,8 +150,8 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
         // Copy pbuf contents
         while (pNext != nullptr) {
           const auto data = static_cast<const uint8_t*>(pNext->payload);
-          holder->remaining.insert(holder->remaining.cend(), &data[0],
-                                   &data[pNext->len]);
+          (void)holder->remaining.insert(holder->remaining.cend(), &data[0],
+                                         &data[pNext->len]);
           pNext = pNext->next;
         }
       }
@@ -158,7 +159,7 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
 
     if (p != nullptr) {
       altcp_recved(tpcb, p->tot_len);
-      pbuf_free(p);
+      (void)pbuf_free(p);
     }
 
     holder->state = nullptr;
@@ -199,7 +200,7 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
       const size_t n = v.size() - state->bufPos;
       if (n > 0) {
         // TODO: Use a ring buffer for performance?
-        std::copy_n(v.cbegin() + state->bufPos, n, v.begin());
+        (void)std::copy_n(v.cbegin() + state->bufPos, n, v.begin());
         v.resize(n);
       } else {
         v.clear();
@@ -210,13 +211,13 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     // Copy all the data from the pbuf
     while (pNext != nullptr) {
       const auto data = static_cast<const uint8_t*>(pNext->payload);
-      v.insert(v.cend(), &data[0], &data[pNext->len]);
+      (void)v.insert(v.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
   }
 
   altcp_recved(tpcb, p->tot_len);
-  pbuf_free(p);
+  (void)pbuf_free(p);
 
   return ERR_OK;
 }
@@ -266,7 +267,7 @@ void ConnectionManager::addConnection(
     const auto it =
         std::find(connections_.cbegin(), connections_.cend(), holder);
     if (it != connections_.cend()) {
-      connections_.erase(it);
+      (void)connections_.erase(it);
     }
   };
 }
@@ -385,7 +386,9 @@ optional<uint16_t> ConnectionManager::listen(const uint16_t port,
 
   uint16_t actualPort = port;
   if (port == 0) {
-    altcp_get_tcp_addrinfo(pcb, true, nullptr, &actualPort);
+    LWIP_ASSERT(
+        "Expected valid port",
+        altcp_get_tcp_addrinfo(pcb, 1, nullptr, &actualPort) == ERR_OK);
   }
   return {true, actualPort};
 }
@@ -397,7 +400,8 @@ static uint16_t getLocalPort(struct altcp_pcb* pcb) {
   return altcp_get_port(pcb, 1);
 #else
   uint16_t port;
-  altcp_get_tcp_addrinfo(pcb, 1, nullptr, &port);
+  LWIP_ASSERT("Expected valid port",
+              altcp_get_tcp_addrinfo(pcb, 1, nullptr, &port) == ERR_OK);
   return port;
 #endif  // LWIP_ALTCP
 }
@@ -422,7 +426,7 @@ bool ConnectionManager::stopListening(const uint16_t port) {
     return false;
   }
   struct altcp_pcb* const pcb = *it;
-  listeners_.erase(it);
+  (void)listeners_.erase(it);
   if (altcp_close(pcb) != ERR_OK) {
     altcp_abort(pcb);
     // Note: Don't set errno because we're returning true here
@@ -472,7 +476,7 @@ bool ConnectionManager::remove(
     if (state != nullptr) {
       state->removeFunc = nullptr;
     }
-    connections_.erase(it);
+    (void)connections_.erase(it);
     return true;
   }
   return false;
@@ -499,7 +503,9 @@ size_t ConnectionManager::write(const uint16_t port,
     }
     const uint16_t len = std::min(size16, altcp_sndbuf(pcb));
     if (len > 0) {
-      altcp_write(pcb, b, len, TCP_WRITE_FLAG_COPY);
+      // TODO: Is ignoring the return the correct thing to do?
+      // Note: Writing to a single connection ignores the error (but sets errno)
+      (void)altcp_write(pcb, b, len, TCP_WRITE_FLAG_COPY);
     }
   });
   Ethernet.loop();
@@ -511,7 +517,9 @@ void ConnectionManager::flush(const uint16_t port) {
     if (getLocalPort(pcb) != port) {
       return;
     }
-    altcp_output(pcb);
+    // TODO: Is ignoring the return the correct thing to do?
+    // Note: Writing to a single connection ignores the error
+    (void)altcp_output(pcb);
     // May invalidate connections_ iterators:
     // Ethernet.loop();
   });
@@ -552,7 +560,7 @@ void ConnectionManager::iterateConnections(
 
 void ConnectionManager::iterateListeners(
     std::function<void(struct altcp_pcb* pcb)> f) {
-  std::for_each(listeners_.cbegin(), listeners_.cend(), f);
+  (void)std::for_each(listeners_.cbegin(), listeners_.cend(), f);
 }
 
 }  // namespace internal

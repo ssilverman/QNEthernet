@@ -109,7 +109,7 @@ FLASHMEM static err_t init_netif(struct netif *const netif) {
 #endif  // LWIP_IGMP
                  ;
 
-  memcpy(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
+  (void)memcpy(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 
 #if LWIP_NETIF_HOSTNAME
@@ -223,7 +223,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   } else {
     // Just set the MAC address
 
-    memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
+    (void)memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
     s_netif.hwaddr_len = ETH_HWADDR_LEN;
   }
 
@@ -232,7 +232,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
 FLASHMEM void enet_deinit(void) {
   // Restore state
-  memset(s_mac, 0, sizeof(s_mac));
+  (void)memset(s_mac, 0, sizeof(s_mac));
 
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
 
@@ -251,7 +251,7 @@ void enet_proc_input(void) {
 
     // Process one chunk of input data
     if (s_netif.input(p, &s_netif) != ERR_OK) {
-      pbuf_free(p);
+      (void)pbuf_free(p);
     }
   }
 }
@@ -293,9 +293,11 @@ bool enet_output_frame(const void *const frame, const size_t len) {
     struct pbuf *const p =
         pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
     if (p) {
-      pbuf_take_at(p, frame, (uint16_t)len, ETH_PAD_SIZE);
+      LWIP_ASSERT(
+          "Expected space for pbuf fill",
+          pbuf_take_at(p, frame, (uint16_t)len, ETH_PAD_SIZE) == ERR_OK);
       if (s_netif.input(p, &s_netif) != ERR_OK) {
-        pbuf_free(p);
+        (void)pbuf_free(p);
       }
     }
     // TODO: Collect stats?

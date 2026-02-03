@@ -241,9 +241,10 @@ size_t trng_data(void *const data, const size_t size) {
       return size - rem;
     }
     const size_t toCopy = min_size(rem, s_entropySizeBytes);
-    memcpy(p,
-           &((uint8_t *)s_entropy)[ENTROPY_COUNT_BYTES - s_entropySizeBytes],
-           toCopy);
+    (void)memcpy(
+        p,
+        &((uint8_t*)s_entropy)[ENTROPY_COUNT_BYTES - s_entropySizeBytes],
+        toCopy);
     p += toCopy;
     s_entropySizeBytes -= toCopy;
     rem -= toCopy;

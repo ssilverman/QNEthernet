@@ -43,7 +43,9 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
   // Execute the callback
   if (ping->replyf_) {
     struct icmp_echo_hdr echo;
-    pbuf_copy_partial(p, &echo, kEchoHdrSize, IP_HLEN);
+    LWIP_ASSERT(
+        "Expected header copy success",
+        pbuf_copy_partial(p, &echo, kEchoHdrSize, IP_HLEN) == kEchoHdrSize);
 
     size_t dataSize = p->tot_len - kMaxHdrSize;  // 16-bit
     const uint8_t* data = nullptr;
@@ -54,9 +56,10 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
       } else {
         // Avoid churn, so use a vector instead of a byte array
         ping->dataBuf_.resize(dataSize);
-        pbuf_copy_partial(p, ping->dataBuf_.data(),
-                          static_cast<uint16_t>(dataSize),
-                          kMaxHdrSize);
+        LWIP_ASSERT("Expected data copy success",
+                    pbuf_copy_partial(p, ping->dataBuf_.data(),
+                                      static_cast<uint16_t>(dataSize),
+                                      kMaxHdrSize) == dataSize);
         data = ping->dataBuf_.data();
       }
     }
@@ -70,7 +73,7 @@ u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     ping->replyf_(reply);
   }
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
   return 1;  // Eat the packet
 }
 
@@ -166,13 +169,13 @@ bool Ping::send(const PingData& req) {
     goto send_err;
   }
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
   Ethernet.loop();  // Allow the stack to move along
   return true;
 
 send_err:
   errno = err_to_errno(err);
-  pbuf_free(p);
+  (void)pbuf_free(p);
   Ethernet.loop();  // Allow the stack to move along
   return false;
 }

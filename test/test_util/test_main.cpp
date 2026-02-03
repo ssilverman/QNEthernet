@@ -45,7 +45,7 @@ class StringPrint final : public Print {
   }
 
   size_t write(const uint8_t* const buffer, const size_t size) override {
-    s_.append(reinterpret_cast<const char*>(buffer), size);
+    (void)s_.append(reinterpret_cast<const char*>(buffer), size);
     return size;
   }
 
@@ -85,7 +85,7 @@ static void test_writeMagic() {
   s_outputString.clear();
   StringPrint sp{s_outputString};
   const uint8_t mac[6]{'1', '2', '3', '4', '5', '6'};
-  writeMagic(sp, mac);
+  TEST_ASSERT_EQUAL(17*ETH_HWADDR_LEN, writeMagic(sp, mac));
   TEST_ASSERT_EQUAL(
       "\xff\xff\xff\xff\xff\xff"
       "123456123456123456123456123456123456123456123456"
@@ -101,7 +101,7 @@ static void test_StdioPrint() {
   TEST_ASSERT_NOT_NULL_MESSAGE(f, "Could not open file");
 
   StdioPrint stdioPrint{f};
-  stdioPrint.print(kMessage);
+  (void)stdioPrint.print(kMessage);
   stdioPrint.flush();
   TEST_ASSERT_EQUAL_MESSAGE(kMessage, s_outputString, "Contents not equal");
 
@@ -155,7 +155,7 @@ void setup() {
 
 #if defined(TEENSYDUINO)
   if (CrashReport) {
-    Serial.println(CrashReport);
+    (void)Serial.println(CrashReport);
   }
 #endif  // defined(TEENSYDUINO)
 

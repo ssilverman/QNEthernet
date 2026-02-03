@@ -27,13 +27,13 @@ extern "C" {
 #define LWIP_RAND() qnethernet_hal_entropy()
 uint32_t qnethernet_hal_entropy(void);
 
-#define LWIP_PLATFORM_ASSERT(x)                          \
-  do {                                                   \
-    printf("Assertion \"%s\" failed at line %d in %s\n", \
-           (x), __LINE__, __FILE__);                     \
-    fflush(NULL);                                        \
-    qnethernet_hal_stdio_flush(STDOUT_FILENO);           \
-    abort();                                             \
+#define LWIP_PLATFORM_ASSERT(x)                                \
+  do {                                                         \
+    (void)printf("Assertion \"%s\" failed at line %d in %s\n", \
+                 (x), __LINE__, __FILE__);                     \
+    (void)fflush(NULL);                                        \
+    qnethernet_hal_stdio_flush(STDOUT_FILENO);                 \
+    abort();                                                   \
   } while (0)
 void qnethernet_hal_stdio_flush(int file);
 

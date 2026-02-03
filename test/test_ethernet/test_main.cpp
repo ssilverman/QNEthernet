@@ -14,6 +14,7 @@
 
 #include <Arduino.h>
 #include <QNEthernet.h>
+#include <lwip/debug.h>
 #include <lwip/dns.h>
 #include <lwip/opt.h>
 #include <qnethernet/QNDNSClient.h>
@@ -40,7 +41,8 @@ std::vector<char> format(const char* format, Args... args) {
     out.resize(1, 0);
   } else {
     out.resize(size);
-    std::snprintf(out.data(), size, format, args...);
+    LWIP_ASSERT("Expected complete string fill",
+                std::snprintf(out.data(), size, format, args...) == (size - 1));
   }
   return out;
 }
@@ -111,7 +113,7 @@ void tearDown() {
   Ethernet.setHostname(nullptr);
 
   // Restore DHCP
-  Ethernet.setDHCPEnabled(true);
+  (void)Ethernet.setDHCPEnabled(true);
 }
 
 // Tests version functions.
@@ -148,7 +150,7 @@ static void test_builtin_mac() {
   uint8_t mac2[6]{1};
   Ethernet.macAddress(mac2);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC");
-  std::fill_n(mac2, 6, 0);
+  (void)std::fill_n(mac2, 6, 0);
 
   Ethernet.MACAddress(mac2);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(mac, mac2, 6, "Expected matching MAC (old API)");
@@ -184,7 +186,7 @@ static void test_set_mac() {
   Ethernet.macAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC");
 
-  std::fill_n(mac, 6, 0);
+  (void)std::fill_n(mac, 6, 0);
   Ethernet.MACAddress(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(testMAC, mac, 6, "Expected matching MAC (old API)");
   TEST_ASSERT_FALSE_MESSAGE(interfaceState, "Expected interface down");
@@ -199,7 +201,7 @@ static void test_set_mac() {
   TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected no IP");
   TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.subnetMask(), "Expected no netmask");
   TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.gatewayIP(), "Expected no gateway");
-  Ethernet.begin(kStaticIP, kSubnetMask, kGateway);
+  TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway), "Expected begin success");
   TEST_ASSERT_TRUE_MESSAGE(interfaceState, "Expected interface up");
   TEST_ASSERT_EQUAL_MESSAGE(1, upCount, "Expected matching up count");
   TEST_ASSERT_EQUAL_MESSAGE(0, downCount, "Expected matching down count");
@@ -299,7 +301,7 @@ static void test_null_group() {
 static void test_null_frame() {
   // Initialize Ethernet so these functions don't exit for the wrong reason
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
-  Ethernet.setDHCPEnabled(false);
+  (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start success");
 
@@ -310,13 +312,13 @@ static void test_null_frame() {
 // Tests DHCP.
 static void test_dhcp() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
-  Ethernet.setDHCPEnabled(false);
+  (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
-  Ethernet.setDHCPEnabled(true);
+  (void)Ethernet.setDHCPEnabled(true);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP enabled");
 
   TEST_ASSERT_EQUAL_MESSAGE(INADDR_NONE, Ethernet.localIP(), "Expected invalid IP");
-  waitForLocalIP();
+  TEST_ASSERT_TRUE_MESSAGE(waitForLocalIP(), "Expected IP address");
 }
 
 // Tests double DHCP: begin() twice.
@@ -728,7 +730,7 @@ static void test_udp() {
   }
 
   uint8_t buf[48];
-  std::fill_n(buf, 48, 0);
+  (void)std::fill_n(buf, 48, 0);
 #if __cplusplus < 201402L
   buf[0] = 0x23;
 #else
@@ -1548,7 +1550,7 @@ static void test_raw_frames() {
   constexpr uint8_t srcMAC[6]{QNETHERNET_DEFAULT_MAC_ADDRESS};
   constexpr uint8_t data[10]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-  Ethernet.setDHCPEnabled(false);
+  (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
 
   // Check that there's nothing there.
@@ -1556,7 +1558,9 @@ static void test_raw_frames() {
 
   // Create and listen
   EthernetFrame.beginFrame(Ethernet.macAddress(), srcMAC, sizeof(data));
-  EthernetFrame.write(data, sizeof(data));
+  TEST_ASSERT_EQUAL_MESSAGE(sizeof(data),
+                            EthernetFrame.write(data, sizeof(data)),
+                            "Expected complete write");
 
   uint32_t t = millis();  // Current timestamp
 
@@ -1593,15 +1597,15 @@ static void test_raw_frames() {
 
 // Tests raw frame receive queueing.
 static void test_raw_frames_receive_queueing() {
-  Ethernet.setDHCPEnabled(false);
+  (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
 
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected default queue capacity");
 
   uint8_t buf[15];
-  std::copy_n(Ethernet.macAddress(), 6, &buf[0]);
-  std::copy_n(Ethernet.macAddress(), 6, &buf[6]);
+  (void)std::copy_n(Ethernet.macAddress(), 6, &buf[0]);
+  (void)std::copy_n(Ethernet.macAddress(), 6, &buf[6]);
   buf[12] = 0;  // Length (16-bit)
   buf[13] = 1;
 
@@ -1766,7 +1770,7 @@ void setup() {
 
 #if defined(TEENSYDUINO)
   if (CrashReport) {
-    Serial.println(CrashReport);
+    (void)Serial.println(CrashReport);
   }
 #endif  // defined(TEENSYDUINO)
 

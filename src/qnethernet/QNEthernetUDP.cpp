@@ -73,7 +73,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
     // TODO: Limit vector size
     while (pNext != nullptr) {
       const auto data = static_cast<const uint8_t*>(pNext->payload);
-      packet.data.insert(packet.data.cend(), &data[0], &data[pNext->len]);
+      (void)packet.data.insert(packet.data.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
   }
@@ -84,7 +84,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   packet.diffServ = pcb->tos;
   packet.ttl = pcb->ttl;
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
 
   ++udp->totalReceiveCount_;
 }
@@ -205,7 +205,7 @@ void EthernetUDP::stop() {
   }
 
   if (listeningMulticast_) {
-    Ethernet.leaveGroup(multicastIP_);
+    (void)Ethernet.leaveGroup(multicastIP_);
     listeningMulticast_ = false;
     multicastIP_ = INADDR_NONE;
   }
@@ -304,7 +304,7 @@ int EthernetUDP::read(uint8_t* const buffer, const size_t len) {
   }
   const size_t actualLen = std::min(len, packet_.data.size() - packetPos_);
   if (buffer != nullptr) {
-    std::copy_n(&packet_.data.data()[packetPos_], actualLen, buffer);
+    (void)std::copy_n(&packet_.data.data()[packetPos_], actualLen, buffer);
   }
   packetPos_ += actualLen;
   return actualLen;
@@ -411,7 +411,8 @@ static inline err_t sendWhileWouldBlock(const err_t err, udp_pcb* const pcb,
 
     // udp_sendto() may have added a header
     if (p->tot_len > dataSize) {
-      pbuf_remove_header(p, p->tot_len - dataSize);
+      LWIP_ASSERT("Expected removed header",
+                  pbuf_remove_header(p, p->tot_len - dataSize) == 0);
     }
   } while (true);
 
@@ -444,7 +445,7 @@ int EthernetUDP::endPacket() {
   err_t err;
   if (!op.data.empty() &&
       ((err = pbuf_take(p, op.data.data(), outSize)) != ERR_OK)) {
-    pbuf_free(p);
+    (void)pbuf_free(p);
 
     outPacket_.has_value = false;
     op.clear();
@@ -459,7 +460,7 @@ int EthernetUDP::endPacket() {
   outPacket_.has_value = false;
   op.clear();
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
 
   if (err != ERR_OK) {
     errno = err_to_errno(err);
@@ -522,14 +523,14 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
   // pbuf_take() considers NULL data an error
   err_t err;
   if ((adjLen != 0) && ((err = pbuf_take(p, data, adjLen)) != ERR_OK)) {
-    pbuf_free(p);
+    (void)pbuf_free(p);
     errno = err_to_errno(err);
     return false;
   }
 
   err = sendWhileWouldBlock(err, pcb_, p, ipaddr, port, adjLen);
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
 
   if (err != ERR_OK) {
     errno = err_to_errno(err);
@@ -555,8 +556,8 @@ size_t EthernetUDP::write(const uint8_t* const buffer, const size_t size) {
   }
   const size_t actualSize =
       std::min(kMaxPossiblePayloadSize - outPacket_.value.data.size(), size);
-  outPacket_.value.data.insert(outPacket_.value.data.cend(), &buffer[0],
-                               &buffer[actualSize]);
+  (void)outPacket_.value.data.insert(outPacket_.value.data.cend(), &buffer[0],
+                                     &buffer[actualSize]);
   return actualSize;
 }
 

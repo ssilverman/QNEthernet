@@ -37,21 +37,23 @@ u32_t calc_tcp_isn(const ip_addr_t *const local_ip, const u16_t local_port,
                    const ip_addr_t *const remote_ip, const u16_t remote_port) {
   if (!s_haveKey) {
     // Initialize the key
-    qnethernet_hal_fill_entropy(s_key, sizeof(s_key));
+    LWIP_ASSERT(
+        "Entropy generation error",
+        qnethernet_hal_fill_entropy(s_key, sizeof(s_key)) == sizeof(s_key));
     s_haveKey = true;
   }
 
   // Attempt to hash in order of higher entropy -> lower entropy
   uint8_t *pMsg = s_msg;
-  memcpy(pMsg, &local_port, sizeof(u16_t));
+  (void)memcpy(pMsg, &local_port, sizeof(u16_t));
   pMsg += sizeof(u16_t);
-  memcpy(pMsg, &remote_port, sizeof(u16_t));
+  (void)memcpy(pMsg, &remote_port, sizeof(u16_t));
   pMsg += sizeof(u16_t);
-  memcpy(pMsg, remote_ip, sizeof(ip_addr_t));
+  (void)memcpy(pMsg, remote_ip, sizeof(ip_addr_t));
   pMsg += sizeof(ip_addr_t);
-  memcpy(pMsg, local_ip, sizeof(ip_addr_t));
+  (void)memcpy(pMsg, local_ip, sizeof(ip_addr_t));
 
-  uint32_t hash = (uint32_t)(siphash(2, 4, s_key, s_msg, sizeof(s_msg)));
+  uint32_t hash = (uint32_t)siphash(2, 4, s_key, s_msg, sizeof(s_msg));
   return hash + qnethernet_hal_micros();
 }
 

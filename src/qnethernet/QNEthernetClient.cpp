@@ -16,10 +16,11 @@
 #include "QNEthernet.h"
 #include "lwip/altcp.h"
 #include "lwip/arch.h"
-#include "lwip/priv/altcp_priv.h"
+#include "lwip/debug.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
 #include "lwip/netif.h"
+#include "lwip/priv/altcp_priv.h"
 #include "lwip/sys.h"
 #if LWIP_ALTCP
 #include "lwip/tcp.h"
@@ -228,7 +229,8 @@ void EthernetClient::close(const bool wait) {
   if (pendingConnect_ || conn_->connected) {
     if (!pendingConnect_) {
       // First try to flush any data
-      altcp_output(state->pcb);
+      // TODO: Is ignoring the return the correct thing to do?
+      (void)altcp_output(state->pcb);
       Ethernet.loop();  // Maybe some TCP data gets in
       // NOTE: loop() requires a re-check of the state
     } else if (!conn_->connected) {
@@ -284,12 +286,14 @@ void EthernetClient::closeOutput() {
   }
 
   // First try to flush any data
-  altcp_output(state->pcb);
+  // TODO: Is ignoring the return the correct thing to do?
+  (void)altcp_output(state->pcb);
   Ethernet.loop();  // Maybe some TCP data gets in
   // NOTE: loop() requires a re-check of the state
 
   if (state != nullptr) {
-    altcp_shutdown(state->pcb, 0, 1);
+    // TODO: Is ignoring the return the correct thing to do?
+    (void)altcp_shutdown(state->pcb, 0, 1);
   }
 }
 
@@ -358,7 +362,8 @@ bool EthernetClient::getAddrInfo(const bool local,
     return false;
   }
 
-  altcp_get_tcp_addrinfo(state->pcb, local, addr, port);
+  LWIP_ASSERT("Expected valid address info",
+              altcp_get_tcp_addrinfo(state->pcb, local, addr, port) == ERR_OK);
   return true;
 }
 
@@ -413,7 +418,8 @@ size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
 
   size_t sndBufSize = altcp_sndbuf(state->pcb);  // 16-bit
   if (sndBufSize == 0) {  // Possibly flush if there's no space
-    altcp_output(state->pcb);
+    // TODO: Is ignoring the return the correct thing to do?
+    (void)altcp_output(state->pcb);
     Ethernet.loop();  // Loop to allow incoming data
     if (state == nullptr) {  // Re-check the state
       return 0;
@@ -431,7 +437,8 @@ size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
       actualSize = 0;
     }
 #if QNETHERNET_FLUSH_AFTER_WRITE
-    altcp_output(state->pcb);
+    // TODO: Is ignoring the return the correct thing to do?
+    (void)altcp_output(state->pcb);
 #endif  // QNETHERNET_FLUSH_AFTER_WRITE
   }
 
@@ -450,7 +457,8 @@ int EthernetClient::availableForWrite() {
 
   // Maybe flush
   if (altcp_sndbuf(state->pcb) == 0) {
-    altcp_output(state->pcb);
+    // TODO: Is ignoring the return the correct thing to do?
+    (void)altcp_output(state->pcb);
   }
 
   Ethernet.loop();  // Loop to allow incoming TCP data
@@ -470,7 +478,8 @@ void EthernetClient::flush() {
     return;
   }
 
-  altcp_output(state->pcb);
+  // TODO: Is ignoring the return the correct thing to do?
+  (void)altcp_output(state->pcb);
   Ethernet.loop();  // Loop to allow incoming TCP data
 }
 
@@ -573,7 +582,7 @@ int EthernetClient::read(uint8_t* const buf, const size_t size) {
     }
     const size_t actualSize = std::min(size, rem.size() - conn_->remainingPos);
     if (buf != nullptr) {
-      std::copy_n(rem.cbegin() + conn_->remainingPos, actualSize, buf);
+      (void)std::copy_n(rem.cbegin() + conn_->remainingPos, actualSize, buf);
     }
     conn_->remainingPos += actualSize;
     if (conn_->remainingPos >= rem.size()) {
@@ -599,7 +608,7 @@ int EthernetClient::read(uint8_t* const buf, const size_t size) {
   const size_t actualSize =
       std::min(size, (*state)->buf.size() - (*state)->bufPos);
   if (buf != nullptr) {
-    std::copy_n(&(*state)->buf.data()[(*state)->bufPos], actualSize, buf);
+    (void)std::copy_n(&(*state)->buf.data()[(*state)->bufPos], actualSize, buf);
   }
   (*state)->bufPos += actualSize;
   return actualSize;

@@ -14,6 +14,7 @@
 
 #include "QNEthernet.h"
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
 #include "qnethernet/platforms/pgmspace.h"
@@ -26,7 +27,8 @@ void qnethernet_hal_enable_interrupts(void);
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf* const p, struct netif* const netif) {
 #if ETH_PAD_SIZE
-  pbuf_remove_header(p, ETH_PAD_SIZE);
+  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header",
+              pbuf_remove_header(p, ETH_PAD_SIZE) == 0);
 #endif  // ETH_PAD_SIZE
 
   return qindesign::network::EthernetFrameClass::recvFunc(p, netif);
@@ -58,13 +60,13 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
     // TODO: Limit vector size
     while (pNext != nullptr) {
       const auto data = static_cast<const uint8_t*>(pNext->payload);
-      frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
+      (void)frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
       pNext = pNext->next;
     }
   }
   frame.receivedTimestamp = timestamp;
 
-  pbuf_free(p);
+  (void)pbuf_free(p);
   ++EthernetFrame.totalReceiveCount_;
 
   return ERR_OK;
@@ -141,8 +143,8 @@ int EthernetFrameClass::read(void* const buffer, const size_t len) {
   }
   const size_t actualLen = std::min(len, frame_.data.size() - framePos_);
   if (buffer != nullptr) {
-    std::copy_n(&frame_.data.data()[framePos_], actualLen,
-                static_cast<uint8_t*>(buffer));
+    (void)std::copy_n(&frame_.data.data()[framePos_], actualLen,
+                      static_cast<uint8_t*>(buffer));
   }
   framePos_ += actualLen;
   return actualLen;
@@ -200,10 +202,12 @@ void EthernetFrameClass::beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
                                     const uint8_t srcAddr[ETH_HWADDR_LEN],
                                     const uint16_t typeOrLength) {
   beginFrame();
-  write(dstAddr, ETH_HWADDR_LEN);
-  write(srcAddr, ETH_HWADDR_LEN);
-  write(static_cast<uint8_t>(typeOrLength >> 8));
-  write(static_cast<uint8_t>(typeOrLength));
+  LWIP_ASSERT(
+      "Expected write success",
+      (write(dstAddr, ETH_HWADDR_LEN) +
+       write(srcAddr, ETH_HWADDR_LEN) +
+       write(static_cast<uint8_t>(typeOrLength >> 8)) +
+       write(static_cast<uint8_t>(typeOrLength))) == (2*ETH_HWADDR_LEN + 2));
 }
 
 void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
@@ -211,10 +215,11 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
                                         const uint16_t vlanInfo,
                                         const uint16_t typeOrLength) {
   beginFrame(dstAddr, srcAddr, ETHTYPE_VLAN);
-  write(static_cast<uint8_t>(vlanInfo >> 8));
-  write(static_cast<uint8_t>(vlanInfo));
-  write(static_cast<uint8_t>(typeOrLength >> 8));
-  write(static_cast<uint8_t>(typeOrLength));
+  LWIP_ASSERT("Expected write success",
+              (write(static_cast<uint8_t>(vlanInfo >> 8)) +
+               write(static_cast<uint8_t>(vlanInfo)) +
+               write(static_cast<uint8_t>(typeOrLength >> 8)) +
+               write(static_cast<uint8_t>(typeOrLength))) == 4);
 }
 
 bool EthernetFrameClass::endFrame() {
@@ -249,8 +254,8 @@ size_t EthernetFrameClass::write(const uint8_t* const buffer,
   }
 
   const size_t actualSize = std::min(size, static_cast<size_t>(avail));
-  outFrame_.value.data.insert(outFrame_.value.data.cend(), &buffer[0],
-                              &buffer[actualSize]);
+  (void)outFrame_.value.data.insert(outFrame_.value.data.cend(), &buffer[0],
+                                    &buffer[actualSize]);
   return actualSize;
 }
 
