@@ -7,6 +7,7 @@
 // C++ includes
 #include <cerrno>
 #include <limits>
+#include <string>
 
 #include <Arduino.h>
 #include <qnethernet/security/RandomDevice.h>
@@ -70,8 +71,8 @@ static void test_random_range() {
   for (int i = 0; i < (1 << 10); ++i) {
     uint32_t r = entropy_random_range(10);
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
-    String msg{"Expected value < 10: iteration "};
-    msg += i;
+    std::string msg{"Expected value < 10: iteration "};
+    msg += std::to_string(i);
     TEST_ASSERT_LESS_THAN_UINT32_MESSAGE(10, r, msg.c_str());
   }
 }
