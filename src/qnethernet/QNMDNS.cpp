@@ -10,6 +10,7 @@
 
 // C++ includes
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <cstring>
 
@@ -34,8 +35,9 @@ static void srv_txt(struct mdns_service* const service,
     return;
   }
 
-  const auto fn = reinterpret_cast<std::vector<String> (*)()>(txt_userdata);
-  const std::vector<String> list = fn();
+  const auto fn =
+      reinterpret_cast<std::vector<std::string> (*)()>(txt_userdata);
+  const std::vector<std::string> list = fn();
   if (list.empty()) {
     const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
     if (err != ERR_OK) {
@@ -44,7 +46,7 @@ static void srv_txt(struct mdns_service* const service,
     return;
   }
 
-  for (const String& item : list) {
+  for (const std::string& item : list) {
     const char* const txt = item.c_str();
     const auto len = static_cast<uint8_t>(
         std::min(item.length(), (unsigned int)(MDNS_LABEL_MAXLEN)));
@@ -132,11 +134,14 @@ void MDNSClass::restart() {
 // for "_tcp" and DNSSD_PROTO_UDP for all else.
 ATTRIBUTE_NODISCARD
 static enum mdns_sd_proto toProto(const char* const protocol) {
-  if (String{protocol}.equalsIgnoreCase("_tcp")) {
+  if ((protocol != nullptr) && (std::strlen(protocol) == 4) &&
+      (protocol[0] == '_') &&
+      (std::tolower(protocol[1]) == 't') &&
+      (std::tolower(protocol[2]) == 'c') &&
+      (std::tolower(protocol[3]) == 'p')) {
     return mdns_sd_proto::DNSSD_PROTO_TCP;
-  } else {
-    return mdns_sd_proto::DNSSD_PROTO_UDP;
   }
+  return mdns_sd_proto::DNSSD_PROTO_UDP;
 }
 
 bool MDNSClass::addService(const char* const type, const char* const protocol,
@@ -151,13 +156,13 @@ bool MDNSClass::addService(const char* const name, const char* const type,
 
 bool MDNSClass::addService(const char* const type, const char* const protocol,
                            const uint16_t port,
-                           std::vector<String> (*const getTXTFunc)()) {
+                           std::vector<std::string> (*const getTXTFunc)()) {
   return addService(hostname_, type, protocol, port, getTXTFunc);
 }
 
 bool MDNSClass::addService(const char* const name, const char* const type,
                            const char* const protocol, const uint16_t port,
-                           std::vector<String> (*getTXTFunc)()) {
+                           std::vector<std::string> (*getTXTFunc)()) {
   if (!netifAdded) {
     // Return false for no netif
     errno = ENOTCONN;
@@ -244,7 +249,7 @@ MDNSClass::Service::Service() {
 
 void MDNSClass::Service::set(bool valid, const char* name, const char* type,
                              enum mdns_sd_proto proto, uint16_t port,
-                             std::vector<String> (*const getTXTFunc)()) {
+                             std::vector<std::string> (*const getTXTFunc)()) {
   valid_ = valid;
   (void)std::strncpy(name_, name, sizeof(name_) - 1);
   (void)std::strncpy(type_, type, sizeof(type_) - 1);

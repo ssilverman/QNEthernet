@@ -33,6 +33,7 @@ and this project adheres to
 * Robustness changes:
   * Removed all implicit conversions
   * Handle all return values in some way
+* Changed `MDNSClass` to use `std::string` instead of the Arduino `String`.
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.

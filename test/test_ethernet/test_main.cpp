@@ -489,7 +489,7 @@ static void test_mdns() {
 
   TEST_ASSERT_FALSE_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
                             "Expected didn't remove service");
-  auto txtf = []() { return std::vector<String>{"path=/"}; };
+  auto txtf = []() { return std::vector<std::string>{"path=/"}; };
   TEST_ASSERT_MESSAGE(MDNS.addService("_http", "_tcp", kHTTPPort, txtf),
                       "Expected add service success");
   TEST_ASSERT_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
