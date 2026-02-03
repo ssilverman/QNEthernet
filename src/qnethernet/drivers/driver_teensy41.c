@@ -837,8 +837,8 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   const uint32_t ru = ENET_PAUR;
   mac[0] = (uint8_t)(rl >> 24);
   mac[1] = (uint8_t)(rl >> 16);
-  mac[2] = (uint8_t)(rl >> 8);
-  mac[3] = (uint8_t)(rl);
+  mac[2] = (uint8_t)(rl >>  8);
+  mac[3] = (uint8_t)(rl >>  0);
   mac[4] = (uint8_t)(ru >> 24);
   mac[5] = (uint8_t)(ru >> 16);
 
