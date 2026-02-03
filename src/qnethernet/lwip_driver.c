@@ -8,6 +8,7 @@
 
 // C includes
 #include <errno.h>
+#include <stddef.h>
 #include <string.h>
 
 #include "lwip/arch.h"
@@ -292,7 +293,7 @@ bool enet_output_frame(const void *const frame, const size_t len) {
       (memcmp(frame, kBroadcastMAC, 6) == 0)) {
     struct pbuf *const p =
         pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
-    if (p) {
+    if (p != NULL) {
       LWIP_ASSERT(
           "Expected space for pbuf fill",
           pbuf_take_at(p, frame, (uint16_t)len, ETH_PAD_SIZE) == ERR_OK);

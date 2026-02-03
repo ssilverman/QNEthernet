@@ -16,6 +16,7 @@
 #include <stdalign.h>
 #endif  // < C23
 #include <stdatomic.h>
+#include <stddef.h>
 #include <string.h>
 
 #include <core_pins.h>
@@ -658,7 +659,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
   } else {
     LINK_STATS_INC(link.recv);
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
-    if (p) {
+    if (p != NULL) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
       arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
