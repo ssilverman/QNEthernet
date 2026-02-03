@@ -254,16 +254,16 @@ uint32_t qnethernet_hal_entropy(void) {
 size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
   auto pBuf = static_cast<uint8_t*>(buf);
 
-  size_t count = size / 4;
+  const size_t count = size / 4;
   for (size_t i = 0; i < count; ++i) {
-    uint32_t r = qnethernet_hal_entropy();
+    const uint32_t r = qnethernet_hal_entropy();
     (void)std::memcpy(pBuf, &r, 4);
     pBuf += 4;
   }
 
-  size_t rem = size % 4;
+  const size_t rem = size % 4;
   if (rem != 0) {
-    uint32_t r = qnethernet_hal_entropy();
+    const uint32_t r = qnethernet_hal_entropy();
     (void)std::memcpy(pBuf, &r, rem);
   }
 
@@ -335,14 +335,14 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
     // Wait
   }
-  uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB7);
+  const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB7);
   __enable_irq();
   mac[0] = 0x04;
   mac[1] = 0xE9;
   mac[2] = 0xE5;
-  mac[3] = num >> 16;
-  mac[4] = num >> 8;
-  mac[5] = num;
+  mac[3] = static_cast<uint8_t>(num >> 16);
+  mac[4] = static_cast<uint8_t>(num >>  8);
+  mac[5] = static_cast<uint8_t>(num >>  0);
 #elif defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY36)
   // usb_desc.c:usb_init_serialnumber()
   __disable_irq();
@@ -359,9 +359,9 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   mac[0] = 0x04;
   mac[1] = 0xE9;
   mac[2] = 0xE5;
-  mac[3] = num >> 16;
-  mac[4] = num >> 8;
-  mac[5] = num;
+  mac[3] = static_cast<uint8_t>(num >> 16);
+  mac[4] = static_cast<uint8_t>(num >>  8);
+  mac[5] = static_cast<uint8_t>(num >>  0);
 #else
   (void)memcpy(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
 #endif  // Board type
