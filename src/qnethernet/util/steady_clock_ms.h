@@ -31,7 +31,7 @@ extern "C" uint32_t qnethernet_hal_millis();
 // See: https://www.cppreference.com/w/cpp/named_req/Clock.html
 class steady_clock_ms {
  public:
-  using rep        = uint64_t;
+  using rep        = int64_t;
   using period     = std::milli;
   using duration   = std::chrono::duration<rep, period>;
   using time_point = std::chrono::time_point<steady_clock_ms>;
@@ -48,7 +48,7 @@ class steady_clock_ms {
       ++high;
     }
     prevLow = low;
-    return time_point{duration{(uint64_t{high} << 32) | low}};
+    return time_point{duration{(int64_t{high} << 32) | low}};
   }
 
  private:

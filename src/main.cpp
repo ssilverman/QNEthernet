@@ -144,7 +144,7 @@ void loop() {
 // Prints the current times using the chrono API.
 static void printTimes() {
   const auto ms = steady_clock::now().time_since_epoch();
-  printf("[Time] steady_now=%" PRIu64 " ms\r\n", ms.count());
+  printf("[Time] steady_now=%" PRId64 " ms\r\n", ms.count());
   const auto now = std::chrono::duration_cast<std::chrono::seconds>(
       std::chrono::system_clock::now().time_since_epoch());
   printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
