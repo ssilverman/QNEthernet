@@ -7,6 +7,10 @@
 // Define MAIN_TEST_PROGRAM to use this test program.
 #if defined(MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
 
+// C++ includes
+#include <cstdint>
+#include <cstdio>
+
 #include <Arduino.h>
 
 #include "QNEthernet.h"
