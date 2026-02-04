@@ -14,8 +14,6 @@
 #include <Arduino.h>
 
 #include "QNEthernet.h"
-#include "lwip/dns.h"
-#include "qnethernet/QNDNSClient.h"
 #include "qnethernet/compat/c++11_compat.h"
 
 using namespace qindesign::network;
@@ -153,7 +151,7 @@ static void dnsLookup() {
   static constexpr char kHostname[]{"dns.google"};
   IPAddress ip;
   printf("[DNS] Looking up \"%s\"...\r\n", kHostname);
-  if (!DNSClient::getHostByName(kHostname, ip)) {
+  if (!Ethernet.hostByName(kHostname, ip)) {
     printf("[DNS] Lookup failed\r\n");
   } else {
     printf("[DNS] IP address: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
