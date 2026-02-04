@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 * Added a ping call to the main program.
+* Added a `qindesign::network::util::steady_clock_ms` class that conforms to the
+  _Clock_ C++ named requirement. This can be used with the `std::chrono` API.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
