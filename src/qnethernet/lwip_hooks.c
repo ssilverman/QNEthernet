@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: MIT
 
 // lwIP hook definitions for QNEthernet library on Teensy 4.1.
