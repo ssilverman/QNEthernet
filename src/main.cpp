@@ -150,6 +150,7 @@ static void printTimes() {
   printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
 }
 
+// Pings the gateway.
 static void ping() {
 #if QNETHERNET_ENABLE_PING_SEND
   printf("Sending ping to the gateway...\r\n");
@@ -162,6 +163,7 @@ static void ping() {
 #endif  // QNETHERNET_ENABLE_PING_SEND
 }
 
+// Performs a DNS lookup.
 static void dnsLookup() {
 #if LWIP_DNS
   static constexpr char kHostname[]{"dns.google"};
@@ -186,6 +188,7 @@ static constexpr char kRequest[]{
 #undef HOST
 static constexpr uint16_t kPort = 80;
 
+// Attempts to perform a client connect.
 static void clientConnect() {
 #if LWIP_TCP
   EthernetClient client;
