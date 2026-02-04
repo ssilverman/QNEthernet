@@ -8,6 +8,8 @@
 #if defined(MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
 
 // C++ includes
+#include <chrono>
+#include <cinttypes>
 #include <cstdint>
 #include <cstdio>
 
@@ -15,8 +17,11 @@
 
 #include "QNEthernet.h"
 #include "qnethernet/compat/c++11_compat.h"
+#include "qnethernet/util/steady_clock_ms.h"
 
 using namespace qindesign::network;
+
+using steady_clock = qindesign::network::util::steady_clock_ms;
 
 // Startup delay, in milliseconds.
 static constexpr uint32_t kStartupDelay = 2000;
@@ -114,6 +119,7 @@ void setup() {
   }
 }
 
+static void printTimes();
 static void ping();
 static void dnsLookup();
 static void clientConnect();
@@ -127,11 +133,21 @@ void loop() {
     if ((Ethernet.localIP() != INADDR_NONE) && Ethernet.linkState()) {
       // Do network things here, but only if there's an address and a link
 
+      printTimes();
       ping();
       dnsLookup();
       clientConnect();
     }
   }
+}
+
+// Prints the current times using the chrono API.
+static void printTimes() {
+  const auto ms = steady_clock::now().time_since_epoch();
+  printf("[Time] steady_now=%" PRIu64 " ms\r\n", ms.count());
+  const auto now = std::chrono::duration_cast<std::chrono::seconds>(
+      std::chrono::system_clock::now().time_since_epoch());
+  printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
 }
 
 static void ping() {
