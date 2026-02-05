@@ -18,10 +18,12 @@
 #include "QNEthernet.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/steady_clock_ms.h"
+#include "qnethernet/util/high_resolution_clock.h"
 
 using namespace qindesign::network;
 
 using steady_clock = qindesign::network::util::steady_clock_ms;
+using high_resolution_clock = qindesign::network::util::high_resolution_clock;
 
 // Startup delay, in milliseconds.
 static constexpr uint32_t kStartupDelay = 2000;
@@ -52,6 +54,10 @@ void setup() {
 #endif  // defined(TEENSYDUINO)
 
   printf("Starting...\r\n");
+
+  if (!high_resolution_clock::init()) {
+    printf("[Main] Error initializing high_resolution_clock\r\n");
+  }
 
   uint8_t mac[6];
   Ethernet.macAddress(mac);
@@ -148,6 +154,11 @@ static void printTimes() {
   const auto now = std::chrono::duration_cast<std::chrono::seconds>(
       std::chrono::system_clock::now().time_since_epoch());
   printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
+  const auto hr = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      high_resolution_clock::now().time_since_epoch());
+  printf("[Time] highres_now=%" PRId64 " ns\r\n", hr.count());
+  printf("[Time] highres wraparound period = %g s\r\n",
+         high_resolution_clock::wraparoundPeriod());
 }
 
 // Pings the gateway.
