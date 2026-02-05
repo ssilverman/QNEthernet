@@ -17,8 +17,7 @@
 
 #include "QNEthernet.h"
 #include "qnethernet/compat/c++11_compat.h"
-#include "qnethernet/util/steady_clock_ms.h"
-#include "qnethernet/util/high_resolution_clock.h"
+#include "qnethernet/util/chrono_clocks.h"
 
 using namespace qindesign::network;
 
