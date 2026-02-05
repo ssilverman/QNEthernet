@@ -12,8 +12,10 @@ namespace network {
 namespace util {
 
 // --------------------------------------------------------------------------
-//  high_resolution_clock
+//  high_resolution_clock -- Only Potentially Supported on ARM
 // --------------------------------------------------------------------------
+
+#ifdef __arm__
 
 // DWT Control Register
 static const auto kDWT_CTRL   = reinterpret_cast<volatile uint32_t*>(0xE0001000);
@@ -59,6 +61,17 @@ bool high_resolution_clock::init() {
 
   return true;
 }
+#else
+
+uint32_t high_resolution_clock_count() {
+  return 0;
+}
+
+bool high_resolution_clock::init() {
+  return false;
+}
+
+#endif  // __arm__
 
 }  // namespace util
 }  // namespace network
