@@ -19,9 +19,14 @@ namespace qindesign {
 namespace network {
 namespace util {
 
-extern "C" uint32_t qnethernet_hal_millis();
+extern "C" {
+void qnethernet_hal_disable_interrupts();
+void qnethernet_hal_enable_interrupts();
+uint32_t qnethernet_hal_millis();
+}  // extern "C"
 
-// See also: https://github.com/luni64/TeensyHelpers/tree/master/src/teensy_clock
+// This was used as guidance:
+// https://github.com/luni64/TeensyHelpers/tree/master/src/teensy_clock
 
 // steady_clock_ms implements a std::chrono wrapper for qnethernet_hal_millis()
 // and properly handles 32-bit wraparound. The value can be cast to 32-bits to
@@ -40,15 +45,33 @@ class steady_clock_ms {
 
   steady_clock_ms() = delete;
 
-  // Returns the current time.
-  static time_point now() {
+  // Gets the wraparound period in seconds.
+  static constexpr double wraparoundPeriod() {
+    return std::chrono::duration_cast<std::chrono::duration<double>>(
+               duration{(rep{1} << 32)})
+        .count();
+  }
+
+  // Polls the counter, handling wraparound. This must be called at least as
+  // often as the wraparound period, 2^32/1000 seconds, to avoid missing
+  // rollovers. Note that now() calls this function.
+  static rep poll() {
+    qnethernet_hal_disable_interrupts();
     const uint32_t low = qnethernet_hal_millis();
     if (low < prevLow) {
       // Roll over
       ++high;
     }
     prevLow = low;
-    return time_point{duration{(rep{high} << 32) | low}};
+    const rep t = (rep{high} << 32) | low;
+    qnethernet_hal_enable_interrupts();
+
+    return t;
+  }
+
+  // Returns the current time.
+  static time_point now() {
+    return time_point{duration{poll()}};
   }
 
  private:
