@@ -48,7 +48,7 @@ class steady_clock_ms {
       ++high;
     }
     prevLow = low;
-    return time_point{duration{(int64_t{high} << 32) | low}};
+    return time_point{duration{(rep{high} << 32) | low}};
   }
 
  private:
