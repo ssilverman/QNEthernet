@@ -153,7 +153,7 @@ static void printTimes() {
 // Pings the gateway.
 static void ping() {
 #if QNETHERNET_ENABLE_PING_SEND
-  printf("Sending ping to the gateway...\r\n");
+  printf("[Ping] Sending ping to the gateway...\r\n");
   const long t = Ethernet.ping(Ethernet.gatewayIP());
   if (t >= 0) {
     printf("[Ping] Ping time = %ld ms\r\n", t);
