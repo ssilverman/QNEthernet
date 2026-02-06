@@ -60,6 +60,30 @@ size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
   return writeMagic(p, mac, [&]() { return !static_cast<bool>(*breakobj); });
 }
 
+// --------------------------------------------------------------------------
+//  Useful Print and Stream classes
+// --------------------------------------------------------------------------
+
+// PrintBase provides a checked printf function.
+class PrintBase : public Print, public internal::PrintfChecked {
+ public:
+  PrintBase() = default;
+
+  // Use the one from here instead of the one from Print because it
+  // does checking
+  using internal::PrintfChecked::printf;
+};
+
+// StreamBase provides a checked printf function.
+class StreamBase : public Stream, public internal::PrintfChecked {
+ public:
+  StreamBase() = default;
+
+  // Use the one from here instead of the one from Print because it
+  // does checking
+  using internal::PrintfChecked::printf;
+};
+
 // A Print decorator for stdio output files. The purpose of this is to utilize
 // the Print class's ability to print Printable objects but using the underlying
 // FILE*. This ensures that a Printable object gets printed using the same
@@ -69,7 +93,7 @@ size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
 // will cause future calls to clear any error via 'std::clearerr()'.
 //
 // See: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html
-class StdioPrint : public Print {
+class StdioPrint : public PrintBase {
  public:
   explicit StdioPrint(std::FILE* stream) : stream_(stream) {}
   virtual ~StdioPrint() = default;
@@ -99,7 +123,7 @@ class StdioPrint : public Print {
 };
 
 // NullPrint is a Print object that accepts all writes and sends them nowhere.
-class NullPrint final : public Print {
+class NullPrint final : public PrintBase {
  public:
   NullPrint() = default;
   virtual ~NullPrint() = default;
@@ -130,7 +154,7 @@ class NullPrint final : public Print {
 
 // PrintDecorator is a Print object that decorates another. This is meant to be
 // a base class. This also guarantees calls to printf() are checked.
-class PrintDecorator : public Print, public internal::PrintfChecked {
+class PrintDecorator : public PrintBase {
  public:
   explicit PrintDecorator(Print& p) : p_(p) {}
   virtual ~PrintDecorator() = default;
@@ -140,9 +164,6 @@ class PrintDecorator : public Print, public internal::PrintfChecked {
   PrintDecorator(PrintDecorator&&) = delete;
   PrintDecorator& operator=(const PrintDecorator&) = delete;
   PrintDecorator& operator=(PrintDecorator&&) = delete;
-
-  // Use the one from here instead of the one from Print
-  using internal::PrintfChecked::printf;
 
   size_t write(const uint8_t b) override {
     return p_.write(b);
@@ -166,7 +187,7 @@ class PrintDecorator : public Print, public internal::PrintfChecked {
 
 // StreamDecorator is a Stream object that decorates another. This is meant to
 // be a base class. This also guarantees calls to printf() are checked.
-class StreamDecorator : public Stream, public internal::PrintfChecked {
+class StreamDecorator : public StreamBase {
  public:
   explicit StreamDecorator(Stream& s) : s_(s) {}
   virtual ~StreamDecorator() = default;
@@ -188,9 +209,6 @@ class StreamDecorator : public Stream, public internal::PrintfChecked {
   int peek() override {
     return  s_.peek();
   }
-
-  // Use the one from here instead of the one from Print
-  using internal::PrintfChecked::printf;
 
   size_t write(const uint8_t b) override {
     return s_.write(b);
