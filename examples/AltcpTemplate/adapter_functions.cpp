@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // adapter_functions.cpp implements the QNEthernet altcp adapter functions.
@@ -132,7 +132,7 @@ std::function<void(uint16_t, uint8_t,
            const uint8_t*& privkey_pass, size_t& privkey_pass_len,
            const uint8_t*& cert,         size_t& cert_len) {
           printf("[[qnethernet_altcp_tls_server_cert(port %" PRIu16 ","
-                 " index %" PRIu8 ")]]\r\n",
+                 " index %u)]]\r\n",
                  port, index);
         };
 
