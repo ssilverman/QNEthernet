@@ -15,6 +15,7 @@ and this project adheres to
   _Clock_ C++ named requirement. These can be used with the `std::chrono` API.
   The first provides a wrapper for `qnethernet_hal_millis()`. The second wraps
   the ARM DWT_CYCCNT cycle counter.
+* Added printing chrono clock times to network-up in the main program.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
