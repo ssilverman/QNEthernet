@@ -389,12 +389,12 @@ The `Ethernet` object is the main Ethernet interface.
 
 #### TCP socket options
 
- * `setNoDelay(flag)`: Sets or clears the TCP_NODELAY flag in order to disable
-   or enable Nagle's algorithm, respectively. This must be changed for each
-   new connection. Returns `true` if connected and the option was set, and
-   `false` otherwise.
- * `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
-   connection. Returns `false` if not connected.
+* `setNoDelay(flag)`: Sets or clears the TCP_NODELAY flag in order to disable or
+  enable Nagle's algorithm, respectively. This must be changed for each new
+  connection. Returns `true` if connected and the option was set, and
+  `false` otherwise.
+* `isNoDelay()`: Returns whether the TCP_NODELAY flag is set for the current
+  connection. Returns `false` if not connected.
 
 #### IP header values
 
@@ -1122,8 +1122,9 @@ Note that this section also applies to the DNS client.
 
 ### `connect()` behaviour and its return values
 
-Firstly, `connect()` blocks. See the [next section](#connectnowait-doesnt-wait)
-for a non-blocking way to connect.
+Firstly, `connect()` blocks. See the
+[next section](#non-blocking-connection-functions) for a non-blocking way
+to connect.
 
 The Arduino-style API,
 [here](https://docs.arduino.cc/libraries/ethernet/#Client%20Class
@@ -1977,7 +1978,7 @@ Simply add compiler flags to the `build_flags` build option in _platformio.ini_.
 
 For example:
 
-```
+```ini
 build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1
 ```
 
