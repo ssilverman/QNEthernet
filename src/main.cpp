@@ -87,10 +87,10 @@ void setup() {
       IPAddress gw = Ethernet.gatewayIP();
       IPAddress dns = Ethernet.dnsServerIP();
       printf("[Ethernet] Address changed:\r\n"
-             "    Local IP = %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8 "\r\n"
-             "    Subnet   = %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8 "\r\n"
-             "    Gateway  = %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8 "\r\n"
-             "    DNS      = %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8 "\r\n",
+             "    Local IP = %u.%u.%u.%u\r\n"
+             "    Subnet   = %u.%u.%u.%u\r\n"
+             "    Gateway  = %u.%u.%u.%u\r\n"
+             "    DNS      = %u.%u.%u.%u\r\n",
              ip[0], ip[1], ip[2], ip[3],
              subnet[0], subnet[1], subnet[2], subnet[3],
              gw[0], gw[1], gw[2], gw[3],
