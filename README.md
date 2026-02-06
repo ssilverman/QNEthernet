@@ -36,7 +36,7 @@ lwIP release.
    7. [`DNSClient`](#dnsclient)
    8. [Ping](#ping)
       1. [Ping reply](#ping-reply)
-   9. [Print utilities](#print-utilities)
+   9. [Print and Stream utilities](#print-and-stream-utilities)
    10. [`operator bool()` and `explicit`](#operator-bool-and-explicit)
    11. [Use of `errno`](#use-of-errno)
 3. [How to run](#how-to-run)
@@ -90,12 +90,20 @@ lwIP release.
     1. [Configuring macros using the Arduino IDE](#configuring-macros-using-the-arduino-ide)
     2. [Configuring macros using PlatformIO](#configuring-macros-using-platformio)
     3. [Changing lwIP configuration macros in `lwipopts.h`](#changing-lwip-configuration-macros-in-lwipoptsh)
-25. [Complete list of features](#complete-list-of-features)
-26. [Compatibility with other APIs](#compatibility-with-other-apis)
-27. [Other notes](#other-notes)
-28. [To do](#to-do)
-29. [Code style](#code-style)
-30. [References](#references)
+25. [Auxiliary tools](#auxiliary-tools)
+    1. [Print and Stream tools](#print-and-stream-tools)
+    2. [`std::random_device`-compatible uniform random bit generator](#stdrandom_device-compatible-uniform-random-bit-generator)
+    3. [Space-savings on some platforms](#space-savings-on-some-platforms)
+    4. [`std::chrono`-compatible Clocks](#stdchrono-compatible-clocks)
+       1. [`steady_clock_ms`](#steady_clock_ms)
+       2. [`high_resolution_clock`](#high_resolution_clock)
+       3. [`elapsedTime<Clock>`](#elapsedtimeclock)
+26. [Complete list of features](#complete-list-of-features)
+27. [Compatibility with other APIs](#compatibility-with-other-apis)
+28. [Other notes](#other-notes)
+29. [To do](#to-do)
+30. [Code style](#code-style)
+31. [References](#references)
 
 ## Introduction
 
@@ -629,11 +637,11 @@ set the `QNETHERNET_ENABLE_PING_REPLY` configuration macro to zero.
 See also:
 [Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
 
-### Print utilities
+### Print and Stream utilities
 
-The `qnethernet/util/PrintUtils.h` file declares some useful output functions
-and classes. Note that this file is included when `QNEthernet.h` is included;
-there's no need to include it separately.
+The `qnethernet/util/PrintUtils.h` file declares some useful output and input
+functions and classes. Note that this file is included when `QNEthernet.h` is
+included; there's no need to include it separately.
 
 The functions and classes are in the `qindesign::network::util` namespace, so if
 you've already added `using namespace qindesign::network;` to your code, they
@@ -661,12 +669,18 @@ Classes:
 
 1. `NullPrint`: A `Print` object that sends all data nowhere.
 
-2. `PrintDecorator`: A `Print` decorator meant to be used as a base class.
+2. `PrintDecorator`: A `Print` decorator meant to be used as a base class. This
+   provides `printf` checking on those platforms that don't by default in their
+   `Print` implementation.
 
 3. `StdioPrint`: A `Print` decorator for `stdio` output files. It provides a
    `Print` interface so that it is easy to print `Printable` objects to `stdout`
    or `stderr` without having to worry about buffering and the need to flush any
    output before printing a `Printable` directly to, say, `Serial`.
+
+4. `StreamDecorator`: A `Stream` decorator meant to be used as a base class.
+   This provides `printf` checking on those platforms that don't by default in
+   their `Stream`/`Print` implementation.
 
 ### `operator bool()` and `explicit`
 
@@ -2009,6 +2023,73 @@ Some extra conditions to keep in mind:
   if mDNS is enabled.
 * `MEMP_NUM_UDP_PCB`: Count must include one if mDNS is enabled.
 
+## Auxiliary tools
+
+This section describes some of the additional tools and features included in
+the library.
+
+### Print and Stream tools
+
+See: [Print and Stream utilities](#print-and-stream-utilities)
+
+### `std::random_device`-compatible uniform random bit generator
+
+See:
+[The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
+
+### Space-savings on some platforms
+
+It is sometimes the case that the standard library implementation (for example,
+Newlib) includes a version of the `__gnu_cxx::__verbose_terminate_handler()`
+function that takes up space in the build. There is a configuration macro,
+`QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER` that can be set to `1`, which
+provides an implementation of this function that just calls `std::abort()`.
+
+### `std::chrono`-compatible Clocks
+
+The library currently includes two `std::chrono` Clock implementations in the
+`qindesign::network::util` namespace:
+1. `steady_clock_ms` - Wraps `qnethernet_hal_millis()` and provides a
+   millisecond-based count.
+2. `high_resolution_clock` - Wraps the ARM DWT_CYCCNT cycle counter, if
+   supported, and provides a nanosecond-based count. For non-ARM platforms, the
+   `init()` function will return false and the cycle counter read will
+   return zero.
+
+These clocks read 32-bit values but provide signed 64-bit values that properly
+handle wraparound. One caveat is that they must be polled more frequently than
+the wraparound period. There exists a `poll()` function that accomplishes this,
+but calling `now()` will also perform the poll. For the high-resolution clock,
+a regular interrupt could be used, and for the millisecond-level steady clock,
+it only needs to be polled at least once every ~49.7 days (2^32 milliseconds).
+
+The `constexpr double wraparoundPeriod()` function returns the wraparound period
+in seconds.
+
+Both of these clocks satisfy the
+[Clock](https://www.cppreference.com/w/cpp/named_req/Clock.html)
+C++ named requirement
+
+#### `steady_clock_ms`
+
+This wraps `qnethernet_hal_millis()`. Each tick is 1ms and the wraparound period
+is 2^32/1000 seconds.
+
+#### `high_resolution_clock`
+
+This wraps the ARM DWT_CYCCNT cycle counter. Each tick is 1/F_CPU seconds, and
+the wraparound period is 2^32/F_CPU seconds.
+
+Before use, this clock shold be initialized with `init()`. That function returns
+a `bool` that indicates initialization success. On platforms where the ARM
+DWT_CYCCNT cycle counter is already initialized, such as Teensy&nbsp;4, this
+call may be skipped (but there's no harm in calling it).
+
+#### `elapsedTime<Clock>`
+
+This class is similar to `elapsedMillis`, but uses a `std::chrono` _Clock_ to
+acquire the current time.
+
 ## Complete list of features
 
 This section is an attempt to provide a complete list of features in the
@@ -2050,21 +2131,44 @@ _QNEthernet_ library.
 21. Teensy platform: Internal [entropy generation](#entropy-generation)
     functions to avoid the _Entropy_ lib dependency; this can be disabled with a
     configuration macro
-22. A "random device" satisfying the _UniformRandomBitGenerator_ C++ named
-    requirement that provides access to hardware-generated entropy (see
-    [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator))
-23. Driver support for:
+22. Driver support for:
     1. Teensy 4.1
     2. W5500
-24. Straightforward to add new Ethernet frame drivers
-25. Ability to toggle [Nagle's algorithm](#tcp-socket-options) for TCP
-26. Ability to set some IP header fields: differentiated services (DiffServ)
+23. Straightforward to add new Ethernet frame drivers
+24. Ability to toggle [Nagle's algorithm](#tcp-socket-options) for TCP
+25. Ability to set some IP header fields: differentiated services (DiffServ)
     and TTL (see [here](#ip-header-values) and [here](#ip-header-values-1))
-27. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
-28. [Ping](#ping) (ICMP echo) support
-29. Ability to disable [ping replies](#ping-reply)
-30. Use of `errno` when function calls fail
-31. C++11 and C11 compatibility
+26. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
+27. [Ping](#ping) (ICMP echo) support
+28. Ability to disable [ping replies](#ping-reply)
+29. Use of `errno` when function calls fail
+30. C++11 and C11 compatibility
+31. [Additional tools](#auxiliary-tools):
+    1. [Print and Stream utilities](#print-and-stream-utilities):
+       1. `writeFully()` - Loops until all bytes are written until error
+          or break
+       2. `writeMagic()` - Writes the payload for a magic packet
+       3. `NullPrint` - A `Print` object that writes to the void
+       4. `PrintDecorator` - Wraps another `Print` object. Also provides
+          `printf` checking on those platforms that don't by default in their
+          `Print` implementation
+       5. `StdioPrint` - Wraps a `std::FILE` handle with a `Print`; this is used
+          in some more advanced cases
+       6. `StreamDecorator` - Wraps another `Stream` object. Also provides
+          `printf` checking on those platforms that don't by default in their
+          `Print` implementation
+    2. `std::random_device`-compatible
+       [uniform random bit generator](#the-randomdevice-uniformrandombitgenerator)
+    3. Ability to provide a `__gnu_cxx::__verbose_terminate_handler` for
+       potential
+       [space-savings on some platforms](#space-savings-on-some-platforms), such
+       as Teensy
+    4. `std::chrono`-compatible steady clocks -
+       [`steady_clock_ms`](#steady_clock_ms) and
+       [`high_resolution_clock`](#high_resolution_clock) in the
+       `qindesign::network::util` namespace
+    5. [`qindesign::network::util::elapsedTime<Clock>`](#elapsedtimeclock),
+       similar to `elapsedMillis`
 
 ## Compatibility with other APIs
 
