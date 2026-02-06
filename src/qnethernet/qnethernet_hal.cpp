@@ -92,7 +92,7 @@ static inline Print* getPrint(const int file) {
     case STDOUT_FILENO:
       ATTRIBUTE_FALLTHROUGH;
     case STDERR_FILENO:
-      return& Serial;
+      return &Serial;
 #endif  // QNETHERNET_CUSTOM_WRITE
     case STDIN_FILENO:
       return nullptr;
