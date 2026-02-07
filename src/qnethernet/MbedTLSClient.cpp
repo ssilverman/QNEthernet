@@ -6,7 +6,9 @@
 
 #include "qnethernet/MbedTLSClient.h"
 
+#include <algorithm>
 #include <cstdio>
+#include <limits>
 
 #include "lwip/ip_addr.h"
 #include "qnethernet/security/mbedtls_funcs.h"
@@ -354,14 +356,24 @@ bool MbedTLSClient::checkRead(const int ret) {
   }
 }
 
+// Converts a size value to int, limiting the result to INT_MAX. This may mean
+// the returned value is smaller than the input value.
+static inline int sizeToInt(size_t size) {
+  if /*constexpr*/ (sizeof(size_t) >= sizeof(int)) {
+    return std::min(size, size_t{std::numeric_limits<int>::max()});
+  } else {
+    return static_cast<int>(size);
+  }
+}
+
 int MbedTLSClient::available() {
   if (!isConnected()) {
     return 0;
   }
 
-  const size_t avail = mbedtls_ssl_get_bytes_avail(&ssl_);
+  const int avail = sizeToInt(mbedtls_ssl_get_bytes_avail(&ssl_));
   if (peeked_ >= 0) {
-    return 1 + avail;
+    return 1 + std::min(avail, std::numeric_limits<int>::max() - 1);
   }
   if (avail != 0) {
     return avail;
@@ -372,9 +384,10 @@ int MbedTLSClient::available() {
   const int read = mbedtls_ssl_read(&ssl_, &b, 1);
   if (read == 1) {
     peeked_ = b;
-    return 1 + mbedtls_ssl_get_bytes_avail(&ssl_);
+    return 1 + std::min(sizeToInt(mbedtls_ssl_get_bytes_avail(&ssl_)),
+                        std::numeric_limits<int>::max() - 1);
   } else if (checkRead(read)) {
-    return mbedtls_ssl_get_bytes_avail(&ssl_);
+    return sizeToInt(mbedtls_ssl_get_bytes_avail(&ssl_));
   } else {
     return 0;
   }
