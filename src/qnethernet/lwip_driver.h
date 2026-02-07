@@ -263,14 +263,14 @@ void driver_restart_auto_negotiation();
 
 // Returns the MTU.
 ATTRIBUTE_NODISCARD
-inline int enet_get_mtu(void) {
+inline size_t enet_get_mtu(void) {
   return MTU;
 }
 
 // Returns the maximum frame length. This includes the 4-byte FCS (frame
 // check sequence).
 ATTRIBUTE_NODISCARD
-inline int enet_get_max_frame_len(void) {
+inline size_t enet_get_max_frame_len(void) {
   return MAX_FRAME_LEN;
 }
 
