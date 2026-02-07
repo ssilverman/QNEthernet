@@ -359,7 +359,7 @@ static void enet_isr(void);
 #define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
 #define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  /* 0: Normal, 1: Swapped */
 
-#define PHY_BMCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart */
+#define PHY_BMCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart (Self-clearing) */
 
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
 // continuation is needed (not complete). If continuation is needed, then this
