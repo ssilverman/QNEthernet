@@ -186,6 +186,7 @@
 #define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
+ATTRIBUTE_NODISCARD
 static inline uint32_t multipleOf32(uint32_t x) {
   return (x + 31u) & ~31u;
 }
