@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // driver_teensymm.c contains the Teensy MicroMod Ethernet interface
@@ -6,12 +6,15 @@
 // Based on the Teensy 4.1 driver.
 // This file is part of the QNEthernet library.
 
+#include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/lwip_driver.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSYMM)
 
 // C includes
+#if __STDC_VERSION__ < 202311L
 #include <stdalign.h>
+#endif  // < C23
 #include <stdatomic.h>
 #include <string.h>
 
@@ -19,6 +22,7 @@
 #include <imxrt.h>
 
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
 #include "qnethernet/platforms/pgmspace.h"
@@ -33,8 +37,6 @@
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
-
-#define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
 #define STRAP_PAD_PULLUP (0                                \
@@ -171,7 +173,11 @@
 #define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
-#define MULTIPLE_OF_32(x) (((x) + 31) & ~31)
+ATTRIBUTE_NODISCARD
+static inline uint32_t multipleOf32(uint32_t x) {
+  return (x + 31u) & ~31u;
+}
+
 #define BUFFER_DMAMEM DMAMEM
 #else
 #define BUFFER_DMAMEM
@@ -311,7 +317,8 @@ static void enet_isr(void);
 #define PHY_ANAR     4  /* Auto Negotiation Advertisement Register */
 #define PHY_PHYSCSR 31  /* PHY Special Control/Status Register */
 
-#define PHY_BSR_LINK_STATUS (1 << 2)  /* 0: No link, 1: Valid link */
+#define PHY_BCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart (Self-clearing)*/
+#define PHY_BSR_LINK_STATUS      (1 << 2)  /* 0: No link, 1: Valid link */
 
 #define WRITE_MDIO_BIT(n)                              \
   digitalWriteFast(MDC_PIN, LOW);                      \
@@ -451,15 +458,16 @@ FLASHMEM static void enable_enet_clocks(void) {
   // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG_PLL_ENET);
 
   // Configure REFCLK to be driven as output by PLL6 (page 325)
-  CLRSET(IOMUXC_GPR_GPR1,
-         IOMUXC_GPR_GPR1_ENET2_CLK_SEL,
-         IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR);
+  clearAndSet32(
+      &IOMUXC_GPR_GPR1,
+      IOMUXC_GPR_GPR1_ENET2_CLK_SEL,
+      IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR);
 }
 
 // Disables everything enabled with enable_enet_clocks().
 FLASHMEM static void disable_enet_clocks(void) {
   // Configure REFCLK
-  CLRSET(IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR, 0);
+  clearAndSet32(&IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET2_TX_CLK_DIR, 0);
 
   // Stop the PLL (first bypassing)
   CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
@@ -549,8 +557,8 @@ FLASHMEM static void init_phy(void) {
   // PHYID2: PHY ID Number: OUI bits 24-19: 110000b
   //         Model Number:                  001111b
   //         Revision Number: 4 bits
-  uint16_t id1 = mdio_read(PHY_PHYID1);
-  uint16_t id2 = mdio_read(PHY_PHYID2);
+  const uint16_t id1 = mdio_read(PHY_PHYID1);
+  const uint16_t id2 = mdio_read(PHY_PHYID2);
   if ((id1 != 0x0007) || ((id2 & 0xfff0) != 0xC0F0)) {
     disable_enet_clocks();
 
@@ -577,6 +585,7 @@ FLASHMEM static void init_phy(void) {
 // Low-level input function that transforms a received frame into an lwIP pbuf.
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
+ATTRIBUTE_NODISCARD
 static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
   const u16_t err_mask = kEnetRxBdTrunc    |
                          kEnetRxBdOverrun  |
@@ -612,11 +621,12 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
   } else {
     LINK_STATS_INC(link.recv);
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
-    if (p) {
+    if (p != NULL) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
-      arm_dcache_delete(pBD->buffer, MULTIPLE_OF_32(p->tot_len));
+      arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-      pbuf_take(p, pBD->buffer, p->tot_len);
+      LWIP_ASSERT("Expected space for pbuf fill",
+                  pbuf_take(p, pBD->buffer, p->tot_len) == ERR_OK);
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
@@ -633,6 +643,7 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This returns NULL if there is no TX buffer available.
+ATTRIBUTE_NODISCARD
 static inline volatile enetbufferdesc_t *get_bufdesc(void) {
   volatile enetbufferdesc_t *const pBD = s_pTxBD;
 
@@ -664,6 +675,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
 }
 
 // Finds the next non-empty BD.
+ATTRIBUTE_NODISCARD
 static inline volatile enetbufferdesc_t *rxbd_next(void) {
   volatile enetbufferdesc_t *pBD = s_pRxBD;
 
@@ -697,6 +709,7 @@ static void enet_isr(void) {
 // Checks the link status and returns zero if complete and a state value if
 // not complete. The return value should be used in the next call to
 // this function.
+ATTRIBUTE_NODISCARD
 static inline int check_link_status(struct netif *const netif,
                                     const int state) {
   static uint16_t bsr;
@@ -709,14 +722,14 @@ static inline int check_link_status(struct netif *const netif,
 
   switch (state) {
     case 0:
-      // Fallthrough
+      ATTRIBUTE_FALLTHROUGH;
     case 1:
       bsr = mdio_read(PHY_BSR);
       is_link_up = ((bsr & PHY_BSR_LINK_STATUS) != 0);
       if (!is_link_up) {
         break;
       }
-      // Fallthrough
+      ATTRIBUTE_FALLTHROUGH;
 
     case 2:
       physcsr = mdio_read(PHY_PHYSCSR);
@@ -766,13 +779,14 @@ static inline int check_link_status(struct netif *const netif,
 // --------------------------------------------------------------------------
 
 FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
-  dc->isMACSettable              = true;
-  dc->isLinkStateDetectable      = true;
-  dc->isLinkSpeedDetectable      = true;
-  dc->isLinkSpeedSettable        = false;
-  dc->isLinkFullDuplexDetectable = true;
-  dc->isLinkFullDuplexSettable   = false;
-  dc->isLinkCrossoverDetectable  = false;
+  dc->isMACSettable                = true;
+  dc->isLinkStateDetectable        = true;
+  dc->isLinkSpeedDetectable        = true;
+  dc->isLinkSpeedSettable          = false;
+  dc->isLinkFullDuplexDetectable   = true;
+  dc->isLinkFullDuplexSettable     = false;
+  dc->isLinkCrossoverDetectable    = false;
+  dc->isAutoNegotiationRestartable = true;
 }
 
 bool driver_is_unknown(void) {
@@ -792,14 +806,14 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
     return false;
   }
 
-  uint32_t r = ENET2_PALR;
-  mac[0] = r >> 24;
-  mac[1] = r >> 16;
-  mac[2] = r >> 8;
-  mac[3] = r;
-  r = ENET2_PAUR;
-  mac[4] = r >> 24;
-  mac[5] = r >> 16;
+  const uint32_t rl = ENET2_PALR;
+  const uint32_t ru = ENET2_PAUR;
+  mac[0] = (uint8_t)(rl >> 24);
+  mac[1] = (uint8_t)(rl >> 16);
+  mac[2] = (uint8_t)(rl >>  8);
+  mac[3] = (uint8_t)(rl >>  0);
+  mac[4] = (uint8_t)(ru >> 24);
+  mac[5] = (uint8_t)(ru >> 16);
 
   return true;
 }
@@ -822,7 +836,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 bool driver_has_hardware(void) {
   switch (s_initState) {
     case kInitStateHasHardware:
+      ATTRIBUTE_FALLTHROUGH;
     case kInitStatePHYInitialized:
+      ATTRIBUTE_FALLTHROUGH;
     case kInitStateInitialized:
       return true;
     case kInitStateNoHardware:
@@ -834,7 +850,7 @@ bool driver_has_hardware(void) {
   return (s_initState != kInitStateNoHardware);
 }
 
-FLASHMEM void driver_set_chip_select_pin(const int pin) {
+void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
@@ -855,8 +871,8 @@ FLASHMEM bool driver_init(void) {
   // Note: The original code left RXD0, RXEN, and RXER with PULLDOWN
   configure_rmii_pins();
 
-  memset(s_rxRing, 0, sizeof(s_rxRing));
-  memset(s_txRing, 0, sizeof(s_txRing));
+  (void)memset(s_rxRing, 0, sizeof(s_rxRing));
+  (void)memset(s_txRing, 0, sizeof(s_txRing));
 
   for (int i = 0; i < RX_SIZE; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
@@ -1075,7 +1091,7 @@ err_t driver_output(struct pbuf *const p) {
     return ERR_BUF;
   }
 #if !QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(copied));
+  arm_dcache_flush_delete(pBD->buffer, multipleOf32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
   update_bufdesc(pBD, copied);
   return ERR_OK;
@@ -1086,17 +1102,20 @@ bool driver_output_frame(const void *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
+  if (len > (UINT16_MAX - ETH_PAD_SIZE)) {
+    return false;
+  }
 
   volatile enetbufferdesc_t *const pBD = get_bufdesc();
   if (pBD == NULL) {
     return false;
   }
 
-  memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
+  (void)memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
-  arm_dcache_flush_delete(pBD->buffer, MULTIPLE_OF_32(len + ETH_PAD_SIZE));
+  arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, len + ETH_PAD_SIZE);
+  update_bufdesc(pBD, (uint16_t)(len + ETH_PAD_SIZE));
 
   return true;
 }
@@ -1110,6 +1129,7 @@ bool driver_output_frame(const void *const frame, const size_t len) {
 
 // CRC-32 routine for computing the 4-byte FCS for multicast lookup. The initial
 // value will be zero.
+ATTRIBUTE_NODISCARD
 static uint32_t crc32(const void *const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
 
@@ -1184,11 +1204,19 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // --------------------------------------------------------------------------
-//  Notifications from upper layers
+//  Notifications from Upper Layers
 // --------------------------------------------------------------------------
 
-void driver_notify_manual_link_state(bool flag) {
+void driver_notify_manual_link_state(const bool flag) {
   s_manualLinkState = flag;
+}
+
+// --------------------------------------------------------------------------
+//  Link Functions
+// --------------------------------------------------------------------------
+
+void driver_restart_auto_negotiation() {
+  mdio_write(PHY_BCR, mdio_read(PHY_BCR) | PHY_BCR_RESTART_AUTO_NEG);
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSYMM
