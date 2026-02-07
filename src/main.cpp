@@ -148,11 +148,13 @@ void loop() {
 
 // Prints the current times using the chrono API.
 static void printTimes() {
+  // Note: _gettimeofday() may need to be defined for std::chrono::system_clock
+
   const auto ms = steady_clock::now().time_since_epoch();
   printf("[Time] steady_now=%" PRId64 " ms\r\n", ms.count());
-  const auto now = std::chrono::duration_cast<std::chrono::seconds>(
-      std::chrono::system_clock::now().time_since_epoch());
-  printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
+  // const auto now = std::chrono::duration_cast<std::chrono::seconds>(
+  //     std::chrono::system_clock::now().time_since_epoch());
+  // printf("[Time] system_now=%" PRId64 " s\r\n", now.count());
   const auto hr = std::chrono::duration_cast<std::chrono::nanoseconds>(
       high_resolution_clock::now().time_since_epoch());
   printf("[Time] highres_now=%" PRId64 " ns\r\n", hr.count());
