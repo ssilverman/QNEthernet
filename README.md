@@ -1872,7 +1872,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_SECURE_TCP_ISN`           | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)  |
 | `QNETHERNET_FLUSH_AFTER_WRITE`               | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                      |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
-| `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Provides default implementations of the altcp interface functions                               | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc) |
+| `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Provides default implementations of the altcp interface functions                              | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)  |
 | `QNETHERNET_USE_ENTROPY_LIB`                 | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                                |
 
 To enable a feature, set the associated macro to `1` or just define it. To
