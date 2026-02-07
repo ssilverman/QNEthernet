@@ -14,6 +14,7 @@
 
 #include <mbedtls/ssl.h>
 
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ClientEx.h"
 #include "qnethernet/security/MbedTLSCert.h"
 #include "qnethernet/security/MbedTLSPSK.h"
@@ -157,6 +158,7 @@ class MbedTLSClient : public internal::ClientEx {
   MbedTLSClient(Client* client, bool isClientEx);
 
   // Initializes the client or server.
+  ATTRIBUTE_NODISCARD
   bool init(bool server);
 
   // Uninitializes the client or server.
@@ -172,6 +174,7 @@ class MbedTLSClient : public internal::ClientEx {
   // Connects to either an IP address or hostname. This is a template because
   // there are two Client connect() functions.
   template <typename T>
+  ATTRIBUTE_NODISCARD
   bool connect(const char* const host, const T hostOrIp, const uint16_t port);
 
   // Starts the connection by first ensuring the underlying client is connected
@@ -181,6 +184,7 @@ class MbedTLSClient : public internal::ClientEx {
   // client will be deinitialized and the underlying client stopped.
   //
   // This optionally waits for the connection/handshake to be complete.
+  ATTRIBUTE_NODISCARD
   bool connect(const char* hostname, bool wait);
 
   // If we're in the middle of connecting or a handshake then this moves the
@@ -192,18 +196,22 @@ class MbedTLSClient : public internal::ClientEx {
   // be called.
   //
   // This assumes that we're in the Conneting or Handshake state.
+  ATTRIBUTE_NODISCARD
   bool watchConnecting();
 
   // Checks the value returned from mbedtls_ssl_read(). If this returns false
   // then stop() will have been called.
+  ATTRIBUTE_NODISCARD
   bool checkRead(int ret);
 
   // Checks the value returned from mbedtls_ssl_write(). If this returns false
   // then stop() will have been called.
+  ATTRIBUTE_NODISCARD
   bool checkWrite(int ret);
 
   // Returns whether the TLS client is connected. This doesn't check whether
   // there's data available.
+  ATTRIBUTE_NODISCARD
   bool isConnected();
 
   int lastError_ = 0;
