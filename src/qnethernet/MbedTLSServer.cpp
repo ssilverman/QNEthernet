@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSServer.cpp implements the MbedTLS server wrapper.
@@ -22,7 +22,7 @@ static int pskCallback(void* const p_psk, mbedtls_ssl_context* const ssl,
   if ((p_psk == nullptr) || (ssl == nullptr)) {
     return -1;
   }
-  auto* f = static_cast<MbedTLSServer::pskf*>(p_psk);
+  const auto* const f = static_cast<MbedTLSServer::pskf*>(p_psk);
   int retval = -1;
   (*f)(id, idLen, [ssl, &retval](const unsigned char* psk, size_t psk_len) {
     if ((psk != nullptr) && (psk_len != 0)) {
