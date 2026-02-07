@@ -320,64 +320,71 @@ static void enet_isr(void);
 #define PHY_BCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart (Self-clearing)*/
 #define PHY_BSR_LINK_STATUS      (1 << 2)  /* 0: No link, 1: Valid link */
 
-#define WRITE_MDIO_BIT(n)                              \
-  digitalWriteFast(MDC_PIN, LOW);                      \
-  digitalWriteFast(MDIO_PIN, ((n) == 0) ? LOW : HIGH); \
-  delayNanoseconds(200);                               \
-  digitalWriteFast(MDC_PIN, HIGH);                     \
-  delayNanoseconds(200)
+ATTRIBUTE_ALWAYS_INLINE
+static inline void writeMDIOBit(const int n) {
+  digitalWriteFast(MDC_PIN, LOW);
+  digitalWriteFast(MDIO_PIN, (n == 0) ? LOW : HIGH);
+  delayNanoseconds(200);
+  digitalWriteFast(MDC_PIN, HIGH);
+  delayNanoseconds(200);
+}
 
-#define READ_MDIO_BIT(r)                                        \
-  digitalWriteFast(MDC_PIN, LOW);                               \
-  delayNanoseconds(200);                                        \
-  digitalWriteFast(MDC_PIN, HIGH);                              \
-  r = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0); \
-  delayNanoseconds(200)
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint16_t readMDIOBit(const uint16_t r) {
+  digitalWriteFast(MDC_PIN, LOW);
+  delayNanoseconds(200);
+  digitalWriteFast(MDC_PIN, HIGH);
+  const uint16_t v = (r << 1) | ((digitalReadFast(MDIO_PIN) == HIGH) ? 1 : 0);
+  delayNanoseconds(200);
+  return v;
+}
 
-#define DO_CLOCK_CYCLE             \
-  digitalWriteFast(MDC_PIN, LOW);  \
-  delayNanoseconds(200);           \
-  digitalWriteFast(MDC_PIN, HIGH); \
-  delayNanoseconds(200)
+ATTRIBUTE_ALWAYS_INLINE
+static inline void doClockCycle() {
+  digitalWriteFast(MDC_PIN, LOW);
+  delayNanoseconds(200);
+  digitalWriteFast(MDC_PIN, HIGH);
+  delayNanoseconds(200);
+}
 
 // Blocking MDIO read.
 uint16_t mdio_read(const uint16_t regaddr) {
   // 32 1's
   digitalWriteFast(MDIO_PIN, HIGH);
   for (int i = 0; i < 32; ++i) {
-    DO_CLOCK_CYCLE;
+    doClockCycle();
   }
 
   // Start of Frame (0 1)
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(1);
+  writeMDIOBit(0);
+  writeMDIOBit(1);
 
   // Read opcode (1 0)
-  WRITE_MDIO_BIT(1);
-  WRITE_MDIO_BIT(0);
+  writeMDIOBit(1);
+  writeMDIOBit(0);
 
   // PHY Address (0 0 0 0 0)
   digitalWriteFast(MDIO_PIN, LOW);
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
 
   // Register Address
   for (int i = 5; i-- > 0; ){
-    WRITE_MDIO_BIT((regaddr >> i) & 0x01);
+    writeMDIOBit((regaddr >> i) & 0x01);
   }
 
   // Turnaround (Z 0)
-  DO_CLOCK_CYCLE;
-  WRITE_MDIO_BIT(0);
+  doClockCycle();
+  writeMDIOBit(0);
 
   // Data
   pinMode(MDIO_PIN, INPUT_PULLUP);
   uint16_t r = 0;
   for (int i = 0; i < 16; ++i) {
-    READ_MDIO_BIT(r);
+    r = readMDIOBit(r);
   }
   pinMode(MDIO_PIN, OUTPUT);
 
@@ -390,37 +397,37 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
   // 32 1's
   digitalWriteFast(MDIO_PIN, HIGH);
   for (int i = 0; i < 32; ++i) {
-    DO_CLOCK_CYCLE;
+    doClockCycle();
   }
 
   // Start of Frame (0 1)
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(1);
+  writeMDIOBit(0);
+  writeMDIOBit(1);
 
   // Read opcode (0 1)
-  WRITE_MDIO_BIT(0);
-  WRITE_MDIO_BIT(1);
+  writeMDIOBit(0);
+  writeMDIOBit(1);
 
   // PHY Address (0 0 0 0 0)
   digitalWriteFast(MDIO_PIN, LOW);
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
-  DO_CLOCK_CYCLE;
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
+  doClockCycle();
 
   // Register Address
   for (int i = 5; i-- > 0; ){
-    WRITE_MDIO_BIT((regaddr >> i) & 0x01);
+    writeMDIOBit((regaddr >> i) & 0x01);
   }
 
   // Turnaround (1 0)
-  WRITE_MDIO_BIT(1);
-  WRITE_MDIO_BIT(0);
+  writeMDIOBit(1);
+  writeMDIOBit(0);
 
   // Data
   for (int i = 16; i-- > 0; ) {
-    WRITE_MDIO_BIT((data >> i) & 0x01);
+    writeMDIOBit((data >> i) & 0x01);
   }
 
   digitalWriteFast(MDC_PIN, LOW);
