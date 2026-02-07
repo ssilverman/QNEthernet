@@ -113,6 +113,9 @@ using steady_clock_ms = chrono_steady_clock<std::milli, &qnethernet_hal_millis>;
 // Returns the current DWT_CYCCNT value.
 uint32_t high_resolution_clock_count();
 
+// Note: In order to get this to compile, the F_CPU variable needs to
+//       be a compile-time constant
+
 // high_resolution_clock implements a std::chrono wrapper for ARM's DWT_CYCCNT
 // cycle counter, on systems that support it. init() should be called
 // before use.
