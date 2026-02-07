@@ -1487,7 +1487,7 @@ bool driver_ieee1588_adjust_timer(const uint32_t corrInc,
   if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
     return false;
   }
-  CLRSET(ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
+  clearAndSet32(&ENET_ATINC, ENET_ATINC_INC_MASK, ENET_ATINC_INC_CORR(corrInc));
   ENET_ATCOR = corrPeriod & ENET_ATCOR_COR_MASK;
   return true;
 }
@@ -1549,8 +1549,8 @@ bool driver_ieee1588_set_channel_mode(const int channel, const int mode) {
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  CLRSET(r, ENET_TCSR_TMODE_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
-         ENET_TCSR_TMODE(mode));
+  clearAndSet32(&r, ENET_TCSR_TMODE_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
+                ENET_TCSR_TMODE(mode));
   *tcsr = r;
   // TODO: Should we wait until change here?
 
@@ -1573,8 +1573,8 @@ bool driver_ieee1588_set_channel_output_pulse_width(const int channel,
   while ((*tcsr & ENET_TCSR_TMODE_MASK) != 0) {
     // Check until the channel is disabled
   }
-  CLRSET(r, ENET_TCSR_TPWC_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
-         ENET_TCSR_TPWC(pulseWidth - 1));
+  clearAndSet32(&r, ENET_TCSR_TPWC_MASK | ENET_TCSR_TF,  // Don't clear TF (w1c)
+                ENET_TCSR_TPWC(pulseWidth - 1));
   *tcsr = r;
   // TODO: Should we wait until change here?
 
