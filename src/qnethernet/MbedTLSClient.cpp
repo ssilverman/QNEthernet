@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSClient.cpp implements the MbedTLS client wrapper.
@@ -405,7 +405,7 @@ int MbedTLSClient::read(uint8_t* const buf, const size_t size) {
 
   // Process any peeked byte
   if (peeked_ >= 0) {
-    *buf = peeked_;
+    *buf = static_cast<uint8_t>(peeked_);
     peeked_ = -1;
     if (size == 1) {
       return 1;
