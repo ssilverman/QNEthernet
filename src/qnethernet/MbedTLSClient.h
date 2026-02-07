@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSClient.h defines a Client wrapper for TLS connections that uses the
@@ -233,8 +233,8 @@ class MbedTLSClient : public internal::ClientEx {
 
   // Key
   const security::MbedTLSPSK* psk_ = nullptr;
-  pskf f_psk_;
-  void* p_psk_;
+  pskf f_psk_ = nullptr;   // Callback
+  void* p_psk_ = nullptr;  // State
 
   friend class MbedTLSServer;
 };
