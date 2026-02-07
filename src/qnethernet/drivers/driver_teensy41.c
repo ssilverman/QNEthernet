@@ -16,7 +16,6 @@
 #include <stdalign.h>
 #endif  // < C23
 #include <stdatomic.h>
-#include <stddef.h>
 #include <string.h>
 
 #include <core_pins.h>
