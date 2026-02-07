@@ -195,7 +195,7 @@ static int sendf(void* const ctx,
   if ((c == nullptr) || !c->connected()) {
     return -1;
   }
-  size_t written = c->write(buf, len);  // TODO: Flush?
+  const size_t written = c->write(buf, len);  // TODO: Flush?
   if ((len != 0) && (written == 0)) {
     return MBEDTLS_ERR_SSL_WANT_WRITE;
   }
@@ -208,7 +208,7 @@ static int recvf(void* const ctx, unsigned char* const buf, const size_t len) {
   if ((c == nullptr) || !c->connected()) {
     return 0;
   }
-  int read = c->read(buf, len);
+  const int read = c->read(buf, len);
   if (read <= 0) {
     return MBEDTLS_ERR_SSL_WANT_READ;
   }
@@ -217,12 +217,9 @@ static int recvf(void* const ctx, unsigned char* const buf, const size_t len) {
 
 bool MbedTLSClient::watchConnecting() {
   if (state_ == States::kConnecting) {
-    bool connecting;
-    if (isClientEx_) {
-      connecting = reinterpret_cast<ClientEx*>(client_)->connecting();
-    } else {
-      connecting = !client_->connected();
-    }
+    const bool connecting =
+        isClientEx_ ? reinterpret_cast<ClientEx*>(client_)->connecting()
+                    : !client_->connected();
     if (connecting) {
       return true;
     }
@@ -237,7 +234,7 @@ bool MbedTLSClient::watchConnecting() {
     state_ = States::kConnected;
     return true;
   }
-  int ret = mbedtls_ssl_handshake_step(&ssl_);
+  const int ret = mbedtls_ssl_handshake_step(&ssl_);
   switch (ret) {
     case 0:
     case MBEDTLS_ERR_SSL_WANT_READ:
@@ -278,7 +275,7 @@ bool MbedTLSClient::connect(const char* const hostname, const bool wait) {
     return watchConnecting();
   }
 
-  uint32_t startTime = qnethernet_hal_millis();
+  const uint32_t startTime = qnethernet_hal_millis();
   while (connecting()) {
     if ((connTimeout_ != 0) &&
         ((qnethernet_hal_millis() - startTime) >= connTimeout_)) {
@@ -315,7 +312,7 @@ size_t MbedTLSClient::write(const uint8_t* const buf, const size_t size) {
     return 0;
   }
 
-  int written = mbedtls_ssl_write(&ssl_, buf, size);
+  const int written = mbedtls_ssl_write(&ssl_, buf, size);
   if (written >= 0) {  // TODO: Should we continue looping on zero?
     return written;
   }
@@ -362,7 +359,7 @@ int MbedTLSClient::available() {
     return 0;
   }
 
-  size_t avail = mbedtls_ssl_get_bytes_avail(&ssl_);
+  const size_t avail = mbedtls_ssl_get_bytes_avail(&ssl_);
   if (peeked_ >= 0) {
     return 1 + avail;
   }
@@ -372,7 +369,7 @@ int MbedTLSClient::available() {
 
   // Move the stack along
   uint8_t b;
-  int read = mbedtls_ssl_read(&ssl_, &b, 1);
+  const int read = mbedtls_ssl_read(&ssl_, &b, 1);
   if (read == 1) {
     peeked_ = b;
     return 1 + mbedtls_ssl_get_bytes_avail(&ssl_);
@@ -385,7 +382,7 @@ int MbedTLSClient::available() {
 
 int MbedTLSClient::read() {
   uint8_t data;
-  int retval = read(&data, 1);
+  const int retval = read(&data, 1);
   if (retval <= 0) {
     return -1;
   }
@@ -416,7 +413,7 @@ int MbedTLSClient::read(uint8_t* const buf, const size_t size) {
     --sizeRem;
   }
 
-  int read = mbedtls_ssl_read(&ssl_, pBuf, sizeRem);
+  const int read = mbedtls_ssl_read(&ssl_, pBuf, sizeRem);
   if (read > 0) {
     totalRead += read;
   } else {
@@ -440,12 +437,12 @@ int MbedTLSClient::availableForWrite() {
   if (avail <= 0) {
     return 0;
   }
-  int expan = mbedtls_ssl_get_record_expansion(&ssl_);
+  const int expan = mbedtls_ssl_get_record_expansion(&ssl_);
   if ((expan < 0) || (avail <= expan)) {
     return 0;
   }
   avail -= expan;
-  int payload = mbedtls_ssl_get_max_out_record_payload(&ssl_);
+  const int payload = mbedtls_ssl_get_max_out_record_payload(&ssl_);
   if (payload < 0) {
     lastError_ = payload;
   }
