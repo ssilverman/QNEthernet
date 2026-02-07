@@ -29,13 +29,13 @@
 #endif
 #else
 #ifndef ATTRIBUTE_ALWAYS_INLINE
-#define ATTRIBUTE_ALWAYS_INLINE __attribute((always_inline))
+#define ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
 #endif
 #ifndef ATTRIBUTE_DEPRECATED
 #define ATTRIBUTE_DEPRECATED(A) [[deprecated(A)]]
 #endif
 #ifndef ATTRIBUTE_FALLTHROUGH
-#define ATTRIBUTE_FALLTHROUGH __attribute((fallthrough))
+#define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
 #endif
 #ifndef ATTRIBUTE_MAYBE_UNUSED
 #define ATTRIBUTE_MAYBE_UNUSED __attribute__((unused))
