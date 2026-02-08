@@ -18,6 +18,7 @@ extern "C" {
 // #define CLRSET(reg, clear, set) ((reg) = ((reg) & ~(clear)) | (set))
 
 // Clears some bits in a 32-bit register and then sets others.
+ATTRIBUTE_ALWAYS_INLINE
 static inline void clearAndSet32(volatile uint32_t* const reg,
                                  const uint32_t clear, const uint32_t set) {
   *reg = (*reg & ~clear) | set;
@@ -33,7 +34,7 @@ static inline void clearAndSet32(volatile uint32_t* const reg,
 */
 
 // Returns the minimum of two size_t variables.
-ATTRIBUTE_NODISCARD
+ATTRIBUTE_NODISCARD ATTRIBUTE_ALWAYS_INLINE
 static inline size_t min_size(size_t a, size_t b) {
   return (a < b) ? a : b;
 }

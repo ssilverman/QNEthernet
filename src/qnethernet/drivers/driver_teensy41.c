@@ -187,7 +187,7 @@ enum Sizes {
 STATIC_ASSERT((RX_SIZE >= 1) && (TX_SIZE >= 1), "Rx and Tx sizes must be >= 1");
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
-ATTRIBUTE_NODISCARD
+ATTRIBUTE_NODISCARD ATTRIBUTE_ALWAYS_INLINE
 static inline uint32_t multipleOf32(uint32_t x) {
   return (x + 31u) & ~31u;
 }
