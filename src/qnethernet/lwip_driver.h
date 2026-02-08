@@ -35,9 +35,7 @@ enum {
 STATIC_ASSERT(MIN_FRAME_LEN >= 4, "MIN_FRAME_LEN must be >= 4");
 
 // Check some sizes
-#if ETH_PAD_SIZE > UINT16_MAX
-#error "ETH_PAD_SIZE must be <= UINT16_MAX"
-#endif  // UINT16_MAX <= ETH_PAD_SIZE
+STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // Requirements for driver-specific headers:
 // 1. Define MTU
