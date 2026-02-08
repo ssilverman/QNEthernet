@@ -49,10 +49,10 @@
 #endif
 #endif  // >= C++23
 
-#ifndef __cplusplus
-#if __STDC_VERSION__ < 202311L
-#define STATIC_ASSERT _Static_assert
-#else
+#ifndef STATIC_ASSERT
+#if defined(__cplusplus) || (__STDC_VERSION__ >= 202311L)
 #define STATIC_ASSERT static_assert
-#endif  // < C23
-#endif  // !__cplusplus
+#else
+#define STATIC_ASSERT _Static_assert
+#endif  // __cplusplus || (C >= 23)
+#endif  // !STATIC_ASSERT
