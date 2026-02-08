@@ -51,7 +51,7 @@ class StringPrint final : public Print {
 
   int availableForWrite() {
     static_assert(sizeof(size_t) >= sizeof(int),
-                  "size_t must be at least as bit as int, for casting");
+                  "size_t must be at least as big as int, for casting");
     return std::min(s_.max_size() - s_.size(),
                     static_cast<size_t>(std::numeric_limits<int>::max()));
   }
