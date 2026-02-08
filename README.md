@@ -96,7 +96,7 @@ lwIP release.
     3. [Space-savings on some platforms](#space-savings-on-some-platforms)
     4. [`std::chrono`-compatible Clocks](#stdchrono-compatible-clocks)
        1. [`steady_clock_ms`](#steady_clock_ms)
-       2. [`high_resolution_clock`](#high_resolution_clock)
+       2. [`arm_high_resolution_clock`](#arm_high_resolution_clock)
        3. [`elapsedTime<Clock>`](#elapsedtimeclock)
 26. [Complete list of features](#complete-list-of-features)
 27. [Compatibility with other APIs](#compatibility-with-other-apis)
@@ -2052,7 +2052,7 @@ The library currently includes two `std::chrono` Clock implementations in the
 `qindesign::network::util` namespace:
 1. `steady_clock_ms` - Wraps `qnethernet_hal_millis()` and provides a
    millisecond-based count.
-2. `high_resolution_clock` - Wraps the ARM DWT_CYCCNT cycle counter, if
+2. `arm_high_resolution_clock` - Wraps the ARM DWT_CYCCNT cycle counter, if
    supported, and provides a nanosecond-based count. For non-ARM platforms, the
    `init()` function will return false and the cycle counter read will
    return zero.
@@ -2076,7 +2076,7 @@ C++ named requirement
 This wraps `qnethernet_hal_millis()`. Each tick is 1ms and the wraparound period
 is 2^32/1000 seconds.
 
-#### `high_resolution_clock`
+#### `arm_high_resolution_clock`
 
 This wraps the ARM DWT_CYCCNT cycle counter. Each tick is 1/F_CPU seconds, and
 the wraparound period is 2^32/F_CPU seconds.
@@ -2166,7 +2166,7 @@ _QNEthernet_ library.
        as Teensy
     4. `std::chrono`-compatible steady clocks -
        [`steady_clock_ms`](#steady_clock_ms) and
-       [`high_resolution_clock`](#high_resolution_clock) in the
+       [`arm_high_resolution_clock`](#arm_high_resolution_clock) in the
        `qindesign::network::util` namespace
     5. [`qindesign::network::util::elapsedTime<Clock>`](#elapsedtimeclock),
        similar to `elapsedMillis`

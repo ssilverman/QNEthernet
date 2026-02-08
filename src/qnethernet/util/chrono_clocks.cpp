@@ -14,7 +14,7 @@ namespace util {
 #ifdef F_CPU
 
 // --------------------------------------------------------------------------
-//  high_resolution_clock -- Only Potentially Supported on ARM
+//  arm_high_resolution_clock -- Only Potentially Supported on ARM
 // --------------------------------------------------------------------------
 
 #ifdef __arm__
@@ -31,11 +31,11 @@ static constexpr auto kDEMCR_TRCENA       = uint32_t{1 << 24};
 static constexpr auto kDWT_CTRL_CYCCNTENA = uint32_t{1 <<  0};
 static constexpr auto kDWT_CTRL_NOCYCCNT  = uint32_t{1 << 25};
 
-uint32_t high_resolution_clock_count() {
+uint32_t arm_high_resolution_clock_count() {
   return *kDWT_CYCCNT;
 }
 
-bool high_resolution_clock::init() {
+bool arm_high_resolution_clock::init() {
   // First enable DWT and check
   if ((*kDEMCR & kDEMCR_TRCENA) == 0) {
     *kDEMCR |= kDEMCR_TRCENA;
@@ -65,11 +65,11 @@ bool high_resolution_clock::init() {
 }
 #else
 
-uint32_t high_resolution_clock_count() {
+uint32_t arm_high_resolution_clock_count() {
   return 0;
 }
 
-bool high_resolution_clock::init() {
+bool arm_high_resolution_clock::init() {
   return false;
 }
 

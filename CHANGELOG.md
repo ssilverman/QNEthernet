@@ -11,10 +11,10 @@ and this project adheres to
 ### Added
 * Added a ping call to the main program.
 * Added `qindesign::network::util::steady_clock_ms` and
-  `qindesign::network::util::high_resolution_clock` classes that conform to the
-  _Clock_ C++ named requirement. These can be used with the `std::chrono` API.
-  The first provides a wrapper for `qnethernet_hal_millis()`. The second wraps
-  the ARM DWT_CYCCNT cycle counter.
+  `qindesign::network::util::arm_high_resolution_clock` classes that conform to
+  the _Clock_ C++ named requirement. These can be used with the `std::chrono`
+  API. The first provides a wrapper for `qnethernet_hal_millis()`. The second
+  wraps the ARM DWT_CYCCNT cycle counter.
 * Added printing chrono clock times to network-up in the main program.
 * Added `qindesign::network::util::elapsedTime<Clock>`, a class similar to
   `elapsedMillis`, but uses a `std::chrono` Clock.

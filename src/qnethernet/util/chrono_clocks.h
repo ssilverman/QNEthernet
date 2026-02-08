@@ -109,23 +109,23 @@ using steady_clock_ms = chrono_steady_clock<std::milli, &qnethernet_hal_millis>;
 #ifdef F_CPU
 
 // --------------------------------------------------------------------------
-//  high_resolution_clock
+//  arm_high_resolution_clock
 // --------------------------------------------------------------------------
 
 // Returns the current DWT_CYCCNT value.
-uint32_t high_resolution_clock_count();
+uint32_t arm_high_resolution_clock_count();
 
 // Note: In order to get this to compile, the F_CPU variable needs to
 //       be a compile-time constant
 
-// high_resolution_clock implements a std::chrono wrapper for ARM's DWT_CYCCNT
-// cycle counter, on systems that support it. init() should be called
+// arm_high_resolution_clock implements a std::chrono wrapper for ARM's
+// DWT_CYCCNT cycle counter, on systems that support it. init() should be called
 // before use.
 //
 // The wraparound period is 2^32/F_CPU, about 7.1 seconds at 600MHz.
-class high_resolution_clock
+class arm_high_resolution_clock
     : public chrono_steady_clock<std::ratio<1, F_CPU>,
-                                 &high_resolution_clock_count> {
+                                 &arm_high_resolution_clock_count> {
  public:
   // Initializes the cycle counter and returns whether it's supported. This uses
   // heuristics and isn't guaranteed to work for all cases.
