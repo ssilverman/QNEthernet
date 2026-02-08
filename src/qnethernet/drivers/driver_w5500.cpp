@@ -27,6 +27,12 @@
 #include "lwip/stats.h"
 #include "qnethernet/platforms/pgmspace.h"
 
+#if defined(TEENSYDUINO)
+#define DIGITAL_WRITE digitalWriteFast
+#else
+#define DIGITAL_WRITE digitalWrite
+#endif
+
 // --------------------------------------------------------------------------
 //  Types
 // --------------------------------------------------------------------------
@@ -214,10 +220,10 @@ static void read(const uint16_t addr, const uint8_t block,
   (void)std::memset(buf, 0, len);
 
   spi.beginTransaction(kSPISettings);
-  digitalWrite(s_chipSelectPin, LOW);  // Warning: implicit conversion
+  DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, 3);
   spi.transfer(buf, len);
-  digitalWrite(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
   spi.endTransaction();
 }
 
@@ -229,7 +235,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //   s_spiBuf[2] = (reg.block << 3) | kControlRWBit;
 
 //   spi.beginTransaction(kSPISettings);
-//   digitalWrite(s_chipSelectPin, LOW);
+//   DIGITAL_WRITE(s_chipSelectPin, LOW);
 
 //   uint8_t* pBuf = static_cast<uint8_t*>(buf);
 //   size_t lenRem = len;
@@ -245,7 +251,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //     index = 0;
 //   } while (lenRem > 0);
 
-//   digitalWrite(s_chipSelectPin, HIGH);
+//   DIGITAL_WRITE(s_chipSelectPin, HIGH);
 //   spi.endTransaction();
 // }
 
@@ -257,9 +263,9 @@ static void write_frame(const uint16_t addr, const uint8_t block,
   s_spiBuf[2] = static_cast<uint8_t>((block << 3) | kControlRWBit);
 
   spi.beginTransaction(kSPISettings);
-  digitalWrite(s_chipSelectPin, LOW);  // Warning: implicit conversion
+  DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, len + 3);
-  digitalWrite(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
   spi.endTransaction();
 }
 
