@@ -59,7 +59,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // frames smaller than this size are allowed; the system will insert padding
   // as needed.
   static constexpr size_t minFrameLen() {
-    return 64;
+    return MIN_FRAME_LEN;
   }
 
   // Starts a fresh frame. This is similar to EthernetUDP::beginPacket().
