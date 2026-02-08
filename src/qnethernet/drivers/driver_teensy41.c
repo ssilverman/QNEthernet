@@ -215,7 +215,7 @@ enum enet_rx_bd_control_status {
   kEnetRxBdNonOctet        = 0x0010U,  // Receive non-octet aligned frame; needs L
   kEnetRxBdCrc             = 0x0004U,  // Receive CRC or frame error; needs L
   kEnetRxBdOverrun         = 0x0002U,  // Receive FIFO overrun; needs L
-  kEnetRxBdTrunc           = 0x0001U   // Frame is truncated
+  kEnetRxBdTrunc           = 0x0001U,  // Frame is truncated
 };
 
 // Defines the control extended region1 of the receive buffer descriptor.
