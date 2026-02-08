@@ -337,7 +337,7 @@ FLASHMEM static bool soft_reset() {
   int count = 0;
 
   // Loop up to 20 times
-  kMR = 0x80;
+  kMR = uint8_t{0x80};
   do {
     if ((*kMR & 0x80) == 0) {
       return true;
@@ -365,15 +365,15 @@ FLASHMEM static void low_level_init() {
   }
 
   // Register tests (the Arduino Ethernet library does this)
-  kMR = 0x08;
+  kMR = uint8_t{0x08};
   if (*kMR != 0x08) {
     goto low_level_init_nohardware;
   }
-  kMR = 0x10;
+  kMR = uint8_t{0x10};
   if (*kMR != 0x10) {
     goto low_level_init_nohardware;
   }
-  kMR = 0x00;
+  kMR = uint8_t{0x00};
   if (*kMR != 0x00) {
     goto low_level_init_nohardware;
   }
@@ -390,22 +390,23 @@ FLASHMEM static void low_level_init() {
   kSn_MR = socketmodes::kMacraw;
 #else
   // Start with MAC filtering enabled until we allow more MAC addresses
-  kSn_MR = socketmodes::kMFEN | socketmodes::kMacraw;
+  kSn_MR = static_cast<uint8_t>(socketmodes::kMFEN | socketmodes::kMacraw);
   s_macFilteringEnabled = true;
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE || QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
-  kSn_RXBUF_SIZE = 16;
-  kSn_TXBUF_SIZE = 16;
+  kSn_RXBUF_SIZE = uint8_t{16};
+  kSn_TXBUF_SIZE = uint8_t{16};
   // Set the others to 0k
   for (uint8_t i = 1; i < 8; ++i) {
-    Reg<uint8_t>{kSn_RXBUF_SIZE, i} = 0;
-    Reg<uint8_t>{kSn_TXBUF_SIZE, i} = 0;
+    Reg<uint8_t>{kSn_RXBUF_SIZE, i} = uint8_t{0};
+    Reg<uint8_t>{kSn_TXBUF_SIZE, i} = uint8_t{0};
   }
   if /*constexpr*/ (!kSocketInterruptsEnabled) {
     // Disable the socket interrupts
-    kSn_IMR = 0;
+    kSn_IMR = uint8_t{0};
   } else {
-    kSn_IMR = socketinterrupts::kSendOk | socketinterrupts::kRecv;
+    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
+                                   socketinterrupts::kRecv);
   }
   set_socket_command(socketcommands::kOpen);
   if (*kSn_SR != socketstates::kMacraw) {
@@ -445,7 +446,7 @@ static err_t send_frame(const size_t len) {
   // Send the data
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
-  kSn_TX_WR = ptr + len;
+  kSn_TX_WR = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
   if /*constexpr*/ (kSocketInterruptsEnabled) {
     // TODO: See if there's a way to make this non-blocking
@@ -650,7 +651,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   } else {
     read(ptr, blocks::kSocketRx, s_inputBuf, frameLen);
   }
-  kSn_RX_RD = ptr + frameLen;
+  kSn_RX_RD = static_cast<uint16_t>(ptr + frameLen);
   set_socket_command(socketcommands::kRecv);
   if /*constexpr*/ (kSocketInterruptsEnabled) {
     if (frameLen + 2 == size) {
