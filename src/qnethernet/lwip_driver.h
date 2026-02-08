@@ -32,6 +32,11 @@
 #error "MAX_FRAME_LEN must be defined and >= 4"
 #endif  // Constant checks
 
+#define MIN_FRAME_LEN 64
+#if MIN_FRAME_LEN < 4
+#error "MIN_FRAME_LEN must be >= 4"
+#endif  // MIN_FRAME_LEN < 4
+
 // Check some sizes
 #if ETH_PAD_SIZE > UINT16_MAX
 #error "ETH_PAD_SIZE must be <= UINT16_MAX"
