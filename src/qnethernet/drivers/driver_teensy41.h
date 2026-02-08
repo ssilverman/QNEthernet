@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2024 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2024,2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // driver_teensy41.h defines Teensy 4.1-specific things.
@@ -7,7 +7,7 @@
 #pragma once
 
 #define MTU           1500
-#define MAX_FRAME_LEN 1522
+#define MAX_FRAME_LEN 1522  /* Includes the 4-byte FCS (frame check sequence) */
 
 // lwIP options
 
