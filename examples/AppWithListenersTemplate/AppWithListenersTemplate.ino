@@ -72,8 +72,10 @@ volatile bool networkReadyLatch = false;
 //  Main Program
 // --------------------------------------------------------------------------
 
+namespace {
 // Forward declarations
 void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp);
+}  // namespace
 
 // Main program setup.
 void setup() {
@@ -227,6 +229,24 @@ void setup() {
   // *** Additional setup code goes here
 }
 
+// Main program loop.
+void loop() {
+  // *** Main program code goes here
+
+  // Perform any network startup:
+  if (networkReadyLatch) {
+    // *** Do any network startup tasks that must run when the network
+    // *** comes up
+    networkReadyLatch = false;
+  }
+}
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
 // This is called when the network readiness has changed. The network
 // is considered ready if there's an IP address and the link and network
 // interface are up.
@@ -248,14 +268,4 @@ void setNetworkReady(bool hasIP, bool hasLink, bool interfaceUp) {
   // all of an address, link, and active network interface.
 }
 
-// Main program loop.
-void loop() {
-  // *** Main program code goes here
-
-  // Perform any network startup:
-  if (networkReadyLatch) {
-    // *** Do any network startup tasks that must run when the network
-    // *** comes up
-    networkReadyLatch = false;
-  }
-}
+}  // namespace

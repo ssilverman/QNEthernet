@@ -47,10 +47,12 @@ uint8_t readBuf[1024];
 //  Main Program
 // -------------------------------------------------------------------
 
-// Forward declarations (not needed in the Arduino IDE)
-static bool connect();
-static void sendRequest();
-static bool readResponse();
+namespace {
+// Forward declarations
+bool connect();
+void sendRequest();
+bool readResponse();
+}  // namespace
 
 // Main program setup.
 void setup() {
@@ -141,8 +143,10 @@ void loop() {
 //  Internal Functions
 // -------------------------------------------------------------------
 
+namespace {
+
 // Attempts to connect to the host and returns whether successful.
-static bool connect() {
+bool connect() {
   Serial.printf("Connecting to %s:%" PRIu16 "...", kHost, kPort);
   Serial.println();
 
@@ -157,7 +161,7 @@ static bool connect() {
 }
 
 // Sends the HTTP request.
-static void sendRequest() {
+void sendRequest() {
   Serial.println("Sending request...");
   client.writeFully(
       "GET / HTTP/1.1\r\n"
@@ -171,7 +175,7 @@ static void sendRequest() {
 }
 
 // Reads the response and returns whether complete.
-static bool readResponse() {
+bool readResponse() {
   // Read what's available from the client and print it
   int avail = client.available();
   if (avail > 0) {
@@ -195,3 +199,5 @@ static bool readResponse() {
 
   return false;
 }
+
+}  // namespace

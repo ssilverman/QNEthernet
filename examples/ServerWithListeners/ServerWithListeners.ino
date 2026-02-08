@@ -99,6 +99,12 @@ EthernetServer server{kServerPort};
 //  Main Program
 // --------------------------------------------------------------------------
 
+namespace {
+// Forward declarations
+bool initEthernet();
+void processClientData(ClientState& state);
+}  // namespace
+
 // Program setup.
 void setup() {
   Serial.begin(115200);
@@ -152,6 +158,64 @@ void setup() {
     printf("%s\r\n", (server) ? "Done." : "FAILED!");
   }
 }
+
+// Main program loop.
+void loop() {
+  EthernetClient client = server.accept();
+  if (client) {
+    // We got a connection!
+    IPAddress ip = client.remoteIP();
+    printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+    clients.emplace_back(std::move(client));
+    printf("Client count: %zu\r\n", clients.size());
+  }
+
+  // Process data from each client
+  for (ClientState& state : clients) {  // Use a reference so we don't copy
+    if (!state.client.connected()) {
+      state.closed = true;
+      continue;
+    }
+
+    // Check if we need to force close the client
+    if (state.outputClosed) {
+      if (millis() - state.closedTime >= kShutdownTimeout) {
+        IPAddress ip = state.client.remoteIP();
+        printf("Client shutdown timeout: %u.%u.%u.%u\r\n",
+               ip[0], ip[1], ip[2], ip[3]);
+        state.client.close();
+        state.closed = true;
+        continue;
+      }
+    } else {
+      if (millis() - state.lastRead >= kClientTimeout) {
+        IPAddress ip = state.client.remoteIP();
+        printf("Client timeout: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
+        state.client.close();
+        state.closed = true;
+        continue;
+      }
+    }
+
+    processClientData(state);
+  }
+
+  // Clean up all the closed clients
+  size_t size = clients.size();
+  clients.erase(
+      std::remove_if(clients.begin(), clients.end(),
+                     [](const ClientState& state) { return state.closed; }),
+      clients.cend());
+  if (clients.size() != size) {
+    printf("New client count: %zu\r\n", clients.size());
+  }
+}
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
 
 bool initEthernet() {
   // DHCP
@@ -240,54 +304,4 @@ void processClientData(ClientState& state) {
   state.outputClosed = true;
 }
 
-// Main program loop.
-void loop() {
-  EthernetClient client = server.accept();
-  if (client) {
-    // We got a connection!
-    IPAddress ip = client.remoteIP();
-    printf("Client connected: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
-    clients.emplace_back(std::move(client));
-    printf("Client count: %zu\r\n", clients.size());
-  }
-
-  // Process data from each client
-  for (ClientState& state : clients) {  // Use a reference so we don't copy
-    if (!state.client.connected()) {
-      state.closed = true;
-      continue;
-    }
-
-    // Check if we need to force close the client
-    if (state.outputClosed) {
-      if (millis() - state.closedTime >= kShutdownTimeout) {
-        IPAddress ip = state.client.remoteIP();
-        printf("Client shutdown timeout: %u.%u.%u.%u\r\n",
-               ip[0], ip[1], ip[2], ip[3]);
-        state.client.close();
-        state.closed = true;
-        continue;
-      }
-    } else {
-      if (millis() - state.lastRead >= kClientTimeout) {
-        IPAddress ip = state.client.remoteIP();
-        printf("Client timeout: %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
-        state.client.close();
-        state.closed = true;
-        continue;
-      }
-    }
-
-    processClientData(state);
-  }
-
-  // Clean up all the closed clients
-  size_t size = clients.size();
-  clients.erase(
-      std::remove_if(clients.begin(), clients.end(),
-                     [](const ClientState& state) { return state.closed; }),
-      clients.cend());
-  if (clients.size() != size) {
-    printf("New client count: %zu\r\n", clients.size());
-  }
-}
+}  // namespace

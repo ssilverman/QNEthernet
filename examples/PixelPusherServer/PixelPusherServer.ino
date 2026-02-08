@@ -62,8 +62,10 @@ constexpr uint32_t kPixelPusherFlags =
 PixelPusherServer pp;
 OctoWS2811Receiver receiver{pp, kNumStrips, kPixelsPerStrip};
 
+namespace {
 // Forward declarations
 void networkChanged(bool hasIP, bool linkState);
+}  // namespace
 
 // Program setup.
 void setup() {
@@ -123,6 +125,17 @@ void setup() {
   }
 }
 
+// Main program loop.
+void loop() {
+  pp.loop();
+}
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
 // The address or link has changed. For example, a DHCP address arrived.
 void networkChanged(bool hasIP, bool linkState) {
   if (!hasIP || !linkState) {
@@ -164,7 +177,4 @@ void networkChanged(bool hasIP, bool linkState) {
   printf("-----------------------\r\n");
 }
 
-// Main program loop.
-void loop() {
-  pp.loop();
-}
+}  // namespace

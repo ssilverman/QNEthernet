@@ -60,32 +60,10 @@ static bool replyReceived = false;  // Indicates if the current reply has
 //  Main Program
 // --------------------------------------------------------------------------
 
-// The Echo Reply callback.
-static void replyCallback(const PingData& reply) {
-  // Check that the ID is ours
-  if (reply.id != kPingId) {
-    return;
-  }
-
-  // Check that the payload data matches
-  bool payloadMatches =
-      (reply.dataSize == kPayloadSize) &&
-      std::equal(&reply.data[4], &reply.data[kPayloadSize], &payload[4]);
-  uint32_t counter;
-  std::memcpy(&counter, &reply.data[0], 4);
-  counter = ntohl(counter);  // Correct the byte order
-
-  // Print the ping result
-  // Add 8 to the data size to print the whole ICMP packet size
-  printf("%" PRIu32 ". %zu bytes from %u.%u.%u.%u:"
-         " seq=%" PRIu16 " ttl=%u time=%lu ms%s\r\n",
-         counter, reply.dataSize + 8,
-         reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
-         reply.seq, reply.ttl, millis() - pingTimer,
-         payloadMatches ? "" : " (payload mismatch)");
-
-  replyReceived = true;
-}
+namespace {
+// Forward declarations
+void replyCallback(const PingData& reply);
+}  // namespace
 
 // Ping object, for sending and receiving echo requests and replies.
 static Ping ping{&replyCallback};
@@ -169,3 +147,38 @@ void loop() {
   }
   pingTimer = millis();
 }
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
+// The Echo Reply callback.
+void replyCallback(const PingData& reply) {
+  // Check that the ID is ours
+  if (reply.id != kPingId) {
+    return;
+  }
+
+  // Check that the payload data matches
+  bool payloadMatches =
+      (reply.dataSize == kPayloadSize) &&
+      std::equal(&reply.data[4], &reply.data[kPayloadSize], &payload[4]);
+  uint32_t counter;
+  std::memcpy(&counter, &reply.data[0], 4);
+  counter = ntohl(counter);  // Correct the byte order
+
+  // Print the ping result
+  // Add 8 to the data size to print the whole ICMP packet size
+  printf("%" PRIu32 ". %zu bytes from %u.%u.%u.%u:"
+         " seq=%" PRIu16 " ttl=%u time=%lu ms%s\r\n",
+         counter, reply.dataSize + 8,
+         reply.ip[0], reply.ip[1], reply.ip[2], reply.ip[3],
+         reply.seq, reply.ttl, millis() - pingTimer,
+         payloadMatches ? "" : " (payload mismatch)");
+
+  replyReceived = true;
+}
+
+}  // namespace

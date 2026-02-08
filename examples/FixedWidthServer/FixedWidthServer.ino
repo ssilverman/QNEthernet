@@ -55,6 +55,11 @@ EthernetServer server{kServerPort};
 //  Main Program
 // --------------------------------------------------------------------------
 
+namespace {
+// Forward declarations
+void processMessage(const ClientState& state);
+}  // namespace
+
 // Program setup.
 void setup() {
   Serial.begin(115200);
@@ -95,16 +100,6 @@ void setup() {
   }
 }
 
-// Process one message. This implementation simply dumps to Serial.
-//
-// We could pass just the buffer, but we're passing the whole state
-// here so we know which client it's from.
-void processMessage(const ClientState& state) {
-  printf("Message: ");
-  fwrite(state.buf, sizeof(state.buf[0]), kMessageSize, stdout);
-  printf("\r\n");
-}
-
 // Main program loop.
 void loop() {
   EthernetClient client = server.accept();
@@ -143,3 +138,21 @@ void loop() {
     printf("Client count: %zu\r\n", clients.size());
   }
 }
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
+// Process one message. This implementation simply dumps to Serial.
+//
+// We could pass just the buffer, but we're passing the whole state
+// here so we know which client it's from.
+void processMessage(const ClientState& state) {
+  printf("Message: ");
+  fwrite(state.buf, sizeof(state.buf[0]), kMessageSize, stdout);
+  printf("\r\n");
+}
+
+}  // namespace

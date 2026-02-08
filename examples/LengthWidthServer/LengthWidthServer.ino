@@ -74,6 +74,11 @@ EthernetServer server{kServerPort};
 //  Main Program
 // --------------------------------------------------------------------------
 
+namespace {
+// Forward declarations
+void processMessage(const ClientState& state);
+}  // namespace
+
 // Program setup.
 void setup() {
   Serial.begin(115200);
@@ -112,38 +117,6 @@ void setup() {
     printf("Listening for clients on port %u...\r\n", kServerPort);
     server.begin();
   }
-}
-
-// Process one message. This implementation simply prints to Serial,
-// escaping some characters.
-//
-// We could pass just the buffer, but we're passing the whole state
-// here so we know which client it's from.
-void processMessage(const ClientState& state) {
-  printf("Message [%d]: ", state.messageSize);
-  for (int i = 0; i < state.messageSize; ++i) {
-    uint8_t b = state.buf[i];
-    if (b < 0x20) {
-      switch (b) {
-        case '\a': printf("\\q"); break;
-        case '\b': printf("\\b"); break;
-        case '\t': printf("\\t"); break;
-        case '\n': printf("\\n"); break;
-        case '\v': printf("\\v"); break;
-        case '\f': printf("\\f"); break;
-        case '\r': printf("\\r"); break;
-        case '\\': printf("\\\\"); break;
-        default:
-          printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
-          break;
-      }
-    } else if ((0x7f <= b) && (b < 0xa0)) {
-      printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
-    } else {
-      printf("%c", b);
-    }
-  }
-  printf("\r\n");
 }
 
 // Main program loop.
@@ -203,3 +176,43 @@ void loop() {
     printf("Client count: %zu\r\n", clients.size());
   }
 }
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
+// Process one message. This implementation simply prints to Serial,
+// escaping some characters.
+//
+// We could pass just the buffer, but we're passing the whole state
+// here so we know which client it's from.
+void processMessage(const ClientState& state) {
+  printf("Message [%d]: ", state.messageSize);
+  for (int i = 0; i < state.messageSize; ++i) {
+    uint8_t b = state.buf[i];
+    if (b < 0x20) {
+      switch (b) {
+        case '\a': printf("\\q"); break;
+        case '\b': printf("\\b"); break;
+        case '\t': printf("\\t"); break;
+        case '\n': printf("\\n"); break;
+        case '\v': printf("\\v"); break;
+        case '\f': printf("\\f"); break;
+        case '\r': printf("\\r"); break;
+        case '\\': printf("\\\\"); break;
+        default:
+          printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
+          break;
+      }
+    } else if ((0x7f <= b) && (b < 0xa0)) {
+      printf("\\x%x%x", (b >> 4) & 0x0f, b & 0x0f);
+    } else {
+      printf("%c", b);
+    }
+  }
+  printf("\r\n");
+}
+
+}  // namespace

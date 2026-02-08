@@ -29,10 +29,12 @@ EthernetUDP udp;
 //  Main Program
 // --------------------------------------------------------------------------
 
-// Forward declarations (not really needed in the Arduino environment)
-static void printPrompt();
-static void receivePacket();
-static void sendLine();
+namespace {
+// Forward declarations
+void receivePacket();
+void printPrompt();
+void sendLine();
+}  // namespace
 
 // Program setup.
 void setup() {
@@ -97,8 +99,10 @@ static const char* kCtrlNames[]{
   "CAN", "EM",  "SUB", "ESC", "FS",  "GS",  "RS",  "US",
 };
 
+namespace {
+
 // Receives and prints chat packets.
-static void receivePacket() {
+void receivePacket() {
   int size = udp.parsePacket();
   if (size < 0) {
     return;
@@ -124,9 +128,15 @@ static void receivePacket() {
   printf("\r\n");
 }
 
+// Prints the chat prompt.
+void printPrompt() {
+  printf("chat> ");
+  fflush(stdout);  // printf may be line-buffered, so ensure there's output
+}
+
 // Tries to read a line from the console and returns whether
 // a complete line was read. This is CR/CRLF/LF EOL-aware.
-static bool readLine(String& line) {
+bool readLine(String& line) {
   static bool inCR = false;  // Keeps track of CR state
 
   while (Serial.available() > 0) {
@@ -157,14 +167,8 @@ static bool readLine(String& line) {
   return false;
 }
 
-// Prints the chat prompt.
-static void printPrompt() {
-  printf("chat> ");
-  fflush(stdout);  // printf may be line-buffered, so ensure there's output
-}
-
 // Reads from the console and sends packets.
-static void sendLine() {
+void sendLine() {
   static String line;
 
   // Read from the console and send lines
@@ -176,3 +180,5 @@ static void sendLine() {
     printPrompt();
   }
 }
+
+}  // namespace

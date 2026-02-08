@@ -172,12 +172,19 @@ EthernetServer server{kServerPort};
 // Other buffers
 uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
 
+namespace {
 // Forward declarations
+bool isExtended(const ConnectionState& s);
+bool isV1(const ConnectionState& s);
+bool isRunNow(const ConnectionState& s);
+bool isClient(const ConnectionState& s);
+
 void networkChanged(bool hasIP, bool linkState);
 bool connectToClient(ConnectionState& state,
                      std::vector<ConnectionState>& list);
 void processConnection(ConnectionState& state,
                        std::vector<ConnectionState>& list);
+}  // namespace
 
 // Main program setup.
 void setup() {
@@ -252,43 +259,6 @@ void setup() {
   }
 }
 
-// The address or link has changed. For example, a DHCP address arrived.
-void networkChanged(bool hasIP, bool linkState) {
-  if (!hasIP || !linkState) {
-    return;
-  }
-
-  // Start the server and keep it up
-  if (!server) {
-    printf("Starting server on port %u...", kServerPort);
-    fflush(stdout);  // Print what we have so far if line buffered
-    server.begin();
-    printf("%s\r\n", server ? "done." : "FAILED!");
-  }
-}
-
-static inline bool isExtended(const ConnectionState& s) {
-  return (s.settingsSize > 0) &&
-         (((s.settings.settingsV1.flags &
-            static_cast<uint32_t>(Flags::kExtend)) != 0));
-}
-
-static inline bool isV1(const ConnectionState& s) {
-  return (s.settingsSize > 0) &&
-         (((s.settings.settingsV1.flags &
-            static_cast<uint32_t>(Flags::kVersion1)) != 0));
-}
-
-static inline bool isRunNow(const ConnectionState& s) {
-  return (s.settingsSize > 0) &&
-         (((s.settings.settingsV1.flags &
-            static_cast<uint32_t>(Flags::kRunNow)) != 0));
-}
-
-static inline bool isClient(const ConnectionState& s) {
-  return s.ioState == IOStates::kWrite;
-}
-
 // Main program loop.
 void loop() {
   EthernetClient client = server.accept();
@@ -341,6 +311,49 @@ void loop() {
       conns.cend());
   if (conns.size() != size) {
     printf("Connection count: %zu\r\n", conns.size());
+  }
+}
+
+// --------------------------------------------------------------------------
+//  Internal Functions
+// --------------------------------------------------------------------------
+
+namespace {
+
+bool isExtended(const ConnectionState& s) {
+  return (s.settingsSize > 0) &&
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kExtend)) != 0));
+}
+
+bool isV1(const ConnectionState& s) {
+  return (s.settingsSize > 0) &&
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kVersion1)) != 0));
+}
+
+bool isRunNow(const ConnectionState& s) {
+  return (s.settingsSize > 0) &&
+         (((s.settings.settingsV1.flags &
+            static_cast<uint32_t>(Flags::kRunNow)) != 0));
+}
+
+bool isClient(const ConnectionState& s) {
+  return s.ioState == IOStates::kWrite;
+}
+
+// The address or link has changed. For example, a DHCP address arrived.
+void networkChanged(bool hasIP, bool linkState) {
+  if (!hasIP || !linkState) {
+    return;
+  }
+
+  // Start the server and keep it up
+  if (!server) {
+    printf("Starting server on port %u...", kServerPort);
+    fflush(stdout);  // Print what we have so far if line buffered
+    server.begin();
+    printf("%s\r\n", server ? "done." : "FAILED!");
   }
 }
 
@@ -435,7 +448,7 @@ void send(ConnectionState& state) {
 
 // Compares a signed available value with an unsigned size. This returns -1 if
 // avail < size, zero if avail == size, or 1 if avail > size.
-static int compareAvail(int avail, size_t size) {
+int compareAvail(int avail, size_t size) {
   size_t a = static_cast<size_t>(avail);
   if ((avail < 0) || (a < size)) {
     return -1;
@@ -616,3 +629,5 @@ void processConnection(ConnectionState& state,
     }
   }
 }
+
+}  // namespace
