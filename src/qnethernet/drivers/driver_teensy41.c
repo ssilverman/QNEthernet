@@ -37,59 +37,59 @@
 //  Defines
 // --------------------------------------------------------------------------
 
-#define GPIO_PAD_OUTPUT (0                         \
-    /* HYS_0_Hysteresis_Disabled */                \
-    /* PUS_0_100K_Ohm_Pull_Down */                 \
-    /* PUE_0_Keeper */                             \
-    /* PKE_0_Pull_Keeper_Disabled */               \
-    /* ODE_0_Open_Drain_Disabled */                \
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */ \
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */        \
-    /* SRE_0_Slow_Slew_Rate */)
+static const uint32_t GPIO_PAD_OUTPUT = (0
+    /* HYS_0_Hysteresis_Disabled */
+    /* PUS_0_100K_Ohm_Pull_Down */
+    /* PUE_0_Keeper */
+    /* PKE_0_Pull_Keeper_Disabled */
+    /* ODE_0_Open_Drain_Disabled */
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
+    /* SRE_0_Slow_Slew_Rate */);
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
 
-#define GPIO_MUX 5
+static const uint32_t GPIO_MUX = 5;
     // SION:0 MUX_MODE:0101
     // ALT5 (GPIO)
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
-#define STRAP_PAD_PULLUP (0                                \
-    /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */     \
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
-    /* ODE_0_Open_Drain_Disabled */                        \
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
-    /* SRE_0_Slow_Slew_Rate */                             \
-    )
+static const uint32_t STRAP_PAD_PULLUP = (0
+    /* HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
+    /* ODE_0_Open_Drain_Disabled */
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
+    /* SRE_0_Slow_Slew_Rate */
+    );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-#define STRAP_PAD_PULLDOWN (0                              \
-    /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */  \
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
-    /* ODE_0_Open_Drain_Disabled */                        \
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */                \
-    /* SRE_0_Slow_Slew_Rate */                             \
-    )
+static const uint32_t STRAP_PAD_PULLDOWN = (0
+    /* HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
+    /* ODE_0_Open_Drain_Disabled */
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
+    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
+    /* SRE_0_Slow_Slew_Rate */
+    );
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x3038
 
-#define MDIO_PAD_PULLUP (0                                 \
-    /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */     \
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
-    | IOMUXC_PAD_ODE       /* ODE_1_Open_Drain_Enabled */  \
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */         \
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
-    )
+static const uint32_t MDIO_PAD_PULLUP = (0
+    /* HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
+    | IOMUXC_PAD_ODE       /* ODE_1_Open_Drain_Enabled */
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
     // 0xF829
     // PHY docs suggest up to 2.2kohms, but this is what we got. It has an
@@ -97,78 +97,73 @@
     // MDIO requires a 1.5k to 10k pull-up.
     // TODO: Why does the Teensy 4.1 board not have an MDIO pull-up?
 
-#define MDIO_MUX 0
+static const uint32_t MDIO_MUX = 0;
     // SION:0 MUX_MODE:0000
     // ALT0
 
-#define RMII_PAD_PULLDOWN (0                               \
-    /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */  \
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
-    /* ODE_0_Open_Drain_Disabled */                        \
-    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */        \
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
-    )
-    // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
-    // 0x30E9
+// static const uint32_t RMII_PAD_PULLDOWN = (0
+//     /* HYS_0_Hysteresis_Disabled */
+//     | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
+//     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
+//     | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
+//     /* ODE_0_Open_Drain_Disabled */
+//     | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
+//     | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
+//     | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+//     );
+//     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+//     // 0x30E9
 
-#define RMII_PAD_PULLUP (0                                 \
-    /* HYS_0_Hysteresis_Disabled */                        \
-    | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */    \
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */                \
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */ \
-    /* ODE_0_Open_Drain_Disabled */                        \
-    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */        \
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */                \
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */      \
-    )
+static const uint32_t RMII_PAD_PULLUP = (0
+    /* HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */
+    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
+    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
+    /* ODE_0_Open_Drain_Disabled */
+    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
+    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    );
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
-#define RMII_PAD_SIGNAL (0                            \
-    /* HYS_0_Hysteresis_Disabled */                   \
-    /* PUS_0_100K_Ohm_Pull_Down */                    \
-    /* PUE_0_Keeper */                                \
-    /* PKE_0_Pull_Keeper_Disabled */                  \
-    /* ODE_0_Open_Drain_Disabled */                   \
-    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */   \
-    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */           \
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */ \
-    )
-    // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
-    // 0x00E9
+// static const uint32_t RMII_PAD_SIGNAL = (0
+//     /* HYS_0_Hysteresis_Disabled */
+//     /* PUS_0_100K_Ohm_Pull_Down */
+//     /* PUE_0_Keeper */
+//     /* PKE_0_Pull_Keeper_Disabled */
+//     /* ODE_0_Open_Drain_Disabled */
+//     | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
+//     | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */
+//     | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+//     );
+//     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
+//     // 0x00E9
 
-#define RMII_PAD_CLOCK (0                             \
-    /* HYS_0_Hysteresis_Disabled */                   \
-    /* PUS_0_100K_Ohm_Pull_Down */                    \
-    /* PUE_0_Keeper */                                \
-    /* PKE_0_Pull_Keeper_Disabled */                  \
-    /* ODE_0_Open_Drain_Disabled */                   \
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */    \
-    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */           \
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */ \
-    )
+static const uint32_t RMII_PAD_CLOCK = (0
+    /* HYS_0_Hysteresis_Disabled */
+    /* PUS_0_100K_Ohm_Pull_Down */
+    /* PUE_0_Keeper */
+    /* PKE_0_Pull_Keeper_Disabled */
+    /* ODE_0_Open_Drain_Disabled */
+    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
+    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */
+    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    );
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
 
-#define RMII_MUX_CLOCK (6 | 0x10)
+static const uint32_t RMII_MUX_CLOCK = (6 | 0x10);
       // SION:1 MUX_MODE:0110
       // ALT6
 
-#define RMII_MUX 3
+static const uint32_t RMII_MUX = 3;
     // SION:0 MUX_MODE:0011
     // ALT3
 
-#define RX_SIZE 5
-#define TX_SIZE 5
-#define IRQ_PRIORITY 64
-
-// Size checks
-#if (RX_SIZE < 1) || (TX_SIZE < 1)
-#error "Rx and Tx sizes mist be >= 1"
-#endif  // (RX_SIZE < 1) || (TX_SIZE < 1)
+enum Sizes {
+  RX_SIZE = 5,
+  TX_SIZE = 5,
 
 // Buffer size for transferring to and from the Ethernet MAC. The frame size is
 // either 1518 or 1522, assuming a 1500-byte payload, depending on whether VLAN
@@ -183,7 +178,13 @@
 // * Padding(2)
 // * Destination(6) + Source(6) + VLAN tag(2) + VLAN info(2) + Length/Type(2) +
 //   Payload(1500) + FCS(4)
-#define BUF_SIZE (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63)
+  BUF_SIZE = (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63),
+};
+
+// #define IRQ_PRIORITY 64
+
+// Size checks
+STATIC_ASSERT((RX_SIZE >= 1) && (TX_SIZE >= 1), "Rx and Tx sizes must be >= 1");
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
 ATTRIBUTE_NODISCARD
@@ -322,45 +323,50 @@ static void enet_isr(void);
 //  PHY I/O
 // --------------------------------------------------------------------------
 
-// PHY register definitions
-#define PHY_REGCR   0x0D
-#define PHY_ADDAR   0x0E
-#define PHY_LEDCR   0x18
-#define PHY_RCSR    0x17
-#define PHY_BMSR    0x01
-#define PHY_PHYSTS  0x10
-#define PHY_BMCR    0x00
-#define PHY_ANAR    0x04
-#define PHY_PHYCR   0x19
-#define PHY_PHYIDR1 0x02
-#define PHY_PHYIDR2 0x03
+// PHY register definitions.
+enum PHYRegs {
+  PHY_REGCR   = 0x0D,
+  PHY_ADDAR   = 0x0E,
+  PHY_LEDCR   = 0x18,
+  PHY_RCSR    = 0x17,
+  PHY_BMSR    = 0x01,
+  PHY_PHYSTS  = 0x10,
+  PHY_BMCR    = 0x00,
+  PHY_ANAR    = 0x04,
+  PHY_PHYCR   = 0x19,
+  PHY_PHYIDR1 = 0x02,
+  PHY_PHYIDR2 = 0x03,
+};
 
-#define PHY_LEDCR_BLINK_RATE_20Hz (0 << 9)
-#define PHY_LEDCR_BLINK_RATE_10Hz (1 << 9)
-#define PHY_LEDCR_BLINK_RATE_5Hz  (2 << 9)
-#define PHY_LEDCR_BLINK_RATE_2Hz  (3 << 9)
-#define PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH (1 << 7)
+// PHY register values definitions.
+enum PHYVals {
+  PHY_LEDCR_BLINK_RATE_20Hz = (0 << 9),
+  PHY_LEDCR_BLINK_RATE_10Hz = (1 << 9),
+  PHY_LEDCR_BLINK_RATE_5Hz = (2 << 9),
+  PHY_LEDCR_BLINK_RATE_2Hz = (3 << 9),
+  PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1 << 7),
 
-#define PHY_LEDCR_VALUE (PHY_LEDCR_BLINK_RATE_10Hz | \
-                         PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH)
+  PHY_LEDCR_VALUE =
+      (PHY_LEDCR_BLINK_RATE_10Hz | PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH),
 
-#define PHY_RCSR_RMII_CLOCK_SELECT_50MHz               (1 << 7)
-#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT (0 << 0)
-#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  (1 << 0)
-#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  (2 << 0)
-#define PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT (3 << 0)
+  PHY_RCSR_RMII_CLOCK_SELECT_50MHz               = (1 << 7),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0 << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  = (1 << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  = (2 << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT = (3 << 0),
 
-#define PHY_RCSR_VALUE (PHY_RCSR_RMII_CLOCK_SELECT_50MHz | \
-                        PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT)
+  PHY_RCSR_VALUE = (PHY_RCSR_RMII_CLOCK_SELECT_50MHz |
+                    PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT),
 
-#define PHY_BMSR_LINK_STATUS (1 << 2)  /* 0: No link, 1: Valid link */
+  PHY_BMSR_LINK_STATUS = (1 << 2),  // 0: No link, 1: Valid link
 
-#define PHY_PHYSTS_LINK_STATUS   (1 <<  0)  /* 0: No link, 1: Valid link */
-#define PHY_PHYSTS_SPEED_STATUS  (1 <<  1)  /* 0: 100Mbps, 1: 10Mbps */
-#define PHY_PHYSTS_DUPLEX_STATUS (1 <<  2)  /* 0: Half-Duplex, 1: Full-Duplex */
-#define PHY_PHYSTS_MDI_MDIX_MODE (1 << 14)  /* 0: Normal, 1: Swapped */
+  PHY_PHYSTS_LINK_STATUS   = (1 << 0),   // 0: No link, 1: Valid link
+  PHY_PHYSTS_SPEED_STATUS  = (1 << 1),   // 0: 100Mbps, 1: 10Mbps
+  PHY_PHYSTS_DUPLEX_STATUS = (1 << 2),   // 0: Half-Duplex, 1: Full-Duplex
+  PHY_PHYSTS_MDI_MDIX_MODE = (1 << 14),  // 0: Normal, 1: Swapped
 
-#define PHY_BMCR_RESTART_AUTO_NEG (1 << 9)  /* 0: Normal, 1: Restart (Self-clearing) */
+  PHY_BMCR_RESTART_AUTO_NEG = (1 << 9),  // 0: Normal, 1: Restart (Self-clearing)
+};
 
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
 // continuation is needed (not complete). If continuation is needed, then this

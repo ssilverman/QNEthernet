@@ -20,59 +20,81 @@
 #include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
 
-// Clock settings
-#define TRNG_CONFIG_CLOCK_MODE   0  /* 0=Ring Oscillator, 1=System Clock (test use only) */
-#define TRNG_CONFIG_RING_OSC_DIV 0  /* Divide by 2^n */
+enum TRNGValues {
+  // Clock settings
+  TRNG_CONFIG_CLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
+  TRNG_CONFIG_RING_OSC_DIV = 0,  // Divide by 2^n
 
-// Sampling
-#define TRNG_CONFIG_SAMPLE_MODE      2  /* 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
-#define TRNG_CONFIG_SPARSE_BIT_LIMIT 63
+  // Sampling
+  TRNG_CONFIG_SAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
+  TRNG_CONFIG_SPARSE_BIT_LIMIT = 63,
 
-// Seed control
-#define TRNG_CONFIG_ENTROPY_DELAY 3200
-#define TRNG_CONFIG_SAMPLE_SIZE   2500/*512*/
+  // Seed control
+  TRNG_CONFIG_ENTROPY_DELAY = 3200,
+  TRNG_CONFIG_SAMPLE_SIZE   = 2500/*512*/,
 
-// Statistical check parameters
-#define TRNG_CONFIG_RETRY_COUNT   1
-#define TRNG_CONFIG_RUN_MAX_LIMIT 34/*32*/
+  // Statistical check parameters
+  TRNG_CONFIG_RETRY_COUNT   = 1,
+  TRNG_CONFIG_RUN_MAX_LIMIT = 34/*32*/,
 
-#define TRNG_CONFIG_MONOBIT_MAX       1384/*317*/
-#define TRNG_CONFIG_MONOBIT_RANGE     268/*122*/
-#define TRNG_CONFIG_RUNBIT1_MAX       405/*107*/
-#define TRNG_CONFIG_RUNBIT1_RANGE     178/*80*/
-#define TRNG_CONFIG_RUNBIT2_MAX       220/*62*/
-#define TRNG_CONFIG_RUNBIT2_RANGE     122/*55*/
-#define TRNG_CONFIG_RUNBIT3_MAX       125/*39*/
-#define TRNG_CONFIG_RUNBIT3_RANGE     88/*39*/
-#define TRNG_CONFIG_RUNBIT4_MAX       75/*26*/
-#define TRNG_CONFIG_RUNBIT4_RANGE     64/*26*/
-#define TRNG_CONFIG_RUNBIT5_MAX       47/*18*/
-#define TRNG_CONFIG_RUNBIT5_RANGE     46/*18*/
-#define TRNG_CONFIG_RUNBIT6PLUS_MAX   47/*17*/
-#define TRNG_CONFIG_RUNBIT6PLUS_RANGE 46/*17*/
+  TRNG_CONFIG_MONOBIT_MAX       = 1384/*317*/,
+  TRNG_CONFIG_MONOBIT_RANGE     = 268/*122*/,
+  TRNG_CONFIG_RUNBIT1_MAX       = 405/*107*/,
+  TRNG_CONFIG_RUNBIT1_RANGE     = 178/*80*/,
+  TRNG_CONFIG_RUNBIT2_MAX       = 220/*62*/,
+  TRNG_CONFIG_RUNBIT2_RANGE     = 122/*55*/,
+  TRNG_CONFIG_RUNBIT3_MAX       = 125/*39*/,
+  TRNG_CONFIG_RUNBIT3_RANGE     = 88/*39*/,
+  TRNG_CONFIG_RUNBIT4_MAX       = 75/*26*/,
+  TRNG_CONFIG_RUNBIT4_RANGE     = 64/*26*/,
+  TRNG_CONFIG_RUNBIT5_MAX       = 47/*18*/,
+  TRNG_CONFIG_RUNBIT5_RANGE     = 46/*18*/,
+  TRNG_CONFIG_RUNBIT6PLUS_MAX   = 47/*17*/,
+  TRNG_CONFIG_RUNBIT6PLUS_RANGE = 46/*17*/,
 
-// Limits for statistical check of "Poker Test"
-#define TRNG_CONFIG_POKER_MAX   26912/*1600*/
-#define TRNG_CONFIG_POKER_RANGE 2467/*570*/
+  // Limits for statistical check of "Poker Test"
+  TRNG_CONFIG_POKER_MAX   = 26912/*1600*/,
+  TRNG_CONFIG_POKER_RANGE = 2467/*570*/,
 
-// Limits for statistical check of entropy sample frequency count
-#define TRNG_CONFIG_FREQUENCY_MAX 25600/*30000*/
-#define TRNG_CONFIG_FREQUENCY_MIN 1600
+  // Limits for statistical check of entropy sample frequency count
+  TRNG_CONFIG_FREQUENCY_MAX = 25600/*30000*/,
+  TRNG_CONFIG_FREQUENCY_MIN = 1600,
 
 // Security configuration
-#define TRNG_CONFIG_LOCK 0
+  TRNG_CONFIG_LOCK = 0,
+};
 
-// Additional bit-setting defines
-#define TRNG_SBLIM_SB_LIM(n)    ((uint32_t)(((n) & 0x000003ff) << 0))
-#define TRNG_PKRMAX_PKR_MAX(n)  ((uint32_t)(((n) & 0x00ffffff) << 0))
-#define TRNG_PKRRNG_PKR_RNG(n)  ((uint32_t)(((n) & 0x0000ffff) << 0))
-#define TRNG_FRQMAX_FRQ_MAX(n)  ((uint32_t)(((n) & 0x003fffff) << 0))
-#define TRNG_FRQMIN_FRQ_MIN(n)  ((uint32_t)(((n) & 0x003fffff) << 0))
-#define TRNG_SEC_CFG_NO_PROG(n) ((uint32_t)(((n) & 0x01) << 1))
+// Additional bit-setting functions
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_SBLIM_SB_LIM(const uint32_t n) {
+  return (n & 0x000003ff);
+}
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_PKRMAX_PKR_MAX(const uint32_t n) {
+  return (n & 0x00ffffff);
+}
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_PKRRNG_PKR_RNG(const uint32_t n) {
+  return (n & 0x0000ffff);
+}
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_FRQMAX_FRQ_MAX(const uint32_t n) {
+  return (n & 0x003fffff);
+}
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_FRQMIN_FRQ_MIN(const uint32_t n) {
+  return (n & 0x003fffff);
+}
+ATTRIBUTE_ALWAYS_INLINE
+static inline uint32_t TRNG_SEC_CFG_NO_PROG(const uint32_t n) {
+  return ((n & 0x01) << 1);
+}
 
 // Entropy storage
-#define ENTROPY_COUNT       16                      /* In dwords */
-#define ENTROPY_COUNT_BYTES ((ENTROPY_COUNT) << 2)  /* In bytes */
+enum {
+  ENTROPY_COUNT = 16,  // In dwords
+};
+static const size_t ENTROPY_COUNT_BYTES  = (ENTROPY_COUNT << 2);  // In bytes
 static uint32_t s_entropy[ENTROPY_COUNT] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
