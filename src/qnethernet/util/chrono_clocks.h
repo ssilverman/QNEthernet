@@ -106,6 +106,8 @@ uint32_t chrono_steady_clock<P, TimeFunc>::high = 0;
 // The wraparound period is 2^32/1000, about 49.7 days.
 using steady_clock_ms = chrono_steady_clock<std::milli, &qnethernet_hal_millis>;
 
+#ifdef F_CPU
+
 // --------------------------------------------------------------------------
 //  high_resolution_clock
 // --------------------------------------------------------------------------
@@ -129,6 +131,8 @@ class high_resolution_clock
   // heuristics and isn't guaranteed to work for all cases.
   static bool init();
 };
+
+#endif  // F_CPU
 
 }  // namespace util
 }  // namespace network

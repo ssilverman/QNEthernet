@@ -11,6 +11,8 @@ namespace qindesign {
 namespace network {
 namespace util {
 
+#ifdef F_CPU
+
 // --------------------------------------------------------------------------
 //  high_resolution_clock -- Only Potentially Supported on ARM
 // --------------------------------------------------------------------------
@@ -72,6 +74,8 @@ bool high_resolution_clock::init() {
 }
 
 #endif  // __arm__
+
+#endif  // F_CPU
 
 }  // namespace util
 }  // namespace network
