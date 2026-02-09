@@ -428,13 +428,13 @@ FLASHMEM static void low_level_init() {
   s_macFilteringEnabled = true;
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE || QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
-  kSn_RXBUF_SIZE = uint8_t{16};
-  kSn_TXBUF_SIZE = uint8_t{16};
-  // Set the others to 0k
+  // Set the others to 0k before setting the first, so the sum won't overflow
   for (uint8_t i = 1; i < 8; ++i) {
     Reg<uint8_t>{kSn_RXBUF_SIZE, i} = uint8_t{0};
     Reg<uint8_t>{kSn_TXBUF_SIZE, i} = uint8_t{0};
   }
+  kSn_RXBUF_SIZE = uint8_t{16};
+  kSn_TXBUF_SIZE = uint8_t{16};
   if /*constexpr*/ (!kSocketInterruptsEnabled) {
     // Disable the socket interrupts
     kSn_IMR = uint8_t{0};
