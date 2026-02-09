@@ -683,8 +683,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     }
     return NULL;
   }
-  frameLen = static_cast<uint16_t>(frameLen - 2);
-  ptr = static_cast<uint16_t>(ptr + 2);
+  frameLen -= 2;
+  ptr += 2;
 
   LINK_STATS_INC(link.recv);
 
