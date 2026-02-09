@@ -256,18 +256,18 @@ void setup() {
     networkChanged = true;
   });
 
+  // Start Ethernet
+  bool success = false;
   if (kStaticIP == INADDR_NONE) {
     printf("Starting Ethernet with DHCP...\r\n");
-    if (!Ethernet.begin()) {
-      printf("Failed to start Ethernet\r\n");
-      return;
-    }
+    success = Ethernet.begin();
   } else {
     printf("Starting Ethernet with a static IP...\r\n");
-    if (!Ethernet.begin(kStaticIP, kSubnet, kGateway)) {
-      printf("Failed to start Ethernet\r\n");
-      return;
-    }
+    success = Ethernet.begin(kStaticIP, kSubnet, kGateway);
+  }
+  if (!success) {
+    printf("Failed to start Ethernet\r\n");
+    return;
   }
 
   // We don't really need to do the following because the
