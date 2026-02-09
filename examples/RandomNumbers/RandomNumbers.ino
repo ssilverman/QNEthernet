@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // RandomNumbers demonstrates how to use random number distributions
@@ -27,6 +27,12 @@
 // named requirement.
 using namespace qindesign::security;
 
+// -------------------------------------------------------------------
+//  Program State
+// -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
+
 // Some distributions included with the standard library;
 // there's many more
 std::uniform_int_distribution<int> diceDist(1, 6);  // Inclusive
@@ -35,6 +41,12 @@ std::normal_distribution<float> normalDist(0.0f, 1.0f);  // mean=0 stddev=1
 
 // Linear congruential generator (LCG) engine.
 std::minstd_rand randomEngine{RandomDevice::instance()()};
+
+}  // namespace
+
+// -------------------------------------------------------------------
+//  Main Program
+// -------------------------------------------------------------------
 
 // Program setup.
 void setup() {

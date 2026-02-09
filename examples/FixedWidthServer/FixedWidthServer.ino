@@ -45,11 +45,15 @@ struct ClientState {
 //  Program State
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage section
+
 // Keeps track of what and where belong to whom.
 std::vector<ClientState> clients;
 
 // The server.
 EthernetServer server{kServerPort};
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

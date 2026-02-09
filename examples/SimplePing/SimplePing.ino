@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2025-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SimplePing demonstrates a simpler Ping program.
@@ -32,11 +32,15 @@ constexpr char kHostname[]{"arduino.cc"};
 //  Program State
 // --------------------------------------------------------------------------
 
-static bool running = false;  // Whether the program is still running
+namespace {  // Internal linkage section
 
-static IPAddress hostIP;
-static unsigned long pingTimer = millis() - kPingInterval;  // Start expired
-static uint32_t pingCounter = 0;
+bool running = false;  // Whether the program is still running
+
+IPAddress hostIP;
+unsigned long pingTimer = millis() - kPingInterval;  // Start expired
+uint32_t pingCounter = 0;
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

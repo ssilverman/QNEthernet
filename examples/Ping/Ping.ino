@@ -38,23 +38,28 @@ constexpr char kHostname[]{"arduino.cc"};
 constexpr uint8_t kPingTTL = 64;
 constexpr uint16_t kPingId = 0x514E;
 constexpr size_t kPayloadSize = 56;
+
 static_assert(kPayloadSize >= 4, "Payload size must be >= 4");
 
 // --------------------------------------------------------------------------
 //  Program State
 // --------------------------------------------------------------------------
 
-static bool running = false;  // Whether the program is still running
+namespace {  // Internal linkage section
 
-static IPAddress pingIP;
-static unsigned long pingTimer = millis() - kPingInterval;  // Start expired
-static uint32_t pingCounter = 0;
+bool running = false;  // Whether the program is still running
 
-static std::array<uint8_t, kPayloadSize> payload;
+IPAddress pingIP;
+unsigned long pingTimer = millis() - kPingInterval;  // Start expired
+uint32_t pingCounter = 0;
 
-static uint16_t seq = 0;            // Current sequence number
-static bool replyReceived = false;  // Indicates if the current reply has
-                                    // been received
+std::array<uint8_t, kPayloadSize> payload;
+
+uint16_t seq = 0;            // Current sequence number
+bool replyReceived = false;  // Indicates if the current reply has
+                             // been received
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

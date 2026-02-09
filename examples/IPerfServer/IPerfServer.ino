@@ -157,8 +157,10 @@ struct ConnectionState {
 };
 
 // -------------------------------------------------------------------
-//  Main Program
+//  Program State
 // -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
 
 // Digits buffer.
 uint8_t kDigitsBuf[TCP_SND_BUF + 10];
@@ -174,6 +176,12 @@ uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
 
 // Whether a network change was detected.
 bool networkChanged = false;
+
+}  // namespace
+
+// -------------------------------------------------------------------
+//  Main Program
+// -------------------------------------------------------------------
 
 namespace {
 // Forward declarations

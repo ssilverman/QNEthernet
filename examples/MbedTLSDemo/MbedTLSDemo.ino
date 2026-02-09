@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // MbedTLSDemo shows how to use Mbed TLS 2.x.x.
@@ -32,6 +32,10 @@
 
 using namespace qindesign::network;
 
+// -------------------------------------------------------------------
+//  Configuration
+// -------------------------------------------------------------------
+
 constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 // Connection information
@@ -45,10 +49,22 @@ constexpr char kRequest[]{
 };
 constexpr uint16_t kPort = 443;   // HTTPS generally uses port 443
 
+// -------------------------------------------------------------------
+//  Program State
+// -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
+
 EthernetClient client;
 
 bool disconnectedPrintLatch = false;  // Print "disconnected" only once
 size_t dataCount = 0;
+
+}  // namespace
+
+// -------------------------------------------------------------------
+//  Main Program
+// -------------------------------------------------------------------
 
 // Program setup.
 void setup() {

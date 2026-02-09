@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SimpleHTTPClient implements a very rudimentary HTTP client. It
@@ -18,7 +18,7 @@ constexpr char kHost[]{"www.google.com"};
 constexpr uint16_t kPort = 80;
 
 // -------------------------------------------------------------------
-//  Program Variables
+//  Types
 // -------------------------------------------------------------------
 
 enum class States {
@@ -28,6 +28,12 @@ enum class States {
   kReadResponse,
   kEnd,
 };
+
+// -------------------------------------------------------------------
+//  Program State
+// -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
 
 // Where we're at and what we're doing
 States state = States::kStart;
@@ -42,6 +48,8 @@ size_t responseSize = 0;
 
 // Client read buffer
 uint8_t readBuf[1024];
+
+}  // namespace
 
 // -------------------------------------------------------------------
 //  Main Program

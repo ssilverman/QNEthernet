@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2023-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // BroadcastChat is a simple chat application that broadcasts and
@@ -22,8 +22,12 @@ constexpr uint16_t kPort = 5190;  // Chat port
 //  Program State
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage section
+
 // UDP port.
 EthernetUDP udp;
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

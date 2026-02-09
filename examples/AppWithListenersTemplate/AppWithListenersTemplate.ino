@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // AppWithListenersTemplate shows one way to start writing a network
@@ -66,7 +66,11 @@ const IPAddress dnsServer = gateway;
 //  Program State
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage section
+
 volatile bool networkReadyLatch = false;
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

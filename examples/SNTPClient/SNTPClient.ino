@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SNTPClient demonstrates a simple SNTP client.
@@ -34,11 +34,15 @@ constexpr uint32_t kBreakTime = 2085978496;
 //  Program State
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage section
+
 // UDP port.
 EthernetUDP udp;
 
 // Buffer.
 uint8_t buf[48];
+
+}  // namespace
 
 // --------------------------------------------------------------------------
 //  Main Program

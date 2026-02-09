@@ -32,9 +32,19 @@
 
 using namespace qindesign::network;
 
+// -------------------------------------------------------------------
+//  Configuration
+// -------------------------------------------------------------------
+
 // VLAN EtherType constants
 constexpr uint16_t kEtherTypeVLAN = 0x8100u;
 constexpr uint16_t kEtherTypeQinQ = 0x88A8u;
+
+// -------------------------------------------------------------------
+//  Program State
+// -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
 
 // We can access the frame's internal data buffer directly,
 // so we don't need the following:
@@ -43,6 +53,8 @@ constexpr uint16_t kEtherTypeQinQ = 0x88A8u;
 
 // Tracks the received frame count.
 int frameCount = 0;
+
+}  // namespace
 
 // Main program setup.
 void setup() {

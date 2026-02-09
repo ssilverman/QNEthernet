@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // OSCPrinter prints received OSC messages. It uses the well-known
@@ -16,14 +16,30 @@
 
 using namespace qindesign::network;
 
+// -------------------------------------------------------------------
+//  Configuration
+// -------------------------------------------------------------------
+
 constexpr uint32_t kDHCPTimeout = 15000;  // 15 seconds
 
 constexpr uint16_t kOSCPort = 8000;
 
 constexpr char kServiceName[] = "osc-example";
 
+// -------------------------------------------------------------------
+//  Program State
+// -------------------------------------------------------------------
+
+namespace {
+
 EthernetUDP udp;
 // Note: We'll be reading the data directly; don't need a buffer
+
+}  // namespace
+
+// -------------------------------------------------------------------
+//  Main Program
+// -------------------------------------------------------------------
 
 // Main program setup.
 void setup() {

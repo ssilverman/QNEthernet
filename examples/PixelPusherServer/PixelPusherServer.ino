@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2022-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // PixelPusherServer implements a simple PixelPusher receiver. The
@@ -56,11 +56,19 @@ constexpr uint32_t kPixelPusherFlags =
     PixelPusherServer::PusherFlags::STRIPBRIGHTNESS;
 
 // -------------------------------------------------------------------
-//  Main Program
+//  Program State
 // -------------------------------------------------------------------
+
+namespace {  // Internal linkage section
 
 PixelPusherServer pp;
 OctoWS2811Receiver receiver{pp, kNumStrips, kPixelsPerStrip};
+
+}  // namespace
+
+// -------------------------------------------------------------------
+//  Main Program
+// -------------------------------------------------------------------
 
 namespace {
 // Forward declarations
