@@ -230,13 +230,19 @@ static bool s_manualLinkState = false;  // True for sticky
 // Initializes the chip-select pin.
 ATTRIBUTE_ALWAYS_INLINE
 static inline void initCS() {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
   pinMode(s_chipSelectPin, OUTPUT);  // Warning: implicit conversion
+#pragma GCC diagnostic pop
 }
 
 // Asserts or deasserts the chip-select pin.
 ATTRIBUTE_ALWAYS_INLINE
 static inline void assertCS(const bool flag) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
   DIGITAL_WRITE(s_chipSelectPin, flag ? LOW : HIGH);  // Warning: implicit conversion
+#pragma GCC diagnostic pop
 }
 
 // Reads bytes starting from the specified register.
