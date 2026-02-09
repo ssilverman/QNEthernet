@@ -168,6 +168,24 @@ namespace socketinterrupts {
   static constexpr uint8_t kRecv   = (1 << 2);  // This is issued whenever data is received from a peer
 }  // namespace socketinterrupts
 
+// For using RAII to begin and end a SPI transaction.
+class SPITransaction final {
+ public:
+  explicit SPITransaction(SPIClass& spi) : spi_(spi) {
+    spi_.beginTransaction(kSPISettings);
+  }
+
+  ~SPITransaction() {
+    spi_.endTransaction();
+  }
+
+  SPITransaction(const SPITransaction&) = delete;
+  SPITransaction& operator=(const SPITransaction&) = delete;
+
+ private:
+  SPIClass& spi_;
+};
+
 // --------------------------------------------------------------------------
 //  Internal Variables
 // --------------------------------------------------------------------------
@@ -219,12 +237,10 @@ static void read(const uint16_t addr, const uint8_t block,
   // Write zeros during transfer (is this step even necessary?)
   (void)std::memset(buf, 0, len);
 
-  spi.beginTransaction(kSPISettings);
   DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, 3);
   spi.transfer(buf, len);
   DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
-  spi.endTransaction();
 }
 
 // // Writes to the specified register.
@@ -234,13 +250,11 @@ static void read(const uint16_t addr, const uint8_t block,
 //   s_spiBuf[1] = reg.addr;
 //   s_spiBuf[2] = (reg.block << 3) | kControlRWBit;
 
-//   spi.beginTransaction(kSPISettings);
-//   DIGITAL_WRITE(s_chipSelectPin, LOW);
-
 //   uint8_t* pBuf = static_cast<uint8_t*>(buf);
 //   size_t lenRem = len;
 
 //   size_t index = 3;
+//   DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
 //   do {
 //     size_t size = std::min(lenRem, std::size(s_spiBuf) - index);
 //     (void)std::memcpy(&s_spiBuf[index], pBuf, size);
@@ -250,9 +264,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //     spi.transfer(s_spiBuf, index + size);
 //     index = 0;
 //   } while (lenRem > 0);
-
-//   DIGITAL_WRITE(s_chipSelectPin, HIGH);
-//   spi.endTransaction();
+//   DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
 // }
 
 // Writes a frame to the specified register. The data starts at &s_spiBuf[3].
@@ -262,11 +274,9 @@ static void write_frame(const uint16_t addr, const uint8_t block,
   s_spiBuf[1] = static_cast<uint8_t>(addr);
   s_spiBuf[2] = static_cast<uint8_t>((block << 3) | kControlRWBit);
 
-  spi.beginTransaction(kSPISettings);
   DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
   spi.transfer(s_spiBuf, len + 3);
   DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
-  spi.endTransaction();
 }
 
 // Writes to the specified register. The data starts at &s_spiBuf[3].
@@ -355,6 +365,8 @@ FLASHMEM static bool soft_reset() {
 }
 
 // Initializes the interface. This sets the init state.
+//
+// This manages the SPI transaction.
 FLASHMEM static void low_level_init() {
   if (s_initState != EnetInitStates::kStart) {
     return;
@@ -363,8 +375,12 @@ FLASHMEM static void low_level_init() {
   // Delay some worst case scenario because Arduino's Ethernet library does
   delay(560);
 
-  pinMode(s_chipSelectPin, OUTPUT);  // Warning: implicit conversion
+  pinMode(s_chipSelectPin, OUTPUT);      // Warning: implicit conversion
+  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+
   spi.begin();
+
+  spi.beginTransaction(kSPISettings);
 
   if (!soft_reset()) {
     goto low_level_init_nohardware;
@@ -417,13 +433,15 @@ FLASHMEM static void low_level_init() {
   set_socket_command(socketcommands::kOpen);
   if (*kSn_SR != socketstates::kMacraw) {
     s_initState = EnetInitStates::kNotInitialized;
-    return;
+  } else {
+    s_initState = EnetInitStates::kHardwareInitialized;
   }
 
-  s_initState = EnetInitStates::kHardwareInitialized;
+  spi.endTransaction();
   return;
 
 low_level_init_nohardware:
+  spi.endTransaction();
   spi.end();
   s_initState = EnetInitStates::kNoHardware;
 }
@@ -527,6 +545,8 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
       return false;
   }
 
+  SPITransaction spiTransaction{spi};
+
   auto reg = kSHAR;
   for (int i = 0; i < ETH_HWADDR_LEN; ++i) {
     mac[i] = *reg;
@@ -547,6 +567,8 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   }
 
   (void)std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
+
+  SPITransaction spiTransaction{spi};
   write_frame(kSHAR, ETH_HWADDR_LEN);
 
   return true;
@@ -604,6 +626,7 @@ FLASHMEM void driver_deinit(void) {
   }
 
   // Close the socket
+  SPITransaction spiTransaction{spi};
   set_socket_command(socketcommands::kClose);
 
   spi.end();
@@ -617,6 +640,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   if (s_initState != EnetInitStates::kInitialized) {
     return NULL;
   }
+
+  SPITransaction spiTransaction{spi};
 
   uint16_t size;
   if (!read_reg_word(kSn_RX_RSR, size)) {
@@ -685,6 +710,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 }
 
 void driver_poll(struct netif* const netif) {
+  SPITransaction spiTransaction{spi};
   check_link_status(netif);
 }
 
@@ -735,6 +761,7 @@ err_t driver_output(struct pbuf* const p) {
     return ERR_BUF;
   }
 
+  SPITransaction spiTransaction{spi};
   return send_frame(p->tot_len);
 }
 
@@ -745,6 +772,8 @@ bool driver_output_frame(const void* const frame, const size_t len) {
   }
 
   (void)std::memcpy(s_frameBuf, frame, len);
+
+  SPITransaction spiTransaction{spi};
   return send_frame(len);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -764,6 +793,8 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
   // It appears MAC filtering still allows multicast destinations through, so
   // don't disable filtering for those (LSb of first byte is 1)
   if (allow && ((mac[0] & 0x01) == 0) && s_macFilteringEnabled) {
+    SPITransaction spiTransaction{spi};
+
     // Allow all MACs now
     uint8_t r = *kSn_MR;
     if ((r & socketmodes::kMFEN) != 0) {
