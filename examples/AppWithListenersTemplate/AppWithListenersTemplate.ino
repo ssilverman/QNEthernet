@@ -57,10 +57,10 @@ constexpr bool kWaitForDHCP = true;
 // true, or it determines whether to use DHCP, if `kStartWithDHCP` is
 // false. In all cases, if it's set to INADDR_NONE (zero), then DHCP
 // will be used.
-IPAddress staticIP{0, 0, 0, 0};//{192, 168, 1, 101};
-IPAddress subnetMask{255, 255, 255, 0};
-IPAddress gateway{192, 168, 1, 1};
-IPAddress dnsServer = gateway;
+const IPAddress staticIP{0, 0, 0, 0};//{192, 168, 1, 101};
+const IPAddress subnetMask{255, 255, 255, 0};
+const IPAddress gateway{192, 168, 1, 1};
+const IPAddress dnsServer = gateway;
 
 // --------------------------------------------------------------------------
 //  Program State
