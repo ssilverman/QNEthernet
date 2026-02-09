@@ -33,6 +33,11 @@ static constexpr uint32_t kDHCPTimeout = 15000;
 // Flag that indicates something about the network changed.
 static volatile bool s_networkChanged = false;
 
+// IP configuration
+static const IPAddress s_staticIP;
+static const IPAddress s_subnet;
+static const IPAddress s_gateway;
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -101,9 +106,16 @@ void setup() {
     s_networkChanged = true;
   });
 
-  // Start DHCP
-  printf("[Main] Starting Ethernet (DHCP)...\r\n");
-  if (!Ethernet.begin()) {
+  // Start Ethernet
+  bool success = false;
+  if (s_staticIP == INADDR_NONE) {
+    printf("[Main] Starting Ethernet (DHCP)...\r\n");
+    success = Ethernet.begin();
+  } else {
+    printf("[Main] Starting Ethernet with static IP...\r\n");
+    success = Ethernet.begin(s_staticIP, s_subnet, s_gateway);
+  }
+  if (!success) {
     printf("[Main] ERROR: Failed to start Ethernet\r\n");
     return;
   }
