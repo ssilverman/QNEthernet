@@ -169,7 +169,7 @@ std::vector<ConnectionState> conns;
 // The server.
 EthernetServer server{kServerPort};
 
-// Other buffers
+// Other buffers.
 uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
 
 // Whether a network change was detected.
