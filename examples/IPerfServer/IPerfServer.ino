@@ -172,6 +172,9 @@ EthernetServer server{kServerPort};
 // Other buffers
 uint8_t settingsBuf[sizeof(SettingsV1) + sizeof(ExtSettings)];
 
+// Whether a network change was detected.
+bool networkChanged = false;
+
 namespace {
 // Forward declarations
 bool isExtended(const ConnectionState& s);
@@ -179,7 +182,7 @@ bool isV1(const ConnectionState& s);
 bool isRunNow(const ConnectionState& s);
 bool isClient(const ConnectionState& s);
 
-void networkChanged(bool hasIP, bool linkState);
+void doNetworkChanged();
 bool connectToClient(ConnectionState& state,
                      std::vector<ConnectionState>& list);
 void processConnection(ConnectionState& state,
@@ -208,7 +211,9 @@ void setup() {
     } else {
       printf("[Ethernet] Link OFF\r\n");
     }
-    networkChanged(Ethernet.localIP() != INADDR_NONE, state);
+
+    // Notify everyone
+    networkChanged = true;
   });
 
   // Listen for address changes
@@ -236,7 +241,7 @@ void setup() {
     // Tell interested parties the network state, for example, servers,
     // SNTP clients, and other sub-programs that need to know whethe
     // to stop/start/restart/etc
-    networkChanged(hasIP, Ethernet.linkState());
+    networkChanged = true;
   });
 
   printf("Starting Ethernet with DHCP...\r\n");
@@ -261,6 +266,11 @@ void setup() {
 
 // Main program loop.
 void loop() {
+  // Check if the network changed
+  if (networkChanged) {
+    doNetworkChanged();
+  }
+
   EthernetClient client = server.accept();
   if (client) {
     // We got a connection!
@@ -343,8 +353,8 @@ bool isClient(const ConnectionState& s) {
 }
 
 // The address or link has changed. For example, a DHCP address arrived.
-void networkChanged(bool hasIP, bool linkState) {
-  if (!hasIP || !linkState) {
+void doNetworkChanged() {
+  if ((Ethernet.localIP() == INADDR_NONE) || !Ethernet.linkState()) {
     return;
   }
 
