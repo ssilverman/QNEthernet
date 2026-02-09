@@ -680,7 +680,6 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     set_socket_command(socketcommands::kOpen);
     if (*kSn_SR != socketstates::kMacraw) {
       s_initState = EnetInitStates::kNotInitialized;
-      return NULL;
     }
     return NULL;
   }
