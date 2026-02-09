@@ -239,7 +239,7 @@ void setup() {
     }
 
     // Tell interested parties the network state, for example, servers,
-    // SNTP clients, and other sub-programs that need to know whethe
+    // SNTP clients, and other sub-programs that need to know whether
     // to stop/start/restart/etc
     networkChanged = true;
   });
