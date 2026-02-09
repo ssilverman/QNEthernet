@@ -227,6 +227,18 @@ static bool s_manualLinkState = false;  // True for sticky
 //  Internal Functions: Registers
 // --------------------------------------------------------------------------
 
+// Initializes the chip-select pin.
+ATTRIBUTE_ALWAYS_INLINE
+static inline void initCS() {
+  pinMode(s_chipSelectPin, OUTPUT);  // Warning: implicit conversion
+}
+
+// Asserts or deasserts the chip-select pin.
+ATTRIBUTE_ALWAYS_INLINE
+static inline void assertCS(const bool flag) {
+  DIGITAL_WRITE(s_chipSelectPin, flag ? LOW : HIGH);  // Warning: implicit conversion
+}
+
 // Reads bytes starting from the specified register.
 static void read(const uint16_t addr, const uint8_t block,
                  void* const buf, const size_t len) {
@@ -237,10 +249,10 @@ static void read(const uint16_t addr, const uint8_t block,
   // Write zeros during transfer (is this step even necessary?)
   (void)std::memset(buf, 0, len);
 
-  DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
+  assertCS(true);
   spi.transfer(s_spiBuf, 3);
   spi.transfer(buf, len);
-  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+  assertCS(false);
 }
 
 // // Writes to the specified register.
@@ -254,7 +266,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //   size_t lenRem = len;
 
 //   size_t index = 3;
-//   DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
+//   assertCS(true);
 //   do {
 //     size_t size = std::min(lenRem, std::size(s_spiBuf) - index);
 //     (void)std::memcpy(&s_spiBuf[index], pBuf, size);
@@ -264,7 +276,7 @@ static void read(const uint16_t addr, const uint8_t block,
 //     spi.transfer(s_spiBuf, index + size);
 //     index = 0;
 //   } while (lenRem > 0);
-//   DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+//   assertCS(false);
 // }
 
 // Writes a frame to the specified register. The data starts at &s_spiBuf[3].
@@ -274,9 +286,9 @@ static void write_frame(const uint16_t addr, const uint8_t block,
   s_spiBuf[1] = static_cast<uint8_t>(addr);
   s_spiBuf[2] = static_cast<uint8_t>((block << 3) | kControlRWBit);
 
-  DIGITAL_WRITE(s_chipSelectPin, LOW);  // Warning: implicit conversion
+  assertCS(true);
   spi.transfer(s_spiBuf, len + 3);
-  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+  assertCS(false);
 }
 
 // Writes to the specified register. The data starts at &s_spiBuf[3].
@@ -375,8 +387,8 @@ FLASHMEM static void low_level_init() {
   // Delay some worst case scenario because Arduino's Ethernet library does
   delay(560);
 
-  pinMode(s_chipSelectPin, OUTPUT);      // Warning: implicit conversion
-  DIGITAL_WRITE(s_chipSelectPin, HIGH);  // Warning: implicit conversion
+  initCS();
+  assertCS(false);
 
   spi.begin();
 
