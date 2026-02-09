@@ -52,6 +52,10 @@ constexpr uint16_t kServerPort = 5001;
 // The settings are sent after every set of bytes of this size.
 constexpr size_t kDefaultRepeatSize = 128 * 1024;  // 128 KiB
 
+const IPAddress kStaticIP;
+const IPAddress kSubnet;
+const IPAddress kGateway;
+
 // -------------------------------------------------------------------
 //  Types
 // -------------------------------------------------------------------
@@ -252,10 +256,18 @@ void setup() {
     networkChanged = true;
   });
 
-  printf("Starting Ethernet with DHCP...\r\n");
-  if (!Ethernet.begin()) {
-    printf("Failed to start Ethernet\r\n");
-    return;
+  if (kStaticIP == INADDR_NONE) {
+    printf("Starting Ethernet with DHCP...\r\n");
+    if (!Ethernet.begin()) {
+      printf("Failed to start Ethernet\r\n");
+      return;
+    }
+  } else {
+    printf("Starting Ethernet with a static IP...\r\n");
+    if (!Ethernet.begin(kStaticIP, kSubnet, kGateway)) {
+      printf("Failed to start Ethernet\r\n");
+      return;
+    }
   }
 
   // We don't really need to do the following because the
