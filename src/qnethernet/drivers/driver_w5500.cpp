@@ -217,6 +217,12 @@ static struct InputBuf {
   bool empty() const {
     return start >= size;
   }
+
+  // Clears the buffer.
+  void clear() {
+    start = 0;
+    size = 0;
+  }
 } s_inputBuf BUFFER_DMAMEM;
 
 // Interrupts
@@ -728,8 +734,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
     // Read all the data
     read(ptr, blocks::kSocketRx, s_inputBuf.buf.data(), rxSize);
-    s_inputBuf.start = 0;
-    s_inputBuf.size = 0;
+    s_inputBuf.clear();
 
     // Scan the data for valid frames
     size_t index = 0;
@@ -781,8 +786,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
   // Check for buffered data
   if (s_inputBuf.empty()) {
-    s_inputBuf.start = 0;
-    s_inputBuf.size = 0;
+    s_inputBuf.clear();
     return NULL;
   }
 
@@ -809,8 +813,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
   // No valid frames
   if (s_inputBuf.empty()) {
-    s_inputBuf.start = 0;
-    s_inputBuf.size = 0;
+    s_inputBuf.clear();
     return NULL;
   }
 
