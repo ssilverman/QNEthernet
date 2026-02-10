@@ -37,6 +37,9 @@ namespace compat {
 // It's hard to silence the warnings, even if casting a result to void
 #define ATTRIBUTE_NODISCARD /*__attribute__((warn_unused_result))*/
 #endif
+#ifndef ATTRIBUTE_PACKED
+#define ATTRIBUTE_PACKED __attribute__((packed))
+#endif
 #ifndef ATTRIBUTE_WEAK
 #define ATTRIBUTE_WEAK __attribute__((weak))
 #endif
@@ -58,6 +61,9 @@ namespace compat {
 #endif
 #ifndef ATTRIBUTE_NODISCARD
 #define ATTRIBUTE_NODISCARD [[nodiscard]]
+#endif
+#ifndef ATTRIBUTE_PACKED
+#define ATTRIBUTE_PACKED [[gnu::packed]]
 #endif
 #ifndef ATTRIBUTE_WEAK
 #define ATTRIBUTE_WEAK [[gnu::weak]]
