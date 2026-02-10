@@ -392,33 +392,6 @@ bool EthernetUDP::beginPacket(const ip_addr_t* const ipaddr,
   return true;
 }
 
-// Repeat send retry until the driver doesn't return ERR_WOULDBLOCK.
-ATTRIBUTE_NODISCARD
-static inline err_t sendWhileWouldBlock(const err_t err, udp_pcb* const pcb,
-                                        pbuf* const p,
-                                        const ip_addr_t* const ip,
-                                        const uint16_t port,
-                                        const uint16_t dataSize) {
-  err_t retval = err;
-
-  // Repeat until not ERR_WOULDBLOCK because the low-level driver returns that
-  // if there are no internal TX buffers available
-  do {
-    retval = udp_sendto(pcb, p, ip, port);
-    if (retval != ERR_WOULDBLOCK) {
-      break;
-    }
-
-    // udp_sendto() may have added a header
-    if (p->tot_len > dataSize) {
-      LWIP_ASSERT("Expected removed header",
-                  pbuf_remove_header(p, p->tot_len - dataSize) == 0);
-    }
-  } while (true);
-
-  return retval;
-}
-
 int EthernetUDP::endPacket() {
   if (!outPacket_.has_value) {
     return false;
@@ -455,7 +428,7 @@ int EthernetUDP::endPacket() {
     return false;
   }
 
-  err = sendWhileWouldBlock(err, pcb_, p, &op.addr, op.port, outSize);
+  err = udp_sendto(pcb_, p, &op.addr, op.port);
 
   outPacket_.has_value = false;
   op.clear();
@@ -528,7 +501,7 @@ bool EthernetUDP::send(const ip_addr_t* const ipaddr, const uint16_t port,
     return false;
   }
 
-  err = sendWhileWouldBlock(err, pcb_, p, ipaddr, port, adjLen);
+  err = udp_sendto(pcb_, p, ipaddr, port);
 
   (void)pbuf_free(p);
 

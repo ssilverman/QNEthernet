@@ -42,6 +42,8 @@ and this project adheres to
   * Removed all implicit conversions
   * Handle all return values in some way
 * Changed `MDNSClass` to use `std::string` instead of the Arduino `String`.
+* Changed drivers to always loop until a frame can be sent instead of returning
+  `ERR_WOULDBLOCK` or NULL.
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.

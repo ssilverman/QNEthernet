@@ -686,13 +686,14 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 }
 
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
-// This returns NULL if there is no TX buffer available.
+// This waits until there is a TX buffer available.
 ATTRIBUTE_NODISCARD
 static inline volatile enetbufferdesc_t *get_bufdesc(void) {
   volatile enetbufferdesc_t *const pBD = s_pTxBD;
 
-  if ((pBD->status & kEnetTxBdReady) != 0) {
-    return NULL;
+  while ((pBD->status & kEnetTxBdReady) != 0) {
+    // Wait until a free buffer is available
+    // TODO: Limit count?
   }
 
   return pBD;
@@ -1114,12 +1115,13 @@ bool driver_link_is_crossover(void) {
 err_t driver_output(struct pbuf *const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *const pBD = get_bufdesc();
-  if (pBD == NULL) {
-    LINK_STATS_INC(link.memerr);
-    LINK_STATS_INC(link.drop);
-    return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
-                            // UDP senders know to retry
-  }
+  // No need to check for NULL:
+  // if (pBD == NULL) {
+  //   LINK_STATS_INC(link.memerr);
+  //   LINK_STATS_INC(link.drop);
+  //   return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
+  //                           // UDP senders know to retry
+  // }
   const uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
   if (copied == 0) {
     LINK_STATS_INC(link.err);
@@ -1143,9 +1145,10 @@ bool driver_output_frame(const void *const frame, const size_t len) {
   }
 
   volatile enetbufferdesc_t *const pBD = get_bufdesc();
-  if (pBD == NULL) {
-    return false;
-  }
+  // No need to check for NULL:
+  // if (pBD == NULL) {
+  //   return false;
+  // }
 
   (void)memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1

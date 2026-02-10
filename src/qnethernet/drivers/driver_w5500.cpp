@@ -480,11 +480,15 @@ static err_t send_frame(const size_t len) {
   }
 
   // Check for space in the transmit buffer
-  uint16_t size;
-  if (!read_reg_word(kSn_TX_FSR, size)) {
-    return ERR_WOULDBLOCK;
-  }
-  if (size < len) {
+  const uint16_t txSize = []() {
+    uint16_t w;
+    while (!read_reg_word(kSn_TX_FSR, w)) {
+      // Wait for valid read
+      // TODO: Limit count?
+    }
+    return w;
+  }();
+  if (len > txSize) {
     return ERR_MEM;
   }
 
