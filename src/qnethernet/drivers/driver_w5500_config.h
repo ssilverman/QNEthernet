@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <Arduino.h>
 #include <SPI.h>
 
 // SPI settings
@@ -14,4 +15,8 @@ static const SPISettings kSPISettings{30000000, MSBFIRST, SPI_MODE0};
 static SPIClass& spi = SPI;
 static constexpr int kDefaultCSPin = 10;
 
-static constexpr bool kSocketInterruptsEnabled = false;
+// Interrupt pin. Negative for not-there.
+//
+// digitalPinToInterrupt() will return -1 if the pin is not available for
+// an interrupt.
+static constexpr int kInterruptPin = digitalPinToInterrupt(-1);

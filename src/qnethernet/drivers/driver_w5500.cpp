@@ -11,10 +11,11 @@
 #include "qnethernet/drivers/driver_w5500_config.h"
 
 // C++ includes
+#include <atomic>
 #include <cstring>
 #include <type_traits>
 
-#include <Arduino.h>  // For pinMode() and digitalWrite()
+#include <Arduino.h>
 #include <SPI.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>
@@ -217,6 +218,10 @@ static struct InputBuf {
   size_t size = 0;   // Total size
 } s_inputBuf BUFFER_DMAMEM;
 
+// Interrupts
+static std::atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
+static std::atomic_flag s_sending    = ATOMIC_FLAG_INIT;
+
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
 static int s_chipSelectPin = kDefaultCSPin;  // Note: Arduino doesn't specify pin type
@@ -365,6 +370,23 @@ static inline void write_reg_word(const uint16_t addr, const uint8_t block,
 //  Internal Functions
 // --------------------------------------------------------------------------
 
+static void recv_isr() {
+  // Read and clear the interrupts
+  const uint8_t ir = []() {
+    SPITransaction spiTransaction(spi);
+    const uint8_t ir = *kSn_IR;
+    kSn_IR = uint8_t{0xff};
+    return ir;
+  }();
+
+  if ((ir | socketinterrupts::kRecv) != 0) {
+    s_rxNotAvail.clear();
+  }
+  if ((ir | socketinterrupts::kSendOk) != 0) {
+    s_sending.clear();
+  }
+}
+
 // Sends a socket command and ensures it completes.
 static void set_socket_command(const uint8_t v) {
   kSn_CR = v;
@@ -449,12 +471,14 @@ FLASHMEM static void low_level_init() {
   }
   kSn_RXBUF_SIZE = uint8_t{kInputBufKB};
   kSn_TXBUF_SIZE = uint8_t{kInputBufKB};
-  IF_CONSTEXPR (!kSocketInterruptsEnabled) {
+  IF_CONSTEXPR (kInterruptPin < 0) {
     // Disable the socket interrupts
     kSn_IMR = uint8_t{0};
   } else {
     kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
                                    socketinterrupts::kRecv);
+    spi.usingInterrupt(kInterruptPin);
+    attachInterrupt(kInterruptPin, &recv_isr, FALLING);
   }
   set_socket_command(socketcommands::kOpen);
   if (*kSn_SR != socketstates::kMacraw) {
@@ -477,6 +501,12 @@ ATTRIBUTE_NODISCARD
 static err_t send_frame(const size_t len) {
   if (len == 0) {
     return ERR_OK;
+  }
+
+  IF_CONSTEXPR (kInterruptPin >= 0) {
+    while (s_sending.test_and_set()) {
+      // Wait until not sending
+    }
   }
 
   // Check for space in the transmit buffer
@@ -502,13 +532,6 @@ static err_t send_frame(const size_t len) {
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
-  IF_CONSTEXPR (kSocketInterruptsEnabled) {
-    // TODO: See if there's a way to make this non-blocking
-    while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
-      // Wait for the interrupt
-    }
-    kSn_IR = socketinterrupts::kSendOk;  // Clear it
-  }
 
   LINK_STATS_INC(link.xmit);
 
@@ -634,6 +657,10 @@ FLASHMEM bool driver_init(void) {
     return true;
   }
 
+  // Clear the flags
+  (void)s_rxNotAvail.test_and_set();
+  s_sending.clear();
+
   // Set the chip's MAC address
   low_level_init();
   if (s_initState != EnetInitStates::kHardwareInitialized) {
@@ -655,6 +682,11 @@ FLASHMEM void driver_deinit(void) {
       break;
   }
 
+  // Detach the interrupt
+  IF_CONSTEXPR (kInterruptPin >= 0) {
+    detachInterrupt(kInterruptPin);
+  }
+
   // Close the socket
   SPITransaction spiTransaction{spi};
   set_socket_command(socketcommands::kClose);
@@ -671,8 +703,12 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     return NULL;
   }
 
-  // Check if we have buffered data, and if not, read some in
-  if (s_inputBuf.start >= s_inputBuf.size) {
+  // Check if we have buffered or received data, and if not, read some in
+  const bool doCheck =
+      (s_inputBuf.start >= s_inputBuf.size) &&
+      ((kInterruptPin < 0) || !s_rxNotAvail.test_and_set());
+
+  if (doCheck) {
     SPITransaction spiTransaction{spi};
 
     const uint16_t rxSize = []() -> uint16_t {
@@ -740,11 +776,6 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     if (doSocketReceive && (s_inputBuf.size != 0)) {
       kSn_RX_RD = static_cast<uint16_t>(ptr + s_inputBuf.size);
       set_socket_command(socketcommands::kRecv);
-      IF_CONSTEXPR (kSocketInterruptsEnabled) {
-        if (s_inputBuf.size == rxSize) {
-          kSn_IR = socketinterrupts::kRecv;  // Clear the RECV interrupt
-        }
-      }
     }
   }
 
