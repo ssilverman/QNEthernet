@@ -58,7 +58,9 @@ void qnethernet_hal_check_core_locking(const char *file, int line,
 
 // Internal Memory Pool Sizes
 // #define MEMP_NUM_PBUF                      16
+#ifndef MEMP_NUM_RAW_PCB
 // #define MEMP_NUM_RAW_PCB                   4
+#endif  // !MEMP_NUM_RAW_PCB
 #ifndef MEMP_NUM_UDP_PCB
 // Increment MEMP_NUM_UDP_PCB by 1 for mDNS, if needed:
 #define MEMP_NUM_UDP_PCB                   8  /* 4 */
