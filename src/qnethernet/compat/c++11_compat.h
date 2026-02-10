@@ -75,6 +75,12 @@ inline std::unique_ptr<T> make_unique(Args&&... args) {
 #endif  // C++ < 14
 }
 
+#if __cplusplus < 201703L
+#define IF_CONSTEXPR if
+#else
+#define IF_CONSTEXPR if constexpr
+#endif  // C++ < 17
+
 }  // namespace compat
 }  // namespace network
 }  // namespace qindesign
