@@ -671,10 +671,13 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   if (s_inputBuf.start >= s_inputBuf.size) {
     SPITransaction spiTransaction{spi};
 
-    uint16_t rxSize;
-    if (!read_reg_word(kSn_RX_RSR, rxSize)) {
-      return NULL;
-    }
+    const uint16_t rxSize = []() -> uint16_t {
+      uint16_t w;
+      if (!read_reg_word(kSn_RX_RSR, w)) {
+        return 0;
+      }
+      return w;
+    }();
     if (rxSize < 2) {
       return NULL;
     }
