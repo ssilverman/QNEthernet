@@ -67,7 +67,7 @@ enum Flags : uint32_t {
 };
 
 // v1 header.
-struct SettingsV1 {
+struct [[gnu::packed]] SettingsV1 {
   uint32_t flags;
   uint32_t numThreads;
   uint32_t port;
@@ -88,7 +88,7 @@ struct SettingsV1 {
 };
 
 // "Extended" header.
-struct ExtSettings {
+struct [[gnu::packed]] ExtSettings {
   // Extended fields
   int32_t type;
   int32_t length;
@@ -119,7 +119,7 @@ struct ExtSettings {
 };
 
 // This is the iPerf settings struct sent from the client.
-struct Settings {
+struct [[gnu::packed]] Settings {
   SettingsV1 settingsV1;
   ExtSettings extSettings;
 };
