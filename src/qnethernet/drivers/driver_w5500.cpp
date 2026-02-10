@@ -223,6 +223,14 @@ static struct InputBuf {
     start = 0;
     size = 0;
   }
+
+  // Reads a frame length value. This assume the data exists at the given index.
+  // This handles conversion from network order.
+  uint16_t readFrameLen(const size_t index) const {
+    uint16_t v;
+    std::memcpy(&v, &buf[index], 2);
+    return ntohs(v);
+  }
 } s_inputBuf BUFFER_DMAMEM;
 
 // Interrupts
@@ -743,11 +751,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     while (index + 2 <= rxSize) {  // Account for a 2-byte frame length
       s_inputBuf.size = index;
 
-      const uint16_t frameLen = [](size_t index) {
-        uint16_t v;
-        std::memcpy(&v, &s_inputBuf.buf[index], 2);
-        return ntohs(v);
-      }(index);
+      const uint16_t frameLen = s_inputBuf.readFrameLen(index);
       // The frame length includes its 2-byte self
 
       // Check for bad data
@@ -797,8 +801,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   // Loop until a valid frame or end of the buffer
   do {
     // Read the frame length
-    std::memcpy(&frameLen, &s_inputBuf.buf[s_inputBuf.start], 2);
-    frameLen = ntohs(frameLen);
+    frameLen = s_inputBuf.readFrameLen(s_inputBuf.start);
     // The frame length includes its 2-byte self
 
     LINK_STATS_INC(link.recv);
