@@ -212,6 +212,11 @@ static struct InputBuf {
   std::array<uint8_t, kInputBufKB * 1024> buf;
   size_t start = 0;  // Where to read from
   size_t size = 0;   // Total size
+
+  // Returns whether this buffer is empty, but not necessarily clear.
+  bool empty() const {
+    return start >= size;
+  }
 } s_inputBuf BUFFER_DMAMEM;
 
 // Interrupts
@@ -700,9 +705,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   }
 
   // Check if we have buffered or received data, and if not, read some in
-  const bool doCheck =
-      (s_inputBuf.start >= s_inputBuf.size) &&
-      ((kInterruptPin < 0) || !s_rxNotAvail.test_and_set());
+  const bool doCheck = s_inputBuf.empty() &&
+                       ((kInterruptPin < 0) || !s_rxNotAvail.test_and_set());
 
   if (doCheck) {
     SPITransaction spiTransaction{spi};
@@ -776,7 +780,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   }
 
   // Check for buffered data
-  if (s_inputBuf.start >= s_inputBuf.size) {
+  if (s_inputBuf.empty()) {
     s_inputBuf.start = 0;
     s_inputBuf.size = 0;
     return NULL;
@@ -801,10 +805,10 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
     LINK_STATS_INC(link.drop);
     s_inputBuf.start += frameLen;
-  } while (s_inputBuf.start < s_inputBuf.size);
+  } while (!s_inputBuf.empty());
 
   // No valid frames
-  if (s_inputBuf.start >= s_inputBuf.size) {
+  if (s_inputBuf.empty()) {
     s_inputBuf.start = 0;
     s_inputBuf.size = 0;
     return NULL;
