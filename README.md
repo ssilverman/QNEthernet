@@ -157,13 +157,13 @@ For API additions beyond what the Arduino-style API provides, see:\
 * `EthernetServer::write(...)` functions always return the write size requested.
   This is because different clients may behave differently.
 * The examples at
-  <https://docs.arduino.cc/libraries/ethernet/#Server%20Class> (server.accept())
-  and <https://docs.arduino.cc/libraries/ethernet/#Client%20Class>
-  (if&nbsp;(EthernetClient)) directly contradict each other with regard to what
-  `operator bool()` means in `EthernetClient`. The first example uses it as
-  "already connected", while the second uses it as "available to connect".
-  "Connected" is the chosen concept, but different from `connected()` in that it
-  doesn't check for unread data.
+  [server.accept()](https://docs.arduino.cc/libraries/ethernet/#Server%20Class)
+  and
+  [if&nbsp;(EthernetClient)](https://docs.arduino.cc/libraries/ethernet/#Client%20Class)
+  directly contradict each other with regard to what `operator bool()` means in
+  `EthernetClient`. The first example uses it as "already connected", while the
+  second uses it as "available to connect". "Connected" is the chosen concept,
+  but different from `connected()` in that it doesn't check for unread data.
 * The three Arduino-defined `Ethernet.begin(...)` functions that use the MAC
   address and that don't specify a subnet are deprecated because they make some
   incorrect assumptions about the subnet and gateway.
@@ -178,7 +178,8 @@ For API additions beyond what the Arduino-style API provides, see:\
 * The `EthernetUDP::flush()` function does nothing because it is ill-defined.
   Note that this is actually defined in the "Arduino WiFi" and Teensy "UDP" APIs
   and not in the main "Arduino Ethernet" API.\
-  See: <https://docs.arduino.cc/libraries/wifi/#UDP%20class> (WiFiUDP.flush())
+  See:
+  [WiFiUDP.flush()](https://docs.arduino.cc/language-reference/en/functions/wifi/udp/#wifiudpflush)
 * The system starts with the Teensy's actual MAC address or some default MAC
   address on other platforms. If you want to use that address with the
   MAC-taking API, you can collect it with `Ethernet.macAddress(mac)` and then
@@ -988,8 +989,8 @@ In summary, my ***strong*** suggestion is to use the `write(...)` functions when
 sending network data, checking the return values and acting on them. Or you can
 use the library's `writeFully(...)` functions.
 
-See the discussion at:
-<https://forum.pjrc.com/index.php?threads/nativeethernet-stalling-with-dropped-packets.68389/>
+See the discussion at the Teensy Forum:
+[NativeEthernet stalling with dropped packets](https://forum.pjrc.com/index.php?threads/nativeethernet-stalling-with-dropped-packets.68389/)
 
 ### `writeFully()` with more break conditions
 
@@ -1127,10 +1128,10 @@ Firstly, `connect()` blocks. See the
 to connect.
 
 The Arduino-style API,
-[here](https://docs.arduino.cc/libraries/ethernet/#Client%20Class
-(client.connect())), used to define a set of possible `int` return values for
-this function, but now it returns a Boolean value indicating success. Note that
-the function signatures still return an `int`.
+[client.connect()](https://docs.arduino.cc/libraries/ethernet/#Client%20Class),
+used to define a set of possible `int` return values for this function, but now
+it returns a Boolean value indicating success. Note that the function signatures
+still return an `int`.
 
 ### Non-blocking connection functions
 
@@ -1537,7 +1538,8 @@ of how to use this feature:
 
 Currently, there doesn't seem to be an Arduino-friendly version of this library.
 So, first download or clone a snapshot of the latest 2.x.x version (current as
-of this writing is 2.28.9): <http://github.com/Mbed-TLS/mbedtls>
+of this writing is 2.28.9):
+[https://github.com/Mbed-TLS/mbedtls](http://github.com/Mbed-TLS/mbedtls)
 
 See the `v2.28.9` or `mbedtls-2.28.9` tags for the 2.28.9 version, or the
 `mbedtls-2.28` branch for the latest 2.28.x version. The `development` and
@@ -1567,7 +1569,8 @@ category=Communication
 url=https://github.com/Mbed-TLS/mbedtls
 includes=mbedtls.h
 ```
-(Ref: <https://arduino.github.io/arduino-cli/latest/library-specification/>)
+(Ref:
+[Library specification](https://arduino.github.io/arduino-cli/latest/library-specification/))
 
 Last, modify the _mbedtls/src/mbedtls/config.h_ file by replacing it with the
 contents of _examples/MbedTLSDemo/sample_mbedtls_config.h_. Note that Mbed TLS
@@ -1622,7 +1625,8 @@ Next, create a _library.json_ file inside _"Libraries"/mbedtls/_:
   }
 }
 ```
-(Ref: <https://docs.platformio.org/en/latest/manifests/library-json/index.html>)
+(Ref:
+[library.json](https://docs.platformio.org/en/latest/manifests/library-json/index.html))
 
 Last, modify the _mbedtls/include/mbedtls/config.h_ file per the instructions in
 the previous, Arduino IDE install, section.
