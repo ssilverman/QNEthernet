@@ -198,7 +198,7 @@ static_assert(kMaxFrameLen >= 4, "Max. frame len must be >= 4");
 
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
-static constexpr size_t kInputBufKB = 16;  // In kilibytes
+static constexpr size_t kInputBufKB = 16;  // In kibibytes
 
 #if !QNETHERNET_BUFFERS_IN_RAM1 && \
     (defined(TEENSYDUINO) && defined(__IMXRT1062__))
