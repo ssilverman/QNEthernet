@@ -25,6 +25,7 @@
 #include "lwip/def.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 #if defined(TEENSYDUINO)
@@ -103,7 +104,7 @@ struct Reg {
   explicit operator T() const {
     T r;
     read(addr, block, &r, sizeof(T));
-    if /*constexpr*/ (sizeof(T) == 2) {
+    IF_CONSTEXPR (sizeof(T) == 2) {
       r = ntohs(r);
     }
     return r;
@@ -448,7 +449,7 @@ FLASHMEM static void low_level_init() {
   }
   kSn_RXBUF_SIZE = uint8_t{kInputBufKB};
   kSn_TXBUF_SIZE = uint8_t{kInputBufKB};
-  if /*constexpr*/ (!kSocketInterruptsEnabled) {
+  IF_CONSTEXPR (!kSocketInterruptsEnabled) {
     // Disable the socket interrupts
     kSn_IMR = uint8_t{0};
   } else {
@@ -497,7 +498,7 @@ static err_t send_frame(const size_t len) {
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
-  if /*constexpr*/ (kSocketInterruptsEnabled) {
+  IF_CONSTEXPR (kSocketInterruptsEnabled) {
     // TODO: See if there's a way to make this non-blocking
     while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
       // Wait for the interrupt
@@ -735,7 +736,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     if (doSocketReceive && (s_inputBuf.size != 0)) {
       kSn_RX_RD = static_cast<uint16_t>(ptr + s_inputBuf.size);
       set_socket_command(socketcommands::kRecv);
-      if /*constexpr*/ (kSocketInterruptsEnabled) {
+      IF_CONSTEXPR (kSocketInterruptsEnabled) {
         if (s_inputBuf.size == rxSize) {
           kSn_IR = socketinterrupts::kRecv;  // Clear the RECV interrupt
         }
