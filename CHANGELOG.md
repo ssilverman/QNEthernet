@@ -44,6 +44,7 @@ and this project adheres to
 * Changed `MDNSClass` to use `std::string` instead of the Arduino `String`.
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
+* Made `QNETHERNET_ENABLE_PING_SEND` on by default.
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.
