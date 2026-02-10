@@ -1995,29 +1995,31 @@ command line are either wrapped in an `#ifndef` block or not defined at all.
 Useful macro list; please see further descriptions in `opt.h` and
 in `mdns_opts.h`:
 
-| Macro                     | Description                                                |
-| ------------------------- | ---------------------------------------------------------- |
-| `DNS_MAX_RETRIES`         | Maximum number of DNS retries                              |
-| `LWIP_ALTCP`              | `1` to enable application layered TCP (eg. TLS, proxies)   |
-| `LWIP_ALTCP_TLS`          | `1` to enable TLS support for ALTCP                        |
-| `LWIP_ALTCP_TLS_MBEDTLS`  | `1` to enable the Mbed TLS implementation for ALTCP TLS    |
-| `LWIP_DHCP`               | Zero to disable DHCP                                       |
-| `LWIP_DNS`                | Zero to disable DNS                                        |
-| `LWIP_IGMP`               | Zero to disable IGMP; also disables mDNS by default        |
-| `LWIP_LOOPBACK_MAX_PBUFS` | Non-zero to specify loopback queue size                    |
-| `LWIP_MDNS_RESPONDER`     | Zero to disable mDNS capabilities                          |
-| `LWIP_NETIF_LOOPBACK`     | `1` to enable loopback capabilities                        |
-| `LWIP_STATS`              | `1` to enable lwIP stats collection                        |
-| `LWIP_STATS_LARGE`        | `1` to use 32-bit stats counters instead of 16-bit         |
-| `LWIP_TCP`                | Zero to disable TCP                                        |
-| `LWIP_UDP`                | Zero to disable UDP; also disables DHCP and DNS by default |
-| `MDNS_MAX_SERVICES`       | Maximum number of mDNS services                            |
-| `MEM_LIBC_MALLOC`         | Zero to enable use of lwIP-defined malloc functions        |
-| `MEM_SIZE`                | Heap memory size; unused if `MEM_LIBC_MALLOC` is enabled   |
-| `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                                 |
-| `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                            |
-| `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets                                      |
-| `MEMP_NUM_UDP_PCB`        | Number of UDP sockets                                      |
+| Macro                     | Description                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `DNS_MAX_RETRIES`         | Maximum number of DNS retries                                                        |
+| `LWIP_ALTCP`              | `1` to enable application layered TCP (eg. TLS, proxies)                             |
+| `LWIP_ALTCP_TLS`          | `1` to enable TLS support for ALTCP                                                  |
+| `LWIP_ALTCP_TLS_MBEDTLS`  | `1` to enable the Mbed TLS implementation for ALTCP TLS                              |
+| `LWIP_DHCP`               | Zero to disable DHCP                                                                 |
+| `LWIP_DNS`                | Zero to disable DNS                                                                  |
+| `LWIP_IGMP`               | Zero to disable IGMP; also disables mDNS by default                                  |
+| `LWIP_LOOPBACK_MAX_PBUFS` | Non-zero to specify loopback queue size                                              |
+| `LWIP_MDNS_RESPONDER`     | Zero to disable mDNS capabilities                                                    |
+| `LWIP_NETIF_LOOPBACK`     | `1` to enable loopback capabilities                                                  |
+| `LWIP_RAW`                | `1` to enable raw IP packet interaction (also set via `QNETHERNET_ENABLE_PING_SEND`) |
+| `LWIP_STATS`              | `1` to enable lwIP stats collection                                                  |
+| `LWIP_STATS_LARGE`        | `1` to use 32-bit stats counters instead of 16-bit                                   |
+| `LWIP_TCP`                | Zero to disable TCP                                                                  |
+| `LWIP_UDP`                | Zero to disable UDP; also disables DHCP and DNS by default                           |
+| `MDNS_MAX_SERVICES`       | Maximum number of mDNS services                                                      |
+| `MEM_LIBC_MALLOC`         | Zero to enable use of lwIP-defined malloc functions                                  |
+| `MEM_SIZE`                | Heap memory size; unused if `MEM_LIBC_MALLOC` is enabled                             |
+| `MEMP_NUM_IGMP_GROUP`     | Number of multicast groups                                                           |
+| `MEMP_NUM_RAW_PCB`        | Number of raw connections                                                            |
+| `MEMP_NUM_TCP_PCB`        | Number of listening TCP sockets                                                      |
+| `MEMP_NUM_TCP_PCB_LISTEN` | Number of TCP sockets                                                                |
+| `MEMP_NUM_UDP_PCB`        | Number of UDP sockets                                                                |
 
 Some extra conditions to keep in mind:
 * `MEMP_NUM_IGMP_GROUP`: Count must include 1 for the "all systems" group and 1
