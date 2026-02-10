@@ -77,16 +77,10 @@ struct Reg {
         block(static_cast<uint8_t>((r.block & 0x03) + (socket << 2))) {}
 
   // Note: C++11-style std::enable_if
-  template <
-      typename U,
-      typename std::enable_if<!std::is_same<U, T>::value, bool>::type = true>
-  const Reg& operator=(const U v) const {
-    return operator=(static_cast<const T>(v));
-  }
-
-  // Note: C++11-style std::enable_if
   template <typename U = T,
-            typename std::enable_if<sizeof(U) == 1, bool>::type = true>
+            typename std::enable_if<std::is_same<U, T>::value &&
+                                        (sizeof(U) == 1),
+                                    bool>::type = true>
   const Reg& operator=(const T v) const {
     write_reg(addr, block, v);
     return *this;
@@ -94,7 +88,9 @@ struct Reg {
 
   // Note: C++11-style std::enable_if
   template <typename U = T,
-            typename std::enable_if<sizeof(U) == 2, bool>::type = true>
+            typename std::enable_if<std::is_same<U, T>::value &&
+                                        (sizeof(U) == 2),
+                                    bool>::type = true>
   const Reg& operator=(const T v) const {
     write_reg_word(addr, block, v);
     return *this;
