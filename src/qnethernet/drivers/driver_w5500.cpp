@@ -726,9 +726,6 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
         break;
       }
 
-      // Rewrite the frame length in proper order
-      std::memcpy(&s_inputBuf.buf[index], &frameLen, 2);
-
       index += frameLen;
     }
 
@@ -757,8 +754,9 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
   // Loop until a valid frame or end of the buffer
   do {
-    // Read the frame length (it's already in the correct order)
+    // Read the frame length
     std::memcpy(&frameLen, &s_inputBuf.buf[s_inputBuf.start], 2);
+    frameLen = ntohs(frameLen);
     // The frame length includes its 2-byte self
 
     LINK_STATS_INC(link.recv);
