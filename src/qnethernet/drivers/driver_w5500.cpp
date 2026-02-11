@@ -536,29 +536,22 @@ static err_t send_frame(const size_t len) {
     }
   }
 
-  // Send the data
+  // Write and then send the data
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
-
-  (void)s_sendNotDone.test_and_set();
   set_socket_command(socketcommands::kSend);
 
-  // Wait for send to complete and, while doing so, check that the
-  // socket is still open
+  // Wait for SEND to complete
   // TODO: See if there's a way to make this non-blocking
   IF_CONSTEXPR (kInterruptPin < 0) {
     while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
-      if (*kSn_SR != socketstates::kMacraw) {
-        return ERR_CLSD;
-      }
+      // Wait for SEND complete
     }
     kSn_IR = socketinterrupts::kSendOk;  // Clear it
   } else {
     while (s_sendNotDone.test_and_set()) {
-      if (*kSn_SR != socketstates::kMacraw) {
-        return ERR_CLSD;
-      }
+      // Wait for SEND complete
     }
   }
 
