@@ -481,11 +481,10 @@ FLASHMEM static void low_level_init() {
   kSn_RXBUF_SIZE = uint8_t{kInputBufKB};
   kSn_TXBUF_SIZE = uint8_t{kInputBufKB};
   IF_CONSTEXPR (kInterruptPin < 0) {
-    // Disable the socket interrupts
-    kSn_IMR = uint8_t{0};
+    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk);
   } else {
-    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kRecv);
-    // Not utilizing SendOk just now
+    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
+                                   socketinterrupts::kRecv);
     spi.usingInterrupt(kInterruptPin);
     attachInterrupt(kInterruptPin, &recv_isr, FALLING);
   }
@@ -512,8 +511,6 @@ static err_t send_frame(const size_t len) {
     return ERR_OK;
   }
 
-  // TODO: Should we wait until we can send? It doesn't seem to be needed.
-
   // Wait for space in the transmit buffer
   while (true) {
     // TODO: Limit count?
@@ -537,6 +534,16 @@ static err_t send_frame(const size_t len) {
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
+
+  // Wait for send to complete and, while doing so, check that the
+  // socket is still open
+  // TODO: See if there's a way to make this non-blocking
+  while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
+    if (*kSn_SR != socketstates::kMacraw) {
+      return ERR_CLSD;
+    }
+  }
+  kSn_IR = socketinterrupts::kSendOk;  // Clear it
 
   LINK_STATS_INC(link.xmit);
 
