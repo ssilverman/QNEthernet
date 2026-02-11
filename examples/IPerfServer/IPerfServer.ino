@@ -51,6 +51,7 @@ constexpr uint16_t kServerPort = 5001;
 // The settings are sent after every set of bytes of this size.
 constexpr size_t kDefaultRepeatSize = 128 * 1024;  // 128 KiB
 
+// Set these to something to use a static IP instead of one from DHCP
 const IPAddress kStaticIP;
 const IPAddress kSubnet;
 const IPAddress kGateway;
