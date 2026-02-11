@@ -232,7 +232,8 @@ static struct InputBuf {
 } s_inputBuf BUFFER_DMAMEM;
 
 // Interrupts
-static std::atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
+static std::atomic_flag s_rxNotAvail  = ATOMIC_FLAG_INIT;
+static std::atomic_flag s_sendNotDone = ATOMIC_FLAG_INIT;
 
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
@@ -394,6 +395,9 @@ static void recv_isr() {
   if ((ir | socketinterrupts::kRecv) != 0) {
     s_rxNotAvail.clear();
   }
+  if ((ir | socketinterrupts::kSendOk) != 0) {
+    s_sendNotDone.clear();
+  }
 }
 
 // Sends a socket command and ensures it completes.
@@ -473,6 +477,9 @@ FLASHMEM static void low_level_init() {
   s_macFilteringEnabled = true;
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE || QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
+  // Clear the interrupts
+  kSn_IR = uint8_t{0xff};
+
   // Set the others to 0k before setting the first, so the sum won't overflow
   for (uint8_t i = 1; i < 8; ++i) {
     Reg<uint8_t>{kSn_RXBUF_SIZE, i} = uint8_t{0};
@@ -533,17 +540,27 @@ static err_t send_frame(const size_t len) {
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
+
+  (void)s_sendNotDone.test_and_set();
   set_socket_command(socketcommands::kSend);
 
   // Wait for send to complete and, while doing so, check that the
   // socket is still open
   // TODO: See if there's a way to make this non-blocking
-  while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
-    if (*kSn_SR != socketstates::kMacraw) {
-      return ERR_CLSD;
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
+      if (*kSn_SR != socketstates::kMacraw) {
+        return ERR_CLSD;
+      }
+    }
+    kSn_IR = socketinterrupts::kSendOk;  // Clear it
+  } else {
+    while (s_sendNotDone.test_and_set()) {
+      if (*kSn_SR != socketstates::kMacraw) {
+        return ERR_CLSD;
+      }
     }
   }
-  kSn_IR = socketinterrupts::kSendOk;  // Clear it
 
   LINK_STATS_INC(link.xmit);
 
@@ -671,6 +688,7 @@ FLASHMEM bool driver_init(void) {
 
   // Clear the flags
   (void)s_rxNotAvail.test_and_set();
+  (void)s_sendNotDone.test_and_set();
 
   // Set the chip's MAC address
   low_level_init();
