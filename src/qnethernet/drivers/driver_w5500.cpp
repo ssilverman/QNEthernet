@@ -131,6 +131,7 @@ static constexpr Reg<uint8_t> kSn_SR{0x0003, blocks::kSocket};          // Socke
 static constexpr Reg<uint8_t> kSn_RXBUF_SIZE{0x001e, blocks::kSocket};  // Socket n RX Buffer Size
 static constexpr Reg<uint8_t> kSn_TXBUF_SIZE{0x001f, blocks::kSocket};  // Socket n TX Buffer Size
 static constexpr Reg<uint16_t> kSn_TX_FSR{0x0020, blocks::kSocket};     // Socket n TX Free Size (16 bits)
+static constexpr Reg<uint16_t> kSn_TX_RD{0x0022, blocks::kSocket};      // Socket n TX Read Pointer (16 bits)
 static constexpr Reg<uint16_t> kSn_TX_WR{0x0024, blocks::kSocket};      // Socket n TX Write Pointer (16 bits)
 static constexpr Reg<uint16_t> kSn_RX_RSR{0x0026, blocks::kSocket};     // Socket n RX Received Size (16 bits)
 static constexpr Reg<uint16_t> kSn_RX_RD{0x0028, blocks::kSocket};      // Socket n RX Read Pointer (16 bits)
@@ -233,6 +234,10 @@ static struct InputBuf {
 // Interrupts
 static std::atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
 static std::atomic_flag s_sending    = ATOMIC_FLAG_INIT;
+
+// Send status tracking, if we're not using interrupts
+static uint16_t s_txReadPtr = 0;
+static size_t s_sentSize    = 0;
 
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
@@ -515,9 +520,17 @@ static err_t send_frame(const size_t len) {
     return ERR_OK;
   }
 
+  // Wait until we can send
   IF_CONSTEXPR (kInterruptPin >= 0) {
     while (s_sending.test_and_set()) {
       // Wait until not sending
+    }
+  } else {
+    if (s_sentSize != 0) {
+      while (static_cast<uint16_t>(*kSn_TX_RD - s_txReadPtr) < s_sentSize) {
+        // Wait for send complete
+      }
+      s_sentSize = 0;
     }
   }
 
@@ -543,7 +556,12 @@ static err_t send_frame(const size_t len) {
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    s_txReadPtr = *kSn_TX_RD;
+    s_sentSize = len;
+  }
   set_socket_command(socketcommands::kSend);
+  // Send-complete is checked on the next send attempt
 
   LINK_STATS_INC(link.xmit);
 
@@ -680,6 +698,12 @@ FLASHMEM bool driver_init(void) {
   }
 
   s_initState = EnetInitStates::kInitialized;
+
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    // Read the current TX read pointer
+    s_txReadPtr = *kSn_TX_RD;
+    s_sentSize = 0;
+  }
 
   return true;
 }
