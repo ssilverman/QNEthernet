@@ -83,7 +83,7 @@
 
 // Enables ping send support. (Includes raw IP layer support.)
 #ifndef QNETHERNET_ENABLE_PING_SEND
-#define QNETHERNET_ENABLE_PING_SEND 1
+#define QNETHERNET_ENABLE_PING_SEND 0
 #endif
 
 // Enables promiscuous mode.
