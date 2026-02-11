@@ -233,11 +233,6 @@ static struct InputBuf {
 
 // Interrupts
 static std::atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
-static std::atomic_flag s_sending    = ATOMIC_FLAG_INIT;
-
-// Send status tracking, if we're not using interrupts
-static uint16_t s_txReadPtr = 0;
-static size_t s_sentSize    = 0;
 
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
@@ -399,9 +394,6 @@ static void recv_isr() {
   if ((ir | socketinterrupts::kRecv) != 0) {
     s_rxNotAvail.clear();
   }
-  if ((ir | socketinterrupts::kSendOk) != 0) {
-    s_sending.clear();
-  }
 }
 
 // Sends a socket command and ensures it completes.
@@ -492,8 +484,8 @@ FLASHMEM static void low_level_init() {
     // Disable the socket interrupts
     kSn_IMR = uint8_t{0};
   } else {
-    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
-                                   socketinterrupts::kRecv);
+    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kRecv);
+    // Not utilizing SendOk just now
     spi.usingInterrupt(kInterruptPin);
     attachInterrupt(kInterruptPin, &recv_isr, FALLING);
   }
@@ -520,48 +512,31 @@ static err_t send_frame(const size_t len) {
     return ERR_OK;
   }
 
-  // Wait until we can send
-  IF_CONSTEXPR (kInterruptPin >= 0) {
-    while (s_sending.test_and_set()) {
-      // Wait until not sending
-    }
-  } else {
-    if (s_sentSize != 0) {
-      while (static_cast<uint16_t>(*kSn_TX_RD - s_txReadPtr) < s_sentSize) {
-        // Wait for send complete
-      }
-      s_sentSize = 0;
-    }
-  }
+  // TODO: Should we wait until we can send? It doesn't seem to be needed.
 
-  // Check for space in the transmit buffer
-  const uint16_t txSize = []() {
-    uint16_t w;
-    while (!read_reg_word(kSn_TX_FSR, w)) {
+  // Wait for space in the transmit buffer
+  while (true) {
+    // TODO: Limit count?
+    uint16_t txSize;
+    while (!read_reg_word(kSn_TX_FSR, txSize)) {
       // Wait for valid read
       // TODO: Limit count?
     }
-    return w;
-  }();
-  if (len > txSize) {
-    return ERR_MEM;
-  }
+    if (len <= txSize) {
+      break;
+    }
 
-  // Check that the socket is open
-  if (*kSn_SR == socketstates::kClosed) {
-    return ERR_CLSD;
+    // Check that the socket is still open
+    if (*kSn_SR != socketstates::kMacraw) {
+      return ERR_CLSD;
+    }
   }
 
   // Send the data
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
-  IF_CONSTEXPR (kInterruptPin < 0) {
-    s_txReadPtr = *kSn_TX_RD;
-    s_sentSize = len;
-  }
   set_socket_command(socketcommands::kSend);
-  // Send-complete is checked on the next send attempt
 
   LINK_STATS_INC(link.xmit);
 
@@ -689,7 +664,6 @@ FLASHMEM bool driver_init(void) {
 
   // Clear the flags
   (void)s_rxNotAvail.test_and_set();
-  s_sending.clear();
 
   // Set the chip's MAC address
   low_level_init();
@@ -698,12 +672,6 @@ FLASHMEM bool driver_init(void) {
   }
 
   s_initState = EnetInitStates::kInitialized;
-
-  IF_CONSTEXPR (kInterruptPin < 0) {
-    // Read the current TX read pointer
-    s_txReadPtr = *kSn_TX_RD;
-    s_sentSize = 0;
-  }
 
   return true;
 }
