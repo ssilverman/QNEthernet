@@ -169,19 +169,16 @@ namespace socketinterrupts {
 // For using RAII to begin and end a SPI transaction.
 class SPITransaction final {
  public:
-  explicit SPITransaction(SPIClass& spi) : spi_(spi) {
-    spi_.beginTransaction(kSPISettings);
+  explicit SPITransaction() {
+    spi.beginTransaction(kSPISettings);
   }
 
   ~SPITransaction() {
-    spi_.endTransaction();
+    spi.endTransaction();
   }
 
   SPITransaction(const SPITransaction&) = delete;
   SPITransaction& operator=(const SPITransaction&) = delete;
-
- private:
-  SPIClass& spi_;
 };
 
 // --------------------------------------------------------------------------
@@ -388,7 +385,7 @@ static inline void write_reg_word(const uint16_t addr, const uint8_t block,
 static void recv_isr() {
   // Read and clear the interrupts
   const uint8_t ir = []() {
-    SPITransaction spiTransaction(spi);
+    SPITransaction spiTransaction;
     const uint8_t ir = *kSn_IR;
     kSn_IR = uint8_t{0xff};
     return ir;
@@ -613,7 +610,7 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
       return false;
   }
 
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
 
   auto reg = kSHAR;
   for (int i = 0; i < ETH_HWADDR_LEN; ++i) {
@@ -636,7 +633,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
   (void)std::memcpy(s_frameBuf, mac, ETH_HWADDR_LEN);
 
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
   write_frame(kSHAR, ETH_HWADDR_LEN);
 
   return true;
@@ -703,7 +700,7 @@ FLASHMEM void driver_deinit(void) {
   }
 
   // Close the socket
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
   set_socket_command(socketcommands::kClose);
 
   spi.end();
@@ -723,7 +720,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
                        ((kInterruptPin < 0) || !s_rxNotAvail.test_and_set());
 
   if (doCheck) {
-    SPITransaction spiTransaction{spi};
+    SPITransaction spiTransaction;
 
     const uint16_t rxSize = []() -> uint16_t {
       uint16_t w;
@@ -835,7 +832,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 }
 
 void driver_poll(struct netif* const netif) {
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
   check_link_status(netif);
 }
 
@@ -886,7 +883,7 @@ err_t driver_output(struct pbuf* const p) {
     return ERR_BUF;
   }
 
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
   return send_frame(p->tot_len);
 }
 
@@ -898,7 +895,7 @@ bool driver_output_frame(const void* const frame, const size_t len) {
 
   (void)std::memcpy(s_frameBuf, frame, len);
 
-  SPITransaction spiTransaction{spi};
+  SPITransaction spiTransaction;
   return send_frame(len);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -918,7 +915,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
   // It appears MAC filtering still allows multicast destinations through, so
   // don't disable filtering for those (LSb of first byte is 1)
   if (allow && ((mac[0] & 0x01) == 0) && s_macFilteringEnabled) {
-    SPITransaction spiTransaction{spi};
+    SPITransaction spiTransaction;
 
     // Allow all MACs now
     uint8_t r = *kSn_MR;
