@@ -566,21 +566,16 @@ static void restartSocket() {
   }
 }
 
-// Waits until any pending SEND request is compete.
-static void waitForSendDone() {
+// Waits until any pending SEND request is compete. This should only be called
+// if interrupts are not configured.
+static void waitForSendDoneNoInterrupts() {
   // TODO: See if there's a way to make this non-blocking
-  IF_CONSTEXPR (kInterruptPin < 0) {
-    while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
-      // Wait for SEND complete
-    }
-    // Note: Clearing this interrupt, when done before the send, seems to
-    //       prevent more traffic
-    kSn_IR = socketinterrupts::kSendOk;  // Clear it
-  } else {
-    while (s_sendNotDone.test_and_set()) {
-      // Wait for SEND complete
-    }
+  while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
+    // Wait for SEND complete
   }
+  // Note: Clearing this interrupt, when done before the send, seems to
+  //       prevent more traffic
+  kSn_IR = socketinterrupts::kSendOk;  // Clear it
 }
 
 // Sends a frame. This uses data already in s_frameBuf.
@@ -593,6 +588,14 @@ static err_t send_frame(const size_t len) {
   // if (len > (kInputBufKB << 10)) {
   //   return ERR_ARG;
   // }
+
+  // Only wait before send if interrupts are configured
+  // See notes below
+  IF_CONSTEXPR (kInterruptPin >= 0) {
+    while (s_sendNotDone.test_and_set()) {
+      // Wait for SEND complete
+    }
+  }
 
   // Wait for space in the transmit buffer
   while (true) {
@@ -624,7 +627,9 @@ static err_t send_frame(const size_t len) {
   // Note: It's probably better to do this check before send, to
   //       prevent some waiting, but clearing the SEND_OK interrupt
   //       bit at that point seems to prevent traffic
-  waitForSendDone();
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    waitForSendDoneNoInterrupts();
+  }
 
   LINK_STATS_INC(link.xmit);
 
