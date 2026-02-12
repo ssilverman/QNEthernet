@@ -16,6 +16,10 @@
 //
 // This file is part of the QNEthernet library.
 
+// Refs:
+// * https://github.com/Wiznet/ioLibrary_Driver
+// * https://github.com/RT-Thread-packages/wiznet
+
 #include "qnethernet/lwip_driver.h"
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
@@ -585,6 +589,10 @@ static err_t send_frame(const size_t len) {
   if (len == 0) {
     return ERR_OK;
   }
+  // Assume len has been sanitized
+  // if (len > (kInputBufKB << 10)) {
+  //   return ERR_ARG;
+  // }
 
   // Wait for space in the transmit buffer
   while (true) {
@@ -594,6 +602,13 @@ static err_t send_frame(const size_t len) {
       // Wait for valid read
       // TODO: Limit count?
     }
+
+    // Slows things down:
+    // // Check that the socket is still open
+    // if (*kSn_SR != socketstates::kMacraw) {
+    //   return ERR_CLSD;
+    // }
+
     if (len <= txSize) {
       break;
     }
@@ -801,6 +816,12 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     if (rxSize < 2) {
       return NULL;
     }
+
+    // Slows things down:
+    // // Check that the socket is still open
+    // if (*kSn_SR != socketstates::kMacraw) {
+    //   s_initState = EnetInitStates::kNotInitialized;
+    // }
 
     // [MACRAW Application Note?](https://forum.wiznet.io/t/topic/979/3)
 
