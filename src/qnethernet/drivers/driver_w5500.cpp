@@ -149,6 +149,13 @@ static constexpr Reg<uint16_t> kSn_RX_RSR{0x0026, blocks::kSocket};     // Socke
 static constexpr Reg<uint16_t> kSn_RX_RD{0x0028, blocks::kSocket};      // Socket n RX Read Pointer (16 bits)
 static constexpr Reg<uint8_t> kSn_IMR{0x002c, blocks::kSocket};         // Socket n Interrupt Mask Register
 
+// PHY configuration.
+namespace phycfg {
+  static constexpr uint8_t kRST   = (1 << 7);  // 0 to reset
+  static constexpr uint8_t kOPMD  = (1 << 6);  // 1:Software, 0:Hardware
+  static constexpr uint8_t kOPMDC = (7 << 3);  // 111:All
+}
+
 // Socket modes.
 namespace socketmodes {
   static constexpr uint8_t kMFEN   = (1 << 7);  // MAC Filter Enable in MACRAW mode
@@ -437,6 +444,20 @@ FLASHMEM static bool soft_reset() {
   return false;
 }
 
+FLASHMEM static void reset_phy() {
+  uint8_t r = *kPHYCFGR;
+
+  // Clear the RST bit
+  r &= static_cast<uint8_t>(~phycfg::kRST);
+  kPHYCFGR = r;
+
+  // Re-set the RST bit
+  // Note: The Wiznet ioLibrary_Driver reads again before setting, so
+  //       this does that too
+  // See: https://github.com/Wiznet/ioLibrary_Driver
+  kPHYCFGR = static_cast<uint8_t>(*kPHYCFGR | phycfg::kRST);
+}
+
 // Initializes the interface. This sets the init state.
 //
 // This manages the SPI transaction.
@@ -477,6 +498,12 @@ FLASHMEM static void low_level_init() {
   if (*kVERSIONR != 4) {
     goto low_level_init_nohardware;
   }
+
+  // Ensure the PHY mode is correct, in case the operation mode isn't
+  // set to all 1's (All capable) by the PMODE[2:0] pin inputs
+  kPHYCFGR = static_cast<uint8_t>(*kPHYCFGR | phycfg::kOPMD | phycfg::kOPMDC);
+      // ~RST, OPMD in software, OPMDC(3)=All, XXX
+  reset_phy();
 
   // Open a MACRAW socket
   // Use 16k buffers
