@@ -65,7 +65,8 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // How to create an external driver that isn't inside the distribution:
 // 1. Create a header named "qnethernet_external_driver.h" that defines MTU and
-//    MAX_FRAME_LEN. Don't forget to use either `#pragma once` or a
+//    MAX_FRAME_LEN. MAX_FRAME_LEN should include the 4-byte FCS, even if the
+//    driver doesn't expose it. Don't forget to use either `#pragma once` or a
 //    #define guard.
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
