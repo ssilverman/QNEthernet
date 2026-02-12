@@ -841,8 +841,6 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     bool doSocketReceive = true;  // Whether to notify the chip of received data
                                   // We don't if we've reset the socket
     while (index + 2 <= rxSize) {  // Account for a 2-byte frame length
-      s_inputBuf.size = index;
-
       const uint16_t frameLen = s_inputBuf.readFrameLen(index);
       // The frame length includes its 2-byte self
 
@@ -867,6 +865,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
       }
 
       index += frameLen;
+      s_inputBuf.size = index;
     }
 
     // Tell the chip we've read some data
