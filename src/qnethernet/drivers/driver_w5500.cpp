@@ -523,6 +523,17 @@ low_level_init_nohardware:
   s_initState = EnetInitStates::kNoHardware;
 }
 
+// Restarts the socket by closing and then reopening it. This only changes the
+// initialization state if re-opening the socket doesn't put its status back
+// to MACRAW mode.
+static void restartSocket() {
+  set_socket_command(socketcommands::kClose);
+  set_socket_command(socketcommands::kOpen);
+  if (*kSn_SR != socketstates::kMacraw) {
+    s_initState = EnetInitStates::kNotInitialized;
+  }
+}
+
 // Waits until any pending SEND request is compete.
 static void waitForSendDone() {
   // TODO: See if there's a way to make this non-blocking
@@ -784,11 +795,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
         LINK_STATS_INC(link.lenerr);
 
         // Recommendation is to close and then re-open the socket
-        set_socket_command(socketcommands::kClose);
-        set_socket_command(socketcommands::kOpen);
-        if (*kSn_SR != socketstates::kMacraw) {
-          s_initState = EnetInitStates::kNotInitialized;
-        }
+        restartSocket();
 
         s_inputBuf.start = 0;
         // Don't set the size so we can keep any received valid frames
