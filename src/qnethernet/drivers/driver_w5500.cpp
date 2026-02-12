@@ -518,6 +518,8 @@ static void waitForSendDone() {
     while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
       // Wait for SEND complete
     }
+    // Note: Clearing this interrupt, when done before the send, seems to
+    //       prevent more traffic
     kSn_IR = socketinterrupts::kSendOk;  // Clear it
   } else {
     while (s_sendNotDone.test_and_set()) {
@@ -553,6 +555,9 @@ static err_t send_frame(const size_t len) {
   set_socket_command(socketcommands::kSend);
 
   // Wait for send to complete
+  // Note: It's probably better to do this check before send, to
+  //       prevent some waiting, but clearing the SEND_OK interrupt
+  //       bit at that point seems to prevent traffic
   waitForSendDone();
 
   LINK_STATS_INC(link.xmit);
