@@ -544,11 +544,6 @@ static err_t send_frame(const size_t len) {
     if (len <= txSize) {
       break;
     }
-
-    // Check that the socket is still open
-    if (*kSn_SR != socketstates::kMacraw) {
-      return ERR_CLSD;
-    }
   }
 
   // Write and then send the data
