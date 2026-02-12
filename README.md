@@ -2256,6 +2256,7 @@ Input is welcome.
   [Restarting  · Issue #31 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/31)
 * Raw IP.
 * Figure out why SYS_TIMEOUT exhaustion occurs sometimes. Is it mDNS?
+* Fix W5500 driver performance, if possible.
 
 ## Code style
 
