@@ -411,7 +411,7 @@ static void recv_isr() {
   const uint8_t ir = []() {
     SPITransaction spiTransaction;
     const uint8_t ir = *kSn_IR;
-    kSn_IR = uint8_t{0xff};
+    kSn_IR = ir;
     return ir;
   }();
 
