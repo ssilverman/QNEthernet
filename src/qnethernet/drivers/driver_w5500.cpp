@@ -741,6 +741,9 @@ FLASHMEM void driver_deinit(void) {
   SPITransaction spiTransaction;
   set_socket_command(socketcommands::kClose);
 
+  // Clear the interrupts
+  kSn_IR = uint8_t{0xff};
+
   spi.end();
   s_initState = EnetInitStates::kStart;
 }
