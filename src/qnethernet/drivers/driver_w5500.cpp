@@ -444,6 +444,7 @@ FLASHMEM static bool soft_reset() {
   return false;
 }
 
+// Resets the PHY.
 FLASHMEM static void reset_phy() {
   uint8_t r = *kPHYCFGR;
 
@@ -652,7 +653,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isLinkFullDuplexDetectable   = true;
   dc->isLinkFullDuplexSettable     = false;
   dc->isLinkCrossoverDetectable    = false;
-  dc->isAutoNegotiationRestartable = false;
+  dc->isAutoNegotiationRestartable = true;
 }
 
 bool driver_is_unknown(void) {
@@ -1009,6 +1010,8 @@ void driver_notify_manual_link_state(const bool flag) {
 // --------------------------------------------------------------------------
 
 void driver_restart_auto_negotiation() {
+  // It is assumed that this restarts auto-negotiation
+  reset_phy();
 }
 
 }  // extern "C"
