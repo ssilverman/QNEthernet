@@ -511,6 +511,21 @@ low_level_init_nohardware:
   s_initState = EnetInitStates::kNoHardware;
 }
 
+// Waits until any pending SEND request is compete.
+static void waitForSendDone() {
+  // TODO: See if there's a way to make this non-blocking
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
+      // Wait for SEND complete
+    }
+    kSn_IR = socketinterrupts::kSendOk;  // Clear it
+  } else {
+    while (s_sendNotDone.test_and_set()) {
+      // Wait for SEND complete
+    }
+  }
+}
+
 // Sends a frame. This uses data already in s_frameBuf.
 ATTRIBUTE_NODISCARD
 static err_t send_frame(const size_t len) {
@@ -542,18 +557,8 @@ static err_t send_frame(const size_t len) {
   kSn_TX_WR = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
 
-  // Wait for SEND to complete
-  // TODO: See if there's a way to make this non-blocking
-  IF_CONSTEXPR (kInterruptPin < 0) {
-    while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
-      // Wait for SEND complete
-    }
-    kSn_IR = socketinterrupts::kSendOk;  // Clear it
-  } else {
-    while (s_sendNotDone.test_and_set()) {
-      // Wait for SEND complete
-    }
-  }
+  // Wait for send to complete
+  waitForSendDone();
 
   LINK_STATS_INC(link.xmit);
 
