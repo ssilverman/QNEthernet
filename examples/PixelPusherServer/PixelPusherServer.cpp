@@ -265,10 +265,8 @@ void PixelPusherServer::loop() {
 
 void PixelPusherServer::sendDiscovery() {
   discoveryUDP_.beginPacket(broadcastIP_, kDiscoveryPort);
-  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&deviceData_),
-                      sizeof(deviceData_));
-  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&ppData1_),
-                      sizeof(ppData1_));
+  discoveryUDP_.write(&deviceData_, sizeof(deviceData_));
+  discoveryUDP_.write(&ppData1_, sizeof(ppData1_));
 
   // Mystery padding. Why?
   // The claim is that the compiler for later versions of PixelPusher
@@ -284,8 +282,7 @@ void PixelPusherServer::sendDiscovery() {
   discoveryUDP_.write(uint8_t{0});
   discoveryUDP_.write(uint8_t{0});
 
-  discoveryUDP_.write(reinterpret_cast<unsigned char*>(&ppData2_),
-                      sizeof(ppData2_));
+  discoveryUDP_.write(&ppData2_, sizeof(ppData2_));
   discoveryUDP_.endPacket();
 
   // Some debug output
