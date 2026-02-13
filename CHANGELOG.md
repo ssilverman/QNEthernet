@@ -22,6 +22,8 @@ and this project adheres to
   as possible.
 * Added `write(const void*, size_t)` convenience functions to all
   `Print`-like classes.
+* New _ChronoClocks_ example that demonstrates how to use the new Clocks and
+  `std::chrono` features.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
