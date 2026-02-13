@@ -298,7 +298,7 @@ int EthernetUDP::read() {
   return packet_.data[packetPos_++];
 }
 
-int EthernetUDP::read(uint8_t* const buffer, const size_t len) {
+int EthernetUDP::read(unsigned char* const buffer, const size_t len) {
   if ((len == 0) || !isAvailable()) {
     return 0;
   }

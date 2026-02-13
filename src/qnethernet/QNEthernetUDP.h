@@ -162,7 +162,7 @@ class EthernetUDP : public UDP,
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
-  int read(uint8_t* buffer, size_t len) final;
+  int read(unsigned char* buffer, size_t len) final;
 
   // A NULL buffer allows the caller to skip bytes without having to read into
   // a buffer.
