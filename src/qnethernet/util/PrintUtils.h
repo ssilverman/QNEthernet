@@ -72,6 +72,13 @@ class PrintBase : public Print, public internal::PrintfChecked {
   // Use the one from here instead of the one from Print because it
   // does checking
   using internal::PrintfChecked::printf;
+
+  using Print::write;  // Add to the overload set
+
+  // A convenience function that can write any type of data.
+  size_t write(const void* const buf, size_t size) {
+    return write(static_cast<const uint8_t*>(buf), size);
+  }
 };
 
 // StreamBase provides a checked printf function.
@@ -82,6 +89,13 @@ class StreamBase : public Stream, public internal::PrintfChecked {
   // Use the one from here instead of the one from Print because it
   // does checking
   using internal::PrintfChecked::printf;
+
+  using Print::write;  // Add to the overload set
+
+  // A convenience function that can write any type of data.
+  size_t write(const void* const buf, size_t size) {
+    return write(static_cast<const uint8_t*>(buf), size);
+  }
 };
 
 // A Print decorator for stdio output files. The purpose of this is to utilize

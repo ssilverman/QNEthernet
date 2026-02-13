@@ -119,6 +119,11 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // the port is not set.
   size_t write(const uint8_t* buffer, size_t size) final;
 
+  // A convenience function that can write any type of data.
+  size_t write(const void* const buf, const size_t size) {
+    return write(static_cast<const uint8_t*>(buf), size);
+  }
+
   // Returns the minimum availability of all the connections, or zero if there
   // are no connections or if the port is not set.
   int availableForWrite() final;

@@ -150,6 +150,11 @@ class EthernetUDP : public UDP,
   size_t write(const uint8_t* buffer, size_t size) final;
   int availableForWrite() final;
 
+  // A convenience function that can write any type of data.
+  size_t write(const void* const buf, const size_t size) {
+    return write(static_cast<const uint8_t*>(buf), size);
+  }
+
   // Receiving UDP packets
   int parsePacket() final;
   int available() final;

@@ -382,6 +382,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `status()`: Returns the current TCP connection state. This returns one of
   lwIP's `tcp_state` enum values. To use with _altcp_, define the
   `LWIP_DEBUG` macro.
+* `write(const void*, size_t)`: Convenience function for writing data from
+  pointers of any type.
 * `writeFully(b)`: Writes a single byte.
 * `writeFully(s)`: Writes a string (`const char *`).
 * `writeFully(buf, size)`: Writes a data buffer (`const void *`).
@@ -423,6 +425,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `end()`: Shuts down the server.
 * `port()`: Returns the server's port, a signed 32-bit value, where -1 means the
   port is not set and a non-negative value is a 16-bit quantity.
+* `write(const void*, size_t)`: Convenience function for writing data from
+  pointers of any type.
 * `static constexpr size_t maxListeners()`: Returns the maximum number of
   TCP listeners.
 * `EthernetServer()`: Creates a placeholder server without a port. This form is
@@ -462,6 +466,8 @@ listening and the port or _reuse_ options have changed.
 * `totalReceiveCount()`: Returns the total number of received packets, including
   dropped packets, since reception was started. Note that this is the count at
   the layer above the driver.
+* `write(const void*, size_t)`: Convenience function for writing data from
+  pointers of any type.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr size_t maxSockets()`: Returns the maximum number of
   UDP sockets.
@@ -565,6 +571,8 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `totalReceiveCount()`: Returns the total number of received frames, including
   dropped frames, since reception was started. Note that this is the count at
   the layer above the driver.
+* `write(const void*, size_t)`: Convenience function for writing data from
+  pointers of any type.
 * `static constexpr size_t maxFrameLen()`: Returns the maximum frame length
   including the 4-byte FCS. Subtract 4 to get the maximum length that can be
   sent or received using this API. Note that this size includes VLAN frames,
@@ -682,6 +690,9 @@ Classes:
 4. `StreamDecorator`: A `Stream` decorator meant to be used as a base class.
    This provides `printf` checking on those platforms that don't by default in
    their `Stream`/`Print` implementation.
+
+All the classes implement a `write(const void*, size_t)` convenience function
+for writing data from pointers of any type.
 
 ### `operator bool()` and `explicit`
 

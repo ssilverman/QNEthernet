@@ -115,6 +115,11 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   size_t write(uint8_t b) override;
   size_t write(const uint8_t* buffer, size_t size) override;
 
+  // A convenience function that can write any type of data.
+  size_t write(const void* const buf, const size_t size) {
+    return write(static_cast<const uint8_t*>(buf), size);
+  }
+
   // Receiving frames
   int parseFrame();
   int available() override;

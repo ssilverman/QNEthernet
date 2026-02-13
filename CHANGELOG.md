@@ -20,6 +20,8 @@ and this project adheres to
   `elapsedMillis`, but uses a `std::chrono` Clock.
 * New _SimpleIPerfServer_ example. It just reads from a socket as fast
   as possible.
+* Added `write(const void*, size_t)` convenience functions to all
+  `Print`-like classes.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
