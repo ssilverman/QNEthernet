@@ -2256,8 +2256,8 @@ Input is welcome.
   [Restarting  · Issue #31 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/31)
 * Raw IP.
 * Figure out why SYS_TIMEOUT exhaustion occurs sometimes. Is it mDNS?
-* Fix W5500 driver performance and ability to receive ping replies (ICMP Echo
-  Reply packets), if possible.
+* Fix W5500 ability to receive ping replies (ICMP Echo Reply packets),
+  if possible.
 
 ## Code style
 

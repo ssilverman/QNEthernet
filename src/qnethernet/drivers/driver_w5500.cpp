@@ -4,10 +4,9 @@
 // driver_w5500.cpp contains the W5500 Ethernet interface implementation.
 //
 // Current issues and notes:
-// 1. Performance is quite dismal
-// 2. Clearing the SEND_OK interrupt bit before sending instead of
+// 1. Clearing the SEND_OK interrupt bit before sending instead of
 //    after seems to prevent more traffic
-// 3. Echo Reply ICMP packets don't seem to arrive, so ping-send
+// 2. Echo Reply ICMP packets don't seem to arrive, so ping-send
 //    doesn't work
 //
 // Is this all because there's some bugs or issues with MACRAW mode,
