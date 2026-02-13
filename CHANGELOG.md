@@ -18,6 +18,8 @@ and this project adheres to
 * Added printing chrono clock times to network-up in the main program.
 * Added `qindesign::network::util::elapsedTime<Clock>`, a class similar to
   `elapsedMillis`, but uses a `std::chrono` Clock.
+* New _SimpleIPerfServer_ example. It just reads from a socket as fast
+  as possible.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
