@@ -605,12 +605,6 @@ static err_t send_frame(const size_t len) {
       // TODO: Limit count?
     }
 
-    // Slows things down:
-    // // Check that the socket is still open
-    // if (*kSn_SR != socketstates::kMacraw) {
-    //   return ERR_CLSD;
-    // }
-
     if (len <= txSize) {
       break;
     }
@@ -820,12 +814,6 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     if (rxSize < 2) {
       return NULL;
     }
-
-    // Slows things down:
-    // // Check that the socket is still open
-    // if (*kSn_SR != socketstates::kMacraw) {
-    //   s_initState = EnetInitStates::kNotInitialized;
-    // }
 
     // [MACRAW Application Note?](https://forum.wiznet.io/t/topic/979/3)
 
