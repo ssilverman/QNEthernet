@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: (c) 2022-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+// [/// Under Repair ///]
+// NOTE: This example doesn't currently behave well.
+// [/// Under Repair ///]
+//
 // IPerfServer implements an iPerf server for TCP traffic.
 // Useful command: iperf -c <IP address> -i 1 -l 1460
 // Other supported options:
