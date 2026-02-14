@@ -156,7 +156,6 @@ static constexpr Reg<uint8_t> kSn_IMR{0x002c, blocks::kSocket};         // Socke
 namespace phycfg {
   static constexpr uint8_t kRST   = (1 << 7);  // 0 to reset
   static constexpr uint8_t kOPMD  = (1 << 6);  // 1:Software, 0:Hardware
-  static constexpr uint8_t kOPMDC = (7 << 3);  // 111:All
 }
 
 // Socket modes.
@@ -265,8 +264,7 @@ static bool s_macFilteringEnabled = false;  // Whether actually enabled
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // PHY status, polled
-static bool s_linkSpeed10Not100 = false;
-static bool s_linkIsFullDuplex  = false;
+static LinkInfo s_linkInfo;
 
 // Notification data
 static bool s_manualLinkState = false;  // True for sticky
@@ -505,9 +503,9 @@ FLASHMEM static void low_level_init() {
 
   // Ensure the PHY mode is correct, in case the operation mode isn't
   // set to all 1's (All capable) by the PMODE[2:0] pin inputs
-  kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) |
-                                  phycfg::kOPMD |
-                                  phycfg::kOPMDC);
+  kPHYCFGR = static_cast<uint8_t>(*kPHYCFGR |
+                                  phycfg::kOPMD |  // Software configures
+                                  (0x07 << 3));
       // ~RST, OPMD in software, OPMDC(3)=All, XXX
   reset_phy();
 
@@ -642,8 +640,10 @@ static void check_link_status(struct netif* const netif) {
   // Watch for changes
   if (netif_is_link_up(netif) != is_link_up) {
     if (is_link_up) {
-      s_linkIsFullDuplex  = ((status & 0x04) != 0);
-      s_linkSpeed10Not100 = ((status & 0x02) == 0);
+      s_linkInfo.fullNotHalfDuplex = ((status & 0x04) != 0);
+      s_linkInfo.speed             = ((status & 0x02) != 0) ? 100 : 10;
+      const uint8_t opmdc = (status >> 3) & 0x07;
+      s_linkInfo.isAutoNegotiation = (opmdc == 0x04) || (opmdc == 0x07);
 
       netif_set_link_up(netif);
     } else {
@@ -915,11 +915,11 @@ void driver_poll(struct netif* const netif) {
   check_link_status(netif);
 }
 
-int driver_link_speed(void) {
-  return s_linkSpeed10Not100 ? 10 : 100;
+void driver_get_link_info(struct LinkInfo* const li) {
+  *li = s_linkInfo;
 }
 
-bool driver_link_set_speed(const int speed) {
+bool driver_set_link(const struct LinkSettings* const ls) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
       ATTRIBUTE_FALLTHROUGH;
@@ -929,78 +929,60 @@ bool driver_link_set_speed(const int speed) {
       return false;
   }
 
-  if ((speed != 10) && (speed != 100)) {
+  if ((ls->speed != 10) && (ls->speed != 100)) {
     return false;
   }
 
-  uint8_t opmdc = static_cast<uint8_t>((*kPHYCFGR >> 3) & 0x07);
-  if ((opmdc & 0x04) == 0)  {  // Auto-negotiation disabled
-    if (((opmdc & 0x02) == 0) == (speed == 10)) {
-      return true;
-    }
-    if (speed == 10) {
-      opmdc &= ~0x02;
-    } else {
-      opmdc |= 0x02;
-    }
-  } else {  // Auto-negotiation enabled
-    return (speed == 100);
+  // Detect some invalid combinations
+  if ((ls->speed == 10) && ls->autoNegotiation) {
+    return false;
   }
 
-  kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) |
-                                  phycfg::kOPMD |
-                                  (opmdc << 3));
-  reset_phy();
-  return true;
-}
-
-bool driver_link_is_full_duplex(void) {
-  return s_linkIsFullDuplex;
-}
-
-bool driver_link_set_full_duplex(const bool flag) {
-  switch (s_initState) {
-    case EnetInitStates::kHardwareInitialized:
-      ATTRIBUTE_FALLTHROUGH;
-    case EnetInitStates::kInitialized:
-      break;
-    default:
-      return false;
-  }
-
-  uint8_t opmdc = static_cast<uint8_t>((*kPHYCFGR >> 3) & 0x07);
-  if ((opmdc & 0x04) == 0)  {  // Auto-negotiation disabled
-    if (((opmdc & 0x01) != 0) == flag) {
-      return true;
-    }
-    if (flag) {
-      opmdc |= 0x01;
-    } else {
-      opmdc &= ~0x01;
-    }
-  } else {  // Auto-negotiation enabled
-    if (opmdc == 0x04) {  // 100, half, enabled
-      if (flag) {
-        opmdc = 0x07;  // All
-      }
-    } else if (opmdc == 0x07) {
-      if (!flag) {
-        opmdc = 0x04;  // 100, half, enabled
+  const uint8_t opmdc = static_cast<uint8_t>((*kPHYCFGR >> 3) & 0x07);
+  uint8_t newOPMDC = 0;
+  if ((opmdc & 0x04) == 0) {  // Auto-negotiation is disabled
+    if (ls->autoNegotiation) {
+      if (ls->fullNotHalfDuplex) {
+        newOPMDC = 0x07;
+      } else {
+        newOPMDC = 0x04;
       }
     } else {
-      return false;
+      if (((opmdc & 0x02) != 0) != (ls->speed == 100)) {
+        if (ls->speed == 100) {
+          newOPMDC |= 0x02;
+        }
+      }
+      if (((opmdc & 0x01) != 0) != ls->fullNotHalfDuplex) {
+        if (ls->fullNotHalfDuplex) {
+          newOPMDC |= 0x01;
+        }
+      }
+    }
+  } else {  // Auto-negotiation is enabled
+    if (ls->autoNegotiation) {
+      if (ls->fullNotHalfDuplex) {
+        newOPMDC = 0x07;
+      } else {
+        newOPMDC = 0x04;
+      }
+    } else {
+      if (ls->speed == 100) {
+        newOPMDC |= 0x02;
+      }
+      if (ls->fullNotHalfDuplex) {
+        newOPMDC |= 0x01;
+      }
     }
   }
 
-  kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) |
-                                  phycfg::kOPMD |
-                                  (opmdc << 3));
-  reset_phy();
+  if (newOPMDC != opmdc) {
+    kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) |
+                                    phycfg::kOPMD |  // Software configures
+                                    (newOPMDC << 3));
+    reset_phy();
+  }
   return true;
-}
-
-bool driver_link_is_crossover(void) {
-  return false;
 }
 
 // Outputs data from the MAC.

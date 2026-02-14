@@ -570,16 +570,10 @@ void EthernetClass::setLinkState(const bool flag) const {
   }
 }
 
-int EthernetClass::linkSpeed() const {
-  return driver_link_speed();
-}
-
-bool EthernetClass::linkIsFullDuplex() const {
-  return driver_link_is_full_duplex();
-}
-
-bool EthernetClass::linkIsCrossover() const {
-  return driver_link_is_crossover();
+LinkInfo EthernetClass::linkInfo() const {
+  LinkInfo li;
+  driver_get_link_info(&li);
+  return li;
 }
 
 bool EthernetClass::interfaceStatus() const {

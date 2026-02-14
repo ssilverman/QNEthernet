@@ -287,13 +287,11 @@ The `Ethernet` object is the main Ethernet interface.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `isDHCPEnabled()`: Returns whether the DHCP client is enabled. This is valid
   whether Ethernet has been started or not.
+* `linkInfo()` : Returns a `LinkInfo` struct containing information about
+  the link.
 * `linkState()`: Returns a `bool` indicating the link state. This returns `true`
   if the link is on and `false` otherwise. This may be managed manually
   with `setLinkState(flag)`.
-* `linkSpeed()`: Returns the link speed in Mbps.
-* `linkIsCrossover()`: Returns whether a crossover cable is detected.
-* `linkIsFullDuplex()`: Returns whether the link is full duplex (`true`) or half
-  duplex (`false`).
 * `joinGroup(ip)`: Joins a multicast group.
 * `leaveGroup(ip)`: Leaves a multicast group.
 * `macAddress()`: Convenience function that returns a pointer to the current

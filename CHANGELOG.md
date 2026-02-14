@@ -24,6 +24,8 @@ and this project adheres to
   `Print`-like classes.
 * New _ChronoClocks_ example that demonstrates how to use the new Clocks and
   `std::chrono` features.
+* Added `EthernetClass::linkInfo()` to replace `linkSpeed()`,
+  `linkIsFullDuplex()`, and `linkIsCrossover()`.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
@@ -51,6 +53,12 @@ and this project adheres to
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
 * Made some improvements to the W5500 driver.
+
+### Removed
+* Removed from `EthernetClass` (and replaced with `linkInfo()`):
+  * `linkSpeed()`
+  * `linkIsFullDuplex()`
+  * `linkIsCrossover()`
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.

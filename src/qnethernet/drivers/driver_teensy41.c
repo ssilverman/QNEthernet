@@ -309,9 +309,7 @@ static enet_init_states_t s_initState = kInitStateStart;
 
 // PHY status, polled
 static int s_checkLinkStatusState = 0;
-static bool s_linkSpeed10Not100 = false;
-static bool s_linkIsFullDuplex  = false;
-static bool s_linkIsCrossover   = false;
+static struct LinkInfo s_linkInfo;
 
 // Notification data
 static bool s_manualLinkState = false;  // True for sticky
@@ -793,9 +791,9 @@ static inline int check_link_status(struct netif* const netif,
 
   if (netif_is_link_up(netif) != is_link_up) {
     if (is_link_up) {
-      s_linkSpeed10Not100 = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0);
-      s_linkIsFullDuplex  = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
-      s_linkIsCrossover   = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+      s_linkInfo.speed = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0) ? 10 : 100;
+      s_linkInfo.fullNotHalfDuplex = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
+      s_linkInfo.isCrossover       = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
 
       netif_set_link_up(netif);
     } else {
@@ -1089,26 +1087,25 @@ void driver_poll(struct netif* const netif) {
   s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
-int driver_link_speed(void) {
-  return s_linkSpeed10Not100 ? 10 : 100;
+void driver_get_link_info(struct LinkInfo* const li) {
+  *li = s_linkInfo;
 }
 
-bool driver_link_set_speed(const int speed) {
-  LWIP_UNUSED_ARG(speed);
+bool driver_set_link(const struct LinkSettings* const ls) {
+  switch (s_initState) {
+    case kInitStatePHYInitialized:
+      ATTRIBUTE_FALLTHROUGH;
+    case kInitStateInitialized:
+      break;
+    default:
+      return false;
+  }
+
+  if ((ls->speed != 10) && (ls->speed != 100)) {
+    return false;
+  }
+
   return false;
-}
-
-bool driver_link_is_full_duplex(void) {
-  return s_linkIsFullDuplex;
-}
-
-bool driver_link_set_full_duplex(const bool flag) {
-  LWIP_UNUSED_ARG(flag);
-  return false;
-}
-
-bool driver_link_is_crossover(void) {
-  return s_linkIsCrossover;
 }
 
 // Outputs data from the MAC.

@@ -68,25 +68,12 @@ void driver_poll(struct netif* const netif) {
   LWIP_UNUSED_ARG(netif);
 }
 
-int driver_link_speed(void) {
-  return 0;
+void driver_get_link_info(struct LinkInfo* const li) {
+  LWIP_UNUSED_ARG(li);
 }
 
-bool driver_link_set_speed(const int speed) {
-  LWIP_UNUSED_ARG(speed);
-  return false;
-}
-
-bool driver_link_is_full_duplex(void) {
-  return false;
-}
-
-bool driver_link_set_full_duplex(const bool flag) {
-  LWIP_UNUSED_ARG(flag);
-  return false;
-}
-
-bool driver_link_is_crossover(void) {
+bool driver_set_link(const struct LinkSettings* const ls) {
+  LWIP_UNUSED_ARG(ls);
   return false;
 }
 

@@ -106,6 +106,46 @@ struct DriverCapabilities {
   bool isAutoNegotiationRestartable;
 };
 
+// Link information. Defaults are:
+// * 100 Mbps
+// * full-duplex
+// * Auto-negotiation enabled
+// * Crossover is false
+struct LinkInfo {
+#ifdef __cplusplus
+  LinkInfo()
+      : speed(100),
+        fullNotHalfDuplex(true),
+        isAutoNegotiation(true),
+        isCrossover(false) {}
+#endif  // __cplusplus
+
+  int speed;
+  bool fullNotHalfDuplex;
+  bool isAutoNegotiation;
+  bool isCrossover;
+};
+
+// Link settings. Defaults are:
+// * 100 Mbps
+// * full-duplex
+// * Auto-negotiation enabled
+//
+// This is separate from LinkInfo because some things are detecatable but
+// not settable.
+struct LinkSettings {
+#ifdef __cplusplus
+  LinkSettings()
+      : speed(100),
+        fullNotHalfDuplex(true),
+        autoNegotiation(true) {}
+#endif  // __cplusplus
+
+  int speed;
+  bool fullNotHalfDuplex;
+  bool autoNegotiation;
+};
+
 // --------------------------------------------------------------------------
 //  Driver Interface
 // --------------------------------------------------------------------------
@@ -170,42 +210,18 @@ struct pbuf* driver_proc_input(struct netif* netif, int counter);
 // Polls anything that needs to be polled, for example, the link status.
 void driver_poll(struct netif* netif);
 
-// Returns the link speed in Mbps. The value is only valid if the link is up.
+// Gets info about the link. The values will only be valid when the link is up.
 //
 // See also: driver_get_capabilities(dc)
-ATTRIBUTE_NODISCARD
-int driver_link_speed(void);
+void driver_get_link_info(struct LinkInfo* li);
 
-// Sets the link speed in Mbps and returns whether successful.
+// Sets some link parameters all at once. This returns whether the call
+// was successful. It is expected that this will return false if the link is
+// not up.
 //
-// Note that a new setting make take a little time to take effect.
-//
-// See also: driver_get_capabilities(dc)
+// This will also return false if any of the parameters are invalid.
 ATTRIBUTE_NODISCARD
-bool driver_link_set_speed(int speed);
-
-// Returns the link duplex mode, true for full and false for half. The value is
-// only valid if the link is up.
-//
-// See also: driver_get_capabilities(dc)
-ATTRIBUTE_NODISCARD
-bool driver_link_is_full_duplex(void);
-
-// Sets the link duplex mode, true for full and false for half. This returns
-// whether successful.
-//
-// Note that a new setting make take a little time to take effect.
-//
-// See also: driver_get_capabilities(dc)
-ATTRIBUTE_NODISCARD
-bool driver_link_set_full_duplex(bool flag);
-
-// Returns whether a crossover cable is detected. The value is only valid if the
-// link is up.
-//
-// See also: driver_get_capabilities(dc)
-ATTRIBUTE_NODISCARD
-bool driver_link_is_crossover(void);
+bool driver_set_link(const struct LinkSettings* ls);
 
 // Outputs the given pbuf data.
 //

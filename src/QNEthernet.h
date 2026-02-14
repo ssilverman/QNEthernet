@@ -252,23 +252,11 @@ class EthernetClass final {
   // errno will be set to ENETDOWN.
   void setLinkState(bool flag) const;
 
-  // Returns the link speed in Mbps. This is only valid if the link is up and
-  // the driver can read the link state.
+  // Returns information about the link. This is only valid if the link is up
+  // and the driver can read the link state.
   //
   // See: driverCapabilities()
-  int linkSpeed() const;
-
-  // Returns the link duplex mode, true for full and false for half. This is
-  // only valid if the link is up and the driver can read the link state.
-  //
-  // See: driverCapabilities()
-  bool linkIsFullDuplex() const;
-
-  // Returns whether a crossover cable is detected. This is only valid if the
-  // link is up and the driver can read the link state.
-  //
-  // See: driverCapabilities()
-  bool linkIsCrossover() const;
+  LinkInfo linkInfo() const;
 
   // Sets a link state callback.
   //
