@@ -951,6 +951,7 @@ bool driver_link_set_speed(const int speed) {
                                   phycfg::kOPMD |
                                   (opmdc << 3));
   reset_phy();
+  return true;
 }
 
 bool driver_link_is_full_duplex(void) {
@@ -995,6 +996,7 @@ bool driver_link_set_full_duplex(const bool flag) {
                                   phycfg::kOPMD |
                                   (opmdc << 3));
   reset_phy();
+  return true;
 }
 
 bool driver_link_is_crossover(void) {
