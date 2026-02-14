@@ -1095,6 +1095,11 @@ void driver_get_link_info(struct LinkInfo* const li) {
   *li = s_linkInfo;
 }
 
+// Invalid:
+// * Speed not 10 or 100
+//
+// Note that the speed and duplex mode can't be changed if auto-negotiation
+// is enabled.
 bool driver_set_link(const struct LinkSettings* const ls) {
   switch (s_initState) {
     case kInitStatePHYInitialized:
@@ -1124,16 +1129,6 @@ bool driver_set_link(const struct LinkSettings* const ls) {
   }
 
   if (newR != r) {
-    // Check for invalid states
-    // Can't change speed or duplex mode if auto-negotiate is on
-    if ((newR & PHY_BMCR_AUTO_NEG) != 0) {
-      if (((newR & PHY_BMCR_SPEED_SELECTION) !=
-           (r & PHY_BMCR_SPEED_SELECTION)) ||
-          ((newR & PHY_BMCR_DUPLEX_MODE) != (r & PHY_BMCR_DUPLEX_MODE))) {
-        return false;
-      }
-    }
-
     mdio_write(PHY_BMCR, newR);
   }
   return true;
