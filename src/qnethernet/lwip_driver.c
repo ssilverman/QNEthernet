@@ -8,7 +8,6 @@
 
 // C includes
 #include <errno.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "lwip/arch.h"
