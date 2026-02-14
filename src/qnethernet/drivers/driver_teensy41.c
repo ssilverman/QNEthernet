@@ -363,7 +363,10 @@ enum PHYVals {
   PHY_PHYSTS_DUPLEX_STATUS = (1 << 2),   // 0: Half-Duplex, 1: Full-Duplex
   PHY_PHYSTS_MDI_MDIX_MODE = (1 << 14),  // 0: Normal, 1: Swapped
 
-  PHY_BMCR_RESTART_AUTO_NEG = (1 << 9),  // 0: Normal, 1: Restart (Self-clearing)
+  PHY_BMCR_SPEED_SELECTION  = (1 << 13),  // 0: 10 Mbps, 1: 100 Mbps
+  PHY_BMCR_AUTO_NEG         = (1 << 12),  // 0: Disable, 1: Enable
+  PHY_BMCR_RESTART_AUTO_NEG = (1 << 9),   // 0: Normal, 1: Restart (Self-clearing)
+  PHY_BMCR_DUPLEX_MODE      = (1 << 8),   // 0: Half, 1: Full
 };
 
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
@@ -814,9 +817,9 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isMACSettable                = true;
   dc->isLinkStateDetectable        = true;
   dc->isLinkSpeedDetectable        = true;
-  dc->isLinkSpeedSettable          = false;
+  dc->isLinkSpeedSettable          = true;
   dc->isLinkFullDuplexDetectable   = true;
-  dc->isLinkFullDuplexSettable     = false;
+  dc->isLinkFullDuplexSettable     = true;
   dc->isLinkCrossoverDetectable    = true;
   dc->isAutoNegotiationRestartable = true;
 }
@@ -1105,7 +1108,34 @@ bool driver_set_link(const struct LinkSettings* const ls) {
     return false;
   }
 
-  return false;
+  const uint16_t r = mdio_read(PHY_BMCR);
+  uint16_t newR = r & ~(PHY_BMCR_SPEED_SELECTION | PHY_BMCR_AUTO_NEG |
+                        PHY_BMCR_DUPLEX_MODE);
+
+  if (ls->speed == 100) {
+    newR |= PHY_BMCR_SPEED_SELECTION;
+  }
+  if (ls->fullNotHalfDuplex) {
+    newR |= PHY_BMCR_DUPLEX_MODE;
+  }
+  if (ls->autoNegotiation) {
+    newR |= PHY_BMCR_AUTO_NEG;
+  }
+
+  if (newR != r) {
+    // Check for invalid states
+    // Can't change speed or duplex mode if auto-negotiate is on
+    if ((newR & PHY_BMCR_AUTO_NEG) != 0) {
+      if (((newR & PHY_BMCR_SPEED_SELECTION) !=
+           (r & PHY_BMCR_SPEED_SELECTION)) ||
+          ((newR & PHY_BMCR_DUPLEX_MODE) != (r & PHY_BMCR_DUPLEX_MODE))) {
+        return false;
+      }
+    }
+
+    mdio_write(PHY_BMCR, newR);
+  }
+  return true;
 }
 
 // Outputs data from the MAC.
