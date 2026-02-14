@@ -28,7 +28,7 @@ err_t unknown_eth_protocol(struct pbuf *p, struct netif *netif);
 #define LWIP_HOOK_TCP_ISN(local_ip, local_port, remote_ip, remote_port) \
   calc_tcp_isn((local_ip), (local_port), (remote_ip), (remote_port))
 
-u32_t calc_tcp_isn(const ip_addr_t *local_ip, u16_t local_port,
-                   const ip_addr_t *remote_ip, u16_t remote_port);
+u32_t calc_tcp_isn(const ip_addr_t* local_ip, u16_t local_port,
+                   const ip_addr_t* remote_ip, u16_t remote_port);
 
 #endif  // LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN

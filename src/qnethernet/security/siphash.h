@@ -15,8 +15,8 @@ extern "C" {
 
 // Calculates a SipHash-c-d-64. The key is expected to contain 16 bytes.
 uint64_t siphash(size_t c, size_t d,
-                 const void *key,
-                 const void *msg, size_t len);
+                 const void* key,
+                 const void* msg, size_t len);
 
 #ifdef __cplusplus
 }  // extern "C"

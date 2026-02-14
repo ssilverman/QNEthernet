@@ -268,7 +268,7 @@ enum enet_tx_bd_control_extend1 {
 typedef struct {
   uint16_t length;
   uint16_t status;
-  void     *buffer;
+  void*    buffer;
   uint16_t extend0;
   uint16_t extend1;
   uint16_t checksum;
@@ -300,8 +300,8 @@ alignas(64) static enetbufferdesc_t s_rxRing[RX_SIZE];
 alignas(64) static enetbufferdesc_t s_txRing[TX_SIZE];
 alignas(64) static uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] BUFFER_DMAMEM;
 alignas(64) static uint8_t s_txBufs[TX_SIZE * BUF_SIZE] BUFFER_DMAMEM;
-static volatile enetbufferdesc_t *s_pRxBD = &s_rxRing[0];
-static volatile enetbufferdesc_t *s_pTxBD = &s_txRing[0];
+static volatile enetbufferdesc_t* s_pRxBD = &s_rxRing[0];
+static volatile enetbufferdesc_t* s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
 static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
@@ -630,14 +630,14 @@ FLASHMEM static void init_phy(void) {
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
 ATTRIBUTE_NODISCARD
-static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
+static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
   const u16_t err_mask = kEnetRxBdTrunc    |
                          kEnetRxBdOverrun  |
                          kEnetRxBdCrc      |
                          kEnetRxBdNonOctet |
                          kEnetRxBdLengthViolation;
 
-  struct pbuf *p = NULL;
+  struct pbuf* p = NULL;
 
   // Determine if a frame has been received
   if (pBD->status & err_mask) {
@@ -688,8 +688,8 @@ static struct pbuf *low_level_input(volatile enetbufferdesc_t *const pBD) {
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This waits until there is a TX buffer available.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t *get_bufdesc(void) {
-  volatile enetbufferdesc_t *const pBD = s_pTxBD;
+static inline volatile enetbufferdesc_t* get_bufdesc(void) {
+  volatile enetbufferdesc_t* const pBD = s_pTxBD;
 
   while ((pBD->status & kEnetTxBdReady) != 0) {
     // Wait until a free buffer is available
@@ -700,7 +700,7 @@ static inline volatile enetbufferdesc_t *get_bufdesc(void) {
 }
 
 // Updates a buffer descriptor. Meant to be used with get_bufdesc().
-static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
+static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
                                   const uint16_t len) {
   pBD->length = len;
   pBD->status = (pBD->status & kEnetTxBdWrap) |
@@ -721,8 +721,8 @@ static inline void update_bufdesc(volatile enetbufferdesc_t *const pBD,
 
 // Finds the next non-empty BD.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t *rxbd_next(void) {
-  volatile enetbufferdesc_t *pBD = s_pRxBD;
+static inline volatile enetbufferdesc_t* rxbd_next(void) {
+  volatile enetbufferdesc_t* pBD = s_pRxBD;
 
   while (pBD->status & kEnetRxBdEmpty) {
     if (pBD->status & kEnetRxBdWrap) {
@@ -755,7 +755,7 @@ static void enet_isr(void) {
 // not complete. The return value should be used in the next call to
 // this function.
 ATTRIBUTE_NODISCARD
-static inline int check_link_status(struct netif *const netif,
+static inline int check_link_status(struct netif* const netif,
                                     const int state) {
   static uint16_t bmsr;
   static uint16_t physts;
@@ -812,7 +812,7 @@ static inline int check_link_status(struct netif *const netif,
 //  Driver Interface
 // --------------------------------------------------------------------------
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isMACSettable                = true;
   dc->isLinkStateDetectable        = true;
   dc->isLinkSpeedDetectable        = true;
@@ -1063,7 +1063,7 @@ FLASHMEM void driver_deinit(void) {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
+struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
@@ -1078,14 +1078,14 @@ struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
   }
 
   // Get the next chunk of input data
-  volatile enetbufferdesc_t *const pBD = rxbd_next();
+  volatile enetbufferdesc_t* const pBD = rxbd_next();
   if (pBD == NULL) {
     return NULL;
   }
   return low_level_input(pBD);
 }
 
-void driver_poll(struct netif *const netif) {
+void driver_poll(struct netif* const netif) {
   s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
@@ -1112,9 +1112,9 @@ bool driver_link_is_crossover(void) {
 }
 
 // Outputs data from the MAC.
-err_t driver_output(struct pbuf *const p) {
+err_t driver_output(struct pbuf* const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
-  volatile enetbufferdesc_t *const pBD = get_bufdesc();
+  volatile enetbufferdesc_t* const pBD = get_bufdesc();
   // No need to check for NULL:
   // if (pBD == NULL) {
   //   LINK_STATS_INC(link.memerr);
@@ -1136,7 +1136,7 @@ err_t driver_output(struct pbuf *const p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void *const frame, const size_t len) {
+bool driver_output_frame(const void* const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
@@ -1144,13 +1144,13 @@ bool driver_output_frame(const void *const frame, const size_t len) {
     return false;
   }
 
-  volatile enetbufferdesc_t *const pBD = get_bufdesc();
+  volatile enetbufferdesc_t* const pBD = get_bufdesc();
   // No need to check for NULL:
   // if (pBD == NULL) {
   //   return false;
   // }
 
-  (void)memcpy((uint8_t *)pBD->buffer + ETH_PAD_SIZE, frame, len);
+  (void)memcpy((uint8_t*)pBD->buffer + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
@@ -1169,11 +1169,11 @@ bool driver_output_frame(const void *const frame, const size_t len) {
 // CRC-32 routine for computing the 4-byte FCS for multicast lookup. The initial
 // value will be zero.
 ATTRIBUTE_NODISCARD
-static uint32_t crc32(const void *const data, const size_t len) {
+static uint32_t crc32(const void* const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
 
   uint32_t crc = 0;  // Initial value
-  const uint8_t *pData = data;
+  const uint8_t* pData = data;
   size_t lenRem = len;
 
   crc = ~crc;
@@ -1204,8 +1204,8 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
   // Choose which locations
 
   const bool isGroup = (mac[0] & 0x01) != 0;
-  volatile uint32_t *reg;
-  uint32_t *collision;
+  volatile uint32_t* reg;
+  uint32_t* collision;
 
   if (crc < 0x20) {
     if (isGroup) {

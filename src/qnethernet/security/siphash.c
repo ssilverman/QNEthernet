@@ -25,12 +25,12 @@ static inline uint64_t rotl(const uint64_t x, const int s) {
   (v2) += (v1); (v1) = rotl((v1), 17); (v1) ^= (v2); (v2) = rotl((v2), 32)
 
 uint64_t siphash(const size_t c, const size_t d,
-                 const void *const key,
-                 const void *const msg, const size_t len) {
+                 const void* const key,
+                 const void* const msg, const size_t len) {
   uint64_t k0;
   uint64_t k1;
   (void)memcpy(&k0, key, 8);
-  (void)memcpy(&k1, (uint8_t *)key + 8, 8);
+  (void)memcpy(&k1, (uint8_t*)key + 8, 8);
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   k0 = __builtin_bswap64(k0);
   k1 = __builtin_bswap64(k1);
@@ -42,7 +42,7 @@ uint64_t siphash(const size_t c, const size_t d,
   uint64_t v2 = k0 ^ UINT64_C(0x6c7967656e657261);  // lygenera
   uint64_t v3 = k1 ^ UINT64_C(0x7465646279746573);  // tedbytes
 
-  const uint8_t *pMsg = msg;
+  const uint8_t* pMsg = msg;
 
   // Compression
   size_t count = (len + 8)/8 - 1;

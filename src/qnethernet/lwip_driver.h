@@ -115,7 +115,7 @@ struct DriverCapabilities {
 // Gets the driver capabilities and fills in the given struct. This may be
 // called more than once but may not be valid until after driver_init()
 // is called.
-void driver_get_capabilities(struct DriverCapabilities *dc);
+void driver_get_capabilities(struct DriverCapabilities* dc);
 
 // Returns if the hardware hasn't yet been probed.
 ATTRIBUTE_NODISCARD
@@ -165,10 +165,10 @@ void driver_deinit(void);
 // chance to run. In other words, it is expected that this will return NULL at
 // some point.
 ATTRIBUTE_NODISCARD
-struct pbuf *driver_proc_input(struct netif *netif, int counter);
+struct pbuf* driver_proc_input(struct netif* netif, int counter);
 
 // Polls anything that needs to be polled, for example, the link status.
-void driver_poll(struct netif *netif);
+void driver_poll(struct netif* netif);
 
 // Returns the link speed in Mbps. The value is only valid if the link is up.
 //
@@ -211,14 +211,14 @@ bool driver_link_is_crossover(void);
 //
 // Note that the data will already contain any extra ETH_PAD_SIZE bytes.
 ATTRIBUTE_NODISCARD
-err_t driver_output(struct pbuf *p);
+err_t driver_output(struct pbuf* p);
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add, to the start, any extra padding bytes given by ETH_PAD_SIZE.
 ATTRIBUTE_NODISCARD
-bool driver_output_frame(const void *frame, size_t len);
+bool driver_output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -309,7 +309,7 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 ATTRIBUTE_NODISCARD
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback,
-               struct DriverCapabilities *dc);
+               struct DriverCapabilities* dc);
 
 // Shuts down the Ethernet stack and driver.
 void enet_deinit(void);
@@ -317,7 +317,7 @@ void enet_deinit(void);
 // Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
 ATTRIBUTE_NODISCARD
-struct netif *enet_netif(void);
+struct netif* enet_netif(void);
 
 // Processes any Ethernet input. This is meant to be called often by the
 // main loop.
@@ -334,7 +334,7 @@ void enet_poll(void);
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.
 ATTRIBUTE_NODISCARD
-bool enet_output_frame(const void *frame, size_t len);
+bool enet_output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
@@ -347,9 +347,9 @@ bool enet_output_frame(const void *frame, size_t len);
 // If 'group' is NULL then these return false. Otherwise, these return the
 // result of 'enet_set_mac_address_allowed()'.
 ATTRIBUTE_NODISCARD
-bool enet_join_group(const ip4_addr_t *group);
+bool enet_join_group(const ip4_addr_t* group);
 ATTRIBUTE_NODISCARD
-bool enet_leave_group(const ip4_addr_t *group);
+bool enet_leave_group(const ip4_addr_t* group);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 

@@ -195,7 +195,7 @@ static bool fillEntropyBuf(void) {
   }
 
   // Fill the array
-  volatile uint32_t *addr = &TRNG_ENT0;
+  volatile uint32_t* addr = &TRNG_ENT0;
   for (size_t i = 0; i < ENTROPY_COUNT; ++i) {
     s_entropy[i] = *(addr++);
   }
@@ -222,11 +222,11 @@ static bool fillEntropy(void) {
 
 // // Reads a single entropy byte.
 // ATTRIBUTE_NODISCARD
-// static bool readEntropy(uint8_t *b) {
+// static bool readEntropy(uint8_t* b) {
 //   if (!fillEntropy()) {
 //     return false;
 //   }
-//   *b = ((uint8_t *)s_entropy)[ENTROPY_COUNT_BYTES - (s_entropySizeBytes--)];
+//   *b = ((uint8_t*)s_entropy)[ENTROPY_COUNT_BYTES - (s_entropySizeBytes--)];
 //   return true;
 // }
 
@@ -244,7 +244,7 @@ size_t trng_available(void) {
   return s_entropySizeBytes;
 }
 
-size_t trng_data(void *const data, const size_t size) {
+size_t trng_data(void* const data, const size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
@@ -255,7 +255,7 @@ size_t trng_data(void *const data, const size_t size) {
     restartEntropy();
   }
 
-  uint8_t *p = data;
+  uint8_t* p = data;
   size_t rem = size;
 
   while (rem > 0) {

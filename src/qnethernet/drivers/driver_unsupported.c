@@ -12,7 +12,7 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
+FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isMACSettable                = false;
   dc->isLinkStateDetectable        = false;
   dc->isLinkSpeedDetectable        = false;
@@ -58,13 +58,13 @@ bool driver_init(void) {
 void driver_deinit(void) {
 }
 
-struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
+struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   LWIP_UNUSED_ARG(netif);
   LWIP_UNUSED_ARG(counter);
   return NULL;
 }
 
-void driver_poll(struct netif *const netif) {
+void driver_poll(struct netif* const netif) {
   LWIP_UNUSED_ARG(netif);
 }
 
@@ -90,13 +90,13 @@ bool driver_link_is_crossover(void) {
   return false;
 }
 
-err_t driver_output(struct pbuf *const p) {
+err_t driver_output(struct pbuf* const p) {
   LWIP_UNUSED_ARG(p);
   return ERR_IF;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void *const frame, const size_t len) {
+bool driver_output_frame(const void* const frame, const size_t len) {
   LWIP_UNUSED_ARG(frame);
   LWIP_UNUSED_ARG(len);
   return false;
