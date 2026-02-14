@@ -92,6 +92,7 @@ struct DriverCapabilities {
         isLinkSpeedSettable(false),
         isLinkFullDuplexDetectable(false),
         isLinkFullDuplexSettable(false),
+        isAutoNegotiationSettable(false),
         isLinkCrossoverDetectable(false),
         isAutoNegotiationRestartable(false) {}
 #endif  // __cplusplus
@@ -102,6 +103,7 @@ struct DriverCapabilities {
   bool isLinkSpeedSettable;
   bool isLinkFullDuplexDetectable;
   bool isLinkFullDuplexSettable;
+  bool isAutoNegotiationSettable;
   bool isLinkCrossoverDetectable;
   bool isAutoNegotiationRestartable;
 };

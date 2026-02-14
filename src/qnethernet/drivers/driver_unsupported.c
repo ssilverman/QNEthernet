@@ -19,6 +19,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isLinkSpeedSettable          = false;
   dc->isLinkFullDuplexDetectable   = false;
   dc->isLinkFullDuplexSettable     = false;
+  dc->isAutoNegotiationSettable    = false;
   dc->isLinkCrossoverDetectable    = false;
   dc->isAutoNegotiationRestartable = false;
 }
