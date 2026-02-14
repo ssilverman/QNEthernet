@@ -270,7 +270,8 @@ The `Ethernet` object is the main Ethernet interface.
 * `dnsServerIP(index)`: Gets a specific DNS server IP address. This returns
   `INADDR_NONE` if the index not in the exclusive range,
   [0, `DNSClient::maxServers()`).
-* `driverCapabilities()`: Returns the driver's set of capabilities.\
+* `driverCapabilities()`: Returns a `DriverCapabilities` struct containing the
+  driver's set of capabilities.\
   Notes:
   * If the link state is not detectable then it must be managed
     with `setLinkState(flag)`.
