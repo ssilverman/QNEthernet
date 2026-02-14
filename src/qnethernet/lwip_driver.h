@@ -178,6 +178,8 @@ int driver_link_speed(void);
 
 // Sets the link speed in Mbps and returns whether successful.
 //
+// Note that a new setting make take a little time to take effect.
+//
 // See also: driver_get_capabilities(dc)
 ATTRIBUTE_NODISCARD
 bool driver_link_set_speed(int speed);
@@ -191,6 +193,8 @@ bool driver_link_is_full_duplex(void);
 
 // Sets the link duplex mode, true for full and false for half. This returns
 // whether successful.
+//
+// Note that a new setting make take a little time to take effect.
 //
 // See also: driver_get_capabilities(dc)
 ATTRIBUTE_NODISCARD
