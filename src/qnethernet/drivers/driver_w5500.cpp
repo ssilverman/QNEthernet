@@ -920,6 +920,9 @@ void driver_get_link_info(struct LinkInfo* const li) {
   *li = s_linkInfo;
 }
 
+// Invalid:
+// * Speed not 10 or 100
+// * Speed 10 and auto-negotiation
 bool driver_set_link(const struct LinkSettings* const ls) {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
