@@ -45,9 +45,10 @@ void setup() {
   // Listen for link changes
   Ethernet.onLinkState([](bool state) {
     if (state) {
+      const LinkInfo li = Ethernet.linkInfo();
       printf("[Ethernet] Link ON, %d Mbps, %s duplex\r\n",
-             Ethernet.linkSpeed(),
-             Ethernet.linkIsFullDuplex() ? "Full" : "Half");
+             li.speed,
+             li.fullNotHalfDuplex ? "Full" : "Half");
     } else {
       printf("[Ethernet] Link OFF\r\n");
     }

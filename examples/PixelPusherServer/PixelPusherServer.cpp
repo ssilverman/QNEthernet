@@ -69,7 +69,7 @@ bool PixelPusherServer::begin(Receiver* recv, uint16_t port,
   deviceData_.productId = productId;
   deviceData_.hwRevision = hwRevision;
   deviceData_.swRevision = kSoftwareRevision;
-  deviceData_.linkSpeed = Ethernet.linkSpeed() * 1000000;
+  deviceData_.linkSpeed = Ethernet.linkInfo().speed * 1000000;
 
   ppData1_.stripsAttached = numStrips;
   ppData1_.maxStripsPerPacket =

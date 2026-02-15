@@ -29,14 +29,15 @@ void setup() {
 
       // We can use driver capabilities to determine what to print
       const DriverCapabilities& dc = Ethernet.driverCapabilities();
+      LinkInfo li = Ethernet.linkInfo();
       if (dc.isLinkSpeedDetectable) {
-        printf(", %d Mbps", Ethernet.linkSpeed());
+        printf(", %d Mbps", li.speed);
       }
       if (dc.isLinkFullDuplexDetectable) {
-        printf(", %s duplex", Ethernet.linkIsFullDuplex() ? "full" : "half");
+        printf(", %s duplex", li.fullNotHalfDuplex ? "full" : "half");
       }
       if (dc.isLinkCrossoverDetectable) {
-        printf(", %s crossover", Ethernet.linkIsCrossover() ? "is" : "not");
+        printf(", %s crossover", li.isCrossover ? "is" : "not");
       }
 
       printf("\r\n");
