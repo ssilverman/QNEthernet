@@ -942,6 +942,8 @@ bool driver_set_link(const struct LinkSettings* const ls) {
     return false;
   }
 
+  SPITransaction spiTransaction;
+
   const uint8_t opmdc = static_cast<uint8_t>((*kPHYCFGR >> 3) & 0x07);
   uint8_t newOPMDC = 0;
   if ((opmdc & 0x04) == 0) {  // Auto-negotiation is disabled
