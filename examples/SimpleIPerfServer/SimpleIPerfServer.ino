@@ -92,6 +92,7 @@ void setup() {
   }
 
   // Start the server
+  printf("Listening on port %" PRIu16 "...\r\n", kPort);
   server.begin();
 }
 
