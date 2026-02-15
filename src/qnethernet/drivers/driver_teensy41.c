@@ -1115,8 +1115,9 @@ bool driver_set_link(const struct LinkSettings* const ls) {
   }
 
   const uint16_t r = mdio_read(PHY_BMCR);
-  uint16_t newR = r & ~(PHY_BMCR_SPEED_SELECTION | PHY_BMCR_AUTO_NEG |
-                        PHY_BMCR_DUPLEX_MODE);
+  uint16_t newR = (uint16_t)(r & ~(PHY_BMCR_SPEED_SELECTION |
+                                   PHY_BMCR_AUTO_NEG |
+                                   PHY_BMCR_DUPLEX_MODE));
 
   if (ls->speed == 100) {
     newR |= PHY_BMCR_SPEED_SELECTION;
