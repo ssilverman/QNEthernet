@@ -43,8 +43,8 @@ namespace network {
 // 3. IPv6 (0x86DD) (if enabled)
 class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
  public:
-  // Returns the maximum frame length. This includes any padding and the 4-byte
-  // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  // Returns the maximum frame length. This includes any padding but does not
+  // include the 4-byte FCS (Frame Check Sequence, the CRC value).
   //
   // Note that this size includes VLAN frames, which are 4 bytes larger.
   // Also note that the padding does not need to be managed by the caller.
@@ -52,8 +52,8 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
     return MAX_FRAME_LEN;
   }
 
-  // Returns the minimum frame length. This includes any padding and the 4-byte
-  // FCS (Frame Check Sequence, the CRC value). Subtract 4 to exclude the FCS.
+  // Returns the minimum frame length. This includes any padding but not the
+  // 4-byte FCS (Frame Check Sequence, the CRC value).
   //
   // Note that the padding does not need to be managed by the caller, meaning
   // frames smaller than this size are allowed; the system will insert padding
@@ -86,8 +86,8 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // This will return false if:
   // 1. The frame was not started,
   // 2. Ethernet was not started,
-  // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
-  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
+  // 3. The length is not in the range [14, maxFrameLen()-4] for non-VLAN frames
+  //    or [18, maxFrameLen()] for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
   bool endFrame();
 
@@ -100,8 +100,8 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // This will return false if:
   // 1. Ethernet was not started,
   // 2. The frame is NULL,
-  // 3. The length is not in the range 14-(maxFrameLen()-8) for non-VLAN frames
-  //    or 18-(maxFrameLen()-4) for VLAN frames (excludes the FCS), or
+  // 3. The length is not in the range [14, maxFrameLen()-4] for non-VLAN frames
+  //    or [18, maxFrameLen()] for VLAN frames (excludes the FCS), or
   // 4. There's no room in the output buffers.
   bool send(const void* frame, size_t len) const;
 
@@ -111,7 +111,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Bring Print::write functions into scope
   using Print::write;
 
-  // The write functions limit the allowed size to Ethernet.maxFrameLen()-4
+  // The write functions limit the allowed size to Ethernet.maxFrameLen()
   size_t write(uint8_t b) override;
   size_t write(const uint8_t* buffer, size_t size) override;
 
@@ -132,7 +132,7 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   int peek() override;
   void flush() override {}
 
-  // Returns max{(Ethernet.maxFrameLen() - 4) - "written", 0}.
+  // Returns max{Ethernet.maxFrameLen() - "written", 0}.
   int availableForWrite() override;
 
   // Returns the total size of the received packet data. This is only valid if a

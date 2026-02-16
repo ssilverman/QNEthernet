@@ -276,12 +276,12 @@ bool enet_output_frame(const void* const frame, const size_t len) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
-    if (len > MAX_FRAME_LEN - 4) {  // Don't include 4-byte FCS
+    if (len > MAX_FRAME_LEN) {
       return false;
     }
   } else {
     // Don't include 4-byte FCS and VLAN
-    if ((MAX_FRAME_LEN < (4 + 4)) || (len > (MAX_FRAME_LEN - (4 + 4)))) {
+    if ((MAX_FRAME_LEN < 4) || (len > (MAX_FRAME_LEN - 4))) {
       return false;
     }
   }

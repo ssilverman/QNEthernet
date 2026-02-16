@@ -124,7 +124,7 @@ void loop() {
   // Access the frame's data directly instead of using read()
   // size = EthernetFrame.read(buf, size);
   const uint8_t* buf = EthernetFrame.data();
-  if (static_cast<size_t>(size + 4) < EthernetFrame.minFrameLen()) {
+  if (static_cast<size_t>(size) < EthernetFrame.minFrameLen()) {
     printf("%d: SHORT Frame[%d]: ", frameCount, size);
     for (int i = 0; i < size; ++i) {
       printf(" %02x", buf[i]);

@@ -26,20 +26,20 @@
 
 // Check things that are supposed to be set properly by the driver headers
 STATIC_ASSERT(MTU >= 0, "MTU must be defined and > 0");
-STATIC_ASSERT(MAX_FRAME_LEN >= 4, "MAX_FRAME_LEN must be defined and >= 4");
+STATIC_ASSERT(MAX_FRAME_LEN >= 0, "MAX_FRAME_LEN must be defined and >= 0");
 
 enum {
-  MIN_FRAME_LEN = 64,
+  MIN_FRAME_LEN = 60,
 };
 
-STATIC_ASSERT(MIN_FRAME_LEN >= 4, "MIN_FRAME_LEN must be >= 4");
+STATIC_ASSERT(MIN_FRAME_LEN >= 0, "MIN_FRAME_LEN must be >= 0");
 
 // Check some sizes
 STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // Requirements for driver-specific headers:
 // 1. Define MTU
-// 2. Define MAX_FRAME_LEN (including the 4-byte FCS (frame check sequence))
+// 2. Define MAX_FRAME_LEN (not including the 4-byte FCS (frame check sequence))
 // 3. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
 //    for your driver. For example, Ethernet padding, checksum generation, and
 //    checksum checking.
@@ -65,9 +65,8 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // How to create an external driver that isn't inside the distribution:
 // 1. Create a header named "qnethernet_external_driver.h" that defines MTU and
-//    MAX_FRAME_LEN. MAX_FRAME_LEN should include the 4-byte FCS, even if the
-//    driver doesn't expose it. Don't forget to use either `#pragma once` or a
-//    #define guard.
+//    MAX_FRAME_LEN. MAX_FRAME_LEN should not include the 4-byte FCS. Don't
+//    forget to use either `#pragma once` or a #define guard.
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 3. Create driver source and include lwip_driver.h. Implement all the
@@ -290,7 +289,7 @@ inline size_t enet_get_mtu(void) {
   return MTU;
 }
 
-// Returns the maximum frame length. This includes the 4-byte FCS (frame
+// Returns the maximum frame length. This does not include the 4-byte FCS (frame
 // check sequence).
 ATTRIBUTE_NODISCARD
 inline size_t enet_get_max_frame_len(void) {
@@ -346,8 +345,8 @@ void enet_poll(void);
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
-// length is not in the correct range. The proper range is 14-(MAX_FRAME_LEN-8)
-// for non-VLAN frames and 18-(MAX_FRAME_LEN-4) for VLAN frames. Note that these
+// length is not in the correct range. The proper range is [14, MAX_FRAME_LEN-4]
+// for non-VLAN frames and [18, MAX_FRAME_LEN] for VLAN frames. Note that these
 // ranges exclude the 4-byte FCS (frame check sequence).
 //
 // This returns the result of driver_output_frame(), if the frame checks pass.

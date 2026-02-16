@@ -263,10 +263,10 @@ int EthernetFrameClass::availableForWrite() {
   if (!outFrame_.has_value) {
     return 0;
   }
-  if (outFrame_.value.data.size() > (maxFrameLen() - 4)) {
+  if (outFrame_.value.data.size() > maxFrameLen()) {
     return 0;
   }
-  return static_cast<int>((maxFrameLen() - 4) - outFrame_.value.data.size());
+  return static_cast<int>(maxFrameLen() - outFrame_.value.data.size());
 }
 
 }  // namespace network

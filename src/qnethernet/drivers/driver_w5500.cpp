@@ -209,9 +209,7 @@ class SPITransaction final {
 // --------------------------------------------------------------------------
 
 static constexpr size_t kMTU         = MTU;
-static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Includes the 4-byte FCS (frame check sequence)
-
-static_assert(kMaxFrameLen >= 4, "Max. frame len must be >= 4");
+static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Does not include the 4-byte FCS (frame check sequence)
 
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
@@ -228,7 +226,7 @@ static constexpr size_t kLocalInputBufSize = 2 * kRxBufSizeKB * 1024;
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
 
 // Buffers
-static uint8_t s_spiBuf[3 + kMaxFrameLen - 4] BUFFER_DMAMEM;  // Exclude the 4-byte FCS
+static uint8_t s_spiBuf[3 + kMaxFrameLen] BUFFER_DMAMEM;
 static uint8_t* const s_frameBuf = &s_spiBuf[3];
 
 static struct InputBuf {
@@ -844,7 +842,7 @@ static bool readAndScan() {
       }
 
       // Only append if the frame isn't too large and if there's space
-      if ((size_t{frameLen} - 2) <= (kMaxFrameLen - 4)) {  // Exclude the 4-byte FCS
+      if ((size_t{frameLen} - 2) <= kMaxFrameLen) {
         if (frameLen > s_inputBuf.buf.remaining()) {
           retval = false;
           break;
@@ -999,7 +997,7 @@ err_t driver_output(struct pbuf* const p) {
 #endif  // ETH_PAD_SIZE
 
   // Shouldn't need this check:
-  // if (p->tot_len > kMaxFrameLen - 4) {  // Exclude the 4-byte FCS
+  // if (p->tot_len > kMaxFrameLen) {
   //   LINK_STATS_INC(link.drop);
   //   LINK_STATS_INC(link.lenerr);
   //   return ERR_BUF;
