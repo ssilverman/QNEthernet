@@ -32,7 +32,7 @@ enum {
   MIN_FRAME_LEN = 60,
 };
 
-STATIC_ASSERT(MIN_FRAME_LEN >= 0, "MIN_FRAME_LEN must be >= 0");
+// STATIC_ASSERT(MIN_FRAME_LEN >= 0, "MIN_FRAME_LEN must be >= 0");
 
 // Check some sizes
 STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");

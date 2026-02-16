@@ -211,6 +211,8 @@ class SPITransaction final {
 static constexpr size_t kMTU         = MTU;
 static constexpr size_t kMaxFrameLen = MAX_FRAME_LEN;  // Does not include the 4-byte FCS (frame check sequence)
 
+// static_assert(kMaxFrameLen >= 0, "Max. frame len must be >= 0");
+
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
 // Buffer sizes
