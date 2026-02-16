@@ -900,7 +900,8 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   const uint16_t frameLen = s_inputBuf.readFrameLen();
 
   // Process the frame
-  struct pbuf* const p = pbuf_alloc(PBUF_RAW, frameLen - 2, PBUF_POOL);
+  struct pbuf* const p =
+      pbuf_alloc(PBUF_RAW, static_cast<uint16_t>(frameLen - 2), PBUF_POOL);
   if (p == nullptr) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
