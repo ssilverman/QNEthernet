@@ -782,6 +782,9 @@ FLASHMEM void driver_deinit(void) {
   // Clear the interrupts
   kSn_IR = uint8_t{0xff};
 
+  // Power down the PHY
+  kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) | (0x06 << 3));
+
   spi.end();
   s_initState = EnetInitStates::kStart;
 }
