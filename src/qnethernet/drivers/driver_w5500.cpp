@@ -578,7 +578,7 @@ static err_t send_frame(const size_t len) {
     return ERR_OK;
   }
   // Assume len has been sanitized
-  // if (len > (kInputBufKB << 10)) {
+  // if (len > (kTxBufSizeKB * 1024)) {
   //   return ERR_ARG;
   // }
 
