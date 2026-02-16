@@ -42,6 +42,7 @@
 #include "lwip/err.h"
 #include "lwip/stats.h"
 #include "qnethernet/compat/c++11_compat.h"
+#include "qnethernet/internal/ByteBuffer.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 #if defined(TEENSYDUINO)
@@ -214,7 +215,10 @@ static_assert(kMaxFrameLen >= 4, "Max. frame len must be >= 4");
 
 static constexpr uint8_t kControlRWBit = (1 << 2);
 
-static constexpr size_t kInputBufKB = 16;  // In kibibytes
+// Buffer sizes
+static constexpr size_t kRxBufSizeKB       = 16;  // In kibibytes
+static constexpr size_t kTxBufSizeKB       = kRxBufSizeKB;
+static constexpr size_t kLocalInputBufSize = 2 * kRxBufSizeKB * 1024;
 
 #if !QNETHERNET_BUFFERS_IN_RAM1 && \
     (defined(TEENSYDUINO) && defined(__IMXRT1062__))
@@ -228,26 +232,16 @@ static uint8_t s_spiBuf[3 + kMaxFrameLen - 4] BUFFER_DMAMEM;  // Exclude the 4-b
 static uint8_t* const s_frameBuf = &s_spiBuf[3];
 
 static struct InputBuf {
-  std::array<uint8_t, kInputBufKB * 1024> buf;
-  size_t start = 0;  // Where to read from
-  size_t size = 0;   // Total size
+  std::array<uint8_t, kRxBufSizeKB * 1024> rxBuf;
+  qindesign::network::internal::ByteBuffer<kLocalInputBufSize> buf;
 
-  // Returns whether this buffer is empty, but not necessarily clear.
-  bool empty() const {
-    return start >= size;
-  }
-
-  // Clears the buffer.
-  void clear() {
-    start = 0;
-    size = 0;
-  }
-
-  // Reads a frame length value. This assume the data exists at the given index.
-  // This handles conversion from network order.
-  uint16_t readFrameLen(const size_t index) const {
+  // Reads a frame length value from the non-RX buffer. This assumes the data
+  // exists at the given index. This handles conversion from network order.
+  //
+  // This decreases the size of the buffer.
+  uint16_t readFrameLen() {
     uint16_t v;
-    std::memcpy(&v, &buf[index], 2);
+    LWIP_ASSERT("Expected valid frame length", buf.read(&v, 2) == 2);
     return ntohs(v);
   }
 } s_inputBuf BUFFER_DMAMEM;
@@ -528,10 +522,10 @@ FLASHMEM static void low_level_init() {
     Reg<uint8_t>{kSn_RXBUF_SIZE, i} = uint8_t{0};
     Reg<uint8_t>{kSn_TXBUF_SIZE, i} = uint8_t{0};
   }
-  kSn_RXBUF_SIZE = uint8_t{kInputBufKB};
-  kSn_TXBUF_SIZE = uint8_t{kInputBufKB};
+  kSn_RXBUF_SIZE = uint8_t{kRxBufSizeKB};
+  kSn_TXBUF_SIZE = uint8_t{kTxBufSizeKB};
   IF_CONSTEXPR (kInterruptPin < 0) {
-    kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk);
+    kSn_IMR = socketinterrupts::kSendOk;
   } else {
     kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
                                    socketinterrupts::kRecv);
@@ -642,7 +636,7 @@ static void check_link_status(struct netif* const netif) {
     if (is_link_up) {
       s_linkInfo.fullNotHalfDuplex = ((status & 0x04) != 0);
       s_linkInfo.speed             = ((status & 0x02) != 0) ? 100 : 10;
-      const uint8_t opmdc = (status >> 3) & 0x07;
+      const uint8_t opmdc = static_cast<uint8_t>((status >> 3) & 0x07);
       s_linkInfo.isAutoNegotiation = (opmdc == 0x04) || (opmdc == 0x07);
 
       netif_set_link_up(netif);
@@ -792,46 +786,44 @@ FLASHMEM void driver_deinit(void) {
   s_initState = EnetInitStates::kStart;
 }
 
-struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
-  LWIP_UNUSED_ARG(netif);
-  LWIP_UNUSED_ARG(counter);
+// Reads the frame length from a buffer, swapping bytes if necessary.
+static inline uint16_t readFrameLen(const uint8_t* const buf) {
+  uint16_t v;
+  std::memcpy(&v, &buf[0], 2);
+  return ntohs(v);
+}
 
-  if (s_initState != EnetInitStates::kInitialized) {
-    return NULL;
-  }
+// Keeps reading the RX buffer unti local buffer is full or no data. This will
+// return false when there's either nothing in the RX buffer or the local buffer
+// is full;
+static bool readAndScan() {
+  bool retval = false;
 
-  // Check if we have buffered or received data, and if not, read some in
-  const bool doCheck = s_inputBuf.empty() &&
-                       ((kInterruptPin < 0) || !s_rxNotAvail.test_and_set());
-
-  if (doCheck) {
-    SPITransaction spiTransaction;
-
-    const uint16_t rxSize = []() -> uint16_t {
-      uint16_t w;
-      if (!read_reg_word(kSn_RX_RSR, w)) {
-        return 0;
-      }
-      return w;
-    }();
-    if (rxSize < 2) {
-      return NULL;
+  // Read what we can from the RX buffer
+  const uint16_t rxSize = []() -> uint16_t {
+    uint16_t w;
+    if (!read_reg_word(kSn_RX_RSR, w)) {
+      return 0;
     }
+    return w;
+  }();
+
+  if (rxSize >= 2) {
+    retval = true;
 
     // [MACRAW Application Note?](https://forum.wiznet.io/t/topic/979/3)
 
     const uint16_t ptr = *kSn_RX_RD;
 
     // Read all the data
-    read(ptr, blocks::kSocketRx, s_inputBuf.buf.data(), rxSize);
-    s_inputBuf.clear();
+    read(ptr, blocks::kSocketRx, s_inputBuf.rxBuf.data(), rxSize);
 
-    // Scan the data for valid frames
-    size_t index = 0;
+    // Scan the data and append to the input buffer as we go
+    size_t end = 0;
     bool doSocketReceive = true;  // Whether to notify the chip of received data
                                   // We don't if we've reset the socket
-    while (index + 2 <= rxSize) {  // Account for a 2-byte frame length
-      const uint16_t frameLen = s_inputBuf.readFrameLen(index);
+    while (end + 2 <= rxSize) {   // Account for a 2-byte frame length
+      const uint16_t frameLen = readFrameLen(&s_inputBuf.rxBuf[end]);
       // The frame length includes its 2-byte self
 
       // Check for bad data
@@ -841,61 +833,67 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
 
         // Recommendation is to close and then re-open the socket
         restartSocket();
-
-        s_inputBuf.start = 0;
-        // Don't set the size so we can keep any received valid frames
         doSocketReceive = false;
         break;
       }
 
       // Watch for the end
-      if ((index + frameLen) > rxSize) {
+      if ((end + frameLen) > rxSize) {
         // We've read all we can read
         break;
       }
 
-      index += frameLen;
-      s_inputBuf.size = index;
+      // Only append if the frame isn't too large and if there's space
+      if ((size_t{frameLen} - 2) <= (kMaxFrameLen - 4)) {  // Exclude the 4-byte FCS
+        if (frameLen > s_inputBuf.buf.remaining()) {
+          retval = false;
+          break;
+        }
+        LWIP_ASSERT(
+            "Expeceted complete buffer write",
+            s_inputBuf.buf.write(&s_inputBuf.rxBuf[end], frameLen) == frameLen);
+        LINK_STATS_INC(link.recv);
+      } else {
+        LINK_STATS_INC(link.drop);
+      }
+
+      end += frameLen;
     }
 
     // Tell the chip we've read some data
-    if (doSocketReceive && (s_inputBuf.size != 0)) {
-      kSn_RX_RD = static_cast<uint16_t>(ptr + s_inputBuf.size);
+    if (doSocketReceive && (end != 0)) {
+      kSn_RX_RD = static_cast<uint16_t>(ptr + end);
       set_socket_command(socketcommands::kRecv);
     }
   }
 
-  // Check for buffered data
-  if (s_inputBuf.empty()) {
-    s_inputBuf.clear();
+  return retval;
+}
+
+struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
+  LWIP_UNUSED_ARG(netif);
+  LWIP_UNUSED_ARG(counter);
+
+  if (s_initState != EnetInitStates::kInitialized) {
     return NULL;
   }
 
-  // At this point, we can assume data in s_inputBuf is correct
-
-  uint16_t frameLen;
-
-  // Loop until a valid frame or end of the buffer
-  do {
-    // Read the frame length
-    frameLen = s_inputBuf.readFrameLen(s_inputBuf.start);
-    // The frame length includes its 2-byte self
-
-    LINK_STATS_INC(link.recv);
-
-    if ((size_t{frameLen} - 2) <= (kMaxFrameLen - 4)) {  // Exclude the 4-byte FCS
-      break;
+  // Make a block for the SPITransaction RAII
+  {
+    SPITransaction spiTransaction;
+    while (readAndScan()) {
+      // Loop until no more data to read
     }
+  }
 
-    LINK_STATS_INC(link.drop);
-    s_inputBuf.start += frameLen;
-  } while (!s_inputBuf.empty());
-
-  // No valid frames
-  if (s_inputBuf.empty()) {
-    s_inputBuf.clear();
+  // Check for buffered data
+  if (s_inputBuf.buf.empty()) {
     return NULL;
   }
+
+  // At this point, we can assume data in s_inputBuf.buf is correct
+
+  const uint16_t frameLen = s_inputBuf.readFrameLen();
 
   // Process the frame
   struct pbuf* const p = pbuf_alloc(PBUF_RAW, frameLen - 2, PBUF_POOL);
@@ -904,9 +902,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
     LINK_STATS_INC(link.memerr);
   } else {
     LWIP_ASSERT("Expected space for pbuf fill",
-                pbuf_take(p, &s_inputBuf.buf.data()[s_inputBuf.start + 2],
-                          p->tot_len) == ERR_OK);
-    s_inputBuf.start += frameLen;
+                s_inputBuf.buf.read(p) == ERR_OK);
   }
   return p;
 }

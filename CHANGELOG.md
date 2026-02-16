@@ -52,7 +52,7 @@ and this project adheres to
 * Changed `MDNSClass` to use `std::string` instead of the Arduino `String`.
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
-* Made some improvements to the W5500 driver.
+* Made dramatic improvements to the W5500 driver with much better buffering.
 
 ### Removed
 * Removed from `EthernetClass` (and replaced with `linkInfo()`):
