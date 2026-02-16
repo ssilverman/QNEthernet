@@ -64,6 +64,8 @@ and this project adheres to
 
 ### Fixed
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.
+* Fixed _RawFrameMonitor_ example tag interpretation to split at <=1500 and
+  assume values in the range 1501-1535 are a type.
 
 ## [0.34.0]
 

@@ -180,11 +180,12 @@ void loop() {
   // 'tag' now holds the length/type field
 
   int payloadEnd = size;
-  if (tag > EthernetFrame.maxFrameLen()) {
-    printf(" type=%04Xh\r\n", tag);
-  } else {
+  // See: https://en.wikipedia.org/wiki/EtherType
+  if (tag <= 1500) {
     printf(" length=%u\r\n", tag);
     payloadEnd = std::min(payloadStart + tag, payloadEnd);
+  } else {  // Note: 1501-1535 are undefined
+    printf(" type=%04Xh\r\n", tag);
   }
 
   printf("\tpayload[%d]=", payloadEnd - payloadStart);
