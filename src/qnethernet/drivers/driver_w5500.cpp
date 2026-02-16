@@ -760,6 +760,7 @@ FLASHMEM bool driver_init(void) {
   return true;
 }
 
+// This also powers down the PHY.
 FLASHMEM void driver_deinit(void) {
   switch (s_initState) {
     case EnetInitStates::kStart:
