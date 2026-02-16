@@ -40,6 +40,7 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 // Requirements for driver-specific headers:
 // 1. Define MTU
 // 2. Define MAX_FRAME_LEN (not including the 4-byte FCS (frame check sequence))
+//    1. It will usually be MTU + 14 (2 6-byte MACs, 2-byte tag) + 4 (VLAN)
 // 3. If necessary, define lwIP options (see lwip/opt.h) with appropriate values
 //    for your driver. For example, Ethernet padding, checksum generation, and
 //    checksum checking.
