@@ -10,7 +10,7 @@
 
 #if __STDC_VERSION__ < 202311L
 #include <stdbool.h>
-#endif  // < C23
+#endif  // C < 23
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>

@@ -14,7 +14,7 @@
 // C includes
 #if __STDC_VERSION__ < 202311L
 #include <stdalign.h>
-#endif  // < C23
+#endif  // C < 23
 #include <stdatomic.h>
 #include <string.h>
 

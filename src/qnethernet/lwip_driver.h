@@ -11,7 +11,7 @@
 // C includes
 #if !defined(__cplusplus) && (__STDC_VERSION__ < 202311L)
 #include <stdbool.h>
-#endif  // < C23
+#endif  // !C++ && (C < 23)
 #include <stddef.h>
 #include <stdint.h>
 

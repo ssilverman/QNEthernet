@@ -9,7 +9,7 @@
 // C includes
 #if __STDC_VERSION__ < 202311L
 #include <stdalign.h>
-#endif  // < C23
+#endif  // C < 23
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

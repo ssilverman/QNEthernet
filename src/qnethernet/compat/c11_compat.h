@@ -53,12 +53,12 @@
 #ifndef ATTRIBUTE_WEAK
 #define ATTRIBUTE_WEAK __attribute__((weak))
 #endif
-#endif  // >= C++23
+#endif  // (C++ >= 17) || (C >= 23)
 
 #ifndef STATIC_ASSERT
 #if defined(__cplusplus) || (__STDC_VERSION__ >= 202311L)
 #define STATIC_ASSERT static_assert
 #else
 #define STATIC_ASSERT _Static_assert
-#endif  // __cplusplus || (C >= 23)
+#endif  // C++ || (C >= 23)
 #endif  // !STATIC_ASSERT
