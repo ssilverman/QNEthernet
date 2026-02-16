@@ -63,6 +63,7 @@ bool arm_high_resolution_clock::init() {
 
   return true;
 }
+
 #else
 
 uint32_t arm_high_resolution_clock_count() {
