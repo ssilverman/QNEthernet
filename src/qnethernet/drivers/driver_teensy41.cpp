@@ -726,7 +726,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
         }
-        p->timestamp.tv_nsec = pBD->timestamp;
+        p->timestamp.tv_nsec = (long)pBD->timestamp;
       }
     } else {
       LINK_STATS_INC(link.drop);
@@ -770,7 +770,7 @@ static inline void update_bufdesc(volatile BufferDescriptor* const pBD,
     s_doTimestampNext = false;
     pBD->extend1 |= tx_bd_extend1::kTimestamp;
   } else {
-    pBD->extend1 &= ~tx_bd_extend1::kTimestamp;
+    pBD->extend1 &= (uint16_t)(~tx_bd_extend1::kTimestamp);
   }
 
   ENET::TDAR::TDAR = 1;
@@ -818,7 +818,7 @@ static void enet_isr() {
   if (ENET::EIR::TS_AVAIL != 0) {
     ENET::EIR::TS_AVAIL = 1;
     s_txTimestamp.tv_sec = s_ieee1588Seconds;
-    s_txTimestamp.tv_nsec = *ENET::ATSTMP::TIMESTAMP;
+    s_txTimestamp.tv_nsec = (long)(*ENET::ATSTMP::TIMESTAMP);
     s_hasTxTimestamp = true;
   }
 
@@ -1479,7 +1479,7 @@ bool ieee1588_read_timer(struct timespec* const t) {
   while (ENET::ATCR::CAPTURE != 0) {
     // Wait for bit to clear
   }
-  t->tv_nsec = *ENET::ATVR::ATIME;
+  t->tv_nsec = (long)(*ENET::ATVR::ATIME);
 
   // The timer could have wrapped while we were doing stuff
   // Leave the interrupt set so that our internal timer will catch it
@@ -1497,8 +1497,8 @@ bool ieee1588_write_timer(const struct timespec* const t) {
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  s_ieee1588Seconds = t->tv_sec;
-  ENET::ATVR::ATIME = t->tv_nsec;
+  s_ieee1588Seconds = (uint32_t)t->tv_sec;
+  ENET::ATVR::ATIME = (uint32_t)t->tv_nsec;
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
@@ -1549,7 +1549,7 @@ bool ieee1588_adjust_freq(int nsps) {
     // Speed up
     ++inc;
   }
-  return ieee1588_adjust_timer(inc, F_ENET_TS_CLK / nsps);
+  return ieee1588_adjust_timer(inc, (uint32_t)(F_ENET_TS_CLK / nsps));
 }
 
 // Channels
