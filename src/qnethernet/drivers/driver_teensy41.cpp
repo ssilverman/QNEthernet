@@ -1424,7 +1424,7 @@ bool driver_ieee1588_is_enabled(void) {
   return ((ENET_ATCR & ENET_ATCR_EN) != 0);
 }
 
-bool driver_ieee1588_read_timer(struct timespec *const t) {
+bool driver_ieee1588_read_timer(struct timespec* const t) {
   if (t == NULL) {
     return false;
   }
@@ -1448,7 +1448,7 @@ bool driver_ieee1588_read_timer(struct timespec *const t) {
   return true;
 }
 
-bool driver_ieee1588_write_timer(const struct timespec *const t) {
+bool driver_ieee1588_write_timer(const struct timespec* const t) {
   if (t == NULL) {
     return false;
   }
@@ -1513,14 +1513,14 @@ bool driver_ieee1588_adjust_freq(int nsps) {
 
 // Channels
 
-static inline volatile uint32_t *tcsrReg(const int channel) {
+static inline volatile uint32_t* tcsrReg(const int channel) {
   if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
   return &ENET_TCSR0 + 2*channel;
 }
 
-static inline volatile uint32_t *tccrReg(const int channel) {
+static inline volatile uint32_t* tccrReg(const int channel) {
   if ((channel < 0) || (TIMER_CHANNEL_COUNT <= channel)) {
     return NULL;
   }
@@ -1539,7 +1539,7 @@ bool driver_ieee1588_set_channel_mode(const int channel, const int mode) {
       break;
   }
 
-  volatile uint32_t *const tcsr = tcsrReg(channel);
+  volatile uint32_t* const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
@@ -1563,7 +1563,7 @@ bool driver_ieee1588_set_channel_output_pulse_width(const int channel,
     return false;
   }
 
-  volatile uint32_t *const tcsr = tcsrReg(channel);
+  volatile uint32_t* const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
@@ -1583,7 +1583,7 @@ bool driver_ieee1588_set_channel_output_pulse_width(const int channel,
 
 bool driver_ieee1588_set_channel_compare_value(const int channel,
                                                const uint32_t value) {
-  volatile uint32_t *const tccr = tccrReg(channel);
+  volatile uint32_t* const tccr = tccrReg(channel);
   if (tccr == NULL) {
     return false;
   }
@@ -1592,7 +1592,7 @@ bool driver_ieee1588_set_channel_compare_value(const int channel,
 }
 
 bool driver_ieee1588_get_and_clear_channel_status(const int channel) {
-  volatile uint32_t *const tcsr = tcsrReg(channel);
+  volatile uint32_t* const tcsr = tcsrReg(channel);
   if (tcsr == NULL) {
     return false;
   }
