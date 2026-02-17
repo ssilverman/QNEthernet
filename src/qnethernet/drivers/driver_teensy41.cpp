@@ -1469,7 +1469,7 @@ bool ieee1588_is_enabled(void) {
   return (ENET::ATCR::EN != 0);
 }
 
-bool ieee1588_read_timer(struct timespec *const t) {
+bool ieee1588_read_timer(struct timespec* const t) {
   if (t == NULL) {
     return false;
   }
@@ -1493,7 +1493,7 @@ bool ieee1588_read_timer(struct timespec *const t) {
   return true;
 }
 
-bool ieee1588_write_timer(const struct timespec *const t) {
+bool ieee1588_write_timer(const struct timespec* const t) {
   if (t == NULL) {
     return false;
   }
@@ -1572,7 +1572,7 @@ bool ieee1588_set_channel_mode(const size_t channel, const int mode) {
       break;
   }
 
-  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
   uint32_t r = *tcsr;
   *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
@@ -1599,7 +1599,7 @@ bool ieee1588_set_channel_output_pulse_width(const size_t channel,
     return false;
   }
 
-  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
 
   uint32_t r = *tcsr;
   *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
@@ -1631,7 +1631,7 @@ bool ieee1588_get_and_clear_channel_status(const size_t channel) {
     return false;
   }
 
-  volatile uint32_t *const tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
   if ((*tcsr & ENET::CHANNEL::TCSR::vals::TF(1)) != 0) {
     *tcsr |= ENET::CHANNEL::TCSR::vals::TF(1);
     ENET::group->TGSR = (1 << channel);
