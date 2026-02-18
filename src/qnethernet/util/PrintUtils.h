@@ -116,6 +116,8 @@ class StdioPrint : public PrintBase {
   StdioPrint(const StdioPrint&) = delete;
   StdioPrint& operator=(const StdioPrint&) = delete;
 
+  using PrintBase::write;  // Bring void* version of write() into scope
+
   size_t write(uint8_t b) override;
   size_t write(const uint8_t* buffer, size_t size) override;
   int availableForWrite() override;
@@ -148,6 +150,8 @@ class NullPrint final : public PrintBase {
   NullPrint& operator=(const NullPrint&) = delete;
   NullPrint& operator=(NullPrint&&) = delete;
 
+  using PrintBase::write;  // Bring void* version of write() into scope
+
   size_t write(const uint8_t b) override {
     LWIP_UNUSED_ARG(b);
     return 1;
@@ -178,6 +182,8 @@ class PrintDecorator : public PrintBase {
   PrintDecorator(PrintDecorator&&) = delete;
   PrintDecorator& operator=(const PrintDecorator&) = delete;
   PrintDecorator& operator=(PrintDecorator&&) = delete;
+
+  using PrintBase::write;  // Bring void* version of write() into scope
 
   size_t write(const uint8_t b) override {
     return p_.write(b);
@@ -223,6 +229,8 @@ class StreamDecorator : public StreamBase {
   int peek() override {
     return  s_.peek();
   }
+
+  using StreamBase::write;  // Bring void* version of write() into scope
 
   size_t write(const uint8_t b) override {
     return s_.write(b);
