@@ -513,9 +513,9 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
 #define SNTP_CHECK_RESPONSE 3  /* 0 */
 #define SNTP_UPDATE_DELAY   600000  /* 3600000 */
 
+#include <sys/time.h>
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>
-#include <sys/time.h>
 #define SNTP_SET_SYSTEM_TIME_US(sec, us)                                  \
   do {                                                                    \
     uint32_t s = (uint32_t)(sec);                                         \
@@ -549,6 +549,7 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
     /* Start the RTC and sync it to the SRTC */                           \
     SNVS_HPCR |= SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS;                      \
   } while (0)
+#endif  // defined(__IMXRT1062__) && defined(TEENSYDUINO)
 #define SNTP_GET_SYSTEM_TIME(sec, us) \
   do {                                \
     struct timeval tv;                \
@@ -556,7 +557,6 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
     (sec) = tv.tv_sec;                \
     (us) = tv.tv_usec;                \
   } while (0)  /* do { (sec) = 0; (us) = 0; } while(0) */
-#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 // MDNS options (mdns_opts.h)
 #ifndef LWIP_MDNS_RESPONDER
