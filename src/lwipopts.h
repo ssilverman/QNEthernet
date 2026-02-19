@@ -516,29 +516,38 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #include <imxrt.h>
 #include <sys/time.h>
-#define SNTP_SET_SYSTEM_TIME_US(sec, us)                    \
-  do {                                                      \
-    /* Assume 'sec' and 'us' have the proper range */       \
-    u32_t hi = (sec) >> 17;                                 \
-    u32_t lo = ((sec) << 15) | ((us) << 9)/15625;           \
-                                                            \
-    /* Code similar to teensy4 core's rtc_set(t) */         \
-    /* This version sets the microseconds too    */         \
-                                                            \
-    /* Stop the RTC */                                      \
-    SNVS_HPCR &= ~(SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);     \
-    while (SNVS_HPCR & SNVS_HPCR_RTC_EN) ;  /* Wait */      \
-    /* Stop the SRTC */                                     \
-    SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;                       \
-    while (SNVS_LPCR & SNVS_LPCR_SRTC_ENV) ;  /* Wait */    \
-    /* Set the SRTC */                                      \
-    SNVS_LPSRTCLR = lo;                                     \
-    SNVS_LPSRTCMR = hi;                                     \
-    /* Start the SRTC */                                    \
-    SNVS_LPCR |= SNVS_LPCR_SRTC_ENV;                        \
-    while (!(SNVS_LPCR & SNVS_LPCR_SRTC_ENV)) ;  /* Wait */ \
-    /* Start the RTC and sync it to the SRTC */             \
-    SNVS_HPCR |= SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS;        \
+#define SNTP_SET_SYSTEM_TIME_US(sec, us)                                  \
+  do {                                                                    \
+    uint32_t s = (uint32_t)(sec);                                         \
+    uint32_t u = (uint32_t)(us);                                          \
+    /* Assume 'sec' and 'us' have the proper range */                     \
+    if (u == 1000000) {                                                   \
+      s++;                                                                \
+      u = 0;                                                              \
+    } else if (u == (uint32_t)(-1)) {                                     \
+      s--;                                                                \
+      u = 999999;                                                         \
+    }                                                                     \
+    const uint32_t hi = (u32_t)((s >> 17) & 0x7fff);                      \
+    const uint32_t lo = (u32_t)((s << 15) | (((u << 9)/15625) & 0x7fff)); \
+                                                                          \
+    /* Code similar to teensy4 core's rtc_set(t) */                       \
+    /* This version sets the microseconds too    */                       \
+                                                                          \
+    /* Stop the RTC */                                                    \
+    SNVS_HPCR &= ~(SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);                   \
+    while (SNVS_HPCR & SNVS_HPCR_RTC_EN) ;  /* Wait */                    \
+    /* Stop the SRTC */                                                   \
+    SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;                                     \
+    while (SNVS_LPCR & SNVS_LPCR_SRTC_ENV) ;  /* Wait */                  \
+    /* Set the SRTC */                                                    \
+    SNVS_LPSRTCLR = lo;                                                   \
+    SNVS_LPSRTCMR = hi;                                                   \
+    /* Start the SRTC */                                                  \
+    SNVS_LPCR |= SNVS_LPCR_SRTC_ENV;                                      \
+    while (!(SNVS_LPCR & SNVS_LPCR_SRTC_ENV)) ;  /* Wait */               \
+    /* Start the RTC and sync it to the SRTC */                           \
+    SNVS_HPCR |= SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS;                      \
   } while (0)
 #define SNTP_GET_SYSTEM_TIME(sec, us) \
   do {                                \
