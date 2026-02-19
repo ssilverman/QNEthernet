@@ -227,7 +227,7 @@ class StreamDecorator : public StreamBase {
   }
 
   int peek() override {
-    return  s_.peek();
+    return s_.peek();
   }
 
   using StreamBase::write;  // Bring void* version of write() into scope
