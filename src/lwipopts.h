@@ -580,6 +580,14 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
   } while (0)
 #endif  // defined(__IMXRT1062__) || defined(KINETISK)
 #endif  // defined(TEENSYDUINO)
+#ifndef SNTP_SET_SYSTEM_TIME_US
+#define SNTP_SET_SYSTEM_TIME_US(sec, us)                          \
+  do {                                                            \
+    const struct timeval tv = {(time_t)(sec), (suseconds_t)(us)}; \
+    settimeofday(&tv, NULL);                                      \
+  } while (0)
+#endif  // !SNTP_SET_SYSTEM_TIME_US
+#ifndef SNTP_GET_SYSTEM_TIME
 #define SNTP_GET_SYSTEM_TIME(sec, us) \
   do {                                \
     struct timeval tv;                \
@@ -587,6 +595,7 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
     (sec) = tv.tv_sec;                \
     (us) = tv.tv_usec;                \
   } while (0)  /* do { (sec) = 0; (us) = 0; } while(0) */
+#endif  // SNTP_GET_SYSTEM_TIME
 
 // MDNS options (mdns_opts.h)
 #ifndef LWIP_MDNS_RESPONDER
