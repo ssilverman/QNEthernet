@@ -514,7 +514,8 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
 #define SNTP_UPDATE_DELAY   600000  /* 3600000 */
 
 #include <sys/time.h>
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
+#if defined(TEENSYDUINO)
+#if defined(__IMXRT1062__)
 #include <imxrt.h>
 #define SNTP_SET_SYSTEM_TIME_US(sec, us)                                  \
   do {                                                                    \
@@ -549,7 +550,36 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
     /* Start the RTC and sync it to the SRTC */                           \
     SNVS_HPCR |= SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS;                      \
   } while (0)
-#endif  // defined(__IMXRT1062__) && defined(TEENSYDUINO)
+#elif defined(KINETISK)
+#include <kinetis.h>
+#define SNTP_SET_SYSTEM_TIME_US(sec, us)              \
+  do {                                                \
+    uint32_t s = (uint32_t)(sec);                     \
+    uint32_t u = (uint32_t)(us);                      \
+    /* Assume 'sec' and 'us' have the proper range */ \
+    if (u == 1000000) {                               \
+      s++;                                            \
+      u = 0;                                          \
+    } else if (u == (uint32_t)(-1)) {                 \
+      s--;                                            \
+      u = 999999;                                     \
+    }                                                 \
+    const uint32_t lo = ((u << 9) / 15625) & 0x7fff;  \
+                                                      \
+    /* Code similar to teensy3 core's rtc_set(t) */   \
+    /* This version sets the microseconds too    */   \
+                                                      \
+    /* Disable time counter */                        \
+    RTC_SR = 0;                                       \
+                                                      \
+    RTC_TPR = lo;                                     \
+    RTC_TSR = s;                                      \
+                                                      \
+    /* Enable time counter */                         \
+    RTC_SR = RTC_SR_TCE;                              \
+  } while (0)
+#endif  // defined(__IMXRT1062__) || defined(KINETISK)
+#endif  // defined(TEENSYDUINO)
 #define SNTP_GET_SYSTEM_TIME(sec, us) \
   do {                                \
     struct timeval tv;                \
