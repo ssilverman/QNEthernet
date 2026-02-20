@@ -249,6 +249,7 @@ static struct InputBuf {
 // Interrupts
 static std::atomic_flag s_rxNotAvail  = ATOMIC_FLAG_INIT;
 static std::atomic_flag s_sendNotDone = ATOMIC_FLAG_INIT;
+static int32_t s_lastSendTxWr = -1;  // 16-bit, but negative if unset
 
 // Misc. internal state
 static EnetInitStates s_initState = EnetInitStates::kStart;
@@ -525,7 +526,7 @@ FLASHMEM static void low_level_init() {
   kSn_RXBUF_SIZE = uint8_t{kRxBufSizeKB};
   kSn_TXBUF_SIZE = uint8_t{kTxBufSizeKB};
   IF_CONSTEXPR (kInterruptPin < 0) {
-    kSn_IMR = socketinterrupts::kSendOk;
+    kSn_IMR = uint8_t{0};
   } else {
     kSn_IMR = static_cast<uint8_t>(socketinterrupts::kSendOk |
                                    socketinterrupts::kRecv);
@@ -561,14 +562,27 @@ static void restartSocket() {
 
 // Waits until any pending SEND request is compete. This should only be called
 // if interrupts are not configured.
+//
+// This waits until Sn_TX_RD matches SN_TX_WR. This is an alternative way to
+// check if the SEND command has completed. The other way is interrupts, but
+// when waiting until the "next send" to check and clear the interrupt, the
+// traffic somehow stops. This means that if we want to check for "send
+// complete" before doing a send instead of after, we can't use the interrupt
+// flag.
+//
+// Checking before a send is the preferred way because that is likely to cause
+// less SPI traffic; the chip is more likely to have completed any internal SEND
+// tasks. Checking after might require more "checks until send complete" and
+// thus block for a little longer.
 static void waitForSendDoneNoInterrupts() {
+  if (s_lastSendTxWr < 0) {
+    return;
+  }
+
   // TODO: See if there's a way to make this non-blocking
-  while ((*kSn_IR & socketinterrupts::kSendOk) == 0) {
+  while (*kSn_TX_RD != static_cast<uint16_t>(s_lastSendTxWr)) {
     // Wait for SEND complete
   }
-  // Note: Clearing this interrupt, when done before the send, seems to
-  //       prevent more traffic
-  kSn_IR = socketinterrupts::kSendOk;  // Clear it
 }
 
 // Sends a frame. This uses data already in s_frameBuf.
@@ -582,9 +596,11 @@ static err_t send_frame(const size_t len) {
   //   return ERR_ARG;
   // }
 
-  // Only wait before send if interrupts are configured
-  // See notes below
-  IF_CONSTEXPR (kInterruptPin >= 0) {
+  // Doing this check here rather than after a send should result in
+  // less SPI traffic
+  IF_CONSTEXPR (kInterruptPin < 0) {
+    waitForSendDoneNoInterrupts();
+  } else {
     while (s_sendNotDone.test_and_set()) {
       // Wait for SEND complete
     }
@@ -607,16 +623,10 @@ static err_t send_frame(const size_t len) {
   // Write and then send the data
   const uint16_t ptr = *kSn_TX_WR;
   write_frame(ptr, blocks::kSocketTx, len);
-  kSn_TX_WR = static_cast<uint16_t>(ptr + len);
+  kSn_TX_WR = s_lastSendTxWr = static_cast<uint16_t>(ptr + len);
   set_socket_command(socketcommands::kSend);
 
-  // Wait for send to complete
-  // Note: It's probably better to do this check before send, to
-  //       prevent some waiting, but clearing the SEND_OK interrupt
-  //       bit at that point seems to prevent traffic
-  IF_CONSTEXPR (kInterruptPin < 0) {
-    waitForSendDoneNoInterrupts();
-  }
+  // Wait for send to complete the next time a send is attempted
 
   LINK_STATS_INC(link.xmit);
 
@@ -748,6 +758,7 @@ FLASHMEM bool driver_init(void) {
   // Clear the flags
   (void)s_rxNotAvail.test_and_set();
   (void)s_sendNotDone.test_and_set();
+  s_lastSendTxWr = -1;
 
   // Set the chip's MAC address
   low_level_init();
