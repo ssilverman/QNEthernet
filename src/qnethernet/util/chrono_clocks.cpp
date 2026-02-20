@@ -35,7 +35,9 @@ uint32_t arm_high_resolution_clock_count() {
   return *kDWT_CYCCNT;
 }
 
-bool arm_high_resolution_clock::init() {
+// Initializes the cycle counter and returns whether it's supported. This uses
+// heuristics and isn't guaranteed to work for all cases.
+bool arm_high_resolution_clock_init() {
   // First enable DWT and check
   if ((*kDEMCR & kDEMCR_TRCENA) == 0) {
     *kDEMCR |= kDEMCR_TRCENA;
@@ -70,7 +72,7 @@ uint32_t arm_high_resolution_clock_count() {
   return 0;
 }
 
-bool arm_high_resolution_clock::init() {
+bool arm_high_resolution_clock_init() {
   return false;
 }
 

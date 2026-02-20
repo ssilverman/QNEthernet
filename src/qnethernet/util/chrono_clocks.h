@@ -13,6 +13,9 @@
 #include <chrono>
 #include <cstdint>
 #include <ratio>
+#include <type_traits>
+
+#include "qnethernet/compat/c++11_compat.h"
 
 namespace qindesign {
 namespace network {
@@ -39,7 +42,7 @@ uint32_t qnethernet_hal_millis();
 //
 // It conforms to the Clock C++ named requirement.
 // See: https://www.cppreference.com/w/cpp/named_req/Clock.html
-template <typename P, uint32_t (*TimeFunc)()>
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)() = nullptr>
 class chrono_steady_clock {
  public:
   using rep        = int64_t;
@@ -56,6 +59,17 @@ class chrono_steady_clock {
     return std::chrono::duration_cast<std::chrono::duration<double>>(
                duration{(rep{1} << 32)})
         .count();
+  }
+
+  // Initializes the clock and returns whether successful. This may not need to
+  // be called, depending on the clock. If InitFunc is NULL then this will
+  // return true.
+  static bool init() {
+    IF_CONSTEXPR (std::is_null_pointer<decltype(InitFunc)>::value) {
+      return InitFunc();
+    } else {
+      return true;
+    }
   }
 
   // Polls the counter, handling wraparound. This must be called at least as
@@ -92,10 +106,10 @@ class chrono_steady_clock {
 };
 
 // Pre-C++17, need out-of-class definition and initialization
-template <typename P, uint32_t (*TimeFunc)()>
-uint32_t chrono_steady_clock<P, TimeFunc>::prevLow = 0;
-template <typename P, uint32_t (*TimeFunc)()>
-uint32_t chrono_steady_clock<P, TimeFunc>::high = 0;
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)()>
+uint32_t chrono_steady_clock<P, TimeFunc, InitFunc>::prevLow = 0;
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)()>
+uint32_t chrono_steady_clock<P, TimeFunc, InitFunc>::high = 0;
 
 // --------------------------------------------------------------------------
 //  steady_clock_ms
@@ -115,6 +129,9 @@ using steady_clock_ms = chrono_steady_clock<std::milli, &qnethernet_hal_millis>;
 // Returns the current DWT_CYCCNT value.
 uint32_t arm_high_resolution_clock_count();
 
+// Initializes the clock.
+bool arm_high_resolution_clock_init();
+
 // Note: In order to get this to compile, the F_CPU variable needs to
 //       be a compile-time constant
 
@@ -123,14 +140,10 @@ uint32_t arm_high_resolution_clock_count();
 // before use.
 //
 // The wraparound period is 2^32/F_CPU, about 7.1 seconds at 600MHz.
-class arm_high_resolution_clock
-    : public chrono_steady_clock<std::ratio<1, F_CPU>,
-                                 &arm_high_resolution_clock_count> {
- public:
-  // Initializes the cycle counter and returns whether it's supported. This uses
-  // heuristics and isn't guaranteed to work for all cases.
-  static bool init();
-};
+using arm_high_resolution_clock =
+    chrono_steady_clock<std::ratio<1, F_CPU>,
+                        &arm_high_resolution_clock_count,
+                        &arm_high_resolution_clock_init>;
 
 #endif  // F_CPU
 
