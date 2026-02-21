@@ -85,7 +85,7 @@ class chrono_steady_clock {
       ++high;
     }
     prevLow = low;
-    const rep t = (rep{high} << 32) | low;
+    const auto t = static_cast<rep>((int64_t{high} << 32) | low);
     qnethernet_hal_enable_interrupts();
 
     return t;
