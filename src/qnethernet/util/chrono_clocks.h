@@ -165,12 +165,14 @@ class arm_high_resolution_clock<f_cpu_tag_type<T, Freq, true>>
 // Non-constant-expression version.
 template <>
 class arm_high_resolution_clock<f_cpu_not_constexpr> {
- public:
+ private:
   using base =
       chrono_steady_clock<std::ratio<1>,
                           &arm_high_resolution_clock_count,
                           &arm_high_resolution_clock_init,
                           double>;
+
+ public:
   using rep        = typename base::rep;
   using period     = typename base::period;
   using duration   = typename base::duration;
