@@ -46,6 +46,12 @@ uint32_t qnethernet_hal_millis();
 //
 // It conforms to the Clock C++ named requirement.
 // See: https://www.cppreference.com/w/cpp/named_req/Clock.html
+//
+// Template parameters:
+// * P - Period, a std::ratio
+// * TimeFunc - Function that returns the current time measurement
+// * InitFunc - Function that initializes the clock, defaults to nullptr
+// * R - Representation, defaults to int64_t
 template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)() = nullptr,
           typename R = int64_t>
 class chrono_steady_clock {
@@ -70,6 +76,7 @@ class chrono_steady_clock {
   // be called, depending on the clock. If InitFunc is NULL then this will
   // return true.
   static bool init() {
+    // Note: Compiler will complain if comparing InitFunc directly to nullptr
     IF_CONSTEXPR (std::is_null_pointer<decltype(InitFunc)>::value) {
       return InitFunc();
     } else {
