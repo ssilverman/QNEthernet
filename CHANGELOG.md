@@ -26,6 +26,8 @@ and this project adheres to
   `std::chrono` features.
 * Added `EthernetClass::linkInfo()` to replace `linkSpeed()`,
   `linkIsFullDuplex()`, and `linkIsCrossover()`.
+* Implemented setting link speed, duplex, and auto-negotiation in Teensy 4.1 and
+  W5500 drivers.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
