@@ -118,7 +118,7 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation() {
+void driver_restart_auto_negotiation(void) {
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED

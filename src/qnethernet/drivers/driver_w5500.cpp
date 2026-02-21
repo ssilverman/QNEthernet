@@ -1089,7 +1089,7 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation() {
+void driver_restart_auto_negotiation(void) {
   // It is assumed that this restarts auto-negotiation
   reset_phy();
 }

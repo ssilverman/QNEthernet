@@ -1278,7 +1278,7 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation() {
+void driver_restart_auto_negotiation(void) {
   mdio_write(PHY_BMCR, mdio_read(PHY_BMCR) | PHY_BMCR_RESTART_AUTO_NEG);
 }
 
