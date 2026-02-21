@@ -344,8 +344,12 @@ enum PHYVals {
   PHY_LEDCR_BLINK_RATE_2Hz  = (3 << 9),
   PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1 << 7),
 
+  // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
+  // LED shows link status, active high, 10Hz
   PHY_LEDCR_VALUE =
       (PHY_LEDCR_BLINK_RATE_10Hz | PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH),
+  // 10-9: LED Blinking Rate (ON/OFF duration)
+  // 7: LED Link Polarity: 1=Active High, 0=Active Low
 
   PHY_RCSR_RMII_CLOCK_SELECT_50MHz               = (1 << 7),
   PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0 << 0),
@@ -355,6 +359,8 @@ enum PHYVals {
 
   PHY_RCSR_VALUE = (PHY_RCSR_RMII_CLOCK_SELECT_50MHz |
                     PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT),
+  // 7: RMII_Clock_Select: 1=50MHz (non-default)
+  // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
 
   PHY_BMSR_LINK_STATUS = (1 << 2),  // 0: No link, 1: Valid link
 
@@ -581,7 +587,7 @@ FLASHMEM static void init_phy(void) {
   GPIO7_DR_SET   = (1 << 15);  // Power on
   delay(50);                   // Just in case; unsure if needed
   GPIO7_DR_CLEAR = (1 << 14);  // Reset
-  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o 25 debouncing caps)
+  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
   GPIO7_DR_SET   = (1 << 14);  // Take out of reset
   delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
@@ -619,8 +625,7 @@ FLASHMEM static void init_phy(void) {
   //                                // 5: 10Base-T_Half-Duplex: 1=advertise
   //                                // 4-0: Selector_Field: IEEE802.3u
   // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
-  mdio_write(PHY_RCSR, 0x0081);  // 7: RMII_Clock_Select: 1=50MHz (non-default)
-                                 // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
+  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
   // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
   // mdio_write(PHY_PHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
 
@@ -823,6 +828,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isAutoNegotiationSettable    = true;
   dc->isLinkCrossoverDetectable    = true;
   dc->isAutoNegotiationRestartable = true;
+  dc->isPHYResettable              = true;
 }
 
 bool driver_is_unknown(void) {
@@ -1280,6 +1286,25 @@ void driver_notify_manual_link_state(const bool flag) {
 
 void driver_restart_auto_negotiation(void) {
   mdio_write(PHY_BMCR, mdio_read(PHY_BMCR) | PHY_BMCR_RESTART_AUTO_NEG);
+}
+
+void driver_reset_phy(void) {
+  switch (s_initState) {
+    case kInitStatePHYInitialized:
+      ATTRIBUTE_FALLTHROUGH;
+    case kInitStateInitialized:
+      break;
+    default:
+      return;
+  }
+
+  GPIO7_DR_CLEAR = (1 << 14);  // Reset
+  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
+  GPIO7_DR_SET   = (1 << 14);  // Take out of reset
+  delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
+
+  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
+  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41

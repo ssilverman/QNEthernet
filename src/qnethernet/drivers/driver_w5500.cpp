@@ -674,6 +674,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isAutoNegotiationSettable    = true;
   dc->isLinkCrossoverDetectable    = false;
   dc->isAutoNegotiationRestartable = true;
+  dc->isPHYResettable              = true;
 }
 
 bool driver_is_unknown(void) {
@@ -1091,6 +1092,10 @@ void driver_notify_manual_link_state(const bool flag) {
 
 void driver_restart_auto_negotiation(void) {
   // It is assumed that this restarts auto-negotiation
+  reset_phy();
+}
+
+void driver_reset_phy(void) {
   reset_phy();
 }
 

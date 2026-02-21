@@ -94,7 +94,8 @@ struct DriverCapabilities {
         isLinkFullDuplexSettable(false),
         isAutoNegotiationSettable(false),
         isLinkCrossoverDetectable(false),
-        isAutoNegotiationRestartable(false) {}
+        isAutoNegotiationRestartable(false),
+        isPHYResettable(false) {}
 #endif  // __cplusplus
 
   bool isMACSettable;
@@ -106,6 +107,7 @@ struct DriverCapabilities {
   bool isAutoNegotiationSettable;
   bool isLinkCrossoverDetectable;
   bool isAutoNegotiationRestartable;
+  bool isPHYResettable;
 };
 
 // Link information. Defaults are:
@@ -279,6 +281,11 @@ void driver_notify_manual_link_state(bool flag);
 //
 // See also: driver_get_capabilities(dc)
 void driver_restart_auto_negotiation(void);
+
+// Resets the PHY, if the driver supports it.
+//
+// See also: driver_get_capabilities(dc)
+void driver_reset_phy(void);
 
 // --------------------------------------------------------------------------
 //  Public Interface

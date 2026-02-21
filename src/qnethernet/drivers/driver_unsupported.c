@@ -22,6 +22,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isAutoNegotiationSettable    = false;
   dc->isLinkCrossoverDetectable    = false;
   dc->isAutoNegotiationRestartable = false;
+  dc->isPHYResettable              = false;
 }
 
 bool driver_is_unknown(void) {
@@ -119,6 +120,9 @@ void driver_notify_manual_link_state(const bool flag) {
 // --------------------------------------------------------------------------
 
 void driver_restart_auto_negotiation(void) {
+}
+
+void driver_reset_phy(void) {
 }
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
