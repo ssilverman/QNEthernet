@@ -15,6 +15,10 @@
 #include <ratio>
 #include <type_traits>
 
+#ifndef F_CPU
+#include <Arduino.h>
+#endif  // !F_CPU
+
 #include "qnethernet/compat/c++11_compat.h"
 
 namespace qindesign {
@@ -42,10 +46,11 @@ uint32_t qnethernet_hal_millis();
 //
 // It conforms to the Clock C++ named requirement.
 // See: https://www.cppreference.com/w/cpp/named_req/Clock.html
-template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)() = nullptr>
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)() = nullptr,
+          typename R = int64_t>
 class chrono_steady_clock {
  public:
-  using rep        = int64_t;
+  using rep        = R;
   using period     = P;
   using duration   = std::chrono::duration<rep, period>;
   using time_point = std::chrono::time_point<chrono_steady_clock>;
@@ -106,10 +111,10 @@ class chrono_steady_clock {
 };
 
 // Pre-C++17, need out-of-class definition and initialization
-template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)()>
-uint32_t chrono_steady_clock<P, TimeFunc, InitFunc>::prevLow = 0;
-template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)()>
-uint32_t chrono_steady_clock<P, TimeFunc, InitFunc>::high = 0;
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)(), typename R>
+uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::prevLow = 0;
+template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)(), typename R>
+uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::high = 0;
 
 // --------------------------------------------------------------------------
 //  steady_clock_ms
@@ -132,8 +137,79 @@ uint32_t arm_high_resolution_clock_count();
 // Initializes the clock.
 bool arm_high_resolution_clock_init();
 
-// Note: In order to get this to compile, the F_CPU variable needs to
-//       be a compile-time constant
+// The mess below makes arm_high_resolution_clock work for
+// non-constant-expression F_CPU
+namespace detail {
+
+template<typename T, T Value, bool IsConstexpr>
+struct f_cpu_tag_type {};
+
+// Constant expression tag type.
+template <decltype(F_CPU) F = F_CPU>
+f_cpu_tag_type<decltype(F), F, true> f_cpu_tag(int);
+
+// Non-constant-expression tag type.
+using f_cpu_not_constexpr = f_cpu_tag_type<decltype(F_CPU), 1, false>;
+f_cpu_not_constexpr f_cpu_tag(...);
+
+template <typename Tag>
+class arm_high_resolution_clock;
+
+// Constant-expression version.
+template <typename T, T Freq>
+class arm_high_resolution_clock<f_cpu_tag_type<T, Freq, true>>
+    : public chrono_steady_clock<std::ratio<1, static_cast<intmax_t>(Freq)>,
+                                 &arm_high_resolution_clock_count,
+                                 &arm_high_resolution_clock_init> {};
+
+// Non-constant-expression version.
+template <>
+class arm_high_resolution_clock<f_cpu_not_constexpr> {
+ public:
+  using base =
+      chrono_steady_clock<std::ratio<1>,
+                          &arm_high_resolution_clock_count,
+                          &arm_high_resolution_clock_init,
+                          double>;
+  using rep        = typename base::rep;
+  using period     = typename base::period;
+  using duration   = typename base::duration;
+  using time_point = typename base::time_point;
+
+  static constexpr bool is_steady = base::is_steady;
+
+  arm_high_resolution_clock() = delete;
+
+  // Gets the wraparound period in seconds.
+  static double wraparoundPeriod() {
+    const auto cpuHz = F_CPU;
+    if (cpuHz == decltype(F_CPU){0}) {
+      return 0.0;
+    }
+    return static_cast<double>(int64_t{1} << 32) / static_cast<double>(cpuHz);
+  }
+
+  static bool init() {
+    return base::init();
+  }
+
+  // Polls the raw cycle count and converts it to seconds.
+  static rep poll() {
+    const auto cpuHz = F_CPU;
+    if (cpuHz == decltype(F_CPU){0}) {
+      return rep{0};
+    }
+    return static_cast<rep>(base::poll() /
+                            static_cast<rep>(cpuHz));
+  }
+
+  // Returns the current time in seconds.
+  static time_point now() {
+    return time_point{duration{poll()}};
+  }
+};
+
+}  // namespace detail
 
 // arm_high_resolution_clock implements a std::chrono wrapper for ARM's
 // DWT_CYCCNT cycle counter, on systems that support it. init() should be called
@@ -141,9 +217,7 @@ bool arm_high_resolution_clock_init();
 //
 // The wraparound period is 2^32/F_CPU, about 7.1 seconds at 600MHz.
 using arm_high_resolution_clock =
-    chrono_steady_clock<std::ratio<1, F_CPU>,
-                        &arm_high_resolution_clock_count,
-                        &arm_high_resolution_clock_init>;
+    detail::arm_high_resolution_clock<decltype(detail::f_cpu_tag(0))>;
 
 #endif  // F_CPU
 
