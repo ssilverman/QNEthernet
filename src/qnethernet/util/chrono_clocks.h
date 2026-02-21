@@ -62,7 +62,7 @@ class chrono_steady_clock {
   // Gets the wraparound period in seconds.
   static constexpr double wraparoundPeriod() {
     return std::chrono::duration_cast<std::chrono::duration<double>>(
-               duration{(rep{1} << 32)})
+               duration{static_cast<rep>(uint64_t{1} << 32)})
         .count();
   }
 
@@ -90,7 +90,7 @@ class chrono_steady_clock {
       ++high;
     }
     prevLow = low;
-    const auto t = static_cast<rep>((int64_t{high} << 32) | low);
+    const auto t = static_cast<rep>((uint64_t{high} << 32) | low);
     qnethernet_hal_enable_interrupts();
 
     return t;
@@ -186,7 +186,7 @@ class arm_high_resolution_clock<f_cpu_not_constexpr> {
     if (cpuHz == decltype(F_CPU){0}) {
       return 0.0;
     }
-    return static_cast<double>(int64_t{1} << 32) / static_cast<double>(cpuHz);
+    return static_cast<double>(uint64_t{1} << 32) / static_cast<double>(cpuHz);
   }
 
   static bool init() {
