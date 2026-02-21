@@ -11,11 +11,11 @@ namespace qindesign {
 namespace network {
 namespace util {
 
-#ifdef F_CPU
-
 // --------------------------------------------------------------------------
 //  arm_high_resolution_clock -- Only Potentially Supported on ARM
 // --------------------------------------------------------------------------
+
+#ifdef F_CPU
 
 #ifdef __arm__
 

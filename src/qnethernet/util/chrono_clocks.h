@@ -77,6 +77,7 @@ class chrono_steady_clock {
   // return true.
   static bool init() {
     // Note: Compiler will complain if comparing InitFunc directly to nullptr
+    //       Instead, compare its type to std::nullptr_t
     IF_CONSTEXPR (std::is_null_pointer<decltype(InitFunc)>::value) {
       return InitFunc();
     } else {
@@ -132,11 +133,11 @@ uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::high = 0;
 // The wraparound period is 2^32/1000, about 49.7 days.
 using steady_clock_ms = chrono_steady_clock<std::milli, &qnethernet_hal_millis>;
 
-#ifdef F_CPU
-
 // --------------------------------------------------------------------------
 //  arm_high_resolution_clock
 // --------------------------------------------------------------------------
+
+#ifdef F_CPU
 
 // Returns the current DWT_CYCCNT value.
 uint32_t arm_high_resolution_clock_count();
@@ -208,8 +209,7 @@ class arm_high_resolution_clock<f_cpu_not_constexpr> {
     if (cpuHz == decltype(F_CPU){0}) {
       return rep{0};
     }
-    return static_cast<rep>(base::poll() /
-                            static_cast<rep>(cpuHz));
+    return static_cast<rep>(base::poll() / static_cast<rep>(cpuHz));
   }
 
   // Returns the current time in seconds.
