@@ -60,6 +60,7 @@ and this project adheres to
   new `LinkSettings` and `LinkInfo` structs.
 * Changed all definitions of, uses of, and references to max. and min. frame
   length to exclude the FCS (frame check sequence).
+* Made `QNETHERNET_ENABLE_PING_SEND` on by default.
 
 ### Removed
 * Removed from `EthernetClass` (and replaced with `linkInfo()`):
