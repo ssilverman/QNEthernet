@@ -1823,10 +1823,17 @@ and then re-plugging the Ethernet kit ribbon cable from the Teensy 4.1 restored
 the link. The link was restored because performing that action caused the link
 to be re-negotiated.
 
-To assist in solving this, a driver function was added:
-`driver_restart_auto_negotiation()`. This can be called, when link-down is
-detected, to restart auto-negotiation. This seemed to solve the link-down
-issues in the project.
+To assist in solving this, two driver functions were added:
+`driver_restart_auto_negotiation()` and `driver_reset_phy()`. These can be
+called, when link-down is detected, to either restart auto-negotiation or reset
+the PHY. Restarting auto-negotiation seemed to solve the link-down issues in
+the project.
+
+See also this thread:
+[Brainstorming possible causes of Ethernet link loss](https://forum.pjrc.com/index.php?threads/brainstorming-possible-causes-of-ethernet-link-loss.77628/)
+
+It turns out that restarting auto-negotiation didn't fix the problem for one
+user. It is unknown, as of this writing, whether `driver_reset_phy()` helped.
 
 ## Security features
 
