@@ -56,6 +56,8 @@ and this project adheres to
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
 * Made dramatic improvements to the W5500 driver with much better buffering.
+* Updated drivers to change link settings and get link info as a group. See the
+  new `LinkSettings` and `LinkInfo` structs.
 * Changed all definitions of, uses of, and references to max. and min. frame
   length to exclude the FCS (frame check sequence).
 
