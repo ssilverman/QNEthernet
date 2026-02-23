@@ -20,49 +20,50 @@ namespace util {
 template <typename Clock>
 class elapsedTime {
  public:
-  elapsedTime() : elapsedTime(Clock::duration::zero()) {}
+  using duration   = typename Clock::duration;
+  using time_point = typename Clock::time_point;
 
-  elapsedTime(typename Clock::duration d) : base_{Clock::now() - d} {}
+  elapsedTime() : elapsedTime(duration::zero()) {}
+
+  elapsedTime(duration d) : base_{Clock::now() - d} {}
 
   // Rule of zero: No declared destructors, copy, or move operations;
   // they will be defaulted
 
-  operator typename Clock::duration() const {
+  operator duration() const {
     return Clock::now() - base_;
   }
 
   // For operator overloading, see also:
   // https://en.cppreference.com/w/cpp/language/operators.html
 
-  elapsedTime& operator=(const typename Clock::duration d) {
+  elapsedTime& operator=(const duration d) {
     base_ = Clock::now() - d;
     return *this;
   }
 
-  elapsedTime& operator+=(const typename Clock::duration d) {
+  elapsedTime& operator+=(const duration d) {
     base_ -= d;
     return *this;
   }
 
-  elapsedTime& operator-=(const typename Clock::duration d) {
+  elapsedTime& operator-=(const duration d) {
     base_ += d;
     return *this;
   }
 
-  friend elapsedTime operator+(elapsedTime lhs,
-                               const typename Clock::duration rhs) {
+  friend elapsedTime operator+(elapsedTime lhs, const duration rhs) {
     lhs += rhs;
     return lhs;
   }
 
-  friend elapsedTime operator-(elapsedTime lhs,
-                               const typename Clock::duration rhs) {
+  friend elapsedTime operator-(elapsedTime lhs, const duration rhs) {
     lhs -= rhs;
     return lhs;
   }
 
  private:
-  typename Clock::time_point base_;
+  time_point base_;
 };
 
 }  // namespace util
