@@ -127,6 +127,8 @@ void setup() {
   } else {
     if (!MDNS.addService("_http", "_tcp", 80)) {
       printf("[Main] ERROR: Failed to add mDNS service\r\n");
+    } else {
+      printf("[Main] Added mDNS service");
     }
   }
 #endif  // LWIP_MDNS_RESPONDER
