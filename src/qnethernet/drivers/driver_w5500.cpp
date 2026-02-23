@@ -1023,7 +1023,7 @@ err_t driver_output(struct pbuf* const p) {
   // }
 
   const uint16_t copied = pbuf_copy_partial(p, s_frameBuf, p->tot_len, 0);
-  if (copied == 0) {
+  if (copied != p->tot_len) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.err);
     return ERR_BUF;

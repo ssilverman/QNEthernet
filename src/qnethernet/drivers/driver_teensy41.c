@@ -1153,7 +1153,7 @@ err_t driver_output(struct pbuf* const p) {
   //                           // UDP senders know to retry
   // }
   const uint16_t copied = pbuf_copy_partial(p, pBD->buffer, p->tot_len, 0);
-  if (copied == 0) {
+  if (copied != p->tot_len) {
     LINK_STATS_INC(link.err);
     LINK_STATS_INC(link.drop);
     return ERR_BUF;
