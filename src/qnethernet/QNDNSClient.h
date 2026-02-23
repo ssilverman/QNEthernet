@@ -55,7 +55,6 @@ class DNSClient final {
   // there was any other error.
   //
   // If the timeout has been reached then the callback will no longer be called.
-  // The timeout is ignored if it is zero.
   //
   // If this returns false and there was an error then errno will be set.
   static bool getHostByName(

@@ -33,7 +33,7 @@ void DNSClient::dnsFoundFunc(const char* const name,
   }
 
   const auto req = static_cast<const Request*>(callback_arg);
-  if ((req->timeout == 0) || ((sys_now() - req->startTime) < req->timeout)) {
+  if ((sys_now() - req->startTime) < req->timeout) {
     req->callback(ipaddr);
   }
   delete req;
