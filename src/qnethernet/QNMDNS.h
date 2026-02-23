@@ -149,13 +149,14 @@ class MDNSClass final {
     // Resets this service to be invalid and empty.
     void reset();
 
+    std::vector<std::string> (*getTXTFunc_)() = nullptr;
+
    private:
     bool valid_ = false;
     char name_[MDNS_LABEL_MAXLEN + 1];
     char type_[MDNS_LABEL_MAXLEN + 1];
     enum mdns_sd_proto proto_ = mdns_sd_proto::DNSSD_PROTO_UDP;
     uint16_t port_ = 0;
-    std::vector<std::string> (*getTXTFunc_)() = nullptr;
   };
 
   MDNSClass() = default;
@@ -166,6 +167,10 @@ class MDNSClass final {
   MDNSClass(MDNSClass&&) = delete;
   MDNSClass& operator=(const MDNSClass&) = delete;
   MDNSClass& operator=(MDNSClass&&) = delete;
+
+  // TXT record callback.
+  static void srv_txt(struct mdns_service* const service,
+                      void* const txt_userdata);
 
   // Finds the slot for the given service.
   ATTRIBUTE_NODISCARD

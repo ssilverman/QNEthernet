@@ -14,6 +14,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include "lwip/apps/mdns_priv.h"  // For struct mdns_service
 #include "lwip/debug.h"
 #include "lwip/err.h"
 #include "qnethernet/platforms/pgmspace.h"
@@ -24,10 +25,27 @@ namespace network {
 // A reference to the singleton.
 STATIC_INIT_DEFN(MDNSClass, MDNS);
 
-static void srv_txt(struct mdns_service* const service,
-                    void* const txt_userdata) {
-  // TODO: Not clear yet why we need at least an empty TXT record for SRV to appear
+void MDNSClass::srv_txt(struct mdns_service* const service,
+                        void* const txt_userdata) {
   if (txt_userdata == nullptr) {
+    return;
+  }
+
+  // Find the correct service function
+  const auto* const instance = static_cast<MDNSClass*>(txt_userdata);
+  const auto end = std::end(instance->slots_);
+  const auto it = std::find_if(
+      std::begin(instance->slots_), end, [service](const Service& s) {
+        return s.equals(true, service->name, service->service,
+                        static_cast<enum mdns_sd_proto>(service->proto),
+                        service->port);
+      });
+  if (it == end) {
+    return;
+  }
+
+  // Some SRVs seem to need a TXT record in order to appear
+  if (it->getTXTFunc_ == nullptr) {
     const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
     if (err != ERR_OK) {
       errno = err_to_errno(err);
@@ -35,9 +53,7 @@ static void srv_txt(struct mdns_service* const service,
     return;
   }
 
-  const auto fn =
-      reinterpret_cast<std::vector<std::string> (*)()>(txt_userdata);
-  const std::vector<std::string> list = fn();
+  const std::vector<std::string> list = it->getTXTFunc_();
   if (list.empty()) {
     const err_t err = mdns_resp_add_service_txtitem(service, "", 0);
     if (err != ERR_OK) {
@@ -173,7 +189,7 @@ bool MDNSClass::addService(const char* const name, const char* const type,
 
   const int8_t slot =
       mdns_resp_add_service(netif_, name, type, proto, port, &srv_txt,
-                            reinterpret_cast<void*>(getTXTFunc));
+                            static_cast<void*>(this));
   if (slot < 0) {
     errno = err_to_errno(slot);
     return false;
