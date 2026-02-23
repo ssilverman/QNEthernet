@@ -204,9 +204,8 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     remove_netif();
   }
 
-  // TODO: Is masking a false return value what we want here?
-  (void)driver_set_mac(mac);
-  if (!driver_get_mac(s_mac)) {
+  // TODO: Do we really need to check the return of driver_set_mac()?
+  if (!driver_set_mac(mac) || !driver_get_mac(s_mac)) {
     // This shouldn't happen because the driver's been initialized
     errno = EFAULT;
     return false;
