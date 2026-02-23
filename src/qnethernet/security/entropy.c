@@ -275,11 +275,17 @@ size_t trng_data(void* const data, const size_t size) {
   return size;
 }
 
+// Gathers a 32-bit random number and returns whether successful. This assumes
+// that the argument is not NULL.
+static inline bool random32(uint32_t* const r) {
+  return (trng_data(r, sizeof(*r)) == sizeof(*r));
+}
+
 uint32_t entropy_random(void) {
   uint32_t r;
-  if (trng_data(&r, sizeof(r)) < sizeof(r)) {
+  if (!random32(&r)) {
     errno = EAGAIN;
-    // TODO: Should we return zero here?
+    return 0;
   }
   return r;
 }
@@ -291,7 +297,7 @@ uint32_t entropy_random_range(const uint32_t range) {
   }
 
   uint32_t r;
-  if (trng_data(&r, sizeof(r)) < sizeof(r)) {
+  if (!random32(&r)) {
     errno = EAGAIN;
     return 0;
   }
@@ -310,8 +316,8 @@ uint32_t entropy_random_range(const uint32_t range) {
   if (low < range) {  // Application of the rejection method
     const uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
     while (low < threshold) {
-      r = entropy_random();
-      if (errno == EAGAIN) {
+      if (!random32(&r)) {
+        errno = EAGAIN;
         return 0;
       }
       product = (uint64_t)r * (uint64_t)range;
