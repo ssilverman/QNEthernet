@@ -11,6 +11,7 @@
 // C++ includes
 #include <cerrno>
 #include <cerrno>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -25,6 +26,8 @@
 #include "lwip/ip4_addr.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/PrintUtils.h"
+#include "qnethernet/util/chrono_clocks.h"
+#include "qnethernet/util/elapsedTime.h"
 #include "qnethernet/util/ip_tools.h"
 
 using namespace qindesign::network::util;
@@ -142,6 +145,16 @@ static void test_isBroadcast() {
   }
 }
 
+// Tests the elapsedTime<Clock> utility class.
+static void test_elapsedTime() {
+  using steady_clock = steady_clock_ms;
+  elapsedTime<steady_clock> timer;
+
+  delay(1000);
+  auto x = std::chrono::duration_cast<std::chrono::seconds>(timer.dur());
+  TEST_ASSERT_EQUAL(1, x.count());
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -164,6 +177,7 @@ void setup() {
   RUN_TEST(test_StdioPrint);
   RUN_TEST(test_NullPrint);
   RUN_TEST(test_isBroadcast);
+  RUN_TEST(test_elapsedTime);
   UNITY_END();
 }
 
