@@ -407,10 +407,10 @@ static void recv_isr() {
     return ir;
   }();
 
-  if ((ir | socketinterrupts::kRecv) != 0) {
+  if ((ir & socketinterrupts::kRecv) != 0) {
     s_rxNotAvail.clear();
   }
-  if ((ir | socketinterrupts::kSendOk) != 0) {
+  if ((ir & socketinterrupts::kSendOk) != 0) {
     s_sendNotDone.clear();
   }
 }
