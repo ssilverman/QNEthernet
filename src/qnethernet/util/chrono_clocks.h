@@ -13,7 +13,6 @@
 #include <chrono>
 #include <cstdint>
 #include <ratio>
-#include <type_traits>
 
 #ifndef F_CPU
 #include <Arduino.h>
@@ -33,6 +32,23 @@ uint32_t qnethernet_hal_millis();
 
 // This was used for guidance:
 // https://github.com/luni64/TeensyHelpers/tree/master/src/teensy_clock
+
+// For correctly handling potentially-NULL initialization functions.
+namespace detail {
+
+template <bool (*Func)()>
+struct InitCaller {
+  ATTRIBUTE_ALWAYS_INLINE
+  static bool call() { return Func(); }
+};
+
+template <>
+struct InitCaller<nullptr> {
+  ATTRIBUTE_ALWAYS_INLINE
+  static bool call() { return true; }
+};
+
+}  // namespace detail
 
 // chrono_steady_clock implements a std::chrono wrapper for TimeFunc().
 //
@@ -76,13 +92,7 @@ class chrono_steady_clock {
   // be called, depending on the clock. If InitFunc is NULL then this will
   // return true.
   static bool init() {
-    // Note: Compiler will complain if comparing InitFunc directly to nullptr
-    //       Instead, compare its type to std::nullptr_t
-    IF_CONSTEXPR (!std::is_null_pointer<decltype(InitFunc)>::value) {
-      return InitFunc();
-    } else {
-      return true;
-    }
+    return detail::InitCaller<InitFunc>::call();
   }
 
   // Polls the counter, handling wraparound. This must be called at least as
