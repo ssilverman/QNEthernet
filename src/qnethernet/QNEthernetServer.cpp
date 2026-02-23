@@ -88,7 +88,8 @@ void EthernetServer::end() {
     listeningPort_ = 0;
     // Note: errno set by stopListening()
   }
-  port_ = {false, 0};
+  // Don't unset the port if it's set:
+  // port_ = {false, 0};
 }
 
 EthernetClient EthernetServer::accept() const {
