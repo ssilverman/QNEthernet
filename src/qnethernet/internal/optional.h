@@ -26,7 +26,7 @@ struct optional {
         value{val} {}
 #endif  // C++ < 14
 
-  bool operator==(const T& t) {
+  bool operator==(const T& t) const {
     return has_value && (value == t);
   }
 };
