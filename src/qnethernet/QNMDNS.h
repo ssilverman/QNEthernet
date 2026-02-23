@@ -153,8 +153,8 @@ class MDNSClass final {
 
    private:
     bool valid_ = false;
-    char name_[MDNS_LABEL_MAXLEN + 1];
-    char type_[MDNS_LABEL_MAXLEN + 1];
+    char name_[MDNS_LABEL_MAXLEN + 1]{'\0'};
+    char type_[MDNS_LABEL_MAXLEN + 1]{'\0'};
     enum mdns_sd_proto proto_ = mdns_sd_proto::DNSSD_PROTO_UDP;
     uint16_t port_ = 0;
   };
