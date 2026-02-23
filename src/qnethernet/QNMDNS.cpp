@@ -185,6 +185,11 @@ bool MDNSClass::addService(const char* const name, const char* const type,
     return false;
   }
 
+  if ((name == nullptr) || (type == nullptr)) {
+    errno = EINVAL;
+    return false;
+  }
+
   const enum mdns_sd_proto proto = toProto(protocol);
 
   const int8_t slot =
@@ -227,6 +232,11 @@ bool MDNSClass::removeService(const char* const name, const char* const type,
                               const char* protocol, const uint16_t port) {
   if (!netifAdded) {
     // Return false for no netif
+    return false;
+  }
+
+  if ((name == nullptr) || (type == nullptr)) {
+    errno = EINVAL;
     return false;
   }
 
