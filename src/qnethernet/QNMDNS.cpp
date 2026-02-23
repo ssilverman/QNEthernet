@@ -252,7 +252,9 @@ void MDNSClass::Service::set(bool valid, const char* name, const char* type,
                              std::vector<std::string> (*const getTXTFunc)()) {
   valid_ = valid;
   (void)std::strncpy(name_, name, sizeof(name_) - 1);
+  name_[sizeof(name_) - 1] = '\0';
   (void)std::strncpy(type_, type, sizeof(type_) - 1);
+  type_[sizeof(type_) - 1] = '\0';
   proto_ = proto;
   port_ = port;
   getTXTFunc_ = getTXTFunc;
