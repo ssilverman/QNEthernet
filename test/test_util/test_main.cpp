@@ -112,7 +112,7 @@ static void test_StdioPrint() {
 static void test_NullPrint() {
   NullPrint np;
   TEST_ASSERT_EQUAL_MESSAGE(1, np.write(1), "Expected byte written");
-  TEST_ASSERT_EQUAL_MESSAGE(12, np.write(nullptr, 12), "Expected bytes written");
+  TEST_ASSERT_EQUAL_MESSAGE(12, np.write((void*)nullptr, 12), "Expected bytes written");
   TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<int>::max(),
                             np.availableForWrite(),
                             "Expected max. bytes available to write");
