@@ -279,6 +279,7 @@ uint32_t entropy_random(void) {
   uint32_t r;
   if (trng_data(&r, sizeof(r)) < sizeof(r)) {
     errno = EAGAIN;
+    // TODO: Should we return zero here?
   }
   return r;
 }
@@ -289,8 +290,9 @@ uint32_t entropy_random_range(const uint32_t range) {
     return 0;
   }
 
-  uint32_t r = entropy_random();
-  if (errno == EAGAIN) {
+  uint32_t r;
+  if (trng_data(&r, sizeof(r)) < sizeof(r)) {
+    errno = EAGAIN;
     return 0;
   }
 
