@@ -30,6 +30,12 @@ class elapsedTime {
   // Rule of zero: No declared destructors, copy, or move operations;
   // they will be defaulted
 
+  // Returns this as a duration. This is useful when the object won't
+  // automatically convert.
+  duration dur() {
+    return static_cast<duration>(*this);
+  }
+
   operator duration() const {
     return Clock::now() - base_;
   }
