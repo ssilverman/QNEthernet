@@ -6,7 +6,11 @@
 //
 // This file is part of the QNEthernet library.
 
+// C includes
+#include <sys/time.h>
+
 // C++ includes
+#include <cstring>
 #include <ctime>
 
 #include <QNEthernet.h>
@@ -86,7 +90,7 @@ void setup() {
 
   // Send an SNTP request
 
-  memset(buf, 0, 48);
+  std::memset(buf, 0, 48);
 #if __cplusplus < 201402L
   buf[0] = 0x23;
 #else
@@ -118,6 +122,24 @@ void setup() {
   // udp.endPacket();
 }
 
+#ifdef TEENSYDUINO
+// Provide an implementation.
+[[gnu::weak]]
+int settimeofday(const struct timeval* const tv,
+                 const struct timezone* const tz) {
+  if (tv == nullptr) {
+    return 0;
+  }
+  time_t t = tv->tv_sec;
+
+  // Ignore the time zone
+
+  Teensy3Clock.set(static_cast<unsigned long>(t));
+  setTime(t);
+  return 0;
+}
+#endif  // TEENSYDUINO
+
 // Main program loop.
 void loop() {
   int size = udp.parsePacket();
@@ -143,8 +165,8 @@ void loop() {
 
   uint32_t t = (uint32_t{buf[40]} << 24) |
                (uint32_t{buf[41]} << 16) |
-               (uint32_t{buf[42]} << 8) |
-               uint32_t{buf[43]};
+               (uint32_t{buf[42]} <<  8) |
+               (uint32_t{buf[43]} <<  0);
   if (t == 0) {
     printf("Discarding reply\r\n");
     return;  // Also discard when the Transmit Timestamp is zero
@@ -157,15 +179,13 @@ void loop() {
   }
 
   // Set the RTC and time
-#ifdef TEENSYDUINO
-  Teensy3Clock.set(t);
-  setTime(t);
-#else
-  // Do something platform-specific here
-#endif  // TEENSYDUINO
+  const timeval tv{std::time_t{t}, 0};
+  if (settimeofday(&tv, nullptr) != 0) {
+    printf("Error setting time\r\n");
+  }
 
   // Print the time
-  std::time_t time = t;
+  std::time_t time = tv.tv_sec;
   std::tm* tm = std::gmtime(&time);
   if (tm != nullptr) {
     printf("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u\r\n",
