@@ -28,6 +28,7 @@
 #include "lwip/altcp.h"
 #include "lwip/altcp_tcp.h"
 #include "lwip/altcp_tls.h"
+#include "lwip/err.h"
 #include "lwip/ip_addr.h"
 
 // Determines if the connection should use TLS. The IP address will be NULL for
@@ -113,11 +114,13 @@ std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
                                               privkey, privkey_len,
                                               privkey_pass, privkey_pass_len,
                                               cert, cert_len);
-              altcp_tls_config_server_add_privkey_cert(
-                  config,
-                  privkey, privkey_len,
-                  privkey_pass, privkey_pass_len,
-                  cert, cert_len);
+              if (altcp_tls_config_server_add_privkey_cert(
+                      config,
+                      privkey, privkey_len,
+                      privkey_pass, privkey_pass_len,
+                      cert, cert_len) != ERR_OK) {
+                // TODO: Do something here
+              }
             }
           }
         } else {  // Client
