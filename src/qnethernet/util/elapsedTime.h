@@ -32,7 +32,7 @@ class elapsedTime {
 
   // Returns this as a duration. This is useful when the object won't
   // automatically convert.
-  duration dur() {
+  duration dur() const {
     return static_cast<duration>(*this);
   }
 
