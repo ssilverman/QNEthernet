@@ -249,7 +249,8 @@ size_t EthernetFrameClass::write(const uint8_t b) {
 size_t EthernetFrameClass::write(const uint8_t* const buffer,
                                  const size_t size) {
   const int avail = availableForWrite();
-  if (!outFrame_.has_value || (size == 0) || (avail <= 0)) {
+  if (!outFrame_.has_value || (size == 0) || (avail <= 0) ||
+      (buffer == nullptr)) {
     return 0;
   }
 

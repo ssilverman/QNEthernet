@@ -524,7 +524,7 @@ size_t EthernetUDP::write(const uint8_t b) {
 }
 
 size_t EthernetUDP::write(const uint8_t* const buffer, const size_t size) {
-  if (!outPacket_.has_value || (size == 0)) {
+  if (!outPacket_.has_value || (size == 0) || (buffer == nullptr)) {
     return 0;
   }
   const size_t actualSize =
