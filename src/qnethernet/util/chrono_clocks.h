@@ -78,7 +78,7 @@ class chrono_steady_clock {
   static bool init() {
     // Note: Compiler will complain if comparing InitFunc directly to nullptr
     //       Instead, compare its type to std::nullptr_t
-    IF_CONSTEXPR (std::is_null_pointer<decltype(InitFunc)>::value) {
+    IF_CONSTEXPR (!std::is_null_pointer<decltype(InitFunc)>::value) {
       return InitFunc();
     } else {
       return true;
