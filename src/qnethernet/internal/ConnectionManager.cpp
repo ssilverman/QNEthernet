@@ -70,7 +70,7 @@ err_t ConnectionManager::connectedFunc(void* const arg,
   if (err != ERR_OK) {
     holder->state = nullptr;
 
-    if ((err != ERR_CLSD) && (err != ERR_ABRT)) {
+    if (err != ERR_CLSD) {
       if (altcp_close(tpcb) != ERR_OK) {
         altcp_abort(tpcb);
         return ERR_ABRT;
@@ -164,7 +164,7 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
 
     holder->state = nullptr;
 
-    if ((err != ERR_CLSD) && (err != ERR_ABRT)) {
+    if (err != ERR_CLSD) {
       if (altcp_close(tpcb) != ERR_OK) {
         altcp_abort(tpcb);
         return ERR_ABRT;
@@ -233,7 +233,7 @@ err_t ConnectionManager::acceptFunc(void* const arg,
   const auto m = static_cast<ConnectionManager*>(arg);
 
   if (err != ERR_OK) {
-    if ((err != ERR_CLSD) && (err != ERR_ABRT)) {
+    if (err != ERR_CLSD) {
       if (altcp_close(newpcb) != ERR_OK) {
         altcp_abort(newpcb);
         return ERR_ABRT;
