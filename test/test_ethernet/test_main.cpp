@@ -1465,7 +1465,8 @@ static void test_server_state() {
   TEST_ASSERT_EQUAL_MESSAGE(kPort, server->port(), "Expected valid port");
   server->end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
+  // end() no longer removes the port
+  // TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_TCP_PCB_LISTEN, EthernetServer::maxListeners(),
                             "Expected default TCP max. listeners");
@@ -1495,7 +1496,8 @@ static void test_server_zero_port() {
   TEST_MESSAGE(format("Server port = %" PRId32, port).data());
   server->end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
+  // end() no longer removes the port
+  // TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 
   server = compat::make_unique<EthernetServer>(0);
 
@@ -1506,7 +1508,8 @@ static void test_server_zero_port() {
   TEST_ASSERT_NOT_EQUAL_MESSAGE(0, server->port(), "Expected zero port");
   server->end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*server), "Expected not listening");
-  TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
+  // end() no longer removes the port
+  // TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
 }
 
 // Tests server accept().
