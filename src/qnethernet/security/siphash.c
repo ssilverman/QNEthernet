@@ -18,11 +18,14 @@ static inline uint64_t rotl(const uint64_t x, const int s) {
   return (x << s) | (x >> (64 - s));
 }
 
-#define SIPROUND                                                            \
-  (v0) += (v1); (v1) = rotl((v1), 13); (v1) ^= (v0); (v0) = rotl((v0), 32); \
-  (v2) += (v3); (v3) = rotl((v3), 16); (v3) ^= (v2);                        \
-  (v0) += (v3); (v3) = rotl((v3), 21); (v3) ^= (v0);                        \
-  (v2) += (v1); (v1) = rotl((v1), 17); (v1) ^= (v2); (v2) = rotl((v2), 32)
+// Performs one SIP round.
+static inline void sipround(uint64_t* const v0, uint64_t* const v1,
+                            uint64_t* const v2, uint64_t* const v3) {
+  *v0 += *v1; *v1 = rotl(*v1, 13); *v1 ^= *v0; *v0 = rotl(*v0, 32);
+  *v2 += *v3; *v3 = rotl(*v3, 16); *v3 ^= *v2;
+  *v0 += *v3; *v3 = rotl(*v3, 21); *v3 ^= *v0;
+  *v2 += *v1; *v1 = rotl(*v1, 17); *v1 ^= *v2; *v2 = rotl(*v2, 32);
+}
 
 uint64_t siphash(const size_t c, const size_t d,
                  const void* const key,
@@ -54,7 +57,7 @@ uint64_t siphash(const size_t c, const size_t d,
 #endif  // Big-endian
     v3 ^= m;
     for (size_t i = 0; i < c; ++i) {
-      SIPROUND;
+      sipround(&v0, &v1, &v2, &v3);
     }
     v0 ^= m;
     pMsg += 8;
@@ -70,14 +73,14 @@ uint64_t siphash(const size_t c, const size_t d,
 #endif  // Big-endian
   v3 ^= m;
   for (size_t i = 0; i < c; ++i) {
-    SIPROUND;
+    sipround(&v0, &v1, &v2, &v3);
   }
   v0 ^= m;
 
   // Finalization
   v2 ^= 0xff;
   for (size_t i = 0; i < d; ++i) {
-    SIPROUND;
+    sipround(&v0, &v1, &v2, &v3);
   }
 
   return v0 ^ v1 ^ v2 ^ v3;
