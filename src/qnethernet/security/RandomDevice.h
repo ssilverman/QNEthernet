@@ -37,6 +37,12 @@ class RandomDevice {
     return std::numeric_limits<result_type>::max();
   }
 
+  // Obtains the entropy estimate for the non-deterministic random number
+  // generator. For a deterministic generator, this will return zero.
+  //
+  // See: https://en.cppreference.com/w/cpp/numeric/random/random_device/entropy.html
+  double entropy() const;
+
   result_type operator()();
 
  private:
