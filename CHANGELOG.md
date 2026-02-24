@@ -35,6 +35,7 @@ and this project adheres to
   * `isPHYResettable`
 * Added call to `qnethernet_hal_deinit_entropy()` in `RandomDevice` destructor.
 * Added `RandomDevice::entropy()` to match `std::random_device::entropy()`.
+* Added `qindesign::security::random_device` to mimic `std::random_device`.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was

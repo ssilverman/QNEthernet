@@ -60,5 +60,38 @@ class RandomDevice {
 
 STATIC_INIT_DECL(RandomDevice, randomDevice);
 
+// Create a class that can mimic std::random_device.
+//
+// See: https://en.cppreference.com/w/cpp/numeric/random/random_device.html
+class random_device {
+ public:
+  using result_type = RandomDevice::result_type;
+
+  random_device() = default;
+  ~random_device() = default;
+
+  // Disallow copying and moving
+  random_device(const random_device&) = delete;
+  random_device(random_device&&) = delete;
+  random_device& operator=(const random_device&) = delete;
+  random_device& operator=(random_device&&) = delete;
+
+  static constexpr result_type min() {
+    return RandomDevice::min();
+  }
+
+  static constexpr result_type max() {
+    return RandomDevice::max();
+  }
+
+  double entropy() const {
+    return randomDevice.entropy();
+  }
+
+  result_type operator()() {
+    return randomDevice();
+  }
+};
+
 }  // namespace security
 }  // namespace qindesign
