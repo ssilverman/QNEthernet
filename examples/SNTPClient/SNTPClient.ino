@@ -127,7 +127,7 @@ void setup() {
 // Provide an implementation.
 [[gnu::weak]]
 int settimeofday(const struct timeval* const tv,
-                 const struct timezone* const tz) {
+                 [[maybe_unused]] const struct timezone* const tz) {
   if (tv == nullptr) {
     return 0;
   }
@@ -143,6 +143,8 @@ int settimeofday(const struct timeval* const tv,
 [[gnu::weak]]
 int settimeofday(const struct timeval* const tv,
                  const struct timezone* const tz) {
+  (void)tz;
+
   if (tv == nullptr) {
     return 0;
   }
