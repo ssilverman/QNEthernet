@@ -304,6 +304,7 @@ std::shared_ptr<ConnectionHolder> ConnectionManager::connect(
       create_altcp_pcb(ipaddr, port, IP_GET_TYPE(ipaddr));
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
+    errno = ENOMEM;
     return nullptr;
   }
 
@@ -343,6 +344,7 @@ optional<uint16_t> ConnectionManager::listen(const uint16_t port,
   struct altcp_pcb* pcb = create_altcp_pcb(nullptr, port, IPADDR_TYPE_ANY);
   if (pcb == nullptr) {
     Ethernet.loop();  // Allow the stack to move along
+    errno = ENOMEM;
     return {};
   }
 
