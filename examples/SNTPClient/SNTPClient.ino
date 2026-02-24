@@ -140,7 +140,7 @@ int settimeofday(const struct timeval* const tv,
   return 0;
 }
 #else
-[[gnu::weak]]
+__attribute__((weak))
 int settimeofday(const struct timeval* const tv,
                  const struct timezone* const tz) {
   (void)tz;
