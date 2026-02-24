@@ -73,8 +73,8 @@ void MDNSClass::srv_txt(struct mdns_service* const service,
   }
 }
 
-static bool initialized = false;
-static bool netifAdded = false;
+static bool s_initialized = false;
+static bool s_netifAdded = false;
 
 FLASHMEM MDNSClass::~MDNSClass() noexcept {
   int lastErrno = errno;
@@ -90,9 +90,9 @@ bool MDNSClass::begin(const char* const hostname) {
     return false;
   }
 
-  if (!initialized) {
+  if (!s_initialized) {
     mdns_resp_init();
-    initialized = true;
+    s_initialized = true;
   }
 
   // Treat nullptr hostname as not allowed
@@ -101,7 +101,7 @@ bool MDNSClass::begin(const char* const hostname) {
     return false;
   }
 
-  if (netifAdded) {
+  if (s_netifAdded) {
     if ((std::strlen(hostname_) == std::strlen(hostname)) &&
         (std::strncmp(hostname_, hostname, std::strlen(hostname_)) == 0)) {
       return true;
@@ -118,7 +118,7 @@ bool MDNSClass::begin(const char* const hostname) {
       return false;
     }
 
-    netifAdded = true;
+    s_netifAdded = true;
     netif_ = netif_default;
   }
 
@@ -128,9 +128,9 @@ bool MDNSClass::begin(const char* const hostname) {
 }
 
 void MDNSClass::end() {
-  if (netifAdded) {
+  if (s_netifAdded) {
     const err_t err = mdns_resp_remove_netif(netif_);
-    netifAdded = false;
+    s_netifAdded = false;
     netif_ = nullptr;
     hostname_[0] = '\0';
     if (err != ERR_OK) {
@@ -140,7 +140,7 @@ void MDNSClass::end() {
 }
 
 void MDNSClass::restart() {
-  if (!netifAdded) {
+  if (!s_netifAdded) {
     return;
   }
   mdns_resp_restart(netif_);
@@ -179,7 +179,7 @@ bool MDNSClass::addService(const char* const type, const char* const protocol,
 bool MDNSClass::addService(const char* const name, const char* const type,
                            const char* const protocol, const uint16_t port,
                            std::vector<std::string> (*getTXTFunc)()) {
-  if (!netifAdded) {
+  if (!s_netifAdded) {
     // Return false for no netif
     errno = ENOTCONN;
     return false;
@@ -230,7 +230,7 @@ bool MDNSClass::removeService(const char* const type,
 
 bool MDNSClass::removeService(const char* const name, const char* const type,
                               const char* protocol, const uint16_t port) {
-  if (!netifAdded) {
+  if (!s_netifAdded) {
     // Return false for no netif
     return false;
   }
@@ -262,7 +262,7 @@ MDNSClass::operator bool() const {
 }
 
 void MDNSClass::announce() const {
-  if (!netifAdded) {
+  if (!s_netifAdded) {
     errno = ENOTCONN;
     return;
   }

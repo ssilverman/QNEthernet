@@ -54,21 +54,21 @@ STATIC_INIT_DEFN(EthernetClass, Ethernet);
 
 #if defined(HAS_EVENT_RESPONDER)
 // Global definitions for Arduino
-static EventResponder ethLoop;
-static bool loopAttached = false;
+static EventResponder s_ethLoop;
+static bool s_loopAttached = false;
 
 // Attach the loop() call to yield() via EventResponder.
 static void attachLoopToYield() {
-  if (loopAttached) {
+  if (s_loopAttached) {
     return;
   }
-  loopAttached = true;
-  ethLoop.attach([](EventResponderRef r) {
+  s_loopAttached = true;
+  s_ethLoop.attach([](EventResponderRef r) {
     // NOTE: EventResponder calls aren't reentrant
     Ethernet.loop();
     r.triggerEvent();
   });
-  ethLoop.triggerEvent();
+  s_ethLoop.triggerEvent();
 }
 #else
 // #warning "Need to hook into or replace yield()"
@@ -505,10 +505,10 @@ void EthernetClass::end() {
   }
 
 #if defined(HAS_EVENT_RESPONDER)
-  if (loopAttached) {
-    loopAttached = false;
-    (void)ethLoop.clearEvent();
-    ethLoop.detach();
+  if (s_loopAttached) {
+    s_loopAttached = false;
+    (void)s_ethLoop.clearEvent();
+    s_ethLoop.detach();
   }
 #endif  // defined(HAS_EVENT_RESPONDER)
 
