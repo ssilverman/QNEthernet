@@ -110,8 +110,10 @@ class ConnectionManager final {
   std::vector<struct altcp_pcb*> listeners_;
 
   // Pre-allocate these to avoid std::vector allocations
-  std::array<struct altcp_pcb*, EthernetClient::maxSockets()> connSnapshot_;
-  std::array<struct altcp_pcb*, EthernetServer::maxListeners()> lstnSnapshot_;
+  // Use 3/2 the max. counts because I still need to prove that the list sizes
+  // don't exceed the maximums
+  std::array<struct altcp_pcb*, EthernetClient::maxSockets()*3/2> connSnapshot_;
+  std::array<struct altcp_pcb*, EthernetServer::maxListeners()*3/2> lstnSnapshot_;
 };
 
 }  // namespace internal
