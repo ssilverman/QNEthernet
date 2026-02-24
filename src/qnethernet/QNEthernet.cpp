@@ -173,6 +173,7 @@ void EthernetClass::setMACAddress(const uint8_t mac[kMACAddrSize]) {
 #endif  // LWIP_DHCP
 
   if (start()) {
+    // Note: I believe it's okay to ignore the return value here
     (void)maybeStartDHCP();
   }
   // TODO: Return value?
