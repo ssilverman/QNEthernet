@@ -38,7 +38,7 @@ class RandomDevice {
 
  private:
   RandomDevice();
-  ~RandomDevice() = default;
+  ~RandomDevice();
 
   // Disallow copying and moving
   RandomDevice(const RandomDevice&) = delete;

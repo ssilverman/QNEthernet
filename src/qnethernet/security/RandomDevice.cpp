@@ -16,6 +16,7 @@ namespace security {
 
 extern "C" {
 void qnethernet_hal_init_entropy(void);
+void qnethernet_hal_deinit_entropy(void);
 uint32_t qnethernet_hal_entropy(void);
 }  // extern "C"
 
@@ -27,6 +28,10 @@ RandomDevice& RandomDevice::instance() {
 
 FLASHMEM RandomDevice::RandomDevice() {
   qnethernet_hal_init_entropy();
+}
+
+FLASHMEM RandomDevice::~RandomDevice() {
+  qnethernet_hal_deinit_entropy();
 }
 
 RandomDevice::result_type RandomDevice::operator()() {

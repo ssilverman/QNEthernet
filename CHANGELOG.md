@@ -33,6 +33,7 @@ and this project adheres to
 * Added to `DriverCapabilities`:
   * `isAutoNegotiationSettable`
   * `isPHYResettable`
+* Added call to `qnethernet_hal_deinit_entropy()` in `RandomDevice` destructor.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
