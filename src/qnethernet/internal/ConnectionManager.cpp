@@ -573,7 +573,24 @@ void ConnectionManager::iterateConnections(
 
 void ConnectionManager::iterateListeners(
     std::function<void(struct altcp_pcb* pcb)> f) {
-  (void)std::for_each(listeners_.cbegin(), listeners_.cend(), f);
+  if (listeners_.empty()) {
+    return;
+  }
+
+  // To avoid any re-entrant modifications, copy the existing list
+  size_t count = 0;
+  (void)std::for_each(
+      listeners_.cbegin(), listeners_.cend(),
+      [this, &count](struct altcp_pcb* const pcb) {
+        // TODO: Verify that listeners_ can never contain more than EthernetServer::maxListeners()
+        if (count < lstnSnapshot_.size()) {
+          lstnSnapshot_[count++] = pcb;
+        }
+      });
+
+  // Now we can iterate more safely
+  (void)std::for_each(lstnSnapshot_.cbegin(), lstnSnapshot_.cbegin() + count,
+                      f);
 }
 
 }  // namespace internal
