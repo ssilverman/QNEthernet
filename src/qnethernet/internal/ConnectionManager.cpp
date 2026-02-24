@@ -548,14 +548,24 @@ void ConnectionManager::abortAll() {
 
 void ConnectionManager::iterateConnections(
     std::function<void(struct altcp_pcb* pcb)> f) {
+  if (connections_.empty()) {
+    return;
+  }
+
+  // To avoid any re-entrant modifications, copy the existing list
+  std::vector<struct altcp_pcb*> snapshot;
+  snapshot.reserve(connections_.size());
   std::for_each(connections_.cbegin(), connections_.cend(),
                 // Note: No 'auto' type for parameters in C++11
-                [&f](const std::shared_ptr<ConnectionHolder>& elem) {
-                  const auto& state = elem->state;
-                  if (state != nullptr) {
-                    f(state->pcb);
+                [&snapshot](const std::shared_ptr<ConnectionHolder>& elem) {
+                  if (elem->state != nullptr) {
+                    snapshot.push_back(elem->state->pcb);
                   }
                 });
+
+  // Now we can iterate more safely
+  std::for_each(snapshot.cbegin(), snapshot.cend(),
+                [&f](struct altcp_pcb* const pcb) { f(pcb); });
 }
 
 void ConnectionManager::iterateListeners(
