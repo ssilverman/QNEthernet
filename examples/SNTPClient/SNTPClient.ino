@@ -10,6 +10,7 @@
 #include <sys/time.h>
 
 // C++ includes
+#include <cerrno>
 #include <cstring>
 #include <ctime>
 
@@ -137,6 +138,16 @@ int settimeofday(const struct timeval* const tv,
   Teensy3Clock.set(static_cast<unsigned long>(t));
   setTime(t);
   return 0;
+}
+#else
+[[gnu::weak]]
+int settimeofday(const struct timeval* const tv,
+                 const struct timezone* const tz) {
+  if (tv == nullptr) {
+    return 0;
+  }
+  errno = ENOSYS;
+  return -1;
 }
 #endif  // TEENSYDUINO
 
