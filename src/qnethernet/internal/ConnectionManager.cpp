@@ -555,18 +555,19 @@ void ConnectionManager::iterateConnections(
   }
 
   // To avoid any re-entrant modifications, copy the existing list
-  std::vector<struct altcp_pcb*> snapshot;
-  snapshot.reserve(connections_.size());
-  std::for_each(connections_.cbegin(), connections_.cend(),
-                // Note: No 'auto' type for parameters in C++11
-                [&snapshot](const std::shared_ptr<ConnectionHolder>& elem) {
-                  if (elem->state != nullptr) {
-                    snapshot.push_back(elem->state->pcb);
-                  }
-                });
+  size_t count = 0;
+  std::for_each(
+      connections_.cbegin(), connections_.cend(),
+      // Note: No 'auto' type for parameters in C++11
+      [this, &count](const std::shared_ptr<ConnectionHolder>& elem) {
+        // TODO: Verify that connections_ can never contain more than EthernetClient::maxSockets()
+        if ((elem->state != nullptr) && (count < connSnapshot_.size())) {
+          connSnapshot_[count++] = elem->state->pcb;
+        }
+      });
 
   // Now we can iterate more safely
-  std::for_each(snapshot.cbegin(), snapshot.cend(),
+  std::for_each(connSnapshot_.cbegin(), connSnapshot_.cbegin() + count,
                 [&f](struct altcp_pcb* const pcb) { f(pcb); });
 }
 

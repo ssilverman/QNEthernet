@@ -11,6 +11,7 @@
 #if LWIP_TCP
 
 // C++ includes
+#include <array>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -18,6 +19,7 @@
 
 #include "lwip/altcp.h"
 #include "lwip/ip_addr.h"
+#include "qnethernet/QNEthernetClient.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ConnectionHolder.h"
 #include "qnethernet/internal/optional.h"
@@ -105,6 +107,9 @@ class ConnectionManager final {
 
   std::vector<std::shared_ptr<ConnectionHolder>> connections_;
   std::vector<struct altcp_pcb*> listeners_;
+
+  // Pre-allocate this to avoid a std::vector allocation.
+  std::array<struct altcp_pcb*, EthernetClient::maxSockets()> connSnapshot_;
 };
 
 }  // namespace internal
