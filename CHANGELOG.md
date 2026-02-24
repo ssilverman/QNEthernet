@@ -18,6 +18,7 @@ and this project adheres to
 * Added printing chrono clock times to network-up in the main program.
 * Added `qindesign::network::util::elapsedTime<Clock>`, a class similar to
   `elapsedMillis`, but uses a `std::chrono` Clock.
+* Added support to the W5500 driver for interrupts via a pin.
 * New _SimpleIPerfServer_ example. It just reads from a socket as fast
   as possible.
 * Added `write(const void*, size_t)` convenience functions to all
@@ -28,6 +29,7 @@ and this project adheres to
   `linkIsFullDuplex()`, and `linkIsCrossover()`.
 * Implemented setting link speed, duplex, and auto-negotiation in Teensy 4.1 and
   W5500 drivers.
+* Added `isAutoNegotiationSettable` to `DriverCapabilities`.
 * Added `driver_reset_phy()` driver function for resetting the PHY.
 
 ### Changed
@@ -52,15 +54,24 @@ and this project adheres to
 * Robustness changes:
   * Removed all implicit conversions
   * Handle all return values in some way
+  * Reduced the number of #defines in favour of constants, enums, and static
+    inline functions
 * Changed `MDNSClass` to use `std::string` instead of the Arduino `String`.
+* Updated examples to be more consistent with each other.
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
-* Made dramatic improvements to the W5500 driver with much better buffering.
+* Marked _IPerfServer_ example as "Under Repair".
+* Now excluding the FCS (Frame Check Sequence) from all frame length-related
+  definitions and use.
+* Made dramatic improvements to the W5500 driver with much better buffering and
+  how it waits to send frames.
+* Updated the W5500 driver's `driver_deinit()` function to power down the PHY.
 * Updated drivers to change link settings and get link info as a group. See the
   new `LinkSettings` and `LinkInfo` structs.
 * Changed all definitions of, uses of, and references to max. and min. frame
   length to exclude the FCS (frame check sequence).
 * Made `QNETHERNET_ENABLE_PING_SEND` on by default.
+* Updated _SNTPClient_ example to use `settimeofday()` to set the time.
 
 ### Removed
 * Removed from `EthernetClass` (and replaced with `linkInfo()`):
@@ -72,8 +83,23 @@ and this project adheres to
 * Fixed `EthernetClass::ping(ip, ttl)` to return -1 if sending the ping failed.
 * Fixed _RawFrameMonitor_ example tag interpretation to split at <=1500 and
   assume values in the range 1501-1535 are a type.
-* Changed `DNSClient` to not ignore a zero timeout. This caused a potential
+* Fixed setting an incorrect register in the entropy module (Teensy 4).
+* Changed `DNSClient` to not ignore a zero timeout. This had caused a potential
   use-after-scope.
+* Added better checks in the driver output for any buffer copy errors.
+* Now checking for NULL buffer arguments in `write()` of `EthernetUDP`
+  and `EthernetFrameClass`.
+* Fixed `MDNSClass`:
+  * Ensure there's final NULs after copying some strings.
+  * Avoid undefined casting between `void*` and a function pointer.
+  * Added some NULL argument checking.
+* `DNSClient` no longer ignores a timeout of zero. This was causing a potential
+  use-after-scope.
+* Fixed the entropy module (Teensy 4) to not depend on a possibly stale `errno`.
+* Clarified in the `EthernetServer` docs that the `beginXXX()` functions are
+  non-transactional in that they call `end()` first.
+* Fixed connection and listener iteration to first take a snapshot of the lists
+  so that it's not possible to change the lists while iterating over them.
 
 ## [0.34.0]
 
