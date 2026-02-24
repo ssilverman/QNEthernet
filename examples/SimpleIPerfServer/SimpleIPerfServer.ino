@@ -22,9 +22,9 @@ constexpr uint16_t kPort = 5001;
 namespace {  // Internal linkage section
 
 // Set these to something to use a static IP instead of one from DHCP
-const IPAddress kStaticIP;
-const IPAddress kSubnet;
-const IPAddress kGateway;
+const IPAddress kStaticIP;//{192, 168, 1, 101};
+const IPAddress kSubnet{255, 255, 255, 0};
+const IPAddress kGateway{192, 168, 1, 1};
 
 EthernetServer server{kPort};
 
