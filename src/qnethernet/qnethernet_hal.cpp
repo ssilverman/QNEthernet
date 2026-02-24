@@ -200,6 +200,12 @@ void qnethernet_hal_init_entropy(void) {
   }
 }
 
+void qnethernet_hal_deinit_entropy(void) {
+  if (trng_is_started()) {
+    trng_deinit();
+  }
+}
+
 uint32_t qnethernet_hal_entropy(void) {
   return entropy_random();
 }
@@ -225,6 +231,9 @@ void qnethernet_hal_init_entropy(void) {
   }
 }
 
+void qnethernet_hal_deinit_entropy(void) {
+}
+
 uint32_t qnethernet_hal_entropy(void) {
   return Entropy.random();
 }
@@ -240,6 +249,9 @@ static std::minstd_rand& urbg_instance() {
 
 void qnethernet_hal_init_entropy(void) {
   urbg_instance().seed(qnethernet_hal_micros());
+}
+
+void qnethernet_hal_deinit_entropy(void) {
 }
 
 uint32_t qnethernet_hal_entropy(void) {
