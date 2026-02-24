@@ -77,6 +77,8 @@ and this project adheres to
   length to exclude the FCS (frame check sequence).
 * Made `QNETHERNET_ENABLE_PING_SEND` on by default.
 * Updated _SNTPClient_ example to use `settimeofday()` to set the time.
+* Updated _RandomNumbers_ example to use new
+  `qindesign::security::random_device` class.
 
 ### Removed
 * Removed from `EthernetClass` (and replaced with `linkInfo()`):

@@ -20,12 +20,8 @@
 
 #include <QNEthernet.h>
 
-// The 'RandomDevice' class is in this namespace. Note that you could
-// also directly qualify the class and not use this directive.
-//
-// The object satisfies the UniformRandomBitGenerator C++
-// named requirement.
-using namespace qindesign::security;
+// This class mimics std::random_device.
+using random_device = qindesign::security::random_device;
 
 // -------------------------------------------------------------------
 //  Program State
@@ -39,8 +35,10 @@ std::uniform_int_distribution<int> diceDist(1, 6);  // Inclusive
 std::uniform_real_distribution<float> realDist(0.0f, 1.0f);  // [0, 1)
 std::normal_distribution<float> normalDist(0.0f, 1.0f);  // mean=0 stddev=1
 
-// Linear congruential generator (LCG) engine.
-std::minstd_rand randomEngine{RandomDevice::instance()()};
+random_device randomDevice;
+
+// Linear congruential generator (LCG) engine. Initialize with a random seed.
+std::minstd_rand randomEngine{randomDevice()};
 
 }  // namespace
 
@@ -56,7 +54,7 @@ void setup() {
   }
 
   printf("[Hardware Entropy]\r\n");
-  demo(RandomDevice::instance());
+  demo(randomDevice);
 
   printf("\r\n");
 
