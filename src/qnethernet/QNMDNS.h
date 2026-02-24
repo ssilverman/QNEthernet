@@ -183,7 +183,7 @@ class MDNSClass final {
   // Holds information about all the slots.
   Service slots_[MDNS_MAX_SERVICES];
 
-  friend class StaticInit<MDNSClass>;
+  STATIC_INIT_FRIEND(MDNSClass, MDNS);
 };
 
 // Instance for interacting with mDNS.

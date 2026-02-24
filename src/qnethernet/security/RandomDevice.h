@@ -55,7 +55,7 @@ class RandomDevice {
   RandomDevice& operator=(const RandomDevice&) = delete;
   RandomDevice& operator=(RandomDevice&&) = delete;
 
-  friend class StaticInit<RandomDevice>;
+  STATIC_INIT_FRIEND(RandomDevice, randomDevice);
 };
 
 STATIC_INIT_DECL(RandomDevice, randomDevice);

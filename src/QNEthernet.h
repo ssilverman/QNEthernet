@@ -550,7 +550,7 @@ class EthernetClass final {
 #endif  // LWIP_IPV4 || LWIP_IPV6
   std::function<void(bool status)> interfaceStatusCB_;
 
-  friend class StaticInit<EthernetClass>;
+  STATIC_INIT_FRIEND(EthernetClass, Ethernet);
 };
 
 // Instance for interacting with the library.

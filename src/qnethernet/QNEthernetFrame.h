@@ -260,8 +260,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   uint32_t droppedReceiveCount_ = 0;
   uint32_t totalReceiveCount_   = 0;
 
-  friend class StaticInit<EthernetFrameClass>;
   friend err_t ::unknown_eth_protocol(struct pbuf* p, struct netif* netif);
+
+  STATIC_INIT_FRIEND(EthernetFrameClass, EthernetFrame);
 };
 
 // Instance for using raw Ethernet frames.

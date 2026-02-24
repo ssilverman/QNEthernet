@@ -15,7 +15,7 @@
 //
 // Header:
 // 1. Include "StaticInit.h"
-// 2. Inside the class declaration, add `friend class StaticInit<SomeType>;`
+// 2. Inside the class declaration, add `STATIC_INIT_FRIEND(SomeType, name);`
 // 3. Add this after the class declaration: `STATIC_INIT_DECL(SomeType, name);`
 //
 // Source:
@@ -67,3 +67,6 @@ struct StaticInit {
   template<> decltype(StaticInit<Type>::buf) StaticInit<Type>::buf{0};      \
   template<> decltype(StaticInit<Type>::pT) StaticInit<Type>::pT = nullptr; \
   Type& name = *name##Init.pT
+
+// Add this to the singleton class.
+#define STATIC_INIT_FRIEND(Type, name) friend class StaticInit<Type>;
