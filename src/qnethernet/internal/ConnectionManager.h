@@ -19,8 +19,6 @@
 
 #include "lwip/altcp.h"
 #include "lwip/ip_addr.h"
-#include "qnethernet/QNEthernetClient.h"
-#include "qnethernet/QNEthernetServer.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/ConnectionHolder.h"
 #include "qnethernet/internal/optional.h"
@@ -112,8 +110,8 @@ class ConnectionManager final {
   // Pre-allocate these to avoid std::vector allocations
   // Use 3/2 the max. counts because I still need to prove that the list sizes
   // don't exceed the maximums
-  std::array<struct altcp_pcb*, EthernetClient::maxSockets()*3/2> connSnapshot_;
-  std::array<struct altcp_pcb*, EthernetServer::maxListeners()*3/2> lstnSnapshot_;
+  std::array<struct altcp_pcb*, MEMP_NUM_TCP_PCB*3/2> connSnapshot_;
+  std::array<struct altcp_pcb*, MEMP_NUM_TCP_PCB_LISTEN*3/2> lstnSnapshot_;
 };
 
 }  // namespace internal

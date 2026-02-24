@@ -560,7 +560,7 @@ void ConnectionManager::iterateConnections(
       connections_.cbegin(), connections_.cend(),
       // Note: No 'auto' type for parameters in C++11
       [this, &count](const std::shared_ptr<ConnectionHolder>& elem) {
-        // TODO: Verify that connections_ can never contain more than EthernetClient::maxSockets()
+        // TODO: Verify that connections_ can never contain more than MEMP_NUM_TCP_PCB
         if ((elem->state != nullptr) && (count < connSnapshot_.size())) {
           connSnapshot_[count++] = elem->state->pcb;
         }
@@ -582,7 +582,7 @@ void ConnectionManager::iterateListeners(
   (void)std::for_each(
       listeners_.cbegin(), listeners_.cend(),
       [this, &count](struct altcp_pcb* const pcb) {
-        // TODO: Verify that listeners_ can never contain more than EthernetServer::maxListeners()
+        // TODO: Verify that listeners_ can never contain more than MEMP_NUM_TCP_PCB_LISTEN
         if (count < lstnSnapshot_.size()) {
           lstnSnapshot_[count++] = pcb;
         }
