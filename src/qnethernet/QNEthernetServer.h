@@ -53,7 +53,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // Starts listening on the server port, if set. This does not set the
   // SO_REUSEADDR socket option.
   //
-  // This first calls end() if the _reuse_ socket option differs.
+  // This first calls end() if the _reuse_ socket option differs, making this
+  // non-transactional.
   //
   // If there was an error then errno will be set appropriately.
   //
@@ -64,7 +65,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // socket option. This returns whether the server started listening. This will
   // always return false if the port is not set.
   //
-  // This first calls end() if the _reuse_ socket option differs.
+  // This first calls end() if the _reuse_ socket option differs, making this
+  // non-transactional.
   //
   // If there was an error then errno will be set appropriately.
   bool beginWithReuse();
@@ -72,7 +74,8 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // Starts listening on the specified port. This does not set the SO_REUSEADDR
   // socket option. This returns whether the server started listening.
   //
-  // This first calls end() if the port or _reuse_ socket option differ.
+  // This first calls end() if the port or _reuse_ socket option differ, making
+  // this non-transactional.
   //
   // If there was an error then errno will be set appropriately.
   bool begin(uint16_t port);
@@ -82,7 +85,7 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   //
   // If the port or _reuse_ socket option differ then this first calls end() to
   // prevent a single server object from representing more than one
-  // listening socket.
+  // listening socket, making this non-transactional.
   //
   // If there was an error then errno will be set appropriately.
   bool beginWithReuse(uint16_t port);
