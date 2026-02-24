@@ -29,8 +29,10 @@ and this project adheres to
   `linkIsFullDuplex()`, and `linkIsCrossover()`.
 * Implemented setting link speed, duplex, and auto-negotiation in Teensy 4.1 and
   W5500 drivers.
-* Added `isAutoNegotiationSettable` to `DriverCapabilities`.
 * Added `driver_reset_phy()` driver function for resetting the PHY.
+* Added to `DriverCapabilities`:
+  * `isAutoNegotiationSettable`
+  * `isPHYResettable`
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
