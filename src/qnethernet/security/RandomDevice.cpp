@@ -31,7 +31,7 @@ FLASHMEM RandomDevice::RandomDevice() {
   qnethernet_hal_init_entropy();
 }
 
-FLASHMEM RandomDevice::~RandomDevice() {
+FLASHMEM RandomDevice::~RandomDevice() noexcept {
   qnethernet_hal_deinit_entropy();
 }
 

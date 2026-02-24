@@ -47,7 +47,7 @@ class RandomDevice {
 
  private:
   RandomDevice();
-  ~RandomDevice();
+  ~RandomDevice() noexcept;
 
   // Disallow copying and moving
   RandomDevice(const RandomDevice&) = delete;
