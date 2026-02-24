@@ -82,7 +82,7 @@ lwIP release.
 20. [Heap memory use](#heap-memory-use)
 21. [Entropy generation](#entropy-generation)
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
-22. [EMF interference mitigation](#emf-interference-mitigation)
+22. [Interference mitigation](#interference-mitigation)
 23. [Security features](#security-features)
     1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
     2. [Disabling ICMP echo (ping) replies](#disabling-icmp-echo-ping-replies)
@@ -1815,19 +1815,20 @@ _Entropy_ library.
 This is the preferred way to acquire entropy. It is meant to be used with a
 [Random number distribution](https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions).
 
-## EMF interference mitigation
+## Interference mitigation
 
-It's possible, based on some experience in the wild, that EMF interference, say
-from a power supply, may bring the link down. It was discovered that unplugging
-and then re-plugging the Ethernet kit ribbon cable from the Teensy 4.1 restored
-the link. The link was restored because performing that action caused the link
-to be re-negotiated.
+It's possible, based on some experience in the wild, that interference, say EMF
+from a power supply, or even some other things, may bring the link down. It was
+discovered that unplugging and then re-plugging the Ethernet kit ribbon cable
+from the Teensy 4.1 restored the link. The link was restored because performing
+that action caused the link to be re-negotiated, or the PHY to be in a new
+state, or something else as-yet undiscovered.
 
 To assist in solving this, two driver functions were added:
-`driver_restart_auto_negotiation()` and `driver_reset_phy()`. These can be
-called, when link-down is detected, to either restart auto-negotiation or reset
-the PHY. Restarting auto-negotiation seemed to solve the link-down issues in
-the project.
+`driver_restart_auto_negotiation()` and `driver_reset_phy()`. One of these can
+be called, when link-down is detected, to either restart auto-negotiation or
+reset the PHY. Restarting auto-negotiation seemed to solve the link-down issues
+in the project.
 
 See also this thread:
 [Brainstorming possible causes of Ethernet link loss](https://forum.pjrc.com/index.php?threads/brainstorming-possible-causes-of-ethernet-link-loss.77628/)
