@@ -19,6 +19,9 @@ namespace security {
 
 // RandomDevice implements UniformRandomBitGenerator.
 // See: https://www.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator.html
+//
+// Note that the constructor calls qnethernet_hal_init_entropy() and the
+// destructor calls qnethernet_hal_deinit_entropy().
 class RandomDevice {
  public:
   typedef uint32_t result_type;
