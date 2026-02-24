@@ -206,6 +206,10 @@ void qnethernet_hal_deinit_entropy(void) {
   }
 }
 
+double qnethernet_hal_estimate_entropy(void) {
+  return 32.0;
+}
+
 uint32_t qnethernet_hal_entropy(void) {
   return entropy_random();
 }
@@ -234,6 +238,10 @@ void qnethernet_hal_init_entropy(void) {
 void qnethernet_hal_deinit_entropy(void) {
 }
 
+double qnethernet_hal_estimate_entropy(void) {
+  return 32.0;
+}
+
 uint32_t qnethernet_hal_entropy(void) {
   return Entropy.random();
 }
@@ -252,6 +260,10 @@ void qnethernet_hal_init_entropy(void) {
 }
 
 void qnethernet_hal_deinit_entropy(void) {
+}
+
+double qnethernet_hal_estimate_entropy(void) {
+  return 0.0;
 }
 
 uint32_t qnethernet_hal_entropy(void) {
