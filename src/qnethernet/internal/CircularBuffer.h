@@ -122,12 +122,12 @@ class CircularBuffer {
   }
 
   ATTRIBUTE_NODISCARD
-  T& operator[](size_t n) {
+  T& operator[](const size_t n) {
     return get(*this, n);
   }
 
   ATTRIBUTE_NODISCARD
-  const T& operator[](size_t n) const {
+  const T& operator[](const size_t n) const {
     return get(*this, n);
   }
 
