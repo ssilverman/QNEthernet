@@ -43,17 +43,17 @@ class elapsedTime {
   // For operator overloading, see also:
   // https://en.cppreference.com/w/cpp/language/operators.html
 
-  elapsedTime& operator=(const duration d) {
+  elapsedTime& operator=(const duration& d) {
     base_ = Clock::now() - d;
     return *this;
   }
 
-  elapsedTime& operator+=(const duration d) {
+  elapsedTime& operator+=(const duration& d) {
     base_ -= d;
     return *this;
   }
 
-  elapsedTime& operator-=(const duration d) {
+  elapsedTime& operator-=(const duration& d) {
     base_ += d;
     return *this;
   }
