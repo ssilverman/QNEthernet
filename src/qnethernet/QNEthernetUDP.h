@@ -88,7 +88,7 @@ class EthernetUDP : public UDP,
   // the port is in use.
   //
   // This first calls stop() if the socket is already listening and the port or
-  // _reuse_ socket option differ.
+  // _reuse_ socket option differ. In other words, this is non-transactional.
   //
   // If this returns false and there was an error then errno will be set.
   uint8_t begin(uint16_t localPort) final;  // Wish: Boolean return
@@ -97,7 +97,7 @@ class EthernetUDP : public UDP,
   // returns whether the attempt was successful.
   //
   // This first calls stop() if the socket is already listening and the port or
-  // _reuse_ socket option differ.
+  // _reuse_ socket option differ. In other words, this is non-transactional.
   //
   // If this returns false and there was an error then errno will be set.
   bool beginWithReuse(uint16_t localPort);
