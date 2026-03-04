@@ -413,8 +413,8 @@ and this project adheres to
 * Updated `EthernetClient::setNoDelay(flag)` to return whether successful.
 * Add another 2 to `MEMP_NUM_SYS_TIMEOUT` option for mDNS, for a total of an
   additional 8. Timeout exhaustion was still observed with 6. Why 8 and not 7:
-  * https://lists.nongnu.org/archive/html/lwip-users/2024-05/msg00000.html
-  * https://savannah.nongnu.org/patch/?9523#comment18
+  * [[lwip-users] MEMP_NUM_SYS_TIMEOUT after update to latest release 2.2.0](https://lists.nongnu.org/archive/html/lwip-users/2024-05/msg00000.html)
+  * [patch #9523: MDNS responder should reply after a random timeout (comment #18)](https://savannah.nongnu.org/patch/?9523#comment18)
 * Updated `EthernetClient::connect()` to return a Boolean value. (The function
   signatures don't change; they still return an `int`.) This matches the new
   definition at
@@ -810,7 +810,7 @@ and this project adheres to
 ### Fixed
 * Reverted how interrupts were being cleared to use assignment instead of OR'ing
   the bits. This seemed to fix an apparent freeze. (See this issue:
-  https://github.com/ssilverman/QNEthernet/issues/26)
+  [Teensy 4.1 freezing, TCP connecting during (#26)](https://github.com/ssilverman/QNEthernet/issues/26))
 * Fixed a signedness comparison warning in `OSCPrinter` example.
 * Addressed "extra" (`-Wextra`) and pedantic (`-Wpedantic`) warnings.
 
@@ -913,7 +913,8 @@ and this project adheres to
 * Changed `EthernetClass` and `MDNSClass` `String` functions to take
   `const char *` instead.
 * Made all `operator bool()` functions `explicit`.
-  See: https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem
+  See:
+  [Implicit conversions - The safe bool problem](https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem)
 * `MDNSClass::removeService()` now returns `false` instead of `true` if mDNS has
   not been started.
 * Enable definition of certain macros in `lwipopts.h` from the command line.
