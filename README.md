@@ -19,7 +19,7 @@ lwIP release.
 ## Table of contents
 
 1. [Introduction](#introduction)
-   1. [Two notes](#two-notes)
+   1. [Three notes](#three-notes)
    2. [Other differences and notes](#other-differences-and-notes)
    3. [Requirements](#requirements)
 2. [Additional functions and features not in the Arduino-style API](#additional-functions-and-features-not-in-the-arduino-style-api)
@@ -1034,7 +1034,7 @@ size_t writeFully(EthernetClient& c, const uint8_t* buf, size_t size,
 See also:
 * [writeFully causes program to freeze · Issue #46 · ssilverman/QNEthernet](https://github.com/ssilverman/QNEthernet/issues/46)
 * [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
-* [Print utilities](#print-utilities)
+* [Print and Stream utilities](#print-and-stream-utilities)
 
 ### Write immediacy
 
@@ -1893,7 +1893,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_FLUSH_AFTER_WRITE`               | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                      |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
 | `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Provides default implementations of the altcp interface functions                              | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)  |
-| `QNETHERNET_USE_ENTROPY_LIB`                 | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy collection](#entropy-collection)                                                |
+| `QNETHERNET_USE_ENTROPY_LIB`                 | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy generation](#entropy-generation)                                                |
 
 To enable a feature, set the associated macro to `1` or just define it. To
 disable a feature, either set the same macro to `0` or leave it undefined.
