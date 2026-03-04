@@ -12,6 +12,7 @@
 #pragma once
 
 #include <chrono>
+#include <type_traits>
 
 namespace qindesign {
 namespace network {
@@ -25,7 +26,9 @@ class elapsedTime {
 
   elapsedTime() : elapsedTime(duration::zero()) {}
 
-  elapsedTime(duration d) : base_{Clock::now() - d} {}
+  template <typename R, typename P>
+  elapsedTime(std::chrono::duration<R, P> d)
+      : base_{Clock::now() - std::chrono::duration_cast<duration>(d)} {}
 
   // Rule of zero: No declared destructors, copy, or move operations;
   // they will be defaulted
@@ -43,52 +46,114 @@ class elapsedTime {
   // For operator overloading, see also:
   // https://en.cppreference.com/w/cpp/language/operators.html
 
-  elapsedTime& operator=(const duration& d) {
-    base_ = Clock::now() - d;
+  template <typename R, typename P>
+  elapsedTime& operator=(const std::chrono::duration<R, P>& d) {
+    base_ = Clock::now() - std::chrono::duration_cast<duration>(d);
     return *this;
   }
 
-  elapsedTime& operator+=(const duration& d) {
-    base_ -= d;
+  template <typename R, typename P>
+  elapsedTime& operator+=(const std::chrono::duration<R, P>& d) {
+    base_ -= std::chrono::duration_cast<duration>(d);
     return *this;
   }
 
-  elapsedTime& operator-=(const duration& d) {
-    base_ += d;
+  template <typename R, typename P>
+  elapsedTime& operator-=(const std::chrono::duration<R, P>& d) {
+    base_ += std::chrono::duration_cast<duration>(d);
     return *this;
   }
 
-  friend elapsedTime operator+(elapsedTime lhs, const duration& rhs) {
-    lhs += rhs;
+  template <typename R, typename P>
+  friend elapsedTime operator+(elapsedTime lhs,
+                               const std::chrono::duration<R, P>& rhs) {
+    lhs += std::chrono::duration_cast<duration>(rhs);
     return lhs;
   }
 
-  friend elapsedTime operator-(elapsedTime lhs, const duration& rhs) {
-    lhs -= rhs;
+  template <typename R, typename P>
+  friend elapsedTime operator-(elapsedTime lhs,
+                               std::chrono::duration<R, P>& rhs) {
+    lhs -= std::chrono::duration_cast<duration>(rhs);
     return lhs;
   }
 
-  friend bool operator==(const elapsedTime& lhs, const duration& rhs) {
-    return static_cast<duration>(lhs) == rhs;
+  template <typename R, typename P>
+  friend bool operator==(const elapsedTime& lhs,
+                         const std::chrono::duration<R, P>& rhs) {
+    return (static_cast<duration>(lhs) ==
+            std::chrono::duration_cast<duration>(rhs));
   }
 
-  friend bool operator!=(const elapsedTime& lhs, const duration& rhs) {
+  template <typename R, typename P>
+  friend bool operator==(const std::chrono::duration<R, P>& lhs,
+                         const elapsedTime& rhs) {
+    // using type = typename std::remove_cv<
+    //     typename std::remove_reference<decltype(lhs)>::type>::type;
+    return (lhs == std::chrono::duration_cast<std::chrono::duration<R, P>>(
+                       static_cast<duration>(rhs)));
+  }
+
+  template <typename R, typename P>
+  friend bool operator!=(const elapsedTime& lhs,
+                         const std::chrono::duration<R, P>& rhs) {
     return !(lhs == rhs);
   }
 
-  friend bool operator<(const elapsedTime& lhs, const duration& rhs) {
+  template <typename R, typename P>
+  friend bool operator!=(const std::chrono::duration<R, P>& lhs,
+                         const elapsedTime& rhs) {
+    return !(lhs == rhs);
+  }
+
+  template <typename R, typename P>
+  friend bool operator<(const elapsedTime& lhs,
+                        const std::chrono::duration<R, P>& rhs) {
     return static_cast<duration>(lhs) < rhs;
   }
 
-  friend bool operator>(const elapsedTime& lhs, const duration& rhs) {
+  template <typename R, typename P>
+  friend bool operator<(const std::chrono::duration<R, P>& lhs,
+                        const elapsedTime& rhs) {
+    // using type = typename std::remove_cv<
+    //     typename std::remove_reference<decltype(lhs)>::type>::type;
+    return lhs < std::chrono::duration_cast<std::chrono::duration<R, P>>(
+                     static_cast<duration>(rhs));
+  }
+
+  template <typename R, typename P>
+  friend bool operator>(const elapsedTime& lhs,
+                        const std::chrono::duration<R, P>& rhs) {
     return rhs < lhs;
   }
 
-  friend bool operator<=(const elapsedTime& lhs, const duration& rhs) {
+  template <typename R, typename P>
+  friend bool operator>(const std::chrono::duration<R, P>& lhs,
+                        const elapsedTime& rhs) {
+    return rhs < lhs;
+  }
+
+  template <typename R, typename P>
+  friend bool operator<=(const elapsedTime& lhs,
+                         const std::chrono::duration<R, P>& rhs) {
     return !(lhs > rhs);
   }
 
-  friend bool operator>=(const elapsedTime& lhs, const duration& rhs) {
+  template <typename R, typename P>
+  friend bool operator<=(const std::chrono::duration<R, P>& lhs,
+                         const elapsedTime& rhs) {
+    return !(lhs > rhs);
+  }
+
+  template <typename R, typename P>
+  friend bool operator>=(const elapsedTime& lhs,
+                         const std::chrono::duration<R, P>& rhs) {
+    return !(lhs < rhs);
+  }
+
+  template <typename R, typename P>
+  friend bool operator>=(const std::chrono::duration<R, P>& lhs,
+                         const elapsedTime& rhs) {
     return !(lhs < rhs);
   }
 
