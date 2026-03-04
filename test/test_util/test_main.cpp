@@ -31,6 +31,7 @@
 #include "qnethernet/util/ip_tools.h"
 
 using namespace qindesign::network::util;
+using namespace std::chrono_literals;
 
 // --------------------------------------------------------------------------
 //  Utilities
@@ -150,9 +151,50 @@ static void test_elapsedTime() {
   using steady_clock = steady_clock_ms;
   elapsedTime<steady_clock> timer;
 
-  delay(1000);
+  delay(2000);
   auto x = std::chrono::duration_cast<std::chrono::seconds>(timer.dur());
-  TEST_ASSERT_EQUAL(1, x.count());
+  TEST_ASSERT_EQUAL(2, x.count());
+
+  // Comparison operators
+
+  TEST_ASSERT_TRUE(timer == 2s);
+  TEST_ASSERT_TRUE(2s == timer);
+  TEST_ASSERT_TRUE(timer != 1s);
+  TEST_ASSERT_TRUE(1s != timer);
+  TEST_ASSERT_TRUE(timer < 3s);
+  TEST_ASSERT_TRUE(3s > timer);
+  TEST_ASSERT_TRUE(timer > 1s);
+  TEST_ASSERT_TRUE(1s < timer);
+  TEST_ASSERT_TRUE(timer <= 3s);
+  TEST_ASSERT_TRUE(3s >= timer);
+  TEST_ASSERT_TRUE(timer >= 2s);
+  TEST_ASSERT_TRUE(2s <= timer);
+
+  TEST_ASSERT_TRUE(timer == 2000ms);
+  TEST_ASSERT_TRUE(2000ms == timer);
+  TEST_ASSERT_TRUE(timer != 1000ms);
+  TEST_ASSERT_TRUE(1000ms != timer);
+  TEST_ASSERT_TRUE(timer < 3000ms);
+  TEST_ASSERT_TRUE(3000ms > timer);
+  TEST_ASSERT_TRUE(timer > 1000ms);
+  TEST_ASSERT_TRUE(1000ms < timer);
+  TEST_ASSERT_TRUE(timer <= 3000ms);
+  TEST_ASSERT_TRUE(3000ms >= timer);
+  TEST_ASSERT_TRUE(timer >= 2000ms);
+  TEST_ASSERT_TRUE(2000ms <= timer);
+
+  TEST_ASSERT_TRUE(timer == 2.0s);
+  TEST_ASSERT_TRUE(2.0s == timer);
+  TEST_ASSERT_TRUE(timer != 1.9s);
+  TEST_ASSERT_TRUE(1.9s != timer);
+  TEST_ASSERT_TRUE(timer < 3.0s);
+  TEST_ASSERT_TRUE(3.0s > timer);
+  TEST_ASSERT_TRUE(timer > 1.9s);
+  TEST_ASSERT_TRUE(1.9s < timer);
+  TEST_ASSERT_TRUE(timer <= 3.0s);
+  TEST_ASSERT_TRUE(3.0s >= timer);
+  TEST_ASSERT_TRUE(timer >= 0.5s);
+  TEST_ASSERT_TRUE(0.5s <= timer);
 }
 
 // Main program setup.
