@@ -58,12 +58,12 @@ class elapsedTime {
     return *this;
   }
 
-  friend elapsedTime operator+(elapsedTime lhs, const duration rhs) {
+  friend elapsedTime operator+(elapsedTime lhs, const duration& rhs) {
     lhs += rhs;
     return lhs;
   }
 
-  friend elapsedTime operator-(elapsedTime lhs, const duration rhs) {
+  friend elapsedTime operator-(elapsedTime lhs, const duration& rhs) {
     lhs -= rhs;
     return lhs;
   }
