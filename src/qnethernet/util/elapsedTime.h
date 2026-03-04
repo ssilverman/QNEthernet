@@ -68,6 +68,30 @@ class elapsedTime {
     return lhs;
   }
 
+  friend bool operator==(const elapsedTime& lhs, const duration& rhs) {
+    return static_cast<duration>(lhs) == rhs;
+  }
+
+  friend bool operator!=(const elapsedTime& lhs, const duration& rhs) {
+    return !(lhs == rhs);
+  }
+
+  friend bool operator<(const elapsedTime& lhs, const duration& rhs) {
+    return static_cast<duration>(lhs) < rhs;
+  }
+
+  friend bool operator>(const elapsedTime& lhs, const duration& rhs) {
+    return rhs < lhs;
+  }
+
+  friend bool operator<=(const elapsedTime& lhs, const duration& rhs) {
+    return !(lhs > rhs);
+  }
+
+  friend bool operator>=(const elapsedTime& lhs, const duration& rhs) {
+    return !(lhs < rhs);
+  }
+
  private:
   time_point base_;
 };
