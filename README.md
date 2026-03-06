@@ -1925,7 +1925,7 @@ Teensyduino installation's _platform.txt_ file does not use these options.
 Here's how to implement the behaviour:
 1. Insert these sections somewhere in _platform.txt_, before the first location
    where these properties will be used:
-   ```
+   ```properties
    # This can be overridden in boards.txt
    build.extra_flags=
 
@@ -1952,7 +1952,7 @@ are exactly the same as if adding them to the command line. For example, to
 enable raw frame support and disable DNS using the macros (the '-D' option
 defines a macro):
 
-```
+```properties
 compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 ```
@@ -1967,7 +1967,7 @@ Note that both properties are needed because _QNEthernet_ contains a mixture of
 C and C++ sources. If the extra flags are exactly the same for both properties,
 and this is likely the case, one could refer to the other. For example:
 
-```
+```properties
 compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 compiler.c.extra_flags={compiler.cpp.extra_flags}
 ```
