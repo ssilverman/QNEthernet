@@ -32,6 +32,7 @@ uint32_t qnethernet_hal_millis();
 
 // This was used for guidance:
 // https://github.com/luni64/TeensyHelpers/tree/master/src/teensy_clock
+// Another relevant link: https://github.com/luni64/HiResClock
 
 // For correctly handling potentially-NULL initialization functions.
 namespace detail {
