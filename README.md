@@ -2111,7 +2111,34 @@ call may be skipped (but there's no harm in calling it).
 #### `elapsedTime<Clock>`
 
 This class is similar to `elapsedMillis`, but uses a `std::chrono` _Clock_ to
-acquire the current time.
+acquire the current time. It compares with durations instead of plain
+millisecond counts.
+
+Example usage:
+```c++
+#include <QNEthernet.h>
+#include <qnethernet/util/chrono_clocks.h>
+#include <qnethernet/util/elapsedTime.h>
+
+using namespace std::chrono_literals;
+
+using steady_clock = qindesign::network::util::steady_clock_ms;
+using elapsedTime = qindesign::network::util::elapsedTime<steady_clock>;
+
+elapsedTime timer;
+
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWriteFast(LED_BUILTIN, HIGH);
+}
+
+void loop() {
+  if (timer >= 500ms) {  // 0.5s is valid too
+    digitalToggleFast(LED_BUILTIN);
+    timer = 0ms;  // steady_clock::duration::zero() would also work
+  }
+}
+```
 
 ## Complete list of features
 
