@@ -26,10 +26,10 @@ static inline void clearAndSet32(volatile uint32_t* const reg,
 
 /*
 // See: https://gcc.gnu.org/onlinedocs/gcc/Typeof.html
-#define min(a, b) __extension__ ({   \
-  typeof(a) _a = (a);  \
-  typeof(b) _b = (b);  \
-  (_a < _b) ? _a : _b; \
+#define min(a, b) __extension__ ({ \
+  typeof(a) _a = (a);              \
+  typeof(b) _b = (b);              \
+  (_a < _b) ? _a : _b;             \
 })
 */
 
