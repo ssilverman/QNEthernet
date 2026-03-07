@@ -19,14 +19,13 @@
 #endif  // !F_CPU
 
 #include "qnethernet/compat/c++11_compat.h"
+#include "qnethernet/qnethernet_hal.h"
 
 namespace qindesign {
 namespace network {
 namespace util {
 
 extern "C" {
-void qnethernet_hal_disable_interrupts();
-void qnethernet_hal_enable_interrupts();
 uint32_t qnethernet_hal_millis();
 }  // extern "C"
 
@@ -102,15 +101,17 @@ class chrono_steady_clock {
   //
   // See: wraparoundPeriod()
   static rep poll() {
-    qnethernet_hal_disable_interrupts();
-    const uint32_t low = TimeFunc();
-    if (low < prevLow) {
-      // Roll over
-      ++high;
-    }
-    prevLow = low;
-    const auto t = static_cast<rep>((uint64_t{high} << 32) | low);
-    qnethernet_hal_enable_interrupts();
+    rep t;
+
+    QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK() {
+      const uint32_t low = TimeFunc();
+      if (low < prevLow) {
+        // Roll over
+        ++high;
+      }
+      prevLow = low;
+      t = static_cast<rep>((uint64_t{high} << 32) | low);
+    } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK();
 
     return t;
   }
