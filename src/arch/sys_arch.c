@@ -7,6 +7,7 @@
 #include "arch/sys_arch.h"
 
 #include "lwip/sys.h"
+#include "qnethernet/compat/c11_compat.h"
 
 // --------------------------------------------------------------------------
 //  Time
@@ -27,12 +28,12 @@ u32_t sys_now(void) {
 // --------------------------------------------------------------------------
 
 #if SYS_LIGHTWEIGHT_PROT
-__attribute__((weak))
+ATTRIBUTE_WEAK
 sys_prot_t sys_arch_protect(void) {
   return 0;
 }
 
-__attribute__((weak))
+ATTRIBUTE_WEAK
 void sys_arch_unprotect(const sys_prot_t pval) {
 }
 #endif  // SYS_LIGHTWEIGHT_PROT
