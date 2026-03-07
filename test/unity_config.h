@@ -4,6 +4,8 @@
 // Unity test framework configuration.
 // This file is part of the QNEthernet library.
 
+#pragma once
+
 // #define UNITY_INCLUDE_CONFIG_H <-- Already defined, includes this file
 #define UNITY_USE_FLUSH_STDOUT
 #define UNITY_PRINT_EOL() { UNITY_OUTPUT_CHAR('\r'); UNITY_OUTPUT_CHAR('\n'); }
