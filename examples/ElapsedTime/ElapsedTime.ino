@@ -26,23 +26,26 @@ constexpr auto kInterval = 500ms;  // 0.5s is valid too
 constexpr auto kZero = 0ms;
 #else
 constexpr auto kInterval = std::chrono::milliseconds(500);
-constexpr auto kZero = std::chrono::milliseconds(0);
+constexpr auto kZero = steady_clock::duration::zero();
+    // std::chrono::milliseconds(0) would also work
 #endif  // C++ >= 14
 
 elapsedTime timer;
 
 }  // namespace
 
+// Note: Could use digitalWriteFast() and digitalToggleFast() where supported
+
 // Main program setup.
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWriteFast(LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // Main program loop.
 void loop() {
   if (timer >= kInterval) {
-    digitalToggleFast(LED_BUILTIN);
+    digitalToggle(LED_BUILTIN);
     timer = kZero;
   }
 }
