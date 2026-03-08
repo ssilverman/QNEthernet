@@ -104,8 +104,8 @@ and this project adheres to
 * `DNSClient` no longer ignores a timeout of zero. This was causing a potential
   use-after-scope.
 * Fixed the entropy module (Teensy 4) to not depend on a possibly stale `errno`.
-* Clarified in the `EthernetServer` docs that the `beginXXX()` functions are
-  non-transactional in that they call `end()` first.
+* Clarified in the `EthernetServer` and `EthernetUDP` docs that the `beginXXX()`
+  functions are non-transactional in that they call `end()` or `stop()` first.
 * Fixed connection and listener iteration to first take a snapshot of the lists
   so that it's not possible to change the lists while iterating over them.
 
