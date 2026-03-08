@@ -12,7 +12,7 @@
 // outside the pair of calls.
 //
 // The 'lock' parameter must be declared somewhere non-local to the macro use.
-// It is ignored on non-LDREXW/STREXW targets.
+// It is ignored on non-LDREXW/STREXW targets. It should be volatile.
 //
 // This is useful for when a platform supports performing a task, but it's
 // preferred not to disable interrupts. For example, for lower latency
