@@ -11,19 +11,18 @@
 // This means that any variables defined between them need to be declared
 // outside the pair of calls.
 //
-// The 'monitor' parameter must be declared somewhere non-local to the
-// macro use.
+// The 'lock' parameter must be declared somewhere non-local to the macro use.
 //
 // This is useful for when a platform supports performing a task, but it's
 // preferred not to disable interrupts. For example, for lower latency
 // or efficiency.
 //
 // Usage example:
-//     uint32_t _nointerrupts_monitor;  // Define this somewhere non-local
+//     uint32_t _nointerrupts_lock;  // Define this somewhere non-local
 //     ...
-//     QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(_nointerrupts_monitor) {
+//     QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(_nointerrupts_lock) {
 //       perform_task();
-//     } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(_nointerrupts_monitor);
+//     } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(_nointerrupts_lock);
 
 // TODO: Implemenet LDREX- and STREX-like usage for other platforms
 
@@ -32,14 +31,14 @@
      defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY32))
 #include <arm_math.h>  // For LDREXW and STREXW instructions
 
-// The monitor is a uint32_t that guards the operation. It must be declared
+// The lock is a uint32_t that guards the operation. It must be declared
 // non-local to the macro use.
-#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(monitor) \
-  do {                                                   \
-    (void)__LDREXW(&(monitor));
+#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(lock) \
+  do {                                                \
+    (void)__LDREXW(&(lock));
 
-#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(monitor) \
-  } while (__STREXW(1, &(monitor)) != 0)
+#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(lock) \
+  } while (__STREXW(1, &(lock)) != 0)
 
 #else
 
@@ -48,10 +47,10 @@ void qnethernet_hal_disable_interrupts();
 void qnethernet_hal_enable_interrupts();
 }  // extern "C"
 
-#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(monitor) \
+#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(lock) \
   qnethernet_hal_disable_interrupts();
 
-#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(monitor) \
+#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(lock) \
   qnethernet_hal_enable_interrupts()
 
 #endif  // Has xREXW instructions

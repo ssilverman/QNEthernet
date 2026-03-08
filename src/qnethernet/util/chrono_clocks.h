@@ -103,7 +103,7 @@ class chrono_steady_clock {
   static rep poll() {
     rep t;
 
-    QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(_nointerrupts_monitor) {
+    QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(_nointerrupts_lock) {
       const uint32_t low = TimeFunc();
       if (low < prevLow) {
         // Roll over
@@ -111,7 +111,7 @@ class chrono_steady_clock {
       }
       prevLow = low;
       t = static_cast<rep>((uint64_t{high} << 32) | low);
-    } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(_nointerrupts_monitor);
+    } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(_nointerrupts_lock);
 
     return t;
   }
@@ -129,7 +129,7 @@ class chrono_steady_clock {
   static uint32_t prevLow;
   static uint32_t high;  // Opting for 32-bit instead of 64-bit for space
 
-  static uint32_t _nointerrupts_monitor;
+  static uint32_t _nointerrupts_lock;
 };
 
 // Pre-C++17, need out-of-class definition and initialization
@@ -138,8 +138,7 @@ uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::prevLow = 0;
 template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)(), typename R>
 uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::high = 0;
 template <typename P, uint32_t (*TimeFunc)(), bool (*InitFunc)(), typename R>
-uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::_nointerrupts_monitor =
-    0;
+uint32_t chrono_steady_clock<P, TimeFunc, InitFunc, R>::_nointerrupts_lock = 0;
 
 // --------------------------------------------------------------------------
 //  steady_clock_ms
