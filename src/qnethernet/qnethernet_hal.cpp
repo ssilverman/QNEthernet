@@ -316,6 +316,23 @@ void qnethernet_hal_enable_interrupts(void) {
   interrupts();
 }
 
+#if defined(__arm__)
+
+ATTRIBUTE_WEAK
+uint32_t qnethernet_hal_disable_and_return_interrupts(void) {
+  uint32_t state;
+  __asm__ volatile("MRS %[result], PRIMASK" : [result] "=r"(state)::);
+  qnethernet_hal_disable_interrupts();
+  return state;
+}
+
+ATTRIBUTE_WEAK
+void qnethernet_hal_restore_interrupts(uint32_t state) {
+  __asm__ volatile("MSR PRIMASK, %[value]" ::[value] "r"(state) :);
+}
+
+#endif  // __arm__ (should have PRIMASK)
+
 }  // extern "C"
 
 // --------------------------------------------------------------------------
