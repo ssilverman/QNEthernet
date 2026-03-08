@@ -47,7 +47,8 @@ void setup() {
 // Main program loop.
 void loop() {
   if (timer >= kInterval) {
-    digitalToggle(LED_BUILTIN);
+    // Some platforms support digitalToggle()
+    digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN));
     timer = kZero;
   }
 }
