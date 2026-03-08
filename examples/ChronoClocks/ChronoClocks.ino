@@ -20,7 +20,7 @@
 // // Allows us to specify things like 1000ms
 // using namespace std::chrono_literals;
 
-// Make it easier to type
+// Make these easier to type
 using steady_clock = qindesign::network::util::steady_clock_ms;
 using high_resolution_clock = qindesign::network::util::arm_high_resolution_clock;
 
