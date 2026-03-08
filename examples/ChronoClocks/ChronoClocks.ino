@@ -24,6 +24,10 @@
 using steady_clock = qindesign::network::util::steady_clock_ms;
 using high_resolution_clock = qindesign::network::util::arm_high_resolution_clock;
 
+// Note: _gettimeofday() may need to be defined for std::chrono::system_clock
+//       if the system doesn't supply it
+using system_clock = std::chrono::system_clock;
+
 // --------------------------------------------------------------------------
 //  Program State
 // --------------------------------------------------------------------------
@@ -54,6 +58,10 @@ void setup() {
          "\r\n",
          hr.count(),
          high_resolution_clock::wraparoundPeriod());
+
+  const auto now = std::chrono::duration_cast<std::chrono::seconds>(
+      system_clock::now().time_since_epoch());
+  printf("system_now=%" PRId64 " s\r\n", now.count());
 }
 
 // Main program loop.
