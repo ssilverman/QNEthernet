@@ -11,14 +11,19 @@
 // This means that any variables defined between them need to be declared
 // outside the pair of calls.
 //
+// The 'monitor' parameter must be declared somewhere non-local to the
+// macro use.
+//
 // This is useful for when a platform supports performing a task, but it's
 // preferred not to disable interrupts. For example, for lower latency
 // or efficiency.
 //
 // Usage example:
-//     QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK() {
+//     uint32_t _nointerrupts_monitor;  // Define this somewhere non-local
+//     ...
+//     QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(_nointerrupts_monitor) {
 //       perform_task();
-//     } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK();
+//     } QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(_nointerrupts_monitor);
 
 // TODO: Implemenet LDREX- and STREX-like usage for other platforms
 
@@ -27,7 +32,8 @@
      defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY32))
 #include <arm_math.h>  // For LDREXW and STREXW instructions
 
-// The monitor is a uint32_t that guards the operation.
+// The monitor is a uint32_t that guards the operation. It must be declared
+// non-local to the macro use.
 #define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(monitor) \
   do {                                                   \
     (void)__LDREXW(&(monitor));
