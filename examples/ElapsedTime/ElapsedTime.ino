@@ -6,6 +6,8 @@
 //
 // This file is part of the QNEthernet library.
 
+#include <chrono>
+
 #include <QNEthernet.h>
 #include <qnethernet/util/chrono_clocks.h>
 #include <qnethernet/util/elapsedTime.h>
