@@ -2120,6 +2120,7 @@ Example usage:
 #include <qnethernet/util/chrono_clocks.h>
 #include <qnethernet/util/elapsedTime.h>
 
+// Note: This is only valid for C++14 and later
 using namespace std::chrono_literals;
 
 using steady_clock = qindesign::network::util::steady_clock_ms;
@@ -2133,6 +2134,7 @@ void setup() {
 }
 
 void loop() {
+  // Note: For C++11, you'll need std::chrono::milliseconds(500), etc.
   if (timer >= 500ms) {  // 0.5s is valid too
     digitalToggleFast(LED_BUILTIN);
     timer = 0ms;  // steady_clock::duration::zero() would also work
