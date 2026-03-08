@@ -2223,6 +2223,8 @@ _QNEthernet_ library.
        `qindesign::network::util` namespace
     5. [`qindesign::network::util::elapsedTime<Clock>`](#elapsedtimeclock),
        similar to `elapsedMillis`
+    6. Various useful HAL (hardware abstraction layer) functions.
+       See _src/qnethernet_hal.cpp_.
 
 ## Compatibility with other APIs
 
