@@ -20,11 +20,6 @@
 #include "qnethernet/platforms/pgmspace.h"
 
 extern "C" {
-void qnethernet_hal_disable_interrupts(void);
-void qnethernet_hal_enable_interrupts(void);
-}  // extern "C"
-
-extern "C" {
 err_t unknown_eth_protocol(struct pbuf* const p, struct netif* const netif) {
 #if ETH_PAD_SIZE
   LWIP_ASSERT("Expected removed ETH_PAD_SIZE header",
@@ -178,9 +173,9 @@ const uint8_t* EthernetFrameClass::payload() const {
 }
 
 void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
-  qnethernet_hal_disable_interrupts();
+  // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
   inBuf_.setCapacity(capacity);
-  qnethernet_hal_enable_interrupts();
+  // }
 }
 
 // --------------------------------------------------------------------------
