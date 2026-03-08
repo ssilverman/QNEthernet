@@ -36,6 +36,7 @@ and this project adheres to
 * Added call to `qnethernet_hal_deinit_entropy()` in `RandomDevice` destructor.
 * Added `RandomDevice::entropy()` to match `std::random_device::entropy()`.
 * Added `qindesign::security::random_device` to mimic `std::random_device`.
+* New _ElapsedTime_ example that shows how to use the new `elapsedTime` utility.
 
 ### Changed
 * Improved _Ping_ example by always sending, even if a send fails. It was
