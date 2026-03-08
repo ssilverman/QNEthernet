@@ -25,17 +25,15 @@
 #if defined(TEENSYDUINO) &&                                 \
     (defined(__IMXRT1062__) || defined(ARDUINO_TEENSY36) || \
      defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY32))
-#include <stdint.h>
-
 #include <arm_math.h>  // For LDREXW and STREXW instructions
 
-#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK() \
-  uint32_t _hal_nointerrupts_monitor;             \
-  do {                                            \
-    (void)__LDREXW(&_hal_nointerrupts_monitor);
+// The monitor is a uint32_t that guards the operation.
+#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(monitor) \
+  do {                                                   \
+    (void)__LDREXW(&(monitor));
 
-#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK() \
-  } while (__STREXW(1, &_hal_nointerrupts_monitor) != 0)
+#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(monitor) \
+  } while (__STREXW(1, &(monitor)) != 0)
 
 #else
 
@@ -44,10 +42,10 @@ void qnethernet_hal_disable_interrupts();
 void qnethernet_hal_enable_interrupts();
 }  // extern "C"
 
-#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK() \
+#define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(monitor) \
   qnethernet_hal_disable_interrupts();
 
-#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK() \
+#define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(monitor) \
   qnethernet_hal_enable_interrupts()
 
 #endif  // Has xREXW instructions
