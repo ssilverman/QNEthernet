@@ -78,7 +78,7 @@ lwIP release.
 17. [On connections that hang around after cable disconnect](#on-connections-that-hang-around-after-cable-disconnect)
     1. [Mitigations](#mitigations)
 18. [Notes on ordering and timing](#notes-on-ordering-and-timing)
-19. [Notes on RAM1 usage](#notes-on-ram1-usage)
+19. [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)
 20. [Heap memory use](#heap-memory-use)
 21. [Entropy generation](#entropy-generation)
     1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
@@ -1732,7 +1732,7 @@ Fun links:
 * The DNS lookup timeout is `DNS_MAX_RETRIES * DNS_TMR_INTERVAL`, where
   `DNS_TMR_INTERVAL` is 1000.
 
-## Notes on RAM1 usage
+## Notes on RAM1 usage (Teensy 4)
 
 By default, the Ethernet RX and TX buffers will go into RAM2. If, for whatever
 reason, you'd prefer to put them into RAM1, set the
@@ -1881,7 +1881,7 @@ The _QNEthernet_-specific macros are as follows:
 | Macro                                        | Default  | Description                                                                                    | Link                                                                                     |
 | -------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | `QNETHERNET_ALTCP_TLS_ADAPTER`               | Disabled | Enables the _altcp_tls_adapter_ functions for easier TLS library integration                   | [About the TLS adapter functions](#about-the-tls-adapter-functions)                      |
-| `QNETHERNET_BUFFERS_IN_RAM1`                 | Disabled | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
+| `QNETHERNET_BUFFERS_IN_RAM1`                 | Disabled | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)                          |
 | `QNETHERNET_CUSTOM_WRITE`                    | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                          |
 | `QNETHERNET_DO_LOOP_IN_YIELD`                | Enabled  | The library should try to hook into or override yield() to call Ethernet.loop()                | [Notes on `yield()`](#notes-on-yield)                                                    |
 | `QNETHERNET_ENABLE_PING_REPLY`               | Enabled  | Enables ICMP echo reply support                                                                | [Ping reply](#ping-reply)                                                                |
@@ -1891,7 +1891,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`        | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                              |
 | `QNETHERNET_ENABLE_SECURE_TCP_ISN`           | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)  |
 | `QNETHERNET_FLUSH_AFTER_WRITE`               | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                      |
-| `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage](#notes-on-ram1-usage)                                              |
+| `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)                          |
 | `QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS` | Disabled | Provides default implementations of the altcp interface functions                              | [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)  |
 | `QNETHERNET_USE_ENTROPY_LIB`                 | Disabled | Uses _Entropy_ library instead of internal functions                                           | [Entropy generation](#entropy-generation)                                                |
 
