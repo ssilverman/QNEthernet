@@ -4,14 +4,15 @@
 // qnethernet_hal.h defines some useful HAL utilities.
 // This file is part of the QNEthernet library.
 
-// The QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK() and
-// QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK() macros either disable and enable
+// The QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(lock) and
+// QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(lock) macros either disable and enable
 // interrupts, or wrap code in a do-while block that utilizes LDREXW and STREXW.
 // In other words, everything between them may or may not be inside a block.
 // This means that any variables defined between them need to be declared
 // outside the pair of calls.
 //
 // The 'lock' parameter must be declared somewhere non-local to the macro use.
+// It is ignored on non-LDREXW/STREXW targets.
 //
 // This is useful for when a platform supports performing a task, but it's
 // preferred not to disable interrupts. For example, for lower latency
@@ -47,9 +48,11 @@ void qnethernet_hal_disable_interrupts();
 void qnethernet_hal_enable_interrupts();
 }  // extern "C"
 
+// This disables interrupts. 'lock' is ignored.
 #define QNETHERNET_HAL_START_NOINTERRUPTS_BLOCK(lock) \
   qnethernet_hal_disable_interrupts();
 
+// This enables interrupts. 'lock' is ignored.
 #define QNETHERNET_HAL_END_NOINTERRUPTS_BLOCK(lock) \
   qnethernet_hal_enable_interrupts()
 
