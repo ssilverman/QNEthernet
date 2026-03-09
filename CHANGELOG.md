@@ -69,8 +69,6 @@ and this project adheres to
 * Changed drivers to always loop until a frame can be sent instead of returning
   `ERR_WOULDBLOCK` or NULL.
 * Marked _IPerfServer_ example as "Under Repair".
-* Now excluding the FCS (Frame Check Sequence) from all frame length-related
-  definitions and use.
 * Made dramatic improvements to the W5500 driver with much better buffering and
   how it waits to send frames.
 * Updated the W5500 driver's `driver_deinit()` function to power down the PHY.
