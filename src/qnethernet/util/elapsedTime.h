@@ -88,7 +88,7 @@ class elapsedTime {
 
   template <typename R, typename P>
   friend elapsedTime operator-(elapsedTime lhs,
-                               std::chrono::duration<R, P>& rhs) {
+                               const std::chrono::duration<R, P>& rhs) {
     lhs -= std::chrono::duration_cast<duration>(rhs);
     return lhs;
   }
