@@ -39,6 +39,11 @@ class elapsedTime {
     return static_cast<duration>(*this);
   }
 
+  // Resets the timer back to zero.
+  void reset() {
+    *this = duration::zero();
+  }
+
   operator duration() const {
     return Clock::now() - base_;
   }

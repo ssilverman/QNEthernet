@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `elapsedTime::reset()` for resetting the timer back to zero.
+
 ## [0.35.0]
 
 ### Added
