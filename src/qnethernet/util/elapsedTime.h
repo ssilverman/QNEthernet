@@ -27,8 +27,9 @@ class elapsedTime {
 
   elapsedTime() : elapsedTime(duration::zero()) {}
 
-  explicit elapsedTime(const rep d)
-      : base_{Clock::now() - duration{d}} {}
+  explicit elapsedTime(const rep d) {
+    *this = d;
+  }
 
   template <typename R, typename P>
   explicit elapsedTime(std::chrono::duration<R, P> d)
