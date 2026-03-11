@@ -33,6 +33,8 @@
 using namespace qindesign::network::util;
 using namespace std::chrono_literals;
 
+using steady_clock = steady_clock_ms;
+
 // --------------------------------------------------------------------------
 //  Utilities
 // --------------------------------------------------------------------------
@@ -146,9 +148,8 @@ static void test_isBroadcast() {
   }
 }
 
-// Tests the elapsedTime<Clock> utility class.
-static void test_elapsedTime() {
-  using steady_clock = steady_clock_ms;
+// Tests the elapsedTime<Clock> utility class comparison functions.
+static void test_elapsedTime_compare() {
   elapsedTime<steady_clock> timer;
 
   delay(2000);
@@ -209,6 +210,33 @@ static void test_elapsedTime() {
   TEST_ASSERT_TRUE(0.5s <= timer);
 }
 
+// Tests "other" things about the elapsedTime<Clock> utility class.
+static void test_elapsedTime_other() {
+  // Constructor (duration), assignment, and arithmetic
+  elapsedTime<steady_clock> t1{2s};
+  TEST_ASSERT_TRUE(t1 == 2s);
+  t1 = 3s;
+  TEST_ASSERT_TRUE(t1 == 3s);
+  t1 += 500ms;
+  TEST_ASSERT_TRUE(t1 == 3.5s);
+  t1 -= 0.2s;
+  TEST_ASSERT_TRUE(t1 == 3.3s);
+  TEST_ASSERT_TRUE((t1 + 0.6s) == 3.9s);
+  TEST_ASSERT_TRUE((t1 - 0.6s) == 2.7s);
+
+  // Constructor (rep), assignment, and arithmetic
+  elapsedTime<steady_clock> t2{2000};
+  TEST_ASSERT_TRUE(t2 == 2s);
+  t2 = 3000;
+  TEST_ASSERT_TRUE(t2 == 3s);
+  t2 += 500;
+  TEST_ASSERT_TRUE(t2 == 3.5s);
+  t2 -= 200;
+  TEST_ASSERT_TRUE(t2 == 3.3s);
+  TEST_ASSERT_TRUE((t2 + 600) == 3.9s);
+  TEST_ASSERT_TRUE((t2 - 600) == 2.7s);
+}
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -231,7 +259,8 @@ void setup() {
   RUN_TEST(test_StdioPrint);
   RUN_TEST(test_NullPrint);
   RUN_TEST(test_isBroadcast);
-  RUN_TEST(test_elapsedTime);
+  RUN_TEST(test_elapsedTime_compare);
+  RUN_TEST(test_elapsedTime_other);
   UNITY_END();
 }
 
