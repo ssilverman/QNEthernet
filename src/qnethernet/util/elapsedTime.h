@@ -23,12 +23,16 @@ class elapsedTime {
  public:
   using duration   = typename Clock::duration;
   using time_point = typename Clock::time_point;
+  using rep        = typename duration::rep;
 
   elapsedTime() : elapsedTime(duration::zero()) {}
 
+  elapsedTime(const rep d)
+      : base_{Clock::now() - duration{d}} {}
+
   template <typename R, typename P>
   elapsedTime(std::chrono::duration<R, P> d)
-      : base_{Clock::now() - std::chrono::duration_cast<duration>(d)} {}
+      : elapsedTime(std::chrono::duration_cast<duration>(d).count()) {}
 
   // Rule of zero: No declared destructors, copy, or move operations;
   // they will be defaulted
@@ -51,9 +55,15 @@ class elapsedTime {
   // For operator overloading, see also:
   // https://en.cppreference.com/w/cpp/language/operators.html
 
+  // Assigns a duration count to the timer. The count type is duration::rep.
+  elapsedTime& operator=(const rep d) {
+    base_ = Clock::now() - duration{d};
+    return *this;
+  }
+
   template <typename R, typename P>
   elapsedTime& operator=(const std::chrono::duration<R, P>& d) {
-    base_ = Clock::now() - std::chrono::duration_cast<duration>(d);
+    *this = std::chrono::duration_cast<duration>(d).count();
     return *this;
   }
 

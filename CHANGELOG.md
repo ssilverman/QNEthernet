@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 * Added `elapsedTime::reset()` for resetting the timer back to zero.
+* Added `rep` assignment operator and constructor to `elapsedTime` for assigning
+  a count.
 
 ## [0.35.0]
 
