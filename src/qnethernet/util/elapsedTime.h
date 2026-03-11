@@ -156,6 +156,7 @@ class elapsedTime {
     return !(lhs == rhs);
   }
 
+#if __cplusplus < 202002L
   friend bool operator<(const elapsedTime& lhs, const rep rhs) {
     return static_cast<duration>(lhs).count() < rhs;
   }
@@ -237,6 +238,27 @@ class elapsedTime {
                          const elapsedTime& rhs) {
     return !(lhs < rhs);
   }
+#else
+  friend auto operator<=>(const elapsedTime& lhs, const rep rhs) {
+    return (static_cast<duration>(lhs).count() <=> rhs);
+  }
+
+  template <typename R, typename P>
+  friend auto operator<=>(const elapsedTime& lhs,
+                          const std::chrono::duration<R, P>& rhs) {
+    return (static_cast<duration>(lhs) <=> rhs);
+  }
+
+  friend auto operator<=>(const rep lhs, const elapsedTime& rhs) {
+    return (lhs <=> static_cast<duration>(rhs).count());
+  }
+
+  template <typename R, typename P>
+  friend auto operator<=>(const std::chrono::duration<R, P>& lhs,
+                          const elapsedTime& rhs) {
+    return (lhs <=> static_cast<duration>(rhs));
+  }
+#endif  // C++ < 20
 
  private:
   time_point base_;
