@@ -67,9 +67,19 @@ class elapsedTime {
     return *this;
   }
 
+  elapsedTime& operator+=(const rep d) {
+    base_ -= duration{d};
+    return *this;
+  }
+
   template <typename R, typename P>
   elapsedTime& operator+=(const std::chrono::duration<R, P>& d) {
     base_ -= std::chrono::duration_cast<duration>(d);
+    return *this;
+  }
+
+  elapsedTime& operator-=(const rep d) {
+    base_ += duration{d};
     return *this;
   }
 
@@ -79,10 +89,20 @@ class elapsedTime {
     return *this;
   }
 
+  friend elapsedTime operator+(elapsedTime lhs, const rep rhs) {
+    lhs += rhs;
+    return lhs;
+  }
+
   template <typename R, typename P>
   friend elapsedTime operator+(elapsedTime lhs,
                                const std::chrono::duration<R, P>& rhs) {
     lhs += std::chrono::duration_cast<duration>(rhs);
+    return lhs;
+  }
+
+  friend elapsedTime operator-(elapsedTime lhs, const rep rhs) {
+    lhs -= rhs;
     return lhs;
   }
 
@@ -93,11 +113,19 @@ class elapsedTime {
     return lhs;
   }
 
+  friend bool operator==(const elapsedTime& lhs, const rep rhs) {
+    return (static_cast<duration>(lhs).count() == rhs);
+  }
+
   template <typename R, typename P>
   friend bool operator==(const elapsedTime& lhs,
                          const std::chrono::duration<R, P>& rhs) {
     return (static_cast<duration>(lhs) ==
             std::chrono::duration_cast<duration>(rhs));
+  }
+
+  friend bool operator==(const rep lhs, const elapsedTime& rhs) {
+    return (lhs == static_cast<duration>(rhs).count());
   }
 
   template <typename R, typename P>
@@ -109,9 +137,17 @@ class elapsedTime {
                        static_cast<duration>(rhs)));
   }
 
+  friend bool operator!=(const elapsedTime& lhs, const rep rhs) {
+    return !(lhs == rhs);
+  }
+
   template <typename R, typename P>
   friend bool operator!=(const elapsedTime& lhs,
                          const std::chrono::duration<R, P>& rhs) {
+    return !(lhs == rhs);
+  }
+
+  friend bool operator!=(const rep lhs, const elapsedTime& rhs) {
     return !(lhs == rhs);
   }
 
@@ -121,10 +157,18 @@ class elapsedTime {
     return !(lhs == rhs);
   }
 
+  friend bool operator<(const elapsedTime& lhs, const rep rhs) {
+    return static_cast<duration>(lhs).count() < rhs;
+  }
+
   template <typename R, typename P>
   friend bool operator<(const elapsedTime& lhs,
                         const std::chrono::duration<R, P>& rhs) {
     return static_cast<duration>(lhs) < rhs;
+  }
+
+  friend bool operator<(const rep lhs, const elapsedTime& rhs) {
+    return lhs < static_cast<duration>(rhs).count();
   }
 
   template <typename R, typename P>
@@ -136,9 +180,17 @@ class elapsedTime {
                      static_cast<duration>(rhs));
   }
 
+  friend bool operator>(const elapsedTime& lhs, const rep rhs) {
+    return rhs < lhs;
+  }
+
   template <typename R, typename P>
   friend bool operator>(const elapsedTime& lhs,
                         const std::chrono::duration<R, P>& rhs) {
+    return rhs < lhs;
+  }
+
+  friend bool operator>(const rep lhs, const elapsedTime& rhs) {
     return rhs < lhs;
   }
 
@@ -148,9 +200,17 @@ class elapsedTime {
     return rhs < lhs;
   }
 
+  friend bool operator<=(const elapsedTime& lhs, const rep rhs) {
+    return !(lhs > rhs);
+  }
+
   template <typename R, typename P>
   friend bool operator<=(const elapsedTime& lhs,
                          const std::chrono::duration<R, P>& rhs) {
+    return !(lhs > rhs);
+  }
+
+  friend bool operator<=(const rep lhs, const elapsedTime& rhs) {
     return !(lhs > rhs);
   }
 
@@ -160,9 +220,17 @@ class elapsedTime {
     return !(lhs > rhs);
   }
 
+  friend bool operator>=(const elapsedTime& lhs, const rep rhs) {
+    return !(lhs < rhs);
+  }
+
   template <typename R, typename P>
   friend bool operator>=(const elapsedTime& lhs,
                          const std::chrono::duration<R, P>& rhs) {
+    return !(lhs < rhs);
+  }
+
+  friend bool operator>=(const rep lhs, const elapsedTime& rhs) {
     return !(lhs < rhs);
   }
 

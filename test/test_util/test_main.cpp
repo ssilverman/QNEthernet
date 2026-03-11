@@ -158,17 +158,29 @@ static void test_elapsedTime() {
   // Comparison operators
 
   TEST_ASSERT_TRUE(timer == 2s);
+  TEST_ASSERT_TRUE(timer == 2000);
   TEST_ASSERT_TRUE(2s == timer);
+  TEST_ASSERT_TRUE(2000 == timer);
   TEST_ASSERT_TRUE(timer != 1s);
+  TEST_ASSERT_TRUE(timer != 1000);
   TEST_ASSERT_TRUE(1s != timer);
+  TEST_ASSERT_TRUE(1000 != timer);
   TEST_ASSERT_TRUE(timer < 3s);
+  TEST_ASSERT_TRUE(timer < 3000);
   TEST_ASSERT_TRUE(3s > timer);
+  TEST_ASSERT_TRUE(3000 > timer);
   TEST_ASSERT_TRUE(timer > 1s);
+  TEST_ASSERT_TRUE(timer > 1000);
   TEST_ASSERT_TRUE(1s < timer);
+  TEST_ASSERT_TRUE(1000 < timer);
   TEST_ASSERT_TRUE(timer <= 3s);
+  TEST_ASSERT_TRUE(timer <= 3000);
   TEST_ASSERT_TRUE(3s >= timer);
+  TEST_ASSERT_TRUE(3000 >= timer);
   TEST_ASSERT_TRUE(timer >= 2s);
+  TEST_ASSERT_TRUE(timer >= 2000);
   TEST_ASSERT_TRUE(2s <= timer);
+  TEST_ASSERT_TRUE(2000 <= timer);
 
   TEST_ASSERT_TRUE(timer == 2000ms);
   TEST_ASSERT_TRUE(2000ms == timer);
