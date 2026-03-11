@@ -98,7 +98,7 @@ class elapsedTime {
   template <typename R, typename P>
   friend elapsedTime operator+(elapsedTime lhs,
                                const std::chrono::duration<R, P>& rhs) {
-    lhs += std::chrono::duration_cast<duration>(rhs);
+    lhs += rhs;
     return lhs;
   }
 
@@ -110,7 +110,7 @@ class elapsedTime {
   template <typename R, typename P>
   friend elapsedTime operator-(elapsedTime lhs,
                                const std::chrono::duration<R, P>& rhs) {
-    lhs -= std::chrono::duration_cast<duration>(rhs);
+    lhs -= rhs;
     return lhs;
   }
 
@@ -121,8 +121,7 @@ class elapsedTime {
   template <typename R, typename P>
   friend bool operator==(const elapsedTime& lhs,
                          const std::chrono::duration<R, P>& rhs) {
-    return (static_cast<duration>(lhs) ==
-            std::chrono::duration_cast<duration>(rhs));
+    return (static_cast<duration>(lhs) == rhs);
   }
 
   friend bool operator==(const rep lhs, const elapsedTime& rhs) {
@@ -134,8 +133,7 @@ class elapsedTime {
                          const elapsedTime& rhs) {
     // using type = typename std::remove_cv<
     //     typename std::remove_reference<decltype(lhs)>::type>::type;
-    return (lhs == std::chrono::duration_cast<std::chrono::duration<R, P>>(
-                       static_cast<duration>(rhs)));
+    return (lhs == static_cast<duration>(rhs));
   }
 
   friend bool operator!=(const elapsedTime& lhs, const rep rhs) {
@@ -177,8 +175,7 @@ class elapsedTime {
                         const elapsedTime& rhs) {
     // using type = typename std::remove_cv<
     //     typename std::remove_reference<decltype(lhs)>::type>::type;
-    return lhs < std::chrono::duration_cast<std::chrono::duration<R, P>>(
-                     static_cast<duration>(rhs));
+    return lhs < static_cast<duration>(rhs);
   }
 
   friend bool operator>(const elapsedTime& lhs, const rep rhs) {
