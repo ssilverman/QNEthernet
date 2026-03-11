@@ -27,11 +27,11 @@ class elapsedTime {
 
   elapsedTime() : elapsedTime(duration::zero()) {}
 
-  elapsedTime(const rep d)
+  explicit elapsedTime(const rep d)
       : base_{Clock::now() - duration{d}} {}
 
   template <typename R, typename P>
-  elapsedTime(std::chrono::duration<R, P> d)
+  explicit elapsedTime(std::chrono::duration<R, P> d)
       : elapsedTime(std::chrono::duration_cast<duration>(d).count()) {}
 
   // Rule of zero: No declared destructors, copy, or move operations;
