@@ -25,11 +25,8 @@ using elapsedTime = qindesign::network::util::elapsedTime<steady_clock>;
 using namespace std::chrono_literals;
 
 constexpr auto kInterval = 500ms;  // 0.5s is valid too
-constexpr auto kZero = 0ms;
 #else
 constexpr auto kInterval = std::chrono::milliseconds(500);
-constexpr auto kZero = steady_clock::duration::zero();
-    // std::chrono::milliseconds(0) would also work
 #endif  // C++ >= 14
 
 elapsedTime timer;
@@ -49,6 +46,6 @@ void loop() {
   if (timer >= kInterval) {
     // Some platforms support digitalToggle()
     digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN));
-    timer = kZero;
+    timer.reset();
   }
 }
