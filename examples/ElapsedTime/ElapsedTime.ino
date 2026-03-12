@@ -45,7 +45,7 @@ void setup() {
 void loop() {
   if (timer >= kInterval) {
     // Some platforms support digitalToggle()
-    digitalWrite(LED_BUILTIN, digitalRead(LED_BUILTIN));
+    digitalWrite(LED_BUILTIN, (digitalRead(LED_BUILTIN) == LOW) ? HIGH : LOW);
     timer.reset();
   }
 }
