@@ -19,7 +19,7 @@ using steady_clock = qindesign::network::util::steady_clock_ms;
 using elapsedTime = qindesign::network::util::elapsedTime<steady_clock>;
 
 // This check can be removed and the code simplified if it is known
-// that your system supports C++14
+// that your system supports at least C++14
 #if __cplusplus >= 201402L
 // Allows us to specify things like 1000ms
 using namespace std::chrono_literals;
