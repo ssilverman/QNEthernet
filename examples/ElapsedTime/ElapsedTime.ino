@@ -46,6 +46,6 @@ void loop() {
   if (timer >= kInterval) {
     // Some platforms support digitalToggle()
     digitalWrite(LED_BUILTIN, (digitalRead(LED_BUILTIN) == LOW) ? HIGH : LOW);
-    timer.reset();
+    timer.reset();  // 'timer = 0' or 'timer = 0s', etc. would also work
   }
 }
