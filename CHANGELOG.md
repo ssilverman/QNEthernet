@@ -14,6 +14,9 @@ and this project adheres to
   a count.
 * Added `elapsedTime` operators that use a count.
 
+### Changed
+* Enabled raw frame support and loopback by default.
+
 ### Fixed
 * Fixed the _ElapsedTime_ example to actually toggle the LED.
 

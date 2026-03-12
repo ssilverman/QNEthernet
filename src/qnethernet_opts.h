@@ -94,12 +94,12 @@
 // Enables raw frame loopback when the destination MAC address matches the local
 // MAC address or the broadcast MAC address.
 #ifndef QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
-#define QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK 0
+#define QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK 1
 #endif
 
 // Enables raw frame support.
 #ifndef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-#define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 0
+#define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 1
 #endif
 
 // Enables use of secure TCP initial sequence numbers (ISNs).
