@@ -196,7 +196,7 @@ class SPITransaction final {
     spi.beginTransaction(kSPISettings);
   }
 
-  ~SPITransaction() {
+  ~SPITransaction() noexcept {
     spi.endTransaction();
   }
 
