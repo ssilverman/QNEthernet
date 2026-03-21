@@ -14,6 +14,7 @@
 #include <cerrno>
 #endif  // QNETHERNET_CUSTOM_WRITE
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <random>
 
@@ -152,7 +153,7 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
 #endif  // defined(__arm__)
 
   if (inInterruptCtx) {
-    (void)printf("%s:%d:%s()\r\n", file, line, func);
+    (void)std::printf("%s:%d:%s()\r\n", file, line, func);
     LWIP_PLATFORM_ASSERT("Function called from interrupt context");
   }
 }
