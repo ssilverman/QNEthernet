@@ -14,6 +14,8 @@
 #include <qnethernet/security/entropy.h>
 #include <unity.h>
 
+using namespace qindesign::security;
+
 // --------------------------------------------------------------------------
 //  Main Program
 // --------------------------------------------------------------------------

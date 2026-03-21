@@ -11,14 +11,17 @@
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
-// C includes
-#include <errno.h>
-#include <string.h>
+// C++ includes
+#include <cerrno>
+#include <cstring>
 
 #include <imxrt.h>
 
 #include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
+
+namespace qindesign {
+namespace security {
 
 enum TRNGValues {
   // Clock settings
@@ -255,7 +258,7 @@ size_t trng_data(void* const data, const size_t size) {
     restartEntropy();
   }
 
-  uint8_t* p = data;
+  uint8_t* p = static_cast<uint8_t*>(data);
   size_t rem = size;
 
   while (rem > 0) {
@@ -326,6 +329,9 @@ uint32_t entropy_random_range(const uint32_t range) {
   }
   return (uint32_t)(product >> 32);
 }
+
+}  // namespace security
+}  // namespace qindesign
 
 /*
 

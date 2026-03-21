@@ -11,16 +11,12 @@
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+// C++ includes
+#include <cstddef>
+#include <cstdint>
 
-// C includes
-#if !defined(__cplusplus) && (__STDC_VERSION__ < 202311L)
-#include <stdbool.h>
-#endif  // !C++ && (C < 23)
-#include <stddef.h>
-#include <stdint.h>
+namespace qindesign {
+namespace security {
 
 // Initializes the TRNG. This always starts by enabling the clock.
 void trng_init(void);
@@ -55,9 +51,8 @@ uint32_t entropy_random(void);
 // See: https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
 uint32_t entropy_random_range(uint32_t range);
 
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
+}  // namespace security
+}  // namespace qindesign
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
