@@ -10,12 +10,9 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
 
-// C includes
-#if __STDC_VERSION__ < 202311L
-#include <stdalign.h>
-#endif  // C < 23
-#include <stdatomic.h>
-#include <string.h>
+// C++ includes
+#include <atomic>
+#include <cstring>
 
 #include <core_pins.h>
 #include <imxrt.h>
@@ -304,7 +301,7 @@ static volatile enetbufferdesc_t* s_pRxBD = &s_rxRing[0];
 static volatile enetbufferdesc_t* s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
-static atomic_flag s_rxNotAvail       = ATOMIC_FLAG_INIT;
+static std::atomic_flag s_rxNotAvail  = ATOMIC_FLAG_INIT;
 static enet_init_states_t s_initState = kInitStateStart;
 
 // PHY status, polled
@@ -315,7 +312,7 @@ static struct LinkInfo s_linkInfo;
 static bool s_manualLinkState = false;  // True for sticky
 
 // Forward declarations
-static void enet_isr(void);
+static void enet_isr();
 
 // --------------------------------------------------------------------------
 //  PHY I/O
@@ -381,7 +378,7 @@ enum PHYVals {
 // then 'cont' should be set to false.
 ATTRIBUTE_NODISCARD
 static bool mdio_read_nonblocking(const uint16_t regaddr,
-                                  uint16_t data[static 1],
+                                  uint16_t data[1],
                                   const bool cont) {
   if (!cont) {
     ENET_EIR = ENET_EIR_MII;  // Clear status
@@ -753,7 +750,7 @@ static inline volatile enetbufferdesc_t* rxbd_next(void) {
 static void enet_isr(void) {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
-    atomic_flag_clear(&s_rxNotAvail);
+    std::atomic_flag_clear(&s_rxNotAvail);
   }
 }
 
@@ -818,6 +815,8 @@ static inline int check_link_status(struct netif* const netif,
 //  Driver Interface
 // --------------------------------------------------------------------------
 
+extern "C" {
+
 FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isMACSettable                = true;
   dc->isLinkStateDetectable        = true;
@@ -850,12 +849,12 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 
   const uint32_t rl = ENET_PALR;
   const uint32_t ru = ENET_PAUR;
-  mac[0] = (uint8_t)(rl >> 24);
-  mac[1] = (uint8_t)(rl >> 16);
-  mac[2] = (uint8_t)(rl >>  8);
-  mac[3] = (uint8_t)(rl >>  0);
-  mac[4] = (uint8_t)(ru >> 24);
-  mac[5] = (uint8_t)(ru >> 16);
+  mac[0] = static_cast<uint8_t>(rl >> 24);
+  mac[1] = static_cast<uint8_t>(rl >> 16);
+  mac[2] = static_cast<uint8_t>(rl >>  8);
+  mac[3] = static_cast<uint8_t>(rl >>  0);
+  mac[4] = static_cast<uint8_t>(ru >> 24);
+  mac[5] = static_cast<uint8_t>(ru >> 16);
 
   return true;
 }
@@ -913,8 +912,8 @@ FLASHMEM bool driver_init(void) {
   // Note: The original code left RXD0, RXEN, and RXER with PULLDOWN
   configure_rmii_pins();
 
-  (void)memset(s_rxRing, 0, sizeof(s_rxRing));
-  (void)memset(s_txRing, 0, sizeof(s_txRing));
+  (void)std::memset(s_rxRing, 0, sizeof(s_rxRing));
+  (void)std::memset(s_txRing, 0, sizeof(s_txRing));
 
   for (int i = 0; i < RX_SIZE; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
@@ -1014,7 +1013,7 @@ FLASHMEM bool driver_init(void) {
 
   // Last few things to do
   ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
-  (void)atomic_flag_test_and_set(&s_rxNotAvail);
+  (void)std::atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
   ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
@@ -1078,7 +1077,7 @@ struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
   }
 
   if (counter == 0) {
-    if (atomic_flag_test_and_set(&s_rxNotAvail)) {
+    if (std::atomic_flag_test_and_set(&s_rxNotAvail)) {
       return NULL;
     }
   } else if (counter >= RX_SIZE * 2) {
@@ -1203,7 +1202,7 @@ static uint32_t crc32(const void* const data, const size_t len) {
   // https://create.stephan-brumme.com/crc32/#fastest-bitwise-crc32
 
   uint32_t crc = 0;  // Initial value
-  const uint8_t* pData = data;
+  const uint8_t* pData = static_cast<const uint8_t*>(data);
   size_t lenRem = len;
 
   crc = ~crc;
@@ -1306,5 +1305,7 @@ void driver_reset_phy(void) {
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
   mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
 }
+
+}  // extern "C"
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSY41
