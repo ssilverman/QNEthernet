@@ -6,7 +6,7 @@
 
 #include "qnethernet/security/entropy.h"
 
-#include "qnethernet/compat/c11_compat.h"
+#include "qnethernet/compat/c++11_compat.h"
 
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
