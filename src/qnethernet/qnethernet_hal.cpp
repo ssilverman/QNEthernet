@@ -404,7 +404,7 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   mac[4] = static_cast<uint8_t>(num >>  8);
   mac[5] = static_cast<uint8_t>(num >>  0);
 #else
-  (void)memcpy(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
+  (void)std::memcpy(mac, kDefaultMACAddress, ETH_HWADDR_LEN);
 #endif  // Board type
 }
 
