@@ -181,7 +181,7 @@ enum Sizes {
 // #define IRQ_PRIORITY 64
 
 // Size checks
-STATIC_ASSERT((RX_SIZE >= 1) && (TX_SIZE >= 1), "Rx and Tx sizes must be >= 1");
+static_assert((RX_SIZE >= 1) && (TX_SIZE >= 1), "Rx and Tx sizes must be >= 1");
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
 ATTRIBUTE_NODISCARD ATTRIBUTE_ALWAYS_INLINE
