@@ -94,11 +94,10 @@ static inline uint32_t TRNG_SEC_CFG_NO_PROG(const uint32_t n) {
 }
 
 // Entropy storage
-enum {
-  ENTROPY_COUNT = 16,  // In dwords
-};
-static const size_t ENTROPY_COUNT_BYTES  = (ENTROPY_COUNT << 2);  // In bytes
-static uint32_t s_entropy[ENTROPY_COUNT] DMAMEM;
+static constexpr size_t kEntropyCount      = 16;  // In dwords
+static constexpr size_t kEntropyCountBytes = (kEntropyCount << 2);  // In bytes
+
+static uint32_t s_entropy[kEntropyCount] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
 bool trng_is_started(void) {
@@ -199,11 +198,11 @@ static bool fillEntropyBuf(void) {
 
   // Fill the array
   volatile uint32_t* addr = &TRNG_ENT0;
-  for (size_t i = 0; i < ENTROPY_COUNT; ++i) {
+  for (size_t i = 0; i < kEntropyCount; ++i) {
     s_entropy[i] = *(addr++);
   }
   TRNG_ENT0;  // Dummy read after TRNG_ENT15 for defect workaround (according to SDK)
-  s_entropySizeBytes = ENTROPY_COUNT_BYTES;
+  s_entropySizeBytes = kEntropyCountBytes;
 
   return true;
 }
@@ -229,7 +228,8 @@ static bool fillEntropy(void) {
 //   if (!fillEntropy()) {
 //     return false;
 //   }
-//   *b = ((uint8_t*)s_entropy)[ENTROPY_COUNT_BYTES - (s_entropySizeBytes--)];
+//   *b = (reinterpret_cast<uint8_t*>(
+//       s_entropy))[kEntropyCountBytes - (s_entropySizeBytes--)];
 //   return true;
 // }
 
@@ -266,10 +266,10 @@ size_t trng_data(void* const data, const size_t size) {
       return size - rem;
     }
     const size_t toCopy = min_size(rem, s_entropySizeBytes);
-    (void)memcpy(
-        p,
-        &((uint8_t*)s_entropy)[ENTROPY_COUNT_BYTES - s_entropySizeBytes],
-        toCopy);
+    (void)std::memcpy(p,
+                      &(reinterpret_cast<uint8_t*>(
+                          s_entropy))[kEntropyCountBytes - s_entropySizeBytes],
+                      toCopy);
     p += toCopy;
     s_entropySizeBytes -= toCopy;
     rem -= toCopy;
@@ -314,8 +314,8 @@ uint32_t entropy_random_range(const uint32_t range) {
   // https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
   // Note: There's not much impact if entropy generation takes much longer
   //       than division.
-  uint64_t product = (uint64_t)r * (uint64_t)range;
-  uint32_t low = (uint32_t)product;
+  uint64_t product = uint64_t{r} * uint64_t{range};
+  uint32_t low = static_cast<uint32_t>(product);
   if (low < range) {  // Application of the rejection method
     const uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
     while (low < threshold) {
@@ -323,11 +323,11 @@ uint32_t entropy_random_range(const uint32_t range) {
         errno = EAGAIN;
         return 0;
       }
-      product = (uint64_t)r * (uint64_t)range;
-      low = (uint32_t)product;
+      product = uint64_t{r} * uint64_t{range};
+      low = static_cast<uint32_t>(product);
     }
   }
-  return (uint32_t)(product >> 32);
+  return static_cast<uint32_t>(product >> 32);
 }
 
 }  // namespace security
