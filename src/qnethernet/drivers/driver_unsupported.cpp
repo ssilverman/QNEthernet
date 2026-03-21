@@ -12,6 +12,8 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
+extern "C" {
+
 FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isMACSettable                = false;
   dc->isLinkStateDetectable        = false;
@@ -124,5 +126,7 @@ void driver_restart_auto_negotiation(void) {
 
 void driver_reset_phy(void) {
 }
+
+}  // extern "C"
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
