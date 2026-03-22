@@ -20,6 +20,7 @@
 
 #include <Arduino.h>
 #include <Print.h>
+#include <util/atomic.h>
 
 #include "qnethernet/compat/c++11_compat.h"
 
@@ -369,16 +370,17 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
       defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY31) || \
       defined(ARDUINO_TEENSYLC)
   // usb_desc.c:usb_init_serialnumber()
-  __disable_irq();
-  FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
-  FTFL_FCCOB0 = 0x41;
-  FTFL_FCCOB1 = 15;
-  FTFL_FSTAT = FTFL_FSTAT_CCIF;
-  while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
-    // Wait
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
+    FTFL_FCCOB0 = 0x41;
+    FTFL_FCCOB1 = 15;
+    FTFL_FSTAT = FTFL_FSTAT_CCIF;
+    while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
+      // Wait
+    }
+    const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB7);
   }
-  const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB7);
-  __enable_irq();
+
   mac[0] = 0x04;
   mac[1] = 0xE9;
   mac[2] = 0xE5;
@@ -387,17 +389,18 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   mac[5] = static_cast<uint8_t>(num >>  0);
 #elif defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY36)
   // usb_desc.c:usb_init_serialnumber()
-  __disable_irq();
-  LWIP_ASSERT("Expected HSRUN disable success", kinetis_hsrun_disable() != 0);
-  FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
-  *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB3) = 0x41070000;
-  FTFL_FSTAT = FTFL_FSTAT_CCIF;
-  while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
-    // Wait
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    LWIP_ASSERT("Expected HSRUN disable success", kinetis_hsrun_disable() != 0);
+    FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
+    *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB3) = 0x41070000;
+    FTFL_FSTAT = FTFL_FSTAT_CCIF;
+    while (!(FTFL_FSTAT & FTFL_FSTAT_CCIF)) {
+      // Wait
+    }
+    const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOBB);
+    LWIP_ASSERT("Expected HSRUN enable success", kinetis_hsrun_enable() != 0);
   }
-  const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOBB);
-  LWIP_ASSERT("Expected HSRUN enable success", kinetis_hsrun_enable() != 0);
-  __enable_irq();
+
   mac[0] = 0x04;
   mac[1] = 0xE9;
   mac[2] = 0xE5;

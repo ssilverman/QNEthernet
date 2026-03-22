@@ -16,6 +16,7 @@
 
 #include <core_pins.h>
 #include <imxrt.h>
+#include <util/atomic.h>
 
 #include "lwip/arch.h"
 #include "lwip/debug.h"
@@ -866,10 +867,11 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
     return false;
   }
 
-  __disable_irq();  // TODO: Not sure if disabling interrupts is really needed
-  ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-  ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
-  __enable_irq();
+  // TODO: Not sure if disabling interrupts is really needed
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
+    ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  }
 
   return true;
 }
