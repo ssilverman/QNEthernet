@@ -220,8 +220,8 @@ void driver_poll(struct netif* netif);
 void driver_get_link_info(struct LinkInfo* li);
 
 // Sets some link parameters all at once. This returns whether the call
-// was successful. It is expected that this will return false if the link is
-// not up.
+// was successful. It is expected that this will return false if the hardware is
+// not initialized.
 //
 // This will also return false if any of the parameters are invalid.
 ATTRIBUTE_NODISCARD
