@@ -312,6 +312,13 @@ static struct LinkInfo s_linkInfo;
 // Notification data
 static bool s_manualLinkState = false;  // True for sticky
 
+// Incoming MAC address hash-collision bookkeeping
+// Don't release bits that have had a collision. Track these here.
+static uint32_t s_collisionGALR = 0;
+static uint32_t s_collisionGAUR = 0;
+static uint32_t s_collisionIALR = 0;
+static uint32_t s_collisionIAUR = 0;
+
 // Forward declarations
 static void enet_isr();
 
@@ -1039,6 +1046,12 @@ FLASHMEM void driver_deinit(void) {
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
 
+  // Clear the MAC address hash-collision bookkeeping
+  s_collisionGALR = 0;
+  s_collisionGAUR = 0;
+  s_collisionIALR = 0;
+  s_collisionIAUR = 0;
+
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
   if (s_initState == kInitStateInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
@@ -1220,12 +1233,6 @@ static uint32_t crc32(const void* const data, const size_t len) {
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              const bool allow) {
-  // Don't release bits that have had a collision. Track these here.
-  static uint32_t collisionGALR = 0;
-  static uint32_t collisionGAUR = 0;
-  static uint32_t collisionIALR = 0;
-  static uint32_t collisionIAUR = 0;
-
   if (mac == NULL) {
     return false;
   }
@@ -1242,18 +1249,18 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
   if (crc < 0x20) {
     if (isGroup) {
       reg = &ENET_GALR;
-      collision = &collisionGALR;
+      collision = &s_collisionGALR;
     } else {
       reg = &ENET_IALR;
-      collision = &collisionIALR;
+      collision = &s_collisionIALR;
     }
   } else {
     if (isGroup) {  // Group
       reg = &ENET_GAUR;
-      collision = &collisionGAUR;
+      collision = &s_collisionGAUR;
     } else {
       reg = &ENET_IAUR;
-      collision = &collisionIAUR;
+      collision = &s_collisionIAUR;
     }
   }
 

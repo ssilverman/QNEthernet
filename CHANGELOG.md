@@ -19,6 +19,8 @@ and this project adheres to
 
 ### Fixed
 * Fixed the _ElapsedTime_ example to actually toggle the LED.
+* Fixed Teensy 4.1 driver to clear the MAC address hash-collision bookkeeping
+  when the driver is uninitialized.
 
 ## [0.35.0]
 
