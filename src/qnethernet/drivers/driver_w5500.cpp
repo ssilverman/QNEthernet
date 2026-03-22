@@ -677,7 +677,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isPHYResettable              = true;
 }
 
-bool driver_is_unknown(void) {
+bool driver_is_unknown() {
   return s_initState == EnetInitStates::kStart;
 }
 
@@ -726,7 +726,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_has_hardware(void) {
+bool driver_has_hardware() {
   switch (s_initState) {
     case EnetInitStates::kHardwareInitialized:
       ATTRIBUTE_FALLTHROUGH;
@@ -751,7 +751,7 @@ FLASHMEM void driver_set_chip_select_pin(const int pin) {
   }
 }
 
-FLASHMEM bool driver_init(void) {
+FLASHMEM bool driver_init() {
   if (s_initState == EnetInitStates::kInitialized) {
     return true;
   }
@@ -773,7 +773,7 @@ FLASHMEM bool driver_init(void) {
 }
 
 // This also powers down the PHY.
-FLASHMEM void driver_deinit(void) {
+FLASHMEM void driver_deinit() {
   switch (s_initState) {
     case EnetInitStates::kStart:
       ATTRIBUTE_FALLTHROUGH;
@@ -1090,12 +1090,12 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation(void) {
+void driver_restart_auto_negotiation() {
   // It is assumed that this restarts auto-negotiation
   reset_phy();
 }
 
-void driver_reset_phy(void) {
+void driver_reset_phy() {
   reset_phy();
 }
 

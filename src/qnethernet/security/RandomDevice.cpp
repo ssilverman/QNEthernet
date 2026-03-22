@@ -15,10 +15,10 @@ namespace qindesign {
 namespace security {
 
 extern "C" {
-void qnethernet_hal_init_entropy(void);
-void qnethernet_hal_deinit_entropy(void);
-double qnethernet_hal_estimate_entropy(void);
-uint32_t qnethernet_hal_entropy(void);
+void qnethernet_hal_init_entropy();
+void qnethernet_hal_deinit_entropy();
+double qnethernet_hal_estimate_entropy();
+uint32_t qnethernet_hal_entropy();
 }  // extern "C"
 
 STATIC_INIT_DEFN(RandomDevice, randomDevice);

@@ -99,7 +99,7 @@ static size_t s_entropySizeBytes = 0;  // Size in bytes
 
 extern "C" {
 
-bool trng_is_started(void) {
+bool trng_is_started() {
   // Two checks:
   // 1. Clock is running
   // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
@@ -108,13 +108,13 @@ bool trng_is_started(void) {
 }
 
 // Restarts entropy generation.
-static void restartEntropy(void) {
+static void restartEntropy() {
   TRNG_ENT15;
   TRNG_ENT0;  // Dummy read for defect workaround
   s_entropySizeBytes = 0;
 }
 
-FLASHMEM void trng_init(void) {
+FLASHMEM void trng_init() {
   // Enable the clock
   CCM_CCGR6 |= CCM_CCGR6_TRNG(CCM_CCGR_ON);
 
@@ -174,7 +174,7 @@ FLASHMEM void trng_init(void) {
   restartEntropy();
 }
 
-FLASHMEM void trng_deinit(void) {
+FLASHMEM void trng_deinit() {
   TRNG_MCTL |= TRNG_MCTL_PRGM;  // Move to program mode; stop entropy generation
 
   // Check this bit before stopping the clock
@@ -188,7 +188,7 @@ FLASHMEM void trng_deinit(void) {
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
 // available. This checks for an error, and if there is one, returns false.
 ATTRIBUTE_NODISCARD
-static bool fillEntropyBuf(void) {
+static bool fillEntropyBuf() {
   // Check for an error
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
     clearAndSet32(&TRNG_MCTL, TRNG_MCTL_ERR, TRNG_MCTL_ERR);  // Clear error
@@ -209,7 +209,7 @@ static bool fillEntropyBuf(void) {
 // Fills the entropy pool if empty. This waits for entropy to be available or
 // an error.
 ATTRIBUTE_NODISCARD
-static bool fillEntropy(void) {
+static bool fillEntropy() {
   if (s_entropySizeBytes > 0) {
     return true;
   }
@@ -232,7 +232,7 @@ static bool fillEntropy(void) {
 //   return true;
 // }
 
-size_t trng_available(void) {
+size_t trng_available() {
   if (s_entropySizeBytes == 0) {
     // Check for Valid
     if ((TRNG_MCTL & TRNG_MCTL_ENT_VAL) == 0) {
@@ -283,7 +283,7 @@ static inline bool random32(uint32_t* const r) {
   return (trng_data(r, sizeof(*r)) == sizeof(*r));
 }
 
-uint32_t entropy_random(void) {
+uint32_t entropy_random() {
   uint32_t r;
   if (!random32(&r)) {
     errno = EAGAIN;

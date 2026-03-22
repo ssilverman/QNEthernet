@@ -452,7 +452,7 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
 // --------------------------------------------------------------------------
 
 // Enables the Ethernet-related clocks. See also disable_enet_clocks().
-FLASHMEM static void enable_enet_clocks(void) {
+FLASHMEM static void enable_enet_clocks() {
   // Enable the Ethernet clock
   CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
 
@@ -485,7 +485,7 @@ FLASHMEM static void enable_enet_clocks(void) {
 }
 
 // Disables everything enabled with enable_enet_clocks().
-FLASHMEM static void disable_enet_clocks(void) {
+FLASHMEM static void disable_enet_clocks() {
   // Configure REFCLK
   clearAndSet32(&IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
 
@@ -502,7 +502,7 @@ FLASHMEM static void disable_enet_clocks(void) {
 }
 
 // Configures all the pins necessary for communicating with the PHY.
-FLASHMEM static void configure_phy_pins(void) {
+FLASHMEM static void configure_phy_pins() {
   // Configure strap pins
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
@@ -543,7 +543,7 @@ FLASHMEM static void configure_phy_pins(void) {
 
 // Configures all the RMII pins. This should be called after initializing
 // the PHY.
-FLASHMEM static void configure_rmii_pins(void) {
+FLASHMEM static void configure_rmii_pins() {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
@@ -574,7 +574,7 @@ FLASHMEM static void configure_rmii_pins(void) {
 // isn't at START or HAS_HARDWARE. After this function returns, the init state
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
-FLASHMEM static void init_phy(void) {
+FLASHMEM static void init_phy() {
   if ((s_initState != kInitStateStart) &&
       (s_initState != kInitStateHasHardware)) {
     return;
@@ -699,7 +699,7 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This waits until there is a TX buffer available.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t* get_bufdesc(void) {
+static inline volatile enetbufferdesc_t* get_bufdesc() {
   volatile enetbufferdesc_t* const pBD = s_pTxBD;
 
   while ((pBD->status & kEnetTxBdReady) != 0) {
@@ -732,7 +732,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
 
 // Finds the next non-empty BD.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t* rxbd_next(void) {
+static inline volatile enetbufferdesc_t* rxbd_next() {
   volatile enetbufferdesc_t* pBD = s_pRxBD;
 
   while (pBD->status & kEnetRxBdEmpty) {
@@ -755,7 +755,7 @@ static inline volatile enetbufferdesc_t* rxbd_next(void) {
 }
 
 // The Ethernet ISR.
-static void enet_isr(void) {
+static void enet_isr() {
   if ((ENET_EIR & ENET_EIR_RXF) != 0) {
     ENET_EIR = ENET_EIR_RXF;
     std::atomic_flag_clear(&s_rxNotAvail);
@@ -838,7 +838,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isPHYResettable              = true;
 }
 
-bool driver_is_unknown(void) {
+bool driver_is_unknown() {
   return s_initState == kInitStateStart;
 }
 
@@ -884,7 +884,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_has_hardware(void) {
+bool driver_has_hardware() {
   switch (s_initState) {
     case kInitStateHasHardware:
       ATTRIBUTE_FALLTHROUGH;
@@ -907,7 +907,7 @@ void driver_set_chip_select_pin(const int pin) {
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
-FLASHMEM bool driver_init(void) {
+FLASHMEM bool driver_init() {
   if (s_initState == kInitStateInitialized) {
     return true;
   }
@@ -1043,9 +1043,9 @@ FLASHMEM bool driver_init(void) {
   return true;
 }
 
-void unused_interrupt_vector(void);  // startup.c
+void unused_interrupt_vector();  // startup.c
 
-FLASHMEM void driver_deinit(void) {
+FLASHMEM void driver_deinit() {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1297,11 +1297,11 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation(void) {
+void driver_restart_auto_negotiation() {
   mdio_write(PHY_BMCR, mdio_read(PHY_BMCR) | PHY_BMCR_RESTART_AUTO_NEG);
 }
 
-void driver_reset_phy(void) {
+void driver_reset_phy() {
   switch (s_initState) {
     case kInitStatePHYInitialized:
       ATTRIBUTE_FALLTHROUGH;

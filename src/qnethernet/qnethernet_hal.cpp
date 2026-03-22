@@ -48,13 +48,13 @@ extern "C" {
 
 // Returns the current time in milliseconds.
 ATTRIBUTE_WEAK
-uint32_t qnethernet_hal_millis(void) {
+uint32_t qnethernet_hal_millis() {
   return millis();
 }
 
 // Returns the current time in microseconds.
 ATTRIBUTE_WEAK
-uint32_t qnethernet_hal_micros(void) {
+uint32_t qnethernet_hal_micros() {
   return micros();
 }
 
@@ -185,10 +185,10 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
 extern "C" {
 
 // Initializes randomness.
-ATTRIBUTE_WEAK void qnethernet_hal_init_entropy(void);
+ATTRIBUTE_WEAK void qnethernet_hal_init_entropy();
 
 // Gets 32-bits of entropy for LWIP_RAND() and RandomDevice.
-ATTRIBUTE_WEAK uint32_t qnethernet_hal_entropy(void);
+ATTRIBUTE_WEAK uint32_t qnethernet_hal_entropy();
 
 // Fills a buffer with random values. This will return the number of bytes
 // actually filled.
@@ -196,23 +196,23 @@ ATTRIBUTE_WEAK size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 
 #if WHICH_ENTROPY_TYPE == 1
 
-void qnethernet_hal_init_entropy(void) {
+void qnethernet_hal_init_entropy() {
   if (!::trng_is_started()) {
     ::trng_init();
   }
 }
 
-void qnethernet_hal_deinit_entropy(void) {
+void qnethernet_hal_deinit_entropy() {
   if (::trng_is_started()) {
     ::trng_deinit();
   }
 }
 
-double qnethernet_hal_estimate_entropy(void) {
+double qnethernet_hal_estimate_entropy() {
   return 32.0;
 }
 
-uint32_t qnethernet_hal_entropy(void) {
+uint32_t qnethernet_hal_entropy() {
   return ::entropy_random();
 }
 
@@ -222,7 +222,7 @@ size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
 
 #elif WHICH_ENTROPY_TYPE == 2
 
-void qnethernet_hal_init_entropy(void) {
+void qnethernet_hal_init_entropy() {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   // Don't reinitialize
   const bool doEntropyInit =
@@ -237,14 +237,14 @@ void qnethernet_hal_init_entropy(void) {
   }
 }
 
-void qnethernet_hal_deinit_entropy(void) {
+void qnethernet_hal_deinit_entropy() {
 }
 
-double qnethernet_hal_estimate_entropy(void) {
+double qnethernet_hal_estimate_entropy() {
   return 32.0;
 }
 
-uint32_t qnethernet_hal_entropy(void) {
+uint32_t qnethernet_hal_entropy() {
   return Entropy.random();
 }
 
@@ -257,18 +257,18 @@ static std::minstd_rand& urbg_instance() {
   return gen;
 }
 
-void qnethernet_hal_init_entropy(void) {
+void qnethernet_hal_init_entropy() {
   urbg_instance().seed(qnethernet_hal_micros());
 }
 
-void qnethernet_hal_deinit_entropy(void) {
+void qnethernet_hal_deinit_entropy() {
 }
 
-double qnethernet_hal_estimate_entropy(void) {
+double qnethernet_hal_estimate_entropy() {
   return 0.0;
 }
 
-uint32_t qnethernet_hal_entropy(void) {
+uint32_t qnethernet_hal_entropy() {
   return urbg_instance()();
 }
 
@@ -308,20 +308,20 @@ extern "C" {
 
 // Disables interrupts.
 ATTRIBUTE_WEAK
-void qnethernet_hal_disable_interrupts(void) {
+void qnethernet_hal_disable_interrupts() {
   noInterrupts();
 }
 
 // Enables interrupts.
 ATTRIBUTE_WEAK
-void qnethernet_hal_enable_interrupts(void) {
+void qnethernet_hal_enable_interrupts() {
   interrupts();
 }
 
 #if defined(__arm__)
 
 ATTRIBUTE_WEAK
-uint32_t qnethernet_hal_disable_and_return_interrupts(void) {
+uint32_t qnethernet_hal_disable_and_return_interrupts() {
   uint32_t state;
   __asm__ volatile("MRS %[result], PRIMASK" : [result] "=r"(state)::);
   qnethernet_hal_disable_interrupts();

@@ -27,7 +27,7 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isPHYResettable              = false;
 }
 
-bool driver_is_unknown(void) {
+bool driver_is_unknown() {
   return false;
 }
 
@@ -47,7 +47,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return false;
 }
 
-bool driver_has_hardware(void) {
+bool driver_has_hardware() {
   return false;
 }
 
@@ -55,11 +55,11 @@ void driver_set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
-bool driver_init(void) {
+bool driver_init() {
   return false;
 }
 
-void driver_deinit(void) {
+void driver_deinit() {
 }
 
 struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
@@ -121,10 +121,10 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation(void) {
+void driver_restart_auto_negotiation() {
 }
 
-void driver_reset_phy(void) {
+void driver_reset_phy() {
 }
 
 }  // extern "C"
