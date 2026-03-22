@@ -876,8 +876,9 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
   // TODO: Not sure if disabling interrupts is really needed
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-    ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+    ENET_PALR = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
+                (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
+    ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808;
   }
 
   return true;
