@@ -192,7 +192,7 @@ ATTRIBUTE_NODISCARD
 static bool fillEntropyBuf(void) {
   // Check for an error
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
-    TRNG_MCTL = TRNG_MCTL_ERR;  // Clear error
+    clearAndSet32(&TRNG_MCTL, TRNG_MCTL_ERR, TRNG_MCTL_ERR);  // Clear error
     return false;
   }
 
@@ -252,7 +252,7 @@ size_t trng_data(void* const data, const size_t size) {
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
   if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
-    TRNG_MCTL = TRNG_MCTL_ERR;  // Clear error
+    clearAndSet32(&TRNG_MCTL, TRNG_MCTL_ERR, TRNG_MCTL_ERR);  // Clear error
 
     // Restart entropy generation
     restartEntropy();
