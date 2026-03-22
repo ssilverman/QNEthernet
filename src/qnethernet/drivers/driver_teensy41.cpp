@@ -991,8 +991,8 @@ FLASHMEM bool driver_init(void) {
   ENET_TFWR = ENET_TFWR_STRFWD;
   ENET_RSFL = 0;
 
-  ENET_RDSR = (uint32_t)s_rxRing;
-  ENET_TDSR = (uint32_t)s_txRing;
+  ENET_RDSR = reinterpret_cast<uint32_t>(s_rxRing);
+  ENET_TDSR = reinterpret_cast<uint32_t>(s_txRing);
   ENET_MRBR = BUF_SIZE;
 
   ENET_RXIC = 0;
@@ -1122,9 +1122,9 @@ bool driver_set_link(const struct LinkSettings* const ls) {
   }
 
   const uint16_t r = mdio_read(PHY_BMCR);
-  uint16_t newR = (uint16_t)(r & ~(PHY_BMCR_SPEED_SELECTION |
-                                   PHY_BMCR_AUTO_NEG |
-                                   PHY_BMCR_DUPLEX_MODE));
+  uint16_t newR = static_cast<uint16_t>(r & ~(PHY_BMCR_SPEED_SELECTION |
+                                              PHY_BMCR_AUTO_NEG        |
+                                              PHY_BMCR_DUPLEX_MODE));
 
   if (ls->speed == 100) {
     newR |= PHY_BMCR_SPEED_SELECTION;
@@ -1181,11 +1181,11 @@ bool driver_output_frame(const void* const frame, const size_t len) {
   //   return false;
   // }
 
-  (void)memcpy((uint8_t*)pBD->buffer + ETH_PAD_SIZE, frame, len);
+  (void)memcpy(static_cast<uint8_t*>(pBD->buffer) + ETH_PAD_SIZE, frame, len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
-  update_bufdesc(pBD, (uint16_t)(len + ETH_PAD_SIZE));
+  update_bufdesc(pBD, static_cast<uint16_t>(len + ETH_PAD_SIZE));
 
   return true;
 }
