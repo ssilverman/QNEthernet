@@ -20,9 +20,6 @@
 #include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
 
-namespace qindesign {
-namespace security {
-
 enum TRNGValues {
   // Clock settings
   TRNG_CONFIG_CLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
@@ -99,6 +96,8 @@ static constexpr size_t kEntropyCountBytes = (kEntropyCount << 2);  // In bytes
 
 static uint32_t s_entropy[kEntropyCount] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
+
+extern "C" {
 
 bool trng_is_started(void) {
   // Two checks:
@@ -330,8 +329,7 @@ uint32_t entropy_random_range(const uint32_t range) {
   return static_cast<uint32_t>(product >> 32);
 }
 
-}  // namespace security
-}  // namespace qindesign
+}  // extern "C"
 
 /*
 

@@ -197,14 +197,14 @@ ATTRIBUTE_WEAK size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 #if WHICH_ENTROPY_TYPE == 1
 
 void qnethernet_hal_init_entropy(void) {
-  if (!qindesign::security::trng_is_started()) {
-    qindesign::security::trng_init();
+  if (!::trng_is_started()) {
+    ::trng_init();
   }
 }
 
 void qnethernet_hal_deinit_entropy(void) {
-  if (qindesign::security::trng_is_started()) {
-    qindesign::security::trng_deinit();
+  if (::trng_is_started()) {
+    ::trng_deinit();
   }
 }
 
@@ -213,11 +213,11 @@ double qnethernet_hal_estimate_entropy(void) {
 }
 
 uint32_t qnethernet_hal_entropy(void) {
-  return qindesign::security::entropy_random();
+  return ::entropy_random();
 }
 
 size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
-  return qindesign::security::trng_data(buf, size);
+  return ::trng_data(buf, size);
 }
 
 #elif WHICH_ENTROPY_TYPE == 2
