@@ -1181,7 +1181,8 @@ bool driver_output_frame(const void* const frame, const size_t len) {
   //   return false;
   // }
 
-  (void)memcpy(static_cast<uint8_t*>(pBD->buffer) + ETH_PAD_SIZE, frame, len);
+  (void)std::memcpy(static_cast<uint8_t*>(pBD->buffer) + ETH_PAD_SIZE, frame,
+                    len);
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
