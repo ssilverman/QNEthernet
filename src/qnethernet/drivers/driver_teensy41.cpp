@@ -924,6 +924,8 @@ FLASHMEM bool driver_init(void) {
 
   (void)std::memset(s_rxRing, 0, sizeof(s_rxRing));
   (void)std::memset(s_txRing, 0, sizeof(s_txRing));
+  s_pRxBD = &s_rxRing[0];
+  s_pTxBD = &s_txRing[0];
 
   for (int i = 0; i < RX_SIZE; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
