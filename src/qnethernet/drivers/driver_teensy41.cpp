@@ -1188,7 +1188,7 @@ bool driver_output_frame(const void* const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
-  if (len > (UINT16_MAX - ETH_PAD_SIZE)) {
+  if (len > (BUF_SIZE - ETH_PAD_SIZE)) {
     return false;
   }
 
