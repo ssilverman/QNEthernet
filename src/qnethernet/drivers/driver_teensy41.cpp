@@ -343,11 +343,11 @@ enum PHYRegs {
 
 // PHY register values definitions.
 enum PHYVals {
-  PHY_LEDCR_BLINK_RATE_20Hz = (0 << 9),
-  PHY_LEDCR_BLINK_RATE_10Hz = (1 << 9),
-  PHY_LEDCR_BLINK_RATE_5Hz  = (2 << 9),
-  PHY_LEDCR_BLINK_RATE_2Hz  = (3 << 9),
-  PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1 << 7),
+  PHY_LEDCR_BLINK_RATE_20Hz = (0u << 9),
+  PHY_LEDCR_BLINK_RATE_10Hz = (1u << 9),
+  PHY_LEDCR_BLINK_RATE_5Hz  = (2u << 9),
+  PHY_LEDCR_BLINK_RATE_2Hz  = (3u << 9),
+  PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1u << 7),
 
   // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
   // LED shows link status, active high, 10Hz
@@ -356,28 +356,28 @@ enum PHYVals {
   // 10-9: LED Blinking Rate (ON/OFF duration)
   // 7: LED Link Polarity: 1=Active High, 0=Active Low
 
-  PHY_RCSR_RMII_CLOCK_SELECT_50MHz               = (1 << 7),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0 << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  = (1 << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  = (2 << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT = (3 << 0),
+  PHY_RCSR_RMII_CLOCK_SELECT_50MHz               = (1u << 7),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0u << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  = (1u << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  = (2u << 0),
+  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT = (3u << 0),
 
   PHY_RCSR_VALUE = (PHY_RCSR_RMII_CLOCK_SELECT_50MHz |
                     PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT),
   // 7: RMII_Clock_Select: 1=50MHz (non-default)
   // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
 
-  PHY_BMSR_LINK_STATUS = (1 << 2),  // 0: No link, 1: Valid link
+  PHY_BMSR_LINK_STATUS = (1u << 2),  // 0: No link, 1: Valid link
 
-  PHY_PHYSTS_LINK_STATUS   = (1 << 0),   // 0: No link, 1: Valid link
-  PHY_PHYSTS_SPEED_STATUS  = (1 << 1),   // 0: 100Mbps, 1: 10Mbps
-  PHY_PHYSTS_DUPLEX_STATUS = (1 << 2),   // 0: Half-Duplex, 1: Full-Duplex
-  PHY_PHYSTS_MDI_MDIX_MODE = (1 << 14),  // 0: Normal, 1: Swapped
+  PHY_PHYSTS_LINK_STATUS   = (1u <<  0),  // 0: No link, 1: Valid link
+  PHY_PHYSTS_SPEED_STATUS  = (1u <<  1),  // 0: 100Mbps, 1: 10Mbps
+  PHY_PHYSTS_DUPLEX_STATUS = (1u <<  2),  // 0: Half-Duplex, 1: Full-Duplex
+  PHY_PHYSTS_MDI_MDIX_MODE = (1u << 14),  // 0: Normal, 1: Swapped
 
-  PHY_BMCR_SPEED_SELECTION  = (1 << 13),  // 0: 10 Mbps, 1: 100 Mbps
-  PHY_BMCR_AUTO_NEG         = (1 << 12),  // 0: Disable, 1: Enable
-  PHY_BMCR_RESTART_AUTO_NEG = (1 << 9),   // 0: Normal, 1: Restart (Self-clearing)
-  PHY_BMCR_DUPLEX_MODE      = (1 << 8),   // 0: Half, 1: Full
+  PHY_BMCR_SPEED_SELECTION  = (1u << 13),  // 0: 10 Mbps, 1: 100 Mbps
+  PHY_BMCR_AUTO_NEG         = (1u << 12),  // 0: Disable, 1: Enable
+  PHY_BMCR_RESTART_AUTO_NEG = (1u <<  9),  // 0: Normal, 1: Restart (Self-clearing)
+  PHY_BMCR_DUPLEX_MODE      = (1u <<  8),  // 0: Half, 1: Full
 };
 
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
@@ -525,10 +525,10 @@ FLASHMEM static void configure_phy_pins(void) {
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = GPIO_MUX;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = GPIO_MUX;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
 
-  GPIO7_GDIR |= (1 << 15) | (1 << 14);
-  GPIO7_DR_CLEAR = (1 << 15);  // Power down
-  GPIO7_DR_SET   = (1 << 14);  // Start with reset de-asserted so that it can be
-                               // asserted for a specific duration
+  GPIO7_GDIR |= (1u << 15) | (1u << 14);
+  GPIO7_DR_CLEAR = (1u << 15);  // Power down
+  GPIO7_DR_SET   = (1u << 14);  // Start with reset de-asserted so that it can be
+                                // asserted for a specific duration
 
   // Configure the MDIO and MDC pins
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD_PULLUP;  // MDIO
@@ -589,12 +589,12 @@ FLASHMEM static void init_phy(void) {
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = RMII_MUX_CLOCK;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
-  GPIO7_DR_SET   = (1 << 15);  // Power on
-  delay(50);                   // Just in case; unsure if needed
-  GPIO7_DR_CLEAR = (1 << 14);  // Reset
-  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
-  GPIO7_DR_SET   = (1 << 14);  // Take out of reset
-  delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
+  GPIO7_DR_SET   = (1u << 15);  // Power on
+  delay(50);                    // Just in case; unsure if needed
+  GPIO7_DR_CLEAR = (1u << 14);  // Reset
+  delayMicroseconds(25) ;       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
+  GPIO7_DR_SET   = (1u << 14);  // Take out of reset
+  delay(2);                     // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
   // PHYIDR1: OUI bits 21-6: 0x2000
   // PHYIDR2: OUI bits 5-0:  0x28: 101000b
@@ -878,7 +878,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     ENET_PALR = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
                 (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
-    ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808;
+    ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808u;
   }
 
   return true;
@@ -1005,8 +1005,9 @@ FLASHMEM bool driver_init(void) {
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
-  // ENET_PALR = (mac[0] << 24) | (mac[1] << 16) | (mac[2] << 8) | mac[3];
-  // ENET_PAUR = (mac[4] << 24) | (mac[5] << 16) | 0x8808;
+  // ENET_PALR = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
+  //             (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
+  // ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808u;
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
@@ -1033,7 +1034,7 @@ FLASHMEM bool driver_init(void) {
   ENET_TDAR = ENET_TDAR_TDAR;
 
   // PHY soft reset
-  // mdio_write(PHY_BMCR, 1 << 15);
+  // mdio_write(PHY_BMCR, 1u << 15);
 
   s_initState = kInitStateInitialized;
 
@@ -1077,7 +1078,7 @@ FLASHMEM void driver_deinit(void) {
 
   if (s_initState == kInitStatePHYInitialized) {
     // Power down the PHY and enable reset
-    GPIO7_DR_CLEAR = (1 << 15) | (1 << 14);
+    GPIO7_DR_CLEAR = (1u << 15) | (1u << 14);
 
     disable_enet_clocks();
 
@@ -1239,7 +1240,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
   }
 
   const uint32_t crc = (crc32(mac, ETH_HWADDR_LEN) >> 26) & 0x3f;
-  const uint32_t value = 1 << (crc & 0x1f);
+  const uint32_t value = uint32_t{1} << (crc & 0x1f);
 
   // Choose which locations
 
@@ -1308,10 +1309,10 @@ void driver_reset_phy(void) {
       return;
   }
 
-  GPIO7_DR_CLEAR = (1 << 14);  // Reset
-  delayMicroseconds(25);       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
-  GPIO7_DR_SET   = (1 << 14);  // Take out of reset
-  delay(2);                    // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
+  GPIO7_DR_CLEAR = (1u << 14);  // Reset
+  delayMicroseconds(25);        // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
+  GPIO7_DR_SET   = (1u << 14);  // Take out of reset
+  delay(2);                     // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
   mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
   mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
