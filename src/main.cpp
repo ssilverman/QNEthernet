@@ -28,11 +28,9 @@ using high_resolution_clock = qindesign::network::util::arm_high_resolution_cloc
 static constexpr uint32_t kStartupDelay = 2000;
 
 // PHY functions
-extern "C" {
 void init_phy();
 uint16_t mdio_read(uint16_t regaddr);
 void mdio_write(uint16_t regaddr, uint16_t data);
-}  // extern "C"
 
 #define PHY_CDCR 0x1E  // Cable Diagnostic Control Register
 #define PHY_CDCR_START  (1 << 15)
