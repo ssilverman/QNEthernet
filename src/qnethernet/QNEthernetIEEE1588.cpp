@@ -6,7 +6,7 @@
 
 #include "qnethernet/QNEthernetIEEE1588.h"
 
-#include "lwip_driver.h"
+#include "qnethernet/lwip_driver.h"
 
 namespace qindesign {
 namespace network {

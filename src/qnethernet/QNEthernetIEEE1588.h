@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <ctime>
 
-#include "StaticInit.h"
+#include "qnethernet/StaticInit.h"
 
 namespace qindesign {
 namespace network {
