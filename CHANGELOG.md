@@ -18,6 +18,8 @@ and this project adheres to
 
 ### Changed
 * Enabled raw frame support and loopback by default.
+* Changed _SNTPClient_ example to assume that the `settimeofday()`
+  function exists.
 
 ### Fixed
 * Fixed the _ElapsedTime_ example to actually toggle the LED.

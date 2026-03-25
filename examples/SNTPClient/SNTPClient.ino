@@ -8,6 +8,7 @@
 
 // C includes
 #include <sys/time.h>
+// Assume settimeofday() exists
 
 // C++ includes
 #include <cerrno>
@@ -15,9 +16,6 @@
 #include <ctime>
 
 #include <QNEthernet.h>
-#ifdef TEENSYDUINO
-#include <TimeLib.h>
-#endif  // TEENSYDUINO
 
 using namespace qindesign::network;
 
@@ -122,36 +120,6 @@ void setup() {
   // udp.write(buf, 48);
   // udp.endPacket();
 }
-
-#ifdef TEENSYDUINO
-// Provide an implementation.
-[[gnu::weak]]
-int settimeofday(const struct timeval* const tv,
-                 [[maybe_unused]] const struct timezone* const tz) {
-  if (tv == nullptr) {
-    return 0;
-  }
-  time_t t = tv->tv_sec;
-
-  // Ignore the time zone
-
-  Teensy3Clock.set(static_cast<unsigned long>(t));
-  setTime(t);
-  return 0;
-}
-#else
-__attribute__((weak))
-int settimeofday(const struct timeval* const tv,
-                 const struct timezone* const tz) {
-  (void)tz;
-
-  if (tv == nullptr) {
-    return 0;
-  }
-  errno = ENOSYS;
-  return -1;
-}
-#endif  // TEENSYDUINO
 
 // Main program loop.
 void loop() {
