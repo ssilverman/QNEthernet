@@ -80,8 +80,8 @@ int settimeofday(const struct timeval* const tv,
     return 0;
   }
 
-  uint32_t sec  = static_cast<uint32_t>(tv->tv_sec);
-  uint32_t usec = static_cast<uint32_t>(tv->tv_usec);
+  auto sec  = static_cast<uint32_t>(tv->tv_sec);
+  auto usec = static_cast<uint32_t>(tv->tv_usec);
 
   // Assume 's' and 'u' have the proper range
   if (tv->tv_usec >= 1000000) {
@@ -93,7 +93,7 @@ int settimeofday(const struct timeval* const tv,
   }
 
 #ifndef __IMXRT1062__
-  const uint32_t lo = ((usec << 9) / 15625) & 0x7fff;
+  const auto lo = static_cast<uint32_t>(((usec << 9) / 15625) & 0x7fff);
 
   // Disable time counter
   RTC_SR = 0;
@@ -104,8 +104,9 @@ int settimeofday(const struct timeval* const tv,
   // Enable time counter
   RTC_SR = RTC_SR_TCE;
 #else
-  const uint32_t hi = (u32_t)((sec >> 17) & 0x7fff);
-  const uint32_t lo = (u32_t)((sec << 15) | (((usec << 9)/15625) & 0x7fff));
+  const auto hi = static_cast<uint32_t>((sec >> 17) & 0x7fff);
+  const auto lo =
+      static_cast<uint32_t>((sec << 15) | (((usec << 9) / 15625) & 0x7fff));
 
   // Code similar to teensy4 core's rtc_set(t)
   // This version sets the microseconds too
