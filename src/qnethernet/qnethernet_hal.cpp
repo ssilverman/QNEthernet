@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 #include <random>
 
 #include <Arduino.h>
@@ -57,6 +58,89 @@ ATTRIBUTE_WEAK
 uint32_t qnethernet_hal_micros() {
   return micros();
 }
+
+#ifdef TEENSYDUINO
+#if QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY
+// Provide a Teensy implementation.
+
+// Notes:
+// * The type of tv_usec is suseconds_t, range is [-1, 1000000]
+// * There are 32768 ticks per 1,000,000 microseconds; that's where 512/15625
+//   comes from, it's 32768/1000000 in lowest terms
+// Refs:
+// * https://pubs.opengroup.org/onlinepubs/007904975/basedefs/sys/time.h.html
+// * https://pubs.opengroup.org/onlinepubs/007904975/basedefs/sys/types.h.html
+
+ATTRIBUTE_WEAK
+int settimeofday(const struct timeval* const tv,
+                 const struct timezone* const tz) {
+  (void)tz;
+
+  if (tv == nullptr) {
+    // Do nothing
+    return 0;
+  }
+
+  uint32_t sec  = static_cast<uint32_t>(tv->tv_sec);
+  uint32_t usec = static_cast<uint32_t>(tv->tv_usec);
+
+  // Assume 's' and 'u' have the proper range
+  if (usec == 1000000) {
+    sec++;
+    usec = 0;
+  } else if (usec == std::numeric_limits<uint32_t>::max()) {
+    sec--;
+    usec = 999999;
+  }
+
+#ifndef __IMXRT1062__
+  const uint32_t lo = ((usec << 9) / 15625) & 0x7fff;
+
+  // Disable time counter
+  RTC_SR = 0;
+
+  RTC_TPR = lo;
+  RTC_TSR = sec;
+
+  // Enable time counter
+  RTC_SR = RTC_SR_TCE;
+#else
+  const uint32_t hi = (u32_t)((sec >> 17) & 0x7fff);
+  const uint32_t lo = (u32_t)((sec << 15) | (((usec << 9)/15625) & 0x7fff));
+
+  // Code similar to teensy4 core's rtc_set(t)
+  // This version sets the microseconds too
+
+  // Stop the RTC
+  SNVS_HPCR &= ~(SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);
+  while ((SNVS_HPCR & SNVS_HPCR_RTC_EN) != 0) {
+    // Wait
+  }
+
+  // Stop the SRTC */
+  SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;
+  while ((SNVS_LPCR & SNVS_LPCR_SRTC_ENV) != 0) {
+    // Wait
+  }
+
+  // Set the SRTC
+  SNVS_LPSRTCLR = lo;
+  SNVS_LPSRTCMR = hi;
+
+  // Start the SRTC
+  SNVS_LPCR |= SNVS_LPCR_SRTC_ENV;
+  while ((SNVS_LPCR & SNVS_LPCR_SRTC_ENV) == 0) {
+    // Wait
+  }
+
+  // Start the RTC and sync it to the SRTC
+  SNVS_HPCR |= (SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);
+#endif  // !__IMXRT1062__
+
+  return 0;
+}
+#endif  // QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY
+#endif  // TEENSYDUINO
 
 }  // extern "C"
 

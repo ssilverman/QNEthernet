@@ -135,6 +135,11 @@
 #define QNETHERNET_PROVIDE_GNU_VERBOSE_TERMINATE_HANDLER 0
 #endif
 
+// Provides an implementation of settimeofday() for Teensy.
+#ifndef QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY
+#define QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY 1
+#endif
+
 // Use the Entropy library instead of internal functions. (Teensy 4)
 #ifndef QNETHERNET_USE_ENTROPY_LIB
 #define QNETHERNET_USE_ENTROPY_LIB 0

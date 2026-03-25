@@ -13,6 +13,8 @@ and this project adheres to
 * Added `rep` assignment operator and constructor to `elapsedTime` for assigning
   a count.
 * Added `elapsedTime` operators that use a count.
+* Added a `settimeofday()` implementation in the HAL for Teensy, gated on the
+  new `QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY` configuration macro.
 
 ### Changed
 * Enabled raw frame support and loopback by default.
