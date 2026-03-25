@@ -163,6 +163,8 @@ void loop() {
   const timeval tv{std::time_t{t}, 0};
   if (settimeofday(&tv, nullptr) != 0) {
     printf("Error setting time\r\n");
+  } else {
+    printf("Time was set\r\n");
   }
 
   // Print the time
