@@ -696,7 +696,7 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
       p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
       if (p->timestampValid) {
         (void)driver_ieee1588_read_timer(&p->timestamp);
-        if ((uint32_t)p->timestamp.tv_nsec < pBD->timestamp) {
+        if (static_cast<uint32_t>(p->timestamp.tv_nsec) < pBD->timestamp) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
         }
@@ -744,7 +744,7 @@ static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
     s_doTimestampNext = false;
     pBD->extend1 |= kEnetTxBdTimestamp;
   } else {
-    pBD->extend1 &= (uint16_t)(~kEnetTxBdTimestamp);
+    pBD->extend1 &= static_cast<uint16_t>(~kEnetTxBdTimestamp);
   }
 
   ENET_TDAR = ENET_TDAR_TDAR;
@@ -1454,8 +1454,8 @@ bool driver_ieee1588_write_timer(const struct timespec* const t) {
   }
 
   qnethernet_hal_disable_interrupts();  // {
-  s_ieee1588Seconds = (uint32_t)t->tv_sec;
-  ENET_ATVR = (uint32_t)t->tv_nsec;
+  s_ieee1588Seconds = static_cast<uint32_t>(t->tv_sec);
+  ENET_ATVR = static_cast<uint32_t>(t->tv_nsec);
   qnethernet_hal_enable_interrupts();  // }
 
   return true;
@@ -1508,7 +1508,8 @@ bool driver_ieee1588_adjust_freq(int nsps) {
     // Speed up
     ++inc;
   }
-  return driver_ieee1588_adjust_timer(inc, (uint32_t)(F_ENET_TS_CLK / nsps));
+  return driver_ieee1588_adjust_timer(
+      inc, static_cast<uint32_t>(F_ENET_TS_CLK / nsps));
 }
 
 // Channels
