@@ -695,7 +695,7 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
                   pbuf_take(p, pBD->buffer, p->tot_len) == ERR_OK);
       p->timestampValid = ((pBD->status & kEnetRxBdLast) != 0);
       if (p->timestampValid) {
-        driver_ieee1588_read_timer(&p->timestamp);
+        (void)driver_ieee1588_read_timer(&p->timestamp);
         if ((uint32_t)p->timestamp.tv_nsec < pBD->timestamp) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
