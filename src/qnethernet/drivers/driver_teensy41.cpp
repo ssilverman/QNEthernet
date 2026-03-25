@@ -721,7 +721,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
                   pbuf_take(p, pBD->buffer, p->tot_len) == ERR_OK);
       p->timestampValid = ((pBD->status & rx_bd_status::kLast) != 0);
       if (p->timestampValid) {
-        driver::ieee1588_read_timer(&p->timestamp);
+        (void)driver::ieee1588_read_timer(&p->timestamp);
         if ((uint32_t)p->timestamp.tv_nsec < pBD->timestamp) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
