@@ -36,7 +36,6 @@
 #include <imxrt.h>
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
-#include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/def.h"
 #include "lwip/err.h"
@@ -887,8 +886,8 @@ static bool readAndScan() {
 }
 
 struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
-  LWIP_UNUSED_ARG(netif);
-  LWIP_UNUSED_ARG(counter);
+  (void)netif;
+  (void)counter;
 
   if (s_initState != EnetInitStates::kInitialized) {
     return NULL;

@@ -18,7 +18,6 @@
 
 #include <IPAddress.h>
 
-#include "lwip/arch.h"
 #include "lwip/ip_addr.h"
 #include "lwip/pbuf.h"
 #include "lwip/raw.h"
@@ -85,8 +84,8 @@ class Ping final {
 
  private:
   // Receives raw packets.
-  static u8_t recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
-                       const ip_addr_t* addr);
+  static uint8_t recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
+                          const ip_addr_t* addr);
 
   // Attempts to create and bind the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns

@@ -15,7 +15,7 @@
 
 uint32_t qnethernet_hal_millis(void);
 
-u32_t sys_now(void) {
+uint32_t sys_now(void) {
 #ifndef LWIP_FUZZ_SYS_NOW
   return qnethernet_hal_millis();
 #else

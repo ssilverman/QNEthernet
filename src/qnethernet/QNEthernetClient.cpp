@@ -15,7 +15,6 @@
 
 #include "QNEthernet.h"
 #include "lwip/altcp.h"
-#include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/dns.h"
 #include "lwip/err.h"
@@ -56,8 +55,9 @@ int EthernetClient::connect(const IPAddress ip, const uint16_t port) {
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return connect(&ipaddr, port, connTimeoutEnabled_);
 #else
-  LWIP_UNUSED_ARG(ip);
-  LWIP_UNUSED_ARG(port);
+  (void)ip;
+  (void)port;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
@@ -72,8 +72,9 @@ int EthernetClient::connect(const char* const host, const uint16_t port) {
   }
   return connect(ip, port);
 #else
-  LWIP_UNUSED_ARG(host);
-  LWIP_UNUSED_ARG(port);
+  (void)host;
+  (void)port;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
@@ -84,8 +85,9 @@ bool EthernetClient::connectNoWait(const IPAddress& ip, const uint16_t port) {
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(ip));
   return connect(&ipaddr, port, false);
 #else
-  LWIP_UNUSED_ARG(ip);
-  LWIP_UNUSED_ARG(port);
+  (void)ip;
+  (void)port;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
@@ -101,8 +103,9 @@ bool EthernetClient::connectNoWait(const char* const host,
   }
   return connectNoWait(ip, port);
 #else
-  LWIP_UNUSED_ARG(host);
-  LWIP_UNUSED_ARG(port);
+  (void)host;
+  (void)port;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
@@ -211,7 +214,7 @@ void EthernetClient::close() {
 
 void EthernetClient::close(const bool wait) {
 #if LWIP_ALTCP
-  LWIP_UNUSED_ARG(wait);
+  (void)wait;
 #endif  // LWIP_ALTCP
 
   if (conn_ == nullptr) {
@@ -352,7 +355,7 @@ IPAddress EthernetClient::localIP() {
 }
 
 bool EthernetClient::getAddrInfo(const bool local,
-                                 ip_addr_t* const addr, u16_t* const port) {
+                                 ip_addr_t* const addr, uint16_t* const port) {
   if (!static_cast<bool>(*this)) {
     return false;
   }

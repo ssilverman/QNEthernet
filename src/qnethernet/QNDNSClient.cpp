@@ -12,7 +12,6 @@
 #include <cerrno>
 
 #include "QNEthernet.h"
-#include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "qnethernet/compat/c++11_compat.h"
@@ -26,7 +25,7 @@ namespace network {
 void DNSClient::dnsFoundFunc(const char* const name,
                              const ip_addr_t* const ipaddr,
                              void* const callback_arg) {
-  LWIP_UNUSED_ARG(name);
+  (void)name;
 
   if (callback_arg == nullptr) {
     return;
@@ -48,8 +47,9 @@ bool DNSClient::setServer(const size_t index, const IPAddress& ip) {
   dns_setserver(static_cast<uint8_t>(index), &addr);
   return true;
 #else
-  LWIP_UNUSED_ARG(index);
-  LWIP_UNUSED_ARG(ip);
+  (void)index;
+  (void)ip;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
@@ -63,7 +63,8 @@ IPAddress DNSClient::getServer(const size_t index) {
   return util::ip_addr_get_ip4_uint32(
       dns_getserver(static_cast<uint8_t>(index)));
 #else
-  LWIP_UNUSED_ARG(index);
+  (void)index;
+
   errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_IPV4
@@ -135,9 +136,10 @@ bool DNSClient::getHostByName(const char* const hostname, IPAddress& ip,
   }
   return found;
 #else
-  LWIP_UNUSED_ARG(hostname);
-  LWIP_UNUSED_ARG(ip);
-  LWIP_UNUSED_ARG(timeout);
+  (void)hostname;
+  (void)ip;
+  (void)timeout;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4

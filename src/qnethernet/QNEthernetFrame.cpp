@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "QNEthernet.h"
-#include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/prot/ieee.h"
 #include "lwip/sys.h"
@@ -38,7 +37,7 @@ STATIC_INIT_DEFN(EthernetFrameClass, EthernetFrame);
 
 err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
                                    struct netif* const netif) {
-  LWIP_UNUSED_ARG(netif);
+  (void)netif;
 
   const uint32_t timestamp = sys_now();
 

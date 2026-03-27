@@ -6,7 +6,6 @@
 
 #include "qnethernet/lwip_driver.h"
 
-#include "lwip/arch.h"
 #include "lwip/err.h"
 #include "qnethernet/platforms/pgmspace.h"
 
@@ -43,7 +42,8 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
-  LWIP_UNUSED_ARG(mac);
+  (void)mac;
+
   return false;
 }
 
@@ -52,7 +52,7 @@ bool driver_has_hardware() {
 }
 
 void driver_set_chip_select_pin(const int pin) {
-  LWIP_UNUSED_ARG(pin);
+  (void) pin;
 }
 
 bool driver_init() {
@@ -63,33 +63,37 @@ void driver_deinit() {
 }
 
 struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
-  LWIP_UNUSED_ARG(netif);
-  LWIP_UNUSED_ARG(counter);
+  (void)netif;
+  (void)counter;
+
   return NULL;
 }
 
 void driver_poll(struct netif* const netif) {
-  LWIP_UNUSED_ARG(netif);
+  (void)netif;
 }
 
 void driver_get_link_info(struct LinkInfo* const li) {
-  LWIP_UNUSED_ARG(li);
+  (void)li;
 }
 
 bool driver_set_link(const struct LinkSettings* const ls) {
-  LWIP_UNUSED_ARG(ls);
+  (void)ls;
+
   return false;
 }
 
 err_t driver_output(struct pbuf* const p) {
-  LWIP_UNUSED_ARG(p);
+  (void)p;
+
   return ERR_IF;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool driver_output_frame(const void* const frame, const size_t len) {
-  LWIP_UNUSED_ARG(frame);
-  LWIP_UNUSED_ARG(len);
+  (void)frame;
+  (void)len;
+
   return false;
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -102,8 +106,9 @@ bool driver_output_frame(const void* const frame, const size_t len) {
 
 bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              const bool allow) {
-  LWIP_UNUSED_ARG(mac);
-  LWIP_UNUSED_ARG(allow);
+  (void)mac;
+  (void)allow;
+
   return false;
 }
 
@@ -114,7 +119,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 // --------------------------------------------------------------------------
 
 void driver_notify_manual_link_state(const bool flag) {
-  LWIP_UNUSED_ARG(flag);
+  (void)flag;
 }
 
 // --------------------------------------------------------------------------

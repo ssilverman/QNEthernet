@@ -34,7 +34,6 @@ static_assert(TEENSYDUINO >= 159, "Must be built with Teensydino >= 1.59");
 #endif  // defined(__has_include)
 #endif  // QNETHERNET_DO_LOOP_IN_YIELD
 
-#include "lwip/arch.h"
 #include "lwip/dhcp.h"
 #include "lwip/err.h"
 #include "lwip/igmp.h"
@@ -232,9 +231,9 @@ bool EthernetClass::begin(const IPAddress& ip,
 #endif  // LWIP_DHCP
   }
 #else
-  LWIP_UNUSED_ARG(ip);
-  LWIP_UNUSED_ARG(mask);
-  LWIP_UNUSED_ARG(gateway);
+  (void)ip;
+  (void)mask;
+  (void)gateway;
 #endif  // LWIP_IPV4
 
   if (!start()) {
@@ -366,7 +365,8 @@ bool EthernetClass::setDHCPEnabled(const bool flag) {
   }
   return true;
 #else
-  LWIP_UNUSED_ARG(flag);
+  (void)flag;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DHCP
@@ -417,7 +417,8 @@ bool EthernetClass::waitForLocalIP(const uint32_t timeout) const {
   }
   return !timedOut;
 #else
-  LWIP_UNUSED_ARG(timeout);
+  (void)timeout;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IPV4
@@ -628,7 +629,8 @@ IPAddress EthernetClass::dnsServerIP(const size_t index) const {
 #if LWIP_DNS
   return DNSClient::getServer(index);
 #else
-  LWIP_UNUSED_ARG(index);
+  (void)index;
+
   errno = ENOSYS;
   return INADDR_NONE;
 #endif  // LWIP_DNS
@@ -655,7 +657,8 @@ void EthernetClass::setLocalIP(const IPAddress& ip) const {
   const ip4_addr_t ipaddr{static_cast<uint32_t>(ip)};
   netif_set_ipaddr(netif_, &ipaddr);
 #else
-  LWIP_UNUSED_ARG(ip);
+  (void)ip;
+
   errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
@@ -668,7 +671,8 @@ void EthernetClass::setSubnetMask(const IPAddress& subnetMask) const {
   const ip4_addr_t netmask{static_cast<uint32_t>(subnetMask)};
   netif_set_netmask(netif_, &netmask);
 #else
-  LWIP_UNUSED_ARG(subnetMask);
+  (void)subnetMask;
+
   errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
@@ -681,7 +685,8 @@ void EthernetClass::setGatewayIP(const IPAddress& ip) const {
   const ip4_addr_t gw{static_cast<uint32_t>(ip)};
   netif_set_gw(netif_, &gw);
 #else
-  LWIP_UNUSED_ARG(ip);
+  (void)ip;
+
   errno = ENOSYS;
 #endif  // LWIP_IPV4
 }
@@ -695,8 +700,9 @@ void EthernetClass::setDNSServerIP(const size_t index,
 #if LWIP_DNS
   (void)DNSClient::setServer(index, ip);
 #else
-  LWIP_UNUSED_ARG(index);
-  LWIP_UNUSED_ARG(ip);
+  (void)index;
+  (void)ip;
+
   errno = ENOSYS;
 #endif  // LWIP_DNS
 }
@@ -729,7 +735,8 @@ bool EthernetClass::joinGroup(const IPAddress& ip) const {
   }
   return true;
 #else
-  LWIP_UNUSED_ARG(ip);
+  (void)ip;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IGMP
@@ -750,7 +757,8 @@ bool EthernetClass::leaveGroup(const IPAddress& ip) const {
   }
   return true;
 #else
-  LWIP_UNUSED_ARG(ip);
+  (void)ip;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_IGMP
@@ -791,7 +799,8 @@ void EthernetClass::setHostname(const char* const hostname) {
     }
   }
 #else
-  LWIP_UNUSED_ARG(hostname);
+  (void)hostname;
+
   errno = ENOSYS;
 #endif  // LWIP_NETIF_HOSTNAME
 }
@@ -806,8 +815,9 @@ bool EthernetClass::hostByName(const char* const hostname,
   return DNSClient::getHostByName(hostname, ip,
                                   QNETHERNET_DEFAULT_DNS_LOOKUP_TIMEOUT);
 #else
-  LWIP_UNUSED_ARG(hostname);
-  LWIP_UNUSED_ARG(ip);
+  (void)hostname;
+  (void)ip;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
@@ -826,8 +836,9 @@ long EthernetClass::ping(const char* const hostname, const uint8_t ttl) const {
   }
   return ping(ip, ttl);
 #else
-  LWIP_UNUSED_ARG(hostname);
-  LWIP_UNUSED_ARG(ttl);
+  (void)hostname;
+  (void)ttl;
+
   errno = ENOSYS;
   return -1;
 #endif  // LWIP_RAW
@@ -880,8 +891,9 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
   }
 
 #else
-  LWIP_UNUSED_ARG(ip);
-  LWIP_UNUSED_ARG(ttl);
+  (void)ip;
+  (void)ttl;
+
   errno = ENOSYS;
   return -1;
 #endif  // LWIP_RAW

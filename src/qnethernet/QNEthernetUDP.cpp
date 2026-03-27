@@ -46,7 +46,7 @@ static_assert(kMaxPossiblePayloadSize <= std::numeric_limits<uint16_t>::max(),
 
 void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
                            struct pbuf* const p,
-                           const ip_addr_t* const addr, const u16_t port) {
+                           const ip_addr_t* const addr, const uint16_t port) {
   if (pcb == nullptr) {
     return;
   }
@@ -367,8 +367,9 @@ int EthernetUDP::beginPacket(const char* const host, const uint16_t port) {
   }
   return beginPacket(ip, port);
 #else
-  LWIP_UNUSED_ARG(host);
-  LWIP_UNUSED_ARG(port);
+  (void)host;
+  (void)port;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS
@@ -462,10 +463,11 @@ bool EthernetUDP::send(const char* const host, const uint16_t port,
   }
   return send(ip, port, data, len);
 #else
-  LWIP_UNUSED_ARG(host);
-  LWIP_UNUSED_ARG(port);
-  LWIP_UNUSED_ARG(data);
-  LWIP_UNUSED_ARG(len);
+  (void)host;
+  (void)port;
+  (void)data;
+  (void)len;
+
   errno = ENOSYS;
   return false;
 #endif  // LWIP_DNS

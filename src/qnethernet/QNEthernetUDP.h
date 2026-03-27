@@ -18,7 +18,6 @@
 #include <IPAddress.h>
 #include <Udp.h>
 
-#include "lwip/arch.h"
 #include "lwip/ip_addr.h"
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
@@ -276,7 +275,7 @@ class EthernetUDP : public UDP,
   };
 
   static void recvFunc(void* arg, struct udp_pcb* pcb, struct pbuf* p,
-                       const ip_addr_t* addr, u16_t port);
+                       const ip_addr_t* addr, uint16_t port);
 
   // Attempts to create the internal PCB if it's not already set. If
   // unsuccessful, this calls Ethernet.loop(), sets errno to ENOMEM, and returns

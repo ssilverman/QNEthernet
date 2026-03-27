@@ -10,7 +10,6 @@
 #include <errno.h>
 #include <string.h>
 
-#include "lwip/arch.h"
 #include "lwip/autoip.h"
 #include "lwip/dhcp.h"
 #include "lwip/etharp.h"
@@ -52,7 +51,7 @@ static struct autoip s_autoip;
 // Outputs the given pbuf to the driver.
 ATTRIBUTE_NODISCARD
 static err_t link_output(struct netif* const netif, struct pbuf* const p) {
-  LWIP_UNUSED_ARG(netif);
+  (void)netif;
 
   if (p == NULL) {
     return ERR_ARG;
@@ -67,7 +66,7 @@ ATTRIBUTE_NODISCARD
 static err_t multicast_filter(struct netif* const netif,
                               const ip4_addr_t* const group,
                               const enum netif_mac_filter_action action) {
-  LWIP_UNUSED_ARG(netif);
+  (void)netif;
 
   bool retval = true;
   switch (action) {

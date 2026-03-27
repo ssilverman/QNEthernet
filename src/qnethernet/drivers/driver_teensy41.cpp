@@ -18,7 +18,6 @@
 #include <imxrt.h>
 #include <util/atomic.h>
 
-#include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
@@ -642,11 +641,11 @@ FLASHMEM static void init_phy() {
 // allocation error.
 ATTRIBUTE_NODISCARD
 static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
-  const u16_t err_mask = kEnetRxBdTrunc    |
-                         kEnetRxBdOverrun  |
-                         kEnetRxBdCrc      |
-                         kEnetRxBdNonOctet |
-                         kEnetRxBdLengthViolation;
+  const uint16_t err_mask = kEnetRxBdTrunc    |
+                            kEnetRxBdOverrun  |
+                            kEnetRxBdCrc      |
+                            kEnetRxBdNonOctet |
+                            kEnetRxBdLengthViolation;
 
   struct pbuf* p = NULL;
 
@@ -902,7 +901,7 @@ bool driver_has_hardware() {
 }
 
 void driver_set_chip_select_pin(const int pin) {
-  LWIP_UNUSED_ARG(pin);
+  (void)pin;
 }
 
 // Initializes the PHY and Ethernet interface. This sets the init state and

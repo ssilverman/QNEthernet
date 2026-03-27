@@ -16,7 +16,6 @@
 #include <Print.h>
 #include <Stream.h>
 
-#include "lwip/arch.h"
 #include "lwip/prot/ethernet.h"
 #include "qnethernet/internal/PrintfChecked.h"
 
@@ -153,12 +152,14 @@ class NullPrint final : public PrintBase {
   using PrintBase::write;  // Bring void* version of write() into scope
 
   size_t write(const uint8_t b) override {
-    LWIP_UNUSED_ARG(b);
+    (void)b;
+
     return 1;
   }
 
   size_t write(const uint8_t* const buffer, const size_t size) override {
-    LWIP_UNUSED_ARG(buffer);
+    (void)buffer;
+
     return size;
   }
 

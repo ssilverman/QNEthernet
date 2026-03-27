@@ -15,7 +15,6 @@
 #include <IPAddress.h>
 
 #include "lwip/apps/mdns_opts.h"
-#include "lwip/arch.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/prot/ethernet.h"
@@ -372,11 +371,11 @@ class EthernetClass final {
   }
   ATTRIBUTE_DEPRECATED("See TCP_MAXRTX")
   void setRetransmissionCount(const uint8_t number) const {
-    LWIP_UNUSED_ARG(number);
+    (void)number;
   }
   ATTRIBUTE_DEPRECATED("Handled internally")
   void setRetransmissionTimeout(const uint16_t milliseconds) const {
-    LWIP_UNUSED_ARG(milliseconds);
+    (void)milliseconds;
   }
 
   // These call something equivalent

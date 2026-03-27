@@ -16,7 +16,6 @@
 
 #include "lwip/altcp.h"
 #include "lwip/altcp_tcp.h"
-#include "lwip/arch.h"
 #include "lwip/ip_addr.h"
 #include "qnethernet/compat/c++11_compat.h"
 
@@ -26,8 +25,8 @@ std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
     qnethernet_altcp_get_allocator = [](const ip_addr_t* const ipaddr,
                                         const uint16_t port,
                                         altcp_allocator_t& allocator) {
-      LWIP_UNUSED_ARG(ipaddr);
-      LWIP_UNUSED_ARG(port);
+      (void)ipaddr;
+      (void)port;
 
       allocator.alloc = &altcp_tcp_alloc;
       allocator.arg = nullptr;
@@ -38,7 +37,7 @@ std::function<bool(const ip_addr_t*, uint16_t, altcp_allocator_t&)>
 ATTRIBUTE_WEAK
 std::function<void(const altcp_allocator_t&)> qnethernet_altcp_free_allocator =
     [](const altcp_allocator_t& allocator) {
-      LWIP_UNUSED_ARG(allocator);
+      (void)allocator;
     };
 
 #endif  // LWIP_ALTCP && QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS

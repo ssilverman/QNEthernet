@@ -28,8 +28,8 @@ static constexpr size_t kMaxHdrSize = IP_HLEN + kEchoHdrSize;
 static_assert(kMaxHdrSize <= std::numeric_limits<uint16_t>::max(),
               "Max. header size overflow");
 
-u8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
-                    const ip_addr_t* addr) {
+uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
+                       const ip_addr_t* addr) {
   // Ensure the PCB matches and the packet is the right type and size
   Ping* const ping = static_cast<Ping*>(arg);
 

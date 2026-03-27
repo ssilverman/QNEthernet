@@ -14,7 +14,6 @@
 #include <stddef.h>
 
 #include <lwip/altcp.h>
-#include <lwip/arch.h>
 #include <lwip/err.h>
 #include <lwip/opt.h>
 #include <qnethernet_opts.h>
@@ -28,43 +27,47 @@ struct altcp_tls_config {
 };
 
 void altcp_tls_free_config(struct altcp_tls_config *conf) {
-  LWIP_UNUSED_ARG(conf);
+  (void)conf;
 }
 
 struct altcp_pcb *altcp_tls_wrap(struct altcp_tls_config *config,
                                  struct altcp_pcb *inner_pcb) {
-  LWIP_UNUSED_ARG(config);
-  LWIP_UNUSED_ARG(inner_pcb);
+  (void)config;
+  (void)inner_pcb;
+
   return NULL;
 }
 
 #if QNETHERNET_ALTCP_TLS_ADAPTER
 // QNEthernet's altcp_tls_adapter needs these
 
-struct altcp_tls_config *altcp_tls_create_config_server(u8_t cert_count) {
-  LWIP_UNUSED_ARG(cert_count);
+struct altcp_tls_config *altcp_tls_create_config_server(uint8_t cert_count) {
+  (void)cert_count;
+
   return NULL;
 }
 
 err_t altcp_tls_config_server_add_privkey_cert(
     struct altcp_tls_config *config,
-    const u8_t *privkey,      size_t privkey_len,
-    const u8_t *privkey_pass, size_t privkey_pass_len,
-    const u8_t *cert,         size_t cert_len) {
-  LWIP_UNUSED_ARG(config);
-  LWIP_UNUSED_ARG(privkey);
-  LWIP_UNUSED_ARG(privkey_len);
-  LWIP_UNUSED_ARG(privkey_pass);
-  LWIP_UNUSED_ARG(privkey_pass_len);
-  LWIP_UNUSED_ARG(cert);
-  LWIP_UNUSED_ARG(cert_len);
+    const uint8_t *privkey,      size_t privkey_len,
+    const uint8_t *privkey_pass, size_t privkey_pass_len,
+    const uint8_t *cert,         size_t cert_len) {
+  (void)config;
+  (void)privkey;
+  (void)privkey_len;
+  (void)privkey_pass;
+  (void)privkey_pass_len;
+  (void)cert;
+  (void)cert_len;
+
   return ERR_OK;
 }
 
-struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
+struct altcp_tls_config *altcp_tls_create_config_client(const uint8_t *cert,
                                                         size_t cert_len) {
-  LWIP_UNUSED_ARG(cert);
-  LWIP_UNUSED_ARG(cert_len);
+  (void)cert;
+  (void)cert_len;
+
   return NULL;
 }
 
@@ -76,10 +79,11 @@ struct altcp_tls_config *altcp_tls_create_config_client(const u8_t *cert,
 int mbedtls_hardware_poll(void *data,
                           unsigned char *output, size_t len, size_t *olen) {
   // A real implementation would fill in random data
-  LWIP_UNUSED_ARG(data);
-  LWIP_UNUSED_ARG(output);
-  LWIP_UNUSED_ARG(len);
-  LWIP_UNUSED_ARG(olen);
+  (void)data;
+  (void)output;
+  (void)len;
+  (void)olen;
+
   return 0;
 }
 

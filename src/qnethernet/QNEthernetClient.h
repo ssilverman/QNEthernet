@@ -294,7 +294,7 @@ class EthernetClient : public internal::ClientEx,
   // Gets address info for this connection. This returns whether the client is
   // connected and there was information to get.
   ATTRIBUTE_NODISCARD
-  bool getAddrInfo(bool local, ip_addr_t* addr, u16_t* port);
+  bool getAddrInfo(bool local, ip_addr_t* addr, uint16_t* port);
 
   // Checks the state and returns false if not connected, or true otherwise.
   ATTRIBUTE_NODISCARD

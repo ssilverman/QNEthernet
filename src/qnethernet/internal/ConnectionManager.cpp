@@ -14,7 +14,6 @@
 #include <limits>
 
 #include "QNEthernet.h"
-#include "lwip/arch.h"
 #include "lwip/err.h"
 #include "lwip/ip.h"
 #if LWIP_ALTCP
@@ -261,7 +260,7 @@ void ConnectionManager::addConnection(
     const std::shared_ptr<ConnectionHolder>& holder) {
   connections_.push_back(holder);
   holder->state->removeFunc = [this, holder](ConnectionState* state) {
-    LWIP_UNUSED_ARG(state);
+    (void)state;
 
     // Remove the connection from the list
     const auto it =
@@ -275,7 +274,7 @@ void ConnectionManager::addConnection(
 ATTRIBUTE_NODISCARD
 static struct altcp_pcb* create_altcp_pcb(const ip_addr_t* const ipaddr,
                                           const uint16_t port,
-                                          const u8_t ip_type) {
+                                          const uint8_t ip_type) {
 #if LWIP_ALTCP
   struct altcp_pcb* pcb = nullptr;
   altcp_allocator_t allocator{nullptr, nullptr};
@@ -287,8 +286,9 @@ static struct altcp_pcb* create_altcp_pcb(const ip_addr_t* const ipaddr,
   }
   return pcb;
 #else
-  LWIP_UNUSED_ARG(ipaddr);
-  LWIP_UNUSED_ARG(port);
+  (void)ipaddr;
+  (void)port;
+
   return altcp_new_ip_type(nullptr, ip_type);
 #endif  // LWIP_ALTCP
 }

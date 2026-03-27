@@ -8,11 +8,11 @@
 
 #if LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
 
+// C includes
 #if __STDC_VERSION__ < 202311L
 #include <stdbool.h>
 #endif  // C < 23
 #include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 
 #include "qnethernet/security/siphash.h"
@@ -20,7 +20,7 @@
 // Key
 static bool s_haveKey = false;
 static uint8_t s_key[16];  // Filled with entropy on first use
-static uint8_t s_msg[2*sizeof(u16_t) + 2*sizeof(ip_addr_t)];
+static uint8_t s_msg[2*sizeof(uint16_t) + 2*sizeof(ip_addr_t)];
 
 // Forward declarations
 size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
@@ -33,8 +33,10 @@ uint32_t qnethernet_hal_micros();
 // * https://github.com/openbsd/src/blob/bd92615b04061daa96ce60d53401eedbb5c09e0d/sys/netinet/tcp_subr.c#L140
 // * https://web.archive.org/web/20031205021237/http://razor.bindview.com/publish/papers/tcpseq.html
 
-u32_t calc_tcp_isn(const ip_addr_t* const local_ip, const u16_t local_port,
-                   const ip_addr_t* const remote_ip, const u16_t remote_port) {
+uint32_t calc_tcp_isn(const ip_addr_t* const local_ip,
+                      const uint16_t local_port,
+                      const ip_addr_t* const remote_ip,
+                      const uint16_t remote_port) {
   if (!s_haveKey) {
     // Initialize the key
     LWIP_ASSERT(
@@ -45,10 +47,10 @@ u32_t calc_tcp_isn(const ip_addr_t* const local_ip, const u16_t local_port,
 
   // Attempt to hash in order of higher entropy -> lower entropy
   uint8_t* pMsg = s_msg;
-  (void)memcpy(pMsg, &local_port, sizeof(u16_t));
-  pMsg += sizeof(u16_t);
-  (void)memcpy(pMsg, &remote_port, sizeof(u16_t));
-  pMsg += sizeof(u16_t);
+  (void)memcpy(pMsg, &local_port, sizeof(uint16_t));
+  pMsg += sizeof(uint16_t);
+  (void)memcpy(pMsg, &remote_port, sizeof(uint16_t));
+  pMsg += sizeof(uint16_t);
   (void)memcpy(pMsg, remote_ip, sizeof(ip_addr_t));
   pMsg += sizeof(ip_addr_t);
   (void)memcpy(pMsg, local_ip, sizeof(ip_addr_t));
