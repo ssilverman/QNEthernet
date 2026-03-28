@@ -93,7 +93,7 @@ int settimeofday(const struct timeval* const tv,
   }
 
 #ifndef __IMXRT1062__
-  const auto lo = static_cast<uint32_t>(((usec << 9) / 15625) & 0x7fff);
+  const uint32_t lo = ((usec << 9) / 15625u) & 0x7fffu;
 
   // Disable time counter
   RTC_SR = 0;
@@ -104,9 +104,8 @@ int settimeofday(const struct timeval* const tv,
   // Enable time counter
   RTC_SR = RTC_SR_TCE;
 #else
-  const auto hi = static_cast<uint32_t>((sec >> 17) & 0x7fff);
-  const auto lo =
-      static_cast<uint32_t>((sec << 15) | (((usec << 9) / 15625) & 0x7fff));
+  const uint32_t hi = (sec >> 17) & 0x7fffu;
+  const uint32_t lo = (sec << 15) | (((usec << 9) / 15625u) & 0x7fffu);
 
   // Code similar to teensy4 core's rtc_set(t)
   // This version sets the microseconds too
@@ -117,7 +116,7 @@ int settimeofday(const struct timeval* const tv,
     // Wait
   }
 
-  // Stop the SRTC */
+  // Stop the SRTC
   SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;
   while ((SNVS_LPCR & SNVS_LPCR_SRTC_ENV) != 0) {
     // Wait
