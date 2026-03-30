@@ -12,6 +12,7 @@
 #if !QNETHERNET_USE_ENTROPY_LIB
 
 // C++ includes
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 
@@ -264,7 +265,7 @@ size_t trng_data(void* const data, const size_t size) {
     if (!fillEntropy()) {
       return size - rem;
     }
-    const size_t toCopy = min_size(rem, s_entropySizeBytes);
+    const size_t toCopy = std::min(rem, s_entropySizeBytes);
     (void)std::memcpy(p,
                       &(reinterpret_cast<uint8_t*>(
                           s_entropy))[kEntropyCountBytes - s_entropySizeBytes],
