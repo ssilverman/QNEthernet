@@ -24,7 +24,12 @@
 enum TRNGValues {
   // Clock settings
   TRNG_CONFIG_CLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
-  TRNG_CONFIG_RING_OSC_DIV = 0,  // Divide by 2^n
+  TRNG_CONFIG_RING_OSC_DIV =     // Divide by 2^n
+#if (F_CPU >= 528000000)
+      0,
+#else
+      2,
+#endif  // F_CPU range
 
   // Sampling
   TRNG_CONFIG_SAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
