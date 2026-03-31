@@ -211,7 +211,7 @@ static bool fillEntropyBuf() {
 // an error.
 ATTRIBUTE_NODISCARD
 static bool fillEntropy() {
-  if (s_entropySizeBytes > 0) {
+  if (s_entropySizeBytes != 0) {
     return true;
   }
 
@@ -261,7 +261,7 @@ size_t trng_data(void* const data, const size_t size) {
   uint8_t* p = static_cast<uint8_t*>(data);
   size_t rem = size;
 
-  while (rem > 0) {
+  while (rem != 0) {
     if (!fillEntropy()) {
       return size - rem;
     }
