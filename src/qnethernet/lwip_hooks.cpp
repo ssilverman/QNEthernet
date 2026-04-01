@@ -8,12 +8,9 @@
 
 #if LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
 
-// C includes
-#if __STDC_VERSION__ < 202311L
-#include <stdbool.h>
-#endif  // C < 23
-#include <stddef.h>
-#include <string.h>
+// C++ includes
+#include <cstddef>
+#include <cstring>
 
 #include "qnethernet/security/siphash.h"
 
@@ -22,9 +19,11 @@ static bool s_haveKey = false;
 static uint8_t s_key[16];  // Filled with entropy on first use
 static uint8_t s_msg[2*sizeof(uint16_t) + 2*sizeof(ip_addr_t)];
 
-// Forward declarations
+// HAL declarations
+extern "C" {
 size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 uint32_t qnethernet_hal_micros();
+}  // extern "C"
 
 // The algorithm used here follows the suggestions of RFC 6528.
 // See:
@@ -32,6 +31,8 @@ uint32_t qnethernet_hal_micros();
 // * https://github.com/torvalds/linux/blob/3666f666e99600518ab20982af04a078bbdad277/net/core/secure_seq.c#L136
 // * https://github.com/openbsd/src/blob/bd92615b04061daa96ce60d53401eedbb5c09e0d/sys/netinet/tcp_subr.c#L140
 // * https://web.archive.org/web/20031205021237/http://razor.bindview.com/publish/papers/tcpseq.html
+
+extern "C" {
 
 uint32_t calc_tcp_isn(const ip_addr_t* const local_ip,
                       const uint16_t local_port,
@@ -47,16 +48,18 @@ uint32_t calc_tcp_isn(const ip_addr_t* const local_ip,
 
   // Attempt to hash in order of higher entropy -> lower entropy
   uint8_t* pMsg = s_msg;
-  (void)memcpy(pMsg, &local_port, sizeof(uint16_t));
+  (void)std::memcpy(pMsg, &local_port, sizeof(uint16_t));
   pMsg += sizeof(uint16_t);
-  (void)memcpy(pMsg, &remote_port, sizeof(uint16_t));
+  (void)std::memcpy(pMsg, &remote_port, sizeof(uint16_t));
   pMsg += sizeof(uint16_t);
-  (void)memcpy(pMsg, remote_ip, sizeof(ip_addr_t));
+  (void)std::memcpy(pMsg, remote_ip, sizeof(ip_addr_t));
   pMsg += sizeof(ip_addr_t);
-  (void)memcpy(pMsg, local_ip, sizeof(ip_addr_t));
+  (void)std::memcpy(pMsg, local_ip, sizeof(ip_addr_t));
 
   uint32_t hash = (uint32_t)siphash(2, 4, s_key, s_msg, sizeof(s_msg));
   return hash + qnethernet_hal_micros();
 }
+
+}  // extern "C"
 
 #endif  // LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN

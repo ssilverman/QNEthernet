@@ -16,6 +16,10 @@
 #include "lwip/pbuf.h"
 #include "qnethernet_opts.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #define LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) \
@@ -34,3 +38,7 @@ uint32_t calc_tcp_isn(const ip_addr_t* local_ip, uint16_t local_port,
                       const ip_addr_t* remote_ip, uint16_t remote_port);
 
 #endif  // LWIP_TCP && QNETHERNET_ENABLE_SECURE_TCP_ISN
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
