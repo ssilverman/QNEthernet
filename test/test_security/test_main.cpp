@@ -64,7 +64,7 @@ static void test_siphash() {
   };
 
   uint64_t want = uint64_t{0xa129ca6149be45e5};
-  uint64_t got = siphash(2, 4, kKey, kMsg, 15);
+  uint64_t got = qindesign::security::siphash(2, 4, kKey, kMsg, 15);
   TEST_ASSERT_EQUAL_MESSAGE(want, got, "Expected proper hash");
 
   // Test vectors
@@ -72,7 +72,7 @@ static void test_siphash() {
   uint8_t msg[64];
   for (size_t i = 0; i < 64; ++i) {
     msg[i] = i;
-    uint64_t h = siphash(2, 4, kKey, msg, i);
+    uint64_t h = qindesign::security::siphash(2, 4, kKey, msg, i);
     TEST_ASSERT_EQUAL_MESSAGE(h, vectors_sip64[i],
                               format("Expected match: i=%zu", i).data());
   }
