@@ -9,7 +9,6 @@
 // C++ includes
 #include <cstdint>
 
-#include "qnethernet/StaticInit.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
@@ -24,11 +23,12 @@ uint32_t qnethernet_hal_entropy();
 
 // Device ensures there's only one initialization and deinitialization.
 class Device {
- private:
+ public:
   Device() {
     qnethernet_hal_init_entropy();
   }
 
+ private:
   ~Device() noexcept {
     qnethernet_hal_deinit_entropy();
   }
@@ -38,12 +38,10 @@ class Device {
   Device(Device&&) = delete;
   Device& operator=(const Device&) = delete;
   Device& operator=(Device&&) = delete;
-
-  STATIC_INIT_FRIEND(Device, device);
 };
 
-STATIC_INIT_DECL(Device, device);
-STATIC_INIT_DEFN(Device, device);
+// Initialize entropy.
+static Device device;
 
 double random_device::entropy() const {
   return qnethernet_hal_estimate_entropy();

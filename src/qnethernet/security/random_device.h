@@ -29,9 +29,6 @@ class random_device {
  public:
   using result_type = unsigned int;
 
-  // Accesses the singleton instance.
-  static random_device& instance();
-
   random_device() = default;
   ~random_device() = default;
 
