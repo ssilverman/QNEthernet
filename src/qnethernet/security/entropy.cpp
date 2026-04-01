@@ -291,6 +291,7 @@ size_t trng_data(void* const data, const size_t size) {
 
 // Gathers a 32-bit random number and returns whether successful. This assumes
 // that the argument is not NULL.
+ATTRIBUTE_NODISCARD
 static inline bool random32(uint32_t* const r) {
   return (trng_data(r, sizeof(*r)) == sizeof(*r));
 }
