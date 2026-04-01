@@ -44,10 +44,10 @@ uint64_t siphash(const size_t c, const size_t d,
 #endif  // Big-endian
 
   // Initialization
-  uint64_t v0 = k0 ^ UINT64_C(0x736f6d6570736575);  // somepseu
-  uint64_t v1 = k1 ^ UINT64_C(0x646f72616e646f6d);  // dorandom
-  uint64_t v2 = k0 ^ UINT64_C(0x6c7967656e657261);  // lygenera
-  uint64_t v3 = k1 ^ UINT64_C(0x7465646279746573);  // tedbytes
+  uint64_t v0 = k0 ^ uint64_t{0x736f6d6570736575};  // somepseu
+  uint64_t v1 = k1 ^ uint64_t{0x646f72616e646f6d};  // dorandom
+  uint64_t v2 = k0 ^ uint64_t{0x6c7967656e657261};  // lygenera
+  uint64_t v3 = k1 ^ uint64_t{0x7465646279746573};  // tedbytes
 
   const uint8_t* pMsg = static_cast<const uint8_t*>(msg);
 
