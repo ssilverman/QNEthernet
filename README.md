@@ -81,7 +81,7 @@ lwIP release.
 19. [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)
 20. [Heap memory use](#heap-memory-use)
 21. [Entropy generation](#entropy-generation)
-    1. [The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
+    1. [The `random_device` _UniformRandomBitGenerator_](#the-random_device-uniformrandombitgenerator)
 22. [Interference mitigation](#interference-mitigation)
 23. [Security features](#security-features)
     1. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
@@ -1802,12 +1802,12 @@ If the target device isn't a Teensy 4 then the _Entropy_ library will be used,
 unless it's not accessible or doesn't exist for the device, in which case an
 instance of `std::minstd_rand` will be used.
 
-### The `RandomDevice` _UniformRandomBitGenerator_
+### The `random_device` _UniformRandomBitGenerator_
 
-Also provided is a class called `RandomDevice` that implements the
+Also provided is a class called `random_device` that implements the
 [_UniformRandomBitGenerator_](https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator)
-C++ named requirement. It's in the `qindesign::security` namespace. An instance
-can be accessed by calling its `instance()` static function.
+C++ named requirement and also mimics `std::random_device`. It's in the
+`qindesign::security` namespace.
 
 This object works with both the internal entropy functions and with the
 _Entropy_ library.
@@ -2059,7 +2059,7 @@ See: [Print and Stream utilities](#print-and-stream-utilities)
 ### `std::random_device`-compatible uniform random bit generator
 
 See:
-[The `RandomDevice` _UniformRandomBitGenerator_](#the-randomdevice-uniformrandombitgenerator)
+[The `random_device` _UniformRandomBitGenerator_](#the-random_device-uniformrandombitgenerator)
 
 ### Space-savings on some platforms
 

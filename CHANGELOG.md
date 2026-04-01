@@ -21,6 +21,10 @@ and this project adheres to
 * Changed _SNTPClient_ example to assume that the `settimeofday()`
   function exists.
 
+### Removed
+* Removed `qindesign::security::RandomDevice` in favour of the
+  `std::random_device`-mimicking `qindesign::security::random_device`.
+
 ### Fixed
 * Fixed the _ElapsedTime_ example to actually toggle the LED.
 * Fixed Teensy 4.1 driver to clear the MAC address hash-collision bookkeeping

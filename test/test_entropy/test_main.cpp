@@ -10,8 +10,8 @@
 #include <string>
 
 #include <Arduino.h>
-#include <qnethernet/security/RandomDevice.h>
 #include <qnethernet/security/entropy.h>
+#include <qnethernet/security/random_device.h>
 #include <unity.h>
 
 // --------------------------------------------------------------------------
@@ -80,19 +80,17 @@ static void test_random_range() {
 
 // Tests entropy_random().
 static void test_randomDevice() {
-  qindesign::security::RandomDevice::instance()();
-  TEST_ASSERT_EQUAL_MESSAGE(&qindesign::security::randomDevice,
-                            &qindesign::security::RandomDevice::instance(),
-                            "Expected objects equal");
-  TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::RandomDevice::min(),
+  qindesign::security::random_device rd;
+
+  TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::random_device::min(),
                             "Expected full-range minimum");
   TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<uint32_t>::max(),
-                            qindesign::security::RandomDevice::max(),
+                            qindesign::security::random_device::max(),
                             "Expected full-range maximum");
 
   errno = 0;
   for (int i = 0; i < (1 << 10); ++i) {
-    (void)qindesign::security::randomDevice();
+    (void)rd();
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
   }
 }

@@ -270,7 +270,7 @@ extern "C" {
 // Initializes randomness.
 ATTRIBUTE_WEAK void qnethernet_hal_init_entropy();
 
-// Gets 32-bits of entropy for LWIP_RAND() and RandomDevice.
+// Gets 32-bits of entropy for LWIP_RAND() and random_device.
 ATTRIBUTE_WEAK uint32_t qnethernet_hal_entropy();
 
 // Fills a buffer with random values. This will return the number of bytes
