@@ -42,6 +42,10 @@ class Device {
 // Initialize entropy.
 static Device device;
 
+random_device::random_device() : random_device("default") {}
+
+random_device::random_device(const std::string& token) {}
+
 double random_device::entropy() const {
   return qnethernet_hal_estimate_entropy();
 }

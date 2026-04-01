@@ -15,6 +15,7 @@
 
 // C++ includes
 #include <limits>
+#include <string>
 
 namespace qindesign {
 namespace security {
@@ -29,7 +30,12 @@ class random_device {
  public:
   using result_type = unsigned int;
 
-  random_device() = default;
+  // Calls random_device("default").
+  random_device();
+
+  // Creates a random_device. This currently ignores the token.
+  explicit random_device(const std::string& token);
+
   ~random_device() = default;
 
   // Disallow copying and moving
