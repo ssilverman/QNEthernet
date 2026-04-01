@@ -28,7 +28,6 @@ class Device {
     qnethernet_hal_init_entropy();
   }
 
- private:
   ~Device() noexcept {
     qnethernet_hal_deinit_entropy();
   }
