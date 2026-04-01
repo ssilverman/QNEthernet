@@ -12,6 +12,9 @@
 // C++ includes
 #include <cstring>
 
+namespace qindesign {
+namespace security {
+
 // Rotates 'x' left by 's' bits.
 ATTRIBUTE_NODISCARD
 static inline uint64_t rotl(const uint64_t x, const int s) {
@@ -28,9 +31,9 @@ static inline void sipround(uint64_t* const v0, uint64_t* const v1,
   *v2 += *v1; *v1 = rotl(*v1, 17); *v1 ^= *v2; *v2 = rotl(*v2, 32);
 }
 
-extern "C" uint64_t siphash(const size_t c, const size_t d,
-                            const void* const key,
-                            const void* const msg, const size_t len) {
+uint64_t siphash(const size_t c, const size_t d,
+                 const void* const key,
+                 const void* const msg, const size_t len) {
   uint64_t k0;
   uint64_t k1;
   (void)std::memcpy(&k0, key, 8);
@@ -86,3 +89,6 @@ extern "C" uint64_t siphash(const size_t c, const size_t d,
 
   return v0 ^ v1 ^ v2 ^ v3;
 }
+
+}  // namespace security
+}  // namespace qindesign

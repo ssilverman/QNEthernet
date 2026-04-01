@@ -6,19 +6,17 @@
 
 #pragma once
 
-// C includes
-#include <stddef.h>
-#include <stdint.h>
+// C++ includes
+#include <cstddef>
+#include <cstdint>
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+namespace qindesign {
+namespace security {
 
 // Calculates a SipHash-c-d-64. The key is expected to contain 16 bytes.
 uint64_t siphash(size_t c, size_t d,
                  const void* key,
                  const void* msg, size_t len);
 
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
+}  // namespace security
+}  // namespace qindesign
