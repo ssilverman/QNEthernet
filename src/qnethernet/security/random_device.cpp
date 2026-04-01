@@ -21,6 +21,8 @@ double qnethernet_hal_estimate_entropy();
 uint32_t qnethernet_hal_entropy();
 }  // extern "C"
 
+namespace {
+
 // One Device instance ensures there's only one initialization
 // and deinitialization.
 class Device {
@@ -41,7 +43,9 @@ class Device {
 };
 
 // Initialize entropy.
-static Device device;
+Device device;
+
+}  // namespace
 
 random_device::random_device() : random_device("default") {}
 
