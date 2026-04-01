@@ -79,7 +79,7 @@ static void test_random_range() {
 #endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
 
 // Tests entropy_random().
-static void test_randomDevice() {
+static void test_random_device() {
   qindesign::security::random_device rd;
 
   TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::random_device::min(),
@@ -122,7 +122,7 @@ void setup() {
   RUN_TEST(test_random);
   RUN_TEST(test_random_range);
 #endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
-  RUN_TEST(test_randomDevice);
+  RUN_TEST(test_random_device);
 #if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   ::trng_deinit();
   RUN_TEST(test_inactive);
