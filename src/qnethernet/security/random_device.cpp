@@ -51,7 +51,7 @@ double random_device::entropy() const {
 }
 
 random_device::result_type random_device::operator()() {
-  return qnethernet_hal_entropy();
+  return static_cast<result_type>(qnethernet_hal_entropy());
 }
 
 }  // namespace security
