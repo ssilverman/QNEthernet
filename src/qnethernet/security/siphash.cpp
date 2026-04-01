@@ -9,6 +9,7 @@
 
 #include "qnethernet/compat/c++11_compat.h"
 
+// C++ includes
 #include <cstring>
 
 // Rotates 'x' left by 's' bits.
