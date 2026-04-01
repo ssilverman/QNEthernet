@@ -287,6 +287,10 @@ void driver_restart_auto_negotiation(void);
 // See also: driver_get_capabilities(dc)
 void driver_reset_phy(void);
 
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
+
 // --------------------------------------------------------------------------
 //  Public Interface
 // --------------------------------------------------------------------------
@@ -377,7 +381,3 @@ ATTRIBUTE_NODISCARD
 bool enet_leave_group(const ip4_addr_t* group);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
-
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus

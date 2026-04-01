@@ -6,9 +6,9 @@
 
 #include "qnethernet/lwip_driver.h"
 
-// C includes
-#include <errno.h>
-#include <string.h>
+// C++ includes
+#include <cerrno>
+#include <cstring>
 
 #include "lwip/autoip.h"
 #include "lwip/dhcp.h"
@@ -108,7 +108,7 @@ FLASHMEM static err_t init_netif(struct netif* const netif) {
 #endif  // LWIP_IGMP
                  ;
 
-  (void)memcpy(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
+  (void)std::memcpy(netif->hwaddr, s_mac, ETH_HWADDR_LEN);
   netif->hwaddr_len = ETH_HWADDR_LEN;
 
 #if LWIP_NETIF_HOSTNAME
@@ -193,7 +193,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   if (isFirstInit) {
     lwip_init();
     isFirstInit = false;
-  } else if (memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
+  } else if (std::memcmp(s_mac, mac, ETH_HWADDR_LEN) != 0) {
     // First test if the MAC address has changed
     // If it's changed then remove the interface and start again
 
@@ -221,7 +221,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   } else {
     // Just set the MAC address
 
-    (void)memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
+    (void)std::memcpy(s_netif.hwaddr, s_mac, ETH_HWADDR_LEN);
     s_netif.hwaddr_len = ETH_HWADDR_LEN;
   }
 
@@ -230,7 +230,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
 
 FLASHMEM void enet_deinit(void) {
   // Restore state
-  (void)memset(s_mac, 0, sizeof(s_mac));
+  (void)std::memset(s_mac, 0, sizeof(s_mac));
 
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
 
@@ -286,8 +286,8 @@ bool enet_output_frame(const void* const frame, const size_t len) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
   // Check for a loopback frame
-  if ((memcmp(frame, s_mac, 6) == 0) ||
-      (memcmp(frame, kBroadcastMAC, 6) == 0)) {
+  if ((std::memcmp(frame, s_mac, 6) == 0) ||
+      (std::memcmp(frame, kBroadcastMAC, 6) == 0)) {
     struct pbuf* const p =
         pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
     if (p != NULL) {
