@@ -57,7 +57,7 @@ class random_device {
   //
   // See:
   // https://en.cppreference.com/w/cpp/numeric/random/random_device/entropy.html
-  double entropy() const;
+  double entropy() const noexcept;
 
   result_type operator()();
 };
