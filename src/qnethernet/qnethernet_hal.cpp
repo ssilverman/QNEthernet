@@ -20,7 +20,9 @@
 
 #include <Arduino.h>
 #include <Print.h>
+#ifdef TEENSYDUINO
 #include <util/atomic.h>
+#endif  // TEENSYDUINO
 
 #include "qnethernet/compat/c++11_compat.h"
 
