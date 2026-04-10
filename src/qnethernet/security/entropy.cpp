@@ -293,7 +293,12 @@ size_t trng_data(void* const data, const size_t size) {
 // that the argument is not NULL.
 ATTRIBUTE_NODISCARD
 static inline bool random32(uint32_t* const r) {
-  return (trng_data(r, sizeof(*r)) == sizeof(*r));
+  if (trng_data(r, sizeof(*r)) == sizeof(*r)) {
+    return true;
+  } else {
+    errno = EIO;
+    return false;
+  }
 }
 
 extern "C" {
@@ -301,7 +306,6 @@ extern "C" {
 uint32_t entropy_random() {
   uint32_t r;
   if (!random32(&r)) {
-    errno = EAGAIN;
     return 0;
   }
   return r;
@@ -315,7 +319,6 @@ uint32_t entropy_random_range(const uint32_t range) {
 
   uint32_t r;
   if (!random32(&r)) {
-    errno = EAGAIN;
     return 0;
   }
 
@@ -334,7 +337,6 @@ uint32_t entropy_random_range(const uint32_t range) {
     const uint32_t threshold = -range % range;  // 2^L mod s = (2^L − s) mod s
     while (low < threshold) {
       if (!random32(&r)) {
-        errno = EAGAIN;
         return 0;
       }
       product = uint64_t{r} * uint64_t{range};

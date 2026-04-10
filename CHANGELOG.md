@@ -20,6 +20,8 @@ and this project adheres to
 * Enabled raw frame support and loopback by default.
 * Changed _SNTPClient_ example to assume that the `settimeofday()`
   function exists.
+* Changed entropy functions to set `errno` to `EIO` instead of `EAGAIN` on
+  entropy generation failure.
 
 ### Removed
 * Removed `qindesign::security::RandomDevice` in favour of the

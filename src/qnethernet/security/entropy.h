@@ -43,13 +43,13 @@ size_t trng_available(void);
 size_t trng_data(void* data, size_t size);
 
 // Returns a random 4-byte number from the entropy generator. If there was any
-// entropy generation error then errno will be set to EAGAIN.
+// entropy generation error then errno will be set to EIO.
 uint32_t entropy_random(void);
 
 // Returns a random number in the range [0, range). This uses an unbiased
 // algorithm. If there was any entropy generation error then errno will be set
-// to EAGAIN and this will return zero. If 'range' is zero then errno will be
-// set to EDOM.
+// to EIO and this will return zero. If 'range' is zero then errno will be set
+// to EDOM.
 //
 // See: http://www.adammil.net/blog/v134_Efficiently_generating_random_numbers_without_bias.html
 // See: https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
