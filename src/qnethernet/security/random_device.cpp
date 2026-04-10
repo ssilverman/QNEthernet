@@ -21,36 +21,20 @@ double qnethernet_hal_estimate_entropy();
 uint32_t qnethernet_hal_entropy();
 }  // extern "C"
 
-namespace {
-
-// One Device instance ensures there's only one initialization
-// and deinitialization.
-class Device {
- public:
-  Device() {
+static void ensureInitialized() {
+  // This is a lightweight alternative to std::call_once
+  static bool initialized = []() {
     qnethernet_hal_init_entropy();
-  }
-
-  ~Device() noexcept {
-    qnethernet_hal_deinit_entropy();
-  }
-
-  // Disallow copying and moving
-  Device(const Device&) = delete;
-  Device(Device&&) = delete;
-  Device& operator=(const Device&) = delete;
-  Device& operator=(Device&&) = delete;
-};
-
-// Initialize entropy.
-Device device;
-
-}  // namespace
+    return true;
+  }();
+  (void)initialized;
+}
 
 random_device::random_device() : random_device("default") {}
 
 random_device::random_device(const std::string& token) {
   (void)token;
+  ensureInitialized();
 }
 
 double random_device::entropy() const noexcept {
