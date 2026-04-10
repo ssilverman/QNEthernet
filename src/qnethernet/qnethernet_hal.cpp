@@ -429,7 +429,7 @@ void qnethernet_hal_restore_interrupts(uint32_t state) {
 extern "C" {
 
 #if !defined(TEENSYDUINO)
-static const uint8_t kDefaultMACAddress[ETH_HWADDR_LEN] = {
+static const uint8_t kDefaultMACAddress[ETH_HWADDR_LEN]{
     QNETHERNET_DEFAULT_MAC_ADDRESS,
 };
 #endif  // !defined(TEENSYDUINO)

@@ -24,15 +24,15 @@
 // --------------------------------------------------------------------------
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT && QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
-static const uint8_t kBroadcastMAC[ETH_HWADDR_LEN] = {0xff, 0xff, 0xff,
-                                                      0xff, 0xff, 0xff};
+static const uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{0xff, 0xff, 0xff,
+                                                   0xff, 0xff, 0xff};
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT && QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
 // Current MAC address.
 static uint8_t s_mac[ETH_HWADDR_LEN];
 
 // netif state
-static struct netif s_netif = { .name = {'e', 'n'}, .num = 0 };
+static struct netif s_netif{ .name = {'e', 'n'}, .num = 0 };
 static bool s_isNetifAdded  = false;
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
@@ -325,7 +325,7 @@ static bool enet_join_notleave_group(const ip4_addr_t* const group,
   }
 
   // Multicast MAC address.
-  static uint8_t multicastMAC[ETH_HWADDR_LEN] = {
+  static uint8_t multicastMAC[ETH_HWADDR_LEN]{
       LL_IP4_MULTICAST_ADDR_0,
       LL_IP4_MULTICAST_ADDR_1,
       LL_IP4_MULTICAST_ADDR_2,
