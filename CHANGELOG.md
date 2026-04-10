@@ -32,6 +32,8 @@ and this project adheres to
 * Fixed Teensy 4.1 driver to clear the MAC address hash-collision bookkeeping
   when the driver is uninitialized.
 * Fixed TRNG (entropy) access for lower operating frequencies, on Teensy 4.
+* Fixed to add some `errno` assignments and update some related comments
+  and docs.
 
 ## [0.35.0]
 

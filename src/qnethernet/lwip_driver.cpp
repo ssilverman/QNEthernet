@@ -174,6 +174,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                         const netif_ext_callback_fn callback,
                         struct DriverCapabilities* const dc) {
   if (!driver_init()) {
+    errno = ENODEV;
     return false;
   }
 
@@ -214,6 +215,7 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     netif_add_ext_callback(&netif_callback, callback);
     if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
       netif_remove_ext_callback(&netif_callback);
+      errno = ENETDOWN;
       return false;
     }
     netif_set_default(&s_netif);

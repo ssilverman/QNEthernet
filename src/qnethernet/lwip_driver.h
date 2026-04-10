@@ -328,6 +328,8 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // use the system MAC address and 'mac' will be ignored. This also fills in the
 // driver capabilities struct.
 //
+// If this returns false then errno will be set to something appropriate.
+//
 // This may be called more than once, but if the MAC address has changed then
 // the interface is first removed and then re-added.
 //

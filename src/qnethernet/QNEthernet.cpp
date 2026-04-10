@@ -283,6 +283,7 @@ bool EthernetClass::start() {
   driver_set_chip_select_pin(chipSelectPin_);
 
   if (!driver_has_hardware()) {
+    errno = ENODEV;
     return false;
   }
 

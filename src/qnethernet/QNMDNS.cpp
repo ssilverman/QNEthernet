@@ -79,8 +79,7 @@ static bool s_netifAdded = false;
 FLASHMEM MDNSClass::~MDNSClass() noexcept {
   int lastErrno = errno;
   end();
-  errno = lastErrno;  // Because end() may have set it via
-                      // ConnectionManager::stopListening()
+  errno = lastErrno;  // Because end() may have set it
 }
 
 bool MDNSClass::begin(const char* const hostname) {
@@ -232,6 +231,7 @@ bool MDNSClass::removeService(const char* const name, const char* const type,
                               const char* protocol, const uint16_t port) {
   if (!s_netifAdded) {
     // Return false for no netif
+    errno = ENOTCONN;
     return false;
   }
 
@@ -243,6 +243,7 @@ bool MDNSClass::removeService(const char* const name, const char* const type,
   // Find a matching service
   const auto found = findService(name, type, protocol, port);
   if (!found.has_value) {
+    errno = ENXIO;
     return false;
   }
   if (found.value < maxServices()) {

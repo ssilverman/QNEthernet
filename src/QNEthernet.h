@@ -247,8 +247,8 @@ class EthernetClass final {
   // Manually sets the link state. This is useful when using the loopback
   // feature. Network operations will usually fail unless there's a link.
   //
-  // If the network is not enabled then this will return false immediately and
-  // errno will be set to ENETDOWN.
+  // If the network is not enabled then this will return immediately and errno
+  // will be set to ENETDOWN.
   void setLinkState(bool flag) const;
 
   // Returns information about the link. This is only valid if the link is up
