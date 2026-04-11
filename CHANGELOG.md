@@ -15,6 +15,7 @@ and this project adheres to
 * Added `elapsedTime` operators that use a count.
 * Added a `settimeofday()` implementation in the HAL for Teensy, gated on the
   new `QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY` configuration macro.
+* Added `qnethernet_hal_entropy_available()` function to the HAL.
 
 ### Changed
 * Enabled raw frame support and loopback by default.

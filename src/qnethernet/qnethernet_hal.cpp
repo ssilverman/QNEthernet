@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <cstring>
 #include <random>
+#include <type_traits>
 
 #include <Arduino.h>
 #include <Print.h>
@@ -278,6 +279,9 @@ ATTRIBUTE_WEAK void qnethernet_hal_deinit_entropy();
 // Estimates the number of bits of entropy.
 ATTRIBUTE_WEAK double qnethernet_hal_estimate_entropy();
 
+// Available entropy without having to generate more.
+ATTRIBUTE_WEAK size_t qnethernet_hal_entropy_available();
+
 // Gets 32-bits of entropy for LWIP_RAND() and random_device.
 ATTRIBUTE_WEAK uint32_t qnethernet_hal_entropy();
 
@@ -301,6 +305,10 @@ void qnethernet_hal_deinit_entropy() {
 
 double qnethernet_hal_estimate_entropy() {
   return 32.0;
+}
+
+size_t qnethernet_hal_entropy_available() {
+  return ::trng_available();
 }
 
 uint32_t qnethernet_hal_entropy() {
@@ -335,6 +343,10 @@ double qnethernet_hal_estimate_entropy() {
   return 32.0;
 }
 
+size_t qnethernet_hal_entropy_available() {
+  return Entropy.available();
+}
+
 uint32_t qnethernet_hal_entropy() {
   return Entropy.random();
 }
@@ -357,6 +369,13 @@ void qnethernet_hal_deinit_entropy() {
 
 double qnethernet_hal_estimate_entropy() {
   return 0.0;
+}
+
+size_t qnethernet_hal_entropy_available() {
+  using T = std::remove_reference<decltype(urbg_instance())>::type::result_type;
+  return (sizeof(T) >= sizeof(size_t))
+             ? std::numeric_limits<size_t>::max()
+             : static_cast<size_t>(std::numeric_limits<T>::max());
 }
 
 uint32_t qnethernet_hal_entropy() {
