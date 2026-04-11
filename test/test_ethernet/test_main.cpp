@@ -123,12 +123,11 @@ static void test_version() {
 
 // Tests that there's entropy.
 static void test_entropy() {
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__) && \
-    !QNETHERNET_USE_ENTROPY_LIB
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   uint32_t r1 = LWIP_RAND();
   uint32_t r2 = LWIP_RAND();
   TEST_ASSERT_FALSE_MESSAGE((r1 == 568509518) && (r2 == 2577880531), "No entropy");
-#endif  // TEENSYDUINO && __IMXRT1062__ && !QNETHERNET_USE_ENTROPY_LIB
+#endif  // TEENSYDUINO && __IMXRT1062__
 }
 
 // Tests using the built-in MAC address.
