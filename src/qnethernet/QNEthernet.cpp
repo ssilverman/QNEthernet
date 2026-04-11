@@ -120,6 +120,12 @@ void EthernetClass::netifEventFunc(
   }
 }
 
+extern "C" void qnethernet_hal_init_entropy();
+
+FLASHMEM EthernetClass::EthernetClass() {
+  qnethernet_hal_init_entropy();
+}
+
 FLASHMEM EthernetClass::~EthernetClass() noexcept {
   end();
 }
