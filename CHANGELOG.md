@@ -16,6 +16,8 @@ and this project adheres to
 * Added a `settimeofday()` implementation in the HAL for Teensy, gated on the
   new `QNETHERNET_PROVIDE_TEENSY_SETTIMEOFDAY` configuration macro.
 * Added `qnethernet_hal_entropy_available()` function to the HAL.
+* Added `operator(buf, size)` and `available()` to
+  `qindesign::security::random_device`.
 
 ### Changed
 * Enabled raw frame support and loopback by default.

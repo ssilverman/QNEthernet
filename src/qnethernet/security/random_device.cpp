@@ -18,7 +18,9 @@ extern "C" {
 void qnethernet_hal_init_entropy();
 void qnethernet_hal_deinit_entropy();
 double qnethernet_hal_estimate_entropy();
+size_t qnethernet_hal_entropy_available();
 uint32_t qnethernet_hal_entropy();
+size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 }  // extern "C"
 
 static void ensureInitialized() {
@@ -43,6 +45,14 @@ double random_device::entropy() const noexcept {
 
 random_device::result_type random_device::operator()() {
   return static_cast<result_type>(qnethernet_hal_entropy());
+}
+
+size_t random_device::operator()(uint8_t* const buf, const size_t size) {
+  return qnethernet_hal_fill_entropy(buf, size);
+}
+
+size_t random_device::available() {
+  return qnethernet_hal_entropy_available();
 }
 
 }  // namespace security

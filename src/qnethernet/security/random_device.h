@@ -14,6 +14,8 @@
 #pragma once
 
 // C++ includes
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <string>
 
@@ -60,6 +62,19 @@ class random_device {
   double entropy() const noexcept;
 
   result_type operator()();
+
+  // ------------------------------------------------------------------------
+  // Methods not part of the std::random_device API
+  // ------------------------------------------------------------------------
+
+  // Fills a buffer with random values. This will return the number of bytes
+  // actually filled. If the returned value is less than the requested size then
+  // there was an entropy generation error.
+  size_t operator()(uint8_t* const buf, const size_t size);
+
+  // Returns the number of entropy bytes available without having to
+  // generate more.
+  size_t available();
 };
 
 }  // namespace security
