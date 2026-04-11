@@ -31,8 +31,18 @@ static const uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{0xff, 0xff, 0xff,
 // Current MAC address.
 static uint8_t s_mac[ETH_HWADDR_LEN];
 
+// Creates a netif, getting around some platforms' missing-field-initializers
+// warnings if only two designated fields are initialized.
+static struct netif create_netif() {
+  struct netif nif{};
+  nif.name[0] = 'e';
+  nif.name[1] = 'n';
+  nif.num = 0;
+  return nif;
+}
+
 // netif state
-static struct netif s_netif{ .name = {'e', 'n'}, .num = 0 };
+static struct netif s_netif = create_netif();
 static bool s_isNetifAdded  = false;
 NETIF_DECLARE_EXT_CALLBACK(netif_callback)/*;*/
 
