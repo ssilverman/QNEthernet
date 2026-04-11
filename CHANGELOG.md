@@ -22,6 +22,8 @@ and this project adheres to
   function exists.
 * Changed entropy functions to set `errno` to `EIO` instead of `EAGAIN` on
   entropy generation failure.
+* Made the HAL's `qnethernet_hal_deinit_entropy()` and
+  `qnethernet_hal_estimate entropy()` weak.
 
 ### Removed
 * Removed `qindesign::security::RandomDevice` in favour of the
