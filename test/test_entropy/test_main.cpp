@@ -6,6 +6,8 @@
 
 // C++ includes
 #include <cerrno>
+#include <climits>
+#include <cstdint>
 #include <limits>
 #include <string>
 
@@ -84,9 +86,11 @@ static void test_random_device() {
 
   TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::random_device::min(),
                             "Expected full-range minimum");
-  TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<uint32_t>::max(),
+  TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<unsigned int>::max(),
                             qindesign::security::random_device::max(),
                             "Expected full-range maximum");
+  TEST_ASSERT_EQUAL_MESSAGE(sizeof(unsigned int) * CHAR_BIT, rd.entropy(),
+                            "Expected full entropy");
 
   errno = 0;
   for (int i = 0; i < (1 << 10); ++i) {
