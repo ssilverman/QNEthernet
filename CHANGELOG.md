@@ -39,6 +39,7 @@ and this project adheres to
 * Fixed TRNG (entropy) access for lower operating frequencies, on Teensy 4.
 * Fixed to add some `errno` assignments and update some related comments
   and docs.
+* Fixed TRNG initialization to use the correct macros.
 
 ## [0.35.0]
 
