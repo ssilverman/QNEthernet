@@ -165,8 +165,6 @@ Print* volatile stderrPrint = nullptr;
 
 #endif  // QNETHERNET_CUSTOM_WRITE
 
-extern "C" {
-
 // Gets the Print* for the given file descriptor.
 ATTRIBUTE_NODISCARD
 static inline Print* getPrint(const int file) {
@@ -188,6 +186,8 @@ static inline Print* getPrint(const int file) {
       return reinterpret_cast<Print*>(file);
   }
 }
+
+extern "C" {
 
 #if QNETHERNET_CUSTOM_WRITE
 
@@ -451,13 +451,13 @@ void qnethernet_hal_restore_interrupts(uint32_t state) {
 //  MAC Address
 // --------------------------------------------------------------------------
 
-extern "C" {
-
 #if !defined(TEENSYDUINO)
 static const uint8_t kDefaultMACAddress[ETH_HWADDR_LEN]{
     QNETHERNET_DEFAULT_MAC_ADDRESS,
 };
 #endif  // !defined(TEENSYDUINO)
+
+extern "C" {
 
 // Gets the system MAC address. This will either be some platform-specific value
 // or a predefined value.
