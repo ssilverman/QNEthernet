@@ -3,6 +3,7 @@
 
 // [/// Under Repair ///]
 // NOTE: This example doesn't currently behave well.
+//       I could use some help fixing it; my gumption for this is low.
 // [/// Under Repair ///]
 //
 // IPerfServer implements an iPerf server for TCP traffic.
