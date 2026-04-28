@@ -268,7 +268,7 @@ The `Ethernet` object is the main Ethernet interface.
   local IP and subnet mask. If Ethernet is not initialized then this will return
   255.255.255.255.
 * `dnsServerIP(index)`: Gets a specific DNS server IP address. This returns
-  `INADDR_NONE` if the index not in the exclusive range,
+  `INADDR_NONE` if the index is not in the exclusive range,
   [0, `DNSClient::maxServers()`).
 * `driverCapabilities()`: Returns a `DriverCapabilities` struct containing the
   driver's set of capabilities.\
@@ -288,7 +288,7 @@ The `Ethernet` object is the main Ethernet interface.
 * `isDHCPActive()`: Returns whether DHCP is active.
 * `isDHCPEnabled()`: Returns whether the DHCP client is enabled. This is valid
   whether Ethernet has been started or not.
-* `linkInfo()` : Returns a `LinkInfo` struct containing information about
+* `linkInfo()`: Returns a `LinkInfo` struct containing information about
   the link.
 * `linkState()`: Returns a `bool` indicating the link state. This returns `true`
   if the link is on and `false` otherwise. This may be managed manually
@@ -814,13 +814,14 @@ Since the underlying lwIP stack depends on the link being up in order to operate
 properly, a project will need to manage the link state itself for those drivers.
 The suggestion is this:
 1. Start Ethernet as you normally would.
-2. If successful, check `Ethernet.driverCapabilities().hasLinkState`.
+2. If successful, check `Ethernet.driverCapabilities().isLinkStateDetectable`.
 3. If `false`, then call `Ethernet.setLinkState(true)`.
 
 Code example:
 
 ```c++
-if (ethernet_is_started && !Ethernet.driverCapabilities().hasLinkState) {
+if (ethernet_is_started &&
+    !Ethernet.driverCapabilities().isLinkStateDetectable) {
   Ethernet.setLinkState(true);
 }
 ```
