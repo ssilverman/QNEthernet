@@ -67,6 +67,7 @@ setGatewayIP	KEYWORD2	Ethernet.setGatewayIP
 setDNSServerIP	KEYWORD2	Ethernet.setDnsServerIP
 setDnsServerIP	KEYWORD2	Ethernet.setDnsServerIP
 hardwareStatus	KEYWORD2	Ethernet.hardwareStatus
+init	KEYWORD2	Ethernet.init
 joinGroup	KEYWORD2
 leaveGroup	KEYWORD2
 setMACAddressAllowed	KEYWORD2
