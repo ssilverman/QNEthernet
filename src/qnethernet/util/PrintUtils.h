@@ -111,7 +111,7 @@ class StdioPrint : public PrintBase {
   explicit StdioPrint(std::FILE* stream) : stream_(stream) {}
   virtual ~StdioPrint() = default;
 
-  // See: https://en.cppreference.com/w/cpp/language/rule_of_three
+  // See: https://www.cppreference.com/cpp/language/rule_of_three
   StdioPrint(const StdioPrint&) = delete;
   StdioPrint& operator=(const StdioPrint&) = delete;
 

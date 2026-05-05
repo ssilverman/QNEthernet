@@ -85,7 +85,7 @@ class DNSClient final {
   ~DNSClient() = delete;
 
   // Disallow copying and moving
-  // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
+  // See: https://www.cppreference.com/cpp/language/rule_of_three
   DNSClient(const DNSClient&) = delete;
   DNSClient(DNSClient&&) = delete;
   DNSClient& operator=(const DNSClient&) = delete;

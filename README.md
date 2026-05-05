@@ -736,8 +736,8 @@ bool isConnected() {
 ```
 
 See also:
-1. [The safe bool problem](https://en.cppreference.com/w/cpp/language/implicit_conversion#The_safe_bool_problem)
-2. [`explicit` specifier](https://en.cppreference.com/w/cpp/language/explicit)
+1. [The safe bool problem](https://www.cppreference.com/cpp/language/implicit_conversion#The_safe_bool_problem)
+2. [`explicit` specifier](https://www.cppreference.com/cpp/language/explicit)
 
 ### Use of `errno`
 
@@ -1806,7 +1806,7 @@ instance of `std::minstd_rand` will be used.
 ### The `random_device` _UniformRandomBitGenerator_
 
 Also provided is a class called `random_device` that implements the
-[_UniformRandomBitGenerator_](https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator)
+[_UniformRandomBitGenerator_](https://www.cppreference.com/cpp/named_req/UniformRandomBitGenerator)
 C++ named requirement and also mimics `std::random_device`. It's in the
 `qindesign::security` namespace.
 
@@ -1814,7 +1814,7 @@ This object works with both the internal entropy functions and with the
 _Entropy_ library.
 
 This is the preferred way to acquire entropy. It is meant to be used with a
-[Random number distribution](https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions).
+[Random number distribution](https://www.cppreference.com/cpp/numeric/random#Random_number_distributions).
 
 ## Interference mitigation
 
@@ -2092,7 +2092,7 @@ The `constexpr double wraparoundPeriod()` function returns the wraparound period
 in seconds.
 
 Both of these clocks satisfy the
-[Clock](https://www.cppreference.com/w/cpp/named_req/Clock.html)
+[Clock](https://www.cppreference.com/cpp/named_req/Clock)
 C++ named requirement
 
 #### `steady_clock_ms`

@@ -6,7 +6,7 @@
 // statically-initialized objects from other translation units.
 //
 // See:
-// * https://en.cppreference.com/w/cpp/language/siof
+// * https://www.cppreference.com/cpp/language/siof
 // * https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Construct_On_First_Use
 // * https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Nifty_Counter
 // This file is part of the QNEthernet library.
@@ -42,7 +42,7 @@ struct StaticInit {
   }
 
   // Rule of five
-  // See: https://en.cppreference.com/w/cpp/language/rule_of_three.html
+  // See: https://www.cppreference.com/cpp/language/rule_of_three
   StaticInit(const StaticInit&) = delete;
   StaticInit(StaticInit&&) = delete;
   StaticInit& operator=(const StaticInit&) = delete;

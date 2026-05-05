@@ -5,9 +5,9 @@
 // and engines using the included entropy functions.
 //
 // See also:
-// * https://en.cppreference.com/w/cpp/numeric/random#Random_number_distributions
-// * https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator
-// * https://en.cppreference.com/w/cpp/named_req/RandomNumberEngine
+// * https://www.cppreference.com/cpp/numeric/random#Random_number_distributions
+// * https://www.cppreference.com/cpp/named_req/UniformRandomBitGenerator
+// * https://www.cppreference.com/cpp/named_req/RandomNumberEngine
 //
 // This file is part of the QNEthernet library.
 

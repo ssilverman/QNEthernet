@@ -6,8 +6,8 @@
 // mimics std::random_device.
 //
 // See:
-// * https://www.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator.html
-// * https://en.cppreference.com/w/cpp/numeric/random/random_device.html
+// * https://www.cppreference.com/cpp/named_req/UniformRandomBitGenerator
+// * https://www.cppreference.com/cpp/numeric/random/random_device
 //
 // This file is part of the QNEthernet library.
 
@@ -27,8 +27,8 @@ namespace security {
 // mimics std::random_device.
 //
 // See:
-// * https://www.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator.html
-// * https://en.cppreference.com/w/cpp/numeric/random/random_device.html
+// * https://www.cppreference.com/cpp/named_req/UniformRandomBitGenerator
+// * https://www.cppreference.com/cpp/numeric/random/random_device
 class random_device {
  public:
 #if (UINT_MAX != UINT32_MAX)
@@ -62,7 +62,7 @@ class random_device {
   // generator. For a deterministic generator, this will return zero.
   //
   // See:
-  // https://en.cppreference.com/w/cpp/numeric/random/random_device/entropy.html
+  // https://www.cppreference.com/cpp/numeric/random/random_device/entropy
   double entropy() const noexcept;
 
   // Returns a random value from the hardware entropy generator. If entropy

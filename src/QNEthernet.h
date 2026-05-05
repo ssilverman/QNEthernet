@@ -491,7 +491,7 @@ class EthernetClass final {
   ~EthernetClass() noexcept;
 
   // EthernetClass is neither copyable nor movable
-  // See also: https://en.cppreference.com/w/cpp/language/rule_of_three
+  // See also: https://www.cppreference.com/cpp/language/rule_of_three
   EthernetClass(const EthernetClass&) = delete;
   EthernetClass(EthernetClass&&) = delete;
   EthernetClass& operator=(const EthernetClass&) = delete;

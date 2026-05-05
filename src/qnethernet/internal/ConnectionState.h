@@ -46,7 +46,7 @@ struct ConnectionState final {
     }
   }
 
-  // See: https://en.cppreference.com/w/cpp/language/rule_of_three
+  // See: https://www.cppreference.com/cpp/language/rule_of_three
   ConnectionState(const ConnectionState&) = delete;
   ConnectionState(ConnectionState&&) = delete;
   ConnectionState& operator=(const ConnectionState&) = delete;

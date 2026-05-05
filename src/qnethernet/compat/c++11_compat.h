@@ -16,7 +16,7 @@ namespace compat {
 // Check for definitions in case c11_compat.h was included before this one
 
 // Unknown attributes are not specified to be ignored before C++17
-// See: https://en.cppreference.com/w/cpp/language/attributes.html
+// See: https://www.cppreference.com/cpp/language/attributes
 #if __cplusplus < 201703L
 #ifndef ATTRIBUTE_ALWAYS_INLINE
 #define ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))

@@ -4,7 +4,7 @@
 // chrono_clocks.h defines several Clocks for use with std::chrono.
 //
 // The clocks conform to the Clock C++ named requirement.
-// See: https://www.cppreference.com/w/cpp/named_req/Clock.html
+// See: https://www.cppreference.com/cpp/named_req/Clock
 //
 // This file is part of the QNEthernet library.
 
@@ -61,7 +61,7 @@ struct InitCaller<nullptr> {
 // differences that are smaller than that period. Note that now() calls poll().
 //
 // It conforms to the Clock C++ named requirement.
-// See: https://www.cppreference.com/w/cpp/named_req/Clock.html
+// See: https://www.cppreference.com/cpp/named_req/Clock
 //
 // Template parameters:
 // * P - Period, a std::ratio
