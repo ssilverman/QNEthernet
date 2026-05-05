@@ -25,7 +25,7 @@
 #include "qnethernet_opts.h"
 
 // Check things that are supposed to be set properly by the driver headers
-STATIC_ASSERT(MTU >= 0, "MTU must be defined and > 0");
+STATIC_ASSERT(MTU > 0, "MTU must be defined and > 0");
 STATIC_ASSERT(MAX_FRAME_LEN >= 0, "MAX_FRAME_LEN must be defined and >= 0");
 
 enum {
