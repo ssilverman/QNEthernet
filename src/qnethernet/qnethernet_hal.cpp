@@ -13,6 +13,7 @@
 #if QNETHERNET_CUSTOM_WRITE
 #include <cerrno>
 #endif  // QNETHERNET_CUSTOM_WRITE
+#include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -41,6 +42,7 @@
 #endif  // defined(TEENSYDUINO)
 
 #include "lwip/arch.h"
+#include "lwip/debug.h"
 #include "lwip/prot/ethernet.h"
 
 // --------------------------------------------------------------------------
@@ -276,8 +278,8 @@ ATTRIBUTE_WEAK void qnethernet_hal_init_entropy();
 // Uninitializes randomness.
 ATTRIBUTE_WEAK void qnethernet_hal_deinit_entropy();
 
-// Estimates the number of bits of entropy.
-ATTRIBUTE_WEAK double qnethernet_hal_estimate_entropy();
+// Estimates the number of bits of entropy, given the size of a type.
+ATTRIBUTE_WEAK double qnethernet_hal_estimate_entropy(size_t typeSize);
 
 // Available entropy without having to generate more.
 ATTRIBUTE_WEAK size_t qnethernet_hal_entropy_available();
@@ -303,8 +305,8 @@ void qnethernet_hal_deinit_entropy() {
   }
 }
 
-double qnethernet_hal_estimate_entropy() {
-  return 32.0;
+double qnethernet_hal_estimate_entropy(const size_t typeSize) {
+  return typeSize * CHAR_BIT;
 }
 
 size_t qnethernet_hal_entropy_available() {
@@ -312,7 +314,9 @@ size_t qnethernet_hal_entropy_available() {
 }
 
 uint32_t qnethernet_hal_entropy() {
-  return ::entropy_random();
+  uint32_t r;
+  LWIP_ASSERT("entropy generation error", ::entropy_random(&r));
+  return r;
 }
 
 size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
@@ -339,8 +343,8 @@ void qnethernet_hal_init_entropy() {
 void qnethernet_hal_deinit_entropy() {
 }
 
-double qnethernet_hal_estimate_entropy() {
-  return 32.0;
+double qnethernet_hal_estimate_entropy(const size_t typeSize) {
+  return typeSize * CHAR_BIT;
 }
 
 size_t qnethernet_hal_entropy_available() {
@@ -367,7 +371,8 @@ void qnethernet_hal_init_entropy() {
 void qnethernet_hal_deinit_entropy() {
 }
 
-double qnethernet_hal_estimate_entropy() {
+double qnethernet_hal_estimate_entropy(const size_t typeSize) {
+  (void)typeSize;
   return 0.0;
 }
 

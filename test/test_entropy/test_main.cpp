@@ -7,9 +7,9 @@
 // C++ includes
 #include <cerrno>
 #include <climits>
-#include <cstdint>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include <Arduino.h>
 #include <qnethernet/security/entropy.h>
@@ -57,30 +57,37 @@ static void test_data() {
 
 // Tests entropy_random().
 static void test_random() {
+  uint32_t r;
   errno = 0;
-  (void)entropy_random();
-  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+  TEST_ASSERT_TRUE_MESSAGE(entropy_random(&r), "Expected no error");
+  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
 }
 
 // Tests entropy_random_range(range).
 static void test_random_range() {
+  uint32_t r;
+
   errno = 0;
-  (void)entropy_random_range(0);
+  TEST_ASSERT_FALSE_MESSAGE(entropy_random_range(0, &r), "Expected error");
   TEST_ASSERT_EQUAL_MESSAGE(EDOM, errno, "Expected EDOM");
+
   errno = 0;
-  TEST_ASSERT_EQUAL_MESSAGE(0, entropy_random_range(1), "Expected zero");
-  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
+  TEST_ASSERT_TRUE_MESSAGE(entropy_random_range(1, &r), "Expected no error");
+  TEST_ASSERT_EQUAL_MESSAGE(0, r, "Expected zero");
+  TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
+
   for (int i = 0; i < (1 << 10); ++i) {
-    uint32_t r = entropy_random_range(10);
-    TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no error");
-    std::string msg{"Expected value < 10: iteration "};
-    msg += std::to_string(i);
-    TEST_ASSERT_LESS_THAN_UINT32_MESSAGE(10, r, msg.c_str());
+    TEST_ASSERT_TRUE_MESSAGE(entropy_random_range(10, &r), "Expected no error");
+    TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
+    if (r >= 10) {
+      const auto msg = "Expected value < 10: iteration " + std::to_string(i);
+      TEST_FAIL_MESSAGE(msg.c_str());
+    }
   }
 }
 #endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
 
-// Tests entropy_random().
+// Tests random_device.
 static void test_random_device() {
   qindesign::security::random_device rd;
 

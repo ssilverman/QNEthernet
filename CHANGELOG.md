@@ -27,6 +27,7 @@ and this project adheres to
   entropy generation failure.
 * Made the HAL's `qnethernet_hal_deinit_entropy()` and
   `qnethernet_hal_estimate entropy()` weak.
+* Improved entropy and `qindesign::security::random_device` APIs.
 
 ### Removed
 * Removed `qindesign::security::RandomDevice` in favour of the

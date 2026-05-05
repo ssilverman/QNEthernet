@@ -14,6 +14,7 @@
 #pragma once
 
 // C++ includes
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -30,6 +31,9 @@ namespace security {
 // * https://en.cppreference.com/w/cpp/numeric/random/random_device.html
 class random_device {
  public:
+#if (UINT_MAX != UINT32_MAX)
+#warning "unsigned int size does not match uint32_t size"
+#endif
   using result_type = unsigned int;
 
   // Calls random_device("default").
@@ -61,16 +65,18 @@ class random_device {
   // https://en.cppreference.com/w/cpp/numeric/random/random_device/entropy.html
   double entropy() const noexcept;
 
+  // Returns a random value from the hardware entropy generator. If entropy
+  // generation fails, this will throw a std::runtime_error.
   result_type operator()();
 
   // ------------------------------------------------------------------------
   // Methods not part of the std::random_device API
   // ------------------------------------------------------------------------
 
-  // Fills a buffer with random values. This will return the number of bytes
-  // actually filled. If the returned value is less than the requested size then
-  // there was an entropy generation error.
-  size_t operator()(uint8_t* const buf, const size_t size);
+  // Tries to read random data into the given buffer. If this reads less than
+  // the number of requested bytes then there was an entropy generation error
+  // and a std::runtime_error is thrown.
+  void operator()(void* buf, size_t size);
 
   // Returns the number of entropy bytes available without having to
   // generate more.
