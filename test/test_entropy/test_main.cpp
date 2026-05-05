@@ -5,16 +5,48 @@
 // This file is part of the QNEthernet library.
 
 // C++ includes
+#include <array>
 #include <cerrno>
 #include <climits>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
 #include <limits>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <Arduino.h>
+#undef F  /* Undefine some Arduino nonsense */
+#include <boost/math/distributions/chi_squared.hpp>
 #include <qnethernet/security/entropy.h>
 #include <qnethernet/security/random_device.h>
 #include <unity.h>
+
+#include "util/OnlineSerialCorrelation.h"
+
+// --------------------------------------------------------------------------
+//  Utilities
+// --------------------------------------------------------------------------
+
+// Formats into a char vector and returns the vector. The vector will always be
+// terminated with a NUL. This returns an empty string if something goes wrong
+// with the print function.
+template <typename... Args>
+static std::vector<char> format(const char* format, Args... args) {
+  std::vector<char> out;
+
+  int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
+  if (size <= 1) {
+    out.resize(1, 0);
+  } else {
+    out.resize(size);
+    TEST_ASSERT_EQUAL_MESSAGE(size - 1,
+                              std::snprintf(out.data(), size, format, args...),
+                              "Expected complete string fill");
+  }
+  return out;
+}
 
 // --------------------------------------------------------------------------
 //  Main Program
@@ -106,6 +138,108 @@ static void test_random_device() {
   }
 }
 
+#if TEENSYDUINO && __IMXRT1062__
+
+// Creates an array of online serial correlation objects having
+// consecutive lags.
+template <size_t... I>
+static constexpr auto make_corrs(std::index_sequence<I...>) {
+  return std::array{util::OnlineSerialCorrelation<uint8_t>{I + 1}...};
+}
+
+// Tests the quality of the entropy by performing some basic tests.
+// These include:
+// 1. Entropy > 7.9
+// 2. Mean between 127 and 128
+// 3. Chi-squared p-value > 0.10
+// 4. Various lagged autocorrelations are all < 0.2
+//
+// See:
+// * https://www.fourmilab.ch/random/
+// * https://github.com/Fourmilab/ent_random_sequence_tester
+static void test_randomness() {
+  static constexpr size_t kBufSize = 64;
+  static constexpr size_t kFillCount = 2*1024;  // 64-byte fills
+  static constexpr size_t kLagCount = 5;
+
+  // Progress bar in increments of 10%.
+  static constexpr char kBar[]{"==========          "};
+
+  qindesign::security::random_device rd;
+  uint8_t buf[kBufSize];
+  uint32_t counts[256]{0};
+  uint32_t totalCount = 0;
+  double p[256];  // Probabilities
+
+  // Use different lags
+  auto corrs = make_corrs(std::make_index_sequence<kLagCount>());
+
+  TEST_MESSAGE(
+      format("Starting randomness test: %zu bytes", kFillCount * kBufSize)
+          .data());
+
+  TEST_MESSAGE(format("[%s]  0%%", kBar + 10).data());
+  for (size_t i = 0; i < kFillCount; ++i) {
+    for (size_t j = 1; j <= 9; ++j) {
+      if (i == j * kFillCount / 10) {
+        TEST_MESSAGE(format("[%.*s] %zu%%", 10, kBar + 10 - j, j*10).data());
+      }
+    }
+
+    rd(buf, kBufSize);  // Shouldn't throw
+    for (size_t j = 0; j < kBufSize; ++j) {
+      ++counts[buf[j]];
+      ++totalCount;
+
+      for (auto& corr : corrs) {
+        corr.sample(buf[j]);
+      }
+    }
+  }
+  TEST_MESSAGE(format("[%.*s]100%%", 10, kBar).data());
+
+  const double expectedCount = totalCount / 256.0;
+  double chiSq   = 0.0;
+  double sum     = 0.0;
+  double entropy = 0.0;
+
+  for (size_t i = 0; i < 256; i++) {
+    const double a = counts[i] - expectedCount;
+
+    p[i] = static_cast<double>(counts[i]) / static_cast<double>(totalCount);
+    if (p[i] != 0.0) {
+      entropy += p[i] * -std::log2(p[i]);
+    }
+
+    chiSq += (a * a) / expectedCount;
+    sum += static_cast<double>(i) * counts[i];
+  }
+
+  const double mean = sum / totalCount;
+
+  static const boost::math::chi_squared_distribution<double> dist(255);
+  double pVal = 1.0 - boost::math::cdf(dist, chiSq);
+
+  TEST_MESSAGE(format("entropy = %f", entropy).data());
+  TEST_MESSAGE(format("mean    = %f", mean).data());
+  TEST_MESSAGE(format("chi-sq  = %f", chiSq).data());
+  TEST_MESSAGE(format("p-val   = %f", pVal).data());
+  for (const auto& corr : corrs) {
+    TEST_MESSAGE(
+        format("corr_%zu  = %+f", corr.lag(), corr.correlation()).data());
+  }
+
+  // Tests
+  TEST_ASSERT_GREATER_THAN_DOUBLE(7.9, entropy);
+  TEST_ASSERT_DOUBLE_WITHIN(0.75, 127.5, mean);
+  TEST_ASSERT_GREATER_THAN_DOUBLE(0.10, pVal);
+  for (const auto& corr : corrs) {
+    TEST_ASSERT_LESS_THAN_DOUBLE(0.2, std::abs(corr.correlation()));
+  }
+}
+
+#endif  // TEENSYDUINO && __IMXRT1062__
+
 // Main program setup.
 void setup() {
   Serial.begin(115200);
@@ -134,6 +268,9 @@ void setup() {
   RUN_TEST(test_random_range);
 #endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   RUN_TEST(test_random_device);
+#if TEENSYDUINO && __IMXRT1062__
+  RUN_TEST(test_randomness);
+#endif  // TEENSYDUINO && __IMXRT1062__
 #if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   ::trng_deinit();
   RUN_TEST(test_inactive);
