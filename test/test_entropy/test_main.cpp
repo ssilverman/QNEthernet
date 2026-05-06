@@ -173,6 +173,7 @@ static void test_randomness() {
   static constexpr size_t kBufSize = 64;
   static constexpr size_t kFillCount = 2*1024;  // 64-byte fills
   static constexpr size_t kLagCount = 5;
+  static constexpr size_t kTotalCount = kFillCount * kBufSize;
 
   // Progress bar in increments of 10%.
   static constexpr char kBar[]{"==========          "};
@@ -187,10 +188,10 @@ static void test_randomness() {
   auto corrs = make_corrs(std::make_index_sequence<kLagCount>());
 
   TEST_MESSAGE(
-      format("Starting randomness test: %zu bytes", kFillCount * kBufSize)
-          .data());
+      format("Starting randomness test: %zu bytes", kTotalCount).data());
 
   TEST_MESSAGE(format("[%s]  0%%", kBar + 10).data());
+  uint32_t t = millis();
   for (size_t i = 0; i < kFillCount; ++i) {
     for (size_t j = 1; j <= 9; ++j) {
       if (i == j * kFillCount / 10) {
@@ -208,7 +209,12 @@ static void test_randomness() {
       }
     }
   }
+  t = millis() - t;
   TEST_MESSAGE(format("[%.*s]100%%", 10, kBar).data());
+  TEST_MESSAGE(
+      format("Generated %zu bytes in %" PRIu32 " ms (%f bps)", totalCount, t,
+             static_cast<double>(totalCount) * 1000.0 / static_cast<double>(t))
+          .data());
 
   const double expectedCount = totalCount / 256.0;
   double chiSq   = 0.0;
