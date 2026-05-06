@@ -21,7 +21,7 @@
 #include <QNEthernet.h>
 
 // This class mimics std::random_device.
-using random_device = qindesign::security::random_device;
+using random_device = qindesign::entropy::random_device;
 
 // -------------------------------------------------------------------
 //  Program State

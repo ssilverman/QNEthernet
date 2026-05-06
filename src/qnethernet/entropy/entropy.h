@@ -16,7 +16,7 @@
 #include <cstdint>
 
 namespace qindesign {
-namespace security {
+namespace entropy {
 
 // Initializes the TRNG. This always starts by enabling the clock.
 void trng_init();
@@ -55,7 +55,7 @@ bool entropy_random(uint32_t* out);
 // * https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
 bool entropy_random_range(uint32_t range, uint32_t* out);
 
-}  // namespace security
+}  // namespace entropy
 }  // namespace qindesign
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB

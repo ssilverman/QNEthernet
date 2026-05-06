@@ -25,9 +25,9 @@
 #include "qnethernet/QNMDNS.h"
 #include "qnethernet/StaticInit.h"
 #include "qnethernet/compat/c++11_compat.h"
+#include "qnethernet/entropy/random_device.h"
 #include "qnethernet/internal/optional.h"
 #include "qnethernet/lwip_driver.h"
-#include "qnethernet/security/random_device.h"
 #include "qnethernet/util/PrintUtils.h"
 #include "qnethernet_opts.h"
 

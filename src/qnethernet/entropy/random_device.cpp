@@ -4,7 +4,7 @@
 // random_device.cpp implements random_device.
 // This file is part of the QNEthernet library.
 
-#include "qnethernet/security/random_device.h"
+#include "qnethernet/entropy/random_device.h"
 
 // C++ includes
 #include <stdexcept>
@@ -12,7 +12,7 @@
 #include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
-namespace security {
+namespace entropy {
 
 extern "C" {
 void qnethernet_hal_init_entropy();
@@ -63,5 +63,5 @@ size_t random_device::available() {
   return qnethernet_hal_entropy_available();
 }
 
-}  // namespace security
+}  // namespace entropy
 }  // namespace qindesign

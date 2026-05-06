@@ -258,7 +258,7 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
     !QNETHERNET_USE_ENTROPY_LIB
 
 #define WHICH_ENTROPY_TYPE 1  // Teensy 4
-#include "qnethernet/security/entropy.h"
+#include "qnethernet/entropy/entropy.h"
 
 #elif defined(__has_include)
 // https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
@@ -294,14 +294,14 @@ ATTRIBUTE_WEAK size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 #if WHICH_ENTROPY_TYPE == 1
 
 void qnethernet_hal_init_entropy() {
-  if (!::qindesign::security::trng_is_started()) {
-    ::qindesign::security::trng_init();
+  if (!::qindesign::entropy::trng_is_started()) {
+    ::qindesign::entropy::trng_init();
   }
 }
 
 void qnethernet_hal_deinit_entropy() {
-  if (::qindesign::security::trng_is_started()) {
-    ::qindesign::security::trng_deinit();
+  if (::qindesign::entropy::trng_is_started()) {
+    ::qindesign::entropy::trng_deinit();
   }
 }
 
@@ -310,18 +310,18 @@ double qnethernet_hal_estimate_entropy(const size_t typeSize) {
 }
 
 size_t qnethernet_hal_entropy_available() {
-  return ::qindesign::security::trng_available();
+  return ::qindesign::entropy::trng_available();
 }
 
 uint32_t qnethernet_hal_entropy() {
   uint32_t r;
   LWIP_ASSERT("entropy generation error",
-              ::qindesign::security::entropy_random(&r));
+              ::qindesign::entropy::entropy_random(&r));
   return r;
 }
 
 size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
-  return ::qindesign::security::trng_data(buf, size);
+  return ::qindesign::entropy::trng_data(buf, size);
 }
 
 #elif WHICH_ENTROPY_TYPE == 2

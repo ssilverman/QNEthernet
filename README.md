@@ -1796,7 +1796,7 @@ The _Entropy_ library does essentially the same things as the internal TRNG
 functions, it just requires an additional dependency. This is the reason these
 functions are provided: to remove that dependency.
 
-See the function declarations in _src/qnethernet/security/entropy.h_ if you want
+See the function declarations in _src/qnethernet/entropy/entropy.h_ if you want
 to use them yourself.
 
 If the target device isn't a Teensy 4 then the _Entropy_ library will be used,
@@ -1808,7 +1808,7 @@ instance of `std::minstd_rand` will be used.
 Also provided is a class called `random_device` that implements the
 [_UniformRandomBitGenerator_](https://www.cppreference.com/cpp/named_req/UniformRandomBitGenerator)
 C++ named requirement and also mimics `std::random_device`. It's in the
-`qindesign::security` namespace.
+`qindesign::entropy` namespace.
 
 This object works with both the internal entropy functions and with the
 _Entropy_ library.

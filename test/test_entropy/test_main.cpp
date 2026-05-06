@@ -19,8 +19,8 @@
 #include <Arduino.h>
 #undef F  /* Undefine some Arduino nonsense */
 #include <boost/math/distributions/chi_squared.hpp>
-#include <qnethernet/security/entropy.h>
-#include <qnethernet/security/random_device.h>
+#include <qnethernet/entropy/entropy.h>
+#include <qnethernet/entropy/random_device.h>
 #include <unity.h>
 
 #include "util/OnlineSerialCorrelation.h"
@@ -63,13 +63,13 @@ void tearDown() {
 #if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
 // Tests that the feature is active.
 static void test_active() {
-  TEST_ASSERT_TRUE_MESSAGE(::qindesign::security::trng_is_started(),
+  TEST_ASSERT_TRUE_MESSAGE(::qindesign::entropy::trng_is_started(),
                            "Expected started");
 }
 
 // Tests that the feature is inactive.
 static void test_inactive() {
-  TEST_ASSERT_FALSE_MESSAGE(::qindesign::security::trng_is_started(),
+  TEST_ASSERT_FALSE_MESSAGE(::qindesign::entropy::trng_is_started(),
                             "Expected not started");
 }
 
@@ -77,20 +77,20 @@ static void test_inactive() {
 static void test_available() {
   // Assume we're going to read full entropy
   delay(100);  // Give it time to collect entropy
-  TEST_ASSERT_EQUAL_MESSAGE(64, ::qindesign::security::trng_available(),
+  TEST_ASSERT_EQUAL_MESSAGE(64, ::qindesign::entropy::trng_available(),
                             "Expected full entropy");
 }
 
 // Tests data access.
 static void test_data() {
   uint8_t b[64];
-  TEST_ASSERT_EQUAL_MESSAGE(1, ::qindesign::security::trng_data(b, 1),
+  TEST_ASSERT_EQUAL_MESSAGE(1, ::qindesign::entropy::trng_data(b, 1),
                             "Expected 1-byte read");
-  TEST_ASSERT_EQUAL_MESSAGE(63, ::qindesign::security::trng_available(),
+  TEST_ASSERT_EQUAL_MESSAGE(63, ::qindesign::entropy::trng_available(),
                             "Expected full entropy");
-  TEST_ASSERT_EQUAL_MESSAGE(63, ::qindesign::security::trng_data(&b[1], 63),
+  TEST_ASSERT_EQUAL_MESSAGE(63, ::qindesign::entropy::trng_data(&b[1], 63),
                             "Expected 63-byte read");
-  TEST_ASSERT_EQUAL_MESSAGE(0, ::qindesign::security::trng_available(),
+  TEST_ASSERT_EQUAL_MESSAGE(0, ::qindesign::entropy::trng_available(),
                             "Expected empty entropy");
 }
 
@@ -98,7 +98,7 @@ static void test_data() {
 static void test_random() {
   uint32_t r;
   errno = 0;
-  TEST_ASSERT_TRUE_MESSAGE(::qindesign::security::entropy_random(&r),
+  TEST_ASSERT_TRUE_MESSAGE(::qindesign::entropy::entropy_random(&r),
                            "Expected no error");
   TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
 }
@@ -108,20 +108,19 @@ static void test_random_range() {
   uint32_t r;
 
   errno = 0;
-  TEST_ASSERT_FALSE_MESSAGE(::qindesign::security::entropy_random_range(0, &r),
+  TEST_ASSERT_FALSE_MESSAGE(::qindesign::entropy::entropy_random_range(0, &r),
                             "Expected error");
   TEST_ASSERT_EQUAL_MESSAGE(EDOM, errno, "Expected EDOM");
 
   errno = 0;
-  TEST_ASSERT_TRUE_MESSAGE(::qindesign::security::entropy_random_range(1, &r),
+  TEST_ASSERT_TRUE_MESSAGE(::qindesign::entropy::entropy_random_range(1, &r),
                            "Expected no error");
   TEST_ASSERT_EQUAL_MESSAGE(0, r, "Expected zero");
   TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
 
   for (int i = 0; i < (1 << 10); ++i) {
-    TEST_ASSERT_TRUE_MESSAGE(
-        ::qindesign::security::entropy_random_range(10, &r),
-        "Expected no error");
+    TEST_ASSERT_TRUE_MESSAGE(::qindesign::entropy::entropy_random_range(10, &r),
+                             "Expected no error");
     TEST_ASSERT_EQUAL_MESSAGE(0, errno, "Expected no errno");
     if (r >= 10) {
       const auto msg = "Expected value < 10: iteration " + std::to_string(i);
@@ -133,12 +132,12 @@ static void test_random_range() {
 
 // Tests random_device.
 static void test_random_device() {
-  qindesign::security::random_device rd;
+  qindesign::entropy::random_device rd;
 
-  TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::security::random_device::min(),
+  TEST_ASSERT_EQUAL_MESSAGE(0, qindesign::entropy::random_device::min(),
                             "Expected full-range minimum");
   TEST_ASSERT_EQUAL_MESSAGE(std::numeric_limits<unsigned int>::max(),
-                            qindesign::security::random_device::max(),
+                            qindesign::entropy::random_device::max(),
                             "Expected full-range maximum");
   TEST_ASSERT_EQUAL_MESSAGE(sizeof(unsigned int) * CHAR_BIT, rd.entropy(),
                             "Expected full entropy");
@@ -178,7 +177,7 @@ static void test_randomness() {
   // Progress bar in increments of 10%.
   static constexpr char kBar[]{"==========          "};
 
-  qindesign::security::random_device rd;
+  qindesign::entropy::random_device rd;
   uint8_t buf[kBufSize];
   uint32_t counts[256]{0};
   uint32_t totalCount = 0;
@@ -278,7 +277,7 @@ void setup() {
   UNITY_BEGIN();
 #if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   RUN_TEST(test_inactive);
-  ::qindesign::security::trng_init();
+  ::qindesign::entropy::trng_init();
   RUN_TEST(test_active);
   RUN_TEST(test_available);
   RUN_TEST(test_data);
@@ -290,7 +289,7 @@ void setup() {
   RUN_TEST(test_randomness);
 #endif  // TEENSYDUINO && __IMXRT1062__
 #if !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
-  ::qindesign::security::trng_deinit();
+  ::qindesign::entropy::trng_deinit();
   RUN_TEST(test_inactive);
 #endif  // !QNETHERNET_USE_ENTROPY_LIB && TEENSYDUINO && __IMXRT1062__
   UNITY_END();

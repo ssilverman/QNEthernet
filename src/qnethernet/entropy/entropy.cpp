@@ -4,7 +4,7 @@
 // entropy.cpp implements the TRNG functions.
 // This file is part of the QNEthernet library.
 
-#include "qnethernet/security/entropy.h"
+#include "qnethernet/entropy/entropy.h"
 
 #include "qnethernet/compat/c++11_compat.h"
 
@@ -22,7 +22,7 @@
 #include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
-namespace security {
+namespace entropy {
 
 namespace {
 
@@ -346,7 +346,7 @@ bool entropy_random_range(const uint32_t range, uint32_t* const out) {
   return true;
 }
 
-}  // namespace security
+}  // namespace entropy
 }  // namespace qindesign
 
 /*

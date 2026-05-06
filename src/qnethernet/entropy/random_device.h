@@ -21,7 +21,7 @@
 #include <string>
 
 namespace qindesign {
-namespace security {
+namespace entropy {
 
 // random_device implements UniformRandomBitGenerator and
 // mimics std::random_device.
@@ -83,5 +83,5 @@ class random_device {
   size_t available();
 };
 
-}  // namespace security
+}  // namespace entropy
 }  // namespace qindesign
