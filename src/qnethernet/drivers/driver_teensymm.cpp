@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// driver_teensymm.c contains the Teensy MicroMod Ethernet interface
+// driver_teensymm.cpp contains the Teensy MicroMod Ethernet interface
 // implementation for the LAN8720A PHY.
 // Based on the Teensy 4.1 driver.
 // This file is part of the QNEthernet library.
@@ -11,12 +11,9 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_TEENSYMM)
 
-// C includes
-#if __STDC_VERSION__ < 202311L
-#include <stdalign.h>
-#endif  // < C23
-#include <stdatomic.h>
-#include <string.h>
+// C++ includes
+#include <atomic>
+#include <cstring>
 
 #include <core_pins.h>
 #include <imxrt.h>
@@ -33,6 +30,10 @@
 // [LAN8720A](https://www.microchip.com/en-us/product/lan8720a)
 // [LAN8720A Datasheet](https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/LAN8720A-LAN8720Ai-Data-Sheet-DS00002165.pdf)
 // [i.MX RT1062 Manual](https://www.pjrc.com/teensy/IMXRT1060RM_rev3.pdf)
+
+namespace qindesign {
+namespace network {
+namespace driver {
 
 // --------------------------------------------------------------------------
 //  Defines
@@ -785,7 +786,7 @@ static inline int check_link_status(struct netif *const netif,
 //  Driver Interface
 // --------------------------------------------------------------------------
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
+FLASHMEM void get_capabilities(struct DriverCapabilities *const dc) {
   dc->isMACSettable                = true;
   dc->isLinkStateDetectable        = true;
   dc->isLinkSpeedDetectable        = true;
@@ -796,17 +797,17 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities *const dc) {
   dc->isAutoNegotiationRestartable = true;
 }
 
-bool driver_is_unknown(void) {
+bool is_unknown(void) {
   return s_initState == kInitStateStart;
 }
 
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);
 
-void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
-bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
   if ((CCM_CCGR7 & CCM_CCGR7_ENET2(CCM_CCGR_ON)) == 0) {
@@ -825,7 +826,7 @@ bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
   if ((CCM_CCGR7 & CCM_CCGR7_ENET2(CCM_CCGR_ON)) == 0) {
@@ -840,7 +841,7 @@ bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   return true;
 }
 
-bool driver_has_hardware(void) {
+bool has_hardware(void) {
   switch (s_initState) {
     case kInitStateHasHardware:
       ATTRIBUTE_FALLTHROUGH;
@@ -857,13 +858,13 @@ bool driver_has_hardware(void) {
   return (s_initState != kInitStateNoHardware);
 }
 
-void driver_set_chip_select_pin(const int pin) {
+void set_chip_select_pin(const int pin) {
   LWIP_UNUSED_ARG(pin);
 }
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
-FLASHMEM bool driver_init(void) {
+FLASHMEM bool init(void) {
   if (s_initState == kInitStateInitialized) {
     return true;
   }
@@ -998,7 +999,7 @@ FLASHMEM bool driver_init(void) {
 
 void unused_interrupt_vector(void);  // startup.c
 
-FLASHMEM void driver_deinit(void) {
+FLASHMEM void deinit(void) {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
   // macro for now
@@ -1033,7 +1034,7 @@ FLASHMEM void driver_deinit(void) {
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
 
-struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
+struct pbuf *proc_input(struct netif *const netif, const int counter) {
   // Finish any pending link status check
   if (s_checkLinkStatusState != 0) {
     s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
@@ -1055,34 +1056,34 @@ struct pbuf *driver_proc_input(struct netif *const netif, const int counter) {
   return low_level_input(pBD);
 }
 
-void driver_poll(struct netif *const netif) {
+void poll(struct netif *const netif) {
   s_checkLinkStatusState = check_link_status(netif, s_checkLinkStatusState);
 }
 
-int driver_link_speed(void) {
+int link_speed(void) {
   return s_linkSpeed10Not100 ? 10 : 100;
 }
 
-bool driver_link_set_speed(const int speed) {
+bool link_set_speed(const int speed) {
   LWIP_UNUSED_ARG(speed);
   return false;
 }
 
-bool driver_link_is_full_duplex(void) {
+bool link_is_full_duplex(void) {
   return s_linkIsFullDuplex;
 }
 
-bool driver_link_set_full_duplex(const bool flag) {
+bool link_set_full_duplex(const bool flag) {
   LWIP_UNUSED_ARG(flag);
   return false;
 }
 
-bool driver_link_is_crossover(void) {
+bool link_is_crossover(void) {
   return s_linkIsCrossover;
 }
 
 // Outputs data from the MAC.
-err_t driver_output(struct pbuf *const p) {
+err_t output(struct pbuf *const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t *const pBD = get_bufdesc();
   if (pBD == NULL) {
@@ -1105,7 +1106,7 @@ err_t driver_output(struct pbuf *const p) {
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void *const frame, const size_t len) {
+bool output_frame(const void *const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
@@ -1154,8 +1155,8 @@ static uint32_t crc32(const void *const data, const size_t len) {
   return crc;
 }
 
-bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             const bool allow) {
+bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                      const bool allow) {
   // Don't release bits that have had a collision. Track these here.
   static uint32_t collisionGALR = 0;
   static uint32_t collisionGAUR = 0;
@@ -1214,7 +1215,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 //  Notifications from Upper Layers
 // --------------------------------------------------------------------------
 
-void driver_notify_manual_link_state(const bool flag) {
+void notify_manual_link_state(const bool flag) {
   s_manualLinkState = flag;
 }
 
@@ -1222,8 +1223,12 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation() {
+void restart_auto_negotiation() {
   mdio_write(PHY_BCR, mdio_read(PHY_BCR) | PHY_BCR_RESTART_AUTO_NEG);
 }
+
+}  // namespace driver
+}  // namespace network
+}  // namespace qindesign
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_TEENSYMM
