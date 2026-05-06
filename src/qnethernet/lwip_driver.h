@@ -349,7 +349,7 @@ bool enet_join_group(const ip4_addr_t* group);
 ATTRIBUTE_NODISCARD
 bool enet_leave_group(const ip4_addr_t* group);
 
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
+
 }  // namespace network
 }  // namespace qindesign
-
-#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
