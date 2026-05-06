@@ -286,9 +286,9 @@ bool EthernetClass::maybeStartDHCP() {
 }
 
 bool EthernetClass::start() {
-  driver_set_chip_select_pin(chipSelectPin_);
+  driver::set_chip_select_pin(chipSelectPin_);
 
-  if (!driver_has_hardware()) {
+  if (!driver::has_hardware()) {
     errno = ENODEV;
     return false;
   }
@@ -550,7 +550,7 @@ void EthernetClass::end() {
 }
 
 EthernetLinkStatus EthernetClass::linkStatus() const {
-  if (driver_is_unknown()) {
+  if (driver::is_unknown()) {
     return EthernetLinkStatus::Unknown;
   }
   return linkState() ? EthernetLinkStatus::LinkON : EthernetLinkStatus::LinkOFF;
@@ -570,7 +570,7 @@ void EthernetClass::setLinkState(const bool flag) const {
   }
 
   // Tell the driver about this possibly sticky setting
-  driver_notify_manual_link_state(flag);
+  driver::notify_manual_link_state(flag);
 
   if (flag) {
     netif_set_link_up(netif_);
@@ -581,7 +581,7 @@ void EthernetClass::setLinkState(const bool flag) const {
 
 LinkInfo EthernetClass::linkInfo() const {
   LinkInfo li;
-  driver_get_link_info(&li);
+  driver::get_link_info(&li);
   return li;
 }
 
@@ -715,7 +715,7 @@ void EthernetClass::setDNSServerIP(const size_t index,
 }
 
 EthernetHardwareStatus EthernetClass::hardwareStatus() const {
-  if (driver_has_hardware()) {
+  if (driver::has_hardware()) {
 #if defined(QNETHERNET_INTERNAL_DRIVER_W5500)
     return EthernetW5500;
 #elif defined(QNETHERNET_INTERNAL_DRIVER_TEENSY41)
@@ -781,7 +781,7 @@ bool EthernetClass::setMACAddressAllowed(const uint8_t mac[kMACAddrSize],
     return false;
   }
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
-  return driver_set_incoming_mac_address_allowed(mac, flag);
+  return driver::set_incoming_mac_address_allowed(mac, flag);
 #else
   return flag;  // Can't disallow MAC addresses
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE

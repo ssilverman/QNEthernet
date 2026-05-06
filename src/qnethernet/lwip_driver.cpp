@@ -19,6 +19,9 @@
 #include "netif/ethernet.h"
 #include "qnethernet/platforms/pgmspace.h"
 
+namespace qindesign {
+namespace network {
+
 // --------------------------------------------------------------------------
 //  Internal Variables
 // --------------------------------------------------------------------------
@@ -67,7 +70,7 @@ static err_t link_output(struct netif* const netif, struct pbuf* const p) {
     return ERR_ARG;
   }
 
-  return driver_output(p);
+  return driver::output(p);
 }
 
 #if LWIP_IGMP && !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -161,7 +164,7 @@ struct netif* enet_netif(void) {
 
 void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac != NULL) {
-    driver_get_system_mac(mac);
+    driver::get_system_mac(mac);
   }
 }
 
@@ -169,33 +172,33 @@ bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == NULL) {
     return false;
   }
-  return driver_get_mac(mac);
+  return driver::get_mac(mac);
 }
 
 bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == NULL) {
     return false;
   }
-  return driver_set_mac(mac);
+  return driver::set_mac(mac);
 }
 
 // This only uses the callback if the interface has not been added.
 FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                         const netif_ext_callback_fn callback,
-                        struct DriverCapabilities* const dc) {
-  if (!driver_init()) {
+                        DriverCapabilities* const dc) {
+  if (!driver::init()) {
     errno = ENODEV;
     return false;
   }
 
   if (dc != NULL) {
-    driver_get_capabilities(dc);
+    driver::get_capabilities(dc);
   }
 
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
   if (mac == NULL) {
-    driver_get_system_mac(m);
+    driver::get_system_mac(m);
     mac = m;
   }
 
@@ -214,8 +217,8 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
     remove_netif();
   }
 
-  // TODO: Do we really need to check the return of driver_set_mac()?
-  if (!driver_set_mac(mac) || !driver_get_mac(s_mac)) {
+  // TODO: Do we really need to check the return of driver::set_mac()?
+  if (!driver::set_mac(mac) || !driver::get_mac(s_mac)) {
     // This shouldn't happen because the driver's been initialized
     errno = EFAULT;
     return false;
@@ -246,15 +249,15 @@ FLASHMEM void enet_deinit(void) {
 
   remove_netif();  // TODO: This also causes issues (see notes in enet_init())
 
-  driver_deinit();
+  driver::deinit();
 }
 
 void enet_proc_input(void) {
   int counter = 0;
   while (true) {
-    // Note: It is expected that driver_proc_input() will return NULL
+    // Note: It is expected that driver::proc_input() will return NULL
     //       at some point
-    struct pbuf* const p = driver_proc_input(&s_netif, counter++);
+    struct pbuf* const p = driver::proc_input(&s_netif, counter++);
     if (p == NULL) {  // Happens on frame error, pbuf allocation error, or loop end
       break;
     }
@@ -268,7 +271,7 @@ void enet_proc_input(void) {
 
 void enet_poll(void) {
   sys_check_timeouts();
-  driver_poll(&s_netif);
+  driver::poll(&s_netif);
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -315,7 +318,7 @@ bool enet_output_frame(const void* const frame, const size_t len) {
   }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
-  return driver_output_frame(frame, len);
+  return driver::output_frame(frame, len);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
@@ -348,7 +351,7 @@ static bool enet_join_notleave_group(const ip4_addr_t* const group,
   multicastMAC[4] = ip4_addr3(group);
   multicastMAC[5] = ip4_addr4(group);
 
-  return driver_set_incoming_mac_address_allowed(multicastMAC, flag);
+  return driver::set_incoming_mac_address_allowed(multicastMAC, flag);
 }
 
 bool enet_join_group(const ip4_addr_t* const group) {
@@ -358,5 +361,8 @@ bool enet_join_group(const ip4_addr_t* const group) {
 bool enet_leave_group(const ip4_addr_t* const group) {
   return enet_join_notleave_group(group, false);
 }
+
+}  // namespace network
+}  // namespace qindesign
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4

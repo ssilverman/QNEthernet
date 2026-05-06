@@ -284,10 +284,12 @@ static void test_other_null_mac() {
       Ethernet.begin(nullptr, INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE),
       "Expected start success (5)");
 
-  TEST_ASSERT_FALSE_MESSAGE(driver_set_incoming_mac_address_allowed(nullptr, true),
-                            "Expected can't allow NULL MAC");
-  TEST_ASSERT_FALSE_MESSAGE(driver_set_incoming_mac_address_allowed(nullptr, false),
-                            "Expected can't disallow NULL MAC");
+  TEST_ASSERT_FALSE_MESSAGE(
+      driver::set_incoming_mac_address_allowed(nullptr, true),
+      "Expected can't allow NULL MAC");
+  TEST_ASSERT_FALSE_MESSAGE(
+      driver::set_incoming_mac_address_allowed(nullptr, false),
+      "Expected can't disallow NULL MAC");
 }
 
 // Tests NULL join/leave groups.

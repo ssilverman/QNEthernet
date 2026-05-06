@@ -8,25 +8,22 @@
 
 #pragma once
 
-// C includes
-#if !defined(__cplusplus) && (__STDC_VERSION__ < 202311L)
-#include <stdbool.h>
-#endif  // !C++ && (C < 23)
-#include <stddef.h>
-#include <stdint.h>
+// C++ includes
+#include <cstddef>
+#include <cstdint>
 
 #include "lwip/ip_addr.h"
 #include "lwip/netif.h"
 #include "lwip/opt.h"
 #include "lwip/pbuf.h"
 #include "lwip/prot/ethernet.h"
-#include "qnethernet/compat/c11_compat.h"
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/driver_select.h"
 #include "qnethernet_opts.h"
 
 // Check things that are supposed to be set properly by the driver headers
-STATIC_ASSERT(MTU > 0, "MTU must be defined and > 0");
-STATIC_ASSERT(MAX_FRAME_LEN >= 0, "MAX_FRAME_LEN must be defined and >= 0");
+static_assert(MTU > 0, "MTU must be defined and > 0");
+static_assert(MAX_FRAME_LEN >= 0, "MAX_FRAME_LEN must be defined and >= 0");
 
 enum {
   MIN_FRAME_LEN = 60,
@@ -35,7 +32,7 @@ enum {
 // STATIC_ASSERT(MIN_FRAME_LEN >= 0, "MIN_FRAME_LEN must be >= 0");
 
 // Check some sizes
-STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
+static_assert(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 
 // Requirements for driver-specific headers:
 // 1. Define MTU
@@ -49,7 +46,7 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 // 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
 //    either `#pragma once` or a #define guard.
 // 2. Create driver source and include lwip_driver.h. Implement all the
-//    `driver_x()` functions. It can be written in either C or C++. If C++ then
+//    `driver::x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
 // 3. Adjust the driver selection logic in driver_select.h to define an
 //    appropriate macro (such as INTERNAL_DRIVER_Y) when the desired driver
@@ -62,7 +59,7 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 7. Optionally update EthernetClass::hardwareStatus() to return an appropriate
 //    enum value. If no change is made, the default 'EthernetOtherHardware' will
-//    be returned if hardware is found (driver_has_hardware() returns true).
+//    be returned if hardware is found (driver::has_hardware() returns true).
 
 // How to create an external driver that isn't inside the distribution:
 // 1. Create a header named "qnethernet_external_driver.h" that defines MTU and
@@ -71,12 +68,11 @@ STATIC_ASSERT(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 3. Create driver source and include lwip_driver.h. Implement all the
-//    `driver_x()` functions. It can be written in either C or C++. If C++ then
+//    `driver::x()` functions. It can be written in either C or C++. If C++ then
 //    make sure to use `extern "C"` around those functions.
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+namespace qindesign {
+namespace network {
 
 // --------------------------------------------------------------------------
 //  Types
@@ -84,30 +80,16 @@ extern "C" {
 
 // Flags that indicate driver capabilities.
 struct DriverCapabilities {
-#ifdef __cplusplus
-  DriverCapabilities()
-      : isMACSettable(false),
-        isLinkStateDetectable(false),
-        isLinkSpeedDetectable(false),
-        isLinkSpeedSettable(false),
-        isLinkFullDuplexDetectable(false),
-        isLinkFullDuplexSettable(false),
-        isAutoNegotiationSettable(false),
-        isLinkCrossoverDetectable(false),
-        isAutoNegotiationRestartable(false),
-        isPHYResettable(false) {}
-#endif  // __cplusplus
-
-  bool isMACSettable;
-  bool isLinkStateDetectable;
-  bool isLinkSpeedDetectable;
-  bool isLinkSpeedSettable;
-  bool isLinkFullDuplexDetectable;
-  bool isLinkFullDuplexSettable;
-  bool isAutoNegotiationSettable;
-  bool isLinkCrossoverDetectable;
-  bool isAutoNegotiationRestartable;
-  bool isPHYResettable;
+  bool isMACSettable                = false;
+  bool isLinkStateDetectable        = false;
+  bool isLinkSpeedDetectable        = false;
+  bool isLinkSpeedSettable          = false;
+  bool isLinkFullDuplexDetectable   = false;
+  bool isLinkFullDuplexSettable     = false;
+  bool isAutoNegotiationSettable    = false;
+  bool isLinkCrossoverDetectable    = false;
+  bool isAutoNegotiationRestartable = false;
+  bool isPHYResettable              = false;
 };
 
 // Link information. Defaults are:
@@ -116,18 +98,10 @@ struct DriverCapabilities {
 // * Auto-negotiation enabled
 // * Crossover is false
 struct LinkInfo {
-#ifdef __cplusplus
-  LinkInfo()
-      : speed(100),
-        fullNotHalfDuplex(true),
-        isAutoNegotiation(true),
-        isCrossover(false) {}
-#endif  // __cplusplus
-
-  int speed;
-  bool fullNotHalfDuplex;
-  bool isAutoNegotiation;
-  bool isCrossover;
+  int speed              = 100;
+  bool fullNotHalfDuplex = true;
+  bool isAutoNegotiation = true;
+  bool isCrossover       = false;
 };
 
 // Link settings. Defaults are:
@@ -138,70 +112,65 @@ struct LinkInfo {
 // This is separate from LinkInfo because some things are detecatable but
 // not settable.
 struct LinkSettings {
-#ifdef __cplusplus
-  LinkSettings()
-      : speed(100),
-        fullNotHalfDuplex(true),
-        autoNegotiation(true) {}
-#endif  // __cplusplus
-
-  int speed;
-  bool fullNotHalfDuplex;
-  bool autoNegotiation;
+  int speed              = 100;
+  bool fullNotHalfDuplex = true;
+  bool autoNegotiation   = true;
 };
 
 // --------------------------------------------------------------------------
 //  Driver Interface
 // --------------------------------------------------------------------------
 
+namespace driver {
+
 // It can be assumed that any parameters passed in will not be NULL.
 
 // Gets the driver capabilities and fills in the given struct. This may be
-// called more than once but may not be valid until after driver_init()
+// called more than once but may not be valid until after init()
 // is called.
-void driver_get_capabilities(struct DriverCapabilities* dc);
+void get_capabilities(DriverCapabilities* dc);
 
 // Returns if the hardware hasn't yet been probed.
 ATTRIBUTE_NODISCARD
-bool driver_is_unknown(void);
+bool is_unknown(void);
 
 // Gets the built-in Ethernet MAC address.
 //
 // For systems without a built-in address, this should retrieve some
 // valid default.
-void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
+void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Gets the internal MAC address. This will retrieve the system default if the
 // internal address has not yet been set.
 //
 // This returns whether the address was retrieved.
 ATTRIBUTE_NODISCARD
-bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
+bool get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the internal MAC address and returns whether successful. This will be
 // set as a transmitted Ethernet frame's source address.
 //
-// See also: driver_get_capabilities(dc)
+// See also: get_capabilities(dc)
 ATTRIBUTE_NODISCARD
-bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
+bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Determines if there's Ethernet hardware. If the hardware hasn't yet been
-// probed (driver_is_unknown() would return 'true'), then this will check
+// probed (is_unknown() would return 'true'), then this will check
 // the hardware.
 ATTRIBUTE_NODISCARD
-bool driver_has_hardware(void);
+bool has_hardware(void);
 
 // Sets the SPI chip select pin given in Ethernet.init(). The pin will be -1 if
 // it has not been initialized.
-void driver_set_chip_select_pin(int pin);
+void set_chip_select_pin(int pin);
 
 // Does low-level initialization. This returns whether the initialization
 // was successful. Most functions depend on the driver being initialized.
 ATTRIBUTE_NODISCARD
-bool driver_init(void);
+bool init(void);
 
 // Uninitializes the driver.
-void driver_deinit(void);
+void deinit(void);
 
 // Processes any input and returns any received frames as a pbuf. The counter
 // parameter indicates how many times the call has looped. This is useful so
@@ -209,15 +178,15 @@ void driver_deinit(void);
 // chance to run. In other words, it is expected that this will return NULL at
 // some point.
 ATTRIBUTE_NODISCARD
-struct pbuf* driver_proc_input(struct netif* netif, int counter);
+struct pbuf* proc_input(struct netif* netif, int counter);
 
 // Polls anything that needs to be polled, for example, the link status.
-void driver_poll(struct netif* netif);
+void poll(struct netif* netif);
 
 // Gets info about the link. The values will only be valid when the link is up.
 //
-// See also: driver_get_capabilities(dc)
-void driver_get_link_info(struct LinkInfo* li);
+// See also: get_capabilities(dc)
+void get_link_info(LinkInfo* li);
 
 // Sets some link parameters all at once. This returns whether the call
 // was successful. It is expected that this will return false if the hardware is
@@ -225,20 +194,20 @@ void driver_get_link_info(struct LinkInfo* li);
 //
 // This will also return false if any of the parameters are invalid.
 ATTRIBUTE_NODISCARD
-bool driver_set_link(const struct LinkSettings* ls);
+bool set_link(const LinkSettings* ls);
 
 // Outputs the given pbuf data.
 //
 // Note that the data will already contain any extra ETH_PAD_SIZE bytes.
 ATTRIBUTE_NODISCARD
-err_t driver_output(struct pbuf* p);
+err_t output(struct pbuf* p);
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw Ethernet frame and returns whether successful.
 //
 // This should add, to the start, any extra padding bytes given by ETH_PAD_SIZE.
 ATTRIBUTE_NODISCARD
-bool driver_output_frame(const void* frame, size_t len);
+bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
@@ -260,8 +229,8 @@ bool driver_output_frame(const void* frame, size_t len);
 //
 // Note that this function may be passed a NULL MAC address.
 ATTRIBUTE_NODISCARD
-bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             bool allow);
+bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+                                      bool allow);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
@@ -271,7 +240,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
 // Notifies the driver that the system manually set the link state. It is
 // assumed that if the new link state is TRUE then it should be sticky.
-void driver_notify_manual_link_state(bool flag);
+void notify_manual_link_state(bool flag);
 
 // --------------------------------------------------------------------------
 //  Link Functions
@@ -279,17 +248,15 @@ void driver_notify_manual_link_state(bool flag);
 
 // Restarts auto-negotiation, if the driver supports it.
 //
-// See also: driver_get_capabilities(dc)
-void driver_restart_auto_negotiation(void);
+// See also: get_capabilities(dc)
+void restart_auto_negotiation(void);
 
 // Resets the PHY, if the driver supports it.
 //
-// See also: driver_get_capabilities(dc)
-void driver_reset_phy(void);
+// See also: get_capabilities(dc)
+void reset_phy(void);
 
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
+}  // namespace driver
 
 // --------------------------------------------------------------------------
 //  Public Interface
@@ -336,11 +303,11 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // It is suggested to initialize the entropy generator with
 // qnethernet_hal_init_entropy() before calling this.
 //
-// See also: driver_get_capabilities(dc)
+// See also: driver::get_capabilities(dc)
 ATTRIBUTE_NODISCARD
 bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                netif_ext_callback_fn callback,
-               struct DriverCapabilities* dc);
+               DriverCapabilities* dc);
 
 // Shuts down the Ethernet stack and driver.
 void enet_deinit(void);
@@ -363,7 +330,7 @@ void enet_poll(void);
 // for non-VLAN frames and [18, MAX_FRAME_LEN] for VLAN frames. Note that these
 // ranges exclude the 4-byte FCS (frame check sequence).
 //
-// This returns the result of driver_output_frame(), if the frame checks pass.
+// This returns the result of driver::output_frame(), if the frame checks pass.
 ATTRIBUTE_NODISCARD
 bool enet_output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
@@ -371,7 +338,7 @@ bool enet_output_frame(const void* frame, size_t len);
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
 // For joining and leaving multicast groups; these call
-// driver_set_incoming_mac_address_allowed() with the MAC addresses related to
+// driver::set_incoming_mac_address_allowed() with the MAC addresses related to
 // the given multicast group. Note that this affects low-level MAC filtering and
 // not the IP stack's use of multicast groups.
 //
@@ -381,5 +348,8 @@ ATTRIBUTE_NODISCARD
 bool enet_join_group(const ip4_addr_t* group);
 ATTRIBUTE_NODISCARD
 bool enet_leave_group(const ip4_addr_t* group);
+
+}  // namespace network
+}  // namespace qindesign
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4

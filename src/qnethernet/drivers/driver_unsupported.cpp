@@ -11,9 +11,11 @@
 
 #if defined(QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED)
 
-extern "C" {
+namespace qindesign {
+namespace network {
+namespace driver {
 
-FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
+FLASHMEM void get_capabilities(DriverCapabilities* const dc) {
   dc->isMACSettable                = false;
   dc->isLinkStateDetectable        = false;
   dc->isLinkSpeedDetectable        = false;
@@ -26,71 +28,73 @@ FLASHMEM void driver_get_capabilities(struct DriverCapabilities* const dc) {
   dc->isPHYResettable              = false;
 }
 
-bool driver_is_unknown() {
+bool is_unknown() {
   return false;
 }
 
+extern "C" {
 void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]);
+}  // extern "C"
 
-void driver_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   qnethernet_hal_get_system_mac_address(mac);
 }
 
-bool driver_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  driver_get_system_mac(mac);
+bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+  get_system_mac(mac);
   return true;
 }
 
-bool driver_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   (void)mac;
 
   return false;
 }
 
-bool driver_has_hardware() {
+bool has_hardware() {
   return false;
 }
 
-void driver_set_chip_select_pin(const int pin) {
+void set_chip_select_pin(const int pin) {
   (void) pin;
 }
 
-bool driver_init() {
+bool init() {
   return false;
 }
 
-void driver_deinit() {
+void deinit() {
 }
 
-struct pbuf* driver_proc_input(struct netif* const netif, const int counter) {
+struct pbuf* proc_input(struct netif* const netif, const int counter) {
   (void)netif;
   (void)counter;
 
   return NULL;
 }
 
-void driver_poll(struct netif* const netif) {
+void poll(struct netif* const netif) {
   (void)netif;
 }
 
-void driver_get_link_info(struct LinkInfo* const li) {
+void get_link_info(LinkInfo* const li) {
   (void)li;
 }
 
-bool driver_set_link(const struct LinkSettings* const ls) {
+bool set_link(const LinkSettings* const ls) {
   (void)ls;
 
   return false;
 }
 
-err_t driver_output(struct pbuf* const p) {
+err_t output(struct pbuf* const p) {
   (void)p;
 
   return ERR_IF;
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool driver_output_frame(const void* const frame, const size_t len) {
+bool output_frame(const void* const frame, const size_t len) {
   (void)frame;
   (void)len;
 
@@ -104,7 +108,7 @@ bool driver_output_frame(const void* const frame, const size_t len) {
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
-bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
+bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              const bool allow) {
   (void)mac;
   (void)allow;
@@ -118,7 +122,7 @@ bool driver_set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 //  Notifications from Upper Layers
 // --------------------------------------------------------------------------
 
-void driver_notify_manual_link_state(const bool flag) {
+void notify_manual_link_state(const bool flag) {
   (void)flag;
 }
 
@@ -126,12 +130,14 @@ void driver_notify_manual_link_state(const bool flag) {
 //  Link Functions
 // --------------------------------------------------------------------------
 
-void driver_restart_auto_negotiation() {
+void restart_auto_negotiation() {
 }
 
-void driver_reset_phy() {
+void reset_phy() {
 }
 
-}  // extern "C"
+}  // namespace driver
+}  // namespace network
+}  // namespace qindesign
 
 #endif  // QNETHERNET_INTERNAL_DRIVER_UNSUPPORTED
