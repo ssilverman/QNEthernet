@@ -29,6 +29,9 @@ and this project adheres to
 * Made the HAL's `qnethernet_hal_deinit_entropy()` and
   `qnethernet_hal_estimate entropy()` weak.
 * Improved entropy and `qindesign::security::random_device` APIs.
+* Updated cppreference.com URLs.
+* Moved driver C functions into namespace `qindesign::network::driver`.
+* Moved entropy C functions into namespace `qindesign::entropy`.
 
 ### Removed
 * Removed `qindesign::security::RandomDevice` in favour of the
