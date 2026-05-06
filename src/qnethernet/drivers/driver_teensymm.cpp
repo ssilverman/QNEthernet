@@ -18,7 +18,6 @@
 #include <core_pins.h>
 #include <imxrt.h>
 
-#include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
@@ -859,7 +858,7 @@ bool has_hardware(void) {
 }
 
 void set_chip_select_pin(const int pin) {
-  LWIP_UNUSED_ARG(pin);
+  (void)pin;
 }
 
 // Initializes the PHY and Ethernet interface. This sets the init state and
@@ -1065,7 +1064,7 @@ int link_speed(void) {
 }
 
 bool link_set_speed(const int speed) {
-  LWIP_UNUSED_ARG(speed);
+  (void)speed;
   return false;
 }
 
@@ -1074,7 +1073,7 @@ bool link_is_full_duplex(void) {
 }
 
 bool link_set_full_duplex(const bool flag) {
-  LWIP_UNUSED_ARG(flag);
+  (void)flag;
   return false;
 }
 
