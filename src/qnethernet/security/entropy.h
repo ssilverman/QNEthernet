@@ -11,30 +11,26 @@
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
-// C includes
-#if !defined(__cplusplus) && (__STDC_VERSION__ < 202311L)
-#include <stdbool.h>
-#endif  // !C++ && (C < 23)
-#include <stddef.h>
-#include <stdint.h>
+// C++ includes
+#include <cstddef>
+#include <cstdint>
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+namespace qindesign {
+namespace security {
 
 // Initializes the TRNG. This always starts by enabling the clock.
-void trng_init(void);
+void trng_init();
 
 // Uninitializes the TRNG. The last thing this does is disable the clock.
-void trng_deinit(void);
+void trng_deinit();
 
 // Returns whether the TRNG has been started. This checks the clock.
-bool trng_is_started(void);
+bool trng_is_started();
 
 // Returns the number of bytes available in the entropy pool without having to
 // restart entropy generation. Once the pool is empty, entropy generation will
 // be restarted automatically.
-size_t trng_available(void);
+size_t trng_available();
 
 // Fills data from the entropy pool and keeps refreshing the pool until the
 // requested size has been reached or a failure was encountered. This returns
@@ -59,9 +55,8 @@ bool entropy_random(uint32_t* out);
 // * https://lemire.me/blog/2019/09/28/doubling-the-speed-of-stduniform_int_distribution-in-the-gnu-c-library/
 bool entropy_random_range(uint32_t range, uint32_t* out);
 
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
+}  // namespace security
+}  // namespace qindesign
 
 #endif  // !QNETHERNET_USE_ENTROPY_LIB
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)

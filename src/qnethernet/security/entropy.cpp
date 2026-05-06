@@ -21,6 +21,11 @@
 #include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
 
+namespace qindesign {
+namespace security {
+
+namespace {
+
 enum TRNGValues : uint32_t {
   // Clock settings
   TRNG_CONFIG_CLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
@@ -96,6 +101,8 @@ static inline uint32_t TRNG_SEC_CFG_NO_PROG(const uint32_t n) {
   return ((n & 0x01) << 1);
 }
 
+}  // namespace
+
 // Entropy storage
 static constexpr size_t kEntropyCount      = 16;  // In dwords
 static constexpr size_t kEntropyCountBytes = (kEntropyCount << 2);  // In bytes
@@ -103,7 +110,7 @@ static constexpr size_t kEntropyCountBytes = (kEntropyCount << 2);  // In bytes
 static uint32_t s_entropy[kEntropyCount] DMAMEM;
 static size_t s_entropySizeBytes = 0;  // Size in bytes
 
-extern "C" bool trng_is_started() {
+bool trng_is_started() {
   // Two checks:
   // 1. Clock is running
   // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
@@ -117,8 +124,6 @@ static void restartEntropy() {
   TRNG_ENT0;  // Dummy read for defect workaround
   s_entropySizeBytes = 0;
 }
-
-extern "C" {
 
 FLASHMEM void trng_init() {
   // Enable the clock
@@ -191,8 +196,6 @@ FLASHMEM void trng_deinit() {
   CCM_CCGR6 &= ~CCM_CCGR6_TRNG(CCM_CCGR_ON);  // Disable the clock
 }
 
-}  // extern "C"
-
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
 // available. This checks for an error, and if there is one, returns false.
 ATTRIBUTE_NODISCARD
@@ -240,8 +243,6 @@ static bool fillEntropy() {
 //   return true;
 // }
 
-extern "C" {
-
 size_t trng_available() {
   if (s_entropySizeBytes == 0) {
     // Check for Valid
@@ -287,8 +288,6 @@ size_t trng_data(void* const data, const size_t size) {
   return size;
 }
 
-}  // extern "C"
-
 // Gathers a 32-bit random number and returns whether successful. This assumes
 // that the argument is not NULL.
 ATTRIBUTE_NODISCARD
@@ -300,8 +299,6 @@ static inline bool random32(uint32_t* const r) {
     return false;
   }
 }
-
-extern "C" {
 
 bool entropy_random(uint32_t* const out) {
   uint32_t r;
@@ -349,7 +346,8 @@ bool entropy_random_range(const uint32_t range, uint32_t* const out) {
   return true;
 }
 
-}  // extern "C"
+}  // namespace security
+}  // namespace qindesign
 
 /*
 
