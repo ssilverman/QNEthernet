@@ -109,6 +109,8 @@ void setup() {
   buf[43] = t;
 
   // Send the packet
+  // Note: If your gateway doesn't have an SNTP server — many routers do — then
+  //       use something like "pool.ntp.org" or "time.nist.gov" instead
   printf("Sending SNTP request to the gateway...");
   if (!udp.send(Ethernet.gatewayIP(), kNTPPort, buf, 48)) {
     printf("ERROR.");
