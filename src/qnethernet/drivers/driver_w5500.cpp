@@ -443,8 +443,9 @@ FLASHMEM static bool soft_reset() {
   return false;
 }
 
-// Resets the PHY.
-FLASHMEM static void reset_phy() {
+// Resets the PHY. This is the internal version that the driver's
+// reset_phy() calls.
+FLASHMEM static void internal_reset_phy() {
   uint8_t r = *kPHYCFGR;
 
   // Clear the RST bit
@@ -505,7 +506,7 @@ FLASHMEM static void low_level_init() {
                                   phycfg::kOPMD |  // Software configures
                                   (0x07 << 3));
       // ~RST, OPMD in software, OPMDC(3)=All, XXX
-  reset_phy();
+  internal_reset_phy();
 
   // Open a MACRAW socket
   // Use 16k buffers
@@ -1002,7 +1003,7 @@ bool set_link(const LinkSettings* const ls) {
     kPHYCFGR = static_cast<uint8_t>((*kPHYCFGR & ~(0x07 << 3)) |
                                     phycfg::kOPMD |  // Software configures
                                     (newOPMDC << 3));
-    reset_phy();
+    internal_reset_phy();
   }
   return true;
 }
@@ -1095,11 +1096,11 @@ void notify_manual_link_state(const bool flag) {
 
 void restart_auto_negotiation() {
   // It is assumed that this restarts auto-negotiation
-  reset_phy();
+  internal_reset_phy();
 }
 
 void reset_phy() {
-  reset_phy();
+  internal_reset_phy();
 }
 
 }  // namespace driver
