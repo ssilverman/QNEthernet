@@ -362,7 +362,7 @@ bool enet_leave_group(const ip4_addr_t* const group) {
   return enet_join_notleave_group(group, false);
 }
 
+#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
+
 }  // namespace network
 }  // namespace qindesign
-
-#endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
