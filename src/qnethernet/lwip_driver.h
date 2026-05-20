@@ -132,7 +132,7 @@ void get_capabilities(DriverCapabilities* dc);
 
 // Returns if the hardware hasn't yet been probed.
 ATTRIBUTE_NODISCARD
-bool is_unknown(void);
+bool is_unknown();
 
 // Gets the built-in Ethernet MAC address.
 //
@@ -158,7 +158,7 @@ bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 // probed (is_unknown() would return 'true'), then this will check
 // the hardware.
 ATTRIBUTE_NODISCARD
-bool has_hardware(void);
+bool has_hardware();
 
 // Sets the SPI chip select pin given in Ethernet.init(). The pin will be -1 if
 // it has not been initialized.
@@ -167,10 +167,10 @@ void set_chip_select_pin(int pin);
 // Does low-level initialization. This returns whether the initialization
 // was successful. Most functions depend on the driver being initialized.
 ATTRIBUTE_NODISCARD
-bool init(void);
+bool init();
 
 // Uninitializes the driver.
-void deinit(void);
+void deinit();
 
 // Processes any input and returns any received frames as a pbuf. The counter
 // parameter indicates how many times the call has looped. This is useful so
@@ -249,12 +249,12 @@ void notify_manual_link_state(bool flag);
 // Restarts auto-negotiation, if the driver supports it.
 //
 // See also: get_capabilities(dc)
-void restart_auto_negotiation(void);
+void restart_auto_negotiation();
 
 // Resets the PHY, if the driver supports it.
 //
 // See also: get_capabilities(dc)
-void reset_phy(void);
+void reset_phy();
 
 }  // namespace driver
 
@@ -264,14 +264,14 @@ void reset_phy(void);
 
 // Returns the MTU.
 ATTRIBUTE_NODISCARD
-inline size_t enet_get_mtu(void) {
+inline size_t enet_get_mtu() {
   return MTU;
 }
 
 // Returns the maximum frame length. This does not include the 4-byte FCS (frame
 // check sequence).
 ATTRIBUTE_NODISCARD
-inline size_t enet_get_max_frame_len(void) {
+inline size_t enet_get_max_frame_len() {
   return MAX_FRAME_LEN;
 }
 
@@ -310,19 +310,19 @@ bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
                DriverCapabilities* dc);
 
 // Shuts down the Ethernet stack and driver.
-void enet_deinit(void);
+void enet_deinit();
 
 // Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
 ATTRIBUTE_NODISCARD
-struct netif* enet_netif(void);
+struct netif* enet_netif();
 
 // Processes any Ethernet input. This is meant to be called often by the
 // main loop.
-void enet_proc_input(void);
+void enet_proc_input();
 
 // Polls the stack (if needed) and Ethernet link status.
-void enet_poll(void);
+void enet_poll();
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
