@@ -120,6 +120,13 @@
 #define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
 #endif
 
+// Uncomment the below to check whether a frame should be passed straight
+// through to the raw frame handling. The given function should be defined
+// somewhere. Don't forget to make it `extern "C"` if defined in a C++ file.
+// Additionally, the function should not free the pbuf.
+// #define QNETHERNET_HOOK_RAW_FRAME_FILTER qnethernet_raw_frame_filter(p, netif)
+// bool qnethernet_raw_frame_filter(struct pbuf* p, struct netif* netif);
+
 // Provides default implementations of the altcp interface functions.
 #ifndef QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS
 #define QNETHERNET_PROVIDE_ALTCP_DEFAULT_FUNCTIONS 0
