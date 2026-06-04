@@ -21,6 +21,7 @@
 
 namespace qindesign {
 namespace network {
+namespace enet {
 
 // --------------------------------------------------------------------------
 //  Internal Variables
@@ -84,10 +85,10 @@ static err_t multicast_filter(struct netif* const netif,
   bool retval = true;
   switch (action) {
     case NETIF_ADD_MAC_FILTER:
-      retval = enet_join_group(group);
+      retval = join_group(group);
       break;
     case NETIF_DEL_MAC_FILTER:
-      retval = enet_leave_group(group);
+      retval = leave_group(group);
       break;
     default:
       break;
@@ -158,24 +159,24 @@ FLASHMEM static void remove_netif() {
 //  Public Interface
 // --------------------------------------------------------------------------
 
-struct netif* enet_netif() {
+struct netif* netif() {
   return &s_netif;
 }
 
-void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac != NULL) {
     driver::get_system_mac(mac);
   }
 }
 
-bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
+bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == NULL) {
     return false;
   }
   return driver::get_mac(mac);
 }
 
-bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
+bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   if (mac == NULL) {
     return false;
   }
@@ -183,9 +184,9 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 }
 
 // This only uses the callback if the interface has not been added.
-FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-                        const netif_ext_callback_fn callback,
-                        DriverCapabilities* const dc) {
+FLASHMEM bool init(const uint8_t mac[ETH_HWADDR_LEN],
+                   const netif_ext_callback_fn callback,
+                   DriverCapabilities* const dc) {
   if (!driver::init()) {
     errno = ENODEV;
     return false;
@@ -243,16 +244,16 @@ FLASHMEM bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
   return true;
 }
 
-FLASHMEM void enet_deinit() {
+FLASHMEM void deinit() {
   // Restore state
   (void)std::memset(s_mac, 0, sizeof(s_mac));
 
-  remove_netif();  // TODO: This also causes issues (see notes in enet_init())
+  remove_netif();  // TODO: This also causes issues (see notes in init())
 
   driver::deinit();
 }
 
-void enet_proc_input() {
+void proc_input() {
   int counter = 0;
   while (true) {
     // Note: It is expected that driver::proc_input() will return NULL
@@ -269,13 +270,13 @@ void enet_proc_input() {
   }
 }
 
-void enet_poll() {
+void poll() {
   sys_check_timeouts();
   driver::poll(&s_netif);
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-bool enet_output_frame(const void* const frame, const size_t len) {
+bool output_frame(const void* const frame, const size_t len) {
   if ((frame == NULL) || (len < (6 + 6 + 2))) {  // dst + src + len/type
     return false;
   }
@@ -331,8 +332,8 @@ bool enet_output_frame(const void* const frame, const size_t len) {
 // Joins or leaves a multicast group. The flag should be true to join and false
 // to leave. This returns whether successful.
 ATTRIBUTE_NODISCARD
-static bool enet_join_notleave_group(const ip4_addr_t* const group,
-                                     const bool flag) {
+static bool join_notleave_group(const ip4_addr_t* const group,
+                                const bool flag) {
   if (group == NULL) {
     return false;
   }
@@ -354,15 +355,16 @@ static bool enet_join_notleave_group(const ip4_addr_t* const group,
   return driver::set_incoming_mac_address_allowed(multicastMAC, flag);
 }
 
-bool enet_join_group(const ip4_addr_t* const group) {
-  return enet_join_notleave_group(group, true);
+bool join_group(const ip4_addr_t* const group) {
+  return join_notleave_group(group, true);
 }
 
-bool enet_leave_group(const ip4_addr_t* const group) {
-  return enet_join_notleave_group(group, false);
+bool leave_group(const ip4_addr_t* const group) {
+  return join_notleave_group(group, false);
 }
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
+}  // namespace enet
 }  // namespace network
 }  // namespace qindesign

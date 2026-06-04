@@ -103,7 +103,7 @@ void tearDown() {
   // Restore the MAC address
   uint8_t mac[6];
   uint8_t mac2[6];
-  enet_get_system_mac(mac);
+  enet::get_system_mac(mac);
   Ethernet.macAddress(mac2);
   if (!std::equal(&mac[0], &mac[6], mac2)) {
     Ethernet.setMACAddress(mac);
@@ -134,11 +134,11 @@ static void test_entropy() {
 static void test_builtin_mac() {
   static constexpr uint8_t zeros[6]{0, 0, 0, 0, 0, 0};
 
-  enet_get_system_mac(nullptr);  // Test NULL input
+  enet::get_system_mac(nullptr);  // Test NULL input
 
   // Get the built-in MAC address
   uint8_t mac[6]{0, 0, 0, 0, 0, 0};
-  enet_get_system_mac(mac);
+  enet::get_system_mac(mac);
   TEST_ASSERT_FALSE_MESSAGE(std::equal(&mac[0], &mac[6], zeros),
                             "Expected an internal MAC");
 
@@ -158,7 +158,7 @@ static void test_builtin_mac() {
 // Tests setting the MAC address.
 static void test_set_mac() {
   uint8_t builtInMAC[6];
-  enet_get_system_mac(builtInMAC);
+  enet::get_system_mac(builtInMAC);
 
   volatile bool interfaceState = false;
   volatile int downCount = 0;
@@ -221,7 +221,7 @@ static void test_get_mac() {
 
   // Get the built-in MAC address
   uint8_t mac[6];
-  enet_get_system_mac(mac);
+  enet::get_system_mac(mac);
   TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), mac, 6, "Expected the internal MAC");
 
   uint8_t mac2[6]{1, 2, 3, 4, 5, 6};
@@ -294,8 +294,8 @@ static void test_other_null_mac() {
 
 // Tests NULL join/leave groups.
 static void test_null_group() {
-  TEST_ASSERT_FALSE_MESSAGE(enet_join_group(nullptr), "Expected join failed");
-  TEST_ASSERT_FALSE_MESSAGE(enet_leave_group(nullptr), "Expected leave failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet::join_group(nullptr), "Expected join failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet::leave_group(nullptr), "Expected leave failed");
 }
 
 // Tests NULL output frames.
@@ -306,8 +306,8 @@ static void test_null_frame() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start success");
 
-  TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 0), "Expected output failed");
-  TEST_ASSERT_FALSE_MESSAGE(enet_output_frame(nullptr, 10), "Expected output failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet::output_frame(nullptr, 0), "Expected output failed");
+  TEST_ASSERT_FALSE_MESSAGE(enet::output_frame(nullptr, 10), "Expected output failed");
 }
 
 // Tests DHCP.
@@ -1542,8 +1542,8 @@ static void test_other_state() {
   TEST_ASSERT_EQUAL_MESSAGE(MEMP_NUM_IGMP_GROUP > 0 ? MEMP_NUM_IGMP_GROUP - 1 : 0,
                             Ethernet.maxMulticastGroups(),
                             "Expected default max. multicast groups");
-  TEST_ASSERT_EQUAL_MESSAGE(enet_get_mtu(), Ethernet.mtu(), "Expected default MTU");
-  TEST_ASSERT_EQUAL_MESSAGE(enet_get_max_frame_len(), EthernetFrame.maxFrameLen(),
+  TEST_ASSERT_EQUAL_MESSAGE(enet::get_mtu(), Ethernet.mtu(), "Expected default MTU");
+  TEST_ASSERT_EQUAL_MESSAGE(enet::get_max_frame_len(), EthernetFrame.maxFrameLen(),
                             "Expected default max. frame len");
   TEST_ASSERT_EQUAL_MESSAGE(60, EthernetFrame.minFrameLen(), "Expected default min. frame len");
   TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");

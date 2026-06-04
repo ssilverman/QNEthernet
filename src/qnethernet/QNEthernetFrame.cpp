@@ -221,15 +221,15 @@ bool EthernetFrameClass::endFrame() {
     return false;
   }
 
-  const bool retval = enet_output_frame(outFrame_.value.data.data(),
-                                        outFrame_.value.data.size());
+  const bool retval = enet::output_frame(outFrame_.value.data.data(),
+                                         outFrame_.value.data.size());
   outFrame_.has_value = false;
   outFrame_.value.clear();
   return retval;
 }
 
 bool EthernetFrameClass::send(const void* const frame, const size_t len) const {
-  return enet_output_frame(frame, len);
+  return enet::output_frame(frame, len);
 }
 
 size_t EthernetFrameClass::write(const uint8_t b) {

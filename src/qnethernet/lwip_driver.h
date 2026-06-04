@@ -262,33 +262,35 @@ void reset_phy();
 //  Public Interface
 // --------------------------------------------------------------------------
 
+namespace enet {
+
 // Returns the MTU.
 ATTRIBUTE_NODISCARD
-inline size_t enet_get_mtu() {
+inline size_t get_mtu() {
   return MTU;
 }
 
 // Returns the maximum frame length. This does not include the 4-byte FCS (frame
 // check sequence).
 ATTRIBUTE_NODISCARD
-inline size_t enet_get_max_frame_len() {
+inline size_t get_max_frame_len() {
   return MAX_FRAME_LEN;
 }
 
 // Gets the built-in Ethernet MAC address. This does nothing if 'mac' is NULL.
 //
 // For systems without a built-in address, this should retrieve some default.
-void enet_get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
+void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Gets the current MAC address and returns whether it was retrieved. This does
 // nothing if 'mac' is NULL.
 ATTRIBUTE_NODISCARD
-bool enet_get_mac(uint8_t mac[ETH_HWADDR_LEN]);
+bool get_mac(uint8_t mac[ETH_HWADDR_LEN]);
 
 // Sets the current MAC address and returns whether it was changed. This does
 // nothing if 'mac' is NULL.
 ATTRIBUTE_NODISCARD
-bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
+bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 
 // Initializes Ethernet and returns whether successful. This does not set the
 // interface to "up". If the MAC is not settable or 'mac' is NULL then this will
@@ -305,24 +307,24 @@ bool enet_set_mac(const uint8_t mac[ETH_HWADDR_LEN]);
 //
 // See also: driver::get_capabilities(dc)
 ATTRIBUTE_NODISCARD
-bool enet_init(const uint8_t mac[ETH_HWADDR_LEN],
-               netif_ext_callback_fn callback,
-               DriverCapabilities* dc);
+bool init(const uint8_t mac[ETH_HWADDR_LEN],
+          netif_ext_callback_fn callback,
+          DriverCapabilities* dc);
 
 // Shuts down the Ethernet stack and driver.
-void enet_deinit();
+void deinit();
 
 // Gets a pointer to the netif structure. This is useful for the netif callback
 // before the default netif has been assigned.
 ATTRIBUTE_NODISCARD
-struct netif* enet_netif();
+struct netif* netif();
 
 // Processes any Ethernet input. This is meant to be called often by the
 // main loop.
-void enet_proc_input();
+void proc_input();
 
 // Polls the stack (if needed) and Ethernet link status.
-void enet_poll();
+void poll();
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 // Outputs a raw ethernet frame. This returns false if frame is NULL or if the
@@ -332,7 +334,7 @@ void enet_poll();
 //
 // This returns the result of driver::output_frame(), if the frame checks pass.
 ATTRIBUTE_NODISCARD
-bool enet_output_frame(const void* frame, size_t len);
+bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
@@ -343,13 +345,15 @@ bool enet_output_frame(const void* frame, size_t len);
 // not the IP stack's use of multicast groups.
 //
 // If 'group' is NULL then these return false. Otherwise, these return the
-// result of 'enet_set_mac_address_allowed()'.
+// result of 'set_mac_address_allowed()'.
 ATTRIBUTE_NODISCARD
-bool enet_join_group(const ip4_addr_t* group);
+bool join_group(const ip4_addr_t* group);
 ATTRIBUTE_NODISCARD
-bool enet_leave_group(const ip4_addr_t* group);
+bool leave_group(const ip4_addr_t* group);
 
 #endif  // !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
+
+}  // namespace enet
 
 }  // namespace network
 }  // namespace qindesign
