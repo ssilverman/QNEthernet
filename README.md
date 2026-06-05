@@ -1063,11 +1063,11 @@ definition of "packet" specific to your application. For example, after sending
 a web page to a client or after a chunk of data is ready for the server
 to process.
 
-There is a configuration option, `QNETHERNET_FLUSH_AFTER_WRITE`, that causes an
-automatic flush after data is written. However, this may reduce TCP efficiency.
-This option is for use with hard-to-modify code or libraries that assume data
-will get sent immediately. The preferred approach is to call flush() in the code
-or library.
+There is a configuration option, `QNETHERNET_FLUSH_AFTER_TCP_WRITE`, that causes
+an automatic flush after data is written. However, this may reduce TCP
+efficiency. This option is for use with hard-to-modify code or libraries that
+assume data will get sent immediately. The preferred approach is to call flush()
+in the code or library.
 
 ## A note on the examples
 

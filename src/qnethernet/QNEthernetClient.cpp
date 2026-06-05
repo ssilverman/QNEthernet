@@ -439,10 +439,10 @@ size_t EthernetClient::write(const uint8_t* const buf, const size_t size) {
       errno = err_to_errno(err);
       actualSize = 0;
     }
-#if QNETHERNET_FLUSH_AFTER_WRITE
+#if QNETHERNET_FLUSH_AFTER_TCP_WRITE
     // TODO: Is ignoring the return the correct thing to do?
     (void)altcp_output(state->pcb);
-#endif  // QNETHERNET_FLUSH_AFTER_WRITE
+#endif  // QNETHERNET_FLUSH_AFTER_TCP_WRITE
   }
 
   Ethernet.loop();  // Loop to allow incoming TCP data

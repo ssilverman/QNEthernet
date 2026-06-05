@@ -32,6 +32,7 @@ and this project adheres to
 * Updated cppreference.com URLs.
 * Moved driver C functions into namespace `qindesign::network::driver`.
 * Moved entropy C functions into namespace `qindesign::entropy`.
+* Changed `QNETHERNET_FLUSH_AFTER_WRITE` to `QNETHERNET_FLUSH_AFTER_TCP_WRITE`.
 
 ### Removed
 * Removed `qindesign::security::RandomDevice` in favour of the
