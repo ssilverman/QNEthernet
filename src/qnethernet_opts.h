@@ -125,6 +125,9 @@
 // somewhere. Don't forget to make it `extern "C"` if defined in a C++ file.
 // Additionally, the function should not free the pbuf.
 //
+// The function should return 'true' if the frame should go straight to raw
+// frame processing, and 'false' otherwise.
+//
 // #define QNETHERNET_HOOK_RAW_FRAME_FILTER qnethernet_raw_frame_filter(p, netif)
 // #ifdef __cplusplus
 // extern "C" {
