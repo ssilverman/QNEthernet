@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 // Enables the 'altcp_tls_adapter' functions for easier TLS library integration.
 // It's set, by default here, to be enabled if MbedTLS is enabled.
 #ifndef QNETHERNET_ALTCP_TLS_ADAPTER
