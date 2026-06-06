@@ -171,7 +171,7 @@ ethernet_input(struct pbuf *p, struct netif *netif)
 #if defined(QNETHERNET_HOOK_RAW_FRAME_FILTER) && \
     defined(LWIP_HOOK_UNKNOWN_ETH_PROTOCOL)
   if (QNETHERNET_HOOK_RAW_FRAME_FILTER(p, netif)) {
-    if (LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) == ERR_OK)) {
+    if (LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) == ERR_OK) {
       return ERR_OK;
     } else {
       ETHARP_STATS_INC(etharp.proterr);
