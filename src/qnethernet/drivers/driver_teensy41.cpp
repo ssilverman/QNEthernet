@@ -962,7 +962,9 @@ FLASHMEM bool init() {
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
              | ENET_RCR_MII_MODE;
   ENET_TCR = 0
+#if !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
              | ENET_TCR_ADDINS     // Overwrite with programmed MAC address
+#endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
              | ENET_TCR_ADDSEL(0)
              // | ENET_TCR_RFC_PAUSE
              // | ENET_TCR_TFC_PAUSE

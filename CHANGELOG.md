@@ -49,6 +49,9 @@ and this project adheres to
 * Fixed raw frame loopback to pass along broadcast frames.
   (Thanks to Folkert van Heusden:
    <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4639110163>)
+* Fixed Teensy 4.1 driver to not overwrite output source MAC address.
+  (Thanks to Folkert van Heusden:
+   <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4638274539>)
 
 ## [0.35.0]
 
