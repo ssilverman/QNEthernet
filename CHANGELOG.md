@@ -46,6 +46,7 @@ and this project adheres to
 * Fixed to add some `errno` assignments and update some related comments
   and docs.
 * Fixed TRNG initialization to use the correct macros.
+* Fixed raw frame loopback to pass along broadcast frames.
 
 ## [0.35.0]
 

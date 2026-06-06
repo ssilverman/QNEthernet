@@ -302,8 +302,8 @@ bool output_frame(const void* const frame, const size_t len) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
   // Check for a loopback frame
-  if ((std::memcmp(frame, s_mac, 6) == 0) ||
-      (std::memcmp(frame, kBroadcastMAC, 6) == 0)) {
+  const bool isOurMAC = (std::memcmp(frame, s_mac, 6) == 0);
+  if (isOurMAC || (std::memcmp(frame, kBroadcastMAC, 6) == 0)) {
     struct pbuf* const p =
         pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
     if (p != NULL) {
@@ -315,7 +315,10 @@ bool output_frame(const void* const frame, const size_t len) {
       }
     }
     // TODO: Collect stats?
-    return true;
+
+    if (isOurMAC) {
+      return true;
+    }
   }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
