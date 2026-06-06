@@ -315,7 +315,9 @@ bool output_frame(const void* const frame, const size_t len) {
       }
     }
     // TODO: Collect stats?
-    return true;
+    if (std::memcmp(frame, s_mac, 6) == 0) {
+      return true;
+    }
   }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
 
