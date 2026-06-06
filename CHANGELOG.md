@@ -47,6 +47,8 @@ and this project adheres to
   and docs.
 * Fixed TRNG initialization to use the correct macros.
 * Fixed raw frame loopback to pass along broadcast frames.
+  (Thanks to Folkert van Heusden:
+   https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4639110163)
 
 ## [0.35.0]
 
