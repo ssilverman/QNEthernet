@@ -941,9 +941,13 @@ FLASHMEM bool init() {
   for (int i = 0; i < TX_SIZE; ++i) {
     s_txRing[i].buffer  = &s_txBufs[i * BUF_SIZE];
     s_txRing[i].status  = kEnetTxBdTransmitCrc;
-    s_txRing[i].extend1 = kEnetTxBdTxInterrupt  |
-                          kEnetTxBdProtChecksum |
-                          kEnetTxBdIpHdrChecksum;
+    s_txRing[i].extend1 = 0
+                          | kEnetTxBdTxInterrupt
+#if !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+                          | kEnetTxBdProtChecksum
+                          | kEnetTxBdIpHdrChecksum
+#endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+                          ;
   }
   s_txRing[TX_SIZE - 1].status |= kEnetTxBdWrap;
 
@@ -1168,6 +1172,10 @@ bool set_link(const LinkSettings* const ls) {
 err_t output(struct pbuf* const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t* const pBD = get_bufdesc();
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+  pBD->extend1 |= kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum;
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+
   // No need to check for NULL:
   // if (pBD == NULL) {
   //   LINK_STATS_INC(link.memerr);
@@ -1198,6 +1206,10 @@ bool output_frame(const void* const frame, const size_t len) {
   }
 
   volatile enetbufferdesc_t* const pBD = get_bufdesc();
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+  pBD->extend1 &= ~(kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum);
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+
   // No need to check for NULL:
   // if (pBD == NULL) {
   //   return false;

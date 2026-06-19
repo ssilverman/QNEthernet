@@ -52,6 +52,10 @@ and this project adheres to
 * Fixed Teensy 4.1 driver to not overwrite output source MAC address.
   (Thanks to Folkert van Heusden:
    <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4638274539>)
+* Fixed Teensy 4.1 driver to not calculate checksums when sending raw frames.
+  (Thanks to Folkert van Heusden:
+   <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4697867441>,
+   <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4754025776>)
 
 ## [0.35.0]
 
