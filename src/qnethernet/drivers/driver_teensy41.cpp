@@ -272,9 +272,9 @@ typedef struct {
   void*    buffer;
   uint16_t extend0;
   uint16_t extend1;
-  uint16_t checksum;
-  uint8_t  prototype;
-  uint8_t  headerlen;
+  uint16_t checksum;   // Rx
+  uint8_t  prototype;  // Rx
+  uint8_t  headerlen;  // Rx
   uint16_t unused0;
   uint16_t extend2;
   uint32_t timestamp;
