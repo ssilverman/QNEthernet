@@ -1206,9 +1206,7 @@ bool output_frame(const void* const frame, const size_t len) {
   }
 
   volatile enetbufferdesc_t* const pBD = get_bufdesc();
-#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   pBD->extend1 &= ~(kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum);
-#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   // No need to check for NULL:
   // if (pBD == NULL) {
