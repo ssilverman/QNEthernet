@@ -46,8 +46,7 @@ static_assert(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 // 1. Create a header that defines MTU and MAX_FRAME_LEN. Don't forget to use
 //    either `#pragma once` or a #define guard.
 // 2. Create driver source and include lwip_driver.h. Implement all the
-//    `driver::x()` functions. It can be written in either C or C++. If C++ then
-//    make sure to use `extern "C"` around those functions.
+//    `driver::x()` functions.
 // 3. Adjust the driver selection logic in driver_select.h to define an
 //    appropriate macro (such as INTERNAL_DRIVER_Y) when the desired driver
 //    condition is satisfied.
@@ -68,8 +67,7 @@ static_assert(ETH_PAD_SIZE <= UINT16_MAX, "ETH_PAD_SIZE must be <= UINT16_MAX");
 // 2. Add lwIP options (see lwip/opt.h) with appropriate values for your driver.
 //    For example, Ethernet padding, checksum generation, and checksum checking.
 // 3. Create driver source and include lwip_driver.h. Implement all the
-//    `driver::x()` functions. It can be written in either C or C++. If C++ then
-//    make sure to use `extern "C"` around those functions.
+//    `driver::x()` functions.
 
 namespace qindesign {
 namespace network {
