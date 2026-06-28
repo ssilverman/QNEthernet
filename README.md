@@ -1395,8 +1395,8 @@ over Ethernet. It uses 01-1B-19-00-00-00 for forwardable frames and
 01-80-C2-00-00-0E for non-forwardable frames. See
 [PTP Message Transport](https://en.wikipedia.org/wiki/Precision_Time_Protocol#Message_transport)
 
-To disable raw frame support, set the `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`
-macro to `0`. This will use a little less space.
+To enable raw frame support, set the `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` macro
+to `1`. This will use some space.
 
 ### Promiscuous mode
 
@@ -1422,8 +1422,8 @@ frames, and so on.
 
 Raw frames having a destination MAC address that matches the local MAC address
 or the broadcast MAC address can optionally be looped back up the stack. To
-disable this feature, set the `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro
-to `0`.
+enable this feature, set the `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro
+to `1`.
 
 ## How to implement VLAN tagging
 
@@ -1889,7 +1889,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_PING_SEND`                | Enabled  | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                            |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`         | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                    |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`       | Enabled  | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                                |
-| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`        | Enabled  | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                              |
+| `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`        | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                              |
 | `QNETHERNET_ENABLE_SECURE_TCP_ISN`           | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)  |
 | `QNETHERNET_FLUSH_AFTER_TCP_WRITE`           | Disabled | Follows every `EthernetClient::write()` call with a flush; may reduce efficiency               | [Write immediacy](#write-immediacy)                                                      |
 | `QNETHERNET_LWIP_MEMORY_IN_RAM1`             | Disabled | Puts lwIP-declared memory into RAM1                                                            | [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)                          |
@@ -1955,8 +1955,8 @@ enable raw frame support and disable DNS using the macros (the '-D' option
 defines a macro):
 
 ```properties
-compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=0 -DLWIP_DNS=0
-compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=0 -DLWIP_DNS=0
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
+compiler.c.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 ```
 
 Each additional option is simply appended. No commas or quotes are required
@@ -1970,7 +1970,7 @@ C and C++ sources. If the extra flags are exactly the same for both properties,
 and this is likely the case, one could refer to the other. For example:
 
 ```properties
-compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=0 -DLWIP_DNS=0
+compiler.cpp.extra_flags=-DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1 -DLWIP_DNS=0
 compiler.c.extra_flags={compiler.cpp.extra_flags}
 ```
 
@@ -2001,7 +2001,7 @@ Simply add compiler flags to the `build_flags` build option in _platformio.ini_.
 For example:
 
 ```ini
-build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=0
+build_flags = -DQNETHERNET_ENABLE_RAW_FRAME_SUPPORT=1
 ```
 
 ### Changing lwIP configuration macros in `lwipopts.h`

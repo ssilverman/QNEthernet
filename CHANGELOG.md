@@ -21,7 +21,7 @@ and this project adheres to
 * Add some basic entropy randomness quality tests.
 
 ### Changed
-* Enabled raw frame support and loopback by default.
+* Enabled raw frame loopback by default, but not raw frame support.
 * Changed _SNTPClient_ example to assume that the `settimeofday()`
   function exists.
 * Changed entropy functions to set `errno` to `EIO` instead of `EAGAIN` on

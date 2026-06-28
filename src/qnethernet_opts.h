@@ -99,7 +99,7 @@
 
 // Enables raw frame support.
 #ifndef QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-#define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 1
+#define QNETHERNET_ENABLE_RAW_FRAME_SUPPORT 0
 #endif
 
 // Enables use of secure TCP initial sequence numbers (ISNs).
