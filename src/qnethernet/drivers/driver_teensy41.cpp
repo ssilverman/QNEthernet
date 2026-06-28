@@ -1172,9 +1172,6 @@ bool set_link(const LinkSettings* const ls) {
 err_t output(struct pbuf* const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
   volatile enetbufferdesc_t* const pBD = get_bufdesc();
-#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-  pBD->extend1 |= kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum;
-#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   // No need to check for NULL:
   // if (pBD == NULL) {
@@ -1192,6 +1189,10 @@ err_t output(struct pbuf* const p) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(copied));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+  ENET_TACC |= ENET_TACC_IPCHK | ENET_TACC_PROCHK;
+  pBD->extend1 |= kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum;
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   update_bufdesc(pBD, copied);
   return ERR_OK;
 }
@@ -1206,7 +1207,6 @@ bool output_frame(const void* const frame, const size_t len) {
   }
 
   volatile enetbufferdesc_t* const pBD = get_bufdesc();
-  pBD->extend1 &= ~(kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum);
 
   // No need to check for NULL:
   // if (pBD == NULL) {
@@ -1218,6 +1218,8 @@ bool output_frame(const void* const frame, const size_t len) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
   arm_dcache_flush_delete(pBD->buffer, multipleOf32(len + ETH_PAD_SIZE));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
+  ENET_TACC &= ~(ENET_TACC_IPCHK | ENET_TACC_PROCHK);
+  pBD->extend1 &= ~(kEnetTxBdProtChecksum | kEnetTxBdIpHdrChecksum);
   update_bufdesc(pBD, static_cast<uint16_t>(len + ETH_PAD_SIZE));
 
   return true;
