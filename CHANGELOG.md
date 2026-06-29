@@ -18,7 +18,9 @@ and this project adheres to
 * Added `qnethernet_hal_entropy_available()` function to the HAL.
 * Added `operator(buf, size)` and `available()` to
   `qindesign::security::random_device`.
-* Add some basic entropy randomness quality tests.
+* Added some basic entropy randomness quality tests.
+* Added `QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK` option for determining whether
+  to route incoming frames directly to the raw frame handling machinery.
 
 ### Changed
 * Enabled raw frame loopback by default, but not raw frame support.
