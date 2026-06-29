@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 // Enables the 'altcp_tls_adapter' functions for easier TLS library integration.
 // It's set, by default here, to be enabled if MbedTLS is enabled.
 #ifndef QNETHERNET_ALTCP_TLS_ADAPTER
@@ -114,6 +116,24 @@
 #ifndef QNETHERNET_FLUSH_AFTER_TCP_WRITE
 #define QNETHERNET_FLUSH_AFTER_TCP_WRITE 0
 #endif
+
+// Uncomment the below to check whether a frame should be passed straight
+// through to the raw frame handling. The given function should be defined
+// somewhere. Don't forget to make it `extern "C"` if defined in a C++ file.
+// Additionally, the function should not free the pbuf.
+//
+// The function should return 'true' if the frame should go straight to raw
+// frame processing, and 'false' otherwise.
+//
+/* #define QNETHERNET_HOOK_RAW_FRAME_FILTER(p, netif) \
+     qnethernet_raw_frame_filter((p), (netif)) */
+// #ifdef __cplusplus
+// extern "C" {
+// #endif  // __cplusplus
+// bool qnethernet_raw_frame_filter(struct pbuf* p, struct netif* netif);
+// #ifdef __cplusplus
+// }  // extern "C"
+// #endif  // __cplusplus
 
 // Put lwIP-declared memory into RAM1. (Teensy 4)
 #ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
