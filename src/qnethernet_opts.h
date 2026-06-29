@@ -93,6 +93,20 @@
 #define QNETHERNET_ENABLE_PROMISCUOUS_MODE 0
 #endif
 
+// Indicates that a filter function checks whether a frame should be passed
+// straight through to the raw frame handling. A function with the following
+// signature should be defined somewhere. Don't forget to make it `extern "C"`
+// if defined in a C++ file. Additionally, the function should not free
+// the pbuf.
+//
+//   bool qnethernet_raw_frame_filter(struct pbuf* p, struct netif* netif);
+//
+// The function should return 'true' if the frame should go straight to raw
+// frame processing, and 'false' otherwise.
+#ifndef QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK
+#define QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK 0
+#endif
+
 // Enables raw frame loopback when the destination MAC address matches the local
 // MAC address or the broadcast MAC address.
 #ifndef QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK
@@ -117,23 +131,10 @@
 #define QNETHERNET_FLUSH_AFTER_TCP_WRITE 0
 #endif
 
-// Uncomment the below to check whether a frame should be passed straight
-// through to the raw frame handling. The given function should be defined
-// somewhere. Don't forget to make it `extern "C"` if defined in a C++ file.
-// Additionally, the function should not free the pbuf.
-//
-// The function should return 'true' if the frame should go straight to raw
-// frame processing, and 'false' otherwise.
-//
-/* #define QNETHERNET_HOOK_RAW_FRAME_FILTER(p, netif) \
-     qnethernet_raw_frame_filter((p), (netif)) */
-// #ifdef __cplusplus
-// extern "C" {
-// #endif  // __cplusplus
-// bool qnethernet_raw_frame_filter(struct pbuf* p, struct netif* netif);
-// #ifdef __cplusplus
-// }  // extern "C"
-// #endif  // __cplusplus
+// Put lwIP-declared memory into RAM1. (Teensy 4)
+#ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
+#define QNETHERNET_LWIP_MEMORY_IN_RAM1 0
+#endif
 
 // Put lwIP-declared memory into RAM1. (Teensy 4)
 #ifndef QNETHERNET_LWIP_MEMORY_IN_RAM1
