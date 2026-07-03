@@ -60,6 +60,7 @@ and this project adheres to
   (Thanks to Folkert van Heusden:
    <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4697867441>,
    <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4754025776>)
+* Fixed Ping to calculate the ICMP checkum if needed.
 
 ## [0.35.0]
 

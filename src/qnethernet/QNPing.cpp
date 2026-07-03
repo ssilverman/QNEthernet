@@ -146,6 +146,9 @@ bool Ping::send(const PingData& req) {
 
   // Must be before the gotos
   const ip_addr_t ipaddr IPADDR4_INIT(static_cast<uint32_t>(req.ip));
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+  uint16_t chksum;
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   err_t err = pbuf_take(p, &echo, sizeof(echo));
   if (err != ERR_OK) {
@@ -158,6 +161,11 @@ bool Ping::send(const PingData& req) {
       goto send_err;
     }
   }
+
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+  chksum = inet_chksum(p->payload, static_cast<uint16_t>(packetSize));
+  pbuf_take_at(p, &chksum, 2, offsetof(struct icmp_echo_hdr, chksum));
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   // Send the packet
   pcb_->ttl = req.ttl;
