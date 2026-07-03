@@ -65,6 +65,7 @@ lwIP release.
     1. [Promiscuous mode](#promiscuous-mode)
     2. [Raw frame receive buffering](#raw-frame-receive-buffering)
     3. [Raw frame loopback](#raw-frame-loopback)
+    4. [Raw frame filter hook](#raw-frame-filter-hook)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
     1. [About the allocator functions](#about-the-allocator-functions)
@@ -1429,6 +1430,20 @@ or the broadcast MAC address can optionally be looped back up the stack. To
 disable this feature, set the `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK` macro
 to `0`.
 
+### Raw frame filter hook
+
+It's possible to enable a hook function that examines all incoming frames to
+determine whether to bypass the stack entirely and send the frame directly to
+the raw frame API.
+
+Steps to use:
+1. Set the `QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK` macro to `1`
+2. Implement a C function (declare with `extern "C"`) having this signature:\
+   `bool qnethernet_raw_frame_filter(struct pbuf*p, struct netif* netif)`
+
+Inside that function, return true if the frame should be passed directly to the
+raw frame API, and false if the frame should be passed to the stack.
+
 ## How to implement VLAN tagging
 
 The lwIP stack supports VLAN tagging. Here are the steps for how to implement
@@ -1892,6 +1907,7 @@ The _QNEthernet_-specific macros are as follows:
 | `QNETHERNET_ENABLE_PING_REPLY`               | Enabled  | Enables ICMP echo reply support                                                                | [Ping reply](#ping-reply)                                                                |
 | `QNETHERNET_ENABLE_PING_SEND`                | Enabled  | Enables ICMP echo support (including raw IP support)                                           | [Ping](#ping)                                                                            |
 | `QNETHERNET_ENABLE_PROMISCUOUS_MODE`         | Disabled | Enables promiscuous mode                                                                       | [Promiscuous mode](#promiscuous-mode)                                                    |
+| `QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK`    | Disabled | Enables a raw frame filter hook for determining whether to bypass the stack                    | [Raw frame filter hook](#raw-frame-filter-hook)                                          |
 | `QNETHERNET_ENABLE_RAW_FRAME_LOOPBACK`       | Enabled  | Enables raw frame loopback when the destination MAC matches the local MAC or the broadcast MAC | [Raw frame loopback](#raw-frame-loopback)                                                |
 | `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT`        | Disabled | Enables raw frame support                                                                      | [Raw Ethernet Frames](#raw-ethernet-frames)                                              |
 | `QNETHERNET_ENABLE_SECURE_TCP_ISN`           | Enabled  | Enables secure TCP initial sequence numbers (ISNs)                                             | [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)  |

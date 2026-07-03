@@ -21,6 +21,8 @@ and this project adheres to
 * Added some basic entropy randomness quality tests.
 * Added `QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK` option for determining whether
   to route incoming frames directly to the raw frame handling machinery.
+  (Thanks to Folkert van Heusden for helping with this:
+   <https://github.com/ssilverman/QNEthernet/issues/106#issuecomment-4619339870>)
 
 ### Changed
 * Enabled raw frame loopback by default, but not raw frame support.
