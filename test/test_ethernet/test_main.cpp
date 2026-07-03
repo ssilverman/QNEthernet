@@ -85,7 +85,9 @@ void tearDown() {
     client = nullptr;
   }
   server = nullptr;
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   EthernetFrame.clear();
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   // Clean up mDNS
   MDNS.end();
@@ -306,8 +308,10 @@ static void test_null_frame() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.isDHCPEnabled(), "Expected DHCP disabled");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected start success");
 
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   TEST_ASSERT_FALSE_MESSAGE(enet::output_frame(nullptr, 0), "Expected output failed");
   TEST_ASSERT_FALSE_MESSAGE(enet::output_frame(nullptr, 10), "Expected output failed");
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 }
 
 // Tests DHCP.
@@ -1543,14 +1547,17 @@ static void test_other_state() {
                             Ethernet.maxMulticastGroups(),
                             "Expected default max. multicast groups");
   TEST_ASSERT_EQUAL_MESSAGE(enet::get_mtu(), Ethernet.mtu(), "Expected default MTU");
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   TEST_ASSERT_EQUAL_MESSAGE(enet::get_max_frame_len(), EthernetFrame.maxFrameLen(),
                             "Expected default max. frame len");
   TEST_ASSERT_EQUAL_MESSAGE(60, EthernetFrame.minFrameLen(), "Expected default min. frame len");
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   TEST_ASSERT_EQUAL_MESSAGE(MDNS_MAX_SERVICES, MDNS.maxServices(), "Expected default mDNS max. services");
 }
 
 // Tests EthernetFrame.
 static void test_raw_frames() {
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   constexpr uint8_t srcMAC[6]{QNETHERNET_DEFAULT_MAC_ADDRESS};
   constexpr uint8_t data[10]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -1597,10 +1604,12 @@ static void test_raw_frames() {
     TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(t, EthernetFrame.receivedTimestamp(),
                                          "Expected valid timestamp");
   }
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 }
 
 // Tests raw frame receive queueing.
 static void test_raw_frames_receive_queueing() {
+#if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
 
@@ -1727,6 +1736,7 @@ static void test_raw_frames_receive_queueing() {
                                        "Expected at least 1 dropped");
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(4, EthernetFrame.totalReceiveCount(),
                                        "Expected at least 4 total");
+#endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 }
 
 // Tests ping.
