@@ -137,6 +137,8 @@ bool Ping::send(const PingData& req) {
   }
 
   // Prepare the ICMP packet
+  // Note: Not casting the pbuf payload to an echo header in case there are
+  //       alignment mismatches
   struct icmp_echo_hdr echo;
   ICMPH_TYPE_SET(&echo, ICMP_ECHO);
   ICMPH_CODE_SET(&echo, 0);
