@@ -271,7 +271,7 @@ void proc_input() {
 }
 
 void poll() {
-  sys_check_timeouts();
+  (void)sys_check_timeouts();
   driver::poll(&s_netif);
 }
 
