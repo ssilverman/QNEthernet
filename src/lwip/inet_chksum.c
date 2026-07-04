@@ -255,7 +255,6 @@ lwip_standard_chksum(const void *dataptr, int len)
 }
 #endif
 
-#if LWIP_IPV4 || LWIP_IPV6
 /** Parts of the pseudo checksum which are common to IPv4 and IPv6 */
 static u16_t
 inet_cksum_pseudo_base(struct pbuf *p, u8_t proto, u16_t proto_len, u32_t acc)
@@ -293,7 +292,6 @@ inet_cksum_pseudo_base(struct pbuf *p, u8_t proto, u16_t proto_len, u32_t acc)
   LWIP_DEBUGF(INET_DEBUG, ("inet_chksum_pseudo(): pbuf chain lwip_chksum()=%"X32_F"\n", acc));
   return (u16_t)~(acc & 0xffffUL);
 }
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 #if LWIP_IPV4
 /* inet_chksum_pseudo:
@@ -365,7 +363,6 @@ ip6_chksum_pseudo(struct pbuf *p, u8_t proto, u16_t proto_len,
 }
 #endif /* LWIP_IPV6 */
 
-#if LWIP_IPV4 || LWIP_IPV6
 /* ip_chksum_pseudo:
  *
  * Calculates the IPv4 or IPv6 pseudo Internet checksum used by TCP and UDP for a pbuf chain.
@@ -441,7 +438,6 @@ inet_cksum_pseudo_partial_base(struct pbuf *p, u8_t proto, u16_t proto_len,
   LWIP_DEBUGF(INET_DEBUG, ("inet_chksum_pseudo(): pbuf chain lwip_chksum()=%"X32_F"\n", acc));
   return (u16_t)~(acc & 0xffffUL);
 }
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 #if LWIP_IPV4
 /* inet_chksum_pseudo_partial:
@@ -515,7 +511,6 @@ ip6_chksum_pseudo_partial(struct pbuf *p, u8_t proto, u16_t proto_len,
 }
 #endif /* LWIP_IPV6 */
 
-#if LWIP_IPV4 || LWIP_IPV6
 /* ip_chksum_pseudo_partial:
  *
  * Calculates the IPv4 or IPv6 pseudo Internet checksum used by TCP and UDP for a pbuf chain.
@@ -545,7 +540,6 @@ ip_chksum_pseudo_partial(struct pbuf *p, u8_t proto, u16_t proto_len,
   }
 #endif /* LWIP_IPV4 */
 }
-#endif /* LWIP_IPV4 || LWIP_IPV6 */
 
 /* inet_chksum:
  *

@@ -167,23 +167,6 @@ ethernet_input(struct pbuf *p, struct netif *netif)
     }
   }
 
-  // QNEthernet: Allows something external to get raw frames
-#if QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK && \
-    defined(LWIP_HOOK_UNKNOWN_ETH_PROTOCOL)
-  bool qnethernet_raw_frame_filter(struct pbuf* p, struct netif* netif);
-
-  if (qnethernet_raw_frame_filter(p, netif)) {
-    if (LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(p, netif) == ERR_OK) {
-      return ERR_OK;
-    } else {
-      ETHARP_STATS_INC(etharp.proterr);
-      ETHARP_STATS_INC(etharp.drop);
-      goto free_and_return;
-    }
-  }
-#endif  // QNETHERNET_ENABLE_RAW_FRAME_FILTER_HOOK &&
-        // defined(LWIP_HOOK_UNKNOWN_ETH_PROTOCOL)
-
   switch (type) {
 #if LWIP_IPV4 && LWIP_ARP
     /* IP packet? */
