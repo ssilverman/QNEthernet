@@ -38,7 +38,7 @@ namespace driver {
 //  Defines
 // --------------------------------------------------------------------------
 
-static const uint32_t GPIO_PAD_OUTPUT = (0
+static constexpr uint32_t GPIO_PAD_OUTPUT = (0
     /* HYS_0_Hysteresis_Disabled */
     /* PUS_0_100K_Ohm_Pull_Down */
     /* PUE_0_Keeper */
@@ -50,12 +50,12 @@ static const uint32_t GPIO_PAD_OUTPUT = (0
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
 
-static const uint32_t GPIO_MUX = 5;
+static constexpr uint32_t GPIO_MUX = 5;
     // SION:0 MUX_MODE:0101
     // ALT5 (GPIO)
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
-static const uint32_t STRAP_PAD_PULLUP = (0
+static constexpr uint32_t STRAP_PAD_PULLUP = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -68,7 +68,7 @@ static const uint32_t STRAP_PAD_PULLUP = (0
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-static const uint32_t STRAP_PAD_PULLDOWN = (0
+static constexpr uint32_t STRAP_PAD_PULLDOWN = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -81,7 +81,7 @@ static const uint32_t STRAP_PAD_PULLDOWN = (0
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x3038
 
-static const uint32_t MDIO_PAD_PULLUP = (0
+static constexpr uint32_t MDIO_PAD_PULLUP = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -98,7 +98,7 @@ static const uint32_t MDIO_PAD_PULLUP = (0
     // MDIO requires a 1.5k to 10k pull-up.
     // TODO: Why does the Teensy 4.1 board not have an MDIO pull-up?
 
-static const uint32_t MDIO_MUX = 0;
+static constexpr uint32_t MDIO_MUX = 0;
     // SION:0 MUX_MODE:0000
     // ALT0
 
@@ -115,7 +115,7 @@ static const uint32_t MDIO_MUX = 0;
 //     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x30E9
 
-static const uint32_t RMII_PAD_PULLUP = (0
+static constexpr uint32_t RMII_PAD_PULLUP = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -128,7 +128,7 @@ static const uint32_t RMII_PAD_PULLUP = (0
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
-// static const uint32_t RMII_PAD_SIGNAL = (0
+// static constexpr uint32_t RMII_PAD_SIGNAL = (0
 //     /* HYS_0_Hysteresis_Disabled */
 //     /* PUS_0_100K_Ohm_Pull_Down */
 //     /* PUE_0_Keeper */
@@ -141,7 +141,7 @@ static const uint32_t RMII_PAD_PULLUP = (0
 //     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x00E9
 
-static const uint32_t RMII_PAD_CLOCK = (0
+static constexpr uint32_t RMII_PAD_CLOCK = (0
     /* HYS_0_Hysteresis_Disabled */
     /* PUS_0_100K_Ohm_Pull_Down */
     /* PUE_0_Keeper */
@@ -154,17 +154,17 @@ static const uint32_t RMII_PAD_CLOCK = (0
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
 
-static const uint32_t RMII_MUX_CLOCK = (6 | 0x10);
+static constexpr uint32_t RMII_MUX_CLOCK = (6 | 0x10);
       // SION:1 MUX_MODE:0110
       // ALT6
 
-static const uint32_t RMII_MUX = 3;
+static constexpr uint32_t RMII_MUX = 3;
     // SION:0 MUX_MODE:0011
     // ALT3
 
-enum Sizes {
-  RX_SIZE = 5,
-  TX_SIZE = 5,
+// Sizes
+static constexpr size_t kRxSize = 5;
+static constexpr size_t kTxSize = 5;
 
 // Buffer size for transferring to and from the Ethernet MAC. The frame size is
 // either 1518 or 1522, assuming a 1500-byte payload, depending on whether VLAN
@@ -175,17 +175,17 @@ enum Sizes {
 //
 // [1518 or 1522 made into a multiple of 32 for ARM cache flush sizing and a
 // multiple of 64 for ENETx_MRBR.]
-// NOTE: BUF_SIZE will be 1536 whether we use 1518 or 1522 (plus ETH_PAD_SIZE)
+// NOTE: kBufSize will be 1536 whether we use 1518 or 1522 (plus ETH_PAD_SIZE)
 // * Padding(2)
 // * Destination(6) + Source(6) + VLAN tag(2) + VLAN info(2) + Length/Type(2) +
 //   Payload(1500) + FCS(4)
-  BUF_SIZE = (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63),
-};
+static constexpr size_t kBufSize =
+    (((ETH_PAD_SIZE + 6 + 6 + 2 + 2 + 2 + 1500 + 4) + 63) & ~63);
 
-// #define IRQ_PRIORITY 64
+// static constexpr int kIRQPriority = 64
 
 // Size checks
-static_assert((RX_SIZE >= 1) && (TX_SIZE >= 1), "Rx and Tx sizes must be >= 1");
+static_assert((kRxSize >= 1) && (kRxSize >= 1), "Rx and Tx sizes must be >= 1");
 
 #if !QNETHERNET_BUFFERS_IN_RAM1
 ATTRIBUTE_NODISCARD ATTRIBUTE_ALWAYS_INLINE
@@ -297,10 +297,10 @@ typedef enum {
 // --------------------------------------------------------------------------
 
 // Ethernet buffers
-alignas(64) static enetbufferdesc_t s_rxRing[RX_SIZE];
-alignas(64) static enetbufferdesc_t s_txRing[TX_SIZE];
-alignas(64) static uint8_t s_rxBufs[RX_SIZE * BUF_SIZE] BUFFER_DMAMEM;
-alignas(64) static uint8_t s_txBufs[TX_SIZE * BUF_SIZE] BUFFER_DMAMEM;
+alignas(64) static enetbufferdesc_t s_rxRing[kRxSize];
+alignas(64) static enetbufferdesc_t s_txRing[kTxSize];
+alignas(64) static uint8_t s_rxBufs[kRxSize * kBufSize] BUFFER_DMAMEM;
+alignas(64) static uint8_t s_txBufs[kTxSize * kBufSize] BUFFER_DMAMEM;
 static volatile enetbufferdesc_t* s_pRxBD = &s_rxRing[0];
 static volatile enetbufferdesc_t* s_pTxBD = &s_txRing[0];
 
@@ -930,16 +930,16 @@ FLASHMEM bool init() {
   s_pRxBD = &s_rxRing[0];
   s_pTxBD = &s_txRing[0];
 
-  for (int i = 0; i < RX_SIZE; ++i) {
-    s_rxRing[i].buffer  = &s_rxBufs[i * BUF_SIZE];
+  for (size_t i = 0; i < kRxSize; ++i) {
+    s_rxRing[i].buffer  = &s_rxBufs[i * kBufSize];
     s_rxRing[i].status  = kEnetRxBdEmpty;
     s_rxRing[i].extend1 = kEnetRxBdInterrupt;
   }
   // The last buffer descriptor should be set with the wrap flag
-  s_rxRing[RX_SIZE - 1].status |= kEnetRxBdWrap;
+  s_rxRing[kRxSize - 1].status |= kEnetRxBdWrap;
 
-  for (int i = 0; i < TX_SIZE; ++i) {
-    s_txRing[i].buffer  = &s_txBufs[i * BUF_SIZE];
+  for (size_t i = 0; i < kTxSize; ++i) {
+    s_txRing[i].buffer  = &s_txBufs[i * kBufSize];
     s_txRing[i].status  = kEnetTxBdTransmitCrc;
     s_txRing[i].extend1 = 0
                           | kEnetTxBdTxInterrupt
@@ -949,7 +949,7 @@ FLASHMEM bool init() {
 #endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
                           ;
   }
-  s_txRing[TX_SIZE - 1].status |= kEnetTxBdWrap;
+  s_txRing[kTxSize - 1].status |= kEnetTxBdWrap;
 
   ENET_EIMR = 0;  // This also deasserts all interrupts
 
@@ -1012,7 +1012,7 @@ FLASHMEM bool init() {
 
   ENET_RDSR = reinterpret_cast<uint32_t>(s_rxRing);
   ENET_TDSR = reinterpret_cast<uint32_t>(s_txRing);
-  ENET_MRBR = BUF_SIZE;
+  ENET_MRBR = kBufSize;
 
   ENET_RXIC = 0;
   ENET_TXIC = 0;
@@ -1108,7 +1108,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
     if (std::atomic_flag_test_and_set(&s_rxNotAvail)) {
       return NULL;
     }
-  } else if (counter >= RX_SIZE * 2) {
+  } else if (counter >= int{kRxSize} * 2) {
     return NULL;
   }
 
@@ -1198,7 +1198,7 @@ bool output_frame(const void* const frame, const size_t len) {
   if (s_initState != kInitStateInitialized) {
     return false;
   }
-  if (len > (BUF_SIZE - ETH_PAD_SIZE)) {
+  if (len > (kBufSize - size_t{ETH_PAD_SIZE})) {
     return false;
   }
 
