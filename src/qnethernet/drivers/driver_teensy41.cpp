@@ -666,22 +666,22 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
   struct pbuf* p = NULL;
 
   // Determine if a frame has been received
-  if (pBD->status & err_mask) {
+  if ((pBD->status & err_mask) != 0) {
 #if LINK_STATS
     // Either truncated or others
-    if (pBD->status & rx_bd_status::kTrunc) {
+    if ((pBD->status & rx_bd_status::kTrunc) != 0) {
       LINK_STATS_INC(link.lenerr);
-    } else if (pBD->status & rx_bd_status::kLast) {
+    } else if ((pBD->status & rx_bd_status::kLast) != 0) {
       // The others are only valid if the 'L' bit is set
-      if (pBD->status & rx_bd_status::kOverrun) {
+      if ((pBD->status & rx_bd_status::kOverrun) != 0) {
         LINK_STATS_INC(link.err);
       } else {  // Either overrun and others zero, or others
-        if (pBD->status & rx_bd_status::kNonOctet) {
+        if ((pBD->status & rx_bd_status::kNonOctet) != 0) {
           LINK_STATS_INC(link.err);
-        } else if (pBD->status & rx_bd_status::kCrc) {  // Non-octet or CRC
+        } else if ((pBD->status & rx_bd_status::kCrc) != 0) {  // Non-octet or CRC
           LINK_STATS_INC(link.chkerr);
         }
-        if (pBD->status & rx_bd_status::kLengthViolation) {
+        if ((pBD->status & rx_bd_status::kLengthViolation) != 0) {
           LINK_STATS_INC(link.lenerr);
         }
       }
@@ -736,7 +736,7 @@ static inline void update_bufdesc(volatile BufferDescriptor* const pBD,
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
-  if (pBD->control & tx_bd_control::kWrap) {
+  if ((pBD->control & tx_bd_control::kWrap) != 0) {
     s_pTxBD = &s_txRing[0];
   } else {
     ++s_pTxBD;
@@ -750,8 +750,8 @@ ATTRIBUTE_NODISCARD
 static inline volatile BufferDescriptor* rxbd_next() {
   volatile BufferDescriptor* pBD = s_pRxBD;
 
-  while (pBD->status & rx_bd_status::kEmpty) {
-    if (pBD->status & rx_bd_status::kWrap) {
+  while ((pBD->status & rx_bd_status::kEmpty) != 0) {
+    if ((pBD->status & rx_bd_status::kWrap) != 0) {
       pBD = &s_rxRing[0];
     } else {
       ++pBD;
@@ -761,7 +761,7 @@ static inline volatile BufferDescriptor* rxbd_next() {
     }
   }
 
-  if (s_pRxBD->status & rx_bd_status::kWrap) {
+  if ((s_pRxBD->status & rx_bd_status::kWrap) != 0) {
     s_pRxBD = &s_rxRing[0];
   } else {
     ++s_pRxBD;
@@ -1252,7 +1252,7 @@ static uint32_t crc32(const void* const data, const size_t len) {
   size_t lenRem = len;
 
   crc = ~crc;
-  while (lenRem--) {
+  while ((lenRem--) != 0) {
     crc ^= *(pData++);
     for (int j = 0; j < 8; ++j) {
       crc = (crc >> 1) ^ (-(crc & 0x01) & 0xEDB88320);
