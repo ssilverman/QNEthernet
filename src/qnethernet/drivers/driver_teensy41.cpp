@@ -202,79 +202,87 @@ static inline uint32_t multipleOf32(uint32_t x) {
 //  Types
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage
+
 // Defines the control and status region of the receive buffer descriptor.
-enum enet_rx_bd_control_status {
-  kEnetRxBdEmpty           = 0x8000U,  // Empty bit
-  kEnetRxBdRxSoftOwner1    = 0x4000U,  // Receive software ownership
-  kEnetRxBdWrap            = 0x2000U,  // Wrap buffer descriptor
-  kEnetRxBdRxSoftOwner2    = 0x1000U,  // Receive software ownership
-  kEnetRxBdLast            = 0x0800U,  // Last BD in the frame (L bit)
-  kEnetRxBdMiss            = 0x0100U,  // Miss; in promiscuous mode; needs L
-  kEnetRxBdBroadcast       = 0x0080U,  // Broadcast
-  kEnetRxBdMulticast       = 0x0040U,  // Multicast
-  kEnetRxBdLengthViolation = 0x0020U,  // Receive length violation; needs L
-  kEnetRxBdNonOctet        = 0x0010U,  // Receive non-octet aligned frame; needs L
-  kEnetRxBdCrc             = 0x0004U,  // Receive CRC or frame error; needs L
-  kEnetRxBdOverrun         = 0x0002U,  // Receive FIFO overrun; needs L
-  kEnetRxBdTrunc           = 0x0001U,  // Frame is truncated
-};
+namespace rx_bd_status {
+constexpr uint16_t kEmpty           = 0x8000;  // Empty bit
+constexpr uint16_t kRxSoftOwner1    = 0x4000;  // Receive software ownership
+constexpr uint16_t kWrap            = 0x2000;  // Wrap buffer descriptor
+constexpr uint16_t kRxSoftOwner2    = 0x1000;  // Receive software ownership
+constexpr uint16_t kLast            = 0x0800;  // Last BD in the frame (L bit)
+constexpr uint16_t kMiss            = 0x0100;  // Miss; in promiscuous mode; needs L
+constexpr uint16_t kBroadcast       = 0x0080;  // Broadcast
+constexpr uint16_t kMulticast       = 0x0040;  // Multicast
+constexpr uint16_t kLengthViolation = 0x0020;  // Receive length violation; needs L
+constexpr uint16_t kNonOctet        = 0x0010;  // Receive non-octet aligned frame; needs L
+constexpr uint16_t kCrc             = 0x0004;  // Receive CRC or frame error; needs L
+constexpr uint16_t kOverrun         = 0x0002;  // Receive FIFO overrun; needs L
+constexpr uint16_t kTrunc           = 0x0001;  // Frame is truncated
+}  // namespace rx_bd_status
 
 // Defines the control extended region1 of the receive buffer descriptor.
-enum enet_rx_bd_control_extend0 {
-  kEnetRxBdIpHeaderChecksumErr = 0x0020U,  // IP header checksum error; needs L
-  kEnetRxBdProtocolChecksumErr = 0x0010U,  // Protocol checksum error; needs L
-  kEnetRxBdVlan                = 0x0004U,  // VLAN; needs L
-  kEnetRxBdIpv6                = 0x0002U,  // Ipv6 frame; needs L
-  kEnetRxBdIpv4Fragment        = 0x0001U,  // Ipv4 fragment; needs L
-};
+namespace rx_bd_extend0 {
+constexpr uint16_t kVlanPriorityCodePoint = 0xE000;  // VLAN priority code point; needs L
+constexpr uint16_t kIpHeaderChecksumErr   = 0x0020;  // IP header checksum error; needs L
+constexpr uint16_t kProtocolChecksumErr   = 0x0010;  // Protocol checksum error; needs L
+constexpr uint16_t kVlan                  = 0x0004;  // VLAN; needs L
+constexpr uint16_t kIpv6                  = 0x0002;  // IPv6 frame; needs L
+constexpr uint16_t kIpv4Fragment          = 0x0001;  // IPv4 fragment; needs L
+}  // namespace rx_bd_extend0
 
 // Defines the control extended region2 of the receive buffer descriptor.
-enum enet_rx_bd_control_extend1 {
-  kEnetRxBdMacErr    = 0x8000U,  // MAC error; needs L
-  kEnetRxBdPhyErr    = 0x0400U,  // PHY error; needs L
-  kEnetRxBdCollision = 0x0200U,  // Collision; needs L
-  kEnetRxBdUnicast   = 0x0100U,  // Unicast frame; valid even if L is not set
-  kEnetRxBdInterrupt = 0x0080U,  // Generate RXB/RXF interrupt
-};
+namespace rx_bd_extend1 {
+constexpr uint16_t kMacErr    = 0x8000;  // MAC error; needs L
+constexpr uint16_t kPhyErr    = 0x0400;  // PHY error; needs L
+constexpr uint16_t kCollision = 0x0200;  // Collision; needs L
+constexpr uint16_t kUnicast   = 0x0100;  // Unicast frame; valid even if L is not set
+constexpr uint16_t kInterrupt = 0x0080;  // Generate RXB/RXF interrupt
+}  // namespace rx_bd_extend1
 
 // Defines the control status of the transmit buffer descriptor.
-enum enet_tx_bd_control_status {
-  kEnetTxBdReady        = 0x8000U,  // Ready bit
-  kEnetTxBdTxSoftOwner1 = 0x4000U,  // Transmit software ownership
-  kEnetTxBdWrap         = 0x2000U,  // Wrap buffer descriptor
-  kEnetTxBdTxSoftOwner2 = 0x1000U,  // Transmit software ownership
-  kEnetTxBdLast         = 0x0800U,  // Last BD in the frame (L bit)
-  kEnetTxBdTransmitCrc  = 0x0400U,  // Transmit CRC; needs L
-};
+namespace tx_bd_control {
+constexpr uint16_t kReady            = 0x8000;  // Ready bit
+constexpr uint16_t kTxSoftwareOwner1 = 0x4000;  // Transmit software ownership
+constexpr uint16_t kWrap             = 0x2000;  // Wrap buffer descriptor
+constexpr uint16_t kTxSoftwareOwner2 = 0x1000;  // Transmit software ownership
+constexpr uint16_t kLast             = 0x0800;  // Last BD in the frame (L bit)
+constexpr uint16_t kTxCrc            = 0x0400;  // Transmit CRC; needs L
+}  // namespace tx_bd_control
 
 // Defines the control extended region1 of the transmit buffer descriptor.
-enum enet_tx_bd_control_extend0 {
-  kEnetTxBdTxErr              = 0x8000U,  // Transmit error; needs L
-  kEnetTxBdTxUnderflowErr     = 0x2000U,  // Underflow error; needs L
-  kEnetTxBdExcessCollisionErr = 0x1000U,  // Excess collision error; needs L
-  kEnetTxBdTxFrameErr         = 0x0800U,  // Frame with error; needs L
-  kEnetTxBdLatecollisionErr   = 0x0400U,  // Late collision error; needs L
-  kEnetTxBdOverflowErr        = 0x0200U,  // Overflow error; needs L
-  kEnetTxTimestampErr         = 0x0100U,  // Timestamp error; needs L
-};
+namespace tx_bd_extend0 {
+constexpr uint16_t kTxErr              = 0x8000;  // Transmit error; needs L
+constexpr uint16_t kUnderflowErr       = 0x2000;  // Underflow error; needs L
+constexpr uint16_t kExcessCollisionErr = 0x1000;  // Excess collision error; needs L
+constexpr uint16_t kFrameErr           = 0x0800;  // Frame with error; needs L
+constexpr uint16_t kLateCollisionErr   = 0x0400;  // Late collision error; needs L
+constexpr uint16_t kOverflowErr        = 0x0200;  // Overflow error; needs L
+constexpr uint16_t kTimestampErr       = 0x0100;  // Timestamp error; needs L
+}  // namespace tx_bd_extend0
 
 // Defines the control extended region2 of the transmit buffer descriptor.
-enum enet_tx_bd_control_extend1 {
-  kEnetTxBdTxInterrupt   = 0x4000U,  // Transmit interrupt; all BDs
-  kEnetTxBdTimestamp     = 0x2000U,  // Transmit timestamp flag; all BDs
-  kEnetTxBdProtChecksum  = 0x1000U,  // Insert protocol specific checksum; all BDs
-  kEnetTxBdIpHdrChecksum = 0x0800U,  // Insert IP header checksum; all BDs
-};
+namespace tx_bd_extend1 {
+constexpr uint16_t kInterrupt        = 0x4000;  // Generate interrupt flags; all BDs
+constexpr uint16_t kTimestamp        = 0x2000;  // Timestamp; all BDs
+constexpr uint16_t kProtocolChecksum = 0x1000;  // Insert protocol specific checksum; all BDs
+constexpr uint16_t kIpHeaderChecksum = 0x0800;  // Insert IP header checksum; all BDs
+}  // namespace tx_bd_extend1
 
-typedef struct {
+}  // namespace
+
+struct ATTRIBUTE_PACKED BufferDescriptor {
   uint16_t length;
-  uint16_t status;
+  union {
+    uint16_t status;   // Rx
+    uint16_t control;  // Tx
+  };
   void*    buffer;
   uint16_t extend0;
   uint16_t extend1;
   uint16_t checksum;   // Rx
-  uint8_t  prototype;  // Rx
-  uint8_t  headerlen;  // Rx
+  uint8_t  protoType;  // Rx
+  uint8_t  headerLen;  // Rx
   uint16_t unused0;
   uint16_t extend2;
   uint32_t timestamp;
@@ -282,31 +290,31 @@ typedef struct {
   uint16_t unused2;
   uint16_t unused3;
   uint16_t unused4;
-} enetbufferdesc_t;
+};
 
-typedef enum {
-  kInitStateStart,           // Unknown hardware
-  kInitStateNoHardware,      // No PHY
-  kInitStateHasHardware,     // Has PHY
-  kInitStatePHYInitialized,  // PHY's been initialized
-  kInitStateInitialized,     // PHY and MAC have been initialized
-} enet_init_states_t;
+enum class InitStates {
+  kStart,           // Unknown hardware
+  kNoHardware,      // No PHY
+  kHasHardware,     // Has PHY
+  kPHYInitialized,  // PHY's been initialized
+  kInitialized,     // PHY and MAC have been initialized
+};
 
 // --------------------------------------------------------------------------
 //  Internal Variables
 // --------------------------------------------------------------------------
 
 // Ethernet buffers
-alignas(64) static enetbufferdesc_t s_rxRing[kRxSize];
-alignas(64) static enetbufferdesc_t s_txRing[kTxSize];
+alignas(64) static BufferDescriptor s_rxRing[kRxSize];
+alignas(64) static BufferDescriptor s_txRing[kTxSize];
 alignas(64) static uint8_t s_rxBufs[kRxSize * kBufSize] BUFFER_DMAMEM;
 alignas(64) static uint8_t s_txBufs[kTxSize * kBufSize] BUFFER_DMAMEM;
-static volatile enetbufferdesc_t* s_pRxBD = &s_rxRing[0];
-static volatile enetbufferdesc_t* s_pTxBD = &s_txRing[0];
+static volatile BufferDescriptor* s_pRxBD = &s_rxRing[0];
+static volatile BufferDescriptor* s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
 static std::atomic_flag s_rxNotAvail  = ATOMIC_FLAG_INIT;
-static enet_init_states_t s_initState = kInitStateStart;
+static InitStates s_initState = InitStates::kStart;
 
 // PHY status, polled
 static int s_checkLinkStatusState = 0;
@@ -329,59 +337,63 @@ static void enet_isr();
 //  PHY I/O
 // --------------------------------------------------------------------------
 
+namespace {  // Internal linkage
+
 // PHY register definitions.
-enum PHYRegs {
-  PHY_REGCR   = 0x0D,
-  PHY_ADDAR   = 0x0E,
-  PHY_LEDCR   = 0x18,
-  PHY_RCSR    = 0x17,
-  PHY_BMSR    = 0x01,
-  PHY_PHYSTS  = 0x10,
-  PHY_BMCR    = 0x00,
-  PHY_ANAR    = 0x04,
-  PHY_PHYCR   = 0x19,
-  PHY_PHYIDR1 = 0x02,
-  PHY_PHYIDR2 = 0x03,
-};
+namespace phy_regs {
+constexpr uint16_t kREGCR   = 0x0D;
+constexpr uint16_t kADDAR   = 0x0E;
+constexpr uint16_t kLEDCR   = 0x18;
+constexpr uint16_t kRCSR    = 0x17;
+constexpr uint16_t kBMSR    = 0x01;
+constexpr uint16_t kPHYSTS  = 0x10;
+constexpr uint16_t kBMCR    = 0x00;
+constexpr uint16_t kANAR    = 0x04;
+constexpr uint16_t kPHYCR   = 0x19;
+constexpr uint16_t kPHYIDR1 = 0x02;
+constexpr uint16_t kPHYIDR2 = 0x03;
+}  // namespace phy_regs
 
 // PHY register values definitions.
-enum PHYVals {
-  PHY_LEDCR_BLINK_RATE_20Hz = (0u << 9),
-  PHY_LEDCR_BLINK_RATE_10Hz = (1u << 9),
-  PHY_LEDCR_BLINK_RATE_5Hz  = (2u << 9),
-  PHY_LEDCR_BLINK_RATE_2Hz  = (3u << 9),
-  PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1u << 7),
+namespace phy_vals {
+constexpr uint16_t kLEDCR_BLINK_RATE_20Hz = (0u << 9);
+constexpr uint16_t kLEDCR_BLINK_RATE_10Hz = (1u << 9);
+constexpr uint16_t kLEDCR_BLINK_RATE_5Hz  = (2u << 9);
+constexpr uint16_t kLEDCR_BLINK_RATE_2Hz  = (3u << 9);
+constexpr uint16_t kLEDCR_LED_LINK_POLARITY_ACTIVE_HIGH = (1u << 7);
 
-  // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
-  // LED shows link status, active high, 10Hz
-  PHY_LEDCR_VALUE =
-      (PHY_LEDCR_BLINK_RATE_10Hz | PHY_LEDCR_LED_LINK_POLARITY_ACTIVE_HIGH),
-  // 10-9: LED Blinking Rate (ON/OFF duration)
-  // 7: LED Link Polarity: 1=Active High, 0=Active Low
+// LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
+// LED shows link status, active high, 10Hz
+constexpr uint16_t kLEDCR_VALUE =
+    (kLEDCR_BLINK_RATE_10Hz | kLEDCR_LED_LINK_POLARITY_ACTIVE_HIGH);
+// 10-9: LED Blinking Rate (ON/OFF duration)
+// 7: LED Link Polarity: 1=Active High, 0=Active Low
 
-  PHY_RCSR_RMII_CLOCK_SELECT_50MHz               = (1u << 7),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0u << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  = (1u << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  = (2u << 0),
-  PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT = (3u << 0),
+constexpr uint16_t kRCSR_RMII_CLOCK_SELECT_50MHz               = (1u << 7);
+constexpr uint16_t kRCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_14_BIT = (0u << 0);
+constexpr uint16_t kRCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT  = (1u << 0);
+constexpr uint16_t kRCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_6_BIT  = (2u << 0);
+constexpr uint16_t kRCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_10_BIT = (3u << 0);
 
-  PHY_RCSR_VALUE = (PHY_RCSR_RMII_CLOCK_SELECT_50MHz |
-                    PHY_RCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT),
-  // 7: RMII_Clock_Select: 1=50MHz (non-default)
-  // 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
+constexpr uint16_t kRCSR_VALUE = (kRCSR_RMII_CLOCK_SELECT_50MHz |
+                                  kRCSR_RECEIVE_ELASTICITY_BUFFER_SIZE_2_BIT);
+// 7: RMII_Clock_Select: 1=50MHz (non-default)
+// 1-0: Receive_Elasticity_Buffer_Size: 1=2 bit tolerance (up to 2400 byte packets)
 
-  PHY_BMSR_LINK_STATUS = (1u << 2),  // 0: No link, 1: Valid link
+constexpr uint16_t kBMSR_LINK_STATUS = (1u << 2);  // 0: No link, 1: Valid link
 
-  PHY_PHYSTS_LINK_STATUS   = (1u <<  0),  // 0: No link, 1: Valid link
-  PHY_PHYSTS_SPEED_STATUS  = (1u <<  1),  // 0: 100Mbps, 1: 10Mbps
-  PHY_PHYSTS_DUPLEX_STATUS = (1u <<  2),  // 0: Half-Duplex, 1: Full-Duplex
-  PHY_PHYSTS_MDI_MDIX_MODE = (1u << 14),  // 0: Normal, 1: Swapped
+constexpr uint16_t kPHYSTS_LINK_STATUS   = (1u <<  0);  // 0: No link, 1: Valid link
+constexpr uint16_t kPHYSTS_SPEED_STATUS  = (1u <<  1);  // 0: 100Mbps, 1: 10Mbps
+constexpr uint16_t kPHYSTS_DUPLEX_STATUS = (1u <<  2);  // 0: Half-Duplex, 1: Full-Duplex
+constexpr uint16_t kPHYSTS_MDI_MDIX_MODE = (1u << 14);  // 0: Normal, 1: Swapped
 
-  PHY_BMCR_SPEED_SELECTION  = (1u << 13),  // 0: 10 Mbps, 1: 100 Mbps
-  PHY_BMCR_AUTO_NEG         = (1u << 12),  // 0: Disable, 1: Enable
-  PHY_BMCR_RESTART_AUTO_NEG = (1u <<  9),  // 0: Normal, 1: Restart (Self-clearing)
-  PHY_BMCR_DUPLEX_MODE      = (1u <<  8),  // 0: Half, 1: Full
-};
+constexpr uint16_t kBMCR_SPEED_SELECTION  = (1u << 13);  // 0: 10 Mbps, 1: 100 Mbps
+constexpr uint16_t kBMCR_AUTO_NEG         = (1u << 12);  // 0: Disable, 1: Enable
+constexpr uint16_t kBMCR_RESTART_AUTO_NEG = (1u <<  9);  // 0: Normal, 1: Restart (Self-clearing)
+constexpr uint16_t kBMCR_DUPLEX_MODE      = (1u <<  8);  // 0: Half, 1: Full
+}  // namespace phy_vals
+
+}  // namespace
 
 // Reads a PHY register (using MDIO & MDC signals) and returns whether
 // continuation is needed (not complete). If continuation is needed, then this
@@ -578,8 +590,8 @@ FLASHMEM static void configure_rmii_pins() {
 // will either be NO_HARDWARE or PHY_INITIALIZED, unless it wasn't START or
 // HAS_HARDWARE when called.
 FLASHMEM static void init_phy() {
-  if ((s_initState != kInitStateStart) &&
-      (s_initState != kInitStateHasHardware)) {
+  if ((s_initState != InitStates::kStart) &&
+      (s_initState != InitStates::kHasHardware)) {
     return;
   }
 
@@ -604,52 +616,52 @@ FLASHMEM static void init_phy() {
   //         Model Number:   0x14: 010100b
   //         Revision Number: 4 bits
   // Check for PHY presence
-  if ((mdio_read(PHY_PHYIDR1) != 0x2000) ||
-      ((mdio_read(PHY_PHYIDR2) & 0xfff0) != 0xA140)) {
+  if ((mdio_read(phy_regs::kPHYIDR1) != 0x2000) ||
+      ((mdio_read(phy_regs::kPHYIDR2) & 0xfff0) != 0xA140)) {
     // Undo some pin configuration, for posterity
     GPIO7_GDIR &= ~((1u << 15) | (1u << 14));
 
     disable_enet_clocks();
 
-    s_initState = kInitStateNoHardware;
+    s_initState = InitStates::kNoHardware;
     return;
   }
 
   // LEDCR offset 0x18, set LED_Link_Polarity and Blink_rate, pg 62
   // LED shows link status, active high, 10Hz
-  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
+  mdio_write(phy_regs::kLEDCR, phy_vals::kLEDCR_VALUE);
 
   // Configure the PHY registers
   // The strap pull-ups may not have been strong enough, so ensure those values
   // are set properly too
   // Right now, it's just the 50MHz clock select for RMII slave mode
 
-  // mdio_write(PHY_BMCR, 0x3100);  // 13: Speed_Selection: 1=100Mbps
-  //                                // 12: Negotiation_Enable: 1=enabled
-  //                                //  8: Duplex_Mode: 1=Full-Duplex
-  // mdio_write(PHY_ANAR, 0x01E1);  // 8: 100Base-TX_Full-Duplex: 1=advertise
-  //                                // 7: 100Base-TX_Half-Duplex: 1=advertise
-  //                                // 6: 10Base-T_Full-Duplex: 1=advertise
-  //                                // 5: 10Base-T_Half-Duplex: 1=advertise
-  //                                // 4-0: Selector_Field: IEEE802.3u
-  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
-  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
-  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(PHY_RCSR));
-  // mdio_write(PHY_PHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
+  // mdio_write(phy_regs::kBMCR, 0x3100);  // 13: Speed_Selection: 1=100Mbps
+  //                                       // 12: Negotiation_Enable: 1=enabled
+  //                                       //  8: Duplex_Mode: 1=Full-Duplex
+  // mdio_write(phy_regs::kANAR, 0x01E1);  // 8: 100Base-TX_Full-Duplex: 1=advertise
+  //                                       // 7: 100Base-TX_Half-Duplex: 1=advertise
+  //                                       // 6: 10Base-T_Full-Duplex: 1=advertise
+  //                                       // 5: 10Base-T_Half-Duplex: 1=advertise
+  //                                       // 4-0: Selector_Field: IEEE802.3u
+  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(phy_regs::kRCSR));
+  mdio_write(phy_regs::kRCSR, phy_vals::kRCSR_VALUE);
+  // printf("RCSR = %04" PRIx16 "h\r\n", mdio_read(phy_regs::kRCSR));
+  // mdio_write(phy_regs::kPHYCR, 0x8000);  // 15: Auto_MDI/X_Enable: 1=enable
 
-  s_initState = kInitStatePHYInitialized;
+  s_initState = InitStates::kPHYInitialized;
 }
 
 // Low-level input function that transforms a received frame into an lwIP pbuf.
 // This returns a newly-allocated pbuf, or NULL if there was a frame error or
 // allocation error.
 ATTRIBUTE_NODISCARD
-static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
-  const uint16_t err_mask = kEnetRxBdTrunc    |
-                            kEnetRxBdOverrun  |
-                            kEnetRxBdCrc      |
-                            kEnetRxBdNonOctet |
-                            kEnetRxBdLengthViolation;
+static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
+  const uint16_t err_mask = rx_bd_status::kTrunc    |
+                            rx_bd_status::kOverrun  |
+                            rx_bd_status::kCrc      |
+                            rx_bd_status::kNonOctet |
+                            rx_bd_status::kLengthViolation;
 
   struct pbuf* p = NULL;
 
@@ -657,19 +669,19 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
   if (pBD->status & err_mask) {
 #if LINK_STATS
     // Either truncated or others
-    if (pBD->status & kEnetRxBdTrunc) {
+    if (pBD->status & rx_bd_status::kTrunc) {
       LINK_STATS_INC(link.lenerr);
-    } else if (pBD->status & kEnetRxBdLast) {
+    } else if (pBD->status & rx_bd_status::kLast) {
       // The others are only valid if the 'L' bit is set
-      if (pBD->status & kEnetRxBdOverrun) {
+      if (pBD->status & rx_bd_status::kOverrun) {
         LINK_STATS_INC(link.err);
       } else {  // Either overrun and others zero, or others
-        if (pBD->status & kEnetRxBdNonOctet) {
+        if (pBD->status & rx_bd_status::kNonOctet) {
           LINK_STATS_INC(link.err);
-        } else if (pBD->status & kEnetRxBdCrc) {  // Non-octet or CRC
+        } else if (pBD->status & rx_bd_status::kCrc) {  // Non-octet or CRC
           LINK_STATS_INC(link.chkerr);
         }
-        if (pBD->status & kEnetRxBdLengthViolation) {
+        if (pBD->status & rx_bd_status::kLengthViolation) {
           LINK_STATS_INC(link.lenerr);
         }
       }
@@ -692,7 +704,7 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
   }
 
   // Set rx bd empty
-  pBD->status = (pBD->status & kEnetRxBdWrap) | kEnetRxBdEmpty;
+  pBD->status = (pBD->status & rx_bd_status::kWrap) | rx_bd_status::kEmpty;
 
   ENET_RDAR = ENET_RDAR_RDAR;
 
@@ -702,10 +714,10 @@ static struct pbuf* low_level_input(volatile enetbufferdesc_t* const pBD) {
 // Acquires a buffer descriptor. Meant to be used with update_bufdesc().
 // This waits until there is a TX buffer available.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t* get_bufdesc() {
-  volatile enetbufferdesc_t* const pBD = s_pTxBD;
+static inline volatile BufferDescriptor* get_bufdesc() {
+  volatile BufferDescriptor* const pBD = s_pTxBD;
 
-  while ((pBD->status & kEnetTxBdReady) != 0) {
+  while ((pBD->control & tx_bd_control::kReady) != 0) {
     // Wait until a free buffer is available
     // TODO: Limit count?
   }
@@ -714,17 +726,17 @@ static inline volatile enetbufferdesc_t* get_bufdesc() {
 }
 
 // Updates a buffer descriptor. Meant to be used with get_bufdesc().
-static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
+static inline void update_bufdesc(volatile BufferDescriptor* const pBD,
                                   const uint16_t len) {
-  pBD->length = len;
-  pBD->status = (pBD->status & kEnetTxBdWrap) |
-                kEnetTxBdTransmitCrc          |
-                kEnetTxBdLast                 |
-                kEnetTxBdReady;
+  pBD->length  = len;
+  pBD->control = (pBD->control & tx_bd_control::kWrap) |
+                  tx_bd_control::kTxCrc                |
+                  tx_bd_control::kLast                 |
+                  tx_bd_control::kReady;
 
   ENET_TDAR = ENET_TDAR_TDAR;
 
-  if (pBD->status & kEnetTxBdWrap) {
+  if (pBD->control & tx_bd_control::kWrap) {
     s_pTxBD = &s_txRing[0];
   } else {
     ++s_pTxBD;
@@ -735,11 +747,11 @@ static inline void update_bufdesc(volatile enetbufferdesc_t* const pBD,
 
 // Finds the next non-empty BD.
 ATTRIBUTE_NODISCARD
-static inline volatile enetbufferdesc_t* rxbd_next() {
-  volatile enetbufferdesc_t* pBD = s_pRxBD;
+static inline volatile BufferDescriptor* rxbd_next() {
+  volatile BufferDescriptor* pBD = s_pRxBD;
 
-  while (pBD->status & kEnetRxBdEmpty) {
-    if (pBD->status & kEnetRxBdWrap) {
+  while (pBD->status & rx_bd_status::kEmpty) {
+    if (pBD->status & rx_bd_status::kWrap) {
       pBD = &s_rxRing[0];
     } else {
       ++pBD;
@@ -749,7 +761,7 @@ static inline volatile enetbufferdesc_t* rxbd_next() {
     }
   }
 
-  if (s_pRxBD->status & kEnetRxBdWrap) {
+  if (s_pRxBD->status & rx_bd_status::kWrap) {
     s_pRxBD = &s_rxRing[0];
   } else {
     ++s_pRxBD;
@@ -775,28 +787,28 @@ static inline int check_link_status(struct netif* const netif,
   static uint16_t physts;
   static uint8_t is_link_up;
 
-  if (s_initState != kInitStateInitialized) {
+  if (s_initState != InitStates::kInitialized) {
     return 0;
   }
 
-  // Note: PHY_PHYSTS doesn't seem to contain the live link information unless
-  //       BMSR is read too
+  // Note: phy_regs::kPHYSTS doesn't seem to contain the live link information
+  //       unless BMSR is read too
 
   switch (state) {
     case 0:
       ATTRIBUTE_FALLTHROUGH;
     case 1:
-      if (mdio_read_nonblocking(PHY_BMSR, &bmsr, state == 1)) {
+      if (mdio_read_nonblocking(phy_regs::kBMSR, &bmsr, state == 1)) {
         return 1;
       }
-      is_link_up = ((bmsr & PHY_BMSR_LINK_STATUS) != 0);
+      is_link_up = ((bmsr & phy_vals::kBMSR_LINK_STATUS) != 0);
       if (!is_link_up) {
         break;
       }
       ATTRIBUTE_FALLTHROUGH;
 
     case 2:
-      if (mdio_read_nonblocking(PHY_PHYSTS, &physts, state == 2)) {
+      if (mdio_read_nonblocking(phy_regs::kPHYSTS, &physts, state == 2)) {
         return 2;
       }
       break;
@@ -807,9 +819,12 @@ static inline int check_link_status(struct netif* const netif,
 
   if (netif_is_link_up(netif) != is_link_up) {
     if (is_link_up) {
-      s_linkInfo.speed = ((physts & PHY_PHYSTS_SPEED_STATUS) != 0) ? 10 : 100;
-      s_linkInfo.fullNotHalfDuplex = ((physts & PHY_PHYSTS_DUPLEX_STATUS) != 0);
-      s_linkInfo.isCrossover       = ((physts & PHY_PHYSTS_MDI_MDIX_MODE) != 0);
+      s_linkInfo.speed =
+          ((physts & phy_vals::kPHYSTS_SPEED_STATUS) != 0) ? 10 : 100;
+      s_linkInfo.fullNotHalfDuplex =
+          ((physts & phy_vals::kPHYSTS_DUPLEX_STATUS) != 0);
+      s_linkInfo.isCrossover =
+          ((physts & phy_vals::kPHYSTS_MDI_MDIX_MODE) != 0);
 
       netif_set_link_up(netif);
     } else {
@@ -840,7 +855,7 @@ FLASHMEM void get_capabilities(DriverCapabilities* const dc) {
 }
 
 bool is_unknown() {
-  return s_initState == kInitStateStart;
+  return s_initState == InitStates::kStart;
 }
 
 extern "C" {
@@ -889,19 +904,19 @@ bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
 
 bool has_hardware() {
   switch (s_initState) {
-    case kInitStateHasHardware:
+    case InitStates::kHasHardware:
       ATTRIBUTE_FALLTHROUGH;
-    case kInitStatePHYInitialized:
+    case InitStates::kPHYInitialized:
       ATTRIBUTE_FALLTHROUGH;
-    case kInitStateInitialized:
+    case InitStates::kInitialized:
       return true;
-    case kInitStateNoHardware:
+    case InitStates::kNoHardware:
       return false;
     default:
       break;
   }
   init_phy();
-  return (s_initState != kInitStateNoHardware);
+  return (s_initState != InitStates::kNoHardware);
 }
 
 void set_chip_select_pin(const int pin) {
@@ -911,12 +926,12 @@ void set_chip_select_pin(const int pin) {
 // Initializes the PHY and Ethernet interface. This sets the init state and
 // returns whether the initialization was successful.
 FLASHMEM bool init() {
-  if (s_initState == kInitStateInitialized) {
+  if (s_initState == InitStates::kInitialized) {
     return true;
   }
 
   init_phy();
-  if (s_initState != kInitStatePHYInitialized) {
+  if (s_initState != InitStates::kPHYInitialized) {
     return false;
   }
 
@@ -932,24 +947,24 @@ FLASHMEM bool init() {
 
   for (size_t i = 0; i < kRxSize; ++i) {
     s_rxRing[i].buffer  = &s_rxBufs[i * kBufSize];
-    s_rxRing[i].status  = kEnetRxBdEmpty;
-    s_rxRing[i].extend1 = kEnetRxBdInterrupt;
+    s_rxRing[i].status  = rx_bd_status::kEmpty;
+    s_rxRing[i].extend1 = rx_bd_extend1::kInterrupt;
   }
   // The last buffer descriptor should be set with the wrap flag
-  s_rxRing[kRxSize - 1].status |= kEnetRxBdWrap;
+  s_rxRing[kRxSize - 1].status |= rx_bd_status::kWrap;
 
   for (size_t i = 0; i < kTxSize; ++i) {
     s_txRing[i].buffer  = &s_txBufs[i * kBufSize];
-    s_txRing[i].status  = kEnetTxBdTransmitCrc;
+    s_txRing[i].control = tx_bd_control::kTxCrc;
     s_txRing[i].extend1 = 0
-                          | kEnetTxBdTxInterrupt
+                          | tx_bd_extend1::kInterrupt
 #if !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-                          | kEnetTxBdProtChecksum
-                          | kEnetTxBdIpHdrChecksum
+                          | tx_bd_extend1::kProtocolChecksum
+                          | tx_bd_extend1::kIpHeaderChecksum
 #endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
                           ;
   }
-  s_txRing[kTxSize - 1].status |= kEnetTxBdWrap;
+  s_txRing[kTxSize - 1].control |= tx_bd_control::kWrap;
 
   ENET_EIMR = 0;  // This also deasserts all interrupts
 
@@ -1045,9 +1060,9 @@ FLASHMEM bool init() {
   ENET_TDAR = ENET_TDAR_TDAR;
 
   // PHY soft reset
-  // mdio_write(PHY_BMCR, 1u << 15);
+  // mdio_write(phy_regs::kBMCR, 1u << 15);
 
-  s_initState = kInitStateInitialized;
+  s_initState = InitStates::kInitialized;
 
   return true;
 }
@@ -1066,7 +1081,7 @@ FLASHMEM void deinit() {
   s_collisionIAUR = 0;
 
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
-  if (s_initState == kInitStateInitialized) {
+  if (s_initState == InitStates::kInitialized) {
     NVIC_DISABLE_IRQ(IRQ_ENET);
     attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
     ENET_EIMR = 0;  // Disable interrupts
@@ -1084,16 +1099,16 @@ FLASHMEM void deinit() {
     //       so nothing will be pending
     ENET_ECR = 0x70000000;
 
-    s_initState = kInitStatePHYInitialized;
+    s_initState = InitStates::kPHYInitialized;
   }
 
-  if (s_initState == kInitStatePHYInitialized) {
+  if (s_initState == InitStates::kPHYInitialized) {
     // Power down the PHY and enable reset
     GPIO7_DR_CLEAR = (1u << 15) | (1u << 14);
 
     disable_enet_clocks();
 
-    s_initState = kInitStateHasHardware;
+    s_initState = InitStates::kHasHardware;
   }
 #endif  // QNETHERNET_INTERNAL_END_STOPS_ALL
 }
@@ -1113,7 +1128,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
   }
 
   // Get the next chunk of input data
-  volatile enetbufferdesc_t* const pBD = rxbd_next();
+  volatile BufferDescriptor* const pBD = rxbd_next();
   if (pBD == NULL) {
     return NULL;
   }
@@ -1135,9 +1150,9 @@ void get_link_info(LinkInfo* const li) {
 // is enabled.
 bool set_link(const LinkSettings* const ls) {
   switch (s_initState) {
-    case kInitStatePHYInitialized:
+    case InitStates::kPHYInitialized:
       ATTRIBUTE_FALLTHROUGH;
-    case kInitStateInitialized:
+    case InitStates::kInitialized:
       break;
     default:
       return false;
@@ -1147,23 +1162,23 @@ bool set_link(const LinkSettings* const ls) {
     return false;
   }
 
-  const uint16_t r = mdio_read(PHY_BMCR);
-  uint16_t newR = static_cast<uint16_t>(r & ~(PHY_BMCR_SPEED_SELECTION |
-                                              PHY_BMCR_AUTO_NEG        |
-                                              PHY_BMCR_DUPLEX_MODE));
+  const uint16_t r = mdio_read(phy_regs::kBMCR);
+  uint16_t newR = static_cast<uint16_t>(r & ~(phy_vals::kBMCR_SPEED_SELECTION |
+                                              phy_vals::kBMCR_AUTO_NEG |
+                                              phy_vals::kBMCR_DUPLEX_MODE));
 
   if (ls->speed == 100) {
-    newR |= PHY_BMCR_SPEED_SELECTION;
+    newR |= phy_vals::kBMCR_SPEED_SELECTION;
   }
   if (ls->fullNotHalfDuplex) {
-    newR |= PHY_BMCR_DUPLEX_MODE;
+    newR |= phy_vals::kBMCR_DUPLEX_MODE;
   }
   if (ls->autoNegotiation) {
-    newR |= PHY_BMCR_AUTO_NEG;
+    newR |= phy_vals::kBMCR_AUTO_NEG;
   }
 
   if (newR != r) {
-    mdio_write(PHY_BMCR, newR);
+    mdio_write(phy_regs::kBMCR, newR);
   }
   return true;
 }
@@ -1171,7 +1186,7 @@ bool set_link(const LinkSettings* const ls) {
 // Outputs data from the MAC.
 err_t output(struct pbuf* const p) {
   // Note: The pbuf already contains the padding (ETH_PAD_SIZE)
-  volatile enetbufferdesc_t* const pBD = get_bufdesc();
+  volatile BufferDescriptor* const pBD = get_bufdesc();
 
   // No need to check for NULL:
   // if (pBD == NULL) {
@@ -1195,14 +1210,14 @@ err_t output(struct pbuf* const p) {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool output_frame(const void* const frame, const size_t len) {
-  if (s_initState != kInitStateInitialized) {
+  if (s_initState != InitStates::kInitialized) {
     return false;
   }
   if (len > (kBufSize - size_t{ETH_PAD_SIZE})) {
     return false;
   }
 
-  volatile enetbufferdesc_t* const pBD = get_bufdesc();
+  volatile BufferDescriptor* const pBD = get_bufdesc();
 
   // No need to check for NULL:
   // if (pBD == NULL) {
@@ -1309,14 +1324,15 @@ void notify_manual_link_state(const bool flag) {
 // --------------------------------------------------------------------------
 
 void restart_auto_negotiation() {
-  mdio_write(PHY_BMCR, mdio_read(PHY_BMCR) | PHY_BMCR_RESTART_AUTO_NEG);
+  mdio_write(phy_regs::kBMCR,
+             mdio_read(phy_regs::kBMCR) | phy_vals::kBMCR_RESTART_AUTO_NEG);
 }
 
 void reset_phy() {
   switch (s_initState) {
-    case kInitStatePHYInitialized:
+    case InitStates::kPHYInitialized:
       ATTRIBUTE_FALLTHROUGH;
-    case kInitStateInitialized:
+    case InitStates::kInitialized:
       break;
     default:
       return;
@@ -1327,8 +1343,8 @@ void reset_phy() {
   GPIO7_DR_SET   = (1u << 14);  // Take out of reset
   delay(2);                     // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
-  mdio_write(PHY_LEDCR, PHY_LEDCR_VALUE);
-  mdio_write(PHY_RCSR, PHY_RCSR_VALUE);
+  mdio_write(phy_regs::kLEDCR, phy_vals::kLEDCR_VALUE);
+  mdio_write(phy_regs::kRCSR, phy_vals::kRCSR_VALUE);
 }
 
 }  // namespace driver
