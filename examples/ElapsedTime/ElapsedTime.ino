@@ -9,14 +9,14 @@
 #include <chrono>
 
 #include <QNEthernet.h>
-#include <qnethernet/util/chrono_clocks.h>
-#include <qnethernet/util/elapsedTime.h>
+#include <qnethernet/chrono/chrono_clocks.h>
+#include <qnethernet/chrono/elapsedTime.h>
 
 namespace {  // Internal linkage section
 
 // Make these easier to type
-using steady_clock = qindesign::network::util::steady_clock_ms;
-using elapsedTime = qindesign::network::util::elapsedTime<steady_clock>;
+using steady_clock = qindesign::chrono::steady_clock_ms;
+using elapsedTime = qindesign::chrono::elapsedTime<steady_clock>;
 
 // This check can be removed and the code simplified if it is known
 // that your system supports at least C++14

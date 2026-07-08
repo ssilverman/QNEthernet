@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+* Moved chrono utilities to the `qindesign::chrono` namespace.
+
 ## [0.36.0]
 
 ### Added

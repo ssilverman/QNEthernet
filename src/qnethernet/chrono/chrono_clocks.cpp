@@ -5,11 +5,10 @@
 // is only here because 'inline' members are only supported in C++17 or later.
 // This file is part of the QNEthernet library.
 
-#include "qnethernet/util/chrono_clocks.h"
+#include "qnethernet/chrono/chrono_clocks.h"
 
 namespace qindesign {
-namespace network {
-namespace util {
+namespace chrono {
 
 // --------------------------------------------------------------------------
 //  arm_high_resolution_clock -- Only Potentially Supported on ARM
@@ -80,6 +79,5 @@ bool arm_high_resolution_clock_init() {
 
 #endif  // F_CPU
 
-}  // namespace util
-}  // namespace network
+}  // namespace chrono
 }  // namespace qindesign

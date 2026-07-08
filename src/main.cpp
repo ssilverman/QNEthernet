@@ -16,13 +16,13 @@
 #include <Arduino.h>
 
 #include "QNEthernet.h"
+#include "qnethernet/chrono/chrono_clocks.h"
 #include "qnethernet/compat/c++11_compat.h"
-#include "qnethernet/util/chrono_clocks.h"
 
 using namespace qindesign::network;
 
-using steady_clock = qindesign::network::util::steady_clock_ms;
-using high_resolution_clock = qindesign::network::util::arm_high_resolution_clock;
+using steady_clock = qindesign::chrono::steady_clock_ms;
+using high_resolution_clock = qindesign::chrono::arm_high_resolution_clock;
 
 // Startup delay, in milliseconds.
 static constexpr uint32_t kStartupDelay = 2000;

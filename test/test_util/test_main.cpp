@@ -10,8 +10,6 @@
 
 // C++ includes
 #include <cerrno>
-#include <cerrno>
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -26,14 +24,9 @@
 #include "lwip/ip4_addr.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/util/PrintUtils.h"
-#include "qnethernet/util/chrono_clocks.h"
-#include "qnethernet/util/elapsedTime.h"
 #include "qnethernet/util/ip_tools.h"
 
 using namespace qindesign::network::util;
-using namespace std::chrono_literals;
-
-using steady_clock = steady_clock_ms;
 
 // --------------------------------------------------------------------------
 //  Utilities
@@ -143,98 +136,8 @@ static void test_isBroadcast() {
   };
 
   for (const uint32_t* test : tests) {
-    TEST_ASSERT_EQUAL(test[3], qindesign::network::util::isBroadcast(
-                                   test[0], test[1], test[2]));
+    TEST_ASSERT_EQUAL(test[3], isBroadcast(test[0], test[1], test[2]));
   }
-}
-
-// Tests the elapsedTime<Clock> utility class comparison functions.
-static void test_elapsedTime_compare() {
-  elapsedTime<steady_clock> timer;
-
-  delay(2000);
-  auto x = std::chrono::duration_cast<std::chrono::seconds>(timer.dur());
-  TEST_ASSERT_EQUAL(2, x.count());
-
-  // Comparison operators
-
-  TEST_ASSERT_TRUE(timer == 2s);
-  TEST_ASSERT_TRUE(timer == 2000);
-  TEST_ASSERT_TRUE(2s == timer);
-  TEST_ASSERT_TRUE(2000 == timer);
-  TEST_ASSERT_TRUE(timer != 1s);
-  TEST_ASSERT_TRUE(timer != 1000);
-  TEST_ASSERT_TRUE(1s != timer);
-  TEST_ASSERT_TRUE(1000 != timer);
-  TEST_ASSERT_TRUE(timer < 3s);
-  TEST_ASSERT_TRUE(timer < 3000);
-  TEST_ASSERT_TRUE(3s > timer);
-  TEST_ASSERT_TRUE(3000 > timer);
-  TEST_ASSERT_TRUE(timer > 1s);
-  TEST_ASSERT_TRUE(timer > 1000);
-  TEST_ASSERT_TRUE(1s < timer);
-  TEST_ASSERT_TRUE(1000 < timer);
-  TEST_ASSERT_TRUE(timer <= 3s);
-  TEST_ASSERT_TRUE(timer <= 3000);
-  TEST_ASSERT_TRUE(3s >= timer);
-  TEST_ASSERT_TRUE(3000 >= timer);
-  TEST_ASSERT_TRUE(timer >= 2s);
-  TEST_ASSERT_TRUE(timer >= 2000);
-  TEST_ASSERT_TRUE(2s <= timer);
-  TEST_ASSERT_TRUE(2000 <= timer);
-
-  TEST_ASSERT_TRUE(timer == 2000ms);
-  TEST_ASSERT_TRUE(2000ms == timer);
-  TEST_ASSERT_TRUE(timer != 1000ms);
-  TEST_ASSERT_TRUE(1000ms != timer);
-  TEST_ASSERT_TRUE(timer < 3000ms);
-  TEST_ASSERT_TRUE(3000ms > timer);
-  TEST_ASSERT_TRUE(timer > 1000ms);
-  TEST_ASSERT_TRUE(1000ms < timer);
-  TEST_ASSERT_TRUE(timer <= 3000ms);
-  TEST_ASSERT_TRUE(3000ms >= timer);
-  TEST_ASSERT_TRUE(timer >= 2000ms);
-  TEST_ASSERT_TRUE(2000ms <= timer);
-
-  TEST_ASSERT_TRUE(timer == 2.0s);
-  TEST_ASSERT_TRUE(2.0s == timer);
-  TEST_ASSERT_TRUE(timer != 1.9s);
-  TEST_ASSERT_TRUE(1.9s != timer);
-  TEST_ASSERT_TRUE(timer < 3.0s);
-  TEST_ASSERT_TRUE(3.0s > timer);
-  TEST_ASSERT_TRUE(timer > 1.9s);
-  TEST_ASSERT_TRUE(1.9s < timer);
-  TEST_ASSERT_TRUE(timer <= 3.0s);
-  TEST_ASSERT_TRUE(3.0s >= timer);
-  TEST_ASSERT_TRUE(timer >= 0.5s);
-  TEST_ASSERT_TRUE(0.5s <= timer);
-}
-
-// Tests "other" things about the elapsedTime<Clock> utility class.
-static void test_elapsedTime_other() {
-  // Constructor (duration), assignment, and arithmetic
-  elapsedTime<steady_clock> t1{2s};
-  TEST_ASSERT_TRUE(t1 == 2s);
-  t1 = 3s;
-  TEST_ASSERT_TRUE(t1 == 3s);
-  t1 += 500ms;
-  TEST_ASSERT_TRUE(t1 == 3.5s);
-  t1 -= 0.2s;
-  TEST_ASSERT_TRUE(t1 == 3.3s);
-  TEST_ASSERT_TRUE((t1 + 0.6s) == 3.9s);
-  TEST_ASSERT_TRUE((t1 - 0.6s) == 2.7s);
-
-  // Constructor (rep), assignment, and arithmetic
-  elapsedTime<steady_clock> t2{2000};
-  TEST_ASSERT_TRUE(t2 == 2s);
-  t2 = 3000;
-  TEST_ASSERT_TRUE(t2 == 3s);
-  t2 += 500;
-  TEST_ASSERT_TRUE(t2 == 3.5s);
-  t2 -= 200;
-  TEST_ASSERT_TRUE(t2 == 3.3s);
-  TEST_ASSERT_TRUE((t2 + 600) == 3.9s);
-  TEST_ASSERT_TRUE((t2 - 600) == 2.7s);
 }
 
 // Main program setup.
@@ -259,8 +162,6 @@ void setup() {
   RUN_TEST(test_StdioPrint);
   RUN_TEST(test_NullPrint);
   RUN_TEST(test_isBroadcast);
-  RUN_TEST(test_elapsedTime_compare);
-  RUN_TEST(test_elapsedTime_other);
   UNITY_END();
 }
 

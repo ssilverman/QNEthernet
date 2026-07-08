@@ -15,8 +15,7 @@
 #include <type_traits>
 
 namespace qindesign {
-namespace network {
-namespace util {
+namespace chrono {
 
 template <typename Clock>
 class elapsedTime {
@@ -264,6 +263,5 @@ class elapsedTime {
   time_point base_;
 };
 
-}  // namespace util
-}  // namespace network
+}  // namespace chrono
 }  // namespace qindesign

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // ChronoClocks demonstrates how to use the std::chrono library with
-// the qindesign::network::util Clocks. This is not intended to be a
+// the qindesign::chrono Clocks. This is not intended to be a
 // std::chrono tutorial.
 //
 // This file is part of the QNEthernet library.
@@ -14,15 +14,15 @@
 #include <cstdio>
 
 #include <QNEthernet.h>
-#include <qnethernet/util/chrono_clocks.h>
+#include <qnethernet/chrono/chrono_clocks.h>
 
 // On C++ >= 14:
 // // Allows us to specify things like 1000ms
 // using namespace std::chrono_literals;
 
 // Make these easier to type
-using steady_clock = qindesign::network::util::steady_clock_ms;
-using high_resolution_clock = qindesign::network::util::arm_high_resolution_clock;
+using steady_clock = qindesign::chrono::steady_clock_ms;
+using high_resolution_clock = qindesign::chrono::arm_high_resolution_clock;
 
 // Note: _gettimeofday() may need to be defined for std::chrono::system_clock
 //       if the system doesn't supply it

@@ -2093,7 +2093,7 @@ provides an implementation of this function that just calls `std::abort()`.
 ### `std::chrono`-compatible Clocks
 
 The library currently includes two `std::chrono` Clock implementations in the
-`qindesign::network::util` namespace:
+`qindesign::chrono` namespace:
 1. `steady_clock_ms` - Wraps `qnethernet_hal_millis()` and provides a
    millisecond-based count.
 2. `arm_high_resolution_clock` - Wraps the ARM DWT_CYCCNT cycle counter, if
@@ -2141,14 +2141,14 @@ Example usage:
 #include <chrono>
 
 #include <QNEthernet.h>
-#include <qnethernet/util/chrono_clocks.h>
-#include <qnethernet/util/elapsedTime.h>
+#include <qnethernet/chrono/chrono_clocks.h>
+#include <qnethernet/chrono/elapsedTime.h>
 
 // Note: This is only valid for C++14 and later
 using namespace std::chrono_literals;
 
-using steady_clock = qindesign::network::util::steady_clock_ms;
-using elapsedTime = qindesign::network::util::elapsedTime<steady_clock>;
+using steady_clock = qindesign::chrono::steady_clock_ms;
+using elapsedTime = qindesign::chrono::elapsedTime<steady_clock>;
 
 elapsedTime timer;
 
@@ -2242,9 +2242,9 @@ _QNEthernet_ library.
     4. `std::chrono`-compatible steady clocks -
        [`steady_clock_ms`](#steady_clock_ms) and
        [`arm_high_resolution_clock`](#arm_high_resolution_clock) in the
-       `qindesign::network::util` namespace
-    5. [`qindesign::network::util::elapsedTime<Clock>`](#elapsedtimeclock),
-       similar to `elapsedMillis`
+       `qindesign::chrono` namespace
+    5. [`qindesign::chrono::elapsedTime<Clock>`](#elapsedtimeclock), similar
+       to `elapsedMillis`
     6. Various useful HAL (hardware abstraction layer) functions.
        See _src/qnethernet_hal.cpp_.
 

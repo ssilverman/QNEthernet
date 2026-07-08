@@ -22,8 +22,7 @@
 #include "qnethernet/qnethernet_hal.h"
 
 namespace qindesign {
-namespace network {
-namespace util {
+namespace chrono {
 
 extern "C" {
 uint32_t qnethernet_hal_millis();
@@ -247,6 +246,5 @@ using arm_high_resolution_clock =
 
 #endif  // F_CPU
 
-}  // namespace util
-}  // namespace network
+}  // namespace chrono
 }  // namespace qindesign
