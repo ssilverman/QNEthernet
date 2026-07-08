@@ -38,7 +38,7 @@ namespace driver {
 //  Defines
 // --------------------------------------------------------------------------
 
-static constexpr uint32_t GPIO_PAD_OUTPUT = (0
+static constexpr uint32_t kGPIOPadOutput = (0
     /* HYS_0_Hysteresis_Disabled */
     /* PUS_0_100K_Ohm_Pull_Down */
     /* PUE_0_Keeper */
@@ -50,12 +50,12 @@ static constexpr uint32_t GPIO_PAD_OUTPUT = (0
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
 
-static constexpr uint32_t GPIO_MUX = 5;
+static constexpr uint32_t kGPIOMux = 5;
     // SION:0 MUX_MODE:0101
     // ALT5 (GPIO)
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
-static constexpr uint32_t STRAP_PAD_PULLUP = (0
+static constexpr uint32_t kStrapPadPullup = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -68,7 +68,7 @@ static constexpr uint32_t STRAP_PAD_PULLUP = (0
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
-static constexpr uint32_t STRAP_PAD_PULLDOWN = (0
+static constexpr uint32_t kStrapPadPulldown = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -81,7 +81,7 @@ static constexpr uint32_t STRAP_PAD_PULLDOWN = (0
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x3038
 
-static constexpr uint32_t MDIO_PAD_PULLUP = (0
+static constexpr uint32_t kMDIOPadPullup = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -98,11 +98,11 @@ static constexpr uint32_t MDIO_PAD_PULLUP = (0
     // MDIO requires a 1.5k to 10k pull-up.
     // TODO: Why does the Teensy 4.1 board not have an MDIO pull-up?
 
-static constexpr uint32_t MDIO_MUX = 0;
+static constexpr uint32_t kMDIOMux = 0;
     // SION:0 MUX_MODE:0000
     // ALT0
 
-// static const uint32_t RMII_PAD_PULLDOWN = (0
+// static const uint32_t kRMIIPadPulldown = (0
 //     /* HYS_0_Hysteresis_Disabled */
 //     | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
 //     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -115,7 +115,7 @@ static constexpr uint32_t MDIO_MUX = 0;
 //     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x30E9
 
-static constexpr uint32_t RMII_PAD_PULLUP = (0
+static constexpr uint32_t kRMIIPadPullup = (0
     /* HYS_0_Hysteresis_Disabled */
     | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */
     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
@@ -128,7 +128,7 @@ static constexpr uint32_t RMII_PAD_PULLUP = (0
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
-// static constexpr uint32_t RMII_PAD_SIGNAL = (0
+// static constexpr uint32_t kRMIIPadSignal = (0
 //     /* HYS_0_Hysteresis_Disabled */
 //     /* PUS_0_100K_Ohm_Pull_Down */
 //     /* PUE_0_Keeper */
@@ -141,7 +141,7 @@ static constexpr uint32_t RMII_PAD_PULLUP = (0
 //     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x00E9
 
-static constexpr uint32_t RMII_PAD_CLOCK = (0
+static constexpr uint32_t kRMIIPadClock = (0
     /* HYS_0_Hysteresis_Disabled */
     /* PUS_0_100K_Ohm_Pull_Down */
     /* PUE_0_Keeper */
@@ -154,11 +154,11 @@ static constexpr uint32_t RMII_PAD_CLOCK = (0
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
 
-static constexpr uint32_t RMII_MUX_CLOCK = (6 | 0x10);
-      // SION:1 MUX_MODE:0110
-      // ALT6
+// static constexpr uint32_t kRMIIMuxClock = (6 | 0x10);
+//       // SION:1 MUX_MODE:0110
+//       // ALT6
 
-static constexpr uint32_t RMII_MUX = 3;
+static constexpr uint32_t kRMIIMux = 3;
     // SION:0 MUX_MODE:0011
     // ALT3
 
@@ -522,23 +522,23 @@ FLASHMEM static void configure_phy_pins() {
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
   // Table 8. PHY Address Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = STRAP_PAD_PULLDOWN;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = STRAP_PAD_PULLDOWN;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = kStrapPadPulldown;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = kStrapPadPulldown;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
   // Table 9. RMII MAC Mode Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = STRAP_PAD_PULLUP;    // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = kStrapPadPullup;    // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
   // Not connected: 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
   // Table 10. Auto_Neg Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = STRAP_PAD_PULLDOWN;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = kStrapPadPulldown;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
   // Not connected to a processor pin: LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
   // Configure PHY-connected Reset and Power pins as outputs
   // PHY spec. page 3
   // Note: Teensyduino already configures GPIO2 as its fast counterpart, GPIO7
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_15 = GPIO_PAD_OUTPUT;  // INTR/PWRDN, pin 3 (page 714)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_14 = GPIO_PAD_OUTPUT;  // RST_N, pin 5 (page 713)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_15 = kGPIOPadOutput;  // INTR/PWRDN, pin 3 (page 714)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_14 = kGPIOPadOutput;  // RST_N, pin 5 (page 713)
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = GPIO_MUX;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = GPIO_MUX;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = kGPIOMux;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = kGPIOMux;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
 
   GPIO7_GDIR |= (1u << 15) | (1u << 14);
   GPIO7_DR_CLEAR = (1u << 15);  // Power down
@@ -546,11 +546,11 @@ FLASHMEM static void configure_phy_pins() {
                                 // asserted for a specific duration
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = MDIO_PAD_PULLUP;  // MDIO
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = RMII_PAD_PULLUP;  // MDC
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = kMDIOPadPullup;  // MDIO
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = kMDIOPadPullup;  // MDC
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = MDIO_MUX;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = MDIO_MUX;  // MDC pin 16 (ENET_MDC of enet, page 534)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = kMDIOMux;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = kMDIOMux;  // MDC pin 16 (ENET_MDC of enet, page 534)
 
   IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0 (page 791)
       // DAISY:10
@@ -560,21 +560,21 @@ FLASHMEM static void configure_phy_pins() {
 // the PHY.
 FLASHMEM static void configure_rmii_pins() {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = RMII_PAD_PULLUP;  // Reset this (RXD0)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = RMII_PAD_PULLUP;  // Reset this (RXD1)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = RMII_PAD_PULLUP;  // Reset this (RXEN)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = RMII_PAD_PULLUP;  // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = RMII_PAD_PULLUP;  // TXD0 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = RMII_PAD_PULLUP;  // TXD1 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = RMII_PAD_PULLUP;  // TXEN (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = kRMIIPadPullup;  // Reset this (RXD0)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = kRMIIPadPullup;  // Reset this (RXD1)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = kRMIIPadPullup;  // Reset this (RXEN)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = kRMIIPadPullup;  // Reset this (RXER)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = kRMIIPadPullup;  // TXD0 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = kRMIIPadPullup;  // TXD1 (PHY has internal pull-down)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = kRMIIPadPullup;  // TXEN (PHY has internal pull-down)
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = RMII_MUX;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = RMII_MUX;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = RMII_MUX;  // RXER pin 22 (ENET_RX_ER of enet, page 531)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = RMII_MUX;  // RXEN pin 20 (ENET_RX_EN of enet, page 526)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = RMII_MUX;  // TXEN pin  1 (ENET_TX_EN of enet, page 529)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = RMII_MUX;  // TXD0 pin 23 (ENET_TX_DATA00 of enet, page 527)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = RMII_MUX;  // TXD1 pin 24 (ENET_TX_DATA01 of enet, page 528)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = kRMIIMux;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = kRMIIMux;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = kRMIIMux;  // RXER pin 22 (ENET_RX_ER of enet, page 531)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = kRMIIMux;  // RXEN pin 20 (ENET_RX_EN of enet, page 526)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = kRMIIMux;  // TXEN pin  1 (ENET_TX_EN of enet, page 529)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = kRMIIMux;  // TXD0 pin 23 (ENET_TX_DATA00 of enet, page 527)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = kRMIIMux;  // TXD1 pin 24 (ENET_TX_DATA01 of enet, page 528)
 
   IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6 (page 791)
       // DAISY:1
@@ -600,8 +600,8 @@ FLASHMEM static void init_phy() {
   configure_phy_pins();
 
   // Note: Ensure the clock is present at the PHY (XI) at power up
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = RMII_PAD_CLOCK;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = RMII_MUX_CLOCK;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = kRMIIPadClock;
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = kRMIIPadClock;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
   GPIO7_DR_SET   = (1u << 15);  // Power on
