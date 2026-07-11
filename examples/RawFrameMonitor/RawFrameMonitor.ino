@@ -19,7 +19,7 @@
 // enabled. It is enabled or disabled by setting the
 // `QNETHERNET_ENABLE_RAW_FRAME_SUPPORT` macro to `1` or `0`,
 // respectively. It can be defined externally or in the
-// _qnethernet_opts.h_ file. The default is enabled.
+// _qnethernet_opts.h_ file. The default is not enabled.
 //
 // Note: the configuration macros must either be defined in the
 //       project build options or in the qnethernet_opts.h
