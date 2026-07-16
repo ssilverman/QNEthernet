@@ -154,9 +154,9 @@ static constexpr uint32_t kRMIIPadClock = (0
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
 
-// static constexpr uint32_t kRMIIMuxClock = (6 | 0x10);
-//       // SION:1 MUX_MODE:0110
-//       // ALT6
+static constexpr uint32_t kRMIIMuxClock = (6 | 0x10);
+      // SION:1 MUX_MODE:0110
+      // ALT6
 
 static constexpr uint32_t kRMIIMux = 3;
     // SION:0 MUX_MODE:0011
@@ -547,7 +547,7 @@ FLASHMEM static void configure_phy_pins() {
 
   // Configure the MDIO and MDC pins
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = kMDIOPadPullup;  // MDIO
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = kMDIOPadPullup;  // MDC
+  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = kRMIIPadPullup;  // MDC
 
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = kMDIOMux;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
   IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = kMDIOMux;  // MDC pin 16 (ENET_MDC of enet, page 534)
@@ -601,7 +601,7 @@ FLASHMEM static void init_phy() {
 
   // Note: Ensure the clock is present at the PHY (XI) at power up
   IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = kRMIIPadClock;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = kRMIIPadClock;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
+  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = kRMIIMuxClock;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
   ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
 
   GPIO7_DR_SET   = (1u << 15);  // Power on
