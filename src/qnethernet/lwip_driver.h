@@ -208,6 +208,10 @@ ATTRIBUTE_NODISCARD
 bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
+// --------------------------------------------------------------------------
+//  MAC Address Filtering
+// --------------------------------------------------------------------------
+
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 // Allows or disallows frames addressed to the specified MAC address. In other
@@ -334,6 +338,10 @@ void poll();
 ATTRIBUTE_NODISCARD
 bool output_frame(const void* frame, size_t len);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+
+// --------------------------------------------------------------------------
+//  MAC Address Filtering
+// --------------------------------------------------------------------------
 
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE && LWIP_IPV4
 
