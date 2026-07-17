@@ -32,7 +32,7 @@ namespace util {
 // This returns the number of bytes actually written. If `breakf` never returns
 // true then this will have written all the bytes upon return.
 size_t writeFully(Print& p, const void* buf, size_t size,
-                  std::function<bool()> breakf = nullptr);
+                  const std::function<bool()>& breakf = nullptr);
 
 // Calls writeFully() with a break function that static_casts the given object
 // to a bool.
@@ -49,7 +49,7 @@ size_t writeFully(Print& p, const void* const buf, const size_t size,
 // This utilizes `writeFully()` under the covers, meaning this loops until
 // all bytes are written or `breakf` returns true.
 size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
-                  std::function<bool()> breakf = nullptr);
+                  const std::function<bool()>& breakf = nullptr);
 
 // Calls writeMagic() with a break function that static_casts the given object
 // to a bool.

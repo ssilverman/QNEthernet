@@ -84,12 +84,12 @@ class ConnectionManager final {
   // Iterates over all the valid connections and calls the specified function
   // for each. Don't call anything that can invaliate the connections_ member,
   // for example, Ethernet.loop().
-  void iterateConnections(std::function<void(struct altcp_pcb* pcb)> f);
+  void iterateConnections(const std::function<void(struct altcp_pcb* pcb)>& f);
 
   // Iterates over all the listeners and calls the specified function for each.
   // Don't call anything that can invaliate the listeners_ member, for example,
   // listen() or stopListening().
-  void iterateListeners(std::function<void(struct altcp_pcb* pcb)> f);
+  void iterateListeners(const std::function<void(struct altcp_pcb* pcb)>& f);
 
  private:
   ConnectionManager() = default;

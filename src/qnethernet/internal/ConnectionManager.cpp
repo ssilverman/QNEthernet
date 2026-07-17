@@ -549,7 +549,7 @@ void ConnectionManager::abortAll() {
 }
 
 void ConnectionManager::iterateConnections(
-    std::function<void(struct altcp_pcb* pcb)> f) {
+    const std::function<void(struct altcp_pcb* pcb)>& f) {
   if (connections_.empty()) {
     return;
   }
@@ -572,7 +572,7 @@ void ConnectionManager::iterateConnections(
 }
 
 void ConnectionManager::iterateListeners(
-    std::function<void(struct altcp_pcb* pcb)> f) {
+    const std::function<void(struct altcp_pcb* pcb)>& f) {
   if (listeners_.empty()) {
     return;
   }

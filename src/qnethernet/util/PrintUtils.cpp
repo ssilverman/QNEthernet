@@ -15,7 +15,7 @@ static constexpr uint8_t kBroadcastMAC[ETH_HWADDR_LEN]{
 };
 
 size_t writeFully(Print& p, const void* const buf, const size_t size,
-                  const std::function<bool()> breakf) {
+                  const std::function<bool()>& breakf) {
   auto pBuf = static_cast<const uint8_t*>(buf);
   size_t sizeRem = size;
 
@@ -39,7 +39,7 @@ size_t writeFully(Print& p, const void* const buf, const size_t size,
 }
 
 size_t writeMagic(Print& p, const uint8_t mac[ETH_HWADDR_LEN],
-                  const std::function<bool()> breakf) {
+                  const std::function<bool()>& breakf) {
   size_t written = writeFully(p, kBroadcastMAC, ETH_HWADDR_LEN, breakf);
   if (written < ETH_HWADDR_LEN) {
     return written;
