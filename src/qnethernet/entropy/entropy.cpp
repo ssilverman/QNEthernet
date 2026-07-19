@@ -6,8 +6,6 @@
 
 #include "qnethernet/entropy/entropy.h"
 
-#include "qnethernet/compat/c++11_compat.h"
-
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 #if !QNETHERNET_USE_ENTROPY_LIB
 
@@ -18,6 +16,7 @@
 
 #include <imxrt.h>
 
+#include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/macro_funcs.h"
 #include "qnethernet/platforms/pgmspace.h"
 
