@@ -145,7 +145,7 @@ void qnethernet_hal_check_core_locking(const char* file, int line,
 
 // RAW options
 #ifndef LWIP_RAW
-#define LWIP_RAW (QNETHERNET_ENABLE_PING_SEND)  /* 0 */
+#define LWIP_RAW ((QNETHERNET_ENABLE_PING_SEND) && (LWIP_IPV4))  /* 0 */
 #endif  // LWIP_RAW
 // #define RAW_TTL  IP_DEFAULT_TTL
 

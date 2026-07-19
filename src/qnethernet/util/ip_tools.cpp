@@ -29,8 +29,6 @@ uint32_t ip_addr_get_ip4_uint32(const ip_addr_t* const ip) {
   return IPADDR_ANY;
 }
 
-#endif  // LWIP_IPV4
-
 bool isBroadcast(const uint32_t ip, const uint32_t localIP,
                  const uint32_t mask) {
   if (ip == IPADDR_ANY ||  // Non-standard broadcast
@@ -45,6 +43,8 @@ bool isBroadcast(const uint32_t ip, const uint32_t localIP,
   return (localIP != ip) && ((localIP & mask) == (ip & mask)) &&
          ((ip & ~mask) == (IPADDR_BROADCAST & ~mask));
 }
+
+#endif  // LWIP_IPV4
 
 }  // namespace util
 }  // namespace network
