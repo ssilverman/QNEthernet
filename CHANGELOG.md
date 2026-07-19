@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Changed
 * Moved chrono utilities to the `qindesign::chrono` namespace.
+* Changed `MAIN_TEST_PROGRAM` to `QNETHERNET_MAIN_TEST_PROGRAM` to detect main
+  program inclusion.
 
 ## [0.36.0]
 

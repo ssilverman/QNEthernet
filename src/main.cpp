@@ -4,8 +4,8 @@
 // main.cpp is a testing playground for this library.
 // This file is part of the QNEthernet library.
 
-// Define MAIN_TEST_PROGRAM to use this test program.
-#if defined(MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
+// Define QNETHERNET_MAIN_TEST_PROGRAM to use this test program.
+#if defined(QNETHERNET_MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
 
 // C++ includes
 #include <chrono>
@@ -259,4 +259,4 @@ static void clientConnect() {
 #endif  // LWIP_TCP
 }
 
-#endif  // MAIN_TEST_PROGRAM && !PIO_UNIT_TESTING
+#endif  // defined(QNETHERNET_MAIN_TEST_PROGRAM) && !defined(PIO_UNIT_TESTING)
