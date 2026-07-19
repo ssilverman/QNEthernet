@@ -32,9 +32,6 @@
 
 #include <Arduino.h>
 #include <SPI.h>
-#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-#include <imxrt.h>
-#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 #include "lwip/debug.h"
 #include "lwip/def.h"
