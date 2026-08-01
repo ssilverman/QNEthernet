@@ -1038,7 +1038,7 @@ FLASHMEM bool init() {
 
   ENET_OPD = 0x10014;
   ENET_RSEM = 0;
-  ENET_MIBC = 0;
+  ENET_MIBC = 0x8000'0000;  // Start with MIB logic disabled (RFC 2819)
 
   ENET_IAUR = 0;
   ENET_IALR = 0;
