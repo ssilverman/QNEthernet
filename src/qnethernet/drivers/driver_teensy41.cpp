@@ -1036,8 +1036,9 @@ FLASHMEM bool init() {
   //             (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
   // ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808u;
 
-  ENET_OPD = 0x10014;
+  ENET_OPD  = 0x0014;
   ENET_RSEM = 0;
+
   ENET_MIBC = 0x8000'0000;  // Start with MIB logic disabled (RFC 2819)
 
   ENET_IAUR = 0;
