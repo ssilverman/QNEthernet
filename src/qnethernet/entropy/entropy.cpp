@@ -206,10 +206,7 @@ static bool fillEntropyBuf() {
   }
 
   // Fill the array
-  volatile uint32_t* addr = &TRNG_ENT0;
-  for (size_t i = 0; i < kEntropyCount; ++i) {
-    s_entropy[i] = *(addr++);
-  }
+  std::copy_n(&TRNG_ENT0, kEntropyCount, &s_entropy[0]);
   TRNG_ENT0;  // Dummy read after TRNG_ENT15 for defect workaround (according to SDK)
   s_entropySizeBytes = kEntropyCountBytes;
 
