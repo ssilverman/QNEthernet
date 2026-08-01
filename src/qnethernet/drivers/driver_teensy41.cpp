@@ -39,14 +39,15 @@ namespace driver {
 // --------------------------------------------------------------------------
 
 static constexpr uint32_t kGPIOPadOutput = (0
-    /* HYS_0_Hysteresis_Disabled */
-    /* PUS_0_100K_Ohm_Pull_Down */
-    /* PUE_0_Keeper */
-    /* PKE_0_Pull_Keeper_Disabled */
-    /* ODE_0_Open_Drain_Disabled */
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
-    /* SRE_0_Slow_Slew_Rate */);
+    // HYS_0_Hysteresis_Disabled
+    // PUS_0_100K_Ohm_Pull_Down
+    // PUE_0_Keeper
+    // PKE_0_Pull_Keeper_Disabled
+    // ODE_0_Open_Drain_Disabled
+    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    // SRE_0_Slow_Slew_Rate
+    );
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x0038
 
@@ -56,40 +57,40 @@ static constexpr uint32_t kGPIOMux = 5;
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
 static constexpr uint32_t kStrapPadPullup = (0
-    /* HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
-    /* ODE_0_Open_Drain_Disabled */
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
-    /* SRE_0_Slow_Slew_Rate */
+    // HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(3)    // PUS_3_22K_Ohm_Pull_Up
+    | IOMUXC_PAD_PUE       // PUE_1_Pull
+    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    // ODE_0_Open_Drain_Disabled
+    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
     // 0xF028
 
 static constexpr uint32_t kStrapPadPulldown = (0
-    /* HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
-    /* ODE_0_Open_Drain_Disabled */
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
-    | IOMUXC_PAD_DSE(7)    /* DSE_7_R0_7 */
-    /* SRE_0_Slow_Slew_Rate */
+    // HYS_0_Hysteresis_Disabled
+    | IOMUXC_PAD_PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+    | IOMUXC_PAD_PUE       // PUE_1_Pull
+    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    // ODE_0_Open_Drain_Disabled
+    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
     // 0x3038
 
 static constexpr uint32_t kMDIOPadPullup = (0
-    /* HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(3)    /* PUS_3_22K_Ohm_Pull_Up */
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
-    | IOMUXC_PAD_ODE       /* ODE_1_Open_Drain_Enabled */
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    // HYS_0_Hysteresis_Disabled
+    | IOMUXC_PAD_PUS(3)    // PUS_3_22K_Ohm_Pull_Up
+    | IOMUXC_PAD_PUE       // PUE_1_Pull
+    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    | IOMUXC_PAD_ODE       // ODE_1_Open_Drain_Enabled
+    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
+    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
     // 0xF829
@@ -103,53 +104,53 @@ static constexpr uint32_t kMDIOMux = 0;
     // ALT0
 
 // static const uint32_t kRMIIPadPulldown = (0
-//     /* HYS_0_Hysteresis_Disabled */
-//     | IOMUXC_PAD_PUS(0)    /* PUS_0_100K_Ohm_Pull_Down */
-//     | IOMUXC_PAD_PUE       /* PUE_1_Pull */
-//     | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
-//     /* ODE_0_Open_Drain_Disabled */
-//     | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
-//     | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
-//     | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+//     // HYS_0_Hysteresis_Disabled
+//     | IOMUXC_PAD_PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+//     | IOMUXC_PAD_PUE       // PUE_1_Pull
+//     | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+//     // ODE_0_Open_Drain_Disabled
+//     | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
+//     | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
+//     | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
 //     );
 //     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x30E9
 
 static constexpr uint32_t kRMIIPadPullup = (0
-    /* HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(2)    /* PUS_2_100K_Ohm_Pull_Up */
-    | IOMUXC_PAD_PUE       /* PUE_1_Pull */
-    | IOMUXC_PAD_PKE       /* PKE_1_Pull_Keeper_Enabled */
-    /* ODE_0_Open_Drain_Disabled */
-    | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
-    | IOMUXC_PAD_DSE(5)    /* DSE_5_R0_5 */
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    // HYS_0_Hysteresis_Disabled */
+    | IOMUXC_PAD_PUS(2)    // PUS_2_100K_Ohm_Pull_Up
+    | IOMUXC_PAD_PUE       // PUE_1_Pull
+    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    // ODE_0_Open_Drain_Disabled
+    | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
+    | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
+    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
 
 // static constexpr uint32_t kRMIIPadSignal = (0
-//     /* HYS_0_Hysteresis_Disabled */
-//     /* PUS_0_100K_Ohm_Pull_Down */
-//     /* PUE_0_Keeper */
-//     /* PKE_0_Pull_Keeper_Disabled */
-//     /* ODE_0_Open_Drain_Disabled */
-//     | IOMUXC_PAD_SPEED(3)  /* SPEED_3_max_200MHz */
-//     | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */
-//     | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+//     // HYS_0_Hysteresis_Disabled
+//     // PUS_0_100K_Ohm_Pull_Down
+//     // PUE_0_Keeper
+//     // PKE_0_Pull_Keeper_Disabled
+//     // ODE_0_Open_Drain_Disabled
+//     | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
+//     | IOMUXC_PAD_DSE(6)    // DSE_6_R0_6
+//     | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
 //     );
 //     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x00E9
 
 static constexpr uint32_t kRMIIPadClock = (0
-    /* HYS_0_Hysteresis_Disabled */
-    /* PUS_0_100K_Ohm_Pull_Down */
-    /* PUE_0_Keeper */
-    /* PKE_0_Pull_Keeper_Disabled */
-    /* ODE_0_Open_Drain_Disabled */
-    | IOMUXC_PAD_SPEED(0)  /* SPEED_0_low_50MHz */
-    | IOMUXC_PAD_DSE(6)    /* DSE_6_R0_6 */
-    | IOMUXC_PAD_SRE       /* SRE_1_Fast_Slew_Rate */
+    // HYS_0_Hysteresis_Disabled
+    // PUS_0_100K_Ohm_Pull_Down
+    // PUE_0_Keeper
+    // PKE_0_Pull_Keeper_Disabled
+    // ODE_0_Open_Drain_Disabled
+    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC_PAD_DSE(6)    // DSE_6_R0_6
+    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
