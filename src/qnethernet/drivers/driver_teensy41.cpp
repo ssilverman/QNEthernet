@@ -971,7 +971,7 @@ FLASHMEM bool init() {
 
   ENET_RCR = 0
              | ENET_RCR_NLC        // Payload length is checked
-             | ENET_RCR_MAX_FL((MAX_FRAME_LEN) + 4)
+             | ENET_RCR_MAX_FL((MAX_FRAME_LEN) + 4)  // Include the 4-byte CRC
              | ENET_RCR_CFEN       // Discard non-pause MAC control frames
              | ENET_RCR_CRCFWD     // CRC is stripped (ignored if PADEN)
              | ENET_RCR_PADEN      // Padding is removed
