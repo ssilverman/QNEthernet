@@ -1084,8 +1084,6 @@ FLASHMEM bool init() {
   return true;
 }
 
-void unused_interrupt_vector();  // startup.c
-
 FLASHMEM void deinit() {
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
