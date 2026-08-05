@@ -322,7 +322,7 @@ static volatile BufferDescriptor* s_pRxBD = &s_rxRing[0];
 static volatile BufferDescriptor* s_pTxBD = &s_txRing[0];
 
 // Misc. internal state
-static std::atomic_flag s_rxNotAvail  = ATOMIC_FLAG_INIT;
+static std::atomic_flag s_rxNotAvail = ATOMIC_FLAG_INIT;
 static InitStates s_initState = InitStates::kStart;
 
 // PHY status, polled
@@ -741,9 +741,9 @@ static inline void update_bufdesc(volatile BufferDescriptor* const pBD,
                                   const uint16_t len) {
   pBD->length  = len;
   pBD->control = (pBD->control & tx_bd_control::kWrap) |
-                  tx_bd_control::kTxCrc                |
-                  tx_bd_control::kLast                 |
-                  tx_bd_control::kReady;
+                 tx_bd_control::kTxCrc                 |
+                 tx_bd_control::kLast                  |
+                 tx_bd_control::kReady;
 
   ENET::TDAR::TDAR = 1;
 
@@ -1025,11 +1025,11 @@ FLASHMEM bool init() {
     (CHECKSUM_CHECK_TCP == 0) && \
     (CHECKSUM_CHECK_ICMP == 0)
                       | ENET::RACC::PRODIS(1)   // Discard frames with incorrect protocol checksum
-                                              // Requires RSFL == 0
+                                                // Requires RSFL == 0
 #endif  // not(Check any checksums)
 #if CHECKSUM_CHECK_IP == 0
                       | ENET::RACC::IPDIS(1)    // Discard frames with incorrect IPv4 header checksum
-                                              // Requires RSFL == 0
+                                                // Requires RSFL == 0
 #endif  // CHECKSUM_CHECK_IP == 0
                       | ENET::RACC::PADREM(1)
                       ;
@@ -1044,7 +1044,7 @@ FLASHMEM bool init() {
   ENET::group->RXIC[0] = 0;
   ENET::group->TXIC[0] = 0;
   // ENET::PALR::PADDR1 = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
-  //                      (uint32_t{mac[2]} << 8) | (uint32_t{mac[3]} << 0);
+  //                      (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
   // ENET::PAUR::PADDR2 = (uint32_t{mac[4]} << 8) | (uint32_t{mac[5]} << 0);
 
   ENET::OPD::PAUSE_DUR = 0x0014;
