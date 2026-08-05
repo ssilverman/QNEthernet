@@ -31,7 +31,10 @@
 // Processor-specific include
 #if defined(TEENSYDUINO)
 #if defined(__IMXRT1062__)
-#include <imxrt.h>
+#include "qnethernet/hardware/imxrt1060/CCM.h"
+#include "qnethernet/hardware/imxrt1060/OCOTP.h"
+#include "qnethernet/hardware/imxrt1060/SNVS.h"
+#include "qnethernet/hardware/imxrt1060/TRNG.h"
 #elif defined(ARDUINO_TEENSY30) || \
       defined(ARDUINO_TEENSY32) || defined(ARDUINO_TEENSY31) || \
       defined(ARDUINO_TEENSYLC) || \
@@ -44,6 +47,8 @@
 #include "lwip/arch.h"
 #include "lwip/debug.h"
 #include "lwip/prot/ethernet.h"
+
+using namespace qindesign::hardware::imxrt1060;
 
 // --------------------------------------------------------------------------
 //  Time
@@ -116,29 +121,29 @@ int settimeofday(const struct timeval* const tv,
   // This version sets the microseconds too
 
   // Stop the RTC
-  SNVS_HPCR &= ~(SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);
-  while ((SNVS_HPCR & SNVS_HPCR_RTC_EN) != 0) {
+  SNVS::group->HPCR &= ~(SNVS::HPCR::RTC_EN(1) | SNVS::HPCR::HP_TS(1));
+  while (SNVS::HPCR::RTC_EN != 0) {
     // Wait
   }
 
   // Stop the SRTC
-  SNVS_LPCR &= ~SNVS_LPCR_SRTC_ENV;
-  while ((SNVS_LPCR & SNVS_LPCR_SRTC_ENV) != 0) {
+  SNVS::LPCR::SRTC_ENV = 0;
+  while (SNVS::LPCR::SRTC_ENV != 0) {
     // Wait
   }
 
   // Set the SRTC
-  SNVS_LPSRTCLR = lo;
-  SNVS_LPSRTCMR = hi;
+  SNVS::LPSRTCLR::SRTC = lo;
+  SNVS::LPSRTCMR::SRTC = hi;
 
   // Start the SRTC
-  SNVS_LPCR |= SNVS_LPCR_SRTC_ENV;
-  while ((SNVS_LPCR & SNVS_LPCR_SRTC_ENV) == 0) {
+  SNVS::LPCR::SRTC_ENV = 1;
+  while (SNVS::LPCR::SRTC_ENV == 0) {
     // Wait
   }
 
   // Start the RTC and sync it to the SRTC
-  SNVS_HPCR |= (SNVS_HPCR_RTC_EN | SNVS_HPCR_HP_TS);
+  SNVS::group->HPCR |= (SNVS::HPCR::RTC_EN(1) | SNVS::HPCR::HP_TS(1));
 #endif  // !__IMXRT1062__
 
   return 0;
@@ -330,9 +335,7 @@ void qnethernet_hal_init_entropy() {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
   // Don't reinitialize
   const bool doEntropyInit =
-      ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) !=
-       CCM_CCGR6_TRNG(CCM_CCGR_ON_RUNONLY)) ||
-      ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) != 0);
+      (CCM::CCGR6::TRNG == 0) || (TRNG::MCTL::TSTOP_OK != 0);
 #else
   const bool doEntropyInit = true;
 #endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
@@ -474,8 +477,8 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
   }
 
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-  const uint32_t m1 = HW_OCOTP_MAC1;
-  const uint32_t m2 = HW_OCOTP_MAC0;
+  const uint32_t m1 = *OCOTP::MAC1::BITS;
+  const uint32_t m2 = *OCOTP::MAC0::BITS;
   mac[0] = static_cast<uint8_t>(m1 >>  8);
   mac[1] = static_cast<uint8_t>(m1 >>  0);
   mac[2] = static_cast<uint8_t>(m2 >> 24);

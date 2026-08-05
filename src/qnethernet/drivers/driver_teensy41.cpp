@@ -15,13 +15,19 @@
 #include <cstring>
 
 #include <core_pins.h>
-#include <imxrt.h>
 #include <util/atomic.h>
 
 #include "lwip/debug.h"
 #include "lwip/err.h"
 #include "lwip/stats.h"
-#include "qnethernet/internal/macro_funcs.h"
+#include "qnethernet/hardware/imxrt1060/CCM.h"
+#include "qnethernet/hardware/imxrt1060/CCM_ANALOG.h"
+#include "qnethernet/hardware/imxrt1060/ENET.h"
+#include "qnethernet/hardware/imxrt1060/GPIO.h"
+#include "qnethernet/hardware/imxrt1060/IOMUXC.h"
+#include "qnethernet/hardware/imxrt1060/IOMUXC_GPR.h"
+#include "qnethernet/hardware/imxrt1060/NVIC.h"
+#include "qnethernet/hardware/imxrt1060/SCB.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 // https://forum.pjrc.com/threads/60532-Teensy-4-1-Beta-Test?p=237096&viewfull=1#post237096
@@ -34,6 +40,8 @@ namespace qindesign {
 namespace network {
 namespace driver {
 
+using namespace qindesign::hardware::imxrt1060;
+
 // --------------------------------------------------------------------------
 //  Defines
 // --------------------------------------------------------------------------
@@ -44,8 +52,8 @@ static constexpr uint32_t kGPIOPadOutput = (0
     // PUE_0_Keeper
     // PKE_0_Pull_Keeper_Disabled
     // ODE_0_Open_Drain_Disabled
-    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
-    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(7)    // DSE_7_R0_7
     // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
@@ -57,13 +65,13 @@ static constexpr uint32_t kGPIOMux = 5;
 
 // Stronger pull-up for the straps, but even this might not be strong enough.
 static constexpr uint32_t kStrapPadPullup = (0
-    // HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(3)    // PUS_3_22K_Ohm_Pull_Up
-    | IOMUXC_PAD_PUE       // PUE_1_Pull
-    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    // HYS_0_Hysteresis_Disabled
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
     // ODE_0_Open_Drain_Disabled
-    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
-    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(7)    // DSE_7_R0_7
     // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:101 00 SRE:0
@@ -71,12 +79,12 @@ static constexpr uint32_t kStrapPadPullup = (0
 
 static constexpr uint32_t kStrapPadPulldown = (0
     // HYS_0_Hysteresis_Disabled
-    | IOMUXC_PAD_PUS(0)    // PUS_0_100K_Ohm_Pull_Down
-    | IOMUXC_PAD_PUE       // PUE_1_Pull
-    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
     // ODE_0_Open_Drain_Disabled
-    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
-    | IOMUXC_PAD_DSE(7)    // DSE_7_R0_7
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(7)    // DSE_7_R0_7
     // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
@@ -84,13 +92,13 @@ static constexpr uint32_t kStrapPadPulldown = (0
 
 static constexpr uint32_t kMDIOPadPullup = (0
     // HYS_0_Hysteresis_Disabled
-    | IOMUXC_PAD_PUS(3)    // PUS_3_22K_Ohm_Pull_Up
-    | IOMUXC_PAD_PUE       // PUE_1_Pull
-    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
-    | IOMUXC_PAD_ODE       // ODE_1_Open_Drain_Enabled
-    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
-    | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
-    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(3)    // PUS_3_22K_Ohm_Pull_Up
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
+    | IOMUXC::SW_PAD_CTL_PAD::vals::ODE(1)    // ODE_1_Open_Drain_Enabled
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(5)    // DSE_5_R0_5
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SRE(1)    // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:1 000 SPEED:00 DSE:101 00 SRE:1
     // 0xF829
@@ -105,26 +113,26 @@ static constexpr uint32_t kMDIOMux = 0;
 
 // static const uint32_t kRMIIPadPulldown = (0
 //     // HYS_0_Hysteresis_Disabled
-//     | IOMUXC_PAD_PUS(0)    // PUS_0_100K_Ohm_Pull_Down
-//     | IOMUXC_PAD_PUE       // PUE_1_Pull
-//     | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
 //     // ODE_0_Open_Drain_Disabled
-//     | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
-//     | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
-//     | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(3)  // SPEED_3_max_200MHz
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(5)    // DSE_5_R0_5
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::SRE(1)    // SRE_1_Fast_Slew_Rate
 //     );
 //     // HYS:0 PUS:00 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x30E9
 
 static constexpr uint32_t kRMIIPadPullup = (0
-    // HYS_0_Hysteresis_Disabled */
-    | IOMUXC_PAD_PUS(2)    // PUS_2_100K_Ohm_Pull_Up
-    | IOMUXC_PAD_PUE       // PUE_1_Pull
-    | IOMUXC_PAD_PKE       // PKE_1_Pull_Keeper_Enabled
+    // HYS_0_Hysteresis_Disabled
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(2)    // PUS_2_100K_Ohm_Pull_Up
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
     // ODE_0_Open_Drain_Disabled
-    | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
-    | IOMUXC_PAD_DSE(5)    // DSE_5_R0_5
-    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(3)  // SPEED_3_max_200MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(5)    // DSE_5_R0_5
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SRE(1)    // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:10 PUE:1 PKE:1 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
     // 0xB0E9
@@ -135,9 +143,9 @@ static constexpr uint32_t kRMIIPadPullup = (0
 //     // PUE_0_Keeper
 //     // PKE_0_Pull_Keeper_Disabled
 //     // ODE_0_Open_Drain_Disabled
-//     | IOMUXC_PAD_SPEED(3)  // SPEED_3_max_200MHz
-//     | IOMUXC_PAD_DSE(6)    // DSE_6_R0_6
-//     | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(3)  // SPEED_3_max_200MHz
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(6)    // DSE_6_R0_6
+//     | IOMUXC::SW_PAD_CTL_PAD::vals::SRE(1)    // SRE_1_Fast_Slew_Rate
 //     );
 //     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:11 DSE:101 00 SRE:1
 //     // 0x00E9
@@ -148,9 +156,9 @@ static constexpr uint32_t kRMIIPadClock = (0
     // PUE_0_Keeper
     // PKE_0_Pull_Keeper_Disabled
     // ODE_0_Open_Drain_Disabled
-    | IOMUXC_PAD_SPEED(0)  // SPEED_0_low_50MHz
-    | IOMUXC_PAD_DSE(6)    // DSE_6_R0_6
-    | IOMUXC_PAD_SRE       // SRE_1_Fast_Slew_Rate
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SPEED(0)  // SPEED_0_low_50MHz
+    | IOMUXC::SW_PAD_CTL_PAD::vals::DSE(6)    // DSE_6_R0_6
+    | IOMUXC::SW_PAD_CTL_PAD::vals::SRE(1)    // SRE_1_Fast_Slew_Rate
     );
     // HYS:0 PUS:00 PUE:0 PKE:0 ODE:0 000 SPEED:00 DSE:110 00 SRE:1
     // 0x0031
@@ -331,6 +339,8 @@ static uint32_t s_collisionGAUR = 0;
 static uint32_t s_collisionIALR = 0;
 static uint32_t s_collisionIAUR = 0;
 
+SCB::VTOR::Vector s_prevENETVector = nullptr;
+
 // Forward declarations
 static void enet_isr();
 
@@ -405,18 +415,19 @@ static bool mdio_read_nonblocking(const uint16_t regaddr,
                                   uint16_t data[1],
                                   const bool cont) {
   if (!cont) {
-    ENET_EIR = ENET_EIR_MII;  // Clear status
+    ENET::EIR::MII = 1;  // Clear status
 
-    ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(2) | ENET_MMFR_PA(0/*phyaddr*/) |
-                ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2);
+    ENET::group->MMFR = ENET::MMFR::ST(1) | ENET::MMFR::OP(2) |
+                        ENET::MMFR::PA(0/*phyaddr*/) |
+                        ENET::MMFR::RA(regaddr) | ENET::MMFR::TA(2);
   }
 
-  if ((ENET_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
+  if (ENET::EIR::MII == 0) {  // Waiting takes on the order of 8.8-8.9us
     return true;
   }
 
-  *data = ENET_MMFR_DATA(ENET_MMFR);
-  ENET_EIR = ENET_EIR_MII;
+  *data = *ENET::MMFR::DATA;
+  ENET::EIR::MII = 1;
   // printf("mdio read (%04xh): %04xh\r\n", regaddr, data);
   return false;
 }
@@ -439,18 +450,18 @@ ATTRIBUTE_NODISCARD
 static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
                                    const bool cont) {
   if (!cont) {
-    ENET_EIR = ENET_EIR_MII;  // Clear status
+    ENET::EIR::MII = 1;  // Clear status
 
-    ENET_MMFR = ENET_MMFR_ST(1) | ENET_MMFR_OP(1) | ENET_MMFR_PA(0/*phyaddr*/) |
-                ENET_MMFR_RA(regaddr) | ENET_MMFR_TA(2) |
-                ENET_MMFR_DATA(data);
+    ENET::group->MMFR = ENET::MMFR::ST(1) | ENET::MMFR::OP(1) |
+                        ENET::MMFR::PA(0 /*phyaddr*/) | ENET::MMFR::RA(regaddr) |
+                        ENET::MMFR::TA(2) | ENET::MMFR::DATA(data);
   }
 
-  if ((ENET_EIR & ENET_EIR_MII) == 0) {  // Waiting takes on the order of 8.8-8.9us
+  if (ENET::EIR::MII == 0) {  // Waiting takes on the order of 8.8-8.9us
     return true;
   }
 
-  ENET_EIR = ENET_EIR_MII;
+  ENET::EIR::MII = 1;
   // printhex("mdio write (%04xh): %04xh\r\n", regaddr, data);
   return false;
 }
@@ -470,51 +481,50 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
 // Enables the Ethernet-related clocks. See also disable_enet_clocks().
 FLASHMEM static void enable_enet_clocks() {
   // Enable the Ethernet clock
-  CCM_CCGR1 |= CCM_CCGR1_ENET(CCM_CCGR_ON);
+  CCM::CCGR1::ENET = CCM::CCGR::kON;
 
   // Configure PLL6 for 50 MHz (page 1112)
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET_CLR = 0
-                            | CCM_ANALOG_PLL_ENET_BYPASS_CLK_SRC(3)
-                            | CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(3)
-                            | CCM_ANALOG_PLL_ENET_DIV_SELECT(3)
-                            ;
-  CCM_ANALOG_PLL_ENET_SET = 0
-                            | CCM_ANALOG_PLL_ENET_ENET_25M_REF_EN
-                            // | CCM_ANALOG_PLL_ENET_ENET2_REF_EN
-                            | CCM_ANALOG_PLL_ENET_ENABLE
-                            // | CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(1)
-                            | CCM_ANALOG_PLL_ENET_DIV_SELECT(1)
-                            ;
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_POWERDOWN;
-  while ((CCM_ANALOG_PLL_ENET & CCM_ANALOG_PLL_ENET_LOCK) == 0) {
+  CCM_ANALOG::PLL_ENET_SET::BYPASS = 1;
+  CCM_ANALOG::group->PLL_ENET_CLR = 0
+                                    | CCM_ANALOG::PLL_ENET::BYPASS_CLK_SRC(3)
+                                    | CCM_ANALOG::PLL_ENET::ENET2_DIV_SELECT(3)
+                                    | CCM_ANALOG::PLL_ENET::DIV_SELECT(3)
+                                    ;
+  CCM_ANALOG::group->PLL_ENET_SET = 0
+                                    | CCM_ANALOG::PLL_ENET::ENET_25M_REF_EN(1)
+                                    // | CCM_ANALOG_PLL_ENET_ENET2_REF_EN(1)
+                                    | CCM_ANALOG::PLL_ENET::ENABLE(1)
+                                    // | CCM_ANALOG_PLL_ENET_ENET2_DIV_SELECT(1)
+                                    | CCM_ANALOG::PLL_ENET::DIV_SELECT(1)
+                                    ;
+  CCM_ANALOG::PLL_ENET_CLR::POWERDOWN = 1;
+  while (CCM_ANALOG::PLL_ENET::LOCK == 0) {
     // Wait for PLL lock
   }
-  CCM_ANALOG_PLL_ENET_CLR = CCM_ANALOG_PLL_ENET_BYPASS;
-  // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG_PLL_ENET);
+  CCM_ANALOG::PLL_ENET_CLR::BYPASS = 1;
+  // printf("PLL6 = %08" PRIX32 "h (should be 80202001h)\n", CCM_ANALOG::group->PLL_ENET);
 
   // Configure REFCLK to be driven as output by PLL6 (page 325)
-  clearAndSet32(
-      &IOMUXC_GPR_GPR1,
-      IOMUXC_GPR_GPR1_ENET1_CLK_SEL,
-      IOMUXC_GPR_GPR1_ENET_IPG_CLK_S_EN | IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR);
+  IOMUXC_GPR::GPR1::ENET1_CLK_SEL = 0;
+  IOMUXC_GPR::group->GPR1 |= IOMUXC_GPR::GPR1::ENET_IPG_CLK_S_EN(1) |
+                             IOMUXC_GPR::GPR1::ENET1_TX_CLK_DIR(1);
 }
 
 // Disables everything enabled with enable_enet_clocks().
 FLASHMEM static void disable_enet_clocks() {
   // Configure REFCLK
-  clearAndSet32(&IOMUXC_GPR_GPR1, IOMUXC_GPR_GPR1_ENET1_TX_CLK_DIR, 0);
+  IOMUXC_GPR::GPR1::ENET1_TX_CLK_DIR = 0;
 
   // Stop the PLL (first bypassing)
-  CCM_ANALOG_PLL_ENET_SET = CCM_ANALOG_PLL_ENET_BYPASS;
-  CCM_ANALOG_PLL_ENET = 0
-                        | CCM_ANALOG_PLL_ENET_BYPASS         // Reset to default
-                        | CCM_ANALOG_PLL_ENET_POWERDOWN
-                        | CCM_ANALOG_PLL_ENET_DIV_SELECT(1)
-                        ;
+  CCM_ANALOG::PLL_ENET_SET::BYPASS = 1;
+  CCM_ANALOG::group->PLL_ENET = 0
+                                | CCM_ANALOG::PLL_ENET::BYPASS(1)      // Reset to default
+                                | CCM_ANALOG::PLL_ENET::POWERDOWN(1)
+                                | CCM_ANALOG::PLL_ENET::DIV_SELECT(1)
+                                ;
 
   // Disable the clock for ENET
-  CCM_CCGR1 &= ~CCM_CCGR1_ENET(CCM_CCGR_ON);
+  CCM::CCGR1::ENET = CCM::CCGR::kOFF;
 }
 
 // Configures all the pins necessary for communicating with the PHY.
@@ -523,37 +533,37 @@ FLASHMEM static void configure_phy_pins() {
   // Note: The pull-up may not be strong enough
   // Note: All the strap pins have an internal pull-down of 9kohm +/-25%
   // Table 8. PHY Address Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = kStrapPadPulldown;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = kStrapPadPulldown;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_04] = kStrapPadPulldown;  // PhyAdd[0] = 0 (RX_D0, pin 18) (page 723)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_06] = kStrapPadPulldown;  // PhyAdd[1] = 0 (CRS_DV, pin 20) (page 726)
   // Table 9. RMII MAC Mode Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = kStrapPadPullup;    // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_05] = kStrapPadPullup;    // UP; Master/Slave = RMII Slave Mode (RX_D1, pin 17) (page 724)
   // Not connected: 50MHzOut/LED2 (pin 2, pull-down): RX_DV_En: Pin 20 is configured as CRS_DV
   // Table 10. Auto_Neg Strap Table (page 39)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = kStrapPadPulldown;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_11] = kStrapPadPulldown;  // Auto MDIX Enable (RX_ER, pin 22) (page 734)
   // Not connected to a processor pin: LED0 (pin 4, pull-down): ANeg_Dis: Auto Negotiation Enable
 
   // Configure PHY-connected Reset and Power pins as outputs
   // PHY spec. page 3
   // Note: Teensyduino already configures GPIO2 as its fast counterpart, GPIO7
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_15 = kGPIOPadOutput;  // INTR/PWRDN, pin 3 (page 714)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_14 = kGPIOPadOutput;  // RST_N, pin 5 (page 713)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB0_15] = kGPIOPadOutput;  // INTR/PWRDN, pin 3 (page 714)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB0_14] = kGPIOPadOutput;  // RST_N, pin 5 (page 713)
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_15 = kGPIOMux;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B0_14 = kGPIOMux;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB0_15] = kGPIOMux;  // Power (INT, pin 3) (GPIO2_IO15, page 519)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB0_14] = kGPIOMux;  // Reset (RST, pin 5) (GPIO2_IO14, page 518)
 
-  GPIO7_GDIR |= (1u << 15) | (1u << 14);
-  GPIO7_DR_CLEAR = (1u << 15);  // Power down
-  GPIO7_DR_SET   = (1u << 14);  // Start with reset de-asserted so that it can be
-                                // asserted for a specific duration
+  GPIO7::group->GDIR    |= (1u << 15) | (1u << 14);
+  GPIO7::group->DR_CLEAR = (1u << 15);  // Power down
+  GPIO7::group->DR_SET   = (1u << 14);  // Start with reset de-asserted so that it can be
+                                       // asserted for a specific duration
 
   // Configure the MDIO and MDC pins
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_15 = kMDIOPadPullup;  // MDIO
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_14 = kRMIIPadPullup;  // MDC
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_15] = kMDIOPadPullup;  // MDIO
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_14] = kRMIIPadPullup;  // MDC
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_15 = kMDIOMux;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_14 = kMDIOMux;  // MDC pin 16 (ENET_MDC of enet, page 534)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_15] = kMDIOMux;  // MDIO pin 15 (ENET_MDIO of enet, page 535)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_14] = kMDIOMux;  // MDC pin 16 (ENET_MDC of enet, page 534)
 
-  IOMUXC_ENET_MDIO_SELECT_INPUT = 2;  // GPIO_B1_15_ALT0 (page 791)
+  IOMUXC::SELECT_INPUT::ENET_MDIO::DAISY = 2;  // GPIO_B1_15_ALT0 (page 791)
       // DAISY:10
 }
 
@@ -561,29 +571,29 @@ FLASHMEM static void configure_phy_pins() {
 // the PHY.
 FLASHMEM static void configure_rmii_pins() {
   // The NXP SDK and original Teensy 4.1 example code use pull-ups
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_04 = kRMIIPadPullup;  // Reset this (RXD0)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_05 = kRMIIPadPullup;  // Reset this (RXD1)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_06 = kRMIIPadPullup;  // Reset this (RXEN)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_11 = kRMIIPadPullup;  // Reset this (RXER)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_07 = kRMIIPadPullup;  // TXD0 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_08 = kRMIIPadPullup;  // TXD1 (PHY has internal pull-down)
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_09 = kRMIIPadPullup;  // TXEN (PHY has internal pull-down)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_04] = kRMIIPadPullup;  // Reset this (RXD0)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_05] = kRMIIPadPullup;  // Reset this (RXD1)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_06] = kRMIIPadPullup;  // Reset this (RXEN)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_11] = kRMIIPadPullup;  // Reset this (RXER)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_07] = kRMIIPadPullup;  // TXD0 (PHY has internal pull-down)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_08] = kRMIIPadPullup;  // TXD1 (PHY has internal pull-down)
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_09] = kRMIIPadPullup;  // TXEN (PHY has internal pull-down)
 
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_04 = kRMIIMux;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_05 = kRMIIMux;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_11 = kRMIIMux;  // RXER pin 22 (ENET_RX_ER of enet, page 531)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_06 = kRMIIMux;  // RXEN pin 20 (ENET_RX_EN of enet, page 526)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_09 = kRMIIMux;  // TXEN pin  1 (ENET_TX_EN of enet, page 529)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_07 = kRMIIMux;  // TXD0 pin 23 (ENET_TX_DATA00 of enet, page 527)
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_08 = kRMIIMux;  // TXD1 pin 24 (ENET_TX_DATA01 of enet, page 528)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_04] = kRMIIMux;  // RXD0 pin 18 (ENET_RX_DATA00 of enet, page 524)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_05] = kRMIIMux;  // RXD1 pin 17 (ENET_RX_DATA01 of enet, page 525)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_11] = kRMIIMux;  // RXER pin 22 (ENET_RX_ER of enet, page 531)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_06] = kRMIIMux;  // RXEN pin 20 (ENET_RX_EN of enet, page 526)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_09] = kRMIIMux;  // TXEN pin  1 (ENET_TX_EN of enet, page 529)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_07] = kRMIIMux;  // TXD0 pin 23 (ENET_TX_DATA00 of enet, page 527)
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_08] = kRMIIMux;  // TXD1 pin 24 (ENET_TX_DATA01 of enet, page 528)
 
-  IOMUXC_ENET_IPG_CLK_RMII_SELECT_INPUT = 1;  // GPIO_B1_10_ALT6 (page 791)
+  IOMUXC::SELECT_INPUT::ENET_IPG_CLK_RMII::DAISY = 1;  // GPIO_B1_10_ALT6 (page 791)
       // DAISY:1
 
-  IOMUXC_ENET0_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_04_ALT3 (page 792)
-  IOMUXC_ENET1_RXDATA_SELECT_INPUT = 1;  // GPIO_B1_05_ALT3 (page 793)
-  IOMUXC_ENET_RXEN_SELECT_INPUT    = 1;  // GPIO_B1_06_ALT3 (page 794)
-  IOMUXC_ENET_RXERR_SELECT_INPUT   = 1;  // GPIO_B1_11_ALT3 (page 795)
+  IOMUXC::SELECT_INPUT::ENET0_RXDATA::DAISY = 1;  // GPIO_B1_04_ALT3 (page 792)
+  IOMUXC::SELECT_INPUT::ENET1_RXDATA::DAISY = 1;  // GPIO_B1_05_ALT3 (page 793)
+  IOMUXC::SELECT_INPUT::ENET_RXEN::DAISY    = 1;  // GPIO_B1_06_ALT3 (page 794)
+  IOMUXC::SELECT_INPUT::ENET_RXERR::DAISY   = 1;  // GPIO_B1_11_ALT3 (page 795)
 }
 
 // Initialization and check for hardware. This does nothing if the init state
@@ -601,16 +611,16 @@ FLASHMEM static void init_phy() {
   configure_phy_pins();
 
   // Note: Ensure the clock is present at the PHY (XI) at power up
-  IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_10 = kRMIIPadClock;
-  IOMUXC_SW_MUX_CTL_PAD_GPIO_B1_10 = kRMIIMuxClock;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
-  ENET_MSCR = ENET_MSCR_MII_SPEED(9);  // Internal module clock frequency = 50MHz
+  IOMUXC::group->SW_PAD_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_10] = kRMIIPadClock;
+  IOMUXC::group->SW_MUX_CTL_PAD[IOMUXC::SW_CTL_PAD::kB1_10] = kRMIIMuxClock;  // REFCLK (XI) pin 13 (ENET_REF_CLK of enet, page 530)
+  ENET::MSCR::MII_SPEED = 9;  // Internal module clock frequency = 50MHz
 
-  GPIO7_DR_SET   = (1u << 15);  // Power on
-  delay(50);                    // Just in case; unsure if needed
-  GPIO7_DR_CLEAR = (1u << 14);  // Reset
-  delayMicroseconds(25) ;       // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
-  GPIO7_DR_SET   = (1u << 14);  // Take out of reset
-  delay(2);                     // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
+  GPIO7::group->DR_SET   = (1u << 15);  // Power on
+  delay(50);                            // Just in case; unsure if needed
+  GPIO7::group->DR_CLEAR = (1u << 14);  // Reset
+  delayMicroseconds(25) ;               // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
+  GPIO7::group->DR_SET   = (1u << 14);  // Take out of reset
+  delay(2);                             // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
   // PHYIDR1: OUI bits 21-6: 0x2000
   // PHYIDR2: OUI bits 5-0:  0x28: 101000b
@@ -620,7 +630,7 @@ FLASHMEM static void init_phy() {
   if ((mdio_read(phy_regs::kPHYIDR1) != 0x2000) ||
       ((mdio_read(phy_regs::kPHYIDR2) & 0xfff0) != 0xA140)) {
     // Undo some pin configuration, for posterity
-    GPIO7_GDIR &= ~((1u << 15) | (1u << 14));
+    GPIO7::group->GDIR &= ~((1u << 15) | (1u << 14));
 
     disable_enet_clocks();
 
@@ -707,7 +717,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
   // Set rx bd empty
   pBD->status = (pBD->status & rx_bd_status::kWrap) | rx_bd_status::kEmpty;
 
-  ENET_RDAR = ENET_RDAR_RDAR;
+  ENET::RDAR::RDAR = 1;
 
   return p;
 }
@@ -735,7 +745,7 @@ static inline void update_bufdesc(volatile BufferDescriptor* const pBD,
                   tx_bd_control::kLast                 |
                   tx_bd_control::kReady;
 
-  ENET_TDAR = ENET_TDAR_TDAR;
+  ENET::TDAR::TDAR = 1;
 
   if ((pBD->control & tx_bd_control::kWrap) != 0) {
     s_pTxBD = &s_txRing[0];
@@ -772,8 +782,8 @@ static inline volatile BufferDescriptor* rxbd_next() {
 
 // The Ethernet ISR.
 static void enet_isr() {
-  if ((ENET_EIR & ENET_EIR_RXF) != 0) {
-    ENET_EIR = ENET_EIR_RXF;
+  if (ENET::EIR::RXF != 0) {
+    ENET::EIR::RXF = 1;
     std::atomic_flag_clear(&s_rxNotAvail);
   }
 }
@@ -870,12 +880,12 @@ void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
-  if ((CCM_CCGR1 & CCM_CCGR1_ENET(CCM_CCGR_ON)) == 0) {
+  if (CCM::CCGR1::ENET == CCM::CCGR::kOFF) {
     return false;
   }
 
-  const uint32_t rl = ENET_PALR;
-  const uint32_t ru = ENET_PAUR;
+  const uint32_t rl = *ENET::PALR::PADDR1;
+  const uint32_t ru = *ENET::PAUR::PADDR2;
   mac[0] = static_cast<uint8_t>(rl >> 24);
   mac[1] = static_cast<uint8_t>(rl >> 16);
   mac[2] = static_cast<uint8_t>(rl >>  8);
@@ -889,15 +899,15 @@ bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
-  if ((CCM_CCGR1 & CCM_CCGR1_ENET(CCM_CCGR_ON)) == 0) {
+  if (CCM::CCGR1::ENET == CCM::CCGR::kOFF) {
     return false;
   }
 
   // TODO: Not sure if disabling interrupts is really needed
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    ENET_PALR = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
-                (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
-    ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808u;
+    ENET::PALR::PADDR1 = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
+                         (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
+    ENET::PAUR::PADDR2 = (uint32_t{mac[4]} << 8) | (uint32_t{mac[5]} << 0);
   }
 
   return true;
@@ -967,99 +977,104 @@ FLASHMEM bool init() {
   }
   s_txRing[kTxSize - 1].control |= tx_bd_control::kWrap;
 
-  ENET_EIMR = 0;  // This also deasserts all interrupts
+  ENET::group->EIMR = 0;  // This also deasserts all interrupts
 
-  ENET_RCR = 0
-             | ENET_RCR_NLC        // Payload length is checked
-             | ENET_RCR_MAX_FL((MAX_FRAME_LEN) + 4)  // Include the 4-byte CRC
-             | ENET_RCR_CFEN       // Discard non-pause MAC control frames
-             | ENET_RCR_CRCFWD     // CRC is stripped (ignored if PADEN)
-             | ENET_RCR_PADEN      // Padding is removed
-             | ENET_RCR_RMII_MODE
-             | ENET_RCR_FCE        // Flow control enable
+  ENET::group->RCR = 0
+                     | ENET::RCR::NLC(1)        // Payload length is checked
+                     | ENET::RCR::MAX_FL((MAX_FRAME_LEN) + 4)  // Include the 4-byte CRC
+                     | ENET::RCR::CFEN(1)       // Discard non-pause MAC control frames
+                     | ENET::RCR::CRCFWD(1)     // CRC is stripped (ignored if PADEN)
+                     | ENET::RCR::PADEN(1)      // Padding is removed
+                     | ENET::RCR::RMII_MODE(1)
+                     | ENET::RCR::FCE(1)        // Flow control enable
 #if QNETHERNET_ENABLE_PROMISCUOUS_MODE
-             | ENET_RCR_PROM       // Promiscuous mode
+                     | ENET::RCR::PROM(1)       // Promiscuous mode
 #endif  // QNETHERNET_ENABLE_PROMISCUOUS_MODE
-             | ENET_RCR_MII_MODE;
-  ENET_TCR = 0
+                     | ENET::RCR::MII_MODE(1)
+                     ;
+  ENET::group->TCR = 0
 #if !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-             | ENET_TCR_ADDINS     // Overwrite with programmed MAC address
+                     | ENET::TCR::ADDINS(1)     // Overwrite with programmed MAC address
 #endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
-             | ENET_TCR_ADDSEL(0)
-             // | ENET_TCR_RFC_PAUSE
-             // | ENET_TCR_TFC_PAUSE
-             | ENET_TCR_FDEN         // Enable full-duplex
-             ;
+                     | ENET::TCR::ADDSEL(0)
+                     // | ENET::TCR::RFC_PAUSE(1)
+                     // | ENET::TCR::TFC_PAUSE(1)
+                     | ENET::TCR::FDEN(1)       // Enable full-duplex
+                     ;
 
-  ENET_TACC = 0
+  ENET::group->TACC = 0
 #if (CHECKSUM_GEN_UDP == 0) || \
     (CHECKSUM_GEN_TCP == 0) || \
     (CHECKSUM_GEN_ICMP == 0)
-      | ENET_TACC_PROCHK  // Insert protocol checksum
+                      | ENET::TACC::PROCHK(1)  // Insert protocol checksum
 #endif  // not(Generate all checksums)
 #if CHECKSUM_GEN_IP == 0
-      | ENET_TACC_IPCHK   // Insert IP header checksum
+                      | ENET::TACC::IPCHK(1)   // Insert IP header checksum
 #endif  // CHECKSUM_GEN_IP == 0
 #if ETH_PAD_SIZE == 2
-      | ENET_TACC_SHIFT16
+                      | ENET::TACC::SHIFT16(1)
 #endif  // ETH_PAD_SIZE == 2
-      ;
+                      ;
 
-  ENET_RACC = 0
+  ENET::group->RACC = 0
 #if ETH_PAD_SIZE == 2
-      | ENET_RACC_SHIFT16
+                      | ENET::RACC::SHIFT16(1)
 #endif  // ETH_PAD_SIZE == 2
-      | ENET_RACC_LINEDIS  // Discard bad frames
+                      | ENET::RACC::LINEDIS(1)  // Discard bad frames
 #if (CHECKSUM_CHECK_UDP == 0) && \
     (CHECKSUM_CHECK_TCP == 0) && \
     (CHECKSUM_CHECK_ICMP == 0)
-      | ENET_RACC_PRODIS   // Discard frames with incorrect protocol checksum
-                           // Requires RSFL == 0
+                      | ENET::RACC::PRODIS(1)   // Discard frames with incorrect protocol checksum
+                                              // Requires RSFL == 0
 #endif  // not(Check any checksums)
 #if CHECKSUM_CHECK_IP == 0
-      | ENET_RACC_IPDIS    // Discard frames with incorrect IPv4 header checksum
-                           // Requires RSFL == 0
+                      | ENET::RACC::IPDIS(1)    // Discard frames with incorrect IPv4 header checksum
+                                              // Requires RSFL == 0
 #endif  // CHECKSUM_CHECK_IP == 0
-      | ENET_RACC_PADREM
-      ;
+                      | ENET::RACC::PADREM(1)
+                      ;
 
-  ENET_TFWR = ENET_TFWR_STRFWD;
-  ENET_RSFL = 0;
+  ENET::TFWR::STRFWD = 1;
+  ENET::RSFL::RX_SECTION_FULL = 0;
 
-  ENET_RDSR = reinterpret_cast<uint32_t>(s_rxRing);
-  ENET_TDSR = reinterpret_cast<uint32_t>(s_txRing);
-  ENET_MRBR = kBufSize;
+  ENET::group->RDSR = reinterpret_cast<uint32_t>(s_rxRing);
+  ENET::group->TDSR = reinterpret_cast<uint32_t>(s_txRing);
+  ENET::group->MRBR = kBufSize;
 
-  ENET_RXIC = 0;
-  ENET_TXIC = 0;
-  // ENET_PALR = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
-  //             (uint32_t{mac[2]} <<  8) | (uint32_t{mac[3]} <<  0);
-  // ENET_PAUR = (uint32_t{mac[4]} << 24) | (uint32_t{mac[5]} << 16) | 0x8808u;
+  ENET::group->RXIC[0] = 0;
+  ENET::group->TXIC[0] = 0;
+  // ENET::PALR::PADDR1 = (uint32_t{mac[0]} << 24) | (uint32_t{mac[1]} << 16) |
+  //                      (uint32_t{mac[2]} << 8) | (uint32_t{mac[3]} << 0);
+  // ENET::PAUR::PADDR2 = (uint32_t{mac[4]} << 8) | (uint32_t{mac[5]} << 0);
 
-  ENET_OPD  = 0x0014;
-  ENET_RSEM = 0;
+  ENET::OPD::PAUSE_DUR = 0x0014;
+  ENET::group->RSEM    = 0;
 
-  ENET_MIBC = 0x8000'0000;  // Start with MIB logic disabled (RFC 2819)
+  ENET::MIBC::MIB_DIS = 1;  // Start with MIB logic disabled (RFC 2819)
 
-  ENET_IAUR = 0;
-  ENET_IALR = 0;
-  ENET_GAUR = 0;
-  ENET_GALR = 0;
+  ENET::IAUR::IADDR1 = 0;
+  ENET::IALR::IADDR2 = 0;
+  ENET::GAUR::GADDR1 = 0;
+  ENET::GALR::GADDR2 = 0;
 
-  ENET_EIMR = ENET_EIMR_RXF;
-  attachInterruptVector(IRQ_ENET, &enet_isr);
-  NVIC_ENABLE_IRQ(IRQ_ENET);
+  ENET::EIMR::RXF = 1;
+  s_prevENETVector = SCB::VTOR::getVector(NVIC::IRQ::kENET);
+  SCB::VTOR::setVector(NVIC::IRQ::kENET, &enet_isr);
+  NVIC::IRQ::enable(NVIC::IRQ::kENET);
 
   // Last few things to do
-  ENET_EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
+  ENET::group->EIR = 0x7fff'8000;  // Clear any pending interrupts before setting ETHEREN
   (void)std::atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
-  ENET_ECR = 0x70000000 | ENET_ECR_DBSWP | ENET_ECR_EN1588 | ENET_ECR_ETHEREN;
+  ENET::group->ECR = ENET::ECR::kWOO |
+                     ENET::ECR::DBSWP(1) |
+                     ENET::ECR::EN1588(1) |
+                     ENET::ECR::ETHEREN(1);
 
   // Indicate there are empty RX buffers and available ready TX buffers
-  ENET_RDAR = ENET_RDAR_RDAR;
-  ENET_TDAR = ENET_TDAR_TDAR;
+  ENET::RDAR::RDAR = 1;
+  ENET::TDAR::TDAR = 1;
 
   // PHY soft reset
   // mdio_write(phy_regs::kBMCR, 1u << 15);
@@ -1084,29 +1099,30 @@ FLASHMEM void deinit() {
 
 #if QNETHERNET_INTERNAL_END_STOPS_ALL
   if (s_initState == InitStates::kInitialized) {
-    NVIC_DISABLE_IRQ(IRQ_ENET);
-    attachInterruptVector(IRQ_ENET, &unused_interrupt_vector);
-    ENET_EIMR = 0;  // Disable interrupts
+    NVIC::IRQ::disable(NVIC::IRQ::kENET);
+    SCB::VTOR::setVector(NVIC::IRQ::kENET, s_prevENETVector);
+    s_prevENETVector = nullptr;
+    ENET::group->EIMR = 0;  // Disable interrupts
 
     // Gracefully stop any transmission before disabling the Ethernet MAC
-    ENET_EIR = ENET_EIR_GRA;  // Clear status
-    ENET_TCR |= ENET_TCR_GTS;
-    while ((ENET_EIR & ENET_EIR_GRA) == 0) {
+    ENET::EIR::GRA = 1;  // Clear status
+    ENET::TCR::GTS = 1;
+    while (ENET::EIR::GRA == 0) {
       // Wait until it's gracefully stopped
     }
-    ENET_EIR = ENET_EIR_GRA;
+    ENET::EIR::GRA = 1;
 
     // Disable the Ethernet MAC
     // Note: All interrupts are cleared when Ethernet is reinitialized,
     //       so nothing will be pending
-    ENET_ECR = 0x70000000;
+    ENET::group->ECR = ENET::ECR::kWOO;
 
     s_initState = InitStates::kPHYInitialized;
   }
 
   if (s_initState == InitStates::kPHYInitialized) {
     // Power down the PHY and enable reset
-    GPIO7_DR_CLEAR = (1u << 15) | (1u << 14);
+    GPIO7::group->DR_CLEAR = (1u << 15) | (1u << 14);
 
     disable_enet_clocks();
 
@@ -1280,18 +1296,18 @@ bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
 
   if (crc < 0x20) {
     if (isGroup) {
-      reg = &ENET_GALR;
+      reg = &ENET::group->GALR;
       collision = &s_collisionGALR;
     } else {
-      reg = &ENET_IALR;
+      reg = &ENET::group->IALR;
       collision = &s_collisionIALR;
     }
   } else {
     if (isGroup) {  // Group
-      reg = &ENET_GAUR;
+      reg = &ENET::group->GAUR;
       collision = &s_collisionGAUR;
     } else {
-      reg = &ENET_IAUR;
+      reg = &ENET::group->IAUR;
       collision = &s_collisionIAUR;
     }
   }
@@ -1340,10 +1356,10 @@ void reset_phy() {
       return;
   }
 
-  GPIO7_DR_CLEAR = (1u << 14);  // Reset
-  delayMicroseconds(25);        // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
-  GPIO7_DR_SET   = (1u << 14);  // Take out of reset
-  delay(2);                     // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
+  GPIO7::group->DR_CLEAR = (1u << 14);  // Reset
+  delayMicroseconds(25);                // T1: RESET PULSE Width: Miminum Reset pulse width to be able to reset (w/o debouncing caps)
+  GPIO7::group->DR_SET   = (1u << 14);  // Take out of reset
+  delay(2);                             // T2: Reset to SMI ready: Post reset stabilization time prior to MDC preamble for register access
 
   mdio_write(phy_regs::kLEDCR, phy_vals::kLEDCR_VALUE);
   mdio_write(phy_regs::kRCSR, phy_vals::kRCSR_VALUE);

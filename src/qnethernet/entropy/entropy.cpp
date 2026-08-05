@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2023-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-// entropy.cpp implements the TRNG functions.
+// entropy.cpp implements the hardware entropy functions.
 // This file is part of the QNEthernet library.
 
 #include "qnethernet/entropy/entropy.h"
@@ -14,21 +14,23 @@
 #include <cerrno>
 #include <cstring>
 
-#include <imxrt.h>
-
 #include "qnethernet/compat/c++11_compat.h"
-#include "qnethernet/internal/macro_funcs.h"
+#include "qnethernet/hardware/imxrt1060/CCM.h"
+#include "qnethernet/hardware/imxrt1060/TRNG.h"
 #include "qnethernet/platforms/pgmspace.h"
 
 namespace qindesign {
 namespace entropy {
 
-namespace {
+using namespace qindesign::hardware::imxrt1060;
 
-enum TRNGValues : uint32_t {
+namespace {
+namespace config {
+
+enum : uint32_t {
   // Clock settings
-  TRNG_CONFIG_CLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
-  TRNG_CONFIG_RING_OSC_DIV =     // Divide by 2^n
+  kCLOCK_MODE   = 0,  // 0=Ring Oscillator, 1=System Clock (test use only)
+  kRING_OSC_DIV =     // Divide by 2^n
 #if (F_CPU >= 528000000)
       0,
 #else
@@ -36,70 +38,45 @@ enum TRNGValues : uint32_t {
 #endif  // F_CPU range
 
   // Sampling
-  TRNG_CONFIG_SAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
-  TRNG_CONFIG_SPARSE_BIT_LIMIT = 63,
+  kSAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
+  kSPARSE_BIT_LIMIT = 63,
 
   // Seed control
-  TRNG_CONFIG_ENTROPY_DELAY = 3200,
-  TRNG_CONFIG_SAMPLE_SIZE   = 2500/*512*/,
+  kENTROPY_DELAY = 3200,
+  kSAMPLE_SIZE   = 2500/*512*/,
 
   // Statistical check parameters
-  TRNG_CONFIG_RETRY_COUNT   = 1,
-  TRNG_CONFIG_RUN_MAX_LIMIT = 34/*32*/,
+  kRETRY_COUNT   = 1,
+  kRUN_MAX_LIMIT = 34/*32*/,
 
-  TRNG_CONFIG_MONOBIT_MAX       = 1384/*317*/,
-  TRNG_CONFIG_MONOBIT_RANGE     = 268/*122*/,
-  TRNG_CONFIG_RUNBIT1_MAX       = 405/*107*/,
-  TRNG_CONFIG_RUNBIT1_RANGE     = 178/*80*/,
-  TRNG_CONFIG_RUNBIT2_MAX       = 220/*62*/,
-  TRNG_CONFIG_RUNBIT2_RANGE     = 122/*55*/,
-  TRNG_CONFIG_RUNBIT3_MAX       = 125/*39*/,
-  TRNG_CONFIG_RUNBIT3_RANGE     = 88/*39*/,
-  TRNG_CONFIG_RUNBIT4_MAX       = 75/*26*/,
-  TRNG_CONFIG_RUNBIT4_RANGE     = 64/*26*/,
-  TRNG_CONFIG_RUNBIT5_MAX       = 47/*18*/,
-  TRNG_CONFIG_RUNBIT5_RANGE     = 46/*18*/,
-  TRNG_CONFIG_RUNBIT6PLUS_MAX   = 47/*17*/,
-  TRNG_CONFIG_RUNBIT6PLUS_RANGE = 46/*17*/,
+  kMONOBIT_MAX       = 1384/*317*/,
+  kMONOBIT_RANGE     = 268/*122*/,
+  kRUNBIT1_MAX       = 405/*107*/,
+  kRUNBIT1_RANGE     = 178/*80*/,
+  kRUNBIT2_MAX       = 220/*62*/,
+  kRUNBIT2_RANGE     = 122/*55*/,
+  kRUNBIT3_MAX       = 125/*39*/,
+  kRUNBIT3_RANGE     = 88/*39*/,
+  kRUNBIT4_MAX       = 75/*26*/,
+  kRUNBIT4_RANGE     = 64/*26*/,
+  kRUNBIT5_MAX       = 47/*18*/,
+  kRUNBIT5_RANGE     = 46/*18*/,
+  kRUNBIT6PLUS_MAX   = 47/*17*/,
+  kRUNBIT6PLUS_RANGE = 46/*17*/,
 
   // Limits for statistical check of "Poker Test"
-  TRNG_CONFIG_POKER_MAX   = 26912/*1600*/,
-  TRNG_CONFIG_POKER_RANGE = 2467/*570*/,
+  kPOKER_MAX   = 26912/*1600*/,
+  kPOKER_RANGE = 2467/*570*/,
 
   // Limits for statistical check of entropy sample frequency count
-  TRNG_CONFIG_FREQUENCY_MAX = 25600/*30000*/,
-  TRNG_CONFIG_FREQUENCY_MIN = 1600,
+  kFREQUENCY_MAX = 25600/*30000*/,
+  kFREQUENCY_MIN = 1600,
 
 // Security configuration
-  TRNG_CONFIG_LOCK = 0,
+  kLOCK = 0,
 };
 
-// Additional bit-setting functions
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_SBLIM_SB_LIM(const uint32_t n) {
-  return (n & 0x000003ff);
-}
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_PKRMAX_PKR_MAX(const uint32_t n) {
-  return (n & 0x00ffffff);
-}
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_PKRRNG_PKR_RNG(const uint32_t n) {
-  return (n & 0x0000ffff);
-}
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_FRQMAX_FRQ_MAX(const uint32_t n) {
-  return (n & 0x003fffff);
-}
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_FRQMIN_FRQ_MIN(const uint32_t n) {
-  return (n & 0x003fffff);
-}
-ATTRIBUTE_ALWAYS_INLINE
-static inline uint32_t TRNG_SEC_CFG_NO_PROG(const uint32_t n) {
-  return ((n & 0x01) << 1);
-}
-
+}  // namespace config
 }  // namespace
 
 // Entropy storage
@@ -113,86 +90,76 @@ bool trng_is_started() {
   // Two checks:
   // 1. Clock is running
   // 2. "OK to stop" bit: asserted if the ring oscillator isn't running
-  return ((CCM_CCGR6 & CCM_CCGR6_TRNG(CCM_CCGR_ON)) != 0) &&
-         ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) == 0);
+  return (CCM::CCGR6::TRNG != 0) && (TRNG::MCTL::TSTOP_OK == 0);
 }
 
 // Restarts entropy generation.
 static void restartEntropy() {
-  TRNG_ENT15;
-  TRNG_ENT0;  // Dummy read for defect workaround
+  (void)TRNG::group->ENT[15];
+  (void)TRNG::group->ENT[0];  // Dummy read for defect workaround
   s_entropySizeBytes = 0;
 }
 
 FLASHMEM void trng_init() {
   // Enable the clock
-  CCM_CCGR6 |= CCM_CCGR6_TRNG(CCM_CCGR_ON);
+  CCM::CCGR6::TRNG = CCM::CCGR::kON;
 
   // Set program mode, clear pending errors, reset registers to default
-  TRNG_MCTL = TRNG_MCTL_PRGM | TRNG_MCTL_ERR | TRNG_MCTL_RST_DEF;
+  TRNG::group->MCTL =
+      TRNG::MCTL::PRGM(1) | TRNG::MCTL::ERR(1) | TRNG::MCTL::RST_DEF(1);
 
   // Apply configuration
-  TRNG_SCMISC = TRNG_SCMISC_RTY_CT(TRNG_CONFIG_RETRY_COUNT) |
-                TRNG_SCMISC_LRUN_MAX(TRNG_CONFIG_RUN_MAX_LIMIT);
-  TRNG_SCML   = TRNG_SCML_MONO_RNG(TRNG_CONFIG_MONOBIT_RANGE) |
-                TRNG_SCML_MONO_MAX(TRNG_CONFIG_MONOBIT_MAX);
-  TRNG_SCR1L  = TRNG_SCR1L_RUN1_RNG(TRNG_CONFIG_RUNBIT1_RANGE) |
-                TRNG_SCR1L_RUN1_MAX(TRNG_CONFIG_RUNBIT1_MAX);
-  TRNG_SCR2L  = TRNG_SCR2L_RUN2_RNG(TRNG_CONFIG_RUNBIT2_RANGE) |
-                TRNG_SCR2L_RUN2_MAX(TRNG_CONFIG_RUNBIT2_MAX);
-  TRNG_SCR3L  = TRNG_SCR3L_RUN3_RNG(TRNG_CONFIG_RUNBIT3_RANGE) |
-                TRNG_SCR3L_RUN3_MAX(TRNG_CONFIG_RUNBIT3_MAX);
-  TRNG_SCR4L  = TRNG_SCR4L_RUN4_RNG(TRNG_CONFIG_RUNBIT4_RANGE) |
-                TRNG_SCR4L_RUN4_MAX(TRNG_CONFIG_RUNBIT4_MAX);
-  TRNG_SCR5L  = TRNG_SCR5L_RUN5_RNG(TRNG_CONFIG_RUNBIT5_RANGE) |
-                TRNG_SCR5L_RUN5_MAX(TRNG_CONFIG_RUNBIT5_MAX);
-  TRNG_SCR6PL = TRNG_SCR6PL_RUN6P_RNG(TRNG_CONFIG_RUNBIT6PLUS_RANGE) |
-                TRNG_SCR6PL_RUN6P_MAX(TRNG_CONFIG_RUNBIT6PLUS_MAX);
-  TRNG_PKRMAX = TRNG_PKRMAX_PKR_MAX(TRNG_CONFIG_POKER_MAX);
-  TRNG_PKRRNG = TRNG_PKRRNG_PKR_RNG(TRNG_CONFIG_POKER_RANGE);
-  TRNG_FRQMAX = TRNG_FRQMAX_FRQ_MAX(TRNG_CONFIG_FREQUENCY_MAX);
-  TRNG_FRQMIN = TRNG_FRQMIN_FRQ_MIN(TRNG_CONFIG_FREQUENCY_MIN);
+  TRNG::group->SCMISC = TRNG::SCMISC::RTY_CT(config::kRETRY_COUNT) |
+                        TRNG::SCMISC::LRUN_MAX(config::kRUN_MAX_LIMIT);
+  TRNG::group->SCML   = TRNG::SCML::MONO_RNG(config::kMONOBIT_RANGE) |
+                        TRNG::SCML::MONO_MAX(config::kMONOBIT_MAX);
+  TRNG::group->SCR1L  = TRNG::SCR1L::RUN1_RNG(config::kRUNBIT1_RANGE) |
+                        TRNG::SCR1L::RUN1_MAX(config::kRUNBIT1_MAX);
+  TRNG::group->SCR2L  = TRNG::SCR2L::RUN2_RNG(config::kRUNBIT2_RANGE) |
+                        TRNG::SCR2L::RUN2_MAX(config::kRUNBIT2_MAX);
+  TRNG::group->SCR3L  = TRNG::SCR3L::RUN3_RNG(config::kRUNBIT3_RANGE) |
+                        TRNG::SCR3L::RUN3_MAX(config::kRUNBIT3_MAX);
+  TRNG::group->SCR4L  = TRNG::SCR4L::RUN4_RNG(config::kRUNBIT4_RANGE) |
+                        TRNG::SCR4L::RUN4_MAX(config::kRUNBIT4_MAX);
+  TRNG::group->SCR5L  = TRNG::SCR5L::RUN5_RNG(config::kRUNBIT5_RANGE) |
+                        TRNG::SCR5L::RUN5_MAX(config::kRUNBIT5_MAX);
+  TRNG::group->SCR6PL = TRNG::SCR6PL::RUN6P_RNG(config::kRUNBIT6PLUS_RANGE) |
+                        TRNG::SCR6PL::RUN6P_MAX(config::kRUNBIT6PLUS_MAX);
+  TRNG::PKRMAX::PKR_MAX = config::kPOKER_MAX;
+  TRNG::PKRRNG::PKR_RNG = config::kPOKER_RANGE;
+  TRNG::FRQMAX::FRQ_MAX = config::kFREQUENCY_MAX;
+  TRNG::FRQMIN::FRQ_MIN = config::kFREQUENCY_MIN;
 
   // Clock settings
-  clearAndSet32(&TRNG_MCTL,
-                TRNG_MCTL_FOR_SCLK,
-                TRNG_CONFIG_CLOCK_MODE ? TRNG_MCTL_FOR_SCLK : 0);
-  clearAndSet32(&TRNG_MCTL,
-                TRNG_MCTL_OSC_DIV(3),
-                TRNG_MCTL_OSC_DIV(TRNG_CONFIG_RING_OSC_DIV));
+  TRNG::MCTL::FOR_SCLK = config::kCLOCK_MODE;
+  TRNG::MCTL::OSC_DIV  = config::kRING_OSC_DIV;
 
   // Sampling
-  clearAndSet32(&TRNG_MCTL,
-                TRNG_MCTL_SAMP_MODE(3),
-                TRNG_MCTL_SAMP_MODE(TRNG_CONFIG_SAMPLE_MODE));
-  TRNG_SBLIM = TRNG_SBLIM_SB_LIM(TRNG_CONFIG_SPARSE_BIT_LIMIT);
+  TRNG::MCTL::SAMP_MODE = config::kSAMPLE_MODE;
+  TRNG::SBLIM::SB_LIM   = config::kSPARSE_BIT_LIMIT;
 
   // Seed control
-  TRNG_SDCTL = TRNG_SDCTL_ENT_DLY(TRNG_CONFIG_ENTROPY_DELAY) |
-               TRNG_SDCTL_SAMP_SIZE(TRNG_CONFIG_SAMPLE_SIZE);
-
-  // clearAndSet32(&TRNG_SCMISC, TRNG_SCMISC_LRUN_MAX, TRNG_CONFIG_RUN_MAX_LIMIT);
+  TRNG::SDCTL::ENT_DLY   = config::kENTROPY_DELAY;
+  TRNG::SDCTL::SAMP_SIZE = config::kSAMPLE_SIZE;
 
   // Security configuration
-  clearAndSet32(&TRNG_SEC_CFG,
-                TRNG_SEC_CFG_NO_PROG(1),
-                TRNG_SEC_CFG_NO_PROG(TRNG_CONFIG_LOCK));
+  TRNG::SEC_CFG::NO_PRGM = config::kLOCK;
 
-  clearAndSet32(&TRNG_MCTL, TRNG_MCTL_PRGM, 0);
+  TRNG::MCTL::PRGM = 0;
 
   // Discard stale data
   restartEntropy();
 }
 
 FLASHMEM void trng_deinit() {
-  TRNG_MCTL |= TRNG_MCTL_PRGM;  // Move to program mode; stop entropy generation
+  TRNG::MCTL::PRGM = 1;  // Move to program mode; stop entropy generation
 
   // Check this bit before stopping the clock
-  while ((TRNG_MCTL & TRNG_MCTL_TSTOP_OK) == 0) {
+  while (TRNG::MCTL::TSTOP_OK == 0) {
     // Wait
   }
 
-  CCM_CCGR6 &= ~CCM_CCGR6_TRNG(CCM_CCGR_ON);  // Disable the clock
+  CCM::CCGR6::TRNG = CCM::CCGR::kOFF;  // Disable the clock
 }
 
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
@@ -200,14 +167,14 @@ FLASHMEM void trng_deinit() {
 ATTRIBUTE_NODISCARD
 static bool fillEntropyBuf() {
   // Check for an error
-  if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
-    clearAndSet32(&TRNG_MCTL, TRNG_MCTL_ERR, TRNG_MCTL_ERR);  // Clear error
+  if (TRNG::MCTL::ERR != 0) {
+    TRNG::MCTL::ERR = 1;  // Clear error
     return false;
   }
 
   // Fill the array
-  std::copy_n(&TRNG_ENT0, kEntropyCount, &s_entropy[0]);
-  TRNG_ENT0;  // Dummy read after TRNG_ENT15 for defect workaround (according to SDK)
+  std::copy_n(&TRNG::group->ENT[0], kEntropyCount, &s_entropy[0]);
+  (void)TRNG::group->ENT[0];  // Dummy read after TRNG_ENT15 for defect workaround (according to SDK)
   s_entropySizeBytes = kEntropyCountBytes;
 
   return true;
@@ -222,7 +189,8 @@ static bool fillEntropy() {
   }
 
   // Wait for either Valid or Error flag
-  while ((TRNG_MCTL & (TRNG_MCTL_ENT_VAL | TRNG_MCTL_ERR)) == 0) {
+  while ((TRNG::group->MCTL & (TRNG::MCTL::ENT_VAL(1) | TRNG::MCTL::ERR(1))) ==
+         0) {
   }
 
   return fillEntropyBuf();
@@ -242,7 +210,7 @@ static bool fillEntropy() {
 size_t trng_available() {
   if (s_entropySizeBytes == 0) {
     // Check for Valid
-    if ((TRNG_MCTL & TRNG_MCTL_ENT_VAL) == 0) {
+    if (TRNG::MCTL::ENT_VAL == 0) {
       return 0;
     }
     if (!fillEntropyBuf()) {
@@ -257,8 +225,8 @@ size_t trng_data(void* const data, const size_t size) {
   // After a deep sleep exit, some error bits are set in MCTL and must be
   // cleared before continuing. Also, trigger new entropy generation to be sure
   // there's fresh bits.
-  if ((TRNG_MCTL & TRNG_MCTL_ERR) != 0) {
-    clearAndSet32(&TRNG_MCTL, TRNG_MCTL_ERR, TRNG_MCTL_ERR);  // Clear error
+  if (TRNG::MCTL::ERR != 0) {
+    TRNG::MCTL::ERR = 1;  // Clear error
 
     // Restart entropy generation
     restartEntropy();

@@ -7,6 +7,9 @@
 
 #include "qnethernet/chrono/chrono_clocks.h"
 
+#include "qnethernet/hardware/imxrt1060/DCB.h"
+#include "qnethernet/hardware/imxrt1060/DWT.h"
+
 namespace qindesign {
 namespace chrono {
 
@@ -18,46 +21,36 @@ namespace chrono {
 
 #ifdef __arm__
 
-// DWT Control Register
-static const auto kDWT_CTRL   = reinterpret_cast<volatile uint32_t*>(0xE0001000);
-// DWT Cycle Count Register
-static const auto kDWT_CYCCNT = reinterpret_cast<volatile uint32_t*>(0xE0001004);
-// Debug Exeption and Monitor Control Register
-static const auto kDEMCR      = reinterpret_cast<volatile uint32_t*>(0xE000EDFC);
-
-// Values
-static constexpr auto kDEMCR_TRCENA       = uint32_t{1 << 24};
-static constexpr auto kDWT_CTRL_CYCCNTENA = uint32_t{1 <<  0};
-static constexpr auto kDWT_CTRL_NOCYCCNT  = uint32_t{1 << 25};
+using namespace qindesign::hardware::imxrt1060;
 
 uint32_t arm_high_resolution_clock_count() {
-  return *kDWT_CYCCNT;
+  return *DWT::CYCCNT::CYCCNT;
 }
 
 // Initializes the cycle counter and returns whether it's supported. This uses
 // heuristics and isn't guaranteed to work for all cases.
 bool arm_high_resolution_clock_init() {
   // First enable DWT and check
-  if ((*kDEMCR & kDEMCR_TRCENA) == 0) {
-    *kDEMCR |= kDEMCR_TRCENA;
+  if (DCB::DEMCR::TRCENA == 0) {
+    DCB::DEMCR::TRCENA = 1;
 
     // Check that it was enabled
-    if ((*kDEMCR & kDEMCR_TRCENA) == 0) {
+    if (DCB::DEMCR::TRCENA == 0) {
       return false;
     }
   }
 
   // Next, check the obvious feature presence
-  if ((*kDWT_CTRL & kDWT_CTRL_NOCYCCNT) != 0) {
+  if (DWT::CTRL::NOCYCCNT != 0) {
     return false;
   }
 
   // Next, check if the cycle count is enabled
-  if ((*kDWT_CTRL & kDWT_CTRL_CYCCNTENA) == 0) {
-    *kDWT_CTRL |= kDWT_CTRL_CYCCNTENA;
+  if (DWT::CTRL::CYCCNTENA == 0) {
+    DWT::CTRL::CYCCNTENA = 1;
 
     // Check that it was enabled
-    if ((*kDWT_CTRL & kDWT_CTRL_CYCCNTENA) == 0) {
+    if (DWT::CTRL::CYCCNTENA == 0) {
       return false;
     }
   }

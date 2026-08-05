@@ -13,6 +13,8 @@ and this project adheres to
 * Changed `MAIN_TEST_PROGRAM` to `QNETHERNET_MAIN_TEST_PROGRAM` to detect main
   program inclusion.
 * Now starting with MIB counters (RFC 2819) disabled.
+* Updated the project to use registers and functions from the `imxrt1060-regs`
+  library, obviating the need for `imxrt.h`.
 
 ## [0.36.0]
 
