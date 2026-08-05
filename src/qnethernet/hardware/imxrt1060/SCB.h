@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "qindesign/hardware/regs/regs.h"
+#include "qnethernet/hardware/regs/regs.h"
 
 namespace qindesign {
 namespace hardware {
