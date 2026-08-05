@@ -399,7 +399,7 @@ constexpr uint16_t kPHYSTS_DUPLEX_STATUS = (1u <<  2);  // 0: Half-Duplex, 1: Fu
 constexpr uint16_t kPHYSTS_MDI_MDIX_MODE = (1u << 14);  // 0: Normal, 1: Swapped
 
 constexpr uint16_t kBMCR_SPEED_SELECTION  = (1u << 13);  // 0: 10 Mbps, 1: 100 Mbps
-constexpr uint16_t kBMCR_AUTO_NEG         = (1u << 12);  // 0: Disable, 1: Enable
+constexpr uint16_t kBMCR_AUTO_NEG_ENABLE  = (1u << 12);  // 0: Disable, 1: Enable
 constexpr uint16_t kBMCR_RESTART_AUTO_NEG = (1u <<  9);  // 0: Normal, 1: Restart (Self-clearing)
 constexpr uint16_t kBMCR_DUPLEX_MODE      = (1u <<  8);  // 0: Half, 1: Full
 }  // namespace phy_vals
@@ -1180,7 +1180,7 @@ bool set_link(const LinkSettings* const ls) {
 
   const uint16_t r = mdio_read(phy_regs::kBMCR);
   uint16_t newR = static_cast<uint16_t>(r & ~(phy_vals::kBMCR_SPEED_SELECTION |
-                                              phy_vals::kBMCR_AUTO_NEG |
+                                              phy_vals::kBMCR_AUTO_NEG_ENABLE |
                                               phy_vals::kBMCR_DUPLEX_MODE));
 
   if (ls->speed == 100) {
@@ -1190,7 +1190,7 @@ bool set_link(const LinkSettings* const ls) {
     newR |= phy_vals::kBMCR_DUPLEX_MODE;
   }
   if (ls->autoNegotiation) {
-    newR |= phy_vals::kBMCR_AUTO_NEG;
+    newR |= phy_vals::kBMCR_AUTO_NEG_ENABLE;
   }
 
   if (newR != r) {
