@@ -70,7 +70,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
   (void)netif;
   (void)counter;
 
-  return NULL;
+  return nullptr;
 }
 
 void poll(struct netif* const netif) {

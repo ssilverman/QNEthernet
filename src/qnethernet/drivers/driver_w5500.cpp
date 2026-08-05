@@ -892,7 +892,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
   (void)counter;
 
   if (s_initState != EnetInitStates::kInitialized) {
-    return NULL;
+    return nullptr;
   }
 
   // Make a block for the SPITransaction RAII
@@ -905,7 +905,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
 
   // Check for buffered data
   if (s_inputBuf.buf.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   // At this point, we can assume data in s_inputBuf.buf is correct

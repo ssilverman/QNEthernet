@@ -674,7 +674,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
                             rx_bd_status::kNonOctet |
                             rx_bd_status::kLengthViolation;
 
-  struct pbuf* p = NULL;
+  struct pbuf* p = nullptr;
 
   // Determine if a frame has been received
   if ((pBD->status & err_mask) != 0) {
@@ -702,7 +702,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
   } else {
     LINK_STATS_INC(link.recv);
     p = pbuf_alloc(PBUF_RAW, pBD->length, PBUF_POOL);
-    if (p != NULL) {
+    if (p != nullptr) {
 #if !QNETHERNET_BUFFERS_IN_RAM1
       arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
@@ -768,7 +768,7 @@ static inline volatile BufferDescriptor* rxbd_next() {
       ++pBD;
     }
     if (pBD == s_pRxBD) {
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -1137,16 +1137,16 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
 
   if (counter == 0) {
     if (std::atomic_flag_test_and_set(&s_rxNotAvail)) {
-      return NULL;
+      return nullptr;
     }
   } else if (counter >= int{kRxSize} * 2) {
-    return NULL;
+    return nullptr;
   }
 
   // Get the next chunk of input data
   volatile BufferDescriptor* const pBD = rxbd_next();
-  if (pBD == NULL) {
-    return NULL;
+  if (pBD == nullptr) {
+    return nullptr;
   }
   return low_level_input(pBD);
 }
@@ -1205,7 +1205,7 @@ err_t output(struct pbuf* const p) {
   volatile BufferDescriptor* const pBD = get_bufdesc();
 
   // No need to check for NULL:
-  // if (pBD == NULL) {
+  // if (pBD == nullptr) {
   //   LINK_STATS_INC(link.memerr);
   //   LINK_STATS_INC(link.drop);
   //   return ERR_WOULDBLOCK;  // Could also use ERR_MEM, but this lets things like
@@ -1236,7 +1236,7 @@ bool output_frame(const void* const frame, const size_t len) {
   volatile BufferDescriptor* const pBD = get_bufdesc();
 
   // No need to check for NULL:
-  // if (pBD == NULL) {
+  // if (pBD == nullptr) {
   //   return false;
   // }
 
@@ -1279,7 +1279,7 @@ static uint32_t crc32(const void* const data, const size_t len) {
 
 bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
                                              const bool allow) {
-  if (mac == NULL) {
+  if (mac == nullptr) {
     return false;
   }
 

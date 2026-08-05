@@ -67,7 +67,7 @@ ATTRIBUTE_NODISCARD
 static err_t link_output(struct netif* const netif, struct pbuf* const p) {
   (void)netif;
 
-  if (p == NULL) {
+  if (p == nullptr) {
     return ERR_ARG;
   }
 
@@ -102,7 +102,7 @@ static err_t multicast_filter(struct netif* const netif,
 // Initializes the netif.
 ATTRIBUTE_NODISCARD
 FLASHMEM static err_t init_netif(struct netif* const netif) {
-  if (netif == NULL) {
+  if (netif == nullptr) {
     return ERR_ARG;
   }
 
@@ -126,7 +126,7 @@ FLASHMEM static err_t init_netif(struct netif* const netif) {
   netif->hwaddr_len = ETH_HWADDR_LEN;
 
 #if LWIP_NETIF_HOSTNAME
-  netif_set_hostname(netif, NULL);
+  netif_set_hostname(netif, nullptr);
 #endif  // LWIP_NETIF_HOSTNAME
 
 #if LWIP_DHCP
@@ -148,7 +148,7 @@ FLASHMEM static err_t init_netif(struct netif* const netif) {
 // Removes the current netif, if any.
 FLASHMEM static void remove_netif() {
   if (s_isNetifAdded) {
-    netif_set_default(NULL);
+    netif_set_default(nullptr);
     netif_remove(&s_netif);
     netif_remove_ext_callback(&netif_callback);
     s_isNetifAdded = false;
@@ -164,20 +164,20 @@ struct netif* netif() {
 }
 
 void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  if (mac != NULL) {
+  if (mac != nullptr) {
     driver::get_system_mac(mac);
   }
 }
 
 bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
-  if (mac == NULL) {
+  if (mac == nullptr) {
     return false;
   }
   return driver::get_mac(mac);
 }
 
 bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
-  if (mac == NULL) {
+  if (mac == nullptr) {
     return false;
   }
   return driver::set_mac(mac);
@@ -192,13 +192,13 @@ FLASHMEM bool init(const uint8_t mac[ETH_HWADDR_LEN],
     return false;
   }
 
-  if (dc != NULL) {
+  if (dc != nullptr) {
     driver::get_capabilities(dc);
   }
 
   // Sanitize the inputs
   uint8_t m[ETH_HWADDR_LEN];
-  if (mac == NULL) {
+  if (mac == nullptr) {
     driver::get_system_mac(m);
     mac = m;
   }
@@ -227,7 +227,8 @@ FLASHMEM bool init(const uint8_t mac[ETH_HWADDR_LEN],
 
   if (!s_isNetifAdded) {
     netif_add_ext_callback(&netif_callback, callback);
-    if (netif_add_noaddr(&s_netif, NULL, init_netif, ethernet_input) == NULL) {
+    if (netif_add_noaddr(&s_netif, nullptr, init_netif, ethernet_input) ==
+        nullptr) {
       netif_remove_ext_callback(&netif_callback);
       errno = ENETDOWN;
       return false;
@@ -259,7 +260,7 @@ void proc_input() {
     // Note: It is expected that driver::proc_input() will return NULL
     //       at some point
     struct pbuf* const p = driver::proc_input(&s_netif, counter++);
-    if (p == NULL) {  // Happens on frame error, pbuf allocation error, or loop end
+    if (p == nullptr) {  // Happens on frame error, pbuf allocation error, or loop end
       break;
     }
 
@@ -277,7 +278,7 @@ void poll() {
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 bool output_frame(const void* const frame, const size_t len) {
-  if ((frame == NULL) || (len < (6 + 6 + 2))) {  // dst + src + len/type
+  if ((frame == nullptr) || (len < (6 + 6 + 2))) {  // dst + src + len/type
     return false;
   }
   if (len > (UINT16_MAX - ETH_PAD_SIZE)) {
@@ -306,7 +307,7 @@ bool output_frame(const void* const frame, const size_t len) {
   if (isOurMAC || (std::memcmp(frame, kBroadcastMAC, 6) == 0)) {
     struct pbuf* const p =
         pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
-    if (p != NULL) {
+    if (p != nullptr) {
       LWIP_ASSERT(
           "Expected space for pbuf fill",
           pbuf_take_at(p, frame, (uint16_t)len, ETH_PAD_SIZE) == ERR_OK);
@@ -337,7 +338,7 @@ bool output_frame(const void* const frame, const size_t len) {
 ATTRIBUTE_NODISCARD
 static bool join_notleave_group(const ip4_addr_t* const group,
                                 const bool flag) {
-  if (group == NULL) {
+  if (group == nullptr) {
     return false;
   }
 
