@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021-2025 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2021-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // driver_teensymm.h defines Teensy MicroMod-specific things.
@@ -7,7 +7,7 @@
 #pragma once
 
 #define MTU           1500
-#define MAX_FRAME_LEN 1522
+#define MAX_FRAME_LEN 1518  /* Does not include the 4-byte FCS (frame check sequence) */
 
 // lwIP options
 
@@ -15,11 +15,14 @@
 #define ETH_PAD_SIZE 2  /* 0 */
 
 // Checksum options
+#if !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 #define CHECKSUM_GEN_IP      0  /* 1 */
 #define CHECKSUM_GEN_UDP     0  /* 1 */
 #define CHECKSUM_GEN_TCP     0  /* 1 */
 #define CHECKSUM_GEN_ICMP    0  /* 1 */
 // #define CHECKSUM_GEN_ICMP6   1
+#endif  // !QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
+
 #define CHECKSUM_CHECK_IP    0  /* 1 */
 #define CHECKSUM_CHECK_UDP   0  /* 1 */
 #define CHECKSUM_CHECK_TCP   0  /* 1 */
