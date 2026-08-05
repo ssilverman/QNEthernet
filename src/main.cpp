@@ -38,27 +38,43 @@ void mdio_write(uint16_t regaddr, uint16_t data);
 }  // namespace network
 }  // namespace qindesign
 
-#define PHY_CDCR 0x1E  // Cable Diagnostic Control Register
-#define PHY_CDCR_START  (1 << 15)
-#define PHY_CDCR_STATUS (1 <<  1)
-#define PHY_CDCR_FAIL   (1 <<  0)
+namespace {  // Internal linkage
 
-#define PHY_CDSCR 0x170  // Cable Diagnostic Specific Control Register
-#define PHY_CDSCR_CROSS_DISABLE        (1 << 14)  // 0: Look for reflections on opposite channel, 1: same channel
-#define PHY_CDSCR_CHANNEL_SELECT       (1 << 13)  // 0: Channel A, 1: Channel B
-#define PHY_CDSCR_CROSS_AND_CHANNEL(n) ((uint16_t)(((n) & 0x03) << 13))  // Combined Cross_Disable and chan_sel
-#define PHY_CDSCR_SEGMENT_NUM(n)       ((uint16_t)(((n) & 0x07) << 4))
+constexpr uint16_t kCDCR = 0x1E;  // Cable Diagnostic Control Register
+constexpr uint16_t kCDCR_START  = (1 << 15);
+constexpr uint16_t kCDCR_STATUS = (1 <<  1);
+constexpr uint16_t kCDCR_FAIL   = (1 <<  0);
+
+constexpr uint16_t kCDSCR = 0x170;  // Cable Diagnostic Specific Control Register
+constexpr uint16_t kCDSCR_CROSS_DISABLE  = (1 << 14);  // 0: Look for reflections on opposite channel, 1: same channel
+constexpr uint16_t kCDSCR_CHANNEL_SELECT = (1 << 13);  // 0: Channel A, 1: Channel B
+inline constexpr uint16_t kCDSCR_CROSS_AND_CHANNEL(const uint16_t n) {  // Combined Cross_Disable and chan_sel
+  return (n & 0x03u) << 13;
+}
+inline constexpr uint16_t kCDSCR_SEGMENT_NUM(const uint16_t n) {
+  return (n & 0x07u) << 4;
    //< 1: 0-10m, 2: 10-20m, 3: 20-40m, 4: 40-80m, 5: 80m-
+}
 
-#define PHY_CDLRR1 0x0180  // Cable Diagnostic Location Result Register 1
-#define PHY_CDLRR1_PEAK_LOCATION(n) ((n) & 0xff)
+constexpr uint16_t kCDLRR1 = 0x0180;  // Cable Diagnostic Location Result Register 1
+inline constexpr uint16_t kCDLRR1_PEAK_LOCATION(const uint16_t n) {
+  return n & 0xffu;
+}
 
-#define PHY_CDLAR1 0x0185  // Cable Diagnostic Amplitude Result Register 1
-#define PHY_CDLAR1_PEAK_AMPLITUDE(n) ((n) & 0x7f)
+constexpr uint16_t kCDLAR1 = 0x0185;  // Cable Diagnostic Amplitude Result Register 1
+inline constexpr uint16_t kCDLAR1_PEAK_AMPLITUDE(const uint16_t n) {
+  return n & 0x7fu;
+}
 
-#define PHY_CDLAR6 0x018A  // Cable Diagnostic Amplitude Result Register 6
-#define PHY_CDLAR6_PEAK_POLARITY(n) (((n) >> 11) & 0x01)
-#define PHY_CDLAR6_CROSS_DETECT(n)  (((n) >> 5) & 0x01)
+constexpr uint16_t kCDLAR6 = 0x018A;  // Cable Diagnostic Amplitude Result Register 6
+inline constexpr uint16_t kCDLAR6_PEAK_POLARITY(const uint16_t n) {
+  return (n >> 11) & 0x01u;
+}
+inline constexpr uint16_t kCDLAR6_CROSS_DETECT(const uint16_t n) {
+  return (n >> 5) & 0x01u;
+}
+
+}  // namespace
 
 // Clears some bits in a 16-bit value and then sets others.
 static inline uint16_t clearAndSet16(const uint16_t reg,
@@ -133,8 +149,8 @@ void setup() {
 // Waits for TDR to be ready. This returns the last read value of CDCR.
 static uint16_t waitForTDRReady() {
   while (true) {
-    const uint16_t cdcr = driver::mdio_read(PHY_CDCR);
-    if ((cdcr & PHY_CDCR_STATUS) != 0) {
+    const uint16_t cdcr = driver::mdio_read(kCDCR);
+    if ((cdcr & kCDCR_STATUS) != 0) {
       return cdcr;
     }
   }
@@ -159,21 +175,21 @@ static void waitAndPrintResult(uint16_t seg, bool cross, bool channel) {
          channel ? "B" : "A");
 
   const uint16_t cdcr = waitForTDRReady();
-  if ((cdcr & PHY_CDCR_FAIL) != 0) {
+  if ((cdcr & kCDCR_FAIL) != 0) {
     printf(" Failed\r\n");
     return;
   }
 
-  const uint16_t amp = PHY_CDLAR1_PEAK_AMPLITUDE(driver::mdio_read(PHY_CDLAR1));
+  const uint16_t amp = kCDLAR1_PEAK_AMPLITUDE(driver::mdio_read(kCDLAR1));
   if (amp == 0) {
     printf(" No peak\r\n");
     return;
   }
 
-  const uint16_t loc = PHY_CDLRR1_PEAK_LOCATION(driver::mdio_read(PHY_CDLRR1));
-  const uint16_t cdlar6 = driver::mdio_read(PHY_CDLAR6);
-  const uint16_t sign = PHY_CDLAR6_PEAK_POLARITY(cdlar6);
-  const uint16_t isCross = PHY_CDLAR6_CROSS_DETECT(cdlar6);
+  const uint16_t loc = kCDLRR1_PEAK_LOCATION(driver::mdio_read(kCDLRR1));
+  const uint16_t cdlar6 = driver::mdio_read(kCDLAR6);
+  const uint16_t sign = kCDLAR6_PEAK_POLARITY(cdlar6);
+  const uint16_t isCross = kCDLAR6_CROSS_DETECT(cdlar6);
   const float location = ((float)loc - 7.0f)/1.3f;
   printf(" loc=%fm sign=%u cross=%u\r\n", location, sign, isCross);
 }
@@ -198,16 +214,16 @@ static void runTests() {
     for (uint16_t i = 0; i < 4; i++) {
       // Select which measurement
       const uint16_t cdscr = clearAndSet16(
-          driver::mdio_read(PHY_CDSCR),
-          PHY_CDSCR_CROSS_AND_CHANNEL(3) | PHY_CDSCR_SEGMENT_NUM(7),
-          PHY_CDSCR_CROSS_AND_CHANNEL(i) | PHY_CDSCR_SEGMENT_NUM(seg));
-      driver::mdio_write(PHY_CDSCR, cdscr);
+          driver::mdio_read(kCDSCR),
+          kCDSCR_CROSS_AND_CHANNEL(3) | kCDSCR_SEGMENT_NUM(7),
+          kCDSCR_CROSS_AND_CHANNEL(i) | kCDSCR_SEGMENT_NUM(seg));
+      driver::mdio_write(kCDSCR, cdscr);
 
       // Start the test
-      driver::mdio_write(PHY_CDCR, driver::mdio_read(PHY_CDCR) | PHY_CDCR_START);
+      driver::mdio_write(kCDCR, driver::mdio_read(kCDCR) | kCDCR_START);
       waitAndPrintResult(seg,
-                         (cdscr & PHY_CDSCR_CROSS_DISABLE) == 0,
-                         (cdscr & PHY_CDSCR_CHANNEL_SELECT) != 0);
+                         (cdscr & kCDSCR_CROSS_DISABLE) == 0,
+                         (cdscr & kCDSCR_CHANNEL_SELECT) != 0);
     }
   }
 }
