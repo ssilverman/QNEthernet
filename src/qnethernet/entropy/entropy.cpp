@@ -38,7 +38,7 @@ enum : uint32_t {
 #endif  // F_CPU range
 
   // Sampling
-  kSAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats */
+  kSAMPLE_MODE      = 2,  // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
   kSPARSE_BIT_LIMIT = 63,
 
   // Seed control
