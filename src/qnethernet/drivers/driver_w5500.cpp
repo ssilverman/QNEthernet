@@ -1054,7 +1054,7 @@ bool output_frame(const void* const frame, const size_t len) {
 #if !QNETHERNET_ENABLE_PROMISCUOUS_MODE
 
 bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             const bool allow) {
+                                      const bool allow) {
   if (mac == nullptr) {
     return false;
   }

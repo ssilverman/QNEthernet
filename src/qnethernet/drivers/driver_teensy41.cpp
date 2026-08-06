@@ -1278,7 +1278,7 @@ static uint32_t crc32(const void* const data, const size_t len) {
 }
 
 bool set_incoming_mac_address_allowed(const uint8_t mac[ETH_HWADDR_LEN],
-                                             const bool allow) {
+                                      const bool allow) {
   if (mac == nullptr) {
     return false;
   }
