@@ -125,7 +125,11 @@ constexpr TRNG_Reg<regs::constify(&TRNG_Layout::MCTL), 1,  5> UNUSED5;          
 constexpr TRNG_Reg<regs::constify(&TRNG_Layout::MCTL), 1,  4> UNUSED4;                               // This bit is unused.
     // Always reads zero.
 constexpr TRNG_Reg<&TRNG_Layout::MCTL, 2,  2, regs::shiftedMask32<2,  2>() | kW1C | kWO> OSC_DIV;    // Oscillator Divide
-    // 1/2^value
+    // 1/2^'value':
+    // 0b00..use ring oscillator with no divide
+    // 0b01..use ring oscillator divided-by-2
+    // 0b10..use ring oscillator divided-by-4
+    // 0b11..use ring oscillator divided-by-8
 constexpr TRNG_Reg<&TRNG_Layout::MCTL, 2,  0, regs::shiftedMask32<2,  0>() | kW1C | kWO> SAMP_MODE;  // Sample Mode
     // 0b00..use Von Neumann data into both Entropy shifter and Statistical Checker
     // 0b01..use raw data into both Entropy shifter and Statistical Checker
@@ -133,9 +137,9 @@ constexpr TRNG_Reg<&TRNG_Layout::MCTL, 2,  0, regs::shiftedMask32<2,  0>() | kW1
     // 0b11..undefined/reserved.
 
 // Sample Mode values
-constexpr uint32_t SAMP_MODE_VON_NEUMANN_BOTH                = 0;
-constexpr uint32_t SAMP_MODE_RAW_BOTH                        = 1;
-constexpr uint32_t SAMP_MODE_VON_NEUMANN_SHIFTER_RAW_CHECKER = 2;
+constexpr uint32_t kSAMP_MODE_VON_NEUMANN_BOTH                = 0;
+constexpr uint32_t kSAMP_MODE_RAW_BOTH                        = 1;
+constexpr uint32_t kSAMP_MODE_VON_NEUMANN_SHIFTER_RAW_CHECKER = 2;
 }  // namespace MCTL
 
 // Statistical Check Miscellaneous Register
