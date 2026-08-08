@@ -702,6 +702,7 @@ constexpr ENET_Reg<&ENET_Layout::TGSR, 1, 0, 0x0> TF0;  // Copy Of Timer Flag Fo
 
 // Timer Control Status Register
 namespace CHANNEL {
+
 namespace TCSR {
 constexpr uint32_t kW1C = regs::shiftedMask32<1, 7>();
 
@@ -741,13 +742,26 @@ template <size_t Index>
 constexpr CHANNEL_Reg<Index, &ENET_Layout::CHANNEL_Layout::TCSR, 1,  0, regs::shiftedMask32<1,  0>() | kW1C> TDRE;   // Timer DMA Request Enable
     // 0b0..DMA request is disabled
     // 0b1..DMA request is enabled
+
+namespace vals {
+constexpr regs::RegValue32<5, 11> TPWC;
+constexpr regs::RegValue32<1,  7> TF;
+constexpr regs::RegValue32<1,  6> TIE;
+constexpr regs::RegValue32<4,  2> TMODE;
+constexpr regs::RegValue32<1,  0> TDRE;
+}  // namespace vals
 }  // namespace TCSR
 
 // Timer Compare Capture Register
 namespace TCCR {
 template <size_t Index>
 constexpr CHANNEL_Reg<Index, &ENET_Layout::CHANNEL_Layout::TCCR, 32, 0> TCC;  // Timer Capture Compare
+
+namespace vals {
+constexpr regs::RegValue32<32, 0> TCC;
+}  // namespace vals
 }  // namespace TCCR
+
 }  // namespace CHANNEL
 
 // Read-only statistic counter fields
@@ -1325,12 +1339,25 @@ template <size_t Index>
 constexpr CHANNEL_Reg<Index, &ENET_Layout::CHANNEL_Layout::TCSR, 4,  2, regs::shiftedMask32<4,  2>() | kW1C> TMODE;
 template <size_t Index>
 constexpr CHANNEL_Reg<Index, &ENET_Layout::CHANNEL_Layout::TCSR, 1,  0, regs::shiftedMask32<1,  0>() | kW1C> TDRE;
+
+namespace vals {
+constexpr regs::RegValue32<5, 11> TPWC;
+constexpr regs::RegValue32<1,  7> TF;
+constexpr regs::RegValue32<1,  6> TIE;
+constexpr regs::RegValue32<4,  2> TMODE;
+constexpr regs::RegValue32<1,  0> TDRE;
+}  // namespace vals
 }  // namespace TCSR
 
 namespace TCCR {
 template <size_t Index>
 constexpr CHANNEL_Reg<Index, &ENET_Layout::CHANNEL_Layout::TCCR, 32, 0> TCC;
+
+namespace vals {
+constexpr regs::RegValue32<32, 0> TCC;
+}  // namespace vals
 }  // namespace TCCR
+
 }  // namespace CHANNEL
 
 // Read-only statistic counter fields

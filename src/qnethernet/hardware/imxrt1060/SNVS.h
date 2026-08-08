@@ -699,6 +699,10 @@ namespace LPZMKR {
 template <size_t Index>
 constexpr SNVS_ArrayReg<&SNVS_Layout::LPZMKR, Index, 32, 0> ZMK;  // Zeroizable Master Key
     // Each of these registers contains 32 bits of the 256-bit ZMK value
+
+namespace vals {
+constexpr regs::RegValue32<32, 0> ZMK;
+}  // namespace vals
 }  // namespace LPZMKR
 
 // SNVS_LP General Purpose Registers 0 .. 3
@@ -706,6 +710,10 @@ namespace LPGPR_ALIAS {
 template <size_t Index>
 constexpr SNVS_ArrayReg<&SNVS_Layout::LPGPR_ALIAS, Index, 32, 0> GPR;  // General Purpose Register
     // When GPR_SL or GPR_HL bit is set, the register cannot be programmed.
+
+namespace vals {
+constexpr regs::RegValue32<32, 0> GPR;
+}  // namespace vals
 }  // namespace LPGPR_ALIAS
 
 // SNVS_LP General Purpose Registers 0 .. 7
@@ -713,6 +721,10 @@ namespace LPGPR {
 template <size_t Index>
 constexpr SNVS_ArrayReg<&SNVS_Layout::LPGPR, Index, 32, 0> GPR;  // General Purpose Register
     // When GPR_SL or GPR_HL bit is set, the register cannot be programmed.
+
+namespace vals {
+constexpr regs::RegValue32<32, 0> GPR;
+}  // namespace vals
 }  // namespace LPGPR
 
 // SNVS_HP Version ID Register 1

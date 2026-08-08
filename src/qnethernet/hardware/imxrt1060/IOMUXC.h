@@ -226,7 +226,12 @@ namespace SW_MUX_CTL_PAD_1 {
 template <size_t Index>
 constexpr SW_MUX_CTL_PAD_1_Reg<Index, 1, 4> SION;      // Software Input On Field.
 template <size_t Index>
-constexpr SW_MUX_CTL_PAD_1_Reg<Index, 3, 0> MUX_MODE;  // MUX Mode Select Field.
+constexpr SW_MUX_CTL_PAD_1_Reg<Index, 4, 0> MUX_MODE;  // MUX Mode Select Field.
+
+namespace vals {
+constexpr regs::RegValue32<1, 4> SION;
+constexpr regs::RegValue32<4, 0> MUX_MODE;
+}  // namespace vals
 }  // namespace SW_MUX_CTL_PAD_1
 
 namespace SW_PAD_CTL_PAD_1 {
@@ -273,12 +278,27 @@ template <size_t Index>
 constexpr SW_PAD_CTL_PAD_1_Reg<Index, 1,  0> SRE;    // Slew Rate Field
     // 0b0..Slow Slew Rate
     // 0b1..Fast Slew Rate
+
+namespace vals {
+constexpr regs::RegValue32<1, 16> HYS;
+constexpr regs::RegValue32<2, 14> PUS;
+constexpr regs::RegValue32<1, 13> PUE;
+constexpr regs::RegValue32<1, 12> PKE;
+constexpr regs::RegValue32<1, 11> ODE;
+constexpr regs::RegValue32<2,  6> SPEED;
+constexpr regs::RegValue32<3,  3> DSE;
+constexpr regs::RegValue32<1,  0> SRE;
+}  // namespace vals
 }  // namespace SW_PAD_CTL_PAD_1
 
 namespace SELECT_INPUT_1 {
 // IOMUXC_SELECT_INPUT_1 values
 template <size_t Index>
 constexpr SELECT_INPUT_1_Reg<Index, 2, 0> DAISY;  // Selecting Pads Involved in Daisy Chain.
+
+namespace vals {
+constexpr regs::RegValue32<2, 0> DAISY;
+}  // namespace vals
 }  // namespace SELECT_INPUT_1
 
 namespace SW_MUX_CTL_PAD {
