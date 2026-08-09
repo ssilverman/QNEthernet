@@ -890,8 +890,8 @@ bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   mac[1] = static_cast<uint8_t>(rl >> 16);
   mac[2] = static_cast<uint8_t>(rl >>  8);
   mac[3] = static_cast<uint8_t>(rl >>  0);
-  mac[4] = static_cast<uint8_t>(ru >> 24);
-  mac[5] = static_cast<uint8_t>(ru >> 16);
+  mac[4] = static_cast<uint8_t>(ru >>  8);
+  mac[5] = static_cast<uint8_t>(ru >>  0);
 
   return true;
 }
