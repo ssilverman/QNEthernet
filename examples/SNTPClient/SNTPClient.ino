@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SNTPClient demonstrates a simple SNTP client.
-// See: https://tools.ietf.org/html/rfc4330
+// See: [Network Time Protocol Version 4: Protocol and Algorithms Specification](https://datatracker.ietf.org/doc/html/rfc5905)
 //
 // This file is part of the QNEthernet library.
 
@@ -154,8 +154,8 @@ void loop() {
 
   // See: Section 5, "SNTP Client Operations"
   int mode = buf[0] & 0x07;
-  if (((buf[0] & 0xc0) == 0xc0) ||      // LI == 3 (Alarm condition)
-      (buf[1] == 0) ||                  // Stratum == 0 (Kiss-o'-Death)
+  if (((buf[0] & 0xc0) == 0xc0) ||      // LI == 3 (Unknown (clock unsynchronized))
+      (buf[1] == 0) || (buf[1] > 16)    // Stratum == 0 (Kiss-o'-Death)
       !((mode == 4) || (mode == 5))) {  // Must be Server or Broadcast mode
     printf("Discarding reply\r\n");
     return;

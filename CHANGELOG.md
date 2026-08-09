@@ -17,6 +17,8 @@ and this project adheres to
   library, obviating the need for `imxrt.h`.
 * Improved _SNTPClient_ example to retry sending SNTP requests until a response
   is received
+* Added `stratum >= 16` check to _SNTPClient_ example and updated the
+  RFC reference.
 
 ## [0.36.0]
 
