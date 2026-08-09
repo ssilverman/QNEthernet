@@ -102,7 +102,10 @@ void setup() {
 #else
   buf[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
 #endif  // C++ < 14
+}
 
+// Sends an SNTP request.
+static void sendRequest() {
   // Set the Transmit Timestamp
   std::time_t t = std::time(nullptr);
   if (t >= kBreakTime) {
@@ -114,10 +117,7 @@ void setup() {
   buf[41] = t >> 16;
   buf[42] = t >> 8;
   buf[43] = t;
-}
 
-// Sends an SNTP request.
-static void sendRequest() {
   // Send the packet
   // Note: If your gateway doesn't have an SNTP server — many routers do — then
   //       use something like "pool.ntp.org" or "time.nist.gov" instead
