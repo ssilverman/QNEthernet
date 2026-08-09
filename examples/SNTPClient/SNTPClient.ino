@@ -154,7 +154,7 @@ void loop() {
   //   return;
   // }
 
-  // See: Section 5, "SNTP Client Operations"
+  // See: RFC 4330, Section 5, "SNTP Client Operations"
   int mode = buf[0] & 0x07;
   if (((buf[0] & 0xc0) == 0xc0) ||      // LI == 3 (Unknown (clock unsynchronized))
       (buf[1] == 0) || (buf[1] >= 16)   // Stratum == 0 (Kiss-o'-Death)
@@ -172,7 +172,7 @@ void loop() {
     return;  // Also discard when the Transmit Timestamp is zero
   }
   if ((t & 0x80000000U) == 0) {
-    // See: Section 3, "NTP Timestamp Format"
+    // See: RFC 4330, Section 3, "NTP Timestamp Format"
     t += kBreakTime;
   } else {
     t -= kEpochDiff;
