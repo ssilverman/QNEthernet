@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // SNTPClient demonstrates a simple SNTP client.
-// See: [Network Time Protocol Version 4: Protocol and Algorithms Specification](https://datatracker.ietf.org/doc/html/rfc5905)
+// See:
+// * [Network Time Protocol Version 4: Protocol and Algorithms Specification](https://datatracker.ietf.org/doc/html/rfc5905)
+// * [Simple Network Time Protocol (SNTP) Version 4 for IPv4, IPv6 and OSI](https://datatracker.ietf.org/doc/html/rfc4330)
 //
 // This file is part of the QNEthernet library.
 
