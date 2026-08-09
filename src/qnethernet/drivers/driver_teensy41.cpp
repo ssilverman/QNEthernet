@@ -66,7 +66,7 @@ static constexpr uint32_t kGPIOMux = 5;
 // Stronger pull-up for the straps, but even this might not be strong enough.
 static constexpr uint32_t kStrapPadPullup = (0
     // HYS_0_Hysteresis_Disabled
-    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(0)    // PUS_0_100K_Ohm_Pull_Down
+    | IOMUXC::SW_PAD_CTL_PAD::vals::PUS(3)    // PUS_3_22K_Ohm_Pull_Up
     | IOMUXC::SW_PAD_CTL_PAD::vals::PUE(1)    // PUE_1_Pull
     | IOMUXC::SW_PAD_CTL_PAD::vals::PKE(1)    // PKE_1_Pull_Keeper_Enabled
     // ODE_0_Open_Drain_Disabled
