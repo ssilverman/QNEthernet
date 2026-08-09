@@ -85,7 +85,9 @@ void setup() {
   printf("    DNS         = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   // Start UDP listening on the NTP port
-  udp.begin(kNTPPort);
+  if (!udp.begin(kNTPPort)) {
+    printf("UDP listen error: %d\r\n", errno);
+  }
 
   // Send an SNTP request
 

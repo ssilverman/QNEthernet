@@ -80,7 +80,9 @@ void setup() {
   printf("    DNS          = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   // Start UDP listening on the port
-  udp.begin(kPort);
+  if (!udp.begin(kPort)) {
+    printf("UDP listen error: %d\r\n", errno);
+  }
 
   printPrompt();
 }

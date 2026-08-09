@@ -79,7 +79,10 @@ void setup() {
   Serial.printf("    DNS          = %u.%u.%u.%u\r\n", ip[0], ip[1], ip[2], ip[3]);
 
   // Listen on port and start an mDNS service
-  udp.begin(kOSCPort);
+  if (!udp.begin(kOSCPort)) {
+    printf("UDP listen error: %d\r\n", errno);
+  }
+
   Serial.println("Starting mDNS...");
   if (!MDNS.begin(kServiceName)) {
     Serial.println("ERROR: Starting mDNS.");
