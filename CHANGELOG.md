@@ -15,6 +15,8 @@ and this project adheres to
 * Now starting with MIB counters (RFC 2819) disabled.
 * Updated the project to use registers and functions from the `imxrt1060-regs`
   library, obviating the need for `imxrt.h`.
+* Improved _SNTPClient_ example to retry sending SNTP requests until a response
+  is received
 
 ## [0.36.0]
 

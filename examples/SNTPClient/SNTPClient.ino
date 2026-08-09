@@ -33,6 +33,8 @@ constexpr uint32_t kEpochDiff = 2208988800;
 // Epoch -> 07-Feb-2036 06:28:16
 constexpr uint32_t kBreakTime = 2085978496;
 
+constexpr uint32_t kNTPTimeout = 10000;
+
 // --------------------------------------------------------------------------
 //  Program State
 // --------------------------------------------------------------------------
@@ -44,6 +46,9 @@ EthernetUDP udp;
 
 // Buffer.
 uint8_t buf[48];
+
+uint32_t lastSendTime = millis() - kNTPTimeout;
+bool gotReply = false;
 
 }  // namespace
 
@@ -109,7 +114,10 @@ void setup() {
   buf[41] = t >> 16;
   buf[42] = t >> 8;
   buf[43] = t;
+}
 
+// Sends an SNTP request.
+static void sendRequest() {
   // Send the packet
   // Note: If your gateway doesn't have an SNTP server — many routers do — then
   //       use something like "pool.ntp.org" or "time.nist.gov" instead
@@ -118,6 +126,7 @@ void setup() {
     printf("ERROR.");
   }
   printf("\r\n");
+  lastSendTime = millis();
 
   // Alternative:
   // udp.beginPacket(Ethernet.gatewayIP(), kNTPPort);
@@ -127,6 +136,10 @@ void setup() {
 
 // Main program loop.
 void loop() {
+  if (!gotReply && ((millis() - lastSendTime) >= kNTPTimeout)) {
+    sendRequest();
+  }
+
   int size = udp.parsePacket();
   if ((size != 48) && (size != 68)) {
     return;
@@ -162,6 +175,8 @@ void loop() {
   } else {
     t -= kEpochDiff;
   }
+
+  gotReply = true;
 
   // Set the RTC and time
   const timeval tv{std::time_t{t}, 0};
