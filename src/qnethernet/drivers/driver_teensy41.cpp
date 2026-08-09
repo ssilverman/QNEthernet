@@ -453,7 +453,7 @@ static bool mdio_write_nonblocking(const uint16_t regaddr, const uint16_t data,
     ENET::EIR::MII = 1;  // Clear status
 
     ENET::group->MMFR = ENET::MMFR::ST(1) | ENET::MMFR::OP(1) |
-                        ENET::MMFR::PA(0 /*phyaddr*/) | ENET::MMFR::RA(regaddr) |
+                        ENET::MMFR::PA(0/*phyaddr*/) | ENET::MMFR::RA(regaddr) |
                         ENET::MMFR::TA(2) | ENET::MMFR::DATA(data);
   }
 
