@@ -1493,7 +1493,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   if (s_hasTxTimestamp) {
     s_hasTxTimestamp = false;
     if (timestamp != NULL) {
-      timestamp->tv_sec = s_txTimestamp.tv_sec;
+      timestamp->tv_sec  = s_txTimestamp.tv_sec;
       timestamp->tv_nsec = s_txTimestamp.tv_nsec;
     }
     retval = true;
