@@ -1415,13 +1415,13 @@ void reset_phy() {
 //  IEEE 1588 functions
 // --------------------------------------------------------------------------
 
-#define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
-#define F_ENET_TS_CLK (25 * 1000 * 1000)
+static constexpr uint32_t kNanosPerSecs = 1000 * 1000 * 1000;
+static constexpr uint32_t kTS_CLK_Freq = 25 * 1000 * 1000;
 
 void ieee1588_init(void) {
   ENET::ATCR::RESTART = 1;                       // Reset timer
-  ENET::ATPER::PERIOD = NANOSECONDS_PER_SECOND;  // Wrap at 10^9
-  ENET::group->ATINC = ENET::ATINC::INC(NANOSECONDS_PER_SECOND / F_ENET_TS_CLK);
+  ENET::ATPER::PERIOD = kNanosPerSecs;           // Wrap at 10^9
+  ENET::group->ATINC = ENET::ATINC::INC(kNanosPerSecs / kTS_CLK_Freq);
   ENET::ATCOR::COR = 0;                          // Start with no corr.
   while (ENET::ATCR::RESTART != 0) {
     // Wait for bit to clear before being able to write to ATCR
@@ -1518,7 +1518,7 @@ bool ieee1588_adjust_freq(int nsps) {
     return true;
   }
 
-  uint32_t inc = NANOSECONDS_PER_SECOND / F_ENET_TS_CLK;
+  uint32_t inc = kNanosPerSecs / kTS_CLK_Freq;
 
   if (nsps < 0) {
     // Slow down
@@ -1528,8 +1528,7 @@ bool ieee1588_adjust_freq(int nsps) {
     // Speed up
     ++inc;
   }
-  return ieee1588_adjust_timer(inc,
-                               static_cast<uint32_t>(F_ENET_TS_CLK / nsps));
+  return ieee1588_adjust_timer(inc, static_cast<uint32_t>(kTS_CLK_Freq / nsps));
 }
 
 // Channels
