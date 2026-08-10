@@ -75,7 +75,7 @@ static constexpr uint32_t kStrapPadPullup = (0
     // SRE_0_Slow_Slew_Rate
     );
     // HYS:0 PUS:11 PUE:1 PKE:1 ODE:0 000 SPEED:00 DSE:111 00 SRE:0
-    // 0xF028
+    // 0xF038
 
 static constexpr uint32_t kStrapPadPulldown = (0
     // HYS_0_Hysteresis_Disabled
