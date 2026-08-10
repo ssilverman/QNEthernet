@@ -1447,7 +1447,7 @@ bool ieee1588_is_enabled(void) {
 }
 
 bool ieee1588_read_timer(struct timespec* const t) {
-  if (t == NULL) {
+  if (t == nullptr) {
     return false;
   }
 
@@ -1471,7 +1471,7 @@ bool ieee1588_read_timer(struct timespec* const t) {
 }
 
 bool ieee1588_write_timer(const struct timespec* const t) {
-  if (t == NULL) {
+  if (t == nullptr) {
     return false;
   }
 
@@ -1492,7 +1492,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   qnethernet_hal_disable_interrupts();  // {
   if (s_hasTxTimestamp) {
     s_hasTxTimestamp = false;
-    if (timestamp != NULL) {
+    if (timestamp != nullptr) {
       timestamp->tv_sec  = s_txTimestamp.tv_sec;
       timestamp->tv_nsec = s_txTimestamp.tv_nsec;
     }
