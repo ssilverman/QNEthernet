@@ -19,18 +19,18 @@ namespace network {
 class EthernetIEEE1588Class final {
  public:
   enum class TimerChannelModes {
-    kDisable = 0,
-    kCaptureOnRising = 1,
-    kCaptureOnFalling = 2,
-    kCaptureOnBoth = 3,
-    kSoftwareCompare = 4,
-    kToggleOnCompare = 5,
-    kClearOnCompare = 6,
-    kSetOnCompare = 7,
+    kDisable                     = 0,
+    kCaptureOnRising             = 1,
+    kCaptureOnFalling            = 2,
+    kCaptureOnBoth               = 3,
+    kSoftwareCompare             = 4,
+    kToggleOnCompare             = 5,
+    kClearOnCompare              = 6,
+    kSetOnCompare                = 7,
     kClearOnCompareSetOnOverflow = 10,
     kSetOnCompareClearOnOverflow = 11,
-    kPulseLowOnCompare = 14,
-    kPulseHighOnCompare = 15,
+    kPulseLowOnCompare           = 14,
+    kPulseHighOnCompare          = 15,
   };
 
   // EthernetIEEE1588Class is neither copyable nor movable.
