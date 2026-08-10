@@ -286,8 +286,10 @@ bool output_frame(const void* const frame, const size_t len) {
   }
 
   // Check length depending on VLAN
-  if ((((const uint8_t*)frame)[12] == (uint8_t)(ETHTYPE_VLAN >> 8)) &&
-      (((const uint8_t*)frame)[13] == (uint8_t)(ETHTYPE_VLAN))) {
+  if (((static_cast<const uint8_t*> frame)[12] ==
+       static_cast<uint8_t>(ETHTYPE_VLAN >> 8)) &&
+      ((static_cast<const uint8_t*> frame)[13] ==
+       static_cast<uint8_t>(ETHTYPE_VLAN))) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
@@ -305,12 +307,12 @@ bool output_frame(const void* const frame, const size_t len) {
   // Check for a loopback frame
   const bool isOurMAC = (std::memcmp(frame, s_mac, 6) == 0);
   if (isOurMAC || (std::memcmp(frame, kBroadcastMAC, 6) == 0)) {
-    struct pbuf* const p =
-        pbuf_alloc(PBUF_RAW, (uint16_t)(len + ETH_PAD_SIZE), PBUF_POOL);
+    struct pbuf* const p = pbuf_alloc(
+        PBUF_RAW, static_cast<uint16_t>(len + ETH_PAD_SIZE), PBUF_POOL);
     if (p != nullptr) {
-      LWIP_ASSERT(
-          "Expected space for pbuf fill",
-          pbuf_take_at(p, frame, (uint16_t)len, ETH_PAD_SIZE) == ERR_OK);
+      LWIP_ASSERT("Expected space for pbuf fill",
+                  pbuf_take_at(p, frame, static_cast<uint16_t>(len),
+                               ETH_PAD_SIZE) == ERR_OK);
       if (s_netif.input(p, &s_netif) != ERR_OK) {
         (void)pbuf_free(p);
       }

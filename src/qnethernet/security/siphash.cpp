@@ -37,7 +37,7 @@ uint64_t siphash(const size_t c, const size_t d,
   uint64_t k0;
   uint64_t k1;
   (void)std::memcpy(&k0, key, 8);
-  (void)std::memcpy(&k1, (uint8_t*)key + 8, 8);
+  (void)std::memcpy(&k1, static_cast<const uint8_t*>(key) + 8, 8);
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   k0 = __builtin_bswap64(k0);
   k1 = __builtin_bswap64(k1);
@@ -68,7 +68,7 @@ uint64_t siphash(const size_t c, const size_t d,
   }
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-  m = ((uint64_t)len << 56);
+  m = (static_cast<uint64_t>(len) << 56);
   (void)std::memcpy(&m, pMsg, len % 8);
 #else
   m = len & 0xff;
