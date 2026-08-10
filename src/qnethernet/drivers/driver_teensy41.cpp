@@ -728,7 +728,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
         }
-        p->timestamp.tv_nsec = (long)pBD->timestamp;
+        p->timestamp.tv_nsec = static_cast<long>(pBD->timestamp);
       }
     } else {
       LINK_STATS_INC(link.drop);
@@ -820,7 +820,7 @@ static void enet_isr() {
   if (ENET::EIR::TS_AVAIL != 0) {
     ENET::EIR::TS_AVAIL = 1;
     s_txTimestamp.tv_sec = s_ieee1588Seconds;
-    s_txTimestamp.tv_nsec = (long)(*ENET::ATSTMP::TIMESTAMP);
+    s_txTimestamp.tv_nsec = static_cast<long>(*ENET::ATSTMP::TIMESTAMP);
     s_hasTxTimestamp = true;
   }
 
@@ -1481,7 +1481,7 @@ bool ieee1588_read_timer(struct timespec* const t) {
   while (ENET::ATCR::CAPTURE != 0) {
     // Wait for bit to clear
   }
-  t->tv_nsec = (long)(*ENET::ATVR::ATIME);
+  t->tv_nsec = static_cast<long>(*ENET::ATVR::ATIME);
 
   // The timer could have wrapped while we were doing stuff
   // Leave the interrupt set so that our internal timer will catch it
