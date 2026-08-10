@@ -1415,31 +1415,8 @@ void reset_phy() {
 //  IEEE 1588 functions
 // --------------------------------------------------------------------------
 
-#define ENET_ATCR_SLAVE    ((uint32_t)(1U << 13))
-#define ENET_ATCR_CAPTURE  ((uint32_t)(1U << 11))
-#define ENET_ATCR_RESTART  ((uint32_t)(1U << 9))
-#define ENET_ATCR_PINPER   ((uint32_t)(1U << 7))
-#define ENET_ATCR_Reserved ((uint32_t)(1U << 5))  // Spec says always write a 1
-#define ENET_ATCR_PEREN    ((uint32_t)(1U << 4))
-#define ENET_ATCR_OFFRST   ((uint32_t)(1U << 3))
-#define ENET_ATCR_OFFEN    ((uint32_t)(1U << 2))
-#define ENET_ATCR_EN       ((uint32_t)(1U << 0))
-
-#define ENET_ATCOR_COR_MASK    (0x7fffffffU)
-#define ENET_ATINC_INC_MASK    (0x00007f00U)
-#define ENET_ATINC_INC_CORR(n) ((uint32_t)(((n) & 0x7f) << 8))
-#define ENET_ATINC_INC(n)      ((uint32_t)(((n) & 0x7f) << 0))
-
 #define NANOSECONDS_PER_SECOND (1000 * 1000 * 1000)
 #define F_ENET_TS_CLK (25 * 1000 * 1000)
-
-#define ENET_TCSR_TMODE_MASK (0x0000003cU)
-#define ENET_TCSR_TMODE(n)   ((uint32_t)(((n) & 0x0f) << 2))
-#define ENET_TCSR_TPWC_MASK  (0x0000f800U)
-#define ENET_TCSR_TPWC(n)    ((uint32_t)(((n) & 0x1f) << 11))
-#define ENET_TCSR_TF         ((uint32_t)(1U << 7))
-
-#define TIMER_CHANNEL_COUNT 4
 
 void ieee1588_init(void) {
   ENET::ATCR::RESTART = 1;                       // Reset timer
