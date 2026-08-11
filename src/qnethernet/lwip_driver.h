@@ -265,14 +265,14 @@ void reset_phy();
 
 // Initializes and enables the IEEE 1588 timer and functionality. The internal
 // time is reset to zero.
-void ieee1588_init(void);
+void ieee1588_init();
 
 // Deinitializes and stops the IEEE 1588 timer.
-void ieee1588_deinit(void);
+void ieee1588_deinit();
 
 // Tests if the IEEE 1588 timer is enabled.
 ATTRIBUTE_NODISCARD
-bool ieee1588_is_enabled(void);
+bool ieee1588_is_enabled();
 
 // Reads the IEEE 1588 timer. This returns whether successful.
 //
