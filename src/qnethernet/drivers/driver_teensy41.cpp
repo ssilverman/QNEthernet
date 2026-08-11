@@ -1416,7 +1416,7 @@ void reset_phy() {
 static constexpr uint32_t kNanosPerSecs = 1000 * 1000 * 1000;
 static constexpr uint32_t kTS_CLK_Freq = 25 * 1000 * 1000;
 
-void ieee1588_init(void) {
+void ieee1588_init() {
   ENET::ATCR::RESTART = 1;                       // Reset timer
   ENET::ATPER::PERIOD = kNanosPerSecs;           // Wrap at 10^9
   ENET::group->ATINC = ENET::ATINC::INC(kNanosPerSecs / kTS_CLK_Freq);
@@ -1435,12 +1435,12 @@ void ieee1588_init(void) {
   ENET::group->EIMR |= ENET::EIMR::TS_AVAIL(1) | ENET::EIMR::TS_TIMER(1);
 }
 
-void ieee1588_deinit(void) {
+void ieee1588_deinit() {
   ENET::group->EIMR &= ~(ENET::EIMR::TS_AVAIL(1) | ENET::EIMR::TS_TIMER(1));
   ENET::group->ATCR = ENET::ATCR::kWOO;
 }
 
-bool ieee1588_is_enabled(void) {
+bool ieee1588_is_enabled() {
   return (ENET::ATCR::EN != 0);
 }
 
