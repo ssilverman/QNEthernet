@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2024 Shawn Silverman <shawn@pobox.com>
+// SPDX-FileCopyrightText: (c) 2024-2026 Shawn Silverman <shawn@pobox.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // driver_w5500_config.h contains the W5500 Ethernet interface configuration.
