@@ -155,7 +155,7 @@ void loop() {
   // }
 
   // See: RFC 4330, Section 5, "SNTP Client Operations"
-  int mode = buf[0] & 0x07;
+  const int mode = buf[0] & 0x07;
   if (((buf[0] & 0xc0) == 0xc0) ||      // LI == 3 (Unknown (clock unsynchronized))
       (buf[1] == 0) || (buf[1] >= 16)   // Stratum == 0 (Kiss-o'-Death)
       !((mode == 4) || (mode == 5))) {  // Must be Server or Broadcast Server mode
