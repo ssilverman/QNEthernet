@@ -48,7 +48,9 @@
 #include "lwip/debug.h"
 #include "lwip/prot/ethernet.h"
 
+#if defined(TEENSYDUINO) && defined(__IMXRT1062__)
 using namespace qindesign::hardware::imxrt1060;
+#endif  // defined(TEENSYDUINO) && defined(__IMXRT1062__)
 
 // --------------------------------------------------------------------------
 //  Time
