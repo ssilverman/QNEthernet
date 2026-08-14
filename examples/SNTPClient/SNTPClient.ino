@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <array>
 #include <cerrno>
+#undef round  /* Undefine some Arduino nonsense */
 #include <cmath>
 #include <cstring>
 #include <ctime>
