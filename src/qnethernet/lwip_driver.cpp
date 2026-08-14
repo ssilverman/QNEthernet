@@ -286,10 +286,10 @@ bool output_frame(const void* const frame, const size_t len) {
   }
 
   // Check length depending on VLAN
-  if (((static_cast<const uint8_t*> frame)[12] ==
+  if ((static_cast<const uint8_t*>(frame)[12] ==
        static_cast<uint8_t>(ETHTYPE_VLAN >> 8)) &&
-      ((static_cast<const uint8_t*> frame)[13] ==
-       static_cast<uint8_t>(ETHTYPE_VLAN))) {
+      ((static_cast<const uint8_t*>(frame)[13] ==
+        static_cast<uint8_t>(ETHTYPE_VLAN)))) {
     if (len < (6 + 6 + 2 + 2 + 2)) {  // dst + src + VLAN tag + VLAN info + len/type
       return false;
     }
