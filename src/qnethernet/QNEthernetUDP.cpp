@@ -401,8 +401,9 @@ int EthernetUDP::endPacket() {
 
   // op.data.size() should be <= UINT16_MAX
   const size_t size = op.data.size();
-  LWIP_ASSERT("Output packet too large",
-              size <= std::numeric_limits<uint16_t>::max());
+  if (size > std::numeric_limits<uint16_t>::max()) {
+    LWIP_PLATFORM_ASSERT("Output packet too large");
+  }
   auto outSize = static_cast<uint16_t>(size);
 
   // Note: Use PBUF_RAM for TX

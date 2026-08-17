@@ -48,8 +48,9 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     struct icmp_echo_hdr echo;
 
     const size_t copied = pbuf_copy_partial(p, &echo, kEchoHdrSize, ipHdrSize);
-    LWIP_ASSERT("Expected header copy success", copied == kEchoHdrSize);
-    (void)copied;
+    if (copied != kEchoHdrSize) {
+      LWIP_PLATFORM_ASSERT("Expected header copy success");
+    }
 
     size_t dataSize = p->tot_len - hdrSize;  // 16-bit
     const uint8_t* data = nullptr;
@@ -63,8 +64,9 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
 
         const size_t copied = pbuf_copy_partial(
             p, ping->dataBuf_.data(), static_cast<uint16_t>(dataSize), hdrSize);
-        LWIP_ASSERT("Expected data copy success", copied == dataSize);
-        (void)copied;
+        if (copied != dataSize) {
+          LWIP_PLATFORM_ASSERT("Expected data copy success");
+        }
 
         data = ping->dataBuf_.data();
       }

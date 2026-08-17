@@ -43,8 +43,9 @@ std::vector<char> format(const char* format, Args... args) {
     out.resize(size);
 
     const int count = std::snprintf(out.data(), size, format, args...);
-    LWIP_ASSERT("Expected complete string fill", count == (size - 1));
-    (void)count;
+    if (count != (size - 1)) {
+      LWIP_PLATFORM_ASSERT("Expected complete string fill");
+    }
   }
   return out;
 }

@@ -200,8 +200,9 @@ bool MDNSClass::addService(const char* const name, const char* const type,
   } else if (static_cast<size_t>(slot) >= maxServices()) {
     // Remove if the addition was successful but we couldn't add it
     const err_t err = mdns_resp_del_service(netif_, slot);
-    LWIP_ASSERT("Can't delete service", err == ERR_OK);
-    (void)err;
+    if (err != ERR_OK) {
+      LWIP_PLATFORM_ASSERT("Can't delete service");
+    }
     errno = ENOBUFS;
     return false;
   }

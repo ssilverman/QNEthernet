@@ -312,8 +312,9 @@ bool output_frame(const void* const frame, const size_t len) {
     if (p != nullptr) {
       const err_t err =
           pbuf_take_at(p, frame, static_cast<uint16_t>(len), ETH_PAD_SIZE);
-      LWIP_ASSERT("Expected space for pbuf fill", err == ERR_OK);
-      (void)err;
+      if (err != ERR_OK) {
+        LWIP_PLATFORM_ASSERT("Expected space for pbuf fill");
+      }
 
       if (s_netif.input(p, &s_netif) != ERR_OK) {
         (void)pbuf_free(p);

@@ -41,8 +41,9 @@ uint32_t calc_tcp_isn(const ip_addr_t* const local_ip,
   if (!s_haveKey) {
     // Initialize the key
     const size_t filled = qnethernet_hal_fill_entropy(s_key, sizeof(s_key));
-    LWIP_ASSERT("Entropy generation error", filled == sizeof(s_key));
-    (void)filled;
+    if (filled != sizeof(s_key)) {
+      LWIP_PLATFORM_ASSERT("Entropy generation error");
+    }
     s_haveKey = true;
   }
 

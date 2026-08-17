@@ -707,8 +707,9 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
       arm_dcache_delete(pBD->buffer, multipleOf32(p->tot_len));
 #endif  // !QNETHERNET_BUFFERS_IN_RAM1
       const err_t err = pbuf_take(p, pBD->buffer, p->tot_len);
-      LWIP_ASSERT("Expected space for pbuf fill", err == ERR_OK);
-      (void)err;
+      if (err != ERR_OK) {
+        LWIP_PLATFORM_ASSERT("Expected space for pbuf fill");
+      }
     } else {
       LINK_STATS_INC(link.drop);
       LINK_STATS_INC(link.memerr);
