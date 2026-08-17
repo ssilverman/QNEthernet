@@ -97,25 +97,29 @@ class ByteBuffer {
   }
 
   // Reads data from the buffer into the given memory and returns the actual
-  // size read.
+  // size read. If 'buf' is NULL then the bytes are skipped.
   ATTRIBUTE_NODISCARD
   size_t read(void* const buf, size_t size) {
-    uint8_t* const bytes = static_cast<uint8_t*>(buf);
-
     size = std::min(size, this->size());
     if (size == 0) {
       return 0;
     }
 
-    const size_t start = tail_ % capacity();
-    tail_ = (tail_ + size) % capacity();
-    const size_t end = tail_;
-
-    if (start < end) {
-      std::copy_n(&buf_[start], size, &bytes[0]);
+    if (buf == nullptr) {
+      tail_ = (tail_ + size) % capacity();
     } else {
-      std::copy_n(&buf_[start], capacity() - start, &bytes[0]);
-      std::copy_n(&buf_[0], end, &bytes[capacity() - start]);
+      uint8_t* const bytes = static_cast<uint8_t*>(buf);
+
+      const size_t start = tail_ % capacity();
+      tail_ = (tail_ + size) % capacity();
+      const size_t end = tail_;
+
+      if (start < end) {
+        std::copy_n(&buf_[start], size, &bytes[0]);
+      } else {
+        std::copy_n(&buf_[start], capacity() - start, &bytes[0]);
+        std::copy_n(&buf_[0], end, &bytes[capacity() - start]);
+      }
     }
 
     size_ -= size;
