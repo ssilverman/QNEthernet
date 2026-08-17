@@ -96,6 +96,8 @@ class ByteBuffer {
     return err;
   }
 
+  // Reads data from the buffer into the given memory and returns the actual
+  // size read.
   ATTRIBUTE_NODISCARD
   size_t read(void* const buf, size_t size) {
     uint8_t* const bytes = static_cast<uint8_t*>(buf);
@@ -121,6 +123,8 @@ class ByteBuffer {
     return size;
   }
 
+  // Copies data from the given memory into the buffer and returns the actual
+  // number of bytes written.
   ATTRIBUTE_NODISCARD
   size_t write(const void* const buf, size_t size) {
     const uint8_t* const bytes = static_cast<const uint8_t*>(buf);
@@ -146,6 +150,7 @@ class ByteBuffer {
     return size;
   }
 
+  // Clears the buffer.
   void clear() {
     size_ = 0;
     head_ = 0;
