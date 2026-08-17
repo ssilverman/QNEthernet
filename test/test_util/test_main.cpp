@@ -96,7 +96,7 @@ static void test_writeMagic() {
 static void test_StdioPrint() {
   constexpr char kMessage[]{"This is a message."};
 
-  std::FILE* f = fopen("file", "w");
+  std::FILE* const f = fopen("file", "w");
   TEST_ASSERT_NOT_NULL_MESSAGE(f, "Could not open file");
 
   StdioPrint stdioPrint{f};

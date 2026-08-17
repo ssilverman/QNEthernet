@@ -78,7 +78,7 @@ static bool s_initialized = false;
 static bool s_netifAdded = false;
 
 FLASHMEM MDNSClass::~MDNSClass() noexcept {
-  int lastErrno = errno;
+  const int lastErrno = errno;
   end();
   errno = lastErrno;  // Because end() may have set it
 }

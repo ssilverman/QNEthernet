@@ -30,10 +30,10 @@ void tearDown() {
 
 // Tests the elapsedTime<Clock> utility class comparison functions.
 static void test_elapsedTime_compare() {
-  elapsedTime timer;
+  const elapsedTime timer;
 
   delay(2000);
-  auto x = std::chrono::duration_cast<std::chrono::seconds>(timer.dur());
+  const auto x = std::chrono::duration_cast<std::chrono::seconds>(timer.dur());
   TEST_ASSERT_EQUAL(2, x.count());
 
   // Comparison operators

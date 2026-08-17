@@ -52,7 +52,7 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
       LWIP_PLATFORM_ASSERT("Expected header copy success");
     }
 
-    size_t dataSize = p->tot_len - hdrSize;  // 16-bit
+    const size_t dataSize = p->tot_len - hdrSize;  // 16-bit
     const uint8_t* data = nullptr;
 
     if (dataSize != 0) {

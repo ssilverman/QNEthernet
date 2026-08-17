@@ -22,7 +22,7 @@ EthernetServer::EthernetServer(const uint16_t port)
     : port_{true, port} {}
 
 EthernetServer::~EthernetServer() noexcept {
-  int lastErrno = errno;
+  const int lastErrno = errno;
   end();
   errno = lastErrno;  // Because end() may have set it via
                       // ConnectionManager::stopListening()
@@ -64,7 +64,7 @@ bool EthernetServer::begin(const uint16_t port, const bool reuse) {
     if ((port != 0) && (port_ == port) && (reuse_ == reuse)) {
       return true;
     }
-    int lastErrno = errno;
+    const int lastErrno = errno;
     end();  // TODO: Should we call end() only if the new begin is successful?
     errno = lastErrno;  // Because end() may have set it via
                         // ConnectionManager::stopListening()

@@ -43,7 +43,7 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
 
   const uint32_t timestamp = sys_now();
 
-  struct pbuf* pNext = p;
+  const struct pbuf* pNext = p;
 
   // Push
   if (EthernetFrame.inBuf_.full()) {

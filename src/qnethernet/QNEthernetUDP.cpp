@@ -60,7 +60,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
 
   const uint32_t timestamp = sys_now();
 
-  struct pbuf* pNext = p;
+  const struct pbuf* pNext = p;
 
   // Push
   if (udp->inBuf_.full()) {
@@ -404,7 +404,7 @@ int EthernetUDP::endPacket() {
   if (size > std::numeric_limits<uint16_t>::max()) {
     LWIP_PLATFORM_ASSERT("Output packet too large");
   }
-  auto outSize = static_cast<uint16_t>(size);
+  const auto outSize = static_cast<uint16_t>(size);
 
   // Note: Use PBUF_RAM for TX
   struct pbuf* const p = pbuf_alloc(PBUF_TRANSPORT, outSize, PBUF_RAM);

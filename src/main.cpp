@@ -86,7 +86,7 @@ void setup() {
   });
 
   Ethernet.onAddressChanged([]() {
-    IPAddress ip = Ethernet.localIP();
+    const IPAddress ip = Ethernet.localIP();
     const bool hasIP = (ip != INADDR_NONE);
     if (hasIP) {
       IPAddress subnet = Ethernet.subnetMask();

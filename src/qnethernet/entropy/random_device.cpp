@@ -25,7 +25,7 @@ size_t qnethernet_hal_fill_entropy(void* buf, size_t size);
 
 static void ensureInitialized() {
   // This is a lightweight alternative to std::call_once
-  static bool initialized = []() {
+  static const bool initialized = []() {
     qnethernet_hal_init_entropy();
     return true;
   }();

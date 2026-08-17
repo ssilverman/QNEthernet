@@ -36,7 +36,7 @@ template <typename... Args>
 static std::vector<char> format(const char* format, Args... args) {
   std::vector<char> out;
 
-  int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
+  const int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
   if (size <= 1) {
     out.resize(1, 0);
   } else {
@@ -235,7 +235,7 @@ static void test_randomness() {
   const double mean = sum / totalCount;
 
   static const boost::math::chi_squared_distribution<double> dist(255);
-  double pVal = 1.0 - boost::math::cdf(dist, chiSq);
+  const double pVal = 1.0 - boost::math::cdf(dist, chiSq);
 
   TEST_MESSAGE(format("entropy = %f", entropy).data());
   TEST_MESSAGE(format("mean    = %f", mean).data());

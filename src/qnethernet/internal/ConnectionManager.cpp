@@ -133,7 +133,7 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
 
   holder->lastError = err;
 
-  struct pbuf* pNext = p;
+  const struct pbuf* pNext = p;
   const auto& state = holder->state;
 
   // Check for errors and null packets

@@ -36,7 +36,7 @@ template <typename... Args>
 std::vector<char> format(const char* format, Args... args) {
   std::vector<char> out;
 
-  int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
+  const int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
   if (size <= 1) {
     out.resize(1, 0);
   } else {
@@ -129,8 +129,8 @@ static void test_version() {
 // Tests that there's entropy.
 static void test_entropy() {
 #if defined(TEENSYDUINO) && defined(__IMXRT1062__)
-  uint32_t r1 = LWIP_RAND();
-  uint32_t r2 = LWIP_RAND();
+  const uint32_t r1 = LWIP_RAND();
+  const uint32_t r2 = LWIP_RAND();
   TEST_ASSERT_FALSE_MESSAGE((r1 == 568509518) && (r2 == 2577880531), "No entropy");
 #endif  // TEENSYDUINO && __IMXRT1062__
 }
@@ -244,17 +244,17 @@ static bool waitForLocalIP() {
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.isDHCPActive(), "Expected DHCP active");
 
   TEST_MESSAGE("Waiting for DHCP...");
-  uint32_t t = millis();
-  bool result = Ethernet.waitForLocalIP(kDHCPTimeout);
+  const uint32_t t = millis();
+  const bool result = Ethernet.waitForLocalIP(kDHCPTimeout);
   TEST_ASSERT_TRUE_MESSAGE(result, "Wait for IP failed");
   TEST_MESSAGE(format("DHCP time: %" PRIu32 "ms", millis() - t).data());
   if (!result) {
     return false;
   }
 
-  IPAddress ip = Ethernet.localIP();
-  IPAddress netmask = Ethernet.subnetMask();
-  IPAddress gateway = Ethernet.gatewayIP();
+  const IPAddress ip = Ethernet.localIP();
+  const IPAddress netmask = Ethernet.subnetMask();
+  const IPAddress gateway = Ethernet.gatewayIP();
   IPAddress dns = Ethernet.dnsServerIP();
   TEST_ASSERT_NOT_EQUAL_MESSAGE(INADDR_NONE, ip, "Expected valid IP");
   TEST_MESSAGE(format("DHCP IP:      %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]).data());
@@ -497,7 +497,7 @@ static void test_mdns() {
 
   TEST_ASSERT_FALSE_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
                             "Expected didn't remove service");
-  auto txtf = []() { return std::vector<std::string>{"path=/"}; };
+  const auto txtf = []() { return std::vector<std::string>{"path=/"}; };
   TEST_ASSERT_MESSAGE(MDNS.addService("_http", "_tcp", kHTTPPort, txtf),
                       "Expected add service success");
   TEST_ASSERT_MESSAGE(MDNS.removeService(kTestHostname, "_http", "_tcp", kHTTPPort),
@@ -562,8 +562,8 @@ static bool waitForLink() {
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected link down");
 
   TEST_MESSAGE("Waiting for link...");
-  uint32_t t = millis();
-  bool result = Ethernet.waitForLink(kLinkTimeout);
+  const uint32_t t = millis();
+  const bool result = Ethernet.waitForLink(kLinkTimeout);
   TEST_ASSERT_TRUE_MESSAGE(result, "Wait for link failed");
   TEST_MESSAGE(format("Link time: %" PRIu32 "ms", millis() - t).data());
 
@@ -574,7 +574,7 @@ static bool waitForLink() {
 
 // Tests seeing a link.
 static void test_link() {
-  EthernetLinkStatus ls = Ethernet.linkStatus();
+  const EthernetLinkStatus ls = Ethernet.linkStatus();
   TEST_ASSERT_TRUE_MESSAGE((ls == LinkOFF) || (ls == Unknown), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
@@ -591,7 +591,7 @@ static void test_link() {
 
   Ethernet.end();
 
-  EthernetLinkStatus status = Ethernet.linkStatus();
+  const EthernetLinkStatus status = Ethernet.linkStatus();
   TEST_ASSERT_TRUE_MESSAGE((status == LinkOFF) || (status == Unknown), "Expected no link");
   TEST_ASSERT_FALSE_MESSAGE(Ethernet.linkState(), "Expected no link");
 }
@@ -623,7 +623,7 @@ static void test_link_listener() {
   Ethernet.end();
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(Ethernet), "Expected stopped");
   TEST_MESSAGE("Waiting for link down...");
-  uint32_t timer = millis();
+  const uint32_t timer = millis();
   while (Ethernet.linkState() && ((millis() - timer) < kLinkTimeout)) {
     yield();
   }
@@ -764,7 +764,7 @@ static void test_udp() {
 
   bool validReply = false;
   uint32_t sntpTime = 0;
-  uint32_t timer = millis();
+  const uint32_t timer = millis();
   uint32_t resendTimer = millis() + kSNTPResendTimeout;
   bool first = true;
 
@@ -785,7 +785,7 @@ static void test_udp() {
 
     yield();
 
-    int size = udp->parsePacket();
+    const int size = udp->parsePacket();
     if (size < 0) {
       continue;
     }
@@ -794,10 +794,10 @@ static void test_udp() {
       continue;
     }
 
-    const uint8_t* data = udp->data();
+    const uint8_t* const data = udp->data();
 
     // See: Section 5, "SNTP Client Operations"
-    int mode = data[0] & 0x07;
+    const int mode = data[0] & 0x07;
     if (((data[0] & 0xc0) == 0xc0) ||     // LI == 3 (Alarm condition)
         (data[1] == 0) ||                 // Stratum == 0 (Kiss-o'-Death)
         !((mode == 4) || (mode == 5))) {  // Must be Server or Broadcast mode
@@ -834,8 +834,8 @@ static void test_udp() {
   }
 
   // Print the time
-  std::time_t time = sntpTime;
-  std::tm* tm = std::gmtime(&time);
+  const std::time_t time = sntpTime;
+  const std::tm* const tm = std::gmtime(&time);
   TEST_MESSAGE(format("SNTP reply: %04u-%02u-%02u %02u:%02u:%02u (UTC)",
                       tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
                       tm->tm_hour, tm->tm_min, tm->tm_sec).data());
@@ -945,7 +945,7 @@ static void test_udp_receive_timestamp() {
 
   uint8_t b = 13;  // The buffer
 
-  uint32_t t = millis();  // Current timestamp
+  const uint32_t t = millis();  // Current timestamp
 
   // Send a packet
   TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
@@ -1167,7 +1167,7 @@ static void test_client() {
   t = millis();
   TEST_MESSAGE("The response:");
   while (client->connected()) {
-    int avail = client->available();
+    const int avail = client->available();
     if (avail <= 0) {
       continue;
     }
@@ -1210,7 +1210,7 @@ static void test_client_write_single_bytes() {
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_MESSAGE(format("Lookup and connect time: %" PRIu32 "ms", millis() - t).data());
 
-  size_t len = std::strlen(kRequest);
+  const size_t len = std::strlen(kRequest);
   for (size_t i = 0; i < len; ++i) {
     while (client->write(kRequest[i]) == 0) {
       // Try until written
@@ -1222,7 +1222,7 @@ static void test_client_write_single_bytes() {
   t = millis();
   TEST_MESSAGE("The response:");
   while (client->connected()) {
-    int avail = client->available();
+    const int avail = client->available();
     if (avail <= 0) {
       continue;
     }
@@ -1271,7 +1271,7 @@ static void test_client_connect_timeout() {
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
 
-  uint32_t t = millis();
+  const uint32_t t = millis();
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connect(Ethernet.localIP(), kPort), "Expected connect failure");
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(1000, millis() - t, "Expected timeout duration");
 
@@ -1499,7 +1499,7 @@ static void test_server_zero_port() {
   TEST_ASSERT_EQUAL_MESSAGE(-1, server->port(), "Expected invalid port");
   TEST_ASSERT_TRUE_MESSAGE(server->begin(0), "Expected TCP listen success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*server), "Expected listening");
-  int32_t port = server->port();
+  const int32_t port = server->port();
   TEST_ASSERT_NOT_EQUAL_MESSAGE(0, port, "Expected non-zero port");
   TEST_MESSAGE(format("Server port = %" PRId32, port).data());
   server->end();
@@ -1592,7 +1592,7 @@ static void test_raw_frames() {
                             "Expected correct frame size");
 
   if (EthernetFrame.size() > 0) {  // Avoid potentially accessing NULL data
-    const uint8_t* frameData = EthernetFrame.data();
+    const uint8_t* const frameData = EthernetFrame.data();
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(Ethernet.macAddress(), &frameData[0], 6,
                                           "Expected matching dest MAC");
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(srcMAC, &frameData[6], 6,
@@ -1750,7 +1750,7 @@ static void test_ping() {
     return;
   }
 
-  long rtt = Ethernet.ping(kHost);
+  const long rtt = Ethernet.ping(kHost);
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(0, rtt, "Expected ping success");
   TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());
 }
@@ -1760,7 +1760,7 @@ static void test_ping_reply() {
     return;
   }
 
-  long rtt = Ethernet.ping(Ethernet.localIP());
+  const long rtt = Ethernet.ping(Ethernet.localIP());
 #if QNETHERNET_ENABLE_PING_REPLY
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(0, rtt, "Expected ping success");
   TEST_MESSAGE(format("Ping RTT = %ld ms", rtt).data());

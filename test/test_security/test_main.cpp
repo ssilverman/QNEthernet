@@ -28,7 +28,7 @@ template <typename... Args>
 std::vector<char> format(const char* format, Args... args) {
   std::vector<char> out;
 
-  int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
+  const int size = std::snprintf(nullptr, 0, format, args...) + 1;  // Include the NUL
   if (size <= 1) {
     out.resize(1, 0);
   } else {
@@ -66,8 +66,8 @@ static void test_siphash() {
       0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
   };
 
-  uint64_t want = uint64_t{0xa129ca6149be45e5};
-  uint64_t got = qindesign::security::siphash(2, 4, kKey, kMsg, 15);
+  const uint64_t want = uint64_t{0xa129ca6149be45e5};
+  const uint64_t got = qindesign::security::siphash(2, 4, kKey, kMsg, 15);
   TEST_ASSERT_EQUAL_MESSAGE(want, got, "Expected proper hash");
 
   // Test vectors
@@ -75,7 +75,7 @@ static void test_siphash() {
   uint8_t msg[64];
   for (size_t i = 0; i < 64; ++i) {
     msg[i] = i;
-    uint64_t h = qindesign::security::siphash(2, 4, kKey, msg, i);
+    const uint64_t h = qindesign::security::siphash(2, 4, kKey, msg, i);
     TEST_ASSERT_EQUAL_MESSAGE(h, vectors_sip64[i],
                               format("Expected match: i=%zu", i).data());
   }
