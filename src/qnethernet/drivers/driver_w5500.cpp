@@ -911,14 +911,15 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
   // At this point, we can assume data in s_inputBuf.buf is correct
 
   const uint16_t frameLen = s_inputBuf.readFrameLen();
+  // Note: This will be >= 2 because that's guaranteed in readAndScan()
 
   // Process the frame
-  struct pbuf* const p =
-      pbuf_alloc(PBUF_RAW, static_cast<uint16_t>(frameLen - 2), PBUF_POOL);
+  const uint16_t frameSize = static_cast<uint16_t>(frameLen - 2);
+  struct pbuf* const p = pbuf_alloc(PBUF_RAW, frameSize, PBUF_POOL);
   if (p == nullptr) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
-    (void)s_inputBuf.buf.read(nullptr, frameLen - 2);
+    (void)s_inputBuf.buf.read(nullptr, frameSize);
   } else {
     LWIP_ASSERT("Expected space for pbuf fill",
                 s_inputBuf.buf.read(p) == ERR_OK);
