@@ -22,6 +22,8 @@ and this project adheres to
 
 ### Fixed
 * Fixed a `pbuf` copy error in `ByteBuffer::read(pbuf*)`.
+* Fixed W5500 input processing to skip the rest of the frame if a `pbuf` could
+  not be allocated.
 
 ## [0.36.0]
 

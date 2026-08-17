@@ -918,6 +918,7 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
   if (p == nullptr) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
+    (void)s_inputBuf.buf.read(nullptr, frameLen - 2);
   } else {
     LWIP_ASSERT("Expected space for pbuf fill",
                 s_inputBuf.buf.read(p) == ERR_OK);
