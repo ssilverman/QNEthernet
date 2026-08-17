@@ -66,6 +66,9 @@ class ByteBuffer {
     if (p->tot_len > size()) {
       return ERR_BUF;
     }
+    if (p->tot_len == 0) {
+      return ERR_OK;
+    }
 
     const size_t start = tail_ % capacity();
     const size_t newTail = (tail_ + p->tot_len) % capacity();
@@ -79,7 +82,8 @@ class ByteBuffer {
       // limited to UINT16_MAX
       err =
           pbuf_take(p, &buf_[start], static_cast<uint16_t>(capacity() - start));
-      if (err == ERR_OK) {
+      if ((err == ERR_OK) && (end != 0)) {
+        // This fails if the offset is beyond the end, even if length is zero
         err = pbuf_take_at(p, &buf_[0], static_cast<uint16_t>(end),
                            static_cast<uint16_t>(capacity() - start));
       }

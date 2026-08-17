@@ -20,6 +20,9 @@ and this project adheres to
 * Added `stratum < 16` check to _SNTPClient_ example and updated the
   RFC reference.
 
+### Fixed
+* Fixed a `pbuf` copy error in `ByteBuffer::read(pbuf*)`.
+
 ## [0.36.0]
 
 ### Added
