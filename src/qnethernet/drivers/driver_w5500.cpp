@@ -922,13 +922,14 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
 
   // Process the frame
   const uint16_t frameSize = static_cast<uint16_t>(frameLen - 2);
-  struct pbuf* const p = pbuf_alloc(PBUF_RAW, frameSize, PBUF_POOL);
+  struct pbuf* const p =
+      pbuf_alloc(PBUF_RAW, frameSize + ETH_PAD_SIZE, PBUF_POOL);
   if (p == nullptr) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.memerr);
-    (void)s_inputBuf.buf.read(nullptr, frameSize);
+    (void)s_inputBuf.buf.read((void*)nullptr, frameSize);
   } else {
-    const err_t read = s_inputBuf.buf.read(p);
+    const err_t read = s_inputBuf.buf.read(p, ETH_PAD_SIZE);
     if (read != ERR_OK) {
       LWIP_PLATFORM_ASSERT("Expected space for pbuf fill");
     }
@@ -1022,13 +1023,6 @@ err_t output(struct pbuf* const p) {
     return ERR_IF;
   }
 
-#if ETH_PAD_SIZE
-  const uint8_t status = pbuf_remove_header(p, ETH_PAD_SIZE);
-  if (status != 0) {
-    LWIP_PLATFORM_ASSERT("Expected removed ETH_PAD_SIZE header");
-  }
-#endif  // ETH_PAD_SIZE
-
   // Shouldn't need this check:
   // if (p->tot_len > kMaxFrameLen) {
   //   LINK_STATS_INC(link.drop);
@@ -1036,15 +1030,17 @@ err_t output(struct pbuf* const p) {
   //   return ERR_BUF;
   // }
 
-  const uint16_t copied = pbuf_copy_partial(p, s_frameBuf, p->tot_len, 0);
-  if (copied != p->tot_len) {
+  const uint16_t frameSize = p->tot_len - ETH_PAD_SIZE;
+  const uint16_t copied =
+      pbuf_copy_partial(p, s_frameBuf, frameSize, ETH_PAD_SIZE);
+  if (copied != frameSize) {
     LINK_STATS_INC(link.drop);
     LINK_STATS_INC(link.err);
     return ERR_BUF;
   }
 
   SPITransaction spiTransaction;
-  return send_frame(p->tot_len);
+  return send_frame(frameSize);
 }
 
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT

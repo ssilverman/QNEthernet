@@ -27,6 +27,7 @@ and this project adheres to
 * Fixed `Ping` to use the current header size instead of a constant.
 * Moved essential operations out of LWIP_ASSERT() statements because
   LWIP_NOASSERT may be defined.
+* Fixed W5500 driver `ETH_PAD_SIZE` handling.
 
 ## [0.36.0]
 
