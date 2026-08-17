@@ -24,6 +24,7 @@ and this project adheres to
 * Fixed a `pbuf` copy error in `ByteBuffer::read(pbuf*)`.
 * Fixed W5500 input processing to skip the rest of the frame if a `pbuf` could
   not be allocated.
+* Fixed `Ping` to use the current header size instead of a constant.
 
 ## [0.36.0]
 

@@ -24,8 +24,8 @@ namespace qindesign {
 namespace network {
 
 static constexpr size_t kEchoHdrSize = sizeof(struct icmp_echo_hdr);
-static constexpr size_t kMaxHdrSize = IP_HLEN + kEchoHdrSize;
-static_assert(kMaxHdrSize <= std::numeric_limits<uint16_t>::max(),
+static constexpr size_t kMaxOutHdrSize = IP_HLEN + kEchoHdrSize;
+static_assert(kMaxOutHdrSize <= std::numeric_limits<uint16_t>::max(),
               "Max. header size overflow");
 
 uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
@@ -33,10 +33,13 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
   // Ensure the PCB matches and the packet is the right type and size
   Ping* const ping = static_cast<Ping*>(arg);
 
+  const uint16_t ipHdrSize = ip_current_header_tot_len();
+  const uint16_t hdrSize = ipHdrSize + kEchoHdrSize;
+
   if ((ping->pcb_ != pcb) ||
-      (p->tot_len < kMaxHdrSize) ||
-      (pbuf_get_at(p, IP_HLEN) != ICMP_ER) ||  // Type
-      (pbuf_get_at(p, IP_HLEN + 1) != 0)) {    // Code
+      (p->tot_len < hdrSize) ||
+      (pbuf_get_at(p, ipHdrSize) != ICMP_ER) ||  // Type
+      (pbuf_get_at(p, ipHdrSize + 1) != 0)) {    // Code
     return 0;  // Don't eat the packet
   }
 
@@ -45,21 +48,21 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     struct icmp_echo_hdr echo;
     LWIP_ASSERT(
         "Expected header copy success",
-        pbuf_copy_partial(p, &echo, kEchoHdrSize, IP_HLEN) == kEchoHdrSize);
+        pbuf_copy_partial(p, &echo, kEchoHdrSize, ipHdrSize) == kEchoHdrSize);
 
-    size_t dataSize = p->tot_len - kMaxHdrSize;  // 16-bit
+    size_t dataSize = p->tot_len - hdrSize;  // 16-bit
     const uint8_t* data = nullptr;
 
     if (dataSize != 0) {
       if (p->len == p->tot_len) {
-        data = static_cast<uint8_t*>(p->payload) + kMaxHdrSize;
+        data = static_cast<uint8_t*>(p->payload) + hdrSize;
       } else {
         // Avoid churn, so use a vector instead of a byte array
         ping->dataBuf_.resize(dataSize);
         LWIP_ASSERT("Expected data copy success",
                     pbuf_copy_partial(p, ping->dataBuf_.data(),
                                       static_cast<uint16_t>(dataSize),
-                                      kMaxHdrSize) == dataSize);
+                                      hdrSize) == dataSize);
         data = ping->dataBuf_.data();
       }
     }
@@ -115,7 +118,7 @@ bool Ping::tryCreatePCB() {
 
 bool Ping::send(const PingData& req) {
   // IPv4 header size is 20
-  if (req.dataSize > (std::numeric_limits<uint16_t>::max() - kMaxHdrSize)) {
+  if (req.dataSize > (std::numeric_limits<uint16_t>::max() - kMaxOutHdrSize)) {
     errno = EINVAL;
     return false;
   }
