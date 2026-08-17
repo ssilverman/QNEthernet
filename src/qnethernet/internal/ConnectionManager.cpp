@@ -184,13 +184,10 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     // Check that we can store all the data
     const size_t rem = v.capacity() - v.size() + state->bufPos;
     if (rem < p->tot_len) {
-      static_assert((std::numeric_limits<decltype(p->tot_len)>::max() <=
-                     std::numeric_limits<uint16_t>::max()),
-                    "Can't assume length doesn't overflow");
       // Note: Don't need to free the pbuf here because not returning
       //       ERR_OK or ERR_ABRT
-      altcp_recved(tpcb, static_cast<uint16_t>(rem));  // p->tot_len is u16_t
-      return ERR_INPROGRESS;  // ERR_MEM? Other?
+      // Do not free or acknowledge the pbuf; lwIP retains and retries it.
+      return ERR_MEM;
     }
 
     // If there isn't enough space at the end, move all the data in the buffer
