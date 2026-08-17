@@ -812,7 +812,7 @@ static inline uint16_t readFrameLen(const uint8_t* const buf) {
   return ntohs(v);
 }
 
-// Keeps reading the RX buffer unti local buffer is full or no data. This will
+// Keeps reading the RX buffer until local buffer is full or no data. This will
 // return false when there's either nothing in the RX buffer or the local buffer
 // is full;
 static bool readAndScan() {
