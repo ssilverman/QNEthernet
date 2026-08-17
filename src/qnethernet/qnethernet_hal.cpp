@@ -322,8 +322,9 @@ size_t qnethernet_hal_entropy_available() {
 
 uint32_t qnethernet_hal_entropy() {
   uint32_t r;
-  LWIP_ASSERT("entropy generation error",
-              ::qindesign::entropy::entropy_random(&r));
+  const bool status = ::qindesign::entropy::entropy_random(&r);
+  LWIP_ASSERT("entropy generation error", status);
+  (void)status;
   return r;
 }
 
@@ -511,7 +512,10 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
 #elif defined(ARDUINO_TEENSY35) || defined(ARDUINO_TEENSY36)
   // usb_desc.c:usb_init_serialnumber()
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    LWIP_ASSERT("Expected HSRUN disable success", kinetis_hsrun_disable() != 0);
+    const int status1 = kinetis_hsrun_disable();
+    LWIP_ASSERT("Expected HSRUN disable success", status1 != 0);
+    (void)status1;
+
     FTFL_FSTAT = FTFL_FSTAT_RDCOLERR | FTFL_FSTAT_ACCERR | FTFL_FSTAT_FPVIOL;
     *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOB3) = 0x41070000;
     FTFL_FSTAT = FTFL_FSTAT_CCIF;
@@ -519,7 +523,10 @@ void qnethernet_hal_get_system_mac_address(uint8_t mac[ETH_HWADDR_LEN]) {
       // Wait
     }
     const uint32_t num = *reinterpret_cast<volatile uint32_t*>(&FTFL_FCCOBB);
-    LWIP_ASSERT("Expected HSRUN enable success", kinetis_hsrun_enable() != 0);
+
+    const int status2 = kinetis_hsrun_enable();
+    LWIP_ASSERT("Expected HSRUN enable success", status2 != 0);
+    (void)status2;
   }
 
   mac[0] = 0x04;

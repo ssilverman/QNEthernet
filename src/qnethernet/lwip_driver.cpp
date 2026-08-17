@@ -310,9 +310,11 @@ bool output_frame(const void* const frame, const size_t len) {
     struct pbuf* const p = pbuf_alloc(
         PBUF_RAW, static_cast<uint16_t>(len + ETH_PAD_SIZE), PBUF_POOL);
     if (p != nullptr) {
-      LWIP_ASSERT("Expected space for pbuf fill",
-                  pbuf_take_at(p, frame, static_cast<uint16_t>(len),
-                               ETH_PAD_SIZE) == ERR_OK);
+      const err_t err =
+          pbuf_take_at(p, frame, static_cast<uint16_t>(len), ETH_PAD_SIZE);
+      LWIP_ASSERT("Expected space for pbuf fill", err == ERR_OK);
+      (void)err;
+
       if (s_netif.input(p, &s_netif) != ERR_OK) {
         (void)pbuf_free(p);
       }

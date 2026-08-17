@@ -21,8 +21,9 @@
 extern "C" {
 err_t unknown_eth_protocol(struct pbuf* const p, struct netif* const netif) {
 #if ETH_PAD_SIZE
-  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header",
-              pbuf_remove_header(p, ETH_PAD_SIZE) == 0);
+  const uint8_t status = pbuf_remove_header(p, ETH_PAD_SIZE);
+  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header", status == 0);
+  (void)status;
 #endif  // ETH_PAD_SIZE
 
   return qindesign::network::EthernetFrameClass::recvFunc(p, netif);
@@ -196,12 +197,13 @@ void EthernetFrameClass::beginFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
                                     const uint8_t srcAddr[ETH_HWADDR_LEN],
                                     const uint16_t typeOrLength) {
   beginFrame();
-  LWIP_ASSERT(
-      "Expected write success",
-      (write(dstAddr, ETH_HWADDR_LEN) +
-       write(srcAddr, ETH_HWADDR_LEN) +
-       write(static_cast<uint8_t>(typeOrLength >> 8)) +
-       write(static_cast<uint8_t>(typeOrLength))) == (2*ETH_HWADDR_LEN + 2));
+
+  const size_t written = write(dstAddr, ETH_HWADDR_LEN) +
+                         write(srcAddr, ETH_HWADDR_LEN) +
+                         write(static_cast<uint8_t>(typeOrLength >> 8)) +
+                         write(static_cast<uint8_t>(typeOrLength));
+  LWIP_ASSERT("Expected write success", written == (2*ETH_HWADDR_LEN + 2));
+  (void)written;
 }
 
 void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
@@ -209,11 +211,13 @@ void EthernetFrameClass::beginVLANFrame(const uint8_t dstAddr[ETH_HWADDR_LEN],
                                         const uint16_t vlanInfo,
                                         const uint16_t typeOrLength) {
   beginFrame(dstAddr, srcAddr, ETHTYPE_VLAN);
-  LWIP_ASSERT("Expected write success",
-              (write(static_cast<uint8_t>(vlanInfo >> 8)) +
-               write(static_cast<uint8_t>(vlanInfo)) +
-               write(static_cast<uint8_t>(typeOrLength >> 8)) +
-               write(static_cast<uint8_t>(typeOrLength))) == 4);
+
+  const size_t written = write(static_cast<uint8_t>(vlanInfo >> 8)) +
+                         write(static_cast<uint8_t>(vlanInfo)) +
+                         write(static_cast<uint8_t>(typeOrLength >> 8)) +
+                         write(static_cast<uint8_t>(typeOrLength));
+  LWIP_ASSERT("Expected write success", written == 4);
+  (void)written;
 }
 
 bool EthernetFrameClass::endFrame() {

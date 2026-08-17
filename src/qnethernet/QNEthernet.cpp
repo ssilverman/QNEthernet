@@ -312,9 +312,11 @@ bool EthernetClass::start() {
       return 3;
     }
   }(netif_->num);
-  LWIP_ASSERT("Expected complete interface name fill",
-              std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u",
-                            netif_->num) == numSize);
+  const int count =
+      std::snprintf(&ifName_[2], sizeof(ifName_) - 2, "%u", netif_->num);
+  LWIP_ASSERT("Expected complete interface name fill", count == numSize);
+  (void)numSize;
+  (void)count;
 
   if (!enet::init(macAddress(), &netifEventFunc, &driverCapabilities_)) {
     netif_ = nullptr;

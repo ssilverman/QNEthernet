@@ -365,8 +365,10 @@ bool EthernetClient::getAddrInfo(const bool local,
     return false;
   }
 
-  LWIP_ASSERT("Expected valid address info",
-              altcp_get_tcp_addrinfo(state->pcb, local, addr, port) == ERR_OK);
+  const err_t err = altcp_get_tcp_addrinfo(state->pcb, local, addr, port);
+  LWIP_ASSERT("Expected valid address info", err == ERR_OK);
+  (void)err;
+
   return true;
 }
 

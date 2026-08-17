@@ -25,6 +25,8 @@ and this project adheres to
 * Fixed W5500 input processing to skip the rest of the frame if a `pbuf` could
   not be allocated.
 * Fixed `Ping` to use the current header size instead of a constant.
+* Moved essential operations out of LWIP_ASSERT() statements because
+  LWIP_NOASSERT may be defined.
 
 ## [0.36.0]
 

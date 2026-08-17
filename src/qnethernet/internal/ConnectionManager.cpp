@@ -385,9 +385,9 @@ optional<uint16_t> ConnectionManager::listen(const uint16_t port,
 
   uint16_t actualPort = port;
   if (port == 0) {
-    LWIP_ASSERT(
-        "Expected valid port",
-        altcp_get_tcp_addrinfo(pcb, 1, nullptr, &actualPort) == ERR_OK);
+    const err_t err = altcp_get_tcp_addrinfo(pcb, 1, nullptr, &actualPort);
+    LWIP_ASSERT("Expected valid port", err == ERR_OK);
+    (void)err;
   }
   return {true, actualPort};
 }
@@ -399,8 +399,9 @@ static uint16_t getLocalPort(struct altcp_pcb* pcb) {
   return altcp_get_port(pcb, 1);
 #else
   uint16_t port;
-  LWIP_ASSERT("Expected valid port",
-              altcp_get_tcp_addrinfo(pcb, 1, nullptr, &port) == ERR_OK);
+  const err_t err = altcp_get_tcp_addrinfo(pcb, 1, nullptr, &port);
+  LWIP_ASSERT("Expected valid port", err == ERR_OK);
+  (void)err;
   return port;
 #endif  // LWIP_ALTCP
 }

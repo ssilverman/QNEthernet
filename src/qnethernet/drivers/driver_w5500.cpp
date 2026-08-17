@@ -241,7 +241,9 @@ static struct InputBuf {
   // This decreases the size of the buffer.
   uint16_t readFrameLen() {
     uint16_t v;
-    LWIP_ASSERT("Expected valid frame length", buf.read(&v, 2) == 2);
+    const size_t read = buf.read(&v, 2);
+    LWIP_ASSERT("Expected valid frame length", read == 2);
+    (void)read;
     return ntohs(v);
   }
 } s_inputBuf BUFFER_DMAMEM;
@@ -866,9 +868,12 @@ static bool readAndScan() {
           retval = false;
           break;
         }
-        LWIP_ASSERT(
-            "Expeceted complete buffer write",
-            s_inputBuf.buf.write(&s_inputBuf.rxBuf[end], frameLen) == frameLen);
+
+        const size_t written =
+            s_inputBuf.buf.write(&s_inputBuf.rxBuf[end], frameLen);
+        LWIP_ASSERT("Expeceted complete buffer write", written == frameLen);
+        (void)written;
+
         LINK_STATS_INC(link.recv);
       } else {
         LINK_STATS_INC(link.drop);
@@ -921,8 +926,9 @@ struct pbuf* proc_input(struct netif* const netif, const int counter) {
     LINK_STATS_INC(link.memerr);
     (void)s_inputBuf.buf.read(nullptr, frameSize);
   } else {
-    LWIP_ASSERT("Expected space for pbuf fill",
-                s_inputBuf.buf.read(p) == ERR_OK);
+    const err_t read = s_inputBuf.buf.read(p);
+    LWIP_ASSERT("Expected space for pbuf fill", read == ERR_OK);
+    (void)read;
   }
   return p;
 }
@@ -1014,8 +1020,9 @@ err_t output(struct pbuf* const p) {
   }
 
 #if ETH_PAD_SIZE
-  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header",
-              pbuf_remove_header(p, ETH_PAD_SIZE) == 0);
+  const uint8_t status = pbuf_remove_header(p, ETH_PAD_SIZE);
+  LWIP_ASSERT("Expected removed ETH_PAD_SIZE header", status == 0);
+  (void)status;
 #endif  // ETH_PAD_SIZE
 
   // Shouldn't need this check:
