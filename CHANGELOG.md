@@ -28,6 +28,7 @@ and this project adheres to
 * Moved essential operations out of LWIP_ASSERT() statements because
   LWIP_NOASSERT may be defined.
 * Fixed W5500 driver `ETH_PAD_SIZE` handling.
+* Fixed STM32 Arduino core 3.0.0 builds.
 
 ## [0.36.0]
 

@@ -16,6 +16,9 @@
 #include <functional>
 #include <vector>
 
+#ifdef ARDUINO_ARCH_STM32
+#include <Arduino.h>  // STM32's Arduino needs this for namespace arduino
+#endif  // ARDUINO_ARCH_STM32
 #include <IPAddress.h>
 
 #include "lwip/ip_addr.h"
