@@ -1065,7 +1065,7 @@ FLASHMEM bool init() {
   NVIC::IRQ::enable(NVIC::IRQ::kENET);
 
   // Last few things to do
-  ENET::group->EIR = 0x7fff'8000;  // Clear any pending interrupts before setting ETHEREN
+  ENET::group->EIR = 0x7fff8000;  // Clear any pending interrupts before setting ETHEREN
   (void)std::atomic_flag_test_and_set(&s_rxNotAvail);
 
   // Last, enable the Ethernet MAC
