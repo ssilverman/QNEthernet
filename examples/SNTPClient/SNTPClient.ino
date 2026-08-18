@@ -157,7 +157,7 @@ static bool sendRequest() {
   packet[0] = 0b00'100'011;  // LI=0, VN=4, Mode=3 (Client)
 #endif  // C++ < 14
 
-  // Get the current time as the Transmit Time
+  // Get the current time as the Transmit Timestamp
   if (std::isnan(currentTime(&packet[40]))) {
     return false;
   }
@@ -231,7 +231,7 @@ void loop() {
 
   gotReply = true;
 
-  // Transmit timestamp
+  // Transmit Timestamp
   const double t3 = ntpToDouble(&buf[40], t4);
   double newTime = t3 - static_cast<double>(kEpochDiff);
   // Note: the new time should also add the one-way delay, if known or estimated
