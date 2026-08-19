@@ -1539,6 +1539,7 @@ bool ieee1588_set_channel_mode(const size_t channel, const int mode) {
   }
 
   switch (mode) {
+    case 8:   // Reserved
     case 12:  // Reserved
     case 13:  // Reserved
       return false;
