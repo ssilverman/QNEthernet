@@ -700,9 +700,9 @@ constexpr ENET_Reg<&ENET_Layout::TGSR, 1, 0, 0x0> TF0;  // Copy Of Timer Flag Fo
     // 0b1..Timer Flag for Channel 0 is set
 }  // namespace TGSR
 
-// Timer Control Status Register
 namespace CHANNEL {
 
+// Timer Control Status Register
 namespace TCSR {
 constexpr uint32_t kW1C = regs::shiftedMask32<1, 7>();
 
@@ -750,6 +750,20 @@ constexpr regs::RegValue32<1,  6> TIE;
 constexpr regs::RegValue32<4,  2> TMODE;
 constexpr regs::RegValue32<1,  0> TDRE;
 }  // namespace vals
+
+constexpr uint32_t kTMODE_Disabled                    = 0;
+constexpr uint32_t kTMODE_CaptureOnRising             = 1;
+constexpr uint32_t kTMODE_CaptureOnFalling            = 2;
+constexpr uint32_t kTMODE_CaptureOnBoth               = 3;
+constexpr uint32_t kTMODE_OutCompareSoftwareOnly      = 4;
+constexpr uint32_t kTMODE_ToggleOnCompare             = 5;
+constexpr uint32_t kTMODE_ClearOnCompare              = 6;
+constexpr uint32_t kTMODE_SetOnCompare                = 7;
+constexpr uint32_t kTMODE_SetOnCompareClearOnOverflow = 9;
+constexpr uint32_t kTMODE_ClearOnCompareSetOnOverflow = 10;
+// constexpr uint32_t kTMODE_SetOnCompareClearOnOverflow = 11;  // Duplicate
+constexpr uint32_t kTMODE_PulseLowOnCompare           = 14;
+constexpr uint32_t kTMODE_PulseHighOnCompare          = 15;
 }  // namespace TCSR
 
 // Timer Compare Capture Register
@@ -1324,8 +1338,8 @@ constexpr ENET2_Reg<&ENET_Layout::TGSR, 1, 1, 0x0> TF1;
 constexpr ENET2_Reg<&ENET_Layout::TGSR, 1, 0, 0x0> TF0;
 }  // namespace TGSR
 
-// Timer Control Status Register
 namespace CHANNEL {
+
 namespace TCSR {
 constexpr uint32_t kW1C = regs::shiftedMask32<1, 7>();
 
@@ -1347,6 +1361,20 @@ constexpr regs::RegValue32<1,  6> TIE;
 constexpr regs::RegValue32<4,  2> TMODE;
 constexpr regs::RegValue32<1,  0> TDRE;
 }  // namespace vals
+
+constexpr uint32_t kTMODE_Disabled                    = 0;
+constexpr uint32_t kTMODE_CaptureOnRising             = 1;
+constexpr uint32_t kTMODE_CaptureOnFalling            = 2;
+constexpr uint32_t kTMODE_CaptureOnBoth               = 3;
+constexpr uint32_t kTMODE_OutCompareSoftwareOnly      = 4;
+constexpr uint32_t kTMODE_ToggleOnCompare             = 5;
+constexpr uint32_t kTMODE_ClearOnCompare              = 6;
+constexpr uint32_t kTMODE_SetOnCompare                = 7;
+constexpr uint32_t kTMODE_SetOnCompareClearOnOverflow = 9;
+constexpr uint32_t kTMODE_ClearOnCompareSetOnOverflow = 10;
+// constexpr uint32_t kTMODE_SetOnCompareClearOnOverflow = 11;  // Duplicate
+constexpr uint32_t kTMODE_PulseLowOnCompare           = 14;
+constexpr uint32_t kTMODE_PulseHighOnCompare          = 15;
 }  // namespace TCSR
 
 namespace TCCR {

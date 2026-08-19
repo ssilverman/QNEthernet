@@ -33,13 +33,17 @@ class RegGroup {
   static_assert((BaseAddr % alignof(Layout)) == 0, "Bad alignment");
 
  public:
+  [[gnu::always_inline]]
   Layout* operator&() const { return reinterpret_cast<Layout*>(BaseAddr); }
+  [[gnu::always_inline]]
   Layout* operator->() const { return operator&(); }
+  [[gnu::always_inline]]
   Layout& operator*() const { return *operator&(); }
 };
 
 // Gets the basic shifted mask for the given parameters.
 template <typename R, size_t Bits, unsigned int Shift>
+[[gnu::always_inline]]
 constexpr R shiftedMask() {
   // Number of bits in whole register.
   constexpr size_t kWholeRegBits = std::numeric_limits<R>::digits;
@@ -63,18 +67,21 @@ constexpr R shiftedMask() {
 
 // Gets the basic shifted 32-bit mask for the given parameters.
 template <size_t Bits, unsigned int Shift>
+[[gnu::always_inline]]
 constexpr uint32_t shiftedMask32() {
   return shiftedMask<uint32_t, Bits, Shift>();
 }
 
 // Gets the basic shifted 16-bit mask for the given parameters.
 template <size_t Bits, unsigned int Shift>
+[[gnu::always_inline]]
 constexpr uint16_t shiftedMask16() {
   return shiftedMask<uint16_t, Bits, Shift>();
 }
 
 // Gets the basic shifted 8-bit mask for the given parameters.
 template <size_t Bits, unsigned int Shift>
+[[gnu::always_inline]]
 constexpr uint8_t shiftedMask8() {
   return shiftedMask<uint8_t, Bits, Shift>();
 }

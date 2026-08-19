@@ -234,8 +234,8 @@ constexpr regs::RegValue32<4, 0> MUX_MODE;
 }  // namespace vals
 }  // namespace SW_MUX_CTL_PAD_1
 
+// IOMUXC_SW_PAD_CTL_PAD_1
 namespace SW_PAD_CTL_PAD_1 {
-// IOMUXC_SW_PAD_CTL_PAD_1 values
 template <size_t Index>
 constexpr SW_PAD_CTL_PAD_1_Reg<Index, 1, 16> HYS;    // Hyst. Enable Field
     // 0b0..Hysteresis Disabled
@@ -291,8 +291,8 @@ constexpr regs::RegValue32<1,  0> SRE;
 }  // namespace vals
 }  // namespace SW_PAD_CTL_PAD_1
 
+// IOMUXC_SELECT_INPUT_1
 namespace SELECT_INPUT_1 {
-// IOMUXC_SELECT_INPUT_1 values
 template <size_t Index>
 constexpr SELECT_INPUT_1_Reg<Index, 2, 0> DAISY;  // Selecting Pads Involved in Daisy Chain.
 

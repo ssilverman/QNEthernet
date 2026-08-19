@@ -542,10 +542,10 @@ constexpr CCM_ANALOG_Reg<&CCM_ANALOG_Layout::PLL_ENET, 2,  2> ENET2_DIV_SELECT; 
 constexpr CCM_ANALOG_Reg<&CCM_ANALOG_Layout::PLL_ENET, 2, 0> DIV_SELECT;             // Controls the frequency of the ethernet reference clock
 
 // Analog ENET PLL Control Register values
-constexpr uint32_t kENET2_DIV_SELECT_25MHZ  = 0;
-constexpr uint32_t kENET2_DIV_SELECT_50MHZ  = 1;
-constexpr uint32_t kENET2_DIV_SELECT_100MHZ = 2;
-constexpr uint32_t kENET2_DIV_SELECT_125MHZ = 3;
+constexpr uint32_t kENET2_DIV_SELECT_25MHz  = 0;
+constexpr uint32_t kENET2_DIV_SELECT_50MHz  = 1;
+constexpr uint32_t kENET2_DIV_SELECT_100MHz = 2;
+constexpr uint32_t kENET2_DIV_SELECT_125MHz = 3;
 }  // namespace PLL_ENET
 
 // Analog ENET PLL Control Register
@@ -773,15 +773,15 @@ constexpr CCM_ANALOG_Reg<&CCM_ANALOG_Layout::MISC0, 1, 3> REFTOP_SELFBIASOFF;   
 constexpr CCM_ANALOG_Reg<&CCM_ANALOG_Layout::MISC0, 1, 0> REFTOP_PWD;                        // Control bit to power-down the analog bandgap reference circuitry
 
 // Miscellaneous Register 0 values
-constexpr uint32_t kREFTOP_VBGADJ_NOMINAL    = 0;
-constexpr uint32_t kREFTOP_VBGADJ_PLUS_0p78  = 1;
-constexpr uint32_t kREFTOP_VBGADJ_PLUS_1p56  = 2;
-constexpr uint32_t kREFTOP_VBGADJ_PLUS_2p34  = 3;
-constexpr uint32_t kREFTOP_VBGADJ_MINUS_0p78 = 4;
-constexpr uint32_t kREFTOP_VBGADJ_MINUS_1p56 = 5;
-constexpr uint32_t kREFTOP_VBGADJ_MINUS_2p34 = 6;
-constexpr uint32_t kREFTOP_VBGADJ_MINUS_3p12 = 7;
-constexpr uint32_t kRTC_XTAL_SOURCE_INTERNAL = 0;
+constexpr uint32_t kREFTOP_VBGADJ_Nominal    = 0;
+constexpr uint32_t kREFTOP_VBGADJ_Plus_0p78  = 1;
+constexpr uint32_t kREFTOP_VBGADJ_Plus_1p56  = 2;
+constexpr uint32_t kREFTOP_VBGADJ_Plus_2p34  = 3;
+constexpr uint32_t kREFTOP_VBGADJ_Minus_0p78 = 4;
+constexpr uint32_t kREFTOP_VBGADJ_Minus_1p56 = 5;
+constexpr uint32_t kREFTOP_VBGADJ_Minus_2p34 = 6;
+constexpr uint32_t kREFTOP_VBGADJ_Minus_3p12 = 7;
+constexpr uint32_t kRTC_XTAL_SOURCE_Internal = 0;
 constexpr uint32_t kRTC_XTAL_SOURCE_XTAL     = 1;
 }  // namespace MISC0
 
@@ -1086,7 +1086,7 @@ constexpr CCM_ANALOG_Reg<regs::constify(&CCM_ANALOG_Layout::MISC2_TOG), 3,  0> R
 
 // CCM_ANALOG_PLL_xxx_BYPASS_CLK_SRC values
 namespace PLL {
-constexpr uint32_t kBYPASS_CLK_SRC_24MHZ = 0;
+constexpr uint32_t kBYPASS_CLK_SRC_24MHz = 0;
 constexpr uint32_t kBYPASS_CLK_SRC_CLK1  = 1;
 }  // namespace PLL
 

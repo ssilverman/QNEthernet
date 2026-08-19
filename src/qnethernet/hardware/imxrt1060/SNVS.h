@@ -345,18 +345,18 @@ constexpr SNVS_Reg<&SNVS_Layout::HPSR, 1, 0, 0x0> HPTA;                         
     // 0b1..A time alarm interrupt occurred.
 
 // SNVS_HP Status Register values
-constexpr uint32_t kSSM_STATE_INIT                = 0;
-constexpr uint32_t kSSM_STATE_HARD_FAIL           = 1;
-constexpr uint32_t kSSM_STATE_SOFT_FAIL           = 3;
-constexpr uint32_t kSSM_STATE_INIT_INTERMEDIATE   = 8;
-constexpr uint32_t kSSM_STATE_CHECK               = 9;
-constexpr uint32_t kSSM_STATE_NONSECURE           = 11;
-constexpr uint32_t kSSM_STATE_TRUSTED             = 13;
-constexpr uint32_t kSSM_STATE_SECURE              = 15;
-constexpr uint32_t kSYS_SECURITY_CFG_FAB          = 0;
-constexpr uint32_t kSYS_SECURITY_CFG_OPEN         = 1;
-constexpr uint32_t kSYS_SECURITY_CFG_CLOSED       = 3;
-constexpr uint32_t kSYS_SECURITY_CFG_FIELD_RETURN = 7;
+constexpr uint32_t kSSM_STATE_Init               = 0;
+constexpr uint32_t kSSM_STATE_HardFail           = 1;
+constexpr uint32_t kSSM_STATE_SoftFail           = 3;
+constexpr uint32_t kSSM_STATE_InitIntermerdiate  = 8;
+constexpr uint32_t kSSM_STATE_Check              = 9;
+constexpr uint32_t kSSM_STATE_Nonsecure          = 11;
+constexpr uint32_t kSSM_STATE_Trusted            = 13;
+constexpr uint32_t kSSM_STATE_Secure             = 15;
+constexpr uint32_t kSYS_SECURITY_CFG_Fab         = 0;
+constexpr uint32_t kSYS_SECURITY_CFG_Open        = 1;
+constexpr uint32_t kSYS_SECURITY_CFG_Closed      = 3;
+constexpr uint32_t kSYS_SECURITY_CFG_FieldReturn = 7;
 }  // namespace HPSR
 
 // SNVS_HP Security Violation Status Register
@@ -550,8 +550,8 @@ constexpr SNVS_Reg<&SNVS_Layout::LPMKCR, 2, 0> MASTER_KEY_SEL;                 /
 constexpr uint32_t kMASTER_KEY_SEL_OTPMK = 0;  /*!< One Time Programmable Master Key. */
 constexpr uint32_t kMASTER_KEY_SEL_ZMK   = 2;  /*!< Zeroizable Master Key. */
 constexpr uint32_t kMASTER_KEY_SEL_CMK   = 3;  /*!< Combined Master Key, it is XOR of OPTMK and ZMK. */
-constexpr uint32_t kZMK_HWP_SOFTWARE     = 0;
-constexpr uint32_t kZMK_HWP_HARDWARE     = 1;
+constexpr uint32_t kZMK_HWP_Software     = 0;
+constexpr uint32_t kZMK_HWP_Hardware     = 1;
 }  // namespace LPMKCR
 
 // SNVS_LP Security Violation Control Register

@@ -70,51 +70,51 @@ constexpr regs::RegValue8<4, 4> PRI;  // Priority of the Nth interrupt
 namespace IRQ {
 
 // Enables the specified IRQ.
-static inline void enable(const uint8_t irq) {
+inline void enable(const uint8_t irq) {
   asm volatile ("" ::: "memory");
   group->ISER[irq >> 5] = (uint32_t{1} << (irq & 0x1f));
   asm volatile ("" ::: "memory");
 }
 
 // Disables the specified IRQ.
-static inline void disable(const uint8_t irq) {
+inline void disable(const uint8_t irq) {
   group->ICER[irq >> 5] = (uint32_t{1} << (irq & 0x1f));
   asm volatile ("dsb sy" ::: "memory");
   asm volatile ("isb sy" ::: "memory");
 }
 
 // Checks if the specified IRQ is enabled.
-static inline bool isEnabled(const uint8_t irq) {
+inline bool isEnabled(const uint8_t irq) {
   return (group->ISER[irq >> 5] & (uint32_t{1} << (irq & 0x1f))) != 0;
 }
 
 // Sets the specified IRQ to be pending.
-static inline void setPending(const uint8_t irq) {
+inline void setPending(const uint8_t irq) {
   group->ISPR[irq >> 5] = (uint32_t{1} << (irq & 0x1f));
 }
 
 // Clears pending state of the specified IRQ.
-static inline void clearPending(const uint8_t irq) {
+inline void clearPending(const uint8_t irq) {
   group->ICPR[irq >> 5] = (uint32_t{1} << (irq & 0x1f));
 }
 
 // Checks if the specified IRQ is pending.
-static inline bool isPending(const uint8_t irq) {
+inline bool isPending(const uint8_t irq) {
   return (group->ISPR[irq >> 5] & (uint32_t{1} << (irq & 0x1f))) != 0;
 }
 
 // Sets the priority of the given IRQ. The IRQ must be in range.
-static inline void setPriority(const uint8_t irq, const uint8_t pri) {
+inline void setPriority(const uint8_t irq, const uint8_t pri) {
   group->IPR[irq] = pri;
 }
 
 // Gets the priority of the given IRQ. The IRQ must be in range.
-static inline uint8_t getPriority(const uint8_t irq) {
+inline uint8_t getPriority(const uint8_t irq) {
   return group->IPR[irq];
 }
 
 // Checks if the specified IRQ is active.
-static inline bool isActive(const uint8_t irq) {
+inline bool isActive(const uint8_t irq) {
   return (group->IABR[irq >> 5] & (uint32_t{1} << (irq & 0x1f))) != 0;
 }
 

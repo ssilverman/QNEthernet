@@ -137,9 +137,9 @@ constexpr TRNG_Reg<&TRNG_Layout::MCTL, 2,  0, regs::shiftedMask32<2,  0>() | kW1
     // 0b11..undefined/reserved.
 
 // Sample Mode values
-constexpr uint32_t kSAMP_MODE_VON_NEUMANN_BOTH                = 0;
-constexpr uint32_t kSAMP_MODE_RAW_BOTH                        = 1;
-constexpr uint32_t kSAMP_MODE_VON_NEUMANN_SHIFTER_RAW_CHECKER = 2;
+constexpr uint32_t kSAMP_MODE_VonNeumannBoth              = 0;
+constexpr uint32_t kSAMP_MODE_RawBoth                     = 1;
+constexpr uint32_t kSAMP_MODE_VonNeuMannShifterRawChecker = 2;
 }  // namespace MCTL
 
 // Statistical Check Miscellaneous Register

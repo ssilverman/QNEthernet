@@ -117,8 +117,8 @@ constexpr CCM_Reg<&CCM_Layout::CCSR, 1, 0> PLL3_SW_CLK_SEL;  // Selects source t
     // 0b1..pll3 bypass clock
 
 // CCM Clock Switcher Register values
-constexpr uint32_t kPLL3_SW_CLK_SEL_MAIN   = 0;
-constexpr uint32_t kPLL3_SW_CLK_SEL_BYPASS = 1;
+constexpr uint32_t kPLL3_SW_CLK_SEL_pll3_main_clk   = 0;
+constexpr uint32_t kPLL3_SW_CLK_SEL_pll3_bypass_clk = 1;
 }  // namespace CCSR
 
 // CCM Arm Clock Root Register
@@ -184,12 +184,12 @@ constexpr CCM_Reg<&CCM_Layout::CBCDR, 1,  6> SEMC_CLK_SEL;      // SEMC clock so
     // 0b1..SEMC alternative clock will be used as SEMC clock root
 
 // CCM Bus Clock Divider Register values
-constexpr uint32_t kSEMC_CLK_SEL_PERIPH                    = 0;
-constexpr uint32_t kSEMC_CLK_SEL_ALT                       = 1;
+constexpr uint32_t kSEMC_CLK_SEL_Periph_clk                = 0;
+constexpr uint32_t kSEMC_CLK_SEL_Alt                       = 1;
 constexpr uint32_t kSEMC_ALT_CLK_SEL_PLL2_PFD2             = 0;
 constexpr uint32_t kSEMC_ALT_CLK_SEL_PLL3_PFD1             = 1;
-constexpr uint32_t kPERIPH_CLK_SEL_PRE_PERIPH_CLK_SEL      = 0;
-constexpr uint32_t kCBCDR_PERIPH_CLK_SEL_PRE_PERIPH_CLK2_CLK_DIV = 1;
+constexpr uint32_t kPERIPH_CLK_SEL_pre_periph_clk_sel      = 0;
+constexpr uint32_t kPERIPH_CLK_SEL_periph_clk2_clk_divided = 1;
 }  // namespace CBCDR
 
 // CCM Bus Clock Multiplexer Register
@@ -915,9 +915,9 @@ constexpr CCM_Reg<&CCM_Layout::CMEOR, 1,  5> MOD_EN_OV_GPT;        // Overide cl
 
 // Clock gating values
 namespace CCGR {
-constexpr uint32_t kOFF      = 0x00;
-constexpr uint32_t kRUN_ONLY = 0x01;
-constexpr uint32_t kON       = 0x03;
+constexpr uint32_t kOff      = 0x00;
+constexpr uint32_t kRunOnly  = 0x01;
+constexpr uint32_t kOn       = 0x03;
 }  // namespace CCGR
 
 }  // namespace CCM

@@ -174,16 +174,16 @@ constexpr regs::RegValue32<1,  0> BIT_0;
 
 // Directions
 namespace GDIR {
-constexpr uint32_t kINPUT  = 0;
-constexpr uint32_t kOUTPUT = 1;
+constexpr uint32_t kInput  = 0;
+constexpr uint32_t kOutput = 1;
 }  // namespace GDIR
 
 // ICR active condition values
 namespace ICR {
-constexpr uint32_t kLOW     = 0;
-constexpr uint32_t kHIGH    = 1;
-constexpr uint32_t kRISING  = 2;
-constexpr uint32_t kFALLING = 3;
+constexpr uint32_t kLow     = 0;
+constexpr uint32_t kHigh    = 1;
+constexpr uint32_t kRising  = 2;
+constexpr uint32_t kFalling = 3;
 }  // namespace ICR
 
 }  // namespace GPIO
