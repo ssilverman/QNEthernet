@@ -1504,7 +1504,7 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
 }
 
 bool ieee1588_adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
-  if ((corrInc >= 128) || (corrPeriod >= (1U << 31))) {
+  if ((corrInc >= 128) || (corrPeriod >= (uint32_t{1} << 31))) {
     return false;
   }
   ENET::ATINC::INC_CORR = corrInc;
@@ -1611,7 +1611,7 @@ bool ieee1588_get_and_clear_channel_status(const size_t channel) {
   volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
   if ((*tcsr & ENET::CHANNEL::TCSR::vals::TF(1)) != 0) {
     *tcsr |= ENET::CHANNEL::TCSR::vals::TF(1);
-    ENET::group->TGSR = (1 << channel);
+    ENET::group->TGSR = (uint32_t{1} << channel);
     return true;
   } else {
     return false;
