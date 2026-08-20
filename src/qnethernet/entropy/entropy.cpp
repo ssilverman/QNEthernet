@@ -38,7 +38,7 @@ enum : uint32_t {
 #endif  // F_CPU range
 
   // Sampling
-  kSAMPLE_MODE      = TRNG::MCTL::kSAMP_MODE_VON_NEUMANN_SHIFTER_RAW_CHECKER/*kSAMP_MODE_RAW_BOTH*/,
+  kSAMPLE_MODE      = TRNG::MCTL::kSAMP_MODE_VonNeuMannShifterRawChecker/*kSAMP_MODE_RawBoth*/,
       // 0:Von Neumann in both, 1:raw in both, 2:VN Entropy and raw in stats
   kSPARSE_BIT_LIMIT = 63,
 
@@ -103,7 +103,7 @@ static void restartEntropy() {
 
 FLASHMEM void trng_init() {
   // Enable the clock
-  CCM::CCGR6::TRNG = CCM::CCGR::kON;
+  CCM::CCGR6::TRNG = CCM::CCGR::kOn;
 
   // Set program mode, clear pending errors, reset registers to default
   TRNG::group->MCTL =
@@ -160,7 +160,7 @@ FLASHMEM void trng_deinit() {
     // Wait
   }
 
-  CCM::CCGR6::TRNG = CCM::CCGR::kOFF;  // Disable the clock
+  CCM::CCGR6::TRNG = CCM::CCGR::kOff;  // Disable the clock
 }
 
 // Copies entropy into the local entropy buffer. It is assumed there's entropy
