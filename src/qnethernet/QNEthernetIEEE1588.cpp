@@ -53,9 +53,9 @@ bool EthernetIEEE1588Class::setChannelMode(size_t channel,
   return driver::ieee1588_set_channel_mode(channel, static_cast<int>(mode));
 }
 
-bool EthernetIEEE1588Class::setChannelOutputPulseWidth(size_t channel,
-                                                       int pulseWidth) const {
-  return driver::ieee1588_set_channel_output_pulse_width(channel, pulseWidth);
+bool EthernetIEEE1588Class::setChannelPulseWidth(size_t channel,
+                                                 int pulseWidth) const {
+  return driver::ieee1588_set_channel_pulse_width(channel, pulseWidth);
 }
 
 bool EthernetIEEE1588Class::setChannelCompareValue(size_t channel,

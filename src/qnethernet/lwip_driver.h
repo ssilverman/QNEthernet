@@ -334,7 +334,7 @@ bool ieee1588_set_channel_mode(size_t channel, int mode);
 // 1. The channel is unknown, or
 // 2. The pulse width is not in the range 1-32.
 ATTRIBUTE_NODISCARD
-bool ieee1588_set_channel_output_pulse_width(size_t channel, int pulseWidth);
+bool ieee1588_set_channel_pulse_width(size_t channel, int pulseWidth);
 
 // Sets the channel compare value. This returns whether successful.
 //

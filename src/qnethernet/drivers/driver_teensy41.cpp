@@ -1570,8 +1570,8 @@ bool ieee1588_set_channel_mode(const size_t channel, const int mode) {
   return true;
 }
 
-bool ieee1588_set_channel_output_pulse_width(const size_t channel,
-                                             const int pulseWidth) {
+bool ieee1588_set_channel_pulse_width(const size_t channel,
+                                      const int pulseWidth) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
