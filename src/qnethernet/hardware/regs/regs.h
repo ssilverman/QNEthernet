@@ -178,10 +178,18 @@ class Reg {
   }
 
   // Given a whole register value, returns the extracted field. This is similar
-  // to 'operator R()'.
+  // to 'operator R()' and the opposite of assign().
   [[gnu::always_inline]]
-  constexpr R extract(const R val) const {
+  static constexpr R extract(const R val) {
     return (val & kMask) >> Shift;
+  }
+
+  // Given a whole register value, returns the new value with the field set to
+  // the given field value. This is similar to assignment and the opposite
+  // of extract().
+  [[gnu::always_inline]]
+  static constexpr R assign(const R r, const R field) {
+    return (r & ~kMask) | ((field << Shift) & kMask);
   }
 
  private:
@@ -375,10 +383,18 @@ class RegValue {
   }
 
   // Given a whole register value, returns the extracted field. This is similar
-  // to 'operator R()'.
+  // to 'operator R()' and the opposite of assign().
   [[gnu::always_inline]]
-  constexpr R extract(const R val) const {
+  static constexpr R extract(const R val) {
     return (val & kMask) >> Shift;
+  }
+
+  // Given a whole register value, returns the new value with the field set to
+  // the given field value. This is similar to assignment and the opposite
+  // of extract().
+  [[gnu::always_inline]]
+  static constexpr R assign(const R r, const R field) {
+    return (r & ~kMask) | ((field << Shift) & kMask);
   }
 };
 
