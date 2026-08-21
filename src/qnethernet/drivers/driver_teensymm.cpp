@@ -478,8 +478,8 @@ void mdio_write(const uint16_t regaddr, const uint16_t data) {
 // Enables the Ethernet-related clocks. See also disable_enet_clocks().
 FLASHMEM static void enable_enet_clocks() {
   // Enable the Ethernet clocks
-  CCM::CCGR1::ENET  = CCM::CCGR::kON;
-  CCM::CCGR7::ENET2 = CCM::CCGR::kON;
+  CCM::CCGR1::ENET  = CCM::CCGR::kOn;
+  CCM::CCGR7::ENET2 = CCM::CCGR::kOn;
 
   // Configure PLL6 for 50 MHz (page 1112)
   CCM_ANALOG::PLL_ENET_SET::BYPASS = 1;
@@ -522,8 +522,8 @@ FLASHMEM static void disable_enet_clocks() {
                                 ;
 
   // Disable the clocks for ENET
-  CCM::CCGR7::ENET2 = CCM::CCGR::kOFF;
-  CCM::CCGR1::ENET  = CCM::CCGR::kOFF;
+  CCM::CCGR7::ENET2 = CCM::CCGR::kOff;
+  CCM::CCGR1::ENET  = CCM::CCGR::kOff;
 }
 
 // Configures all the pins necessary for communicating with the PHY.
@@ -851,7 +851,7 @@ void get_system_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
-  if (CCM::CCGR7::ENET2 == CCM::CCGR::kOFF) {
+  if (CCM::CCGR7::ENET2 == CCM::CCGR::kOff) {
     return false;
   }
 
@@ -870,7 +870,7 @@ bool get_mac(uint8_t mac[ETH_HWADDR_LEN]) {
 bool set_mac(const uint8_t mac[ETH_HWADDR_LEN]) {
   // Don't do anything if the Ethernet clock isn't running because register
   // access will freeze the machine
-  if (CCM::CCGR7::ENET2 == CCM::CCGR::kOFF) {
+  if (CCM::CCGR7::ENET2 == CCM::CCGR::kOff) {
     return false;
   }
 
