@@ -10,7 +10,8 @@
 #include <SPI.h>
 
 // SPI settings
-// static SPISettings kSPISettings{14000000, MSBFIRST, SPI_MODE0};
+// static const SPISettings kSPISettings{14000000, MSBFIRST, SPI_MODE0};
+// static const SPISettings kSPISettings{60000000, MSBFIRST, SPI_MODE0};
 static const SPISettings kSPISettings{30000000, MSBFIRST, SPI_MODE0};
 static SPIClass& spi = SPI;
 static constexpr int kDefaultCSPin = 10;
