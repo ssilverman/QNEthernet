@@ -266,7 +266,7 @@ void reset_phy();
 namespace ieee1588 {
 
 // Initializes and enables the IEEE 1588 timer and functionality. The internal
-// time is reset to zero.
+// time and the correction are set to zero.
 void init();
 
 // Deinitializes and stops the IEEE 1588 timer.
