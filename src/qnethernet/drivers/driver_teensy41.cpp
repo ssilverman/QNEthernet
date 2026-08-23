@@ -1446,11 +1446,7 @@ bool ieee1588_is_enabled() {
   return (ENET::ATCR::EN != 0);
 }
 
-bool ieee1588_read_timer(struct timespec* const t) {
-  if (t == nullptr) {
-    return false;
-  }
-
+void ieee1588_read_timer(struct timespec* const t) {
   qnethernet_hal_disable_interrupts();  // {
   t->tv_sec = s_ieee1588Seconds;
 
@@ -1466,21 +1462,13 @@ bool ieee1588_read_timer(struct timespec* const t) {
     ++t->tv_sec;
   }
   qnethernet_hal_enable_interrupts();  // }
-
-  return true;
 }
 
-bool ieee1588_write_timer(const struct timespec* const t) {
-  if (t == nullptr) {
-    return false;
-  }
-
+void ieee1588_write_timer(const struct timespec* const t) {
   qnethernet_hal_disable_interrupts();  // {
   s_ieee1588Seconds = static_cast<uint32_t>(t->tv_sec);
   ENET::ATVR::ATIME = static_cast<uint32_t>(t->tv_nsec);
   qnethernet_hal_enable_interrupts();  // }
-
-  return true;
 }
 
 void ieee1588_timestamp_next_frame() {
@@ -1503,19 +1491,16 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   return retval;
 }
 
-bool ieee1588_adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
-  if ((corrInc >= 128) || (corrPeriod >= (uint32_t{1} << 31))) {
-    return false;
-  }
+void ieee1588_adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
+  // INC_CORR is 7 bits (0-127) and COR is 31 bits (0-(2^31-1))
   ENET::ATINC::INC_CORR = corrInc;
   ENET::ATCOR::COR = corrPeriod;
-  return true;
 }
 
-bool ieee1588_adjust_freq(int nsps) {
+void ieee1588_adjust_freq(int nsps) {
   if (nsps == 0) {
     ENET::ATCOR::COR = 0;
-    return true;
+    return;
   }
 
   uint32_t inc = kNanosPerSecs / kTS_CLK_Freq;
@@ -1528,86 +1513,113 @@ bool ieee1588_adjust_freq(int nsps) {
     // Speed up
     ++inc;
   }
-  return ieee1588_adjust_timer(inc, static_cast<uint32_t>(kTS_CLK_Freq / nsps));
+  ieee1588_adjust_timer(inc, static_cast<uint32_t>(kTS_CLK_Freq / nsps));
 }
 
-// Channels
+// ----------
+//  Channels
+// ----------
 
-bool ieee1588_set_channel_mode(const size_t channel, const int mode) {
-  if (channel >= kENET_CHANNEL_count) {
-    return false;
+size_t ieee1588_get_channel_count() {
+  return kENET_CHANNEL_count;
+}
+
+void ieee1588_get_channel_status(const size_t channel, uint32_t* const status) {
+  if (channel < kENET_CHANNEL_count) {
+    *status = ENET::group->CHANNEL[channel].TCSR;
   }
+}
 
-  switch (mode) {
-    case 8:   // Reserved
-    case 12:  // Reserved
-    case 13:  // Reserved
-      return false;
-    default:
-      if ((mode < 0) || (0x0f < mode)) {
-        return false;
-      }
-      break;
+void ieee1588_set_channel_status(const size_t channel, const uint32_t status) {
+  if (channel >= kENET_CHANNEL_count) {
+    return;
   }
 
   volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  const uint32_t r = *tcsr;
 
-  uint32_t r = *tcsr;
+  const bool disableFirst =
+      (ENET::CHANNEL::TCSR::vals::TMODE.extract(r) !=
+       ENET::CHANNEL::TCSR::vals::TMODE.extract(status)) ||
+      (ENET::CHANNEL::TCSR::vals::TPWC.extract(r) !=
+       ENET::CHANNEL::TCSR::vals::TPWC.extract(status));
 
-  // First, disable the channel
-  *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
-                ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
-  while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
-    // Check until the channel is disabled
+  if (disableFirst) {
+    *tcsr =
+        status & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
+                   ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
+    while (ENET::CHANNEL::TCSR::vals::TMODE.extract(*tcsr) != 0) {
+      // Check until the channel is disabled
+    }
   }
 
-  r = (r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
-             ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
-      ENET::CHANNEL::TCSR::vals::TMODE(mode);
-  *tcsr = r;
-  // TODO: Should we wait until change here?
+  // Change the settings
+  *tcsr = status & ~ENET::CHANNEL::TCSR::vals::TF(1);  // Don't clear TF (w1c)
 
-  return true;
+  // Note: It may take a few 1588 clock cycles to apply the settings
 }
 
-bool ieee1588_set_channel_pulse_width(const size_t channel,
-                                      const int pulseWidth) {
+void ieee1588_wait_for_channel_status(const size_t channel,
+                                      const uint32_t status) {
   if (channel >= kENET_CHANNEL_count) {
-    return false;
-  }
-
-  if ((pulseWidth < 1) || (32 < pulseWidth)) {
-    return false;
+    return;
   }
 
   volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
+  const uint32_t s = status & ~ENET::CHANNEL::TCSR::vals::TF(1);
 
-  uint32_t r = *tcsr;
-
-  // First, disable the channel
-  *tcsr = r & ~(ENET::CHANNEL::TCSR::vals::TMODE.kMask |
-                ENET::CHANNEL::TCSR::vals::TF(1));  // Don't clear TF (w1c)
-  while ((*tcsr & ENET::CHANNEL::TCSR::vals::TMODE.kMask) != 0) {
-    // Check until the channel is disabled
+  while ((*tcsr & ~ENET::CHANNEL::TCSR::vals::TF(1)) != s) {
+    // Wait for same
   }
-
-  r = (r & ~(ENET::CHANNEL::TCSR::vals::TPWC.kMask |
-             ENET::CHANNEL::TCSR::vals::TF(1))) |  // Don't clear TF (w1c)
-      ENET::CHANNEL::TCSR::vals::TPWC(pulseWidth - 1);
-  *tcsr = r;
-  // TODO: Should we wait until change here?
-
-  return true;
 }
 
-bool ieee1588_set_channel_compare_value(const size_t channel,
+void ieee1588_set_channel_mode(uint32_t* const status, const uint32_t mode) {
+  *status = ENET::CHANNEL::TCSR::vals::TMODE.assign(*status, mode);
+}
+
+uint32_t ieee1588_get_channel_mode(const uint32_t status) {
+  return ENET::CHANNEL::TCSR::vals::TMODE.extract(status);
+}
+
+void ieee1588_set_channel_pulse_width(uint32_t* const status,
+                                      const uint32_t pulseWidth) {
+  *status = ENET::CHANNEL::TCSR::vals::TPWC.assign(*status, pulseWidth - 1);
+}
+
+uint32_t ieee1588_get_channel_pulse_width(const uint32_t status) {
+  return (ENET::CHANNEL::TCSR::vals::TPWC.extract(status) + 1);
+}
+
+void ieee1588_set_channel_interrupt_enable(uint32_t* const status,
+                                           const bool flag) {
+  *status = ENET::CHANNEL::TCSR::vals::TIE.assign(*status, flag ? 1 : 0);
+}
+
+bool ieee1588_get_channel_interrupt_enable(const uint32_t status) {
+  return (ENET::CHANNEL::TCSR::vals::TIE.extract(status) != 0);
+}
+
+void ieee1588_set_channel_dma_request_enable(uint32_t* const status,
+                                             const bool flag) {
+  *status = ENET::CHANNEL::TCSR::vals::TDRE.assign(*status, flag ? 1 : 0);
+}
+
+bool ieee1588_get_channel_dma_request_enable(const uint32_t status) {
+  return (ENET::CHANNEL::TCSR::vals::TDRE.extract(status) != 0);
+}
+
+void ieee1588_set_channel_compare_value(const size_t channel,
                                         const uint32_t value) {
-  if (channel >= kENET_CHANNEL_count) {
-    return false;
+  if (channel < kENET_CHANNEL_count) {
+    ENET::group->CHANNEL[channel].TCCR = value;
   }
+}
 
-  ENET::group->CHANNEL[channel].TCCR = value;
-  return true;
+uint32_t ieee1588_get_channel_compare_value(const size_t channel) {
+  if (channel >= kENET_CHANNEL_count) {
+    return 0;
+  }
+  return ENET::group->CHANNEL[channel].TCCR;
 }
 
 bool ieee1588_get_and_clear_channel_status(const size_t channel) {
@@ -1615,10 +1627,10 @@ bool ieee1588_get_and_clear_channel_status(const size_t channel) {
     return false;
   }
 
-  volatile uint32_t* const tcsr = &ENET::group->CHANNEL[channel].TCSR;
-  if ((*tcsr & ENET::CHANNEL::TCSR::vals::TF(1)) != 0) {
-    *tcsr |= ENET::CHANNEL::TCSR::vals::TF(1);
-    ENET::group->TGSR = (uint32_t{1} << channel);
+  const uint32_t mask = uint32_t{1} << channel;
+
+  if ((ENET::group->TGSR & mask) != 0) {
+    ENET::group->TGSR = mask;
     return true;
   } else {
     return false;

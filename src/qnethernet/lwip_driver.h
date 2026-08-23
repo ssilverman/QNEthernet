@@ -274,17 +274,11 @@ void ieee1588_deinit();
 ATTRIBUTE_NODISCARD
 bool ieee1588_is_enabled();
 
-// Reads the IEEE 1588 timer. This returns whether successful.
-//
-// This will return false if the argument is NULL.
-ATTRIBUTE_NODISCARD
-bool ieee1588_read_timer(struct timespec* t);
+// Reads the IEEE 1588 timer.
+void ieee1588_read_timer(struct timespec* t);
 
-// Writes the IEEE 1588 timer. This returns whether successful.
-//
-// This will return false if the argument is NULL.
-ATTRIBUTE_NODISCARD
-bool ieee1588_write_timer(const struct timespec* t);
+// Writes the IEEE 1588 timer.
+void ieee1588_write_timer(const struct timespec* t);
 
 // Tells the driver to timestamp the next transmitted frame.
 void ieee1588_timestamp_next_frame();
@@ -301,46 +295,80 @@ ATTRIBUTE_NODISCARD
 bool ieee1588_read_and_clear_tx_timestamp(struct timespec* timestamp);
 
 // Directly adjust the correction increase and correction period. To adjust the
-// timer in "nanoseconds per second", see `ieee1588_adjust_freq`. This
-// returns whether successful.
+// timer in "nanoseconds per second", see `ieee1588_adjust_freq`.
 //
 // This will return false if:
 // 1. The correction increment is not in the range 0-127, or
 // 2. The correction period is not in the range 0-(2^31-1).
-ATTRIBUTE_NODISCARD
-bool ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
+void ieee1588_adjust_timer(uint32_t corrInc, uint32_t corrPeriod);
 
 // Adjust the correction in nanoseconds per second. This uses
-// `driver_ieee1588_adjust_timer()` under the hood. This returns
-// whether successful.
-ATTRIBUTE_NODISCARD
-bool ieee1588_adjust_freq(int nsps);
+// `driver_ieee1588_adjust_timer()` under the hood.
+void ieee1588_adjust_freq(int nsps);
 
-// Sets the channel mode for the given channel. This does not set the output
-// compare pulse modes. This returns whether successful.
+// ----------
+//  Channels
+// ----------
+
+// Returns the channel count.
+size_t ieee1588_get_channel_count();
+
+// Retrieves the status of the specified channel. This ignores channels that are
+// out of range.
+void ieee1588_get_channel_status(size_t channel, uint32_t* status);
+
+// Sets the new status of the specified channel. This explicitly avoids clearing
+// the TF flag. This ignores channels that are out of range.
 //
-// This will return false if:
-// 1. The channel is unknown,
-// 2. The mode is one of the output compare pulse modes, or
-// 3. The mode is a reserved value or unknown.
-ATTRIBUTE_NODISCARD
-bool ieee1588_set_channel_mode(size_t channel, int mode);
+// Note that this does not wait for the channel status to change. It may take a
+// few 1588 clock cycles to apply. See ieee1588_wait_for_status(channel, status).
+void ieee1588_set_channel_status(size_t channel, uint32_t status);
 
-// Sets the pulse width for the given channel and returns whether successful.
+// Waits for the channel status to be set to the given value, ignoring the
+// TF flag.
+void ieee1588_wait_for_channel_status(size_t channel, uint32_t status);
+
+// Sets the channel mode for the given channel status.
+//
+// Note that this will allow any 4-bit value for the mode, even reserved ones.
+void ieee1588_set_channel_mode(uint32_t* status, uint32_t mode);
+
+// Gets the mode for the given channel status.
+ATTRIBUTE_NODISCARD
+uint32_t ieee1588_get_channel_mode(uint32_t status);
+
+// Sets the pulse width for the given channel status. The value must be in the
+// range 1-32; this will subtract 1 when assigning.
+//
 // Note that the pulse width only has an effect when the mode is one of the
 // output compare pulse modes.
-//
-// This will return false if:
-// 1. The channel is unknown, or
-// 2. The pulse width is not in the range 1-32.
-ATTRIBUTE_NODISCARD
-bool ieee1588_set_channel_pulse_width(size_t channel, int pulseWidth);
+void ieee1588_set_channel_pulse_width(uint32_t* status, uint32_t pulseWidth);
 
-// Sets the channel compare value. This returns whether successful.
-//
-// This will return false for an unknown channel.
+// Gets the pulse width for the given channel status.
 ATTRIBUTE_NODISCARD
-bool ieee1588_set_channel_compare_value(size_t channel, uint32_t value);
+uint32_t ieee1588_get_channel_pulse_width(uint32_t status);
+
+// Sets the Timer Interrupt Enable flags.
+void ieee1588_set_channel_interrupt_enable(uint32_t* status, bool flag);
+
+// Gets the Timer Interrupt Enable flag.
+ATTRIBUTE_NODISCARD
+bool ieee1588_get_channel_interrupt_enable(uint32_t status);
+
+// Sets the Timer DMA Request Enable flag.
+void ieee1588_set_channel_dma_request_enable(uint32_t* status, bool flag);
+
+// Gets the Timer DMA Request Enable flag.
+ATTRIBUTE_NODISCARD
+bool ieee1588_get_channel_dma_request_enable(uint32_t status);
+
+// Sets the channel compare value. This ignores channels that are out of range.
+void ieee1588_set_channel_compare_value(size_t channel, uint32_t value);
+
+// Sets the channel compare value. This returns zero for channels that are out
+// of range.
+ATTRIBUTE_NODISCARD
+uint32_t ieee1588_get_channel_compare_value(size_t channel);
 
 // Retrieves and then clears the status for the given channel. This will return
 // false for an unknown channel.
