@@ -15,37 +15,37 @@ namespace network {
 STATIC_INIT_DEFN(EthernetIEEE1588Class, EthernetIEEE1588);
 
 void EthernetIEEE1588Class::begin() const {
-  driver::ieee1588_init();
+  driver::ieee1588::init();
 }
 
 void EthernetIEEE1588Class::end() const {
-  driver::ieee1588_deinit();
+  driver::ieee1588::deinit();
 }
 
 void EthernetIEEE1588Class::readTimer(timespec& t) const {
-  driver::ieee1588_read_timer(&t);
+  driver::ieee1588::read_timer(&t);
 }
 
 void EthernetIEEE1588Class::writeTimer(const timespec& t) const {
-  driver::ieee1588_write_timer(&t);
+  driver::ieee1588::write_timer(&t);
 }
 
 void EthernetIEEE1588Class::timestampNextFrame() const {
-  driver::ieee1588_timestamp_next_frame();
+  driver::ieee1588::timestamp_next_frame();
 }
 
 bool EthernetIEEE1588Class::readAndClearTxTimestamp(
     struct timespec& timestamp) const {
-  return driver::ieee1588_read_and_clear_tx_timestamp(&timestamp);
+  return driver::ieee1588::read_and_clear_tx_timestamp(&timestamp);
 }
 
 void EthernetIEEE1588Class::adjustTimer(uint32_t corrInc,
                                         uint32_t corrPeriod) const {
-  driver::ieee1588_adjust_timer(corrInc, corrPeriod);
+  driver::ieee1588::adjust_timer(corrInc, corrPeriod);
 }
 
 void EthernetIEEE1588Class::adjustFreq(int nsps) const {
-  driver::ieee1588_adjust_freq(nsps);
+  driver::ieee1588::adjust_freq(nsps);
 }
 
 // ----------
@@ -53,23 +53,23 @@ void EthernetIEEE1588Class::adjustFreq(int nsps) const {
 // ----------
 
 size_t EthernetIEEE1588Class::channelCount() const {
-  return driver::ieee1588_get_channel_count();
+  return driver::ieee1588::get_channel_count();
 }
 
 uint32_t EthernetIEEE1588Class::channelStatus(size_t channel) const {
   uint32_t status;
-  driver::ieee1588_get_channel_status(channel, &status);
+  driver::ieee1588::get_channel_status(channel, &status);
   return status;
 }
 
 void EthernetIEEE1588Class::setChannelStatus(const size_t channel,
                                              const uint32_t status) const {
-  driver::ieee1588_set_channel_status(channel, status);
+  driver::ieee1588::set_channel_status(channel, status);
 }
 
 void EthernetIEEE1588Class::waitForChannelStatus(const size_t channel,
                                                  const uint32_t status) const {
-  driver::ieee1588_wait_for_channel_status(channel, status);
+  driver::ieee1588::wait_for_channel_status(channel, status);
 }
 
 void EthernetIEEE1588Class::setChannelMode(uint32_t* const status,
@@ -77,12 +77,12 @@ void EthernetIEEE1588Class::setChannelMode(uint32_t* const status,
   if (status == nullptr) {
     return;
   }
-  driver::ieee1588_set_channel_mode(status, static_cast<uint32_t>(mode));
+  driver::ieee1588::set_channel_mode(status, static_cast<uint32_t>(mode));
 }
 
 EthernetIEEE1588Class::TimerChannelModes EthernetIEEE1588Class::channelMode(
     const uint32_t status) const {
-  uint32_t mode = driver::ieee1588_get_channel_mode(status);
+  uint32_t mode = driver::ieee1588::get_channel_mode(status);
   switch (mode) {
     case 8:
       ATTRIBUTE_FALLTHROUGH;
@@ -104,11 +104,11 @@ void EthernetIEEE1588Class::setChannelPulseWidth(uint32_t* const status,
   if ((status == nullptr) || (pulseWidth < 1) || (32 < pulseWidth)) {
     return;
   }
-  driver::ieee1588_set_channel_pulse_width(status, pulseWidth);
+  driver::ieee1588::set_channel_pulse_width(status, pulseWidth);
 }
 
 uint32_t EthernetIEEE1588Class::channelPulseWidth(const uint32_t status) const {
-  return driver::ieee1588_get_channel_pulse_width(status);
+  return driver::ieee1588::get_channel_pulse_width(status);
 }
 
 void EthernetIEEE1588Class::setChannelInterruptEnable(uint32_t* const status,
@@ -116,12 +116,12 @@ void EthernetIEEE1588Class::setChannelInterruptEnable(uint32_t* const status,
   if (status == nullptr) {
     return;
   }
-  driver::ieee1588_set_channel_interrupt_enable(status, flag);
+  driver::ieee1588::set_channel_interrupt_enable(status, flag);
 }
 
 bool EthernetIEEE1588Class::channelInterruptEnable(
     const uint32_t status) const {
-  return driver::ieee1588_get_channel_interrupt_enable(status);
+  return driver::ieee1588::get_channel_interrupt_enable(status);
 }
 
 void EthernetIEEE1588Class::setChannelDMARequestEnable(uint32_t* const status,
@@ -129,30 +129,30 @@ void EthernetIEEE1588Class::setChannelDMARequestEnable(uint32_t* const status,
   if (status == nullptr) {
     return;
   }
-  driver::ieee1588_set_channel_dma_request_enable(status, flag);
+  driver::ieee1588::set_channel_dma_request_enable(status, flag);
 }
 
 bool EthernetIEEE1588Class::channelDMARequestEnable(
     const uint32_t status) const {
-  return driver::ieee1588_get_channel_dma_request_enable(status);
+  return driver::ieee1588::get_channel_dma_request_enable(status);
 }
 
 void EthernetIEEE1588Class::setChannelCompareValue(const size_t channel,
                                                    const uint32_t value) const {
-  driver::ieee1588_set_channel_compare_value(channel, value);
+  driver::ieee1588::set_channel_compare_value(channel, value);
 }
 
 uint32_t EthernetIEEE1588Class::channelCompareValue(
     const size_t channel) const {
-  return driver::ieee1588_get_channel_compare_value(channel);
+  return driver::ieee1588::get_channel_compare_value(channel);
 }
 
 bool EthernetIEEE1588Class::getAndClearChannelStatus(size_t channel) const {
-  return driver::ieee1588_get_and_clear_channel_status(channel);
+  return driver::ieee1588::get_and_clear_channel_status(channel);
 }
 
 EthernetIEEE1588Class::operator bool() const {
-  return driver::ieee1588_is_enabled();
+  return driver::ieee1588::is_enabled();
 }
 
 }  // namespace network

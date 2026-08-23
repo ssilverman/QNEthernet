@@ -723,7 +723,7 @@ static struct pbuf* low_level_input(volatile BufferDescriptor* const pBD) {
       }
       p->timestampValid = ((pBD->status & rx_bd_status::kLast) != 0);
       if (p->timestampValid) {
-        (void)driver::ieee1588_read_timer(&p->timestamp);
+        (void)driver::ieee1588::read_timer(&p->timestamp);
         if (static_cast<uint32_t>(p->timestamp.tv_nsec) < pBD->timestamp) {
           // The timer has wrapped around
           --p->timestamp.tv_sec;
@@ -1131,7 +1131,7 @@ FLASHMEM bool init() {
 }
 
 FLASHMEM void deinit() {
-  ieee1588_deinit();
+  ieee1588::deinit();
 
   // Something about stopping Ethernet and the PHY kills performance if Ethernet
   // is restarted after calling end(), so gate the following two blocks with a
@@ -1415,10 +1415,12 @@ void reset_phy() {
 //  IEEE 1588 functions
 // --------------------------------------------------------------------------
 
+namespace ieee1588 {
+
 static constexpr uint32_t kNanosPerSecs = 1000 * 1000 * 1000;
 static constexpr uint32_t kTS_CLK_Freq = 25 * 1000 * 1000;
 
-void ieee1588_init() {
+void init() {
   ENET::ATCR::RESTART = 1;                       // Reset timer
   ENET::ATPER::PERIOD = kNanosPerSecs;           // Wrap at 10^9
   ENET::group->ATINC = ENET::ATINC::INC(kNanosPerSecs / kTS_CLK_Freq);
@@ -1437,16 +1439,16 @@ void ieee1588_init() {
   ENET::group->EIMR |= ENET::EIMR::TS_AVAIL(1) | ENET::EIMR::TS_TIMER(1);
 }
 
-void ieee1588_deinit() {
+void deinit() {
   ENET::group->EIMR &= ~(ENET::EIMR::TS_AVAIL(1) | ENET::EIMR::TS_TIMER(1));
   ENET::group->ATCR = ENET::ATCR::kWOO;
 }
 
-bool ieee1588_is_enabled() {
+bool is_enabled() {
   return (ENET::ATCR::EN != 0);
 }
 
-void ieee1588_read_timer(struct timespec* const t) {
+void read_timer(struct timespec* const t) {
   qnethernet_hal_disable_interrupts();  // {
   t->tv_sec = s_ieee1588Seconds;
 
@@ -1464,18 +1466,18 @@ void ieee1588_read_timer(struct timespec* const t) {
   qnethernet_hal_enable_interrupts();  // }
 }
 
-void ieee1588_write_timer(const struct timespec* const t) {
+void write_timer(const struct timespec* const t) {
   qnethernet_hal_disable_interrupts();  // {
   s_ieee1588Seconds = static_cast<uint32_t>(t->tv_sec);
   ENET::ATVR::ATIME = static_cast<uint32_t>(t->tv_nsec);
   qnethernet_hal_enable_interrupts();  // }
 }
 
-void ieee1588_timestamp_next_frame() {
+void timestamp_next_frame() {
   s_doTimestampNext = true;
 }
 
-bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
+bool read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   bool retval = false;
   qnethernet_hal_disable_interrupts();  // {
   if (s_hasTxTimestamp) {
@@ -1491,13 +1493,13 @@ bool ieee1588_read_and_clear_tx_timestamp(struct timespec* const timestamp) {
   return retval;
 }
 
-void ieee1588_adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
+void adjust_timer(const uint32_t corrInc, const uint32_t corrPeriod) {
   // INC_CORR is 7 bits (0-127) and COR is 31 bits (0-(2^31-1))
   ENET::ATINC::INC_CORR = corrInc;
   ENET::ATCOR::COR = corrPeriod;
 }
 
-void ieee1588_adjust_freq(int nsps) {
+void adjust_freq(int nsps) {
   if (nsps == 0) {
     ENET::ATCOR::COR = 0;
     return;
@@ -1513,24 +1515,24 @@ void ieee1588_adjust_freq(int nsps) {
     // Speed up
     ++inc;
   }
-  ieee1588_adjust_timer(inc, static_cast<uint32_t>(kTS_CLK_Freq / nsps));
+  adjust_timer(inc, static_cast<uint32_t>(kTS_CLK_Freq / nsps));
 }
 
 // ----------
 //  Channels
 // ----------
 
-size_t ieee1588_get_channel_count() {
+size_t get_channel_count() {
   return kENET_CHANNEL_count;
 }
 
-void ieee1588_get_channel_status(const size_t channel, uint32_t* const status) {
+void get_channel_status(const size_t channel, uint32_t* const status) {
   if (channel < kENET_CHANNEL_count) {
     *status = ENET::group->CHANNEL[channel].TCSR;
   }
 }
 
-void ieee1588_set_channel_status(const size_t channel, const uint32_t status) {
+void set_channel_status(const size_t channel, const uint32_t status) {
   if (channel >= kENET_CHANNEL_count) {
     return;
   }
@@ -1559,7 +1561,7 @@ void ieee1588_set_channel_status(const size_t channel, const uint32_t status) {
   // Note: It may take a few 1588 clock cycles to apply the settings
 }
 
-void ieee1588_wait_for_channel_status(const size_t channel,
+void wait_for_channel_status(const size_t channel,
                                       const uint32_t status) {
   if (channel >= kENET_CHANNEL_count) {
     return;
@@ -1573,56 +1575,56 @@ void ieee1588_wait_for_channel_status(const size_t channel,
   }
 }
 
-void ieee1588_set_channel_mode(uint32_t* const status, const uint32_t mode) {
+void set_channel_mode(uint32_t* const status, const uint32_t mode) {
   *status = ENET::CHANNEL::TCSR::vals::TMODE.assign(*status, mode);
 }
 
-uint32_t ieee1588_get_channel_mode(const uint32_t status) {
+uint32_t get_channel_mode(const uint32_t status) {
   return ENET::CHANNEL::TCSR::vals::TMODE.extract(status);
 }
 
-void ieee1588_set_channel_pulse_width(uint32_t* const status,
+void set_channel_pulse_width(uint32_t* const status,
                                       const uint32_t pulseWidth) {
   *status = ENET::CHANNEL::TCSR::vals::TPWC.assign(*status, pulseWidth - 1);
 }
 
-uint32_t ieee1588_get_channel_pulse_width(const uint32_t status) {
+uint32_t get_channel_pulse_width(const uint32_t status) {
   return (ENET::CHANNEL::TCSR::vals::TPWC.extract(status) + 1);
 }
 
-void ieee1588_set_channel_interrupt_enable(uint32_t* const status,
+void set_channel_interrupt_enable(uint32_t* const status,
                                            const bool flag) {
   *status = ENET::CHANNEL::TCSR::vals::TIE.assign(*status, flag ? 1 : 0);
 }
 
-bool ieee1588_get_channel_interrupt_enable(const uint32_t status) {
+bool get_channel_interrupt_enable(const uint32_t status) {
   return (ENET::CHANNEL::TCSR::vals::TIE.extract(status) != 0);
 }
 
-void ieee1588_set_channel_dma_request_enable(uint32_t* const status,
+void set_channel_dma_request_enable(uint32_t* const status,
                                              const bool flag) {
   *status = ENET::CHANNEL::TCSR::vals::TDRE.assign(*status, flag ? 1 : 0);
 }
 
-bool ieee1588_get_channel_dma_request_enable(const uint32_t status) {
+bool get_channel_dma_request_enable(const uint32_t status) {
   return (ENET::CHANNEL::TCSR::vals::TDRE.extract(status) != 0);
 }
 
-void ieee1588_set_channel_compare_value(const size_t channel,
+void set_channel_compare_value(const size_t channel,
                                         const uint32_t value) {
   if (channel < kENET_CHANNEL_count) {
     ENET::group->CHANNEL[channel].TCCR = value;
   }
 }
 
-uint32_t ieee1588_get_channel_compare_value(const size_t channel) {
+uint32_t get_channel_compare_value(const size_t channel) {
   if (channel >= kENET_CHANNEL_count) {
     return 0;
   }
   return ENET::group->CHANNEL[channel].TCCR;
 }
 
-bool ieee1588_get_and_clear_channel_status(const size_t channel) {
+bool get_and_clear_channel_status(const size_t channel) {
   if (channel >= kENET_CHANNEL_count) {
     return false;
   }
@@ -1636,6 +1638,8 @@ bool ieee1588_get_and_clear_channel_status(const size_t channel) {
     return false;
   }
 }
+
+}  // namespace ieee1588
 
 }  // namespace driver
 }  // namespace network
