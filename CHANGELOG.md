@@ -8,6 +8,9 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+* Fixed `settimeofday()` negative usec calculation for Teensyduino.
+
 ## [0.37.0]
 
 ### Changed

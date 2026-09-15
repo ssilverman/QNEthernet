@@ -100,8 +100,15 @@ int settimeofday(const struct timeval* const tv,
     sec += tv->tv_usec / 1000000;
     usec = tv->tv_usec % 1000000;
   } else if (tv->tv_usec < 0) {
+    const auto rem = tv->tv_usec % 1000000;
+
     sec += tv->tv_usec / 1000000;
-    usec = 1000000 + (tv->tv_usec % 1000000);
+    if (rem != 0) {
+      --sec;
+      usec = static_cast<uint32_t>(1000000 + rem);
+    } else {
+      usec = 0;
+    }
   }
 
 #ifndef __IMXRT1062__
