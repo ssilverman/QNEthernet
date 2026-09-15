@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.
+* Fixed UDP receive callback `diffServ` and `ttl` sources.
 
 ## [0.37.0]
 

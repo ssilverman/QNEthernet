@@ -79,10 +79,10 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   }
   packet.addr = *addr;
   packet.port = port;
-  packet.destAddr = *ip4_current_dest_addr();
+  packet.destAddr = *ip_current_dest_addr();
   packet.receivedTimestamp = timestamp;
-  packet.diffServ = pcb->tos;
-  packet.ttl = pcb->ttl;
+  packet.diffServ = IPH_TOS(ip4_current_header());
+  packet.ttl = IPH_TTL(ip4_current_header());
 
   (void)pbuf_free(p);
 
