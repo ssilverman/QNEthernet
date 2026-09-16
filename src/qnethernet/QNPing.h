@@ -68,11 +68,11 @@ class Ping final {
 
   ~Ping() noexcept;
 
-  // Disallow copying, but allow moving
+  // Disallow copying and moving
   Ping(const Ping&) = delete;
-  Ping(Ping&&) noexcept = default;
+  Ping(Ping&&) noexcept = delete;
   Ping& operator=(const Ping&) = delete;
-  Ping& operator=(Ping&&) noexcept = default;
+  Ping& operator=(Ping&&) noexcept = delete;
 
   // Sets the callback to the given function.
   void setCallback(const replyf f) {

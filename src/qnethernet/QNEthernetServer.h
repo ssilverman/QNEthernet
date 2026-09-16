@@ -35,11 +35,11 @@ class EthernetServer : public Server, public internal::PrintfChecked {
 
   virtual ~EthernetServer() noexcept;
 
-  // Disallow copying but allow moving
+  // Disallow copying and moving
   EthernetServer(const EthernetServer&) = delete;
-  EthernetServer(EthernetServer&&) noexcept = default;
+  EthernetServer(EthernetServer&&) noexcept = delete;
   EthernetServer& operator=(const EthernetServer&) = delete;
-  EthernetServer& operator=(EthernetServer&&) noexcept = default;
+  EthernetServer& operator=(EthernetServer&&) noexcept = delete;
 
   // Returns the maximum number of TCP listeners.
   static constexpr size_t maxListeners() {

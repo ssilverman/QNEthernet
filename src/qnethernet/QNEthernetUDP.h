@@ -45,11 +45,11 @@ class EthernetUDP : public UDP,
 
   virtual ~EthernetUDP() noexcept;
 
-  // Disallow copying but allow moving
+  // Disallow copying and moving
   EthernetUDP(const EthernetUDP&) = delete;
-  EthernetUDP(EthernetUDP&&) noexcept = default;
+  EthernetUDP(EthernetUDP&&) noexcept = delete;
   EthernetUDP& operator=(const EthernetUDP&) = delete;
-  EthernetUDP& operator=(EthernetUDP&&) noexcept = default;
+  EthernetUDP& operator=(EthernetUDP&&) noexcept = delete;
 
   // Returns the maximum number of UDP sockets.
   static constexpr size_t maxSockets() {
