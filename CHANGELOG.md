@@ -13,6 +13,7 @@ and this project adheres to
 * Fixed UDP receive callback `diffServ` and `ttl` sources.
 * Fixed move operations in `EthernetServer`, `EthernetUDP`, and `Ping` by
   deleting them.
+* Fixed possible W5500 receive overrun.
 
 ## [0.37.0]
 

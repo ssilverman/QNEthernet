@@ -828,6 +828,12 @@ static bool readAndScan() {
     return w;
   }();
 
+  if (rxSize > s_inputBuf.rxBuf.size()) {
+    LINK_STATS_INC(link.lenerr);
+    restartSocket();
+    return false;
+  }
+
   if (rxSize >= 2) {
     retval = true;
 
