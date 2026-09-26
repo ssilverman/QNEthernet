@@ -9,6 +9,12 @@
 
 #include <stdbool.h>
 
+// Allows a deterministic PRNG when no secure entropy source exists.
+// This is unsuitable for TCP ISNs, DNS transaction IDs, TLS, or cryptography.
+#ifndef QNETHERNET_ALLOW_INSECURE_RANDOM
+#define QNETHERNET_ALLOW_INSECURE_RANDOM 0
+#endif
+
 // Enables the 'altcp_tls_adapter' functions for easier TLS library integration.
 // It's set, by default here, to be enabled if MbedTLS is enabled.
 #ifndef QNETHERNET_ALTCP_TLS_ADAPTER

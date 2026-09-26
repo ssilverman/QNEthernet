@@ -284,6 +284,10 @@ void qnethernet_hal_check_core_locking(const char* const file, const int line,
 
 #endif  // Which entropy type
 
+#ifndef WHICH_ENTROPY_TYPE
+#define WHICH_ENTROPY_TYPE 0
+#endif  // !WHICH_ENTROPY_TYPE
+
 extern "C" {
 
 // Initializes randomness.
@@ -370,7 +374,7 @@ uint32_t qnethernet_hal_entropy() {
   return Entropy.random();
 }
 
-#else
+#elif QNETHERNET_ALLOW_INSECURE_RANDOM
 
 // Returns a UniformRandomBitGenerator instance.
 ATTRIBUTE_NODISCARD
@@ -402,10 +406,41 @@ uint32_t qnethernet_hal_entropy() {
   return urbg_instance()();
 }
 
+#else
+
+void qnethernet_hal_init_entropy() {
+}
+
+void qnethernet_hal_deinit_entropy() {
+}
+
+double qnethernet_hal_estimate_entropy(size_t typeSize) {
+  (void)typeSize;
+  return 0.0;
+}
+
+// Available entropy without having to generate more.
+size_t qnethernet_hal_entropy_available() {
+  return 0;
+}
+
+// Gets 32-bits of entropy for LWIP_RAND() and random_device.
+uint32_t qnethernet_hal_entropy() {
+  LWIP_PLATFORM_ASSERT("No secure entropy source");
+  return 0;
+}
+
+size_t qnethernet_hal_fill_entropy(void* buf, size_t size) {
+  (void)buf;
+  (void)size;
+  return 0;
+}
+
 #endif  // Which entropy type
 
 // Multi-byte fill
-#if WHICH_ENTROPY_TYPE != 1
+#if (WHICH_ENTROPY_TYPE == 2) || \
+    ((WHICH_ENTROPY_TYPE == 0) && QNETHERNET_ALLOW_INSECURE_RANDOM)
 
 size_t qnethernet_hal_fill_entropy(void* const buf, const size_t size) {
   auto pBuf = static_cast<uint8_t*>(buf);

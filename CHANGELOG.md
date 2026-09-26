@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+* Added `QNETHERNET_ALLOW_INSECURE_RANDOM` option for allowing or disallowing
+  the use of an insecure entropy source.
+
+### Changed
+* An insecure entropy source is disallowed by default.
+
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.
 * Fixed UDP receive callback `diffServ` and `ttl` sources.

@@ -1820,7 +1820,12 @@ to use them yourself.
 
 If the target device isn't a Teensy 4 then the _Entropy_ library will be used,
 unless it's not accessible or doesn't exist for the device, in which case an
-instance of `std::minstd_rand` will be used.
+instance of `std::minstd_rand` will be used (if the
+[`QNETHERNET_ALLOW_INSECURE_RANDOM` option](#configuration-macros) is enabled).
+
+If the [`QNETHERNET_ALLOW_INSECURE_RANDOM` option](#configuration-macros) is not
+enabled and there's no entropy library available, then the
+`qnethernet_hal_entropy()` function will assert.
 
 ### The `random_device` _UniformRandomBitGenerator_
 
@@ -1900,6 +1905,7 @@ The _QNEthernet_-specific macros are as follows:
 
 | Macro                                        | Default  | Description                                                                                    | Link                                                                                     |
 | -------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `QNETHERNET_ALLOW_INSECURE_RANDOM`           | Disabled | Allows use of an insecure entropy source                                                       | [Entropy generation](#entropy-generation)                                                |
 | `QNETHERNET_ALTCP_TLS_ADAPTER`               | Disabled | Enables the _altcp_tls_adapter_ functions for easier TLS library integration                   | [About the TLS adapter functions](#about-the-tls-adapter-functions)                      |
 | `QNETHERNET_BUFFERS_IN_RAM1`                 | Disabled | Puts the RX and TX buffers into RAM1                                                           | [Notes on RAM1 usage (Teensy 4)](#notes-on-ram1-usage-teensy-4)                          |
 | `QNETHERNET_CUSTOM_WRITE`                    | Disabled | Uses expanded `stdio` output behaviour                                                         | [stdio](#stdio)                                                                          |
