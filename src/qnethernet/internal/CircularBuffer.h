@@ -137,7 +137,7 @@ class CircularBuffer {
   // Handles both const and non-const cases.
   template <typename U>
   ATTRIBUTE_NODISCARD
-  static T& get(U& t, const size_t n) {
+  static auto get(U& t, const size_t n) -> decltype(t.buf_[n]) {
     assert(n < t.size());
     return t.buf_[(t.readIndex_ + n) % t.capacity()];
   }
