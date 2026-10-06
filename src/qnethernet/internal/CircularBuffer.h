@@ -48,10 +48,10 @@ class CircularBuffer {
     return buf_.size();
   }
 
-  // Sets a new capacity. If the new capacity is smaller than the current
-  // capacity then all the newest elements are kept. If a capacity of zero is
+  // Sets a new capacity. If elements must be discarded, keeps the newest when
+  // keepNewest is true and the oldest otherwise. If a capacity of zero is
   // requested then the value will be set to 1.
-  void setCapacity(const size_t cap) {
+  void setCapacity(const size_t cap, bool keepNewest = true) {
     if (cap == capacity()) {
       return;
     }
@@ -60,10 +60,9 @@ class CircularBuffer {
 
     size_t n;
     if (actualCap <= size_) {
-      // Keep all the newest elements
-      // Rotate the new read index (after lopping off the too-long end) to
-      // position 0
-      n = (readIndex_ + (size() - actualCap)) % capacity();
+      // Rotate the (possibly new) read index to position 0 and lop off the end
+      n = keepNewest ? (readIndex_ + (size() - actualCap)) % capacity()
+                     : readIndex_;
       writeIndex_ = 0;  // Because it's now full
       size_ = actualCap;
     } else {
