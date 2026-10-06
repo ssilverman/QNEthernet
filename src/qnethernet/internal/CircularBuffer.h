@@ -61,23 +61,23 @@ class CircularBuffer {
     size_t n;
     if (actualCap <= size_) {
       // Keep all the newest elements
-      // Rotate the new tail (after lopping off the too-long end) to
+      // Rotate the new read index (after lopping off the too-long end) to
       // position 0
-      n = (tail_ + (size() - actualCap)) % capacity();
-      head_ = 0;  // Because it's now full
+      n = (readIndex_ + (size() - actualCap)) % capacity();
+      writeIndex_ = 0;  // Because it's now full
       size_ = actualCap;
     } else {
-      // Rotate the tail to position 0 before resizing because the
+      // Rotate the read index to position 0 before resizing because the
       // elements may be wrapped to the smaller size
-      n = tail_;
-      head_ = size_;
+      n = readIndex_;
+      writeIndex_ = size_;
       // Size stays the same
     }
     if (n != 0) {
       (void)std::rotate(buf_.begin(), buf_.begin() + n, buf_.end());
     }
     buf_.resize(actualCap);
-    tail_ = 0;
+    readIndex_ = 0;
 
     // TODO: Should we shrink_to_fit?
     // buf_.shrink_to_fit();
@@ -91,13 +91,13 @@ class CircularBuffer {
       return T{};
     }
 
-    const size_t oldTail = tail_;
-    tail_ = (tail_ + 1) % capacity();
+    const size_t oldReadIndex = readIndex_;
+    readIndex_ = (readIndex_ + 1) % capacity();
     --size_;
 
     // We're moving out so probably don't need to clear the old value
     // It's just left in an unspecified state
-    return std::move(buf_[oldTail]);
+    return std::move(buf_[oldReadIndex]);
   }
 
   // Stores and returns a reference to a latest element. If the buffer is full
@@ -105,20 +105,20 @@ class CircularBuffer {
   // may be in an unspecified state.
   ATTRIBUTE_NODISCARD
   T& put() {
-    T& t = buf_[head_];
+    T& t = buf_[writeIndex_];
     if (full()) {
-      tail_ = (tail_ + 1) % capacity();
+      readIndex_ = (readIndex_ + 1) % capacity();
     } else {
       ++size_;
     }
-    head_ = (head_ + 1) % capacity();
+    writeIndex_ = (writeIndex_ + 1) % capacity();
     return t;
   }
 
   void clear() {
     size_ = 0;
-    head_ = 0;
-    tail_ = 0;
+    writeIndex_ = 0;
+    readIndex_ = 0;
   }
 
   ATTRIBUTE_NODISCARD
@@ -139,14 +139,14 @@ class CircularBuffer {
   ATTRIBUTE_NODISCARD
   static T& get(U& t, const size_t n) {
     assert(n < t.size());
-    return t.buf_[(t.tail_ + n) % t.capacity()];
+    return t.buf_[(t.readIndex_ + n) % t.capacity()];
   }
 
   std::vector<T> buf_;
 
   size_t size_ = 0;
-  size_t head_ = 0;
-  size_t tail_ = 0;
+  size_t writeIndex_ = 0;
+  size_t readIndex_ = 0;
 };
 
 }  // namespace internal
