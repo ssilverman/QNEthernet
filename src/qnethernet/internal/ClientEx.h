@@ -24,6 +24,10 @@ class ClientEx : public Client {
  public:
   ClientEx() = default;
 
+ protected:
+  ~ClientEx() = default;
+
+ public:
   // Local and remote IP address and port
 
   // Returns the local IP address for this connection or INADDR_NONE if this

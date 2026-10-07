@@ -18,6 +18,10 @@ class IPOpts {
  public:
   IPOpts() = default;
 
+ protected:
+  ~IPOpts() = default;
+
+ public:
   // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
   // header. The top 6 bits are the differentiated services code point (DSCP)
   // value, and the bottom 2 bits are the explicit congestion notification

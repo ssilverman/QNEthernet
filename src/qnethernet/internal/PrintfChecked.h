@@ -28,6 +28,10 @@ class PrintfChecked {
  public:
   PrintfChecked() = default;
 
+ protected:
+  ~PrintfChecked() = default;
+
+ public:
   // Define a format-checked printf.
   ATTRIBUTE_FORMAT(printf, 2, 3)
   int printf(const char* const format, ...) {
