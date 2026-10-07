@@ -90,6 +90,8 @@ void tearDown() {
   server = nullptr;
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   EthernetFrame.clear();
+  EthernetFrame.setReceiveQueueCapacity(1);
+  EthernetFrame.setDropPolicy(DropPolicy::kNewest);
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
   // Clean up mDNS
@@ -887,6 +889,7 @@ static void test_udp() {
 }
 
 // Tests UDP receive queueing.
+template <DropPolicy DP>
 static void test_udp_receive_queueing() {
   constexpr uint16_t kPort = 1025;
 
@@ -894,8 +897,13 @@ static void test_udp_receive_queueing() {
                            "Expected successful Ethernet start");
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
-  // Create and listen
+  // Create, set the drop policy, and listen
   udp = compat::make_unique<EthernetUDP>();  // Receive queue of 1
+  TEST_ASSERT_EQUAL_MESSAGE(DropPolicy::kNewest, udp->dropPolicy(),
+                            "Expected correct default drop policy");
+  udp->setDropPolicy(DP);
+  TEST_ASSERT_EQUAL_MESSAGE(DP, udp->dropPolicy(), "Expected correct drop policy");
+
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(),
                             "Expected default queue capacity");
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
@@ -920,9 +928,15 @@ static void test_udp_receive_queueing() {
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
   TEST_ASSERT_EQUAL_MESSAGE(2, udp->totalReceiveCount(), "Expected total 2");
 
-  // Expect to receive only the last packet
+  // Expect to receive only one of the packets
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 2), "Expected packet 2 data");
+  IF_CONSTEXPR (DP == DropPolicy::kNewest) {
+    TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 1),
+                        "Expected packet 1 data");
+  } else {
+    TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == 2),
+                        "Expected packet 2 data");
+  }
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(), "Expected queue capacity 1");
   TEST_ASSERT_EQUAL_MESSAGE(0, udp->receiveQueueSize(), "Expected queue size 0");
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->droppedReceiveCount(), "Expected dropped 1");
@@ -1656,10 +1670,17 @@ static void test_raw_frames() {
 }
 
 // Tests raw frame receive queueing.
+template <DropPolicy DP>
 static void test_raw_frames_receive_queueing() {
 #if QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
   (void)Ethernet.setDHCPEnabled(false);
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(), "Expected Ethernet start success");
+
+  // Set the drop policy
+  TEST_ASSERT_EQUAL_MESSAGE(DropPolicy::kNewest, EthernetFrame.dropPolicy(),
+                            "Expected correct default drop policy");
+  EthernetFrame.setDropPolicy(DP);
+  TEST_ASSERT_EQUAL_MESSAGE(DP, EthernetFrame.dropPolicy(), "Expected correct drop policy");
 
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected default queue capacity");
@@ -1697,12 +1718,18 @@ static void test_raw_frames_receive_queueing() {
   TEST_ASSERT_GREATER_OR_EQUAL_MESSAGE(2, EthernetFrame.totalReceiveCount(),
                                        "Expected at least 2 total");
 
-  // Expect to receive only the last packet
+  // Expect to receive only one of the frames
   TEST_ASSERT_EQUAL_MESSAGE(15, EthernetFrame.parseFrame(),
                             "Expected frame with size 15");
-  TEST_ASSERT_MESSAGE(
-      (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 2),
-      "Expected frame 2 data");
+  IF_CONSTEXPR (DP == DropPolicy::kNewest) {
+    TEST_ASSERT_MESSAGE(
+        (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 1),
+        "Expected frame 1 data");
+  } else {
+    TEST_ASSERT_MESSAGE(
+        (EthernetFrame.size() >= 15) && (EthernetFrame.data()[14] == 2),
+        "Expected frame 2 data");
+  }
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected queue capacity 1");
   TEST_ASSERT_EQUAL_MESSAGE(0, EthernetFrame.receiveQueueSize(),
@@ -1859,7 +1886,8 @@ void setup() {
   RUN_TEST(test_address_listener);
   RUN_TEST(test_interface_listener);
   RUN_TEST(test_udp);
-  RUN_TEST(test_udp_receive_queueing);
+  RUN_TEST(test_udp_receive_queueing<DropPolicy::kNewest>);
+  RUN_TEST(test_udp_receive_queueing<DropPolicy::kOldest>);
   RUN_TEST(test_udp_receive_timestamp);
   RUN_TEST(test_udp_state);
   RUN_TEST(test_udp_options);
@@ -1883,7 +1911,8 @@ void setup() {
   RUN_TEST(test_server_accept);
   RUN_TEST(test_other_state);
   RUN_TEST(test_raw_frames);
-  RUN_TEST(test_raw_frames_receive_queueing);
+  RUN_TEST(test_raw_frames_receive_queueing<DropPolicy::kNewest>);
+  RUN_TEST(test_raw_frames_receive_queueing<DropPolicy::kOldest>);
   RUN_TEST(test_ping);
   RUN_TEST(test_ping_reply);
   UNITY_END();

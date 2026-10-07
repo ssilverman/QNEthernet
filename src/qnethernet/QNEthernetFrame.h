@@ -27,6 +27,7 @@
 #include "qnethernet/StaticInit.h"
 #include "qnethernet/compat/c++11_compat.h"
 #include "qnethernet/internal/CircularBuffer.h"
+#include "qnethernet/internal/ReceiveQueueing.h"
 #include "qnethernet/internal/PrintfChecked.h"
 #include "qnethernet/internal/optional.h"
 #include "qnethernet/lwip_driver.h"
@@ -44,7 +45,9 @@ namespace network {
 // 1. IPv4 (0x0800)
 // 2. ARP  (0x0806)
 // 3. IPv6 (0x86DD) (if enabled)
-class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
+class EthernetFrameClass final : public Stream,
+                                 public internal::PrintfChecked,
+                                 public internal::ReceiveQueueing {
  public:
   // Returns the maximum frame length. This includes any padding but does not
   // include the 4-byte FCS (Frame Check Sequence, the CRC value).
@@ -189,23 +192,22 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // This returns data() + 14.
   const uint8_t* payload() const;
 
-  // Sets the receive queue capacity. This will use a minimum of 1.
-  //
-  // If the new capacity is smaller than the number of elements in the queue
-  // then all the oldest frames that don't fit are dropped.
-  //
-  // This disables interrupts while changing the queue so as not to interfere
-  // with the receive function if called from an ISR.
-  void setReceiveQueueCapacity(size_t capacity);
+  void setReceiveQueueCapacity(size_t capacity) override;
 
-  // Returns the receive queue capacity.
-  size_t receiveQueueCapacity() const {
+  size_t receiveQueueCapacity() const override {
     return inBuf_.capacity();
   }
 
-  // Returns the number of frames currently in the receive queue.
-  size_t receiveQueueSize() const {
+  size_t receiveQueueSize() const override {
     return inBuf_.size();
+  }
+
+  void setDropPolicy(DropPolicy p) override {
+    dropPolicy_ = p;
+  }
+
+  DropPolicy dropPolicy() const override {
+    return dropPolicy_;
   }
 
   // Returns the total number of dropped received frames since reception was
@@ -248,6 +250,9 @@ class EthernetFrameClass final : public Stream, public internal::PrintfChecked {
   // Checks if there's data still available in the packet.
   ATTRIBUTE_NODISCARD
   bool isAvailable() const;
+
+  // See: https://www.rfc-editor.org/rfc/rfc7567.html
+  DropPolicy dropPolicy_ = DropPolicy::kNewest;  // Default to "tail drop"
 
   // Received frames; updated every time one is received
   internal::CircularBuffer<Frame> inBuf_;

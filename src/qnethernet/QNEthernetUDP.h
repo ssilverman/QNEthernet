@@ -28,6 +28,7 @@
 #include "qnethernet/internal/CircularBuffer.h"
 #include "qnethernet/internal/IPOpts.h"
 #include "qnethernet/internal/PrintfChecked.h"
+#include "qnethernet/internal/ReceiveQueueing.h"
 #include "qnethernet/internal/optional.h"
 
 namespace qindesign {
@@ -35,13 +36,15 @@ namespace network {
 
 class EthernetUDP : public UDP,
                     public internal::IPOpts,
-                    public internal::PrintfChecked {
+                    public internal::PrintfChecked,
+                    public internal::ReceiveQueueing {
  public:
   EthernetUDP();
 
-  // Creates a new UDP socket with the given receive queue capacity. It will be
-  // set to a minimum of 1.
-  explicit EthernetUDP(size_t capacity);
+  // Creates a new UDP socket with the given receive queue capacity and drop
+  // policy. It will be set to a minimum of 1.
+  explicit EthernetUDP(size_t capacity,
+                       DropPolicy dropPolicy = DropPolicy::kNewest);
 
   virtual ~EthernetUDP() noexcept;
 
@@ -56,21 +59,23 @@ class EthernetUDP : public UDP,
     return MEMP_NUM_UDP_PCB;
   }
 
-  // Returns the receive queue capacity.
-  size_t receiveQueueCapacity() const {
+  void setReceiveQueueCapacity(size_t capacity) override;
+
+  size_t receiveQueueCapacity() const override {
     return inBuf_.capacity();
   }
 
-  // Returns the number of packets currently in the receive queue.
-  size_t receiveQueueSize() const {
+  size_t receiveQueueSize() const override {
     return inBuf_.size();
   }
 
-  // Changes the receive queue capacity. This will use a minimum of 1.
-  //
-  // If the new capacity is smaller than the number of elements in the queue
-  // then all the oldest packets that don't fit are dropped.
-  void setReceiveQueueCapacity(size_t capacity);
+  void setDropPolicy(DropPolicy p) override {
+    dropPolicy_ = p;
+  }
+
+  DropPolicy dropPolicy() const override {
+    return dropPolicy_;
+  }
 
   // Returns the total number of dropped received packets since reception was
   // started. Note that this is the count of dropped packets at the layer above
@@ -321,6 +326,9 @@ class EthernetUDP : public UDP,
 
   // Received packets; updated every time one is received
   internal::CircularBuffer<Packet> inBuf_;
+
+  // See: https://www.rfc-editor.org/rfc/rfc7567.html
+  DropPolicy dropPolicy_ = DropPolicy::kNewest;  // Default to "tail drop"
 
   // Packet being processed by the caller
   Packet packet_;       // Holds the packet being read

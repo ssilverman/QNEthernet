@@ -11,6 +11,8 @@ and this project adheres to
 ### Added
 * Added `QNETHERNET_ALLOW_INSECURE_RANDOM` option for allowing or disallowing
   the use of an insecure entropy source.
+* Added drop policies, support for changing how UDP packets or raw frames get
+  discarded when a receive queue is full or shrinks.
 
 ### Changed
 * An insecure entropy source is disallowed by default.

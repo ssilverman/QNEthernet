@@ -56,16 +56,15 @@ lwIP release.
 7. [How to use multicast](#how-to-use-multicast)
 8. [How to use listeners](#how-to-use-listeners)
 9. [How to change the number of sockets](#how-to-change-the-number-of-sockets)
-10. [UDP receive buffering](#udp-receive-buffering)
+10. [UDP and raw frame receive buffering](#udp-and-raw-frame-receive-buffering)
 11. [mDNS services](#mdns-services)
 12. [DNS](#dns)
 13. [stdio](#stdio)
     1. [Adapt stdio files to the Print interface](#adapt-stdio-files-to-the-print-interface)
 14. [Raw Ethernet frames](#raw-ethernet-frames)
     1. [Promiscuous mode](#promiscuous-mode)
-    2. [Raw frame receive buffering](#raw-frame-receive-buffering)
-    3. [Raw frame loopback](#raw-frame-loopback)
-    4. [Raw frame filter hook](#raw-frame-filter-hook)
+    2. [Raw frame loopback](#raw-frame-loopback)
+    3. [Raw frame filter hook](#raw-frame-filter-hook)
 15. [How to implement VLAN tagging](#how-to-implement-vlan-tagging)
 16. [Application layered TCP: TLS, proxies, etc.](#application-layered-tcp-tls-proxies-etc)
     1. [About the allocator functions](#about-the-allocator-functions)
@@ -443,6 +442,7 @@ listening and the port or _reuse_ options have changed.
   `beginMulticast(ip, localPort)`, but also sets the SO_REUSEADDR socket option.
 * `data()`: Returns a pointer to the received packet data.
 * `destIP()`: Returns the destination IP of a received packet.
+* `dropPolicy()`: Returns the current receive queue drop policy.
 * `droppedReceiveCount()`: Returns the total number of dropped received packets
   since reception was started. Note that this is the count of dropped packets at
   the layer above the driver.
@@ -458,10 +458,13 @@ listening and the port or _reuse_ options have changed.
 * `send(host, port, data, len)`: Sends a packet without having to use
   `beginPacket()`, `write()`, and `endPacket()`. It causes less overhead. The
   host can be either an IP address or a hostname.
+* `setDropPolicy(policy)`: Sets the receive queue drop policy. The default is
+  `DropPolicy::kNewest`.
 * `setReceiveQueueCapacity(capacity)`: Changes the receive queue capacity. The
   minimum possible value is 1 and the default is 1. If a value of zero is used,
   it will default to 1. If the new capacity is smaller than the number of items
-  in the queue then all the oldest packets will get dropped.
+  in the queue then packets will be dropped; which are dropped depends on the
+  drop policy.
 * `size()`: Returns the total size of the received packet data.
 * `totalReceiveCount()`: Returns the total number of received packets, including
   dropped packets, since reception was started. Note that this is the count at
@@ -471,9 +474,10 @@ listening and the port or _reuse_ options have changed.
 * `operator bool()`: Tests if the socket is listening.
 * `static constexpr size_t maxSockets()`: Returns the maximum number of
   UDP sockets.
-* `EthernetUDP(capacity)`: Creates a new UDP socket having the specified receive
-  packet queue capacity. The minimum possible value is 1 and the default is 1.
-  If a value of zero is used, it will default to 1.
+* `EthernetUDP(capacity, dropPolicy = DropPolicy::kNewest)`: Creates a new UDP
+  socket having the specified receive packet queue capacity and drop policy. The
+  minimum possible value is 1 and the default is 1. If a value of zero is used,
+  it will default to 1.
 
 All the `begin` functions call `stop()` first only if the socket is currently
 listening and the local port or _reuse_ options have changed.
@@ -539,6 +543,7 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `clear()`: Clears the outgoing and incoming buffers.
 * `data()`: Returns a pointer to the frame data.
 * `destinationMAC()`: Returns a pointer to the destination MAC.
+* `dropPolicy()`: Returns the current receive queue drop policy.
 * `droppedReceiveCount()`: Returns the total number of dropped received frames
   since reception was started. Note that this is the count of dropped frames at
   the layer above the driver.
@@ -562,10 +567,13 @@ read from a frame and the `Print` API can be used to write to the frame.
 * `send(frame, len)`: Sends a raw Ethernet frame without the overhead of
   `beginFrame()`/`write()`/`endFrame()`. See the description of `endFrame()` for
   size limits. This is similar to `EthernetUDP::send(data, len)`.
+* `setDropPolicy(policy)`: Sets the receive queue drop policy. The default is
+  `DropPolicy::kNewest`.
 * `setReceiveQueueCapacity(capacity)`: Sets the receive queue capacity. The
   minimum possible value is 1 and the default is 1. If a value of zero is used,
   it will default to 1. If the new capacity is smaller than the number of items
-  in the queue then all the oldest frames will get dropped.
+  in the queue then frames will be dropped; which are dropped depends on the
+  drop policy.
 * `size()`: Returns the total size of the frame data.
 * `sourceMAC()`: Returns a pointer to the source MAC.
 * `totalReceiveCount()`: Returns the total number of received frames, including
@@ -1276,14 +1284,34 @@ shows how to change the number for each socket type.
 | TCP             | `MEMP_NUM_TCP_PCB`        | Simultaneously active |
 | TCP (listening) | `MEMP_NUM_TCP_PCB_LISTEN` | Listening             |
 
-## UDP receive buffering
+## UDP and raw frame receive buffering
 
-If UDP packets come in at a faster rate than they are consumed, some may get
-dropped. To help mitigate this, the `EthernetUDP(capacity)` constructor can be
-called with a value > 1. The minimum capacity is 1, meaning any new packets will
-cause any existing packet to get dropped. If it's set to 2 then there will be
-space for one additional packet for a total of 2 packets, and so on. Setting a
-value of zero will use the default of 1.
+If packets or frames come in at a faster rate than they are consumed, some may
+get dropped. To help mitigate this, both the `EthernetUDP` and `EthernetFrame`
+classes supply the ability to buffer incoming data, dropping any excess packets
+or frames according to a "drop policy".
+
+Relevant functions:
+* `EthernetUDP(capacity, dropPolicy = DropPolicy::kNewest)` constructor
+* `setReceiveQueueCapacity(capacity)` &mdash; Sets the receive queue capacity,
+  ensuring a size of at least 1; frames will be dropped when the queue is full
+  or when its capacity is changed to something less than the size, according to
+  the current drop policy
+* `receiveQueueCapacity()` &mdash; Returns the current receive queue capacity,
+  minimum 1
+* `receiveQueueSize()` &mdash; Returns the number of items currently in
+  the queue
+* `setDropPolicy(policy)` &mdash; Sets the receive queue drop policy; the
+  default is `DropPolicy::kNewest`
+* `dropPolicy()` &mdash; Returns the current receive queue drop policy
+
+In all cases, the minimum queue capacity is 1. Additionally, if the queue is
+full, something will always be dropped if a new packet or frame comes in.
+
+The available drop policies for when the queue is full or the capacity shrinks
+to a size that doesn't fit all the items are as follows:
+* `DropPolicy::kNewest` &mdash; Discards arriving or newest
+* `DropPolicy::kOldest` &mdash; Evicts oldest
 
 ## mDNS services
 
@@ -1409,19 +1437,6 @@ It's possible to enable promiscuous mode so that all frames are received, even
 ones whose destination MAC address would normally be filtered out by the
 Ethernet hardware. To do this, set the `QNETHERNET_ENABLE_PROMISCUOUS_MODE`
 macro to `1`.
-
-### Raw frame receive buffering
-
-Similar to [UDP buffering](#udp-receive-buffering), if raw frames come in at a
-faster rate than they are consumed, some may get dropped. To help mitigate this,
-the receive queue capacity can be adjusted with the
-`EthernetFrame.setReceiveQueueCapacity(capacity)` function. The default queue
-capacity is 1 and the minimum is also 1 (if a zero is passed in then 1 will be
-used instead).
-
-For a size of 1, any new frames will cause any existing frame to get dropped. If
-the size is 2 then there will be space for one additional frame for a total of 2
-frames, and so on.
 
 ### Raw frame loopback
 

@@ -63,26 +63,30 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
   const struct pbuf* pNext = p;
 
   // Push
+  bool doPut = true;
   if (udp->inBuf_.full()) {
     ++udp->droppedReceiveCount_;
+    doPut = (udp->dropPolicy_ == DropPolicy::kOldest);
   }
-  Packet& packet = udp->inBuf_.put();
-  packet.clear();
-  if (pNext->tot_len > 0) {
-    packet.data.reserve(pNext->tot_len);
-    // TODO: Limit vector size
-    while (pNext != nullptr) {
-      const auto data = static_cast<const uint8_t*>(pNext->payload);
-      (void)packet.data.insert(packet.data.cend(), &data[0], &data[pNext->len]);
-      pNext = pNext->next;
+  if (doPut) {
+    Packet& packet = udp->inBuf_.put();
+    packet.clear();
+    if (pNext->tot_len > 0) {
+      packet.data.reserve(pNext->tot_len);
+      // TODO: Limit vector size
+      while (pNext != nullptr) {
+        const auto data = static_cast<const uint8_t*>(pNext->payload);
+        (void)packet.data.insert(packet.data.cend(), &data[0], &data[pNext->len]);
+        pNext = pNext->next;
+      }
     }
+    packet.addr = *addr;
+    packet.port = port;
+    packet.destAddr = *ip_current_dest_addr();
+    packet.receivedTimestamp = timestamp;
+    packet.diffServ = IPH_TOS(ip4_current_header());
+    packet.ttl = IPH_TTL(ip4_current_header());
   }
-  packet.addr = *addr;
-  packet.port = port;
-  packet.destAddr = *ip_current_dest_addr();
-  packet.receivedTimestamp = timestamp;
-  packet.diffServ = IPH_TOS(ip4_current_header());
-  packet.ttl = IPH_TTL(ip4_current_header());
 
   (void)pbuf_free(p);
 
@@ -91,17 +95,16 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
 
 EthernetUDP::EthernetUDP() : EthernetUDP(1) {}
 
-EthernetUDP::EthernetUDP(const size_t capacity)
-    : inBuf_(std::max(capacity, size_t{1})) {}
+EthernetUDP::EthernetUDP(const size_t capacity, const DropPolicy dropPolicy)
+    : inBuf_(std::max(capacity, size_t{1})),
+      dropPolicy_(dropPolicy) {}
 
 EthernetUDP::~EthernetUDP() noexcept {
   stop();
 }
 
 void EthernetUDP::setReceiveQueueCapacity(const size_t capacity) {
-  // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-  inBuf_.setCapacity(capacity);
-  // }
+  inBuf_.setCapacity(capacity, dropPolicy_ == DropPolicy::kOldest);
 }
 
 uint8_t EthernetUDP::begin(const uint16_t localPort) {

@@ -46,21 +46,25 @@ err_t EthernetFrameClass::recvFunc(struct pbuf* const p,
   const struct pbuf* pNext = p;
 
   // Push
+  bool doPut = true;
   if (EthernetFrame.inBuf_.full()) {
     ++EthernetFrame.droppedReceiveCount_;
+    doPut = (EthernetFrame.dropPolicy_ == DropPolicy::kOldest);
   }
-  Frame& frame = EthernetFrame.inBuf_.put();
-  frame.data.clear();
-  if (p->tot_len > 0) {
-    frame.data.reserve(p->tot_len);
-    // TODO: Limit vector size
-    while (pNext != nullptr) {
-      const auto data = static_cast<const uint8_t*>(pNext->payload);
-      (void)frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
-      pNext = pNext->next;
+  if (doPut) {
+    Frame& frame = EthernetFrame.inBuf_.put();
+    frame.data.clear();
+    if (p->tot_len > 0) {
+      frame.data.reserve(p->tot_len);
+      // TODO: Limit vector size
+      while (pNext != nullptr) {
+        const auto data = static_cast<const uint8_t*>(pNext->payload);
+        (void)frame.data.insert(frame.data.cend(), &data[0], &data[pNext->len]);
+        pNext = pNext->next;
+      }
     }
+    frame.receivedTimestamp = timestamp;
   }
-  frame.receivedTimestamp = timestamp;
 
   (void)pbuf_free(p);
   ++EthernetFrame.totalReceiveCount_;
@@ -174,9 +178,7 @@ const uint8_t* EthernetFrameClass::payload() const {
 }
 
 void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
-  // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-  inBuf_.setCapacity(capacity);
-  // }
+  inBuf_.setCapacity(capacity, dropPolicy_ == DropPolicy::kOldest);
 }
 
 // --------------------------------------------------------------------------

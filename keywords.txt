@@ -25,6 +25,7 @@ EthernetLinkStatus	KEYWORD1	EthernetLinkStatus
 EthernetHardwareStatus	KEYWORD1	EthernetHardwareStatus
 DriverCapabilities	KEYWORD1
 Ping	KEYWORD1
+DropPolicy	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -113,9 +114,11 @@ maxListeners	KEYWORD2
 port	KEYWORD2
 beginWithReuse	KEYWORD2
 accept	KEYWORD2	server.accept
+setReceiveQueueCapacity	KEYWORD2
 receiveQueueCapacity	KEYWORD2
 receiveQueueSize	KEYWORD2
-setReceiveQueueCapacity	KEYWORD2
+setDropPolicy	KEYWORD2
+dropPolicy	KEYWORD2
 droppedReceiveCount	KEYWORD2
 totalReceiveCount	KEYWORD2
 beginMulticast	KEYWORD2	WiFiUDP.beginMulticast
