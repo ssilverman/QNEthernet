@@ -178,7 +178,11 @@ const uint8_t* EthernetFrameClass::payload() const {
 }
 
 void EthernetFrameClass::setReceiveQueueCapacity(const size_t capacity) {
-  inBuf_.setCapacity(capacity, dropPolicy_ == DropPolicy::kOldest);
+  const size_t actualCap = std::max(capacity, size_t{1});
+  if (actualCap < inBuf_.size()) {
+    droppedReceiveCount_ += (inBuf_.size() - actualCap);
+  }
+  inBuf_.setCapacity(actualCap, dropPolicy_ == DropPolicy::kOldest);
 }
 
 // --------------------------------------------------------------------------

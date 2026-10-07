@@ -23,6 +23,8 @@ and this project adheres to
 * Fixed move operations in `EthernetServer`, `EthernetUDP`, and `Ping` by
   deleting them.
 * Fixed possible W5500 receive overrun.
+* Fixed drop counter (UDP packets and raw frames) to include dropped data when
+  shrinking the queue.
 
 ## [0.37.0]
 
