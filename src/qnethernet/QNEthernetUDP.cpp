@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <cerrno>
 #include <limits>
-#include <utility>
 
 #include "QNEthernet.h"
 #include "lwip/debug.h"
@@ -274,13 +273,10 @@ int EthernetUDP::parsePacket() {
 
   Ethernet.loop();  // Allow the stack to move along
 
-  if (inBuf_.empty()) {
+  if (!inBuf_.popInto(packet_)) {
     packetPos_ = -1;
     return -1;
   }
-
-  // Pop
-  packet_ = std::move(inBuf_.get());
 
   packetPos_ = 0;
   return static_cast<int>(packet_.data.size());

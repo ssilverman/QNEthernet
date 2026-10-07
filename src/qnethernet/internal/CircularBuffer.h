@@ -82,21 +82,20 @@ class CircularBuffer {
     // buf_.shrink_to_fit();
   }
 
-  // Pops the oldest element. If this is empty then a new T{} is returned. The
-  // caller may want to std::move() the returned element.
+  // Pops the oldest element into the given object. This returns whether an
+  // object was popped successfully from a non-empty queue.
   ATTRIBUTE_NODISCARD
-  T get() {
+  bool popInto(T& t) {
     if (empty()) {
-      return T{};
+      return false;
     }
 
-    const size_t oldReadIndex = readIndex_;
+    std::swap(t, buf_[readIndex_]);
+
     readIndex_ = (readIndex_ + 1) % capacity();
     --size_;
 
-    // We're moving out so probably don't need to clear the old value
-    // It's just left in an unspecified state
-    return std::move(buf_[oldReadIndex]);
+    return true;
   }
 
   // Stores and returns a reference to a latest element. If the buffer is full

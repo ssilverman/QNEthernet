@@ -10,7 +10,6 @@
 
 // C++ includes
 #include <algorithm>
-#include <utility>
 
 #include "QNEthernet.h"
 #include "lwip/debug.h"
@@ -99,13 +98,10 @@ void EthernetFrameClass::clear() {
 // --------------------------------------------------------------------------
 
 int EthernetFrameClass::parseFrame() {
-  if (inBuf_.empty()) {
+  if (!inBuf_.popInto(frame_)) {
     framePos_ = -1;
     return -1;
   }
-
-  // Pop
-  frame_ = std::move(inBuf_.get());
 
   Ethernet.loop();  // Allow the stack to move along
 

@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Changed
 * An insecure entropy source is disallowed by default.
+* Improved memory churn for queued UDP packets and raw frames.
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.
