@@ -904,8 +904,13 @@ static void test_udp_receive_queueing() {
   udp->setDropPolicy(DP);
   TEST_ASSERT_EQUAL_MESSAGE(DP, udp->dropPolicy(), "Expected correct drop policy");
 
+  // Default and minimum queue capacity
   TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(),
                             "Expected default queue capacity");
+  udp->setReceiveQueueCapacity(0);
+  TEST_ASSERT_EQUAL_MESSAGE(1, udp->receiveQueueCapacity(),
+                            "Expected queue capacity of 1");
+
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
 
   uint8_t b = 0;  // The buffer
@@ -1682,8 +1687,12 @@ static void test_raw_frames_receive_queueing() {
   EthernetFrame.setDropPolicy(DP);
   TEST_ASSERT_EQUAL_MESSAGE(DP, EthernetFrame.dropPolicy(), "Expected correct drop policy");
 
+  // Default and minimum queue capacity
   TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
                             "Expected default queue capacity");
+  EthernetFrame.setReceiveQueueCapacity(0);
+  TEST_ASSERT_EQUAL_MESSAGE(1, EthernetFrame.receiveQueueCapacity(),
+                            "Expected queue capacity of 1");
 
   uint8_t buf[15];
   (void)std::copy_n(Ethernet.macAddress(), 6, &buf[0]);
