@@ -98,12 +98,22 @@ void EthernetFrameClass::clear() {
 // --------------------------------------------------------------------------
 
 int EthernetFrameClass::parseFrame() {
+  // Move the stack along before, if empty, otherwise after
+
+  const bool empty = inBuf_.empty();
+
+  if (empty) {
+    Ethernet.loop();  // Allow the stack to move along
+  }
+
   if (!inBuf_.popInto(frame_)) {
     framePos_ = -1;
     return -1;
   }
 
-  Ethernet.loop();  // Allow the stack to move along
+  if (!empty) {
+    Ethernet.loop();  // Allow the stack to move along
+  }
 
   if (frame_.data.size() > 0) {
     framePos_ = 0;

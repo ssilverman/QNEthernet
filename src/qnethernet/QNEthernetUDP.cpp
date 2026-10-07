@@ -271,11 +271,21 @@ int EthernetUDP::parsePacket() {
     return -1;
   }
 
-  Ethernet.loop();  // Allow the stack to move along
+  // Move the stack along before, if empty, otherwise after
+
+  const bool empty = inBuf_.empty();
+
+  if (empty) {
+    Ethernet.loop();  // Allow the stack to move along
+  }
 
   if (!inBuf_.popInto(packet_)) {
     packetPos_ = -1;
     return -1;
+  }
+
+  if (!empty) {
+    Ethernet.loop();  // Allow the stack to move along
   }
 
   packetPos_ = 0;
