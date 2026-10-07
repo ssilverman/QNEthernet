@@ -15,6 +15,10 @@
 #include "qnethernet/chrono/elapsedTime.h"
 #include "qnethernet/compat/c++11_compat.h"
 
+#if __cplusplus < 201402L
+#error "These tests require at least C++14"
+#endif  // C++ >= 14
+
 using namespace std::chrono_literals;
 
 using steady_clock = qindesign::chrono::steady_clock_ms;
