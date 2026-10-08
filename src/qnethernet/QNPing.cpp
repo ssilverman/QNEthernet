@@ -43,6 +43,18 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
     return 0;  // Don't eat the packet
   }
 
+  // Checksum check
+  // Borrow a view of the ICMP message, excluding the IP header.
+  // This neither allocates nor modifies the original pbuf.
+  struct pbuf icmp = *p;
+  icmp.payload = static_cast<uint8_t*>(p->payload) + ipHdrSize;
+  icmp.len = static_cast<uint16_t>(p->len - ipHdrSize);
+  icmp.tot_len = static_cast<uint16_t>(p->tot_len - ipHdrSize);
+
+  if (inet_chksum_pbuf(&icmp) != 0) {
+    return 0;
+  }
+
   // Execute the callback
   if (ping->replyf_) {
     struct icmp_echo_hdr echo;

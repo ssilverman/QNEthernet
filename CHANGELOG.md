@@ -18,6 +18,7 @@ and this project adheres to
 * An insecure entropy source is disallowed by default.
 * Improved memory churn for queued UDP packets and raw frames.
 * Updated `Ethernet.ping()` to use an incrementing sequence number.
+* Improved `Ping` receive to also check the checksum.
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.
