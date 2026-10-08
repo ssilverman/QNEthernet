@@ -75,9 +75,9 @@ class ByteBuffer {
       return ERR_OK;
     }
 
-    const size_t start = tail_ % capacity();
-    const size_t newTail = (tail_ + pSize) % capacity();
-    const size_t end = newTail;
+    const size_t start = readIndex_ % capacity();
+    const size_t newReadIndex = (readIndex_ + pSize) % capacity();
+    const size_t end = newReadIndex;
 
     err_t err;
     if (start < end) {
@@ -94,7 +94,7 @@ class ByteBuffer {
       }
     }
     if (err == ERR_OK) {
-      tail_ = newTail;
+      readIndex_ = newReadIndex;
       size_ -= pSize;
     }
 
@@ -111,13 +111,13 @@ class ByteBuffer {
     }
 
     if (buf == nullptr) {
-      tail_ = (tail_ + size) % capacity();
+      readIndex_ = (readIndex_ + size) % capacity();
     } else {
       uint8_t* const bytes = static_cast<uint8_t*>(buf);
 
-      const size_t start = tail_ % capacity();
-      tail_ = (tail_ + size) % capacity();
-      const size_t end = tail_;
+      const size_t start = readIndex_ % capacity();
+      readIndex_ = (readIndex_ + size) % capacity();
+      const size_t end = readIndex_;
 
       if (start < end) {
         std::copy_n(&buf_[start], size, &bytes[0]);
@@ -143,9 +143,9 @@ class ByteBuffer {
       return 0;
     }
 
-    const size_t start = head_ % capacity();
-    head_ = (head_ + size) % capacity();
-    const size_t end = head_;
+    const size_t start = writeIndex_ % capacity();
+    writeIndex_ = (writeIndex_ + size) % capacity();
+    const size_t end = writeIndex_;
 
     if (start < end) {
       std::copy_n(&bytes[0], size, &buf_[start]);
@@ -162,16 +162,16 @@ class ByteBuffer {
   // Clears the buffer.
   void clear() {
     size_ = 0;
-    head_ = 0;
-    tail_ = 0;
+    writeIndex_ = 0;
+    readIndex_ = 0;
   }
 
  private:
   std::array<uint8_t, N> buf_;
 
   size_t size_ = 0;
-  size_t head_ = 0;  // New elements go here
-  size_t tail_ = 0;  // Old elements are read from here
+  size_t writeIndex_ = 0;  // New elements go here
+  size_t readIndex_ = 0;  // Old elements are read from here
 };
 
 }  // namespace internal
