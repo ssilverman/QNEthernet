@@ -859,16 +859,20 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
     return -1;
   }
 
+  static uint16_t s_seq = 0;
+
+  const uint16_t seq = s_seq++;
   const PingData req{.ip       = ip,
                      .ttl      = ttl,
                      .id       = QNETHERNET_DEFAULT_PING_ID,
-                     .seq      = 0,
+                     .seq      = seq,
                      .data     = nullptr,
                      .dataSize = 0};
 
   volatile bool found = false;
-  Ping ping{[&ip, &found](const PingData& reply) {
-    if ((reply.id != QNETHERNET_DEFAULT_PING_ID) || (reply.ip != ip)) {
+  Ping ping{[&ip, &found, seq](const PingData& reply) {
+    if ((reply.id != QNETHERNET_DEFAULT_PING_ID) || (reply.ip != ip) ||
+        (reply.seq != seq) || (reply.dataSize != 0)) {
       return;
     }
     found = true;
