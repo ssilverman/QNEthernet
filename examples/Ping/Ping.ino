@@ -68,7 +68,7 @@ bool replyReceived = false;  // Indicates if the current reply has
 
 namespace {
 // Forward declarations
-void replyCallback(const PingData& reply);
+bool replyCallback(const PingData& reply);
 }  // namespace
 
 // Ping object, for sending and receiving echo requests and replies.
@@ -161,12 +161,12 @@ void loop() {
 namespace {
 
 // The Echo Reply callback.
-void replyCallback(const PingData& reply) {
+bool replyCallback(const PingData& reply) {
   // Check that the ID is ours
   if ((reply.id != kPingId) ||
       (reply.data == nullptr) ||
       (reply.dataSize < 4)) {
-    return;
+    return false;
   }
 
   // Check that the payload data matches
@@ -187,6 +187,8 @@ void replyCallback(const PingData& reply) {
          payloadMatches ? "" : " (payload mismatch)");
 
   replyReceived = true;
+
+  return true;
 }
 
 }  // namespace

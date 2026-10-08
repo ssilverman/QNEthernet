@@ -56,8 +56,10 @@ struct PingData {
 class Ping final {
  public:
   // Function type for receiving ping replies. data may be NULL and dataSize
-  // will be zero if there's no echo reply data.
-  using replyf = std::function<void(const PingData& reply)>;
+  // will be zero if there's no echo reply data. It returns whether the packet
+  // has been handled and can be consumed: true to consume and false to leave it
+  // available for other receivers.
+  using replyf = std::function<bool(const PingData& reply)>;
 
   // Creates a new Ping object with no reply callback.
   Ping() = default;

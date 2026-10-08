@@ -90,11 +90,13 @@ uint8_t Ping::recvFunc(void* arg, struct raw_pcb* pcb, struct pbuf* p,
                          .seq      = ntohs(echo.seqno),
                          .data     = data,
                          .dataSize = dataSize};
-    ping->replyf_(reply);
+    if (ping->replyf_(reply)) {
+      (void)pbuf_free(p);
+      return 1;  // Eat the packet
+    }
   }
 
-  (void)pbuf_free(p);
-  return 1;  // Eat the packet
+  return 0;  // Not consumed; don't free
 }
 
 Ping::~Ping() noexcept {

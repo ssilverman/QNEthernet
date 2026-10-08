@@ -19,6 +19,8 @@ and this project adheres to
 * Improved memory churn for queued UDP packets and raw frames.
 * Updated `Ethernet.ping()` to use an incrementing sequence number.
 * Improved `Ping` receive to also check the checksum.
+* Changed `Ping` reply callback to return a Boolean indicating whether the
+  packet can be consumed.
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.

@@ -873,9 +873,10 @@ long EthernetClass::ping(const IPAddress& ip, const uint8_t ttl) const {
   Ping ping{[&ip, &found, seq](const PingData& reply) {
     if ((reply.id != QNETHERNET_DEFAULT_PING_ID) || (reply.ip != ip) ||
         (reply.seq != seq) || (reply.dataSize != 0)) {
-      return;
+      return false;
     }
     found = true;
+    return true;
   }};
 
   if (!ping.send(req)) {
