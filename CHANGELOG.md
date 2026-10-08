@@ -21,6 +21,9 @@ and this project adheres to
 * Improved `Ping` receive to also check the checksum.
 * Changed `Ping` reply callback to return a Boolean indicating whether the
   packet can be consumed.
+* Changed `EthernetServer::write()` functions to return the total number of
+  bytes written. Also changed the internal `ConnectionManager::write()`
+  functions.
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.

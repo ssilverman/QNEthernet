@@ -124,14 +124,14 @@ EthernetServer::operator bool() const {
 
 size_t EthernetServer::write(const uint8_t b) {
   if (listeningPort_ == 0) {
-    return 1;
+    return 0;
   }
   return internal::ConnectionManager::instance().write(listeningPort_, b);
 }
 
 size_t EthernetServer::write(const uint8_t* const buffer, const size_t size) {
   if (listeningPort_ == 0) {
-    return size;
+    return 0;
   }
   return internal::ConnectionManager::instance().write(listeningPort_,
                                                        buffer, size);

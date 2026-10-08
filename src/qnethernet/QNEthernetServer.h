@@ -117,12 +117,12 @@ class EthernetServer : public Server, public internal::PrintfChecked {
   // Bring Print::write functions into scope
   using Print::write;
 
-  // Writes a byte to all the connections. This does nothing and returns 1 if
-  // the port is not set.
+  // Writes a byte to all the connections and returns the total number of bytes
+  // written. This does nothing and returns zero if the port is not set.
   size_t write(uint8_t b) final;
 
-  // Writes data to all the connections. This does nothing and returns size if
-  // the port is not set.
+  // Writes data to all the connections and returns the total number of bytes
+  // written. This does nothing and returns zero if the port is not set.
   size_t write(const uint8_t* buffer, size_t size) final;
 
   // A convenience function that can write any type of data.

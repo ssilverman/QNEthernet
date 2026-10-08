@@ -490,7 +490,9 @@ size_t ConnectionManager::write(const uint16_t port,
                                 const void* const b, const size_t len) {
   const auto size16 = static_cast<uint16_t>(
       std::min(len, size_t{std::numeric_limits<uint16_t>::max()}));
-  iterateConnections([port, b, size16](struct altcp_pcb* pcb) {
+  size_t written = 0;
+
+  iterateConnections([port, b, size16, &written](struct altcp_pcb* pcb) {
     if (getLocalPort(pcb) != port) {
       return;
     }
@@ -506,10 +508,13 @@ size_t ConnectionManager::write(const uint16_t port,
       // TODO: Is ignoring the return the correct thing to do?
       // Note: Writing to a single connection ignores the error (but sets errno)
       (void)altcp_write(pcb, b, len, TCP_WRITE_FLAG_COPY);
+      written += len;
     }
   });
+
   Ethernet.loop();
-  return size16;
+
+  return written;
 }
 
 void ConnectionManager::flush(const uint16_t port) {
