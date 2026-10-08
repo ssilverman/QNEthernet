@@ -154,8 +154,8 @@ For API additions beyond what the Arduino-style API provides, see:\
   address. If the address is NULL then the internal or system default MAC
   address will be used. As well, if Ethernet fails to start then the MAC address
   will not be changed.
-* `EthernetServer::write(...)` functions always return the write size requested.
-  This is because different clients may behave differently.
+* `EthernetServer::write(...)` functions return the totsl number of bytes
+  written across all clients.
 * The examples at
   [server.accept()](https://docs.arduino.cc/libraries/ethernet/#Server%20Class)
   and
