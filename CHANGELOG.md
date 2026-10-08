@@ -27,6 +27,7 @@ and this project adheres to
 * Fixed possible W5500 receive overrun.
 * Fixed drop counter (UDP packets and raw frames) to include dropped data when
   shrinking the queue.
+* Fixed _Ping_ example reply callback to add data and data-size checks.
 
 ## [0.37.0]
 

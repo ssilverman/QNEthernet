@@ -163,7 +163,9 @@ namespace {
 // The Echo Reply callback.
 void replyCallback(const PingData& reply) {
   // Check that the ID is ours
-  if (reply.id != kPingId) {
+  if ((reply.id != kPingId) ||
+      (reply.data == nullptr) ||
+      (reply.dataSize < 4)) {
     return;
   }
 
