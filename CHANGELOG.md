@@ -24,6 +24,8 @@ and this project adheres to
 * Changed `EthernetServer::write()` functions to return the total number of
   bytes written. Also changed the internal `ConnectionManager::write()`
   functions.
+* Improved internal `ConnectionManager` handling of remaining data by using move
+  instead of potential allocation and copy.
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.

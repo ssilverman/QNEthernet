@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <limits>
+#include <utility>
 
 #include "QNEthernet.h"
 #include "lwip/err.h"
@@ -85,11 +86,11 @@ static inline bool isAvailable(const std::unique_ptr<ConnectionState>& state) {
   return (/*(0 <= state->bufPos) &&*/ (state->bufPos < state->buf.size()));
 }
 
-// Copy any remaining data from the state to the "remaining" buffer. This first
-// clears the 'remaining' buffer.
+// Moves any remaining data from the state to the "remaining" buffer without
+// allocating, replacing what's there.
 //
 // This assumes holder->state != NULL.
-static void maybeCopyRemaining(ConnectionHolder* const holder) {
+static void maybeMoveRemaining(ConnectionHolder* const holder) {
   std::vector<uint8_t>& v = holder->remaining;
   const auto& state = holder->state;
 
@@ -98,8 +99,9 @@ static void maybeCopyRemaining(ConnectionHolder* const holder) {
   holder->remainingPos = 0;
 
   if (isAvailable(state)) {
-    (void)v.insert(v.cend(), state->buf.cbegin() + state->bufPos,
-                   state->buf.cend());
+    v = std::move(state->buf);
+    holder->remainingPos = state->bufPos;
+    state->bufPos =  0;
   }
 }
 
@@ -115,8 +117,8 @@ void ConnectionManager::errFunc(void* const arg, const err_t err) {
   holder->connected = (err == ERR_OK);
 
   if ((holder->state != nullptr) && (err != ERR_OK)) {
-    // Copy any buffered data
-    maybeCopyRemaining(holder);
+    // Preserve any buffered data
+    maybeMoveRemaining(holder);
 
     holder->state = nullptr;
   }
@@ -142,8 +144,8 @@ err_t ConnectionManager::recvFunc(void* const arg, struct altcp_pcb* const tpcb,
     holder->connected = false;
 
     if (state != nullptr) {
-      // Copy any buffered data
-      maybeCopyRemaining(holder);
+      // Preserve any buffered data
+      maybeMoveRemaining(holder);
 
       if (p != nullptr) {
         // Copy pbuf contents
