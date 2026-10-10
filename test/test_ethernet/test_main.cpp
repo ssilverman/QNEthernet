@@ -72,6 +72,7 @@ static constexpr char kTestHostname[]{"test-hostname"};
 
 // Registry of objects that need destruction, per test.
 std::unique_ptr<EthernetUDP> udp;
+std::unique_ptr<EthernetUDP> udpSender;  // For when need a separate socket
 std::unique_ptr<EthernetClient> client;
 std::unique_ptr<EthernetServer> server;
 
@@ -83,6 +84,7 @@ void setUp() {
 void tearDown() {
   // Clean up any stray objects because of the longjmp
   udp = nullptr;
+  udpSender = nullptr;
   if (client != nullptr) {
     client->abort();
     client = nullptr;
@@ -1100,63 +1102,88 @@ static void test_udp_zero_length() {
   udp->stop();
 }
 
-// Tests the DiffServ field for UDP.
+// Tests that received DiffServ comes from each packet, independently of the
+// receiving socket's outgoing setting. Include both DSCP and ECN bits.
 static void test_udp_diffserv() {
   constexpr uint16_t kPort = 1025;
-  constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
+  constexpr uint8_t kOtherDiffServ = 0x5e;
+  constexpr uint8_t kDiffServ[]{(0x2c << 2) | 1, 0};
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
-  // Create and listen
   udp = compat::make_unique<EthernetUDP>();
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
-  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->outgoingDiffServ(),
-                                  "Expected correct outgoing DiffServ");
+  udpSender = compat::make_unique<EthernetUDP>();
+  TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
 
-  uint8_t b = 13;
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(kOtherDiffServ),
+                           "Expected can set receiver outgoing DiffServ");
+  TEST_ASSERT_EQUAL_MESSAGE(kOtherDiffServ, udp->outgoingDiffServ(),
+                            "Expected correct receiver outgoing DiffServ");
 
-  // Send a packet
-  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
-                           "Expected packet send success");
+  for (size_t i = 0; i < std::size(kDiffServ); ++i) {
+    TEST_ASSERT_TRUE_MESSAGE(udpSender->setOutgoingDiffServ(kDiffServ[i]),
+                             "Expected can set sender outgoing DiffServ");
+    TEST_ASSERT_EQUAL_MESSAGE(kDiffServ[i], udpSender->outgoingDiffServ(),
+                              "Expected correct sender outgoing DiffServ");
+    const uint8_t b = static_cast<uint8_t>(i);
+    TEST_ASSERT_TRUE_MESSAGE(udpSender->send(Ethernet.localIP(), kPort, &b, 1),
+                             "Expected packet send success");
+    // Ethernet.loop();
 
-  // Test that we actually received the packet
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, udp->receivedDiffServ(), "Expected matching DiffServ");
+    TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+    TEST_ASSERT_EQUAL_MESSAGE(static_cast<int>(i), udp->read(), "Expected correct packet data");
+    TEST_ASSERT_EQUAL_MESSAGE(kDiffServ[i], udp->receivedDiffServ(),
+                              "Expected correct DiffServ");
 
-  udp->stop();
+    TEST_ASSERT_EQUAL_MESSAGE(kOtherDiffServ, udp->outgoingDiffServ(),
+                              "Expected receiver outgoing DiffServ unchanged");
+  }
+
+  TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected no more packets");
 }
 
-// Tests the TTL field for UDP.
+// Tests that received TTL comes from each packet, independently of the
+// receiving socket's outgoing setting. Note that Loopback does not
+// decrement TTL.
 static void test_udp_ttl() {
   constexpr uint16_t kPort = 1025;
+  constexpr uint8_t kOtherTTL = 37;
+  constexpr uint8_t kTTL[]{1, 255};
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
   Ethernet.setLinkState(true);  // send() won't work unless there's a link
 
-  // Create and listen
   udp = compat::make_unique<EthernetUDP>();
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp->begin(kPort), "Expected UDP listen success");
-  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL - 1), "Expected can set TTL");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(),
-                                  "Expected correct outgoing TTL");
+  udpSender = compat::make_unique<EthernetUDP>();
+  TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
 
-  uint8_t b = 13;
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(kOtherTTL),
+                           "Expected can set receiver outgoing TTL");
+  TEST_ASSERT_EQUAL_MESSAGE(kOtherTTL, udp->outgoingTTL(),
+                            "Expected correct receiver outgoing TTL");
 
-  // Send a packet
-  TEST_ASSERT_TRUE_MESSAGE(udp->send(Ethernet.localIP(), kPort, &b, 1),
-                           "Expected packet send success");
+  for (size_t i = 0; i < std::size(kTTL); ++i) {
+    TEST_ASSERT_TRUE_MESSAGE(udpSender->setOutgoingTTL(kTTL[i]),
+                             "Expected can set sender outgoing TTL");
+    TEST_ASSERT_EQUAL_MESSAGE(kTTL[i], udpSender->outgoingTTL(),
+                              "Expected correct sender outgoing TTL");
+    const uint8_t b = static_cast<uint8_t>(i);
+    TEST_ASSERT_TRUE_MESSAGE(udpSender->send(Ethernet.localIP(), kPort, &b, 1),
+                             "Expected packet send success");
+    // Ethernet.loop();
 
-  // Test that we actually received the packet
-  TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
-  TEST_ASSERT_MESSAGE((udp->size() > 0) && (udp->data()[0] == b), "Expected packet data");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(UDP_TTL - 1, udp->receivedTTL(), "Expected matching TTL");
+    TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
+    TEST_ASSERT_EQUAL_MESSAGE(static_cast<int>(i), udp->read(), "Expected correct packet data");
+    TEST_ASSERT_EQUAL_MESSAGE(kTTL[i], udp->receivedTTL(), "Expected correct TTL");
 
-  udp->stop();
+    TEST_ASSERT_EQUAL_MESSAGE(kOtherTTL, udp->outgoingTTL(),
+                              "Expected receiver outgoing TTL unchanged");
+  }
+
+  TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected no more packets");
 }
 
 // Tests UDP addresses and ports.
