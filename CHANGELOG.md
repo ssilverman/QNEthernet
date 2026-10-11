@@ -41,6 +41,7 @@ and this project adheres to
 * Fixed drop counter (UDP packets and raw frames) to include dropped data when
   shrinking the queue.
 * Fixed _Ping_ example reply callback to add data and data-size checks.
+* Fixed W5500 driver's `output_frame()` return value.
 
 ## [0.37.0]
 

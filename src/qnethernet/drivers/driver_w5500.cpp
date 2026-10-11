@@ -1058,7 +1058,7 @@ bool output_frame(const void* const frame, const size_t len) {
   (void)std::memcpy(s_frameBuf, frame, len);
 
   SPITransaction spiTransaction;
-  return send_frame(len);
+  return (send_frame(len) == ERR_OK);
 }
 #endif  // QNETHERNET_ENABLE_RAW_FRAME_SUPPORT
 
