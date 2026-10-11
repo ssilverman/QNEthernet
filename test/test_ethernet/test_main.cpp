@@ -1057,10 +1057,10 @@ static void test_udp_options() {
 
   udp = compat::make_unique<EthernetUDP>();
 
-  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(0xa5), "Expected set DiffServ success (1)");
-  TEST_ASSERT_EQUAL_MESSAGE(0xa5, udp->outgoingDiffServ(), "Expected Diffserv 0xa5");
-  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(0), "Expected set DiffServ success (2)");
-  TEST_ASSERT_EQUAL_MESSAGE(0, udp->outgoingDiffServ(), "Expected DiffServ 0");
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTypeOfService(0xa5), "Expected set ToS success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(0xa5, udp->outgoingTypeOfService(), "Expected ToS 0xa5");
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTypeOfService(0), "Expected set ToS success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(0, udp->outgoingTypeOfService(), "Expected ToS 0");
 
   TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTTL(UDP_TTL - 1), "Expected set TTL success (1)");
   TEST_ASSERT_EQUAL_MESSAGE(UDP_TTL - 1, udp->outgoingTTL(), "Expected TTL UDP_TTL-1");
@@ -1102,12 +1102,12 @@ static void test_udp_zero_length() {
   udp->stop();
 }
 
-// Tests that received DiffServ comes from each packet, independently of the
-// receiving socket's outgoing setting. Include both DSCP and ECN bits.
-static void test_udp_diffserv() {
+// Tests that received ToS comes from each packet, independently of the
+// receiving socket's outgoing setting. Includes both DSCP and ECN bits.
+static void test_udp_tos() {
   constexpr uint16_t kPort = 1025;
-  constexpr uint8_t kOtherDiffServ = 0x5e;
-  constexpr uint8_t kDiffServ[]{(0x2c << 2) | 1, 0};
+  constexpr uint8_t kOtherToS = 0x5e;
+  constexpr uint8_t kToS[]{(0x2c << 2) | 1, 0};
 
   TEST_ASSERT_TRUE_MESSAGE(Ethernet.begin(kStaticIP, kSubnetMask, kGateway),
                            "Expected successful Ethernet start");
@@ -1117,16 +1117,16 @@ static void test_udp_diffserv() {
   udpSender = compat::make_unique<EthernetUDP>();
   TEST_ASSERT_TRUE_MESSAGE(udp->begin(kPort), "Expected UDP listen success");
 
-  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingDiffServ(kOtherDiffServ),
-                           "Expected can set receiver outgoing DiffServ");
-  TEST_ASSERT_EQUAL_MESSAGE(kOtherDiffServ, udp->outgoingDiffServ(),
-                            "Expected correct receiver outgoing DiffServ");
+  TEST_ASSERT_TRUE_MESSAGE(udp->setOutgoingTypeOfService(kOtherToS),
+                           "Expected can set receiver outgoing ToS");
+  TEST_ASSERT_EQUAL_MESSAGE(kOtherToS, udp->outgoingTypeOfService(),
+                            "Expected correct receiver outgoing ToS");
 
-  for (size_t i = 0; i < std::size(kDiffServ); ++i) {
-    TEST_ASSERT_TRUE_MESSAGE(udpSender->setOutgoingDiffServ(kDiffServ[i]),
-                             "Expected can set sender outgoing DiffServ");
-    TEST_ASSERT_EQUAL_MESSAGE(kDiffServ[i], udpSender->outgoingDiffServ(),
-                              "Expected correct sender outgoing DiffServ");
+  for (size_t i = 0; i < std::size(kToS); ++i) {
+    TEST_ASSERT_TRUE_MESSAGE(udpSender->setOutgoingTypeOfService(kToS[i]),
+                             "Expected can set sender outgoing ToS");
+    TEST_ASSERT_EQUAL_MESSAGE(kToS[i], udpSender->outgoingTypeOfService(),
+                              "Expected correct sender outgoing ToS");
     const uint8_t b = static_cast<uint8_t>(i);
     TEST_ASSERT_TRUE_MESSAGE(udpSender->send(Ethernet.localIP(), kPort, &b, 1),
                              "Expected packet send success");
@@ -1134,11 +1134,11 @@ static void test_udp_diffserv() {
 
     TEST_ASSERT_EQUAL_MESSAGE(1, udp->parsePacket(), "Expected packet with size 1");
     TEST_ASSERT_EQUAL_MESSAGE(static_cast<int>(i), udp->read(), "Expected correct packet data");
-    TEST_ASSERT_EQUAL_MESSAGE(kDiffServ[i], udp->receivedDiffServ(),
-                              "Expected correct DiffServ");
+    TEST_ASSERT_EQUAL_MESSAGE(kToS[i], udp->receivedTypeOfService(),
+                              "Expected correct ToS");
 
-    TEST_ASSERT_EQUAL_MESSAGE(kOtherDiffServ, udp->outgoingDiffServ(),
-                              "Expected receiver outgoing DiffServ unchanged");
+    TEST_ASSERT_EQUAL_MESSAGE(kOtherToS, udp->outgoingTypeOfService(),
+                              "Expected receiver outgoing ToS unchanged");
   }
 
   TEST_ASSERT_EQUAL_MESSAGE(-1, udp->parsePacket(), "Expected no more packets");
@@ -1478,10 +1478,10 @@ static void test_client_options() {
   TEST_ASSERT_TRUE_MESSAGE(client->setNoDelay(false), "Expected set no-delay false success");
   TEST_ASSERT_FALSE_MESSAGE(client->isNoDelay(), "Expected not no-delay");
 
-  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(0xa5), "Expected set DiffServ success (1)");
-  TEST_ASSERT_EQUAL_MESSAGE(0xa5, client->outgoingDiffServ(), "Expected DiffServ 0xa5");
-  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(0), "Expected set DiffServ success (2)");
-  TEST_ASSERT_EQUAL_MESSAGE(0, client->outgoingDiffServ(), "Expected DiffServ 0");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTypeOfService(0xa5), "Expected set ToS success (1)");
+  TEST_ASSERT_EQUAL_MESSAGE(0xa5, client->outgoingTypeOfService(), "Expected ToS 0xa5");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTypeOfService(0), "Expected set ToS success (2)");
+  TEST_ASSERT_EQUAL_MESSAGE(0, client->outgoingTypeOfService(), "Expected ToS 0");
 
   TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTTL(TCP_TTL - 1), "Expected set TTL success (1)");
   TEST_ASSERT_EQUAL_MESSAGE(TCP_TTL - 1, client->outgoingTTL(), "Expected TTL TCP_TTL-1");
@@ -1491,10 +1491,10 @@ static void test_client_options() {
   client->close();
 }
 
-// Tests the DiffServ field for TCP.
-static void test_client_diffserv() {
+// Tests the ToS field for TCP.
+static void test_client_tos() {
   constexpr uint16_t kPort = 80;
-  constexpr uint8_t kDiffServ = (0x2c << 2) | 1;
+  constexpr uint8_t kToS = (0x2c << 2) | 1;
   constexpr char kHost[]{"www.google.com"};
 
   if (!waitForLocalIP()) {
@@ -1504,18 +1504,18 @@ static void test_client_diffserv() {
   client = compat::make_unique<EthernetClient>();
   client->setConnectionTimeout(kConnectTimeout);
 
-  // Check that can't set DiffServ before connect
+  // Check that can't set ToS before connect
   TEST_ASSERT_FALSE_MESSAGE(static_cast<bool>(*client), "Expected not connected");
   TEST_ASSERT_EQUAL_MESSAGE(false, client->connected(), "Expected not connected (no data)");
-  TEST_ASSERT_FALSE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can't set DiffServ");
+  TEST_ASSERT_FALSE_MESSAGE(client->setOutgoingTypeOfService(kToS), "Expected can't set ToS");
 
-  // Connect and set DiffServ
+  // Connect and set ToS
   TEST_MESSAGE("Connecting ...");
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connect(kHost, kPort), "Expected connect success");
   TEST_ASSERT_TRUE_MESSAGE(static_cast<bool>(*client), "Expected connected");
   TEST_ASSERT_EQUAL_MESSAGE(true, client->connected(), "Expected connected (or data)");
-  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingDiffServ(kDiffServ), "Expected can set DiffServ");
-  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kDiffServ, client->outgoingDiffServ(), "Expected matching DiffServ");
+  TEST_ASSERT_TRUE_MESSAGE(client->setOutgoingTypeOfService(kToS), "Expected can set ToS");
+  TEST_ASSERT_EQUAL_UINT8_MESSAGE(kToS, client->outgoingTypeOfService(), "Expected matching ToS");
 
   client->close();
 }
@@ -1928,7 +1928,7 @@ void setup() {
   RUN_TEST(test_udp_state);
   RUN_TEST(test_udp_options);
   RUN_TEST(test_udp_zero_length);
-  RUN_TEST(test_udp_diffserv);
+  RUN_TEST(test_udp_tos);
   RUN_TEST(test_udp_ttl);
   RUN_TEST(test_udp_addrs);
   RUN_TEST(test_client);
@@ -1939,7 +1939,7 @@ void setup() {
   RUN_TEST(test_client_addr_info);
   RUN_TEST(test_client_wait_for_disconnect);
   RUN_TEST(test_client_options);
-  RUN_TEST(test_client_diffserv);
+  RUN_TEST(test_client_tos);
   RUN_TEST(test_client_ttl);
   RUN_TEST(test_server_state);
   RUN_TEST(test_server_construct_int_port);

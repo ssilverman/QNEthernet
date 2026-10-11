@@ -83,7 +83,7 @@ void EthernetUDP::recvFunc(void* const arg, struct udp_pcb* const pcb,
     packet.port = port;
     packet.destAddr = *ip_current_dest_addr();
     packet.receivedTimestamp = timestamp;
-    packet.diffServ = IPH_TOS(ip4_current_header());
+    packet.tos = IPH_TOS(ip4_current_header());
     packet.ttl = IPH_TTL(ip4_current_header());
   }
 
@@ -222,15 +222,15 @@ void EthernetUDP::stop() {
   listenReuse_ = false;
 }
 
-bool EthernetUDP::setOutgoingDiffServ(const uint8_t ds) {
+bool EthernetUDP::setOutgoingTypeOfService(const uint8_t tos) {
   if (!tryCreatePCB()) {
     return false;
   }
-  pcb_->tos = ds;
+  pcb_->tos = tos;
   return true;
 }
 
-uint8_t EthernetUDP::outgoingDiffServ() const {
+uint8_t EthernetUDP::outgoingTypeOfService() const {
   if (pcb_ == nullptr) {
     return 0;
   }
@@ -253,7 +253,7 @@ uint8_t EthernetUDP::outgoingTTL() const {
 }
 
 void EthernetUDP::Packet::clear() {
-  diffServ = 0;
+  tos = 0;
   ttl = 0;
   data.clear();
   addr = *IP_ANY_TYPE;

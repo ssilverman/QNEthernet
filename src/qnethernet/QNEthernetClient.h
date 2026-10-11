@@ -243,19 +243,18 @@ class EthernetClient : public internal::ClientEx,
   // returns false if not connected.
   bool isNoDelay() const;
 
-  // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
-  // header. The top 6 bits are the differentiated services code point (DSCP)
-  // value, and the bottom 2 bits are the explicit congestion notification
-  // (ECN) value.
+  // Sets the Type of Service field in the outgoing IP header. The top 6 bits
+  // are the differentiated services code point (DSCP) value, and the bottom
+  // 2 bits are the explicit congestion notification (ECN) value.
   //
   // This returns true if connected and the value was set, and false otherwise.
   //
   // Note that this must be set for each new connection.
-  bool setOutgoingDiffServ(uint8_t ds) final;
+  bool setOutgoingTypeOfService(uint8_t tos) final;
 
-  // Returns the differentiated services (DiffServ) value from the outgoing IP
-  // header. This will return zero if not connected.
-  uint8_t outgoingDiffServ() const final;
+  // Returns the Type of Service (DiffServ, ECN) value from the outgoing
+  // IP header. This will return zero if not connected.
+  uint8_t outgoingTypeOfService() const final;
 
   // Sets the TTL field in the outgoing IP header.
   //

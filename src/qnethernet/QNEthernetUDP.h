@@ -215,10 +215,9 @@ class EthernetUDP : public UDP,
     return listening_;
   }
 
-  // Sets the differentiated services (DiffServ, DS) field in the outgoing IP
-  // header. The top 6 bits are the differentiated services code point (DSCP)
-  // value, and the bottom 2 bits are the explicit congestion notification
-  // (ECN) value.
+  // Sets the Type of Service field in the outgoing IP header. The top 6 bits
+  // are the differentiated services code point (DSCP) value, and the bottom
+  // 2 bits are the explicit congestion notification (ECN) value.
   //
   // This attempts to create the necessary internal state, if not already
   // created, and returns whether successful. This will not be successful if the
@@ -230,17 +229,17 @@ class EthernetUDP : public UDP,
   // Note that this must be set again after calling stop().
   //
   // If this returns false and there was an error then errno will be set.
-  bool setOutgoingDiffServ(uint8_t ds) final;
+  bool setOutgoingTypeOfService(uint8_t tos) final;
 
-  // Returns the differentiated services (DiffServ) value from the outgoing IP
+  // Returns the Type of Service (DiffServ, ECN) value from the outgoing IP
   // header. This will return zero if the internal state has not yet
   // been created.
-  uint8_t outgoingDiffServ() const final;
+  uint8_t outgoingTypeOfService() const final;
 
-  // Returns the received packet's DiffServ value. This is only valid if a
-  // packet has been received with parsePacket().
-  uint8_t receivedDiffServ() const {
-    return packet_.diffServ;
+  // Returns the received packet's Type of Service value. This is only valid if
+  // a packet has been received with parsePacket().
+  uint8_t receivedTypeOfService() const {
+    return packet_.tos;
   }
 
   // Sets the TTL field in the outgoing IP header.
@@ -270,7 +269,7 @@ class EthernetUDP : public UDP,
  private:
   // Packet holds packet data. destAddr is unused for outgoing packets.
   struct Packet final {
-    uint8_t diffServ = 0;
+    uint8_t tos = 0;
     uint8_t ttl = 0;
     std::vector<uint8_t> data;
     ip_addr_t addr = *IP_ANY_TYPE;

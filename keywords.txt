@@ -106,8 +106,8 @@ peek	KEYWORD2
 status	KEYWORD2	client.status
 setNoDelay	KEYWORD2
 isNoDelay	KEYWORD2
-setOutgoingDiffServ	KEYWORD2
-outgoingDiffServ	KEYWORD2
+setOutgoingTypeOfService	KEYWORD2
+outgoingTypeOfService	KEYWORD2
 setOutgoingTTL	KEYWORD2
 outgoingTTL	KEYWORD2
 maxListeners	KEYWORD2
@@ -128,7 +128,7 @@ endPacket	KEYWORD2	EthernetUDP.endPacket
 send	KEYWORD2
 parsePacket	KEYWORD2	EthernetUDP.parsePacket
 size	KEYWORD2
-receivedDiffServ	KEYWORD2
+receivedTypeOfService	KEYWORD2
 receivedTTL	KEYWORD2
 maxServices	KEYWORD2
 restart	KEYWORD2

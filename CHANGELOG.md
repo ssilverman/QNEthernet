@@ -26,6 +26,11 @@ and this project adheres to
   functions.
 * Improved internal `ConnectionManager` handling of remaining data by using move
   instead of potential allocation and copy.
+* Renamed "DiffServ" functions to use "TypeOfService" instead:
+  * `setOutgoingDiffServ(ds)` -> `setOutgoingTypeOfService(tos)`
+  * `outgoingDiffServ()` -> `outgoingTypeOfService()`
+  * `receivedDiffServ()` -> `receivedTypeOfService()`
+
 
 ### Fixed
 * Fixed `settimeofday()` negative usec calculation for Teensyduino.

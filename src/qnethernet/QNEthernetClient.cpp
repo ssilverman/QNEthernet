@@ -716,16 +716,16 @@ bool EthernetClient::isNoDelay() const {
   return altcp_nagle_disabled((*state)->pcb);
 }
 
-bool EthernetClient::setOutgoingDiffServ(const uint8_t ds) {
+bool EthernetClient::setOutgoingTypeOfService(const uint8_t tos) {
   const auto* state = getState();
   if (state == nullptr) {
     return false;
   }
-  innermost(*state)->tos = ds;
+  innermost(*state)->tos = tos;
   return true;
 }
 
-uint8_t EthernetClient::outgoingDiffServ() const {
+uint8_t EthernetClient::outgoingTypeOfService() const {
   const auto* state = getState();
   if (state == nullptr) {
     return 0;

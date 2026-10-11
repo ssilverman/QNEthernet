@@ -400,11 +400,11 @@ The `Ethernet` object is the main Ethernet interface.
 
 #### IP header values
 
-* `outgoingDiffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the outgoing IP header, or zero if not connected.
-* `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
-  in the outgoing IP header, if connected. Returns `true` if connected and the
-  option was set, and `false` otherwise.
+* `outgoingTypeOfService()`: Returns the current value of the ToS field from the
+  outgoing IP header, or zero if not connected.
+* `setOutgoingTypeOfService(tos)`: Sets the ToS (DiffServ, ECN) field in the
+  outgoing IP header, if connected. Returns `true` if connected and the option
+  was set, and `false` otherwise.
 * `outgoingTTL()`: Returns the current value of the TTL field from the outgoing
   IP header, or zero if not connected.
 * `setOutgoingTTL(ttl)`: Sets the TTL field in the outgoing IP header, if
@@ -484,12 +484,11 @@ listening and the local port or _reuse_ options have changed.
 
 #### IP header values
 
-* `outgoingDiffServ()`: Returns the current value of the differentiated services
-  (DiffServ) field from the outgoing IP header, or zero if the object hasn't yet
-  been set up.
-* `receivedDiffServ()`: Returns the DiffServ value of the last received packet.
-* `setOutgoingDiffServ(ds)`: Sets the differentiated services (DiffServ) field
-  in the outgoing IP header, setting up any necessary internal state. Returns
+* `outgoingTypeOfService()`: Returns the current value of the ToS field from the
+  outgoing IP header, or zero if the object hasn't yet been set up.
+* `receivedTypeOfService()`: Returns the ToS value of the last received packet.
+* `setOutgoingTypeOfService(tos)`: Sets the ToS (DiffServ, ECN) field in the
+  outgoing IP header, setting up any necessary internal state. Returns
   whether successful.
 * `outgoingTTL()`: Returns the current value of the TTL field from the outgoing
   IP header, or zero if the object hasn't yet been set up.
@@ -2233,8 +2232,8 @@ _QNEthernet_ library.
     2. W5500
 23. Straightforward to add new Ethernet frame drivers
 24. Ability to toggle [Nagle's algorithm](#tcp-socket-options) for TCP
-25. Ability to set some IP header fields: differentiated services (DiffServ)
-    and TTL (see [here](#ip-header-values) and [here](#ip-header-values-1))
+25. Ability to set some IP header fields: ToS (DiffServ, ECN) and TTL
+    (see [here](#ip-header-values) and [here](#ip-header-values-1))
 26. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
 27. [Ping](#ping) (ICMP echo) support
 28. Ability to disable [ping replies](#ping-reply)
