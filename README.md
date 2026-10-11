@@ -2232,8 +2232,9 @@ _QNEthernet_ library.
     2. W5500
 23. Straightforward to add new Ethernet frame drivers
 24. Ability to toggle [Nagle's algorithm](#tcp-socket-options) for TCP
-25. Ability to set some IP header fields: ToS (DiffServ, ECN) and TTL
-    (see [here](#ip-header-values) and [here](#ip-header-values-1))
+25. Ability to access some IP header fields: ToS (DiffServ, ECN) and TTL
+    (see [here for TCP](#ip-header-values) and
+    [here for UDP](#ip-header-values-1))
 26. [Secure TCP initial sequence numbers (ISNs)](#secure-tcp-initial-sequence-numbers-isns)
 27. [Ping](#ping) (ICMP echo) support
 28. Ability to disable [ping replies](#ping-reply)
